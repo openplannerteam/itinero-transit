@@ -2,6 +2,7 @@
 using System.IO;
 using Serilog;
 using Serilog.Events;
+using Serilog.Formatting.Display;
 using Serilog.Formatting.Json;
 
 namespace Itinero_Transit
@@ -13,14 +14,14 @@ namespace Itinero_Transit
 
         private static void Main(string[] args)
         {
-            ConfigureLogging("production");
+            ConfigureLogging();
         }
 
 
-        public static void ConfigureLogging(string name)
+        public static void ConfigureLogging()
         {
             var date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            var logFile = Path.Combine("logs", $"log-Itinero-Transit-{name}-{date}.txt");
+            var logFile = Path.Combine("logs", $"log-Itinero-Transit-{date}.txt");
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)

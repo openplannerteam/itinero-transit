@@ -1,13 +1,13 @@
 ﻿using System;
 using System.IO;
-using System.Net;
+using Newtonsoft.Json.Linq;
 
 namespace Itinero_Transit.LinkedData
 {
     /**
      * A linked object is an object which has an Uniform Resource Identifier
      */
-    public class LinkedObject
+    public abstract class LinkedObject
     {
         public Uri Uri { get; set; }
 
@@ -27,8 +27,6 @@ namespace Itinero_Transit.LinkedData
             return Downloader.Download(Uri); // Do the actual stuff
         }
 
-           
-        
-        
+
     }
 }

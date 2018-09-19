@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Net.Http;
+using CacheCow.Client;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
@@ -24,10 +26,10 @@ namespace Itinero_Transit.LinkedData
         }
 
 
-        public static void AsJson(string contents)
+        public static JObject AsJson(string contents)
         {
-            dynamic json = JObject.Parse(contents);
-            Log.Information(json);
+            var json = JObject.Parse(contents);
+            return json;
         }
 
         /// <summary>
@@ -43,28 +45,18 @@ namespace Itinero_Transit.LinkedData
                 return AlwaysReturn;
             }
 
-            var client = new WebClient();
+            var client = ClientExtensions.CreateClient();
 
-            client.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+        //    client..Headers.Add("user-agent", "Itinero-Transit-v0.0.1");
+       //     client.Headers.Add("accept", "application/ld+json");
 
-            var data = client.OpenRead(uri);
+            var data = client.GetAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
             if (data == null)
             {
                 throw new FileNotFoundException("Could not open " + uri);
             }
 
-            var reader = new StreamReader(data);
-            string s;
-            try
-            {
-                s = reader.ReadToEnd();
-            }
-            finally
-            {
-                reader.Close();
-            }
-
-            return s;
+            return data.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
         }
     }
 }
