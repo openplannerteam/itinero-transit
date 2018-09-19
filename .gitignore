@@ -1,4 +1,5 @@
-Itinero-Transit/bin/*
-Itinero-Transit/obj/*
-Itinero-Transit/Itinero-Transit.sln.DotSettings.user
-Itinero-Transit/.idea/
+**/bin/*
+**/obj/
+**/Itinero-Transit.sln.DotSettings.user
+**/.idea/
+**/logs/*
