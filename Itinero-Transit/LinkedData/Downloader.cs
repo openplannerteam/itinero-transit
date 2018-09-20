@@ -24,6 +24,11 @@ namespace Itinero_Transit.LinkedData
         {
             return DownloadRaw(uri);
         }
+        
+        public static JObject DownloadJson(Uri uri)
+        {
+            return AsJson(DownloadRaw(uri));
+        }
 
 
         public static JObject AsJson(string contents)
@@ -46,6 +51,7 @@ namespace Itinero_Transit.LinkedData
             }
 
             var client = ClientExtensions.CreateClient();
+            
 
         //    client..Headers.Add("user-agent", "Itinero-Transit-v0.0.1");
        //     client.Headers.Add("accept", "application/ld+json");

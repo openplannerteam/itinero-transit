@@ -18,12 +18,12 @@ namespace Itinero_Transit_Tests
         [Fact]
         public void TestLinkedConnectionDownloader()
         {
-          //  Downloader.AlwaysReturn = singleConnection;
+            Downloader.AlwaysReturn = singleConnection;
             var result = Downloader.Download(Program.IRail);
             Assert.Equal(result, singleConnection);
             log("Downloaded result");
             log(Downloader.AsJson(result)["@graph"][0].ToString());
-           // var c = new Connection(Downloader.AsJson(result)["@graph"][0]);
+            // var c = new Connection(Downloader.AsJson(result)["@graph"][0]);
             //log(c.ToString());
         }
 

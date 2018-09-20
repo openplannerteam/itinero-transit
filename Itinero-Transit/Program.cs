@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using Itinero_Transit.CSA;
+using Itinero_Transit.LinkedData;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Display;
@@ -15,10 +17,15 @@ namespace Itinero_Transit
         private static void Main(string[] args)
         {
             ConfigureLogging();
+            Log.Information("Starting...");
+            var timeTable = new TimeTable(Downloader.DownloadJson(IRail));
+            Log.Information(timeTable.ToString());
+            
+            Log.Information("Done");
         }
 
 
-        public static void ConfigureLogging()
+        private static void ConfigureLogging()
         {
             var date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             var logFile = Path.Combine("logs", $"log-Itinero-Transit-{date}.txt");
