@@ -37,7 +37,7 @@ namespace Itinero_Transit.CSA
         {
             var res = PreviousLink == null ? "JOURNEY: \n" : PreviousLink.ToString();
 
-            res += "  "+Connection.ToString()+"\n";
+            res += $"  {Connection}\n";
             return res;
         }
 

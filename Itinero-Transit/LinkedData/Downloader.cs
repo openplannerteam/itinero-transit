@@ -1,10 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Net;
-using System.Net.Http;
 using CacheCow.Client;
 using Newtonsoft.Json.Linq;
-using Serilog;
 
 namespace Itinero_Transit.LinkedData
 {

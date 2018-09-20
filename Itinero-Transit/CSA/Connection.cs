@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Itinero_Transit.LinkedData;
 using Newtonsoft.Json.Linq;
 

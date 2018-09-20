@@ -12,7 +12,7 @@ namespace Itinero_Transit_Tests
 
         public TestLinkedObject(ITestOutputHelper output)
         {
-            this._output = output;
+            _output = output;
         }
 
         [Fact]

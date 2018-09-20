@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
@@ -15,7 +14,7 @@ namespace Itinero_Transit.LinkedData
 
         protected LinkedObject(Uri uri)
         {
-            this.Uri = AsUri(uri.ToString());
+            Uri = AsUri(uri.ToString());
         }
 
         /// <summary>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection.Metadata.Ecma335;
 using Serilog;
 
 namespace Itinero_Transit.CSA
@@ -12,20 +11,18 @@ namespace Itinero_Transit.CSA
     /// </summary>
     public class EarliestConnectionScan
     {
-        private readonly DateTime userDepartureTime;
-        private readonly Uri userDepartureStop;
-        private readonly Uri userTargetStop;
+        private readonly Uri _userDepartureStop;
+        private readonly Uri _userTargetStop;
 
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as early as possible
         /// </summary>
         private Dictionary<Uri, Journey> S = new Dictionary<Uri, Journey>();
 
-        public EarliestConnectionScan(DateTime userDepartureTime, Uri userDepartureStop, Uri userTargetStop)
+        public EarliestConnectionScan(Uri userDepartureStop, Uri userTargetStop)
         {
-            this.userDepartureTime = userDepartureTime;
-            this.userDepartureStop = userDepartureStop;
-            this.userTargetStop = userTargetStop;
+            _userDepartureStop = userDepartureStop;
+            _userTargetStop = userTargetStop;
         }
 
 
@@ -42,12 +39,12 @@ namespace Itinero_Transit.CSA
                 {
                     if (c.DepartureTime > currentBestArrival)
                     {
-                        return GetJourneyTo(userTargetStop);
+                        return GetJourneyTo(_userTargetStop);
                     }
                     
                     
                     IntegrateConnection(c);
-                    currentBestArrival = GetJourneyTo(userTargetStop).ArrivalTime;
+                    currentBestArrival = GetJourneyTo(_userTargetStop).ArrivalTime;
                 }
 
                 tt = new TimeTable(tt.Next);
@@ -63,7 +60,7 @@ namespace Itinero_Transit.CSA
         /// <param name="c"></param>
         private void IntegrateConnection(Connection c)
         {
-            if (c.DepartureStop.Equals(userDepartureStop))
+            if (c.DepartureStop.Equals(_userDepartureStop))
             {
                 Log.Information("Found a connection away!");
                 // Special case: we can always take this connection as we start here

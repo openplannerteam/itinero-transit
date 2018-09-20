@@ -2,10 +2,8 @@
 using System.IO;
 using Itinero_Transit.CSA;
 using Itinero_Transit.LinkedData;
-using JsonLD.Util;
 using Serilog;
 using Serilog.Events;
-using Serilog.Formatting.Display;
 using Serilog.Formatting.Json;
 
 namespace Itinero_Transit
@@ -16,7 +14,7 @@ namespace Itinero_Transit
         public static readonly Uri IRail = LinkedObject.AsUri("http://graph.irail.be/sncb/connections");
 
         public static readonly Uri Brugge = LinkedObject.AsUri("http://irail.be/stations/NMBS/008891009");
-        public static readonly Uri GentSP = LinkedObject.AsUri("http://irail.be/stations/NMBS/008892007");
+        public static readonly Uri GentStP = LinkedObject.AsUri("http://irail.be/stations/NMBS/008892007");
 
         public static readonly Uri Poperinge = LinkedObject.AsUri("http://irail.be/stations/NMBS/008896735");
         public static readonly Uri Vielsalm = LinkedObject.AsUri("http://irail.be/stations/NMBS/008845146");
@@ -25,7 +23,7 @@ namespace Itinero_Transit
         {
             ConfigureLogging();
             Log.Information("Starting...");
-            var ecs = new EarliestConnectionScan(DateTime.Now, Poperinge, Vielsalm);
+            var ecs = new EarliestConnectionScan(Poperinge, Vielsalm);
             var j = ecs.CalculateJourney(IRail);
             Log.Information(j.ToString());
         }
