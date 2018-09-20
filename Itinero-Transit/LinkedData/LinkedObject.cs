@@ -15,7 +15,7 @@ namespace Itinero_Transit.LinkedData
 
         protected LinkedObject(Uri uri)
         {
-            this.Uri = uri;
+            this.Uri = AsUri(uri.ToString());
         }
 
         /// <summary>
@@ -35,6 +35,15 @@ namespace Itinero_Transit.LinkedData
             FromJson(Downloader.DownloadJson(Uri));
         }
 
+
+        public static Uri AsUri(string s)
+        {
+            if (!s.StartsWith("https") && s.StartsWith("http"))
+            {
+                s = "https" + s.Substring(4);
+            }
+            return new Uri(s);
+        }
 
     }
 }

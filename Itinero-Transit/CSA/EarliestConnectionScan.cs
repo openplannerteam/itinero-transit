@@ -34,14 +34,26 @@ namespace Itinero_Transit.CSA
             var tt = new TimeTable(startPage);
             tt.Download();
 
-            Log.Information(tt.ToString());
-            foreach (var c in tt.Graph)
+            var currentBestArrival = DateTime.MaxValue;
+            
+            while (true)
             {
-                IntegrateConnection(c);
-            }
+                foreach (var c in tt.Graph)
+                {
+                    if (c.DepartureTime > currentBestArrival)
+                    {
+                        return GetJourneyTo(userTargetStop);
+                    }
+                    
+                    
+                    IntegrateConnection(c);
+                    currentBestArrival = GetJourneyTo(userTargetStop).ArrivalTime;
+                }
 
-            return GetJourneyTo(userTargetStop) != Journey.InfiniteJourney ? GetJourneyTo(userTargetStop) : null;
-            //    CalculateJourney(tt.Next);
+                tt = new TimeTable(tt.Next);
+                tt.Download();
+
+            }
         }
 
 
@@ -51,8 +63,7 @@ namespace Itinero_Transit.CSA
         /// <param name="c"></param>
         private void IntegrateConnection(Connection c)
         {
-            //  Log.Information($"Having a look at connection {c}");
-            if (c.DepartureStop. == (userDepartureStop))
+            if (c.DepartureStop.Equals(userDepartureStop))
             {
                 Log.Information("Found a connection away!");
                 // Special case: we can always take this connection as we start here
@@ -84,7 +95,6 @@ namespace Itinero_Transit.CSA
 
             if (c.DepartureTime < journeyTillStop.ArrivalTime)
             {
-                Log.Information("Already gone");
                 // This connection has already left before we can make it to the stop
                 return;
             }
@@ -92,7 +102,6 @@ namespace Itinero_Transit.CSA
             var actualArrival = c.ArrivalTime.AddSeconds(c.ArrivalDelay);
             if (actualArrival > GetJourneyTo(c.ArrivalStop).ArrivalTime)
             {
-                Log.Information("Later arrival");
                 // We will arrive later to the target stop
                 // It is no use to take the connection
                 return;

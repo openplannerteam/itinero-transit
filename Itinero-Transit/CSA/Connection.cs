@@ -69,20 +69,20 @@ namespace Itinero_Transit.CSA
         public override string ToString()
         {
             return
-                $"Connection {DepartureStop}:{DepartureTime:yyyy-MM-dd HH:mm:ss} --> {ArrivalStop}:{ArrivalTime:yyyy-MM-dd HH:mm:ss} ({Uri})";
+                $"Connection {DepartureStop}:{DepartureTime:yyyy-MM-dd HH:mm:ss} --> {ArrivalStop}:{ArrivalTime:yyyy-MM-dd HH:mm:ss}\n    Direction {Direction} ({Uri})";
         }
 
         protected sealed override void FromJson(JToken json)
         {
-            DepartureStop = new Uri(json["departureStop"].ToString());
-            ArrivalStop = new Uri(json["arrivalStop"].ToString());
+            DepartureStop = AsUri(json["departureStop"].ToString());
+            ArrivalStop = AsUri(json["arrivalStop"].ToString());
             DepartureTime = DateTime.Parse(json["departureTime"].ToString());
             ArrivalTime = DateTime.Parse(json["arrivalTime"].ToString());
             DepartureDelay = GetInt(json, "departureDelay");
             ArrivalDelay = GetInt(json, "arrivalDelay");
             Direction = json["direction"].ToString();
-            GtfsTrip = new Uri(json["gtfs:trip"].ToString());
-            GtfsRoute = new Uri(json["gtfs:route"].ToString());
+            GtfsTrip = AsUri(json["gtfs:trip"].ToString());
+            GtfsRoute = AsUri(json["gtfs:route"].ToString());
         }
     }
 }

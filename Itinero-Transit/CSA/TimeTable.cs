@@ -30,8 +30,8 @@ namespace Itinero_Transit.CSA
 
         protected sealed override void FromJson(JToken json)
         {
-            Next = new Uri(json["hydra:next"].ToString());
-            Prev = new Uri(json["hydra:previous"].ToString());
+            Next = AsUri(json["hydra:next"].ToString());
+            Prev = AsUri(json["hydra:previous"].ToString());
 
             Graph = new List<Connection>();
             var jsonGraph = json["@graph"];
