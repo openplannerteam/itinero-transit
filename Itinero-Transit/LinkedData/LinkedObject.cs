@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Newtonsoft.Json.Linq;
+using Serilog;
 
 namespace Itinero_Transit.LinkedData
 {
@@ -11,20 +13,26 @@ namespace Itinero_Transit.LinkedData
     {
         public Uri Uri { get; set; }
 
-        public LinkedObject(Uri uri)
+        protected LinkedObject(Uri uri)
         {
             this.Uri = uri;
         }
 
         /// <summary>
-        /// Downloads the resource where this linkedObject points to.
-        /// This method might implement caching, ... in the future
+        /// Load all instance fields from a JSON
         /// </summary>
-        /// <returns>The string at the given resoruce</returns>
+        /// <param name="json"></param>
+        protected abstract void FromJson(JToken json);
+        
+        /// <summary>
+        /// Downloads the resource where this linkedObject points to and tries to instantiate it
+        /// </summary>
+        /// <returns>The string at the given resource</returns>
         /// <exception cref="FileNotFoundException">If nothing could be downloaded</exception>
-        public string Download()
+        public void Download()
         {
-            return Downloader.Download(Uri); // Do the actual stuff
+            Log.Information($"Downloading {Uri}");
+            FromJson(Downloader.DownloadJson(Uri));
         }
 
 

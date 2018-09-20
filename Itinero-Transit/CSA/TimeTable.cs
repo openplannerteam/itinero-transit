@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using Itinero_Transit.LinkedData;
 using Newtonsoft.Json.Linq;
-using Serilog;
 
 namespace Itinero_Transit.CSA
 {
@@ -13,11 +13,10 @@ namespace Itinero_Transit.CSA
     public class TimeTable : LinkedObject
     {
 
-        public Uri next { get; set; }
-        public Uri prev { get; set; }
+        public Uri Next { get; set; }
+        public Uri Prev { get; set; }
 
-        public List<Connection> graph = new List<Connection>();
-        
+        public List<Connection> Graph { get; set; }
         
         public TimeTable(Uri uri) : base(uri)
         {
@@ -26,21 +25,26 @@ namespace Itinero_Transit.CSA
         
         public TimeTable(JToken json) : base(new Uri(json["@id"].ToString()))
         {
-            next = new Uri(json["hydra:next"].ToString());
-            prev = new Uri(json["hydra:previous"].ToString());
+           FromJson(json);
+        }
 
+        protected sealed override void FromJson(JToken json)
+        {
+            Next = new Uri(json["hydra:next"].ToString());
+            Prev = new Uri(json["hydra:previous"].ToString());
+
+            Graph = new List<Connection>();
             var jsonGraph = json["@graph"];
-            var l = jsonGraph.Count();
             foreach (var conn in jsonGraph)
             {
-                graph.Add(new Connection(conn));
+                Graph.Add(new Connection(conn));
             }
         }
 
         public override string ToString()
         {
-            var res = $"Timetable with {graph.Count} conneections; ID: {Uri.Segments.Last()} Next: {next.Segments.Last()} Prev: {prev.Segments.Last()}\n";
-            foreach (var conn in graph)
+            var res = $"Timetable with {Graph.Count} conneections; ID: {Uri.Segments.Last()} Next: {Next.Segments.Last()} Prev: {Prev.Segments.Last()}\n";
+            foreach (var conn in Graph)
             {
                 res += $"  {conn}\n";
             }

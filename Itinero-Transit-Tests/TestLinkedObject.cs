@@ -23,8 +23,18 @@ namespace Itinero_Transit_Tests
             Assert.Equal(result, singleConnection);
             log("Downloaded result");
             log(Downloader.AsJson(result)["@graph"][0].ToString());
-            // var c = new Connection(Downloader.AsJson(result)["@graph"][0]);
-            //log(c.ToString());
+        }
+
+        [Fact]
+        public void TestJSONParsing()
+        {
+            Downloader.AlwaysReturn = singleConnection;
+            var tt = new TimeTable(Downloader.DownloadJson(Program.IRail));
+            log(tt.ToString());
+            const string exp = "Timetable with 2 conneections; ID: connections Next: connections Prev: connections\n"+
+                               "  Connection 008822137:2018-09-19 13:30:00 --> 008893559:2018-09-19 13:51:00 (http://irail.be/connections/8822137/20180919/IC4136)\n"+
+                               "  Connection 008863008:2018-09-19 13:30:00 --> 008863461:2018-09-19 13:35:00 (http://irail.be/connections/8863008/20180919/L4965)";
+            Assert.Equal(exp, tt.ToString());
         }
 
 

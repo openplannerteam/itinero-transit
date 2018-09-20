@@ -56,6 +56,24 @@ namespace Itinero_Transit.CSA
 
         public Connection(JToken json) : base(new Uri(json["@id"].ToString()))
         {
+            FromJson(json);
+        }
+
+        private static int GetInt(JToken json, string name)
+        {
+            var jtoken = json[name];
+            return jtoken == null ? 0 : int.Parse(jtoken.ToString());
+        }
+
+
+        public override string ToString()
+        {
+            return
+                $"Connection {DepartureStop}:{DepartureTime:yyyy-MM-dd HH:mm:ss} --> {ArrivalStop}:{ArrivalTime:yyyy-MM-dd HH:mm:ss} ({Uri})";
+        }
+
+        protected sealed override void FromJson(JToken json)
+        {
             DepartureStop = new Uri(json["departureStop"].ToString());
             ArrivalStop = new Uri(json["arrivalStop"].ToString());
             DepartureTime = DateTime.Parse(json["departureTime"].ToString());
@@ -65,19 +83,6 @@ namespace Itinero_Transit.CSA
             Direction = json["direction"].ToString();
             GtfsTrip = new Uri(json["gtfs:trip"].ToString());
             GtfsRoute = new Uri(json["gtfs:route"].ToString());
-        }
-
-        private static int GetInt(JToken json, string name)
-        {
-            var jtoken = json[name];
-            return jtoken == null ? 0 : 
-                int.Parse(jtoken.ToString());
-        }
-
-
-        public override string ToString()
-        {
-            return $"Connection {DepartureStop.Segments.Last()}:{DepartureTime:yyyy-MM-dd HH:mm:ss} --> {ArrivalStop.Segments.Last()}:{ArrivalTime:yyyy-MM-dd HH:mm:ss} ({Uri})";
         }
     }
 }
