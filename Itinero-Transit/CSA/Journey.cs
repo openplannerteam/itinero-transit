@@ -7,7 +7,8 @@ namespace Itinero_Transit.CSA
     /// </summary>
     public class Journey
     {
-        public static readonly Journey InfiniteJourney = new Journey(null, DateTime.MaxValue, null);
+        public static readonly Journey InfiniteJourney = new Journey((IJourneyStats) null, DateTime.MaxValue, null);
+
         /// <summary>
         /// The previous link in this journey. Can be null if this is where we start the journey
         /// </summary>
@@ -17,19 +18,33 @@ namespace Itinero_Transit.CSA
         /// <summary>
         /// The time that the journey will ends
         /// </summary>
-        public DateTime ArrivalTime { get; }
+        public DateTime Time { get; }
 
         /// <summary>
         /// The connection taken for this journey
         /// </summary>
         public Connection Connection { get; }
 
+        /// <summary>
+        /// Keeps some statistics about the journey
+        /// </summary>
+        public IJourneyStats Stats { get; }
 
-        public Journey(Journey previousLink, DateTime arrivalTime, Connection connection)
+
+        public Journey(Journey previousLink, DateTime time, Connection connection)
         {
             PreviousLink = previousLink;
-            ArrivalTime = arrivalTime;
+            Time = time;
             Connection = connection;
+            Stats = previousLink.Stats.Add(this);
+        }
+
+        public Journey(IJourneyStats singleConnectionStats, DateTime time, Connection connection)
+        {
+            PreviousLink = null;
+            Time = time;
+            Connection = connection;
+            Stats = singleConnectionStats;
         }
 
 
@@ -38,9 +53,8 @@ namespace Itinero_Transit.CSA
             var res = PreviousLink == null ? "JOURNEY: \n" : PreviousLink.ToString();
 
             res += $"  {Connection}\n";
+            res += $"  {Stats}\n";
             return res;
         }
-
-        
     }
 }

@@ -42,7 +42,7 @@ namespace Itinero_Transit.CSA
 
         public override string ToString()
         {
-            var res = $"Timetable with {Graph.Count} conneections; ID: {Uri.Segments.Last()} Next: {Next.Segments.Last()} Prev: {Prev.Segments.Last()}\n";
+            var res = $"Timetable with {Graph.Count} connections; ID: {Uri.Segments.Last()} Next: {Next.Segments.Last()} Prev: {Prev.Segments.Last()}\n";
             foreach (var conn in Graph)
             {
                 res += $"  {conn}\n";

@@ -11,7 +11,7 @@ namespace Itinero_Transit
     public static class Program
     {
         // ReSharper disable once InconsistentNaming
-        public static readonly Uri IRail = LinkedObject.AsUri("http://graph.irail.be/sncb/connections");
+        public static readonly Uri IxRail = LinkedObject.AsUri("http://graph.irail.be/sncb/connections");
 
         public static readonly Uri Brugge = LinkedObject.AsUri("http://irail.be/stations/NMBS/008891009");
         public static readonly Uri GentStP = LinkedObject.AsUri("http://irail.be/stations/NMBS/008892007");
@@ -23,9 +23,26 @@ namespace Itinero_Transit
         {
             ConfigureLogging();
             Log.Information("Starting...");
-            var ecs = new EarliestConnectionScan(Poperinge, Vielsalm);
+            var ecs = new EarliestConnectionScan(Poperinge, Vielsalm, new AdvancedStats());
+            /*
             var j = ecs.CalculateJourney(IRail);
             Log.Information(j.ToString());
+            Log.Information(j.Stats.ToString());
+            */
+            
+            var pcs = new ProfiledConnectionScan<TransferStats>
+            (Poperinge, GentStP, DateTime.Now - new TimeSpan(6,0,0),
+                TransferStats.Factory, TransferStats.MinimizeTransfersFirst);
+
+            var pareto = pcs.CalculateJourneys(IRail);
+            Log.Information("Found "+pareto.Count+" pareto points");
+            var i = 0;
+            foreach (var journey in pareto)
+            {
+                Log.Information($"{i}:\n {journey}");
+                i++;
+            }
+
         }
 
 

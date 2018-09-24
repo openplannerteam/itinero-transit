@@ -66,7 +66,7 @@ namespace Itinero_Transit.CSA
         public override string ToString()
         {
             return
-                $"Connection {DepartureStop}:{DepartureTime:yyyy-MM-dd HH:mm:ss} --> {ArrivalStop}:{ArrivalTime:yyyy-MM-dd HH:mm:ss}\n    Direction {Direction} ({Uri})";
+                $"Connection {DepartureStop} {DepartureTime:yyyy-MM-dd HH:mm:ss} --> {ArrivalStop} {ArrivalTime:yyyy-MM-dd HH:mm:ss}\n    Direction {Direction} ({Uri})";
         }
 
         protected sealed override void FromJson(JToken json)
