@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using Itinero_Transit.LinkedData;
 using Serilog;
 
 namespace Itinero_Transit.CSA
@@ -17,27 +17,30 @@ namespace Itinero_Transit.CSA
     /// </summary>
     public class ProfiledConnectionScan<T> where T : IJourneyStats
     {
-        private readonly Uri _departureStation, _targetStation;
+        private readonly Uri _departureLocation, _targetLocation;
         private readonly T _statsFactory;
         private readonly IStatsComparator<T> _comparator;
         private readonly DateTime _earliestDeparture;
 
-        private readonly HashSet<Journey> _emptyJourneys = new HashSet<Journey>();
+        private readonly List<Journey> _emptyJourneys = new List<Journey>();
 
         /// <summary>
         /// Maps each stop onto a pareto front of journeys.
         /// If the station isn't in the dictionary yet, this means no trip from this station has been already found.
         ///
         /// Also known as 'S' in the paper
+        ///
+        /// Note that the list is sorted in descending order (thus first departure in time last in the list)
+        /// There can be multiple points which depart at the same time (but will have different arrival times and different other properties)
         /// </summary>
-        private readonly Dictionary<Uri, HashSet<Journey>> _stationJourneys = new Dictionary<Uri, HashSet<Journey>>();
+        private readonly Dictionary<Uri, List<Journey>> _stationJourneys = new Dictionary<Uri, List<Journey>>();
 
-        public ProfiledConnectionScan(Uri departureStation, Uri targetStation, DateTime earliestDeparture,
+        public ProfiledConnectionScan(Uri departureLocation, Uri targetLocation, DateTime earliestDeparture,
             T statsFactory,
             IStatsComparator<T> comparator)
         {
-            _departureStation = departureStation;
-            _targetStation = targetStation;
+            _departureLocation = departureLocation;
+            _targetLocation = targetLocation;
             _statsFactory = statsFactory;
             _comparator = comparator;
             _earliestDeparture = earliestDeparture;
@@ -48,7 +51,7 @@ namespace Itinero_Transit.CSA
         /// where the Uri points to the timetable of the last allowed arrival at the destination station
         /// </summary>
         /// <returns></returns>
-        public HashSet<Journey> CalculateJourneys(Uri lastArrival)
+        public List<Journey> CalculateJourneys(Uri lastArrival)
         {
             var tt = new TimeTable(lastArrival);
             tt.Download();
@@ -60,7 +63,8 @@ namespace Itinero_Transit.CSA
                 if (c.DepartureTime < _earliestDeparture)
                 {
                     // We're done! Returning values
-                    return _stationJourneys.GetValueOrDefault(_departureStation, _emptyJourneys);
+                    _dumpStationJourneys();
+                    return _stationJourneys.GetValueOrDefault(_departureLocation, _emptyJourneys);
                 }
 
                 AddConnection(c);
@@ -74,31 +78,34 @@ namespace Itinero_Transit.CSA
         /// Handles a connection backwards in time
         /// </summary>
         /// <param name="c"></param>
-        private void AddConnection(Connection c)
+        private void AddConnection(IConnection c)
         {
-            if (c.ArrivalStop.Equals(_targetStation))
+            if (c.DepartureLocation().Equals(_targetLocation))
             {
-                Log.Information("Found a way in: " + c);
-                // We keep track of the departure times here!
-                var journey = new Journey(_statsFactory.InitialStats(c), c.DepartureTime.AddSeconds(c.DepartureDelay),
-                    c);
-                ConsiderJourney(c.DepartureStop, journey);
+                // We want to be here! Lets not leave ;)
                 return;
             }
 
-            var journeysToEnd = _stationJourneys.GetValueOrDefault(c.DepartureStop, _emptyJourneys);
+            if (c.ArrivalLocation().Equals(_targetLocation))
+            {
+                // We keep track of the departure times here!
+                var journey = new Journey(_statsFactory.InitialStats(c), c.DepartureTime(), c);
+                ConsiderJourney(c.DepartureLocation(), journey);
+                return;
+            }
+
+            var journeysToEnd = _stationJourneys.GetValueOrDefault(c.ArrivalLocation(), _emptyJourneys);
             foreach (var j in journeysToEnd)
             {
-                
-                if(c.ArrivalTime.AddSeconds(c.ArrivalDelay) > j.Time)
+                if (c.ArrivalTime() > j.Time)
                 {
-                    // We missed this journey
+                    // We missed this connection
                     continue;
                 }
-                
+
                 // Chaining to the start of the journey, not the end -> We keep track of the departure time (although the time is not actually used)
-                var chained = new Journey(j, c.DepartureTime.AddSeconds(c.DepartureDelay), c);
-                ConsiderJourney(c.DepartureStop, chained);
+                var chained = new Journey(j, c.DepartureTime(), c);
+                ConsiderJourney(c.DepartureLocation(), chained);
             }
         }
 
@@ -112,47 +119,65 @@ namespace Itinero_Transit.CSA
         /// <param name="considered"></param>
         private void ConsiderJourney(Uri startStation, Journey considered)
         {
-            
             if (!_stationJourneys.ContainsKey(startStation))
             {
-                _stationJourneys.Add(startStation, new HashSet<Journey>());
+                _stationJourneys.Add(startStation, new List<Journey>());
             }
 
             var startJourneys = _stationJourneys[startStation];
 
-            Log.Information($"Considering journey {considered}");
+            var log = startStation.Equals(_departureLocation) ||
+                      startStation.Equals(Stations.GetId("Gent-Sint-Pieters"));
+            if (log)
+                Log.Information($"Considering journey {considered}");
 
-            var toRemove = new HashSet<Journey>();
             foreach (var journey in startJourneys)
             {
                 var comparison = _comparator.ADominatesB((T) journey.Stats, (T) considered.Stats);
                 // ReSharper disable once InvertIf
                 if (comparison == -1)
                 {
+                    if (log) Log.Information($"Dominated by {journey}");
                     // The considered journey is dominated and thus useless
-                    Log.Information($"Dominated by {journey}");
                     return;
                 }
 
-                if (comparison == 1)
-                {
-                    // The considered journey dominates the current journey
-                    toRemove.Add(journey);
-                }
-                
                 // The other cases are 0 (both are the same) of MaxValue (both are not comparable)
                 // Then we keep both
             }
 
 
-            foreach (var journey in toRemove)
-            {
-                startJourneys.Remove(journey);
-            }
-            
+            if (log) Log.Information("Added journey for " + considered.Connection);
+            startJourneys.Add(considered); // List is still shared with the dictionary
+        }
 
-            Log.Information("Added journey for " + considered.Connection);
-            startJourneys.Add(considered);
+        private void _dumpStationJourneys()
+        {
+            var focus = new List<string>()
+            {
+                "Brugge",
+                "Gent-Sint-Pieters",
+                "Brussel-Centraal/Bruxelles-Central",
+                "Brussel-Noord/Bruxelles-Nord"
+            };
+            foreach (var kv in focus)
+            {
+                var uri = Stations.GetId(kv);
+                var journeys = "";
+                if (!_stationJourneys.ContainsKey(uri))
+                {
+                    continue;
+                }
+
+                foreach (var journey in _stationJourneys[uri])
+                {
+                    journeys += ", " + journey;
+                }
+
+                Log.Information(
+                    $"Journeys from {kv} to {Stations.GetName(_targetLocation)} are:\n -----------------------------------\n" +
+                    $"{journeys}");
+            }
         }
     }
 }

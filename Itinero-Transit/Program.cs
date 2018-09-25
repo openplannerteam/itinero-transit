@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices.ComTypes;
 using Itinero_Transit.CSA;
 using Itinero_Transit.LinkedData;
 using Serilog;
@@ -11,38 +13,35 @@ namespace Itinero_Transit
     public static class Program
     {
         // ReSharper disable once InconsistentNaming
-        public static readonly Uri IxRail = LinkedObject.AsUri("http://graph.irail.be/sncb/connections");
+        public static readonly string IRail = "http://graph.irail.be/sncb/connections?departureTime=";
 
-        public static readonly Uri Brugge = LinkedObject.AsUri("http://irail.be/stations/NMBS/008891009");
-        public static readonly Uri GentStP = LinkedObject.AsUri("http://irail.be/stations/NMBS/008892007");
-
-        public static readonly Uri Poperinge = LinkedObject.AsUri("http://irail.be/stations/NMBS/008896735");
-        public static readonly Uri Vielsalm = LinkedObject.AsUri("http://irail.be/stations/NMBS/008845146");
+        
+        
 
         private static void Main(string[] args)
         {
+
+            var bxlc = "Brussel-Centraal/Bruxelles-Central";
+            var gent = "Gent-Sint-Pieters";
+               
             ConfigureLogging();
             Log.Information("Starting...");
-            var ecs = new EarliestConnectionScan(Poperinge, Vielsalm, new AdvancedStats());
-            /*
-            var j = ecs.CalculateJourney(IRail);
-            Log.Information(j.ToString());
-            Log.Information(j.Stats.ToString());
-            */
-            
-            var pcs = new ProfiledConnectionScan<TransferStats>
-            (Poperinge, GentStP, DateTime.Now - new TimeSpan(6,0,0),
-                TransferStats.Factory, TransferStats.MinimizeTransfersFirst);
 
-            var pareto = pcs.CalculateJourneys(IRail);
-            Log.Information("Found "+pareto.Count+" pareto points");
+
+            var pcs = new ProfiledConnectionScan<TransferStats>
+            (Stations.GetId("Brugge"), Stations.GetId(bxlc),
+                DateTime.Now.AddHours(-3),
+                TransferStats.Factory, TransferStats.ParetoCompare);
+           // 2018-09-20T14:55:00.000Z
+            var uriIRail = new Uri(IRail+$"{DateTime.Now.AddHours(3):yyyy-MM-ddTHH:mm:ss}.000Z");
+            var pareto = pcs.CalculateJourneys(uriIRail);
+            Log.Information("Found " + pareto.Count + " pareto points");
             var i = 0;
             foreach (var journey in pareto)
             {
                 Log.Information($"{i}:\n {journey}");
                 i++;
             }
-
         }
 
 

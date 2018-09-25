@@ -44,5 +44,10 @@ namespace Itinero_Transit.LinkedData
             return new Uri(s);
         }
 
+        public Uri Id()
+        {
+            return Uri;
+        }
+
     }
 }

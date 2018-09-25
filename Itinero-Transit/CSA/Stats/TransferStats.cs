@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.Common;
 
 namespace Itinero_Transit.CSA
 {
@@ -13,6 +12,7 @@ namespace Itinero_Transit.CSA
         public readonly int NumberOfTransfers;
         public readonly DateTime StartTime;
         public readonly DateTime EndTime;
+        public readonly TimeSpan TravelTime;
 
         public static readonly MinimizeTransfers MinimizeTransfers = new MinimizeTransfers();
         public static readonly MinimizeTravelTimes MinimizeTravelTimes = new MinimizeTravelTimes();
@@ -26,34 +26,40 @@ namespace Itinero_Transit.CSA
             new ChainedComparator<TransferStats>(MinimizeTravelTimes, MinimizeTransfers);
 
 
-        public static readonly TransferStats Factory = new TransferStats(int.MaxValue, DateTime.MinValue, DateTime.MaxValue);
-        
+        public static readonly TransferStats Factory =
+            new TransferStats(int.MaxValue, DateTime.MinValue, DateTime.MaxValue);
+
         public TransferStats(int numberOfTransfers, DateTime startTime, DateTime endTime)
         {
             NumberOfTransfers = numberOfTransfers;
             StartTime = startTime;
             EndTime = endTime;
+            TravelTime = endTime - startTime;
+            if (endTime < startTime)
+            {
+                throw new ArgumentException("Arrivaltime before departuretime");
+            }
         }
 
-        public IJourneyStats InitialStats(Connection c)
+        public IJourneyStats InitialStats(IConnection c)
         {
-            return new TransferStats(0, c.DepartureTime.AddSeconds(c.DepartureDelay),
-                    c.ArrivalTime.AddSeconds(c.ArrivalDelay))
-                ;
+            return new TransferStats(0, c.DepartureTime(), c.ArrivalTime());
         }
 
         public IJourneyStats Add(Journey journey)
         {
-            var transferred = !journey.Connection.GtfsTrip.Equals(journey.PreviousLink.Connection.GtfsTrip);
+            var transferred =
+                journey.Connection.Trip() != null &&
+                !journey.Connection.Trip().Equals(journey.PreviousLink.Connection.Trip());
 
 
-            var dep = journey.Connection.DepartureTime;
+            var dep = journey.Connection.DepartureTime();
             if (dep > StartTime)
             {
                 dep = StartTime;
             }
 
-            var arr = journey.Connection.ArrivalTime;
+            var arr = journey.Connection.ArrivalTime();
             if (arr < EndTime)
             {
                 arr = EndTime;
@@ -87,6 +93,7 @@ namespace Itinero_Transit.CSA
         {
             return $"{NumberOfTransfers} transfers, {EndTime - StartTime}";
         }
+
     }
 
 
@@ -105,7 +112,7 @@ namespace Itinero_Transit.CSA
             return (a.EndTime - a.StartTime).CompareTo(b.EndTime - b.StartTime);
         }
     }
-
+    
     public class ParetoCompare : IStatsComparator<TransferStats>
     {
         public int ADominatesB(TransferStats a, TransferStats b)
@@ -131,8 +138,10 @@ namespace Itinero_Transit.CSA
 
         private bool S1DominatesS2(TransferStats s1, TransferStats s2)
         {
-            return s1.NumberOfTransfers <= s2.NumberOfTransfers &&
-                   (s1.EndTime - s1.StartTime) <= (s2.EndTime - s2.StartTime);
+            return
+                   s1.NumberOfTransfers < s2.NumberOfTransfers 
+                && s1.StartTime > s2.StartTime
+                && s1.EndTime   < s2.EndTime;
         }
     }
 }

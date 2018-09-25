@@ -12,23 +12,13 @@ namespace Itinero_Transit.CSA
      * The saved data is more then useful for barebones route planner, it is simply everything that IRail offered
      * 
      */
-    public class Connection : LinkedObject
+    public class Connection : LinkedObject, IConnection
     {
         public Uri DepartureStop { get; set; }
         public Uri ArrivalStop { get; set; }
 
         public DateTime DepartureTime { get; set; }
         public DateTime ArrivalTime { get; set; }
-
-        /// <summary>
-        /// Departure delay in seconds
-        /// </summary>
-        public int DepartureDelay { get; set; }
-
-        /// <summary>
-        /// Arrival delay in seconds
-        /// </summary>
-        public int ArrivalDelay { get; set; }
 
         /// <summary>
         /// Human readable name where the vehicle is heading (e.g. "Brugge")
@@ -66,20 +56,63 @@ namespace Itinero_Transit.CSA
         public override string ToString()
         {
             return
-                $"Connection {DepartureStop} {DepartureTime:yyyy-MM-dd HH:mm:ss} --> {ArrivalStop} {ArrivalTime:yyyy-MM-dd HH:mm:ss}\n    Direction {Direction} ({Uri})";
+                $"Connection {Stations.GetName(DepartureStop)} {DepartureTime:yyyy-MM-dd HH:mm:ss} --> {Stations.GetName(ArrivalStop)}" +
+                $" {ArrivalTime:yyyy-MM-dd HH:mm:ss}\n    Direction {Direction} ({Uri})";
         }
 
         protected sealed override void FromJson(JToken json)
         {
             DepartureStop = AsUri(json["departureStop"].ToString());
             ArrivalStop = AsUri(json["arrivalStop"].ToString());
-            DepartureTime = DateTime.Parse(json["departureTime"].ToString());
-            ArrivalTime = DateTime.Parse(json["arrivalTime"].ToString());
-            DepartureDelay = GetInt(json, "departureDelay");
-            ArrivalDelay = GetInt(json, "arrivalDelay");
+            var depDel = GetInt(json, "departureDelay");
+            DepartureTime = DateTime.Parse(json["departureTime"].ToString())
+                .AddSeconds(depDel);
+            var arrDel = GetInt(json, "arrivalDelay");
+            ArrivalTime = DateTime.Parse(json["arrivalTime"].ToString()).AddSeconds(arrDel);
             Direction = json["direction"].ToString();
             GtfsTrip = AsUri(json["gtfs:trip"].ToString());
             GtfsRoute = AsUri(json["gtfs:route"].ToString());
+            if (ArrivalTime < DepartureTime)
+            {
+                // TODO This is a workaround for issue https://github.com/iRail/iRail/issues/361
+                ArrivalTime = ArrivalTime.AddSeconds(depDel);
+            }
+        }
+
+
+        public Uri Trip()
+        {
+            return GtfsTrip;
+        }
+
+        public Uri Route()
+        {
+            return GtfsRoute;
+        }
+
+        public Uri DepartureLocation()
+        {
+            return DepartureStop;
+        }
+
+        public Uri ArrivalLocation()
+        {
+            return ArrivalStop;
+        }
+
+        DateTime IConnection.ArrivalTime()
+        {
+            return ArrivalTime;
+        }
+
+        DateTime IConnection.DepartureTime()
+        {
+            return DepartureTime;
+        }
+
+        public bool Continuous()
+        {
+            return false;
         }
     }
 }

@@ -24,16 +24,15 @@ namespace Itinero_Transit.CSA
             MaxTransferTime = 0;
         }
 
-        public IJourneyStats InitialStats(Connection c)
+        public IJourneyStats InitialStats(IConnection c)
         {
             return ConnectionStats(c);
         }
 
 
-        public AdvancedStats
-            ConnectionStats(Connection c)
+        public AdvancedStats ConnectionStats(IConnection c)
         {
-            var trainTime = (c.ArrivalTime - c.DepartureTime).TotalSeconds + c.ArrivalDelay - c.DepartureDelay;
+            var trainTime = (c.ArrivalTime() - c.DepartureTime()).TotalSeconds;
             return new AdvancedStats()
             {
                 NumberOfTransfers = 0,
@@ -49,11 +48,9 @@ namespace Itinero_Transit.CSA
             var c = journey.Connection;
             var connectionStats = ConnectionStats(c);
 
-            if (c.GtfsTrip.Equals(journey.PreviousLink.Connection.GtfsTrip))
+            if (c.Trip() != null && c.Trip().Equals(journey.PreviousLink.Connection.Trip()))
             {
-                var transfertime = (c.DepartureTime - journey.PreviousLink.Time)
-                                   .TotalSeconds
-                                   + c.DepartureDelay - journey.PreviousLink.Connection.ArrivalDelay;
+                var transfertime = (c.DepartureTime() - journey.PreviousLink.Time).TotalSeconds;
                 return new AdvancedStats()
                 {
                     NumberOfTransfers = NumberOfTransfers + 1, //
