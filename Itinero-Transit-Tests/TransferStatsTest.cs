@@ -31,7 +31,7 @@ namespace Itinero_Transit_Tests
             var t3 = new TransferStats(0, tenOClock,
                 new DateTime(2018, 09, 24, 10, 30, 00));
 
-            IStatsComparator<TransferStats> compare = TransferStats.ParetoCompare;
+            IStatsComparator<TransferStats> compare = TransferStats.ProfileCompare;
             
             Assert.Equal(0, compare.ADominatesB(t1, t1));
             Assert.Equal(0, compare.ADominatesB(t2, t2));

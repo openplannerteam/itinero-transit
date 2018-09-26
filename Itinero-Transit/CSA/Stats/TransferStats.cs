@@ -17,6 +17,7 @@ namespace Itinero_Transit.CSA
         public static readonly MinimizeTransfers MinimizeTransfers = new MinimizeTransfers();
         public static readonly MinimizeTravelTimes MinimizeTravelTimes = new MinimizeTravelTimes();
 
+        public static readonly ProfileCompare ProfileCompare = new ProfileCompare();
         public static readonly ParetoCompare ParetoCompare = new ParetoCompare();
 
         public static readonly ChainedComparator<TransferStats> MinimizeTransfersFirst =
@@ -54,13 +55,13 @@ namespace Itinero_Transit.CSA
 
 
             var dep = journey.Connection.DepartureTime();
-            if (dep > StartTime)
+            if (StartTime < dep)
             {
                 dep = StartTime;
             }
 
             var arr = journey.Connection.ArrivalTime();
-            if (arr < EndTime)
+            if (EndTime > arr)
             {
                 arr = EndTime;
             }
@@ -93,7 +94,6 @@ namespace Itinero_Transit.CSA
         {
             return $"{NumberOfTransfers} transfers, {EndTime - StartTime}";
         }
-
     }
 
 
@@ -112,7 +112,39 @@ namespace Itinero_Transit.CSA
             return (a.EndTime - a.StartTime).CompareTo(b.EndTime - b.StartTime);
         }
     }
-    
+
+    public class ProfileCompare : IStatsComparator<TransferStats>
+    {
+        public int ADominatesB(TransferStats a, TransferStats b)
+        {
+            if (a.Equals(b))
+            {
+                return 0;
+            }
+
+            if (S1DominatesS2(a, b))
+            {
+                return -1;
+            }
+
+            // ReSharper disable once ConvertIfStatementToReturnStatement
+            if (S1DominatesS2(b, a))
+            {
+                return 1;
+            }
+
+            return int.MaxValue;
+        }
+
+        private bool S1DominatesS2(TransferStats s1, TransferStats s2)
+        {
+            return
+                s1.NumberOfTransfers <= s2.NumberOfTransfers
+                && s1.StartTime >= s2.StartTime
+                && s1.EndTime <= s2.EndTime;
+        }
+    }
+
     public class ParetoCompare : IStatsComparator<TransferStats>
     {
         public int ADominatesB(TransferStats a, TransferStats b)
@@ -139,9 +171,8 @@ namespace Itinero_Transit.CSA
         private bool S1DominatesS2(TransferStats s1, TransferStats s2)
         {
             return
-                   s1.NumberOfTransfers < s2.NumberOfTransfers 
-                && s1.StartTime > s2.StartTime
-                && s1.EndTime   < s2.EndTime;
+                s1.NumberOfTransfers < s2.NumberOfTransfers
+                && s1.TravelTime < s2.TravelTime;
         }
     }
 }

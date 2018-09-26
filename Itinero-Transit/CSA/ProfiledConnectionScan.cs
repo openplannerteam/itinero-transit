@@ -53,25 +53,26 @@ namespace Itinero_Transit.CSA
         /// <returns></returns>
         public List<Journey> CalculateJourneys(Uri lastArrival)
         {
-            var tt = new TimeTable(lastArrival);
-            tt.Download();
-
-            tt.Graph.Reverse();
-
-            foreach (var c in tt.Graph)
+            while (true)
             {
-                if (c.DepartureTime < _earliestDeparture)
+                var tt = new TimeTable(lastArrival);
+                tt.Download();
+                tt.Graph.Reverse();
+                _dumpStationJourneys();
+                foreach (var c in tt.Graph)
                 {
-                    // We're done! Returning values
-                    _dumpStationJourneys();
-                    return _stationJourneys.GetValueOrDefault(_departureLocation, _emptyJourneys);
+                    if (c.DepartureTime < _earliestDeparture)
+                    {
+                        // We're done! Returning values
+                        _dumpStationJourneys();
+                        return _stationJourneys.GetValueOrDefault(_departureLocation, _emptyJourneys);
+                    }
+
+                    AddConnection(c);
                 }
 
-                AddConnection(c);
+                lastArrival = tt.Prev;
             }
-
-            // ReSharper disable once TailRecursiveCall
-            return CalculateJourneys(tt.Prev);
         }
 
         /// <summary>
@@ -86,26 +87,34 @@ namespace Itinero_Transit.CSA
                 return;
             }
 
+            var toRemove = new HashSet<Journey>();
             if (c.ArrivalLocation().Equals(_targetLocation))
             {
                 // We keep track of the departure times here!
                 var journey = new Journey(_statsFactory.InitialStats(c), c.DepartureTime(), c);
-                ConsiderJourney(c.DepartureLocation(), journey);
-                return;
+
+                ConsiderJourney(c.DepartureLocation(), journey, toRemove);
+            }
+            else
+            {
+                var journeysToEnd = _stationJourneys.GetValueOrDefault(c.ArrivalLocation(), _emptyJourneys);
+                foreach (var j in journeysToEnd)
+                {
+                    if (c.ArrivalTime() > j.Time)
+                    {
+                        // We missed this connection
+                        continue;
+                    }
+
+                    // Chaining to the start of the journey, not the end -> We keep track of the departure time (although the time is not actually used)
+                    var chained = new Journey(j, c.DepartureTime(), c);
+                    ConsiderJourney(c.DepartureLocation(), chained, toRemove);
+                }
             }
 
-            var journeysToEnd = _stationJourneys.GetValueOrDefault(c.ArrivalLocation(), _emptyJourneys);
-            foreach (var j in journeysToEnd)
+            foreach (var journey in toRemove)
             {
-                if (c.ArrivalTime() > j.Time)
-                {
-                    // We missed this connection
-                    continue;
-                }
-
-                // Chaining to the start of the journey, not the end -> We keep track of the departure time (although the time is not actually used)
-                var chained = new Journey(j, c.DepartureTime(), c);
-                ConsiderJourney(c.DepartureLocation(), chained);
+                _stationJourneys[journey.Connection.DepartureLocation()].Remove(journey);
             }
         }
 
@@ -117,7 +126,7 @@ namespace Itinero_Transit.CSA
         /// </summary>
         /// <param name="startStation"></param>
         /// <param name="considered"></param>
-        private void ConsiderJourney(Uri startStation, Journey considered)
+        private void ConsiderJourney(Uri startStation, Journey considered, HashSet<Journey> toRemove)
         {
             if (!_stationJourneys.ContainsKey(startStation))
             {
@@ -126,10 +135,7 @@ namespace Itinero_Transit.CSA
 
             var startJourneys = _stationJourneys[startStation];
 
-            var log = startStation.Equals(_departureLocation) ||
-                      startStation.Equals(Stations.GetId("Gent-Sint-Pieters"));
-            if (log)
-                Log.Information($"Considering journey {considered}");
+            var log = considered.Connection.ArrivalLocation().Equals(Stations.GetId("Gent-Sint-Pieters"));
 
             foreach (var journey in startJourneys)
             {
@@ -137,15 +143,20 @@ namespace Itinero_Transit.CSA
                 // ReSharper disable once InvertIf
                 if (comparison == -1)
                 {
-                    if (log) Log.Information($"Dominated by {journey}");
                     // The considered journey is dominated and thus useless
                     return;
+                }
+
+
+                if (comparison == 1)
+                {
+                    // The considered journey clearly dominates the route; it can be removed
+                    toRemove.Add(journey);
                 }
 
                 // The other cases are 0 (both are the same) of MaxValue (both are not comparable)
                 // Then we keep both
             }
-
 
             if (log) Log.Information("Added journey for " + considered.Connection);
             startJourneys.Add(considered); // List is still shared with the dictionary
@@ -153,12 +164,12 @@ namespace Itinero_Transit.CSA
 
         private void _dumpStationJourneys()
         {
-            var focus = new List<string>()
+            var focus = new List<string>() 
             {
                 "Brugge",
                 "Gent-Sint-Pieters",
                 "Brussel-Centraal/Bruxelles-Central",
-                "Brussel-Noord/Bruxelles-Nord"
+                "Brussel-Zuid/Bruxelles-Midi",
             };
             foreach (var kv in focus)
             {

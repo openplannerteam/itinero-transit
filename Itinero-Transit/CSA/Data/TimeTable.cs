@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Itinero_Transit.LinkedData;
 using Newtonsoft.Json.Linq;
+using Serilog;
 
 namespace Itinero_Transit.CSA
 {
@@ -36,7 +37,14 @@ namespace Itinero_Transit.CSA
             var jsonGraph = json["@graph"];
             foreach (var conn in jsonGraph)
             {
-                Graph.Add(new Connection(conn));
+                try
+                {
+                    Graph.Add(new Connection(conn));
+                }
+                catch (ArgumentException e)
+                {
+                    Log.Warning(e, "Ignored connection due to time travelling");
+                }
             }
         }
 

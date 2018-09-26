@@ -12,6 +12,7 @@ namespace Itinero_Transit.LinkedData
     {
         public Uri Uri { get; set; }
 
+
         protected LinkedObject(Uri uri)
         {
             Uri = AsUri(uri.ToString());
@@ -48,6 +49,8 @@ namespace Itinero_Transit.LinkedData
         {
             return Uri;
         }
+
+
 
     }
 }

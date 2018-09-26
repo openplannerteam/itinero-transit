@@ -14,12 +14,17 @@ namespace Itinero_Transit_Tests
         {
             _output = output;
         }
+        
+        private void log(string s)
+        {
+            _output.WriteLine(s);
+        }
 
         [Fact]
         public void TestLinkedConnectionDownloader()
         {
             Downloader.AlwaysReturn = singleConnection;
-            var result = Downloader.Download(Program.IRail);
+            var result = Downloader.Download(Program.IRailNow);
             Assert.Equal(result, singleConnection);
             log("Downloaded result");
             log(Downloader.AsJson(result)["@graph"][0].ToString());
@@ -29,7 +34,7 @@ namespace Itinero_Transit_Tests
         public void TestJSONParsing()
         {
             Downloader.AlwaysReturn = singleConnection;
-            var tt = new TimeTable(Downloader.DownloadJson(Program.IRail));
+            var tt = new TimeTable(Downloader.DownloadJson(Program.IRailNow));
             log(tt.ToString());
             const string exp =
                 "Timetable with 2 connections; ID: connections Next: connections Prev: connections\n  Connection http://irail.be/stations/NMBS/008822137 2018-09-19 13:30:00 --> http://irail.be/stations/NMBS/008893559 2018-09-19 13:51:00\n    Direction Gand-Saint-Pierre (http://irail.be/connections/8822137/20180919/IC4136)\n  Connection http://irail.be/stations/NMBS/008863008 2018-09-19 13:30:00 --> http://irail.be/stations/NMBS/008863461 2018-09-19 13:35:00\n    Direction Liege-Guillemins (http://irail.be/connections/8863008/20180919/L4965)";
@@ -37,10 +42,7 @@ namespace Itinero_Transit_Tests
         }
 
 
-        private void log(string s)
-        {
-            _output.WriteLine(s);
-        }
+     
 
         public static readonly string singleConnection =
             "{\"@context\":{\"xsd\":\"http://www.w3.org/2001/XMLSchema#\",\"lc\":\"http://semweb.mmlab.be/ns/linkedconnections#\",\"hydra\":\"http://www.w3.org/ns/hydra/core#\",\"gtfs\":\"http://vocab.gtfs.org/terms#\",\"Connection\":\"lc:Connection\",\"arrivalTime\":{\"@id\":\"lc:arrivalTime\",\"@type\":\"xsd:dateTime\"},\"departureTime\":{\"@id\":\"lc:departureTime\",\"@type\":\"xsd:dateTime\"},\"arrivalStop\":{\"@type\":\"@id\",\"@id\":\"lc:arrivalStop\"},\"departureStop\":{\"@type\":\"@id\",\"@id\":\"lc:departureStop\"},\"departureDelay\":{\"@id\":\"lc:departureDelay\",\"@type\":\"xsd:integer\"},\"arrivalDelay\":{\"@id\":\"lc:arrivalDelay\",\"@type\":\"xsd:integer\"},\"direction\":{\"@id\":\"gtfs:headsign\",\"@type\":\"xsd:string\"},\"gtfs:trip\":{\"@type\":\"@id\"},\"gtfs:route\":{\"@type\":\"@id\"},\"gtfs:pickupType\":{\"@type\":\"@id\"},\"gtfs:dropOffType\":{\"@type\":\"@id\"},\"gtfs:Regular\":{\"@type\":\"@id\"},\"gtfs:NotAvailable\":{\"@type\":\"@id\"},\"hydra:next\":{\"@type\":\"@id\"},\"hydra:previous\":{\"@type\":\"@id\"},\"hydra:property\":{\"@type\":\"@id\"},\"hydra:variableRepresentation\":{\"@type\":\"@id\"}},\"@id\":\"https://graph.irail.be/sncb/connections?departureTime=2018-09-19T13:30:00.000Z\",\"@type\":\"hydra:PagedCollection\",\"hydra:next\":\"https://graph.irail.be/sncb/connections?departureTime=2018-09-19T13:33:00.000Z\",\"hydra:previous\":\"https://graph.irail.be/sncb/connections?departureTime=2018-09-19T13:27:00.000Z\",\"hydra:search\":{\"@type\":\"hydra:IriTemplate\",\"hydra:template\":\"https://graph.irail.be/sncb/connections{?departureTime}\",\"hydra:variableRepresentation\":\"hydra:BasicRepresentation\",\"hydra:mapping\":{\"@type\":\"IriTemplateMapping\",\"hydra:variable\":\"departureTime\",\"hydra:required\":true,\"hydra:property\":\"lc:departureTimeQuery\"}}," +

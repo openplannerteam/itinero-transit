@@ -65,10 +65,9 @@ namespace Itinero_Transit.CSA
             DepartureStop = AsUri(json["departureStop"].ToString());
             ArrivalStop = AsUri(json["arrivalStop"].ToString());
             var depDel = GetInt(json, "departureDelay");
-            DepartureTime = DateTime.Parse(json["departureTime"].ToString())
-                .AddSeconds(depDel);
+            DepartureTime = DateTime.Parse(json["departureTime"].ToString()); // Departure time already includes delay
             var arrDel = GetInt(json, "arrivalDelay");
-            ArrivalTime = DateTime.Parse(json["arrivalTime"].ToString()).AddSeconds(arrDel);
+            ArrivalTime = DateTime.Parse(json["arrivalTime"].ToString()).AddSeconds(arrDel); // Arrival time already includes delay
             Direction = json["direction"].ToString();
             GtfsTrip = AsUri(json["gtfs:trip"].ToString());
             GtfsRoute = AsUri(json["gtfs:route"].ToString());
@@ -76,6 +75,11 @@ namespace Itinero_Transit.CSA
             {
                 // TODO This is a workaround for issue https://github.com/iRail/iRail/issues/361
                 ArrivalTime = ArrivalTime.AddSeconds(depDel);
+            }
+
+            if (ArrivalTime < DepartureTime)
+            {
+                throw new ArgumentException($"WTF? Timetravellers! {DepartureTime} incl {depDel} --> {ArrivalTime} incl {arrDel}\n{json}");
             }
         }
 

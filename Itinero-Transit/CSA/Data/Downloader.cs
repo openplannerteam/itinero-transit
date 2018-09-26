@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Net.Http;
 using CacheCow.Client;
+using CacheCow.Client.Headers;
 using Newtonsoft.Json.Linq;
 
 namespace Itinero_Transit.LinkedData
@@ -17,11 +19,18 @@ namespace Itinero_Transit.LinkedData
         // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public static string AlwaysReturn = null;
 
+        public static int DownloadCounter = 0;
+        public static int CacheHits = 0;
+        public static double TimeDownloading = 0;
+
+        private static readonly HttpClient client = new FileStore("cache").CreateClient();
+
+
         public static string Download(Uri uri)
         {
             return DownloadRaw(uri);
         }
-        
+
         public static JObject DownloadJson(Uri uri)
         {
             return AsJson(DownloadRaw(uri));
@@ -47,19 +56,36 @@ namespace Itinero_Transit.LinkedData
                 return AlwaysReturn;
             }
 
-            var client = ClientExtensions.CreateClient();
-            
+            DownloadCounter++;
+            var start = DateTime.Now;
 
-        //    client..Headers.Add("user-agent", "Itinero-Transit-v0.0.1");
-       //     client.Headers.Add("accept", "application/ld+json");
 
-            var data = client.GetAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
-            if (data == null)
+            //    client..Headers.Add("user-agent", "Itinero-Transit-v0.0.1");
+            //     client.Headers.Add("accept", "application/ld+json");
+
+            var response = client.GetAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
+            if (response == null)
             {
                 throw new FileNotFoundException("Could not open " + uri);
             }
 
-            return data.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            var data = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            var end = DateTime.Now;
+
+            if (response.Headers.GetCacheCowHeader().ToString().Contains("did-not-exist=false"))
+            {
+                CacheHits++;
+            }
+
+            TimeDownloading += (end - start).TotalMilliseconds;
+            return data;
+        }
+
+        public static void ResetCounters()
+        {
+            TimeDownloading = 0;
+            DownloadCounter = 0;
+            CacheHits = 0;
         }
     }
 }
