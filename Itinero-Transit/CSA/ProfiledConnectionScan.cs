@@ -22,10 +22,14 @@ namespace Itinero_Transit.CSA
         private readonly IStatsComparator<T> _comparator;
         private readonly DateTime _earliestDeparture;
 
+        /// <summary>
+        /// Solely used in a few GetOrDefault values.
+        /// Never ever add something to this list!
+        /// </summary>
         private readonly List<Journey> _emptyJourneys = new List<Journey>();
 
         /// <summary>
-        /// Maps each stop onto a pareto front of journeys.
+        /// Maps each stop onto a pareto front of journeys (with profiles).
         /// If the station isn't in the dictionary yet, this means no trip from this station has been already found.
         ///
         /// Also known as 'S' in the paper
@@ -58,7 +62,6 @@ namespace Itinero_Transit.CSA
                 var tt = new TimeTable(lastArrival);
                 tt.Download();
                 tt.Graph.Reverse();
-                _dumpStationJourneys();
                 foreach (var c in tt.Graph)
                 {
                     if (c.DepartureTime < _earliestDeparture)

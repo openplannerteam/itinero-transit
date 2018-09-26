@@ -23,8 +23,15 @@ namespace Itinero_Transit.LinkedData
         public static int CacheHits = 0;
         public static double TimeDownloading = 0;
 
-        private static readonly HttpClient client = new FileStore("cache").CreateClient();
+        private static readonly HttpClient client = createClient();
 
+        private static HttpClient createClient()
+        {
+            var cl = new FileStore("cache").CreateClient();
+            cl.DefaultRequestHeaders.Add("user-agent", "Itinero-Transit");
+            cl.DefaultRequestHeaders.Add("accept", "application/ld+json");
+            return cl;
+        }
 
         public static string Download(Uri uri)
         {
@@ -58,10 +65,6 @@ namespace Itinero_Transit.LinkedData
 
             DownloadCounter++;
             var start = DateTime.Now;
-
-
-            //    client..Headers.Add("user-agent", "Itinero-Transit-v0.0.1");
-            //     client.Headers.Add("accept", "application/ld+json");
 
             var response = client.GetAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
             if (response == null)
