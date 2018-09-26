@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Itinero_Transit.CSA
 {
@@ -64,6 +65,7 @@ namespace Itinero_Transit.CSA
     }
 
 
+    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     internal class CompareTime : Comparer<Journey>
     {
         public override int Compare(Journey x, Journey y)
@@ -72,6 +74,7 @@ namespace Itinero_Transit.CSA
         }
     }
 
+    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
     internal class CompareTimeDesc : Comparer<Journey>
     {
         public override int Compare(Journey x, Journey y)

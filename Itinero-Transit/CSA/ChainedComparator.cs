@@ -7,8 +7,8 @@
 
         public ChainedComparator(IStatsComparator<T> firstComparator, IStatsComparator<T> spillOver)
         {
-            this._firstComparator = firstComparator;
-            this._spillOver = spillOver;
+            _firstComparator = firstComparator;
+            _spillOver = spillOver;
         }
 
         public int ADominatesB(T a, T b)

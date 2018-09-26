@@ -19,18 +19,18 @@ namespace Itinero_Transit.LinkedData
         // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public static string AlwaysReturn = null;
 
-        public static int DownloadCounter = 0;
-        public static int CacheHits = 0;
-        public static double TimeDownloading = 0;
+        public static int DownloadCounter;
+        public static int CacheHits;
+        public static double TimeDownloading;
 
-        private static readonly HttpClient client = createClient();
+        private static readonly HttpClient Client = CreateClient();
 
-        private static HttpClient createClient()
+        private static HttpClient CreateClient()
         {
-            var cl = new FileStore("cache").CreateClient();
-            cl.DefaultRequestHeaders.Add("user-agent", "Itinero-Transit");
-            cl.DefaultRequestHeaders.Add("accept", "application/ld+json");
-            return cl;
+            var client = new FileStore("cache").CreateClient();
+            client.DefaultRequestHeaders.Add("user-agent", "Itinero-Transit");
+            client.DefaultRequestHeaders.Add("accept", "application/ld+json");
+            return client;
         }
 
         public static string Download(Uri uri)
@@ -66,7 +66,7 @@ namespace Itinero_Transit.LinkedData
             DownloadCounter++;
             var start = DateTime.Now;
 
-            var response = client.GetAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
+            var response = Client.GetAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
             if (response == null)
             {
                 throw new FileNotFoundException("Could not open " + uri);
@@ -84,6 +84,7 @@ namespace Itinero_Transit.LinkedData
             return data;
         }
 
+        // ReSharper disable once UnusedMember.Global
         public static void ResetCounters()
         {
             TimeDownloading = 0;

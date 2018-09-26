@@ -41,7 +41,7 @@ namespace Itinero_Transit.LinkedData
             {
                 Log.Error($"Could not parse {Uri}:\n{e.Message}");
                 Log.Error(e.ToString());
-                throw e;
+                throw;
             }
         }
 

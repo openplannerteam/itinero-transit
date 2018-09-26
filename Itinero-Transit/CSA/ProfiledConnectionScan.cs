@@ -121,15 +121,16 @@ namespace Itinero_Transit.CSA
             }
         }
 
-        /// <summary>
-        /// This method is called when a new startStation can be reached with the given Journey J.
-        ///
-        /// The method will consider if this journey is pareto optimal and should thus be included.
-        /// If it is not, it will be ignored.
-        /// </summary>
-        /// <param name="startStation"></param>
-        /// <param name="considered"></param>
-        private void ConsiderJourney(Uri startStation, Journey considered, HashSet<Journey> toRemove)
+        ///  <summary>
+        ///  This method is called when a new startStation can be reached with the given Journey J.
+        /// 
+        ///  The method will consider if this journey is pareto optimal and should thus be included.
+        ///  If it is not, it will be ignored.
+        ///  </summary>
+        ///  <param name="startStation"></param>
+        ///  <param name="considered"></param>
+        /// <param name="toRemove">The journes that should be removed upstream</param>
+        private void ConsiderJourney(Uri startStation, Journey considered, ISet<Journey> toRemove)
         {
             if (!_stationJourneys.ContainsKey(startStation))
             {

@@ -1,8 +1,5 @@
-﻿using System;
-
-namespace Itinero_Transit.CSA
+﻿namespace Itinero_Transit.CSA
 {
-    /// <inheritdoc />
     ///  <summary>
     ///  Every journey carries a 'journeyStats'-object.
     ///  This is an object keeping track of statistics for each journey.

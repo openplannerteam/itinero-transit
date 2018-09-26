@@ -83,7 +83,7 @@ namespace Itinero_Transit.CSA
 
         public int CompareTo(object obj)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public bool IsComparableTo(IJourneyStats stats)

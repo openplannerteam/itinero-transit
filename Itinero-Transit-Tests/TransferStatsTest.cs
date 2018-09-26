@@ -96,7 +96,8 @@ namespace Itinero_Transit_Tests
 
         }
         
-        private void log(string s)
+        // ReSharper disable once UnusedMember.Local
+        private void Log(string s)
         {
             _output.WriteLine(s);
         }

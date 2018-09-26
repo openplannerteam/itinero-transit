@@ -20,12 +20,6 @@ namespace Itinero_Transit.LinkedData
             FromJson(json);
         }
 
-        private static int GetInt(JToken json, string name)
-        {
-            var jtoken = json[name];
-            return jtoken == null ? 0 : int.Parse(jtoken.ToString());
-        }
-
 
         public override string ToString()
         {

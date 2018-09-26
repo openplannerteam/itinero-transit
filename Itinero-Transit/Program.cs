@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices.ComTypes;
 using Itinero_Transit.CSA;
 using Itinero_Transit.LinkedData;
 using Serilog;
@@ -13,7 +11,9 @@ namespace Itinero_Transit
     public static class Program
     {
         // ReSharper disable once InconsistentNaming
+        // ReSharper disable once MemberCanBePrivate.Global
         public static readonly string IRail = "http://graph.irail.be/sncb/connections?departureTime=";
+        // ReSharper disable once InconsistentNaming
         public static readonly Uri IRailNow = new Uri("http://graph.irail.be/sncb/connections");
 
 
