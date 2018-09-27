@@ -9,6 +9,19 @@ namespace Itinero_Transit.CSA
     public interface IConnection
     {
         /// <summary>
+        /// The identifier of the operator
+        /// </summary>
+        /// <returns></returns>
+        Uri Operator();
+
+        /// <summary>
+        /// A human readable string indicating the transport mode, e.g. 'train', 'tram', 'bus', 'bike', 'foot', ...
+        /// Mainly used in debugging
+        /// </summary>
+        /// <returns></returns>
+        string Mode();
+        
+        /// <summary>
         /// The identifier of this single connection (e.g. between Brussels-North and Brussels-Central)
         /// </summary>
         /// <returns></returns>
@@ -57,5 +70,7 @@ namespace Itinero_Transit.CSA
         /// </summary>
         /// <returns></returns>
         bool Continuous();
+        
+        
     }
 }

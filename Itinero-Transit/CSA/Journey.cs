@@ -22,7 +22,7 @@ namespace Itinero_Transit.CSA
 
 
         /// <summary>
-        /// The time that the journey will ends
+        /// The time that the journey starts or ends, depending on the used algorithm
         /// </summary>
         public DateTime Time { get; }
 

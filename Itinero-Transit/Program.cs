@@ -29,7 +29,7 @@ namespace Itinero_Transit
             try
             {
                 var pcs = new ProfiledConnectionScan<TransferStats>
-                (Stations.GetId("Brugge"), Stations.GetId(bxlc),
+                (Stations.GetId("Poperinge"), Stations.GetId(bxlc),
                     DateTime.Now.AddHours(-3),
                     TransferStats.Factory, TransferStats.ProfileCompare);
                 // 2018-09-20T14:55:00.000Z

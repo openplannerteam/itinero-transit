@@ -12,7 +12,7 @@ namespace Itinero_Transit.CSA
      * The saved data is more then useful for barebones route planner, it is simply everything that IRail offered
      * 
      */
-    public class Connection : LinkedObject, IConnection
+    public class SncbConnection : LinkedObject, IConnection
     {
         public Uri DepartureStop { get; set; }
         public Uri ArrivalStop { get; set; }
@@ -37,11 +37,11 @@ namespace Itinero_Transit.CSA
         public Uri GtfsRoute { get; set; }
 
 
-        public Connection(Uri uri) : base(uri)
+        public SncbConnection(Uri uri) : base(uri)
         {
         }
 
-        public Connection(JToken json) : base(new Uri(json["@id"].ToString()))
+        public SncbConnection(JToken json) : base(new Uri(json["@id"].ToString()))
         {
             FromJson(json);
         }
@@ -56,7 +56,7 @@ namespace Itinero_Transit.CSA
         public override string ToString()
         {
             return
-                $"Connection {Stations.GetName(DepartureStop)} {DepartureTime:yyyy-MM-dd HH:mm:ss} --> {Stations.GetName(ArrivalStop)}" +
+                $"Train connection by NMBS, {Stations.GetName(DepartureStop)} {DepartureTime:yyyy-MM-dd HH:mm:ss} --> {Stations.GetName(ArrivalStop)}" +
                 $" {ArrivalTime:yyyy-MM-dd HH:mm:ss}\n    Direction {Direction} ({Uri})";
         }
 
@@ -83,6 +83,16 @@ namespace Itinero_Transit.CSA
             }
         }
 
+
+        public Uri Operator()
+        {
+            return new Uri("https://www.belgiantrain.be/");
+        }
+
+        public string Mode()
+        {
+            return "Train";
+        }
 
         public Uri Trip()
         {

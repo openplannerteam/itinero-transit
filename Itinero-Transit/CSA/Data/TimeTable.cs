@@ -16,7 +16,7 @@ namespace Itinero_Transit.CSA
         public Uri Next { get; set; }
         public Uri Prev { get; set; }
 
-        public List<Connection> Graph { get; set; }
+        public List<SncbConnection> Graph { get; set; }
         
         public TimeTable(Uri uri) : base(uri)
         {
@@ -33,13 +33,13 @@ namespace Itinero_Transit.CSA
             Next = AsUri(json["hydra:next"].ToString());
             Prev = AsUri(json["hydra:previous"].ToString());
 
-            Graph = new List<Connection>();
+            Graph = new List<SncbConnection>();
             var jsonGraph = json["@graph"];
             foreach (var conn in jsonGraph)
             {
                 try
                 {
-                    Graph.Add(new Connection(conn));
+                    Graph.Add(new SncbConnection(conn));
                 }
                 catch (ArgumentException e)
                 {
