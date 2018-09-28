@@ -1,17 +1,18 @@
 ﻿namespace Itinero_Transit.CSA
 {
-    public  class ChainedComparator<T> : IStatsComparator<T>
+    public  class ChainedComparator<T> : StatsComparator<T>
+        where T : IJourneyStats<T>
     {
 
-        private readonly IStatsComparator<T> _firstComparator, _spillOver;
+        private readonly StatsComparator<T> _firstComparator, _spillOver;
 
-        public ChainedComparator(IStatsComparator<T> firstComparator, IStatsComparator<T> spillOver)
+        public ChainedComparator(StatsComparator<T> firstComparator, StatsComparator<T> spillOver)
         {
             _firstComparator = firstComparator;
             _spillOver = spillOver;
         }
 
-        public int ADominatesB(T a, T b)
+        public override int ADominatesB(T a, T b)
         {
             var value = _firstComparator.ADominatesB(a, b);
             return value == 0 ? _spillOver.ADominatesB(a, b) : value;

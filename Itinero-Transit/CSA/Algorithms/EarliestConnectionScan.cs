@@ -9,7 +9,8 @@ namespace Itinero_Transit.CSA
     /// It will download only the linked connections it needs.
     /// It does _not_ use footpath interlinks (yet)
     /// </summary>
-    public class EarliestConnectionScan
+    public class EarliestConnectionScan<T>
+        where T : IJourneyStats<T>
     {
         private readonly Uri _userDepartureLocation;
         private readonly Uri _userTargetLocation;
@@ -17,11 +18,11 @@ namespace Itinero_Transit.CSA
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as early as possible
         /// </summary>
-        private readonly Dictionary<Uri, Journey> _s = new Dictionary<Uri, Journey>();
+        private readonly Dictionary<Uri, Journey<T>> _s = new Dictionary<Uri, Journey<T>>();
 
-        private readonly IJourneyStats _statsFactory;
+        private readonly IJourneyStats<T> _statsFactory;
 
-        public EarliestConnectionScan(Uri userDepartureLocation, Uri userTargetLocation, IJourneyStats statsFactory)
+        public EarliestConnectionScan(Uri userDepartureLocation, Uri userTargetLocation, IJourneyStats<T> statsFactory)
         {
             _userDepartureLocation = userDepartureLocation;
             _userTargetLocation = userTargetLocation;
@@ -35,7 +36,7 @@ namespace Itinero_Transit.CSA
         /// </summary>
         /// <param name="startPage"></param>
         /// <returns></returns>
-        public Journey CalculateJourney(Uri startPage)
+        public Journey<T> CalculateJourney(Uri startPage)
         {
             var tt = new TimeTable(startPage);
             tt.Download();
@@ -77,7 +78,7 @@ namespace Itinero_Transit.CSA
                 if (actualArr >= GetJourneyTo(c.ArrivalLocation()).Time) return;
 
                 // Yey! We arrive earlier then previously known
-                _s[c.ArrivalLocation()] = new Journey(_statsFactory.InitialStats(c), actualArr, c);
+                _s[c.ArrivalLocation()] = new Journey<T>(_statsFactory.InitialStats(c), actualArr, c);
 
                 // All done with this connection
                 return;
@@ -88,7 +89,7 @@ namespace Itinero_Transit.CSA
             // Lets check if we can take it
 
             var journeyTillStop = GetJourneyTo(c.DepartureLocation());
-            if (journeyTillStop.Equals(Journey.InfiniteJourney))
+            if (journeyTillStop.Equals(Journey<T>.InfiniteJourney))
             {
                 //    Log.Information("Stop not yet reachable");
                 // The stop where connection starts, is not yet reachable
@@ -112,12 +113,12 @@ namespace Itinero_Transit.CSA
             }
 
             // Jej! We can take the train! It gets us to some stop faster then previously known
-            _s[c.ArrivalLocation()] = new Journey(journeyTillStop, actualArrival, c);
+            _s[c.ArrivalLocation()] = new Journey<T>(journeyTillStop, actualArrival, c);
         }
 
-        private Journey GetJourneyTo(Uri stop)
+        private Journey<T> GetJourneyTo(Uri stop)
         {
-            return _s.GetValueOrDefault(stop, Journey.InfiniteJourney);
+            return _s.GetValueOrDefault(stop, Journey<T>.InfiniteJourney);
         }
     }
 }

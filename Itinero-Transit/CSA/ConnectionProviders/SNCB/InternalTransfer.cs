@@ -1,27 +1,31 @@
 ﻿using System;
 using Itinero_Transit.CSA;
+using Itinero_Transit.LinkedData;
 
 namespace Itinero_Transit.CSA
 {
     /// <inheritdoc />
     /// <summary>
-    /// A 'connection' representing a transfer between two SNCB-trains
+    /// A 'connection' representing a transfer between two platforms, without leaving the station.
+    /// They give a fixed transfer time. Normally, the locations of both connections should be the same.
     /// </summary>
-    public class SncbTransfer : IConnection
+    [Serializable()]
+    public class InternalTransfer : IConnection
     {
-        private readonly Uri _location; // TODO should be updated to an Uri indicating the platforms
+        private readonly Uri _location, _operator; // TODO should be updated to an Uri indicating the platforms
         private readonly DateTime _departureTime, _arrivalTime;
 
-        public SncbTransfer(Uri location, DateTime arrivalTime, DateTime departureTime)
+        public InternalTransfer(Uri location, Uri operatorId, DateTime arrivalTime, DateTime departureTime)
         {
             _location = location;
             _arrivalTime = arrivalTime;
             _departureTime = departureTime;
+            _operator = operatorId;
         }
 
         public Uri Operator()
         {
-            return new Uri("https://www.belgiantrain.be/");
+            return _operator;
         }
 
         public string Mode()
@@ -67,6 +71,11 @@ namespace Itinero_Transit.CSA
         public bool Continuous()
         {
             return true;
+        }
+
+        public override string ToString()
+        {
+            return $"Transfer in {Stations.GetName(_location)} {_departureTime} --> {_arrivalTime}";
         }
     }
 }

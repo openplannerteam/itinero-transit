@@ -11,8 +11,7 @@ namespace Itinero_Transit.LinkedData
      */
     public abstract class LinkedObject
     {
-        public Uri Uri { get; set; }
-
+        public readonly Uri Uri;
 
         protected LinkedObject(Uri uri)
         {

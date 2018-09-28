@@ -12,7 +12,8 @@ namespace Itinero_Transit.CSA
      * The saved data is more then useful for barebones route planner, it is simply everything that IRail offered
      * 
      */
-    public class SncbConnection : LinkedObject, IConnection
+    [Serializable()]
+    public class PTConnection : LinkedObject, IConnection
     {
         public Uri DepartureStop { get; set; }
         public Uri ArrivalStop { get; set; }
@@ -37,11 +38,11 @@ namespace Itinero_Transit.CSA
         public Uri GtfsRoute { get; set; }
 
 
-        public SncbConnection(Uri uri) : base(uri)
+        public PTConnection(Uri uri) : base(uri)
         {
         }
 
-        public SncbConnection(JToken json) : base(new Uri(json["@id"].ToString()))
+        public PTConnection(JToken json) : base(new Uri(json["@id"].ToString()))
         {
             FromJson(json);
         }

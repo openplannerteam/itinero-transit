@@ -27,8 +27,10 @@ namespace Itinero_Transit.LinkedData
 
         private static HttpClient CreateClient()
         {
-            var client = new FileStore("cache").CreateClient();
-            client.DefaultRequestHeaders.Add("user-agent", "Itinero-Transit");
+            var store = new FileStore("cache");
+            store.Remove("y22xKWDh3wbEohramNuigPEBJtk=");
+            var client = store.CreateClient();
+            client.DefaultRequestHeaders.Add("user-agent", "Itinero-Transit/0.0.1");
             client.DefaultRequestHeaders.Add("accept", "application/ld+json");
             return client;
         }

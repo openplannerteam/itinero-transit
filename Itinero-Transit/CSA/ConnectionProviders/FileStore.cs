@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using CacheCow.Client;
 using CacheCow.Common;
+using Serilog;
+
 namespace Itinero_Transit.LinkedData
 
 {
@@ -17,6 +20,9 @@ namespace Itinero_Transit.LinkedData
     {
         private readonly MessageContentHttpMessageSerializer _serializer = new MessageContentHttpMessageSerializer();
 
+        /// <summary>
+        /// The directory location of the cache
+        /// </summary>
         private readonly string _cacheRoot;
 
         /// <summary>
@@ -25,10 +31,30 @@ namespace Itinero_Transit.LinkedData
         /// </summary>
         public TimeSpan MinExpiry { get; set; }
 
+        private static readonly List<string> ForbiddenDirectories =
+            new List<string>()
+            {
+                "/",
+                "",
+                ".",
+                ".."
+            };
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Create a new Cachestore within the given directory. Responses will be saved in this directory.
+        /// The directory should not be "/", ".", "" or null.
+        /// Note that _all_ contents of this directory can be cleared.
+        /// </summary>
+        /// <param name="cacheRoot">The directory containing the cache</param>
+        /// <exception cref="ArgumentException">When the passed directory is "/", ".", ".." or ""</exception>
         public FileStore(string cacheRoot)
         {
+            if (cacheRoot is null || ForbiddenDirectories.Contains(cacheRoot))
+            {
+                throw new ArgumentException(
+                    "The given cachedirectory is null or invalid. Do give an explicit caching directory, not empty, '/' or '.'. This will prevent accidents when cleaning the cache");
+            }
+
             _cacheRoot = cacheRoot;
             if (!Directory.Exists(_cacheRoot))
             {
@@ -44,18 +70,19 @@ namespace Itinero_Transit.LinkedData
                 return null;
             }
 
-            var fs = File.OpenRead(_pathFor(key));
-            var resp = await _serializer.DeserializeToResponseAsync(fs);
-            fs.Close();
-            return resp;
+            using (var fs = File.OpenRead(_pathFor(key)))
+            {
+                return await _serializer.DeserializeToResponseAsync(fs);
+            }
         }
 
         /// <inheritdoc />
         public async Task AddOrUpdateAsync(CacheKey key, HttpResponseMessage response)
         {
-            var fs = File.OpenWrite(_pathFor(key));
-            await _serializer.SerializeAsync(response, fs);
-            fs.Close();
+            using (var fs = File.OpenWrite(_pathFor(key)))
+            {
+                await _serializer.SerializeAsync(response, fs);
+            }
         }
 
         /// <inheritdoc />
@@ -80,16 +107,18 @@ namespace Itinero_Transit.LinkedData
         {
             foreach (var f in Directory.GetFiles(_cacheRoot))
             {
-               File.Delete(f);
+                File.Delete(f);
             }
         }
 
 
         private string _pathFor(CacheKey key)
         {
-            // Who the fuck thought using '/' in a Base64-encoding was a good idea?
+            // Base64 might return "/" as character. This breaks files; so we replace the '/' with '!'
             return _cacheRoot + "/" + key.HashBase64.Replace('/', '!');
         }
+        
+        
 
 
         /// <inheritdoc />
@@ -104,7 +133,12 @@ namespace Itinero_Transit.LinkedData
         /// <returns>True if no files are in the current cache</returns>
         public bool IsEmpty()
         {
-            return Directory.GetFiles(_cacheRoot).Length==0;
+            return Directory.GetFiles(_cacheRoot).Length == 0;
+        }
+
+        public void Remove(string key)
+        {
+            File.Delete(_cacheRoot+"/"+key);
         }
     }
 }

@@ -15,18 +15,19 @@ namespace Itinero_Transit.CSA
     /// 
     /// 
     /// </summary>
-    public class ProfiledConnectionScan<T> where T : IJourneyStats
+    public class ProfiledConnectionScan<T> where T : IJourneyStats<T>
     {
         private readonly Uri _departureLocation, _targetLocation;
         private readonly T _statsFactory;
-        private readonly IStatsComparator<T> _comparator;
+        private readonly StatsComparator<T> _comparator;
         private readonly DateTime _earliestDeparture;
+        private readonly InternalTransferFactory _transferPolicy;
 
         /// <summary>
         /// Solely used in a few GetOrDefault values.
         /// Never ever add something to this list!
         /// </summary>
-        private readonly List<Journey> _emptyJourneys = new List<Journey>();
+        private readonly List<Journey<T>> _emptyJourneys = new List<Journey<T>>();
 
         /// <summary>
         /// Maps each stop onto a pareto front of journeys (with profiles).
@@ -37,14 +38,16 @@ namespace Itinero_Transit.CSA
         /// Note that the list is sorted in descending order (thus first departure in time last in the list)
         /// There can be multiple points which depart at the same time (but will have different arrival times and different other properties)
         /// </summary>
-        private readonly Dictionary<Uri, List<Journey>> _stationJourneys = new Dictionary<Uri, List<Journey>>();
+        private readonly Dictionary<Uri, List<Journey<T>>> _stationJourneys = new Dictionary<Uri, List<Journey<T>>>();
 
-        public ProfiledConnectionScan(Uri departureLocation, Uri targetLocation, DateTime earliestDeparture,
+        public ProfiledConnectionScan(Uri departureLocation, Uri targetLocation, InternalTransferFactory transferPolicy,
+            DateTime earliestDeparture,
             T statsFactory,
-            IStatsComparator<T> comparator)
+            StatsComparator<T> comparator)
         {
             _departureLocation = departureLocation;
             _targetLocation = targetLocation;
+            _transferPolicy = transferPolicy;
             _statsFactory = statsFactory;
             _comparator = comparator;
             _earliestDeparture = earliestDeparture;
@@ -55,20 +58,22 @@ namespace Itinero_Transit.CSA
         /// where the Uri points to the timetable of the last allowed arrival at the destination station
         /// </summary>
         /// <returns></returns>
-        public List<Journey> CalculateJourneys(Uri lastArrival)
+        public IEnumerable<Journey<T>> CalculateJourneys(Uri lastArrival)
         {
-            while (true)
+            List<Journey<T>> results = null;
+            while (results == null)
             {
                 var tt = new TimeTable(lastArrival);
                 tt.Download();
                 tt.Graph.Reverse();
+                _dumpStationJourneys();
                 foreach (var c in tt.Graph)
                 {
                     if (c.DepartureTime < _earliestDeparture)
                     {
                         // We're done! Returning values
-                        _dumpStationJourneys();
-                        return _stationJourneys.GetValueOrDefault(_departureLocation, _emptyJourneys);
+                        results = _stationJourneys.GetValueOrDefault(_departureLocation, _emptyJourneys);
+                        break;
                     }
 
                     AddConnection(c);
@@ -76,6 +81,9 @@ namespace Itinero_Transit.CSA
 
                 lastArrival = tt.Prev;
             }
+
+            _dumpStationJourneys();
+            return results;
         }
 
         /// <summary>
@@ -90,11 +98,11 @@ namespace Itinero_Transit.CSA
                 return;
             }
 
-            var toRemove = new HashSet<Journey>();
+            var toRemove = new HashSet<Journey<T>>();
             if (c.ArrivalLocation().Equals(_targetLocation))
             {
                 // We keep track of the departure times here!
-                var journey = new Journey(_statsFactory.InitialStats(c), c.DepartureTime(), c);
+                var journey = new Journey<T>(_statsFactory.InitialStats(c), c.DepartureTime(), c);
 
                 ConsiderJourney(c.DepartureLocation(), journey, toRemove);
             }
@@ -103,14 +111,31 @@ namespace Itinero_Transit.CSA
                 var journeysToEnd = _stationJourneys.GetValueOrDefault(c.ArrivalLocation(), _emptyJourneys);
                 foreach (var j in journeysToEnd)
                 {
+                    
                     if (c.ArrivalTime() > j.Time)
                     {
                         // We missed this connection
                         continue;
                     }
 
+                    var journey = j;
+                    if (_transferPolicy != null && !c.Trip().Equals(j.Connection.Trip()))
+                    {
+                        // The transferpolicy expects two connections: the start and end connection
+                        // We build our journey from end to start, thus this is the order we have to pass the arguments
+                        var transferC = _transferPolicy.CreateTransfer(c, j.Connection);
+                        if (transferC == null)
+                        {
+                            // Transferpolicy deemed this transfer impossible
+                            // We skip the connection too
+                            continue;
+                        }
+
+                        journey = new Journey<T>(j, transferC.DepartureTime(), transferC);
+                    }
+
                     // Chaining to the start of the journey, not the end -> We keep track of the departure time (although the time is not actually used)
-                    var chained = new Journey(j, c.DepartureTime(), c);
+                    var chained = new Journey<T>(journey, c.DepartureTime(), c);
                     ConsiderJourney(c.DepartureLocation(), chained, toRemove);
                 }
             }
@@ -130,17 +155,15 @@ namespace Itinero_Transit.CSA
         ///  <param name="startStation"></param>
         ///  <param name="considered"></param>
         /// <param name="toRemove">The journes that should be removed upstream</param>
-        private void ConsiderJourney(Uri startStation, Journey considered, ISet<Journey> toRemove)
+        private void ConsiderJourney(Uri startStation, Journey<T> considered, ISet<Journey<T>> toRemove)
         {
             if (!_stationJourneys.ContainsKey(startStation))
             {
-                _stationJourneys.Add(startStation, new List<Journey>());
+                _stationJourneys.Add(startStation, new List<Journey<T>>());
             }
 
             var startJourneys = _stationJourneys[startStation];
-
             var log = considered.Connection.ArrivalLocation().Equals(Stations.GetId("Gent-Sint-Pieters"));
-
             foreach (var journey in startJourneys)
             {
                 var comparison = _comparator.ADominatesB((T) journey.Stats, (T) considered.Stats);
@@ -150,7 +173,6 @@ namespace Itinero_Transit.CSA
                     // The considered journey is dominated and thus useless
                     return;
                 }
-
 
                 if (comparison == 1)
                 {
@@ -162,18 +184,14 @@ namespace Itinero_Transit.CSA
                 // Then we keep both
             }
 
-            if (log) Log.Information("Added journey for " + considered.Connection);
             startJourneys.Add(considered); // List is still shared with the dictionary
         }
 
         private void _dumpStationJourneys()
         {
-            var focus = new List<string>() 
+            var focus = new List<string>()
             {
-                "Brugge",
-                "Gent-Sint-Pieters",
-                "Brussel-Centraal/Bruxelles-Central",
-                "Brussel-Zuid/Bruxelles-Midi",
+                "Poperinge", "Gent-Sint-Pieters", "Brussel-Zuid/Bruxelles-Midi", "Brugge"
             };
             foreach (var kv in focus)
             {
