@@ -33,6 +33,7 @@ namespace Itinero_Transit.CSA
 
         protected sealed override void FromJson(JToken json)
         {
+            Uri = AsUri(json["@id"].ToString());
             Next = AsUri(json["hydra:next"].ToString());
             Prev = AsUri(json["hydra:previous"].ToString());
 

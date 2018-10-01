@@ -25,7 +25,7 @@ namespace Itinero_Transit.LinkedData
             }
             catch (Exception e)
             {
-                Log.Warning("Could not download station list");
+                Log.Warning($"Could not download station list: {e}");
             }
         }
 

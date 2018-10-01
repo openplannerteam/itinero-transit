@@ -24,9 +24,6 @@ namespace Itinero_Transit
         {
 
             
-            var bxlc = "Brussel-Centraal/Bruxelles-Central";
-            var gent = "Gent-Sint-Pieters";
-
             ConfigureLogging();
             Log.Information("Starting...");
             var startTime = DateTime.Now;

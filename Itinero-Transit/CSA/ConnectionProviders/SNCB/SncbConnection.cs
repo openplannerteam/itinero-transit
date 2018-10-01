@@ -133,5 +133,38 @@ namespace Itinero_Transit.CSA
         {
             return false;
         }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is SncbConnection conn))
+            {
+                return false;
+            }
+            return Equals(conn);
+        }
+
+        protected bool Equals(SncbConnection other)
+        {
+            return Equals(DepartureStop, other.DepartureStop) && Equals(ArrivalStop, other.ArrivalStop) && 
+                   DepartureTime.Equals(other.DepartureTime) && ArrivalTime.Equals(other.ArrivalTime) &&
+                   string.Equals(Direction, other.Direction) && Equals(GtfsTrip, other.GtfsTrip) && 
+                   Equals(GtfsRoute, other.GtfsRoute);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (DepartureStop != null ? DepartureStop.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (ArrivalStop != null ? ArrivalStop.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ DepartureTime.GetHashCode();
+                hashCode = (hashCode * 397) ^ ArrivalTime.GetHashCode();
+                hashCode = (hashCode * 397) ^ (Direction != null ? Direction.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (GtfsTrip != null ? GtfsTrip.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (GtfsRoute != null ? GtfsRoute.GetHashCode() : 0);
+                return hashCode;
+            }
+        }
     }
+    
 }

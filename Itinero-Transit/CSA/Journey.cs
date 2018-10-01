@@ -66,9 +66,47 @@ namespace Itinero_Transit.CSA
         {
             var res = PreviousLink == null ? $"JOURNEY ({Time:O}): \n" : PreviousLink.ToString();
 
-            res += "  "+(Connection == null ? "-- No connection given--" : Connection.ToString())+"\n";
-            res += "  "+(Stats == null ? "-- No stats -- ": Stats.ToString())+"\n";
+            res += "  " + (Connection == null ? "-- No connection given--" : Connection.ToString()) + "\n";
+            res += "  " + (Stats == null ? "-- No stats -- " : Stats.ToString()) + "\n";
             return res;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is Journey<T> j))
+            {
+                return false;
+            }
+
+            return Equals(j);
+        }
+
+        protected bool Equals(Journey<T> other)
+        {
+            var b = Time.Equals(other.Time) && Connection.Equals(other.Connection) &&
+                    Equals(PreviousLink, other.PreviousLink);
+            return b;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (PreviousLink != null ? PreviousLink.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ Time.GetHashCode();
+                hashCode = (hashCode * 397) ^ (Connection != null ? Connection.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ EqualityComparer<T>.Default.GetHashCode(Stats);
+                return hashCode;
+            }
+        }
+
+        public void VerboseDiff(Journey<T> j)
+        {
+            if (!Equals(Connection, j.Connection))
+            {
+                throw new ArgumentException($"Not the same: \n{Connection}\n{j.Connection}");
+            }
+            PreviousLink.VerboseDiff(j.PreviousLink);
         }
     }
 

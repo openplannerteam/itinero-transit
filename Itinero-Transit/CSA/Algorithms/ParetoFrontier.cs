@@ -20,14 +20,12 @@ namespace Itinero_Transit.CSA
         /// <param name="???"></param>
         /// <param name="comparator"></param>
         /// <returns></returns>
-        public HashSet<Journey<T>> ParetoFront(IEnumerable<Journey<T>> journeys)
+        public List<Journey<T>> ParetoFront(IEnumerable<Journey<T>> journeys)
         {
-            var frontier = new HashSet<Journey<T>>();
+            var frontier = new List<Journey<T>>();
             var toRemove = new HashSet<Journey<T>>();
-            Log.Information("Doing postfiltering");
             foreach (var considered in journeys)
             {
-                Log.Information("Considering" + considered);
                 toRemove.Clear();
                 var defeated = false;
                 foreach (var guard in frontier)
@@ -37,7 +35,6 @@ namespace Itinero_Transit.CSA
                     {
                         // The new journey didn't make the cut
                         defeated = true;
-                        Log.Information("Defeated by " + guard.Stats);
                         continue;
                     }
 
@@ -45,7 +42,6 @@ namespace Itinero_Transit.CSA
                     {
                         // The new journey defeated the guard
                         toRemove.Add(guard);
-                        Log.Information("Guard defeated! He was: " + guard.Stats);
                     }
 
                     //if (comparison == int.MaxValue)
@@ -59,7 +55,6 @@ namespace Itinero_Transit.CSA
 
                 if (!defeated)
                 {
-                    Log.Information($"Welcoming {considered.Stats} in the frontier");
                     frontier.Add(considered);
                 }
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Itinero_Transit.LinkedData;
 using Serilog;
 
 namespace Itinero_Transit.CSA
@@ -55,12 +54,11 @@ namespace Itinero_Transit.CSA
         /// where the Uri points to the timetable of the last allowed arrival at the destination station
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Journey<T>> CalculateJourneys(DateTime earliestDeparture,DateTime lastArrival )
+        public List<Journey<T>> CalculateJourneys(DateTime earliestDeparture,DateTime lastArrival )
         {
             
             var tt = _connectionsProvider.GetTimeTable(_connectionsProvider.TimeTableIdFor(lastArrival));
-            List<Journey<T>> results = null;
-            while (results == null)
+            while (true)
             {
 
                 var cons = tt.Connections();
@@ -71,8 +69,7 @@ namespace Itinero_Transit.CSA
                     if (c.DepartureTime() < earliestDeparture)
                     {
                         // We're done! Returning values
-                        results = _stationJourneys.GetValueOrDefault(_departureLocation, _emptyJourneys);
-                        break;
+                        return _stationJourneys.GetValueOrDefault(_departureLocation, _emptyJourneys);
                     }
 
                     AddConnection(c);
@@ -80,9 +77,6 @@ namespace Itinero_Transit.CSA
 
                 tt = _connectionsProvider.GetTimeTable(tt.PreviousTable());
             }
-
-            _dumpStationJourneys();
-            return results;
         }
 
         /// <summary>
@@ -162,20 +156,26 @@ namespace Itinero_Transit.CSA
             }
 
             var startJourneys = _stationJourneys[startStation];
-            foreach (var journey in startJourneys)
+            foreach (var guard in startJourneys)
             {
-                var comparison = _comparator.ADominatesB(journey, considered);
+                var comparison = _comparator.ADominatesB(guard, considered);
                 // ReSharper disable once InvertIf
                 if (comparison == -1)
                 {
                     // The considered journey is dominated and thus useless
                     return;
                 }
+                
+                if(comparison == 0 && considered.Equals(guard))
+                {
+                    // We don't need duplicates
+                    return;
+                }
 
                 if (comparison == 1)
                 {
                     // The considered journey clearly dominates the route; it can be removed
-                    toRemove.Add(journey);
+                    toRemove.Add(guard);
                 }
 
                 // The other cases are 0 (both are the same) of MaxValue (both are not comparable)
@@ -183,32 +183,6 @@ namespace Itinero_Transit.CSA
             }
 
             startJourneys.Add(considered); // List is still shared with the dictionary
-        }
-
-        private void _dumpStationJourneys()
-        {
-            var focus = new List<string>()
-            {
-                "Poperinge", "Gent-Sint-Pieters", "Brussel-Zuid/Bruxelles-Midi", "Brugge"
-            };
-            foreach (var kv in focus)
-            {
-                var uri = Stations.GetId(kv);
-                var journeys = "";
-                if (!_stationJourneys.ContainsKey(uri))
-                {
-                    continue;
-                }
-
-                foreach (var journey in _stationJourneys[uri])
-                {
-                    journeys += ", " + journey;
-                }
-
-                Log.Information(
-                    $"Journeys from {kv} to {Stations.GetName(_targetLocation)} are:\n -----------------------------------\n" +
-                    $"{journeys}");
-            }
         }
     }
 }

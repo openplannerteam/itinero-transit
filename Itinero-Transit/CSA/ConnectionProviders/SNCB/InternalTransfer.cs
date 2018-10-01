@@ -1,5 +1,4 @@
 ﻿using System;
-using Itinero_Transit.CSA;
 using Itinero_Transit.LinkedData;
 
 namespace Itinero_Transit.CSA
@@ -76,6 +75,34 @@ namespace Itinero_Transit.CSA
         public override string ToString()
         {
             return $"Transfer in {Stations.GetName(_location)} {_departureTime} --> {_arrivalTime}";
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is InternalTransfer tr))
+            {
+                return false;
+            }
+
+            return Equals(tr);
+        }
+
+        protected bool Equals(InternalTransfer other)
+        {
+            return Equals(_location, other._location) && Equals(_operator, other._operator) &&
+                   _departureTime.Equals(other._departureTime) && _arrivalTime.Equals(other._arrivalTime);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (_location != null ? _location.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (_operator != null ? _operator.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ _departureTime.GetHashCode();
+                hashCode = (hashCode * 397) ^ _arrivalTime.GetHashCode();
+                return hashCode;
+            }
         }
     }
 }

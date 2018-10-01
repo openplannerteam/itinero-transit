@@ -13,7 +13,7 @@ namespace Itinero_Transit.LinkedData
     public abstract class LinkedObject
     {
         // ReSharper disable once MemberCanBeProtected.Global
-        public readonly Uri Uri;
+        public Uri Uri;
 
         protected LinkedObject(Uri uri)
         {

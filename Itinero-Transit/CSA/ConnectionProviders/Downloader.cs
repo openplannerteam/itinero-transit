@@ -2,8 +2,10 @@
 using System.IO;
 using System.Net.Http;
 using CacheCow.Client;
+using CacheCow.Client.FileCacheStore;
 using CacheCow.Client.Headers;
 using Newtonsoft.Json.Linq;
+using Serilog;
 
 namespace Itinero_Transit.LinkedData
 {
@@ -28,7 +30,6 @@ namespace Itinero_Transit.LinkedData
         private static HttpClient CreateClient()
         {
             var store = new FileStore("cache");
-            store.Remove("y22xKWDh3wbEohramNuigPEBJtk=");
             var client = store.CreateClient();
             client.DefaultRequestHeaders.Add("user-agent", "Itinero-Transit-dev/0.0.1");
             client.DefaultRequestHeaders.Add("accept", "application/ld+json");
@@ -64,7 +65,7 @@ namespace Itinero_Transit.LinkedData
                 // Used for testing
                 return AlwaysReturn;
             }
-
+            Log.Information($"Downloading {uri}");
             DownloadCounter++;
             var start = DateTime.Now;
 
