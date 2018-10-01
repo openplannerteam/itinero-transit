@@ -11,24 +11,24 @@ namespace Itinero_Transit.CSA
     /// <summary>
     /// Represents one entire page of connections
     /// </summary>
-    public class TimeTable : LinkedObject, ITimeTable
+    [Serializable]
+    public class SncbTimeTable : LinkedObject, ITimeTable
     {
-
         public Uri Next { get; set; }
         public Uri Prev { get; set; }
 
         private DateTime _startTime, _endTime;
 
-        public List<PTConnection> Graph { get; set; }
-        
-        public TimeTable(Uri uri) : base(uri)
+        public List<IConnection> Graph { get; set; }
+
+        public SncbTimeTable(Uri uri) : base(uri)
         {
         }
-        
-        
-        public TimeTable(JToken json) : base(new Uri(json["@id"].ToString()))
+
+
+        public SncbTimeTable(JToken json) : base(new Uri(json["@id"].ToString()))
         {
-           FromJson(json);
+            FromJson(json);
         }
 
         protected sealed override void FromJson(JToken json)
@@ -38,15 +38,15 @@ namespace Itinero_Transit.CSA
 
             _startTime = _extractTime(AsUri(json["@id"].ToString()));
             _endTime = _extractTime(Next);
-            
 
-            Graph = new List<PTConnection>();
+
+            Graph = new List<IConnection>();
             var jsonGraph = json["@graph"];
             foreach (var conn in jsonGraph)
             {
                 try
                 {
-                    Graph.Add(new PTConnection(conn));
+                    Graph.Add(new SncbConnection(conn));
                 }
                 catch (ArgumentException e)
                 {
@@ -64,13 +64,15 @@ namespace Itinero_Transit.CSA
                 throw new ArgumentException("The passed URI does not contain a departureTime argument");
             }
 
-            var time = raw.Substring(ind + "departureTime=".Length, raw.Length);
-            return DateTime.Parse(time, CultureInfo.InvariantCulture);
+            var start = ind + "departureTime=".Length;
+            var time = raw.Substring(start, raw.Length-start-2);
+            return DateTime.Parse(time);
         }
 
         public override string ToString()
         {
-            var res = $"Timetable with {Graph.Count} connections; ID: {Uri.Segments.Last()} Next: {Next.Segments.Last()} Prev: {Prev.Segments.Last()}\n";
+            var res =
+                $"Timetable with {Graph.Count} connections; ID: {Uri.Segments.Last()} Next: {Next.Segments.Last()} Prev: {Prev.Segments.Last()}\n";
             foreach (var conn in Graph)
             {
                 res += $"  {conn}\n";
@@ -100,7 +102,7 @@ namespace Itinero_Transit.CSA
             return Prev;
         }
 
-        public IEnumerable<IConnection> Connections()
+        public List<IConnection> Connections()
         {
             return Graph;
         }

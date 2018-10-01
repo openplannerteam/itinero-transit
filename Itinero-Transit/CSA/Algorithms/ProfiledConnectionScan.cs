@@ -20,8 +20,7 @@ namespace Itinero_Transit.CSA
         private readonly Uri _departureLocation, _targetLocation;
         private readonly T _statsFactory;
         private readonly StatsComparator<T> _comparator;
-        private readonly DateTime _earliestDeparture;
-        private readonly InternalTransferFactory _transferPolicy;
+        private readonly IConnectionsProvider _connectionsProvider;
 
         /// <summary>
         /// Solely used in a few GetOrDefault values.
@@ -40,17 +39,15 @@ namespace Itinero_Transit.CSA
         /// </summary>
         private readonly Dictionary<Uri, List<Journey<T>>> _stationJourneys = new Dictionary<Uri, List<Journey<T>>>();
 
-        public ProfiledConnectionScan(Uri departureLocation, Uri targetLocation, InternalTransferFactory transferPolicy,
-            DateTime earliestDeparture,
-            T statsFactory,
-            StatsComparator<T> comparator)
+        public ProfiledConnectionScan(Uri departureLocation, Uri targetLocation,
+            IConnectionsProvider connectionsProvider,
+            T statsFactory,StatsComparator<T> comparator)
         {
             _departureLocation = departureLocation;
             _targetLocation = targetLocation;
-            _transferPolicy = transferPolicy;
+            _connectionsProvider = connectionsProvider;
             _statsFactory = statsFactory;
             _comparator = comparator;
-            _earliestDeparture = earliestDeparture;
         }
 
         /// <summary>
@@ -58,18 +55,20 @@ namespace Itinero_Transit.CSA
         /// where the Uri points to the timetable of the last allowed arrival at the destination station
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Journey<T>> CalculateJourneys(Uri lastArrival)
+        public IEnumerable<Journey<T>> CalculateJourneys(DateTime earliestDeparture,DateTime lastArrival )
         {
+            
+            var tt = _connectionsProvider.GetTimeTable(_connectionsProvider.TimeTableIdFor(lastArrival));
             List<Journey<T>> results = null;
             while (results == null)
             {
-                var tt = new TimeTable(lastArrival);
-                tt.Download();
-                tt.Graph.Reverse();
-                _dumpStationJourneys();
-                foreach (var c in tt.Graph)
+
+                var cons = tt.Connections();
+                Log.Information($"Handling timetable{tt.StartTime():O}");
+                for (var i = cons.Count-1; i >= 0; i--)
                 {
-                    if (c.DepartureTime < _earliestDeparture)
+                    var c = cons[i];
+                    if (c.DepartureTime() < earliestDeparture)
                     {
                         // We're done! Returning values
                         results = _stationJourneys.GetValueOrDefault(_departureLocation, _emptyJourneys);
@@ -79,7 +78,7 @@ namespace Itinero_Transit.CSA
                     AddConnection(c);
                 }
 
-                lastArrival = tt.Prev;
+                tt = _connectionsProvider.GetTimeTable(tt.PreviousTable());
             }
 
             _dumpStationJourneys();
@@ -119,14 +118,14 @@ namespace Itinero_Transit.CSA
                     }
 
                     var journey = j;
-                    if (_transferPolicy != null && !c.Trip().Equals(j.Connection.Trip()))
+                    if (_connectionsProvider != null && !c.Trip().Equals(j.Connection.Trip()))
                     {
                         // The transferpolicy expects two connections: the start and end connection
                         // We build our journey from end to start, thus this is the order we have to pass the arguments
-                        var transferC = _transferPolicy.CreateTransfer(c, j.Connection);
+                        var transferC = _connectionsProvider.CalculateInterConnection(c, j.Connection);
                         if (transferC == null)
                         {
-                            // Transferpolicy deemed this transfer impossible
+                            // Transfer-policy deemed this transfer impossible
                             // We skip the connection too
                             continue;
                         }
@@ -154,7 +153,7 @@ namespace Itinero_Transit.CSA
         ///  </summary>
         ///  <param name="startStation"></param>
         ///  <param name="considered"></param>
-        /// <param name="toRemove">The journes that should be removed upstream</param>
+        /// <param name="toRemove">The journey that should be removed upstream</param>
         private void ConsiderJourney(Uri startStation, Journey<T> considered, ISet<Journey<T>> toRemove)
         {
             if (!_stationJourneys.ContainsKey(startStation))
@@ -163,10 +162,9 @@ namespace Itinero_Transit.CSA
             }
 
             var startJourneys = _stationJourneys[startStation];
-            var log = considered.Connection.ArrivalLocation().Equals(Stations.GetId("Gent-Sint-Pieters"));
             foreach (var journey in startJourneys)
             {
-                var comparison = _comparator.ADominatesB((T) journey.Stats, (T) considered.Stats);
+                var comparison = _comparator.ADominatesB(journey, considered);
                 // ReSharper disable once InvertIf
                 if (comparison == -1)
                 {

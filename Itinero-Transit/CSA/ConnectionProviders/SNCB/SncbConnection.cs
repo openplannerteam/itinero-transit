@@ -13,7 +13,7 @@ namespace Itinero_Transit.CSA
      * 
      */
     [Serializable()]
-    public class PTConnection : LinkedObject, IConnection
+    public class SncbConnection : LinkedObject, IConnection
     {
         public Uri DepartureStop { get; set; }
         public Uri ArrivalStop { get; set; }
@@ -38,11 +38,11 @@ namespace Itinero_Transit.CSA
         public Uri GtfsRoute { get; set; }
 
 
-        public PTConnection(Uri uri) : base(uri)
+        public SncbConnection(Uri uri) : base(uri)
         {
         }
 
-        public PTConnection(JToken json) : base(new Uri(json["@id"].ToString()))
+        public SncbConnection(JToken json) : base(new Uri(json["@id"].ToString()))
         {
             FromJson(json);
         }
@@ -66,9 +66,12 @@ namespace Itinero_Transit.CSA
             DepartureStop = AsUri(json["departureStop"].ToString());
             ArrivalStop = AsUri(json["arrivalStop"].ToString());
             var depDel = GetInt(json, "departureDelay");
-            DepartureTime = DateTime.Parse(json["departureTime"].ToString()); // Departure time already includes delay
+            // Departure time already includes delay
+            DepartureTime =
+                DateTime.Parse(json["departureTime"].ToString());
             var arrDel = GetInt(json, "arrivalDelay");
-            ArrivalTime = DateTime.Parse(json["arrivalTime"].ToString()).AddSeconds(arrDel); // Arrival time already includes delay
+            // Arrival time already includes delay
+            ArrivalTime = DateTime.Parse(json["arrivalTime"].ToString());
             Direction = json["direction"].ToString();
             GtfsTrip = AsUri(json["gtfs:trip"].ToString());
             GtfsRoute = AsUri(json["gtfs:route"].ToString());
@@ -80,7 +83,8 @@ namespace Itinero_Transit.CSA
 
             if (ArrivalTime < DepartureTime)
             {
-                throw new ArgumentException($"WTF? Timetravellers! {DepartureTime} incl {depDel} --> {ArrivalTime} incl {arrDel}\n{json}");
+                throw new ArgumentException(
+                    $"WTF? Timetravellers! {DepartureTime} incl {depDel} --> {ArrivalTime} incl {arrDel}\n{json}");
             }
         }
 

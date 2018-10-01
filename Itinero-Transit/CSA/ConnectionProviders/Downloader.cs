@@ -30,7 +30,7 @@ namespace Itinero_Transit.LinkedData
             var store = new FileStore("cache");
             store.Remove("y22xKWDh3wbEohramNuigPEBJtk=");
             var client = store.CreateClient();
-            client.DefaultRequestHeaders.Add("user-agent", "Itinero-Transit/0.0.1");
+            client.DefaultRequestHeaders.Add("user-agent", "Itinero-Transit-dev/0.0.1");
             client.DefaultRequestHeaders.Add("accept", "application/ld+json");
             return client;
         }

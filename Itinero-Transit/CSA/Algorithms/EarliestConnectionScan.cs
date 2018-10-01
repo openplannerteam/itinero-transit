@@ -15,6 +15,8 @@ namespace Itinero_Transit.CSA
         private readonly Uri _userDepartureLocation;
         private readonly Uri _userTargetLocation;
 
+        private readonly IConnectionsProvider _connectionsProvider;
+
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as early as possible
         /// </summary>
@@ -22,32 +24,25 @@ namespace Itinero_Transit.CSA
 
         private readonly IJourneyStats<T> _statsFactory;
 
-        public EarliestConnectionScan(Uri userDepartureLocation, Uri userTargetLocation, IJourneyStats<T> statsFactory)
+        public EarliestConnectionScan(Uri userDepartureLocation, Uri userTargetLocation,
+            IJourneyStats<T> statsFactory, IConnectionsProvider connectionsProvider)
         {
             _userDepartureLocation = userDepartureLocation;
             _userTargetLocation = userTargetLocation;
             _statsFactory = statsFactory;
+            _connectionsProvider = connectionsProvider;
         }
 
-        /// <summary>
-        /// Runs CSA (A* forward) starting from this timetable.
-        /// Note that the passed timetable has an implicit time - implying the starttime of the traveller.
-        /// (When passing in graph.irail.be/sncb/connections, you'll start searching now)
-        /// </summary>
-        /// <param name="startPage"></param>
-        /// <returns></returns>
-        public Journey<T> CalculateJourney(Uri startPage)
+        public Journey<T> CalculateJourney(DateTime departureTime)
         {
-            var tt = new TimeTable(startPage);
-            tt.Download();
-
+            var timeTable = _connectionsProvider.GetTimeTable(_connectionsProvider.TimeTableIdFor(departureTime));
             var currentBestArrival = DateTime.MaxValue;
 
             while (true)
             {
-                foreach (var c in tt.Graph)
+                foreach (var c in timeTable.Connections())
                 {
-                    if (c.DepartureTime > currentBestArrival)
+                    if (c.DepartureTime() > currentBestArrival)
                     {
                         return GetJourneyTo(_userTargetLocation);
                     }
@@ -57,8 +52,7 @@ namespace Itinero_Transit.CSA
                     currentBestArrival = GetJourneyTo(_userTargetLocation).Time;
                 }
 
-                tt = new TimeTable(tt.Next);
-                tt.Download();
+                timeTable = _connectionsProvider.GetTimeTable(timeTable.NextTable());
             }
         }
 

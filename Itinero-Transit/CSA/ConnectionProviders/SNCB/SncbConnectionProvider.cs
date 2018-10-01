@@ -4,7 +4,10 @@ namespace Itinero_Transit.CSA.ConnectionProviders
 {
     public class SncbConnectionProvider : IConnectionsProvider
     {
+        
+        public static readonly string Irail = "http://graph.irail.be/sncb/connections?departureTime=";
 
+        
         private readonly int _transferSecondsNeeded;
 
         public SncbConnectionProvider(int transferSecondsNeeded)
@@ -15,6 +18,13 @@ namespace Itinero_Transit.CSA.ConnectionProviders
         public SncbConnectionProvider() : this(3 * 60)
         {
             
+        }
+
+
+        public Uri TimeTableIdFor(DateTime time)
+        {
+            time = time.AddSeconds(-time.Second).AddMilliseconds(-time.Millisecond);
+            return new Uri($"{Irail}{time:yyyy-MM-ddTHH:mm:ss}.000Z");
         }
 
         public IConnection GetConnection(Uri id)

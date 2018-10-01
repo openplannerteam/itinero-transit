@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Itinero_Transit.CSA
 {
@@ -20,8 +21,23 @@ namespace Itinero_Transit.CSA
 
 
         IConnection GetConnection(Uri id);
+        ITimeTable GetTimeTable(Uri id);
+        /// <summary>
+        /// Give a timetable which contains connections starting at includedTime.
+        /// The timetable might include connections departing earlier or later
+        /// </summary>
+        /// <param name="includedTime">The departure time of connections that are needed</param>
+        /// <returns>A timetable</returns>
+        Uri TimeTableIdFor(DateTime includedTime);
+
+        /// <summary>
+        /// Given two connections (e.g. within the same station; or to a bus station which is close by),
+        /// calculates an object representing the transfer (e.g. walking from platform 2 to platform 5; or walking 250 meters)
+        /// </summary>
+        /// <param name="from">The connection that the newly calculated connection continues on</param>
+        /// <param name="to">The connection that should be taken after the returned connection</param>
+        /// <returns>A connection representing the transfer. Returns null if no transfer is possible (e.g. to little time)</returns>
+        IConnection CalculateInterConnection(IConnection from, IConnection to);
         
-
-
     }
 }

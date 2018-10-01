@@ -9,8 +9,10 @@ namespace Itinero_Transit.LinkedData
     /**
      * A linked object is an object which has an Uniform Resource Identifier
      */
+    [Serializable]
     public abstract class LinkedObject
     {
+        // ReSharper disable once MemberCanBeProtected.Global
         public readonly Uri Uri;
 
         protected LinkedObject(Uri uri)
@@ -31,7 +33,6 @@ namespace Itinero_Transit.LinkedData
         /// <exception cref="FileNotFoundException">If nothing could be downloaded</exception>
         public void Download()
         {
-            Log.Information($"Downloading {Uri}");
             try
             {
                 FromJson(Downloader.DownloadJson(Uri));

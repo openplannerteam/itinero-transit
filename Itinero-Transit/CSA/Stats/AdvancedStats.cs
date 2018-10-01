@@ -6,7 +6,7 @@ namespace Itinero_Transit.CSA
     /// <summary>
     /// Keeps track of as much statistics as possible for showcasing
     /// </summary>
-    public class AdvancedStats : IJourneyStats
+    public class AdvancedStats : IJourneyStats<AdvancedStats>
     {
         public int NumberOfTransfers;
 
@@ -24,7 +24,7 @@ namespace Itinero_Transit.CSA
             MaxTransferTime = 0;
         }
 
-        public IJourneyStats InitialStats(IConnection c)
+        public AdvancedStats InitialStats(IConnection c)
         {
             return ConnectionStats(c);
         }
@@ -43,7 +43,7 @@ namespace Itinero_Transit.CSA
             };
         }
 
-        public IJourneyStats Add(Journey journey)
+        public AdvancedStats Add(Journey<AdvancedStats> journey)
         {
             var c = journey.Connection;
             var connectionStats = ConnectionStats(c);
@@ -86,7 +86,7 @@ namespace Itinero_Transit.CSA
             throw new NotImplementedException();
         }
 
-        public bool IsComparableTo(IJourneyStats stats)
+        public bool IsComparableTo(IJourneyStats<AdvancedStats> stats)
         {
             throw new NotImplementedException();
         }

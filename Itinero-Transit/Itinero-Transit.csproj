@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CacheCow.Client" Version="2.4.1" />
+    <PackageReference Include="CacheCow.Client" Version="2.4.2" />
     <PackageReference Include="json-ld.net" Version="1.0.6" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Serilog" Version="2.7.1" />

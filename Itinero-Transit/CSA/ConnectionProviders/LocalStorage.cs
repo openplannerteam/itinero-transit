@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using Itinero_Transit.LinkedData;
 
 namespace Itinero_Transit.CSA.Data
 {
@@ -14,6 +13,7 @@ namespace Itinero_Transit.CSA.Data
     public class LocalStorage
     {
         private readonly string root;
+
         private static readonly List<string> ForbiddenDirectories =
             new List<string>()
             {
@@ -22,12 +22,14 @@ namespace Itinero_Transit.CSA.Data
                 ".",
                 ".."
             };
+
         public LocalStorage(string root)
         {
-            this.root = root;
+            this.root = Path.GetFullPath(root + Path.DirectorySeparatorChar).Normalize();
             if (ForbiddenDirectories.Contains(root))
             {
-                throw new ArgumentException($"Using {root} as localstorage is not a good idea, specify a specific directory");
+                throw new ArgumentException(
+                    $"Using {root} as localstorage is not a good idea, specify a specific directory");
             }
 
             if (!Directory.Exists(root))
@@ -43,7 +45,7 @@ namespace Itinero_Transit.CSA.Data
         /// <returns>The unmodified value</returns>
         public T Store<T>(string key, T value)
         {
-            using (var fs = File.OpenWrite(pathFor(key)))
+            using (var fs = File.OpenWrite(PathFor(key)))
             {
                 var wr = new BinaryFormatter();
                 wr.Serialize(fs, value);
@@ -54,7 +56,7 @@ namespace Itinero_Transit.CSA.Data
 
         public T Retrieve<T>(string key)
         {
-            using (var fs = File.OpenRead(pathFor(key)))
+            using (var fs = File.OpenRead(PathFor(key)))
             {
                 var wr = new BinaryFormatter();
                 var x = wr.Deserialize(fs);
@@ -71,30 +73,43 @@ namespace Itinero_Transit.CSA.Data
 
         public bool Contains(string key)
         {
-            return File.Exists(pathFor(key));
+            return File.Exists(PathFor(key));
         }
 
-        public IEnumerable<string> KnownKeys()
+        public List<string> KnownKeys()
         {
-            return Directory.EnumerateFiles(root);
+            var keys = new List<string>();
+            foreach (var path in Directory.EnumerateFiles(root))
+            {
+                keys.Add(KeyFor(path));
+            }
+
+            keys.Sort();
+            return keys;
         }
 
         public void RemoveKey(string key)
         {
-            File.Delete(pathFor(key));
+            File.Delete(PathFor(key));
         }
 
         public void ClearAll()
         {
             foreach (var key in KnownKeys())
             {
-               RemoveKey(key); 
+                RemoveKey(key);
             }
         }
-        
-        private string pathFor(string key)
+
+        private string PathFor(string key)
         {
-            return root + "/" + key;
+            return root +
+                   key.Replace("_", "_U").Replace("/", "_S");
+        }
+
+        private string KeyFor(string path)
+        {
+            return path.Substring(root.Length).Replace("_S", "/").Replace("_U", "U");
         }
     }
 }

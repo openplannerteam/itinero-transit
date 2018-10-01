@@ -8,19 +8,20 @@
     ///  Note: there is one statistic that is tracked by the journey itself: the arrival time.
     ///  This is because the arrival time is needed in the CSA algorithm.
     ///  </summary>
-    public interface IJourneyStats
+    public interface IJourneyStats<T>
+        where T : IJourneyStats<T>
     {
         /// <summary>
         /// Create statistics for a single connection, used to start the journey statistics.
         /// </summary>
         /// <returns></returns>
-        IJourneyStats InitialStats(IConnection c);
+        T InitialStats(IConnection c);
 
         /// <summary>
         /// A new statistics object that represents the new statistics when this connection is taken.
         /// nextPiece.PreviousLink should not be null
         /// </summary>
-        IJourneyStats Add(Journey journey);
+        T Add(Journey<T> journey);
         
 
     }

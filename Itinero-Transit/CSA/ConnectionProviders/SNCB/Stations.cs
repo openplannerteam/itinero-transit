@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using Serilog;
+using Serilog.Core;
 
 namespace Itinero_Transit.LinkedData
 {
@@ -17,7 +19,14 @@ namespace Itinero_Transit.LinkedData
 
         private Stations(Uri uri):base(uri)
         {
-            Download();
+            try
+            {
+                Download();
+            }
+            catch (Exception e)
+            {
+                Log.Warning("Could not download station list");
+            }
         }
 
 
@@ -33,7 +42,7 @@ namespace Itinero_Transit.LinkedData
 
         public static string GetName(Uri uri)
         {
-            return Nmbs._mapping.GetValueOrDefault(uri, uri.ToString());
+            return Nmbs._mapping == null ? uri.ToString() : Nmbs._mapping.GetValueOrDefault(uri, uri.ToString());
         }
 
         public static Uri GetId(string name)

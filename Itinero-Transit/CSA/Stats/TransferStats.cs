@@ -7,7 +7,7 @@ namespace Itinero_Transit.CSA
     /// A simple statistic keeping track of the number of trains taken and the total travel time.
     /// This class uses Pareto Optimization. Use either TotalTimeMinimizer or TotalTransferMinimizer to optimize for one of those
     /// </summary>
-    public class TransferStats : IJourneyStats
+    public class TransferStats : IJourneyStats<TransferStats>
     {
         public readonly int NumberOfTransfers;
         public readonly DateTime StartTime;
@@ -42,12 +42,12 @@ namespace Itinero_Transit.CSA
             }
         }
 
-        public IJourneyStats InitialStats(IConnection c)
+        public TransferStats InitialStats(IConnection c)
         {
             return new TransferStats(0, c.DepartureTime(), c.ArrivalTime());
         }
 
-        public IJourneyStats Add(Journey journey)
+        public TransferStats Add(Journey<TransferStats> journey)
         {
             var transferred =
                 journey.Connection.Trip() != null &&
@@ -82,7 +82,7 @@ namespace Itinero_Transit.CSA
         internal bool Equals(TransferStats other)
         {
             return NumberOfTransfers == other.NumberOfTransfers &&
-                   (EndTime - StartTime).Equals(other.EndTime - other.StartTime);
+                   EndTime.Equals(other.EndTime) && StartTime.Equals(other.StartTime);
         }
 
         public override int GetHashCode()
@@ -97,25 +97,25 @@ namespace Itinero_Transit.CSA
     }
 
 
-    public class MinimizeTransfers : IStatsComparator<TransferStats>
+    public class MinimizeTransfers : StatsComparator<TransferStats>
     {
-        public int ADominatesB(TransferStats a, TransferStats b)
+        public override int ADominatesB(TransferStats a, TransferStats b)
         {
             return a.NumberOfTransfers.CompareTo(b.NumberOfTransfers);
         }
     }
 
-    public class MinimizeTravelTimes : IStatsComparator<TransferStats>
+    public class MinimizeTravelTimes : StatsComparator<TransferStats>
     {
-        public int ADominatesB(TransferStats a, TransferStats b)
+        public override int ADominatesB(TransferStats a, TransferStats b)
         {
             return (a.EndTime - a.StartTime).CompareTo(b.EndTime - b.StartTime);
         }
     }
 
-    public class ProfileCompare : IStatsComparator<TransferStats>
+    public class ProfileCompare : StatsComparator<TransferStats>
     {
-        public int ADominatesB(TransferStats a, TransferStats b)
+        public override int ADominatesB(TransferStats a, TransferStats b)
         {
             if (a.Equals(b))
             {
@@ -145,11 +145,11 @@ namespace Itinero_Transit.CSA
         }
     }
 
-    public class ParetoCompare : IStatsComparator<TransferStats>
+    public class ParetoCompare : StatsComparator<TransferStats>
     {
-        public int ADominatesB(TransferStats a, TransferStats b)
+        public override int ADominatesB(TransferStats a, TransferStats b)
         {
-            if (a.Equals(b))
+            if (a.TravelTime.Equals(b.TravelTime) && a.NumberOfTransfers.Equals(b.NumberOfTransfers))
             {
                 return 0;
             }
@@ -171,8 +171,10 @@ namespace Itinero_Transit.CSA
         private bool S1DominatesS2(TransferStats s1, TransferStats s2)
         {
             return
-                s1.NumberOfTransfers < s2.NumberOfTransfers
-                && s1.TravelTime < s2.TravelTime;
+                    (s1.NumberOfTransfers < s2.NumberOfTransfers
+                    && s1.TravelTime <= s2.TravelTime) 
+                || (s1.NumberOfTransfers <= s2.NumberOfTransfers
+                    && s1.TravelTime < s2.TravelTime);
         }
     }
 }
