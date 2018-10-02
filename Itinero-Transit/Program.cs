@@ -1,8 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using CacheCow.Client;
-using CacheCow.Common;
 using Itinero_Transit.CSA;
 using Itinero_Transit.CSA.ConnectionProviders;
 using Itinero_Transit.CSA.Data;
@@ -15,10 +12,6 @@ namespace Itinero_Transit
 {
     public static class Program
     {
-        // ReSharper disable once InconsistentNaming
-        // ReSharper disable once MemberCanBePrivate.Global
-        // ReSharper disable once InconsistentNaming
-
 
         private static void Main(string[] args)
         {
@@ -31,27 +24,22 @@ namespace Itinero_Transit
             try
             {
                 var sncbprovider = new SncbConnectionProvider();
-                var storage = new LocalStorage("timetables-cache");
+                var storage = new LocalStorage("timetables-for-testing-2018-10-02");
                 var provider = new LocallyCachedConnectionsProvider(sncbprovider, storage);
-                Log.Information("Starting prefetch");
-                provider.PreFetch(new DateTime(2018, 10, 2, 00, 01, 00),new DateTime(2018, 10, 2, 23, 59, 59));
                 
-                /*
                 var pcs = new ProfiledConnectionScan<TransferStats>
-                (Stations.GetId("Poperinge"), Stations.GetId("Vielsalm"), provider,
-                    TransferStats.Factory, TransferStats.ProfileCompare);
+                (Stations.Brugge, Stations.Gent, provider,
+                    TransferStats.Factory, TransferStats.ProfileCompare, TransferStats.ParetoCompare);
 
-                var profiles = pcs.CalculateJourneys(),
-                    new DateTime(2018, 10, 1, 23, 59, 59));
-                Log.Information($"Found {profiles.Count()} profiles");
-                var pareto = new ParetoFrontier<TransferStats>(TransferStats.ParetoCompare).ParetoFront(profiles);
-                Log.Information($"Found {pareto.Count()} pareto points");
+                var pareto = pcs.CalculateJourneys(new DateTime(2018,10,2,10,00,00), 
+                    new DateTime(2018, 10, 2, 18, 00, 00));
+                Log.Information($"Found {pareto.Count} profiles");
                 var i = 0;
                 foreach (var journey in pareto)
                 {
                     Log.Information($"{i}:\n {journey}");
                     i++;
-                }*/
+                }
             }
             catch (Exception e)
             {

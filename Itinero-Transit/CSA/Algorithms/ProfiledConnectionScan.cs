@@ -18,14 +18,23 @@ namespace Itinero_Transit.CSA
     {
         private readonly Uri _departureLocation, _targetLocation;
         private readonly T _statsFactory;
-        private readonly StatsComparator<T> _comparator;
+        private readonly StatsComparator<T> _profileComparator;
+
+        /// <summary>
+        /// When a journey is found from the departure station to the arrival station,
+        /// it will have certain stats.
+        /// Only journeys performing as good as this journey 
+        /// </summary>
+        private readonly ParetoFrontier<T> _paretoFront;
+
         private readonly IConnectionsProvider _connectionsProvider;
+
 
         /// <summary>
         /// Solely used in a few GetOrDefault values.
         /// Never ever add something to this list!
         /// </summary>
-        private readonly List<Journey<T>> _emptyJourneys = new List<Journey<T>>();
+        private readonly ParetoFrontier<T> _emptyJourneys;
 
         /// <summary>
         /// Maps each stop onto a pareto front of journeys (with profiles).
@@ -36,17 +45,38 @@ namespace Itinero_Transit.CSA
         /// Note that the list is sorted in descending order (thus first departure in time last in the list)
         /// There can be multiple points which depart at the same time (but will have different arrival times and different other properties)
         /// </summary>
-        private readonly Dictionary<Uri, List<Journey<T>>> _stationJourneys = new Dictionary<Uri, List<Journey<T>>>();
+        private readonly Dictionary<Uri, ParetoFrontier<T>> _stationJourneys = new Dictionary<Uri, ParetoFrontier<T>>();
 
+        /// <summary>
+        /// Create a new ProfiledConnectionScan algorithm with the given parameters
+        /// </summary>
+        /// <param name="departureLocation">The URI-ID of the location where the traveller leaves</param>
+        /// <param name="targetLocation">The URI-ID of the location where the traveller would like to go</param>
+        /// <param name="connectionsProvider">The object providing connections from one or multiple transit operators</param>
+        /// <param name="statsFactory">The object creating the statistics for each journey</param>
+        /// <param name="profileComparator">An object comparing statistics which compares using profiles. Important:
+        ///     This comparator should _not_ filter out journeys with a suboptimal time length, but only filter shadowed time travels.
+        ///     (e.g. if a journey from starting at 10:00 and arriving at 11:00 is compared with a journey starting at 09:00 and arriving at 09:05,
+        ///     no conclusions should be drawn.
+        ///     This comparator is used in intermediate stops. Filtering away the trip 10:00 -> 11:00 at an intermediate stop
+        ///     might remove a transfer that turned out to be optimal from the starting position.
+        /// </param>
+        /// <param name="paretoComparator">
+        ///  An object comparing statistics which compares for optimal points as the user sees fit.
+        ///     This comparator is used to filter the final list of journeys.
+        ///     It is used to retain only the journeys with the least travel time, least number of transfers, cheapest cost, ...
+        /// </param>
         public ProfiledConnectionScan(Uri departureLocation, Uri targetLocation,
             IConnectionsProvider connectionsProvider,
-            T statsFactory,StatsComparator<T> comparator)
+            T statsFactory, StatsComparator<T> profileComparator, StatsComparator<T> paretoComparator)
         {
             _departureLocation = departureLocation;
             _targetLocation = targetLocation;
             _connectionsProvider = connectionsProvider;
             _statsFactory = statsFactory;
-            _comparator = comparator;
+            _profileComparator = profileComparator;
+            _emptyJourneys = new ParetoFrontier<T>(profileComparator);
+            _paretoFront = new ParetoFrontier<T>(paretoComparator);
         }
 
         /// <summary>
@@ -54,22 +84,20 @@ namespace Itinero_Transit.CSA
         /// where the Uri points to the timetable of the last allowed arrival at the destination station
         /// </summary>
         /// <returns></returns>
-        public List<Journey<T>> CalculateJourneys(DateTime earliestDeparture,DateTime lastArrival )
+        public List<Journey<T>> CalculateJourneys(DateTime earliestDeparture, DateTime lastArrival)
         {
-            
             var tt = _connectionsProvider.GetTimeTable(_connectionsProvider.TimeTableIdFor(lastArrival));
             while (true)
             {
-
                 var cons = tt.Connections();
                 Log.Information($"Handling timetable{tt.StartTime():O}");
-                for (var i = cons.Count-1; i >= 0; i--)
+                for (var i = cons.Count - 1; i >= 0; i--)
                 {
                     var c = cons[i];
                     if (c.DepartureTime() < earliestDeparture)
                     {
                         // We're done! Returning values
-                        return _stationJourneys.GetValueOrDefault(_departureLocation, _emptyJourneys);
+                        return _paretoFront.Frontier;
                     }
 
                     AddConnection(c);
@@ -87,102 +115,91 @@ namespace Itinero_Transit.CSA
         {
             if (c.DepartureLocation().Equals(_targetLocation))
             {
-                // We want to be here! Lets not leave ;)
+                // We want to be here, lets not leave
                 return;
             }
 
-            var toRemove = new HashSet<Journey<T>>();
+            if (c.ArrivalLocation().Equals(_departureLocation))
+            {
+                // We want to leave here, not arrive
+                return;
+            }
+
             if (c.ArrivalLocation().Equals(_targetLocation))
             {
-                // We keep track of the departure times here!
+                // We can arrive in our target location.
+                // We create a new journey and add it
                 var journey = new Journey<T>(_statsFactory.InitialStats(c), c.DepartureTime(), c);
 
-                ConsiderJourney(c.DepartureLocation(), journey, toRemove);
+                ConsiderJourney(c.DepartureLocation(), journey);
+                return;
             }
-            else
+
+            var journeysToEnd = _stationJourneys.GetValueOrDefault(c.ArrivalLocation(), _emptyJourneys);
+            foreach (var j in journeysToEnd.Frontier)
             {
-                var journeysToEnd = _stationJourneys.GetValueOrDefault(c.ArrivalLocation(), _emptyJourneys);
-                foreach (var j in journeysToEnd)
+                var journey = j;
+                if (c.ArrivalTime() > journey.Time)
                 {
-                    
-                    if (c.ArrivalTime() > j.Time)
+                    // We missed this connection
+                    continue;
+                }
+
+                if (_connectionsProvider != null && !c.Trip().Equals(j.Connection.Trip()))
+                {
+                    // Create a transfer object, according to the transfer policy (if one is given)
+
+                    // The transfer-policy expects two connections: the start and end connection
+                    // We build our journey from end to start, thus this is the order we have to pass the arguments
+                    var transferC = _connectionsProvider.CalculateInterConnection(c, j.Connection);
+                    if (transferC == null)
                     {
-                        // We missed this connection
+                        // Transfer-policy deemed this transfer impossible
+                        // We skip the connection
                         continue;
                     }
 
-                    var journey = j;
-                    if (_connectionsProvider != null && !c.Trip().Equals(j.Connection.Trip()))
-                    {
-                        // The transferpolicy expects two connections: the start and end connection
-                        // We build our journey from end to start, thus this is the order we have to pass the arguments
-                        var transferC = _connectionsProvider.CalculateInterConnection(c, j.Connection);
-                        if (transferC == null)
-                        {
-                            // Transfer-policy deemed this transfer impossible
-                            // We skip the connection too
-                            continue;
-                        }
-
-                        journey = new Journey<T>(j, transferC.DepartureTime(), transferC);
-                    }
-
-                    // Chaining to the start of the journey, not the end -> We keep track of the departure time (although the time is not actually used)
-                    var chained = new Journey<T>(journey, c.DepartureTime(), c);
-                    ConsiderJourney(c.DepartureLocation(), chained, toRemove);
+                    journey = new Journey<T>(j, transferC.DepartureTime(), transferC);
                 }
-            }
 
-            foreach (var journey in toRemove)
-            {
-                _stationJourneys[journey.Connection.DepartureLocation()].Remove(journey);
+                // Chaining to the start of the journey, not the end -> We keep track of the departure time (although the time is not actually used)
+                var chained = new Journey<T>(journey, c.DepartureTime(), c);
+                ConsiderJourney(c.DepartureLocation(), chained);
             }
         }
 
         ///  <summary>
         ///  This method is called when a new startStation can be reached with the given Journey J.
         /// 
-        ///  The method will consider if this journey is pareto optimal and should thus be included.
+        ///  The method will consider if this journey is profile optimal and should thus be included.
         ///  If it is not, it will be ignored.
+        ///
+        ///  If a pareto comparator is found and total journeys are already known,
+        ///  the journey is also checked against the pareto frontier
         ///  </summary>
         ///  <param name="startStation"></param>
         ///  <param name="considered"></param>
-        /// <param name="toRemove">The journey that should be removed upstream</param>
-        private void ConsiderJourney(Uri startStation, Journey<T> considered, ISet<Journey<T>> toRemove)
+        private void ConsiderJourney(Uri startStation, Journey<T> considered)
         {
             if (!_stationJourneys.ContainsKey(startStation))
             {
-                _stationJourneys.Add(startStation, new List<Journey<T>>());
+                _stationJourneys.Add(startStation, new ParetoFrontier<T>(_profileComparator));
             }
 
             var startJourneys = _stationJourneys[startStation];
-            foreach (var guard in startJourneys)
+
+            // Compare with the already known total journeys
+            if (!_paretoFront.OnTheFrontier(considered))
             {
-                var comparison = _comparator.ADominatesB(guard, considered);
-                // ReSharper disable once InvertIf
-                if (comparison == -1)
-                {
-                    // The considered journey is dominated and thus useless
-                    return;
-                }
-                
-                if(comparison == 0 && considered.Equals(guard))
-                {
-                    // We don't need duplicates
-                    return;
-                }
-
-                if (comparison == 1)
-                {
-                    // The considered journey clearly dominates the route; it can be removed
-                    toRemove.Add(guard);
-                }
-
-                // The other cases are 0 (both are the same) of MaxValue (both are not comparable)
-                // Then we keep both
+                // We won't be able to outperform an already known total route, especially because this is a partial route
+                return;
             }
 
-            startJourneys.Add(considered); // List is still shared with the dictionary
+            startJourneys.AddToFrontier(considered); // List is still shared with the dictionary
+            if (startStation.Equals(_departureLocation))
+            {
+                _paretoFront.AddToFrontier(considered);
+            }
         }
     }
 }

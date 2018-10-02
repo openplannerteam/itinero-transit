@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Serilog;
 
 namespace Itinero_Transit.CSA
 {
@@ -9,63 +8,106 @@ namespace Itinero_Transit.CSA
     {
         private readonly StatsComparator<T> _comparator;
 
+        public readonly List<Journey<T>> Frontier = new List<Journey<T>>();
+
+
         public ParetoFrontier(StatsComparator<T> comparator)
         {
             _comparator = comparator;
         }
 
-        /// <summary>
-        /// Given a list of journeys, returns a new collection only returning journeys on the pareto frontier
-        /// </summary>
-        /// <param name="???"></param>
-        /// <param name="comparator"></param>
-        /// <returns></returns>
-        public List<Journey<T>> ParetoFront(IEnumerable<Journey<T>> journeys)
+
+        public bool OnTheFrontier(Journey<T> journey)
         {
-            var frontier = new List<Journey<T>>();
-            var toRemove = new HashSet<Journey<T>>();
-            foreach (var considered in journeys)
+            return OnTheFrontier(journey.Stats);
+        }
+
+        /// <summary>
+        /// Are the given statistics on the current frontier?
+        /// Returns false if they are outperformed   
+        /// </summary>
+        /// <param name="considered">The considered statistics</param>
+        /// <returns></returns>
+        public bool OnTheFrontier(T considered)
+        {
+            foreach (var guard in Frontier)
             {
-                toRemove.Clear();
-                var defeated = false;
-                foreach (var guard in frontier)
+                var comparison = _comparator.ADominatesB(guard.Stats, considered);
+                if (comparison < 0)
                 {
-                    var comparison = _comparator.ADominatesB(guard, considered);
-                    if (comparison < 0)
-                    {
-                        // The new journey didn't make the cut
-                        defeated = true;
-                        continue;
-                    }
-
-                    if (comparison == 1)
-                    {
-                        // The new journey defeated the guard
-                        toRemove.Add(guard);
-                    }
-
-                    //if (comparison == int.MaxValue)
-                    // Both are on the pareto front
-
-                    //if (comparison == 0)
-                    // Both are equally good
-                    // As both might leave at different hours, we add the new journey as well
+                    // The new journey didn't make the cut
+                    return false;
                 }
 
+                //  if (comparison == 1)
+                // The new journey defeated the guard
+                // If we were to add these stats to the frontier, the guard would be removed
 
-                if (!defeated)
-                {
-                    frontier.Add(considered);
-                }
+                //if (comparison == int.MaxValue)
+                // Both are on the pareto front
 
-
-                foreach (var defeatedGuard in toRemove)
-                {
-                    frontier.Remove(defeatedGuard);
-                }
+                //if (comparison == 0)
+                // Both are equally good
+                // As both might leave at different hours, we add the new journey as well
             }
 
-            return frontier;
+            return true;
         }
+
+        /// <summary>
+        /// If the given journey is pareto-optimal in respect to the current frontier,
+        /// the journey is added.
+        /// If this journey outperforms some other point on the frontier, that point is removed
+        /// </summary>
+        /// <param name="considered"></param>
+        /// <returns>True if the journey was appended to the frontier</returns>
+        public bool AddToFrontier(Journey<T> considered)
+        {
+            var toRemove = new HashSet<Journey<T>>();
+            foreach (var guard in Frontier)
+            {
+                var comparison = _comparator.ADominatesB(guard, considered);
+                if (comparison < 0)
+                {
+                    // The new journey didn't make the cut
+                    return false;
+                }
+
+                if (comparison == 1)
+                {
+                    // The new journey defeated the guard
+                    toRemove.Add(guard);
+                }
+
+                //if (comparison == int.MaxValue)
+                // Both are on the pareto front
+
+                //if (comparison == 0)
+                // Both are equally good
+                // As both might leave at different hours, we add the new journey as well
+            }
+
+
+            foreach (var defeatedGuard in toRemove)
+            {
+                Frontier.Remove(defeatedGuard);
+            }
+
+            Frontier.Add(considered);
+            return true;
+        }
+
+        /// <summary>
+        /// Considers all of the journeys to append them to the frontier
+        /// </summary>
+        public void AddAllToFrontier(IEnumerable<Journey<T>> journeys)
+        {
+            foreach (var journey in journeys)
+            {
+                AddToFrontier(journey);
+            }
+        }
+        
+        
     }
 }
