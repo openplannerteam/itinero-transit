@@ -135,7 +135,13 @@ namespace Itinero_Transit.CSA
                 return;
             }
 
-            var journeysToEnd = _stationJourneys.GetValueOrDefault(c.ArrivalLocation(), _emptyJourneys);
+            if (_stationJourneys.ContainsKey(c.ArrivalLocation()))
+            {
+                // NO way out of the arrival station yet
+                return;
+            }
+
+            var journeysToEnd = _stationJourneys[c.ArrivalLocation()];
             foreach (var j in journeysToEnd.Frontier)
             {
                 var journey = j;
