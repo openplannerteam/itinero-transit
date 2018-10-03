@@ -7,6 +7,8 @@ First, start with reading the paper 'Connection Scan Algorithm', by Julian Dibbe
 
 Second, the library works with linked connections, so every object is identified with a URI. If you have never heard about linked data and the semantic web (or simply need a refresher) have a look at [Ruben Verborgh's slides](http://rubenverborgh.github.io/WebFundamentals/semantic-web/).
 
+Thirdly, most classes (should) have a banner comment stating the purpose of the class and where it fits in the whole. However, it helps to have an succint overview to start and to find your way around the code. You'll find this overview below.
+
 Major classes and interfaces
 ----------------------------
 
@@ -56,8 +58,7 @@ For now, the following algorithms are supported:
  - ParetoFrontier: given a list of Journeys, are they pareto-optimal with respect to each other? This class is mainly used in other algorithms
  - ProfiledConnectionScan: given a departure- and arrival-location, what are all pareto-optimal routes in a given timespan?
 
-
-
+The inner workings of the algorithm are stated in the classes themselves.
 
 
 
