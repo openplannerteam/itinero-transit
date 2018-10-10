@@ -19,7 +19,7 @@ namespace Itinero_Transit.LinkedData
         {
         }
 
-        public Station(JToken json) : base(new Uri(json["@id"].ToString()))
+        public Station(JObject json) : base(new Uri(json["@id"].ToString()))
         {
             FromJson(json);
         }
@@ -31,7 +31,7 @@ namespace Itinero_Transit.LinkedData
                 $"Station {Name} ({Uri})";
         }
 
-        protected sealed override void FromJson(JToken json)
+        protected sealed override void FromJson(JObject json)
         {
             Name = json["name"].ToString();
             Country = AsUri(json["country"].ToString());

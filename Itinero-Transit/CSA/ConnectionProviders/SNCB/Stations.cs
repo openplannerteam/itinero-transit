@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Itinero_Transit.CSA.ConnectionProviders;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
@@ -16,19 +17,11 @@ namespace Itinero_Transit.LinkedData
         private readonly Dictionary<Uri, string> _mapping = new Dictionary<Uri, string>();
         private readonly Dictionary<string, Uri> _reverseMapping = new Dictionary<string, Uri>();
 
-
-        public static readonly Uri BrusselZuid = AsUri("http://irail.be/stations/NMBS/008814001");
-        public static readonly Uri Gent = AsUri("https://irail.be/stations/NMBS/008892007");
-        public static readonly Uri Brugge = AsUri("https://irail.be/stations/NMBS/008891009");
-        public static readonly Uri Poperinge = AsUri("https://irail.be/stations/NMBS/008896735");
-        public static readonly Uri Vielsalm = AsUri("https://irail.be/stations/NMBS/008845146");
-
-
         private Stations(Uri uri) : base(uri)
         {
             try
             {
-                // Download();
+                Download(SncbConnectionProvider.IrailProcessor);
             }
             catch (Exception e)
             {
@@ -37,11 +30,11 @@ namespace Itinero_Transit.LinkedData
         }
 
 
-        protected override void FromJson(JToken json)
+        protected override void FromJson(JObject json)
         {
             foreach (var js in json["@graph"])
             {
-                var s = new Station(js);
+                var s = new Station((JObject) js);
                 _mapping.Add(s.Id(), s.Name);
                 _reverseMapping.Add(s.Name, s.Id());
             }

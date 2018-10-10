@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Itinero_Transit.CSA;
 using Itinero_Transit.CSA.ConnectionProviders;
 using Itinero_Transit.CSA.Data;
 using Itinero_Transit.LinkedData;
+using JsonLD.Core;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
@@ -16,30 +18,14 @@ namespace Itinero_Transit
         private static void Main(string[] args)
         {
 
-            
-            ConfigureLogging();
             Log.Information("Starting...");
             var startTime = DateTime.Now;
 
             try
             {
-                var sncbprovider = new SncbConnectionProvider();
-                var storage = new LocalStorage("timetables-for-testing-2018-10-02");
-                var provider = new LocallyCachedConnectionsProvider(sncbprovider, storage);
-                
-                var pcs = new ProfiledConnectionScan<TransferStats>
-                (Stations.Brugge, Stations.Gent, provider,
-                    TransferStats.Factory, TransferStats.ProfileCompare, TransferStats.ParetoCompare);
-
-                var pareto = pcs.CalculateJourneys(new DateTime(2018,10,2,10,00,00), 
-                    new DateTime(2018, 10, 2, 18, 00, 00));
-                Log.Information($"Found {pareto.Count} profiles");
-                var i = 0;
-                foreach (var journey in pareto)
-                {
-                    Log.Information($"{i}:\n {journey}");
-                    i++;
-                }
+                var provider = new LinkedConnectionProvider(new Uri("http://graph.irail.be"));
+                provider.GetTimeTable(new Uri("http://graph.irail.be/sncb/connections"));
+             
             }
             catch (Exception e)
             {
@@ -48,8 +34,9 @@ namespace Itinero_Transit
 
             var endTime = DateTime.Now;
             Log.Information($"Calculating took {(endTime - startTime).TotalSeconds}");
+            var downloader = SncbConnectionProvider.Loader;
             Log.Information(
-                $"Downloading {Downloader.DownloadCounter} entries took {Downloader.TimeDownloading / 1000} sec; got {Downloader.CacheHits} cache hits");
+                $"Downloading {downloader.DownloadCounter} entries took {downloader.TimeDownloading / 1000} sec; got {downloader.CacheHits} cache hits");
             
             
         }

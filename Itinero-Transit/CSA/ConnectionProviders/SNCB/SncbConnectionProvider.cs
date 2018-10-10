@@ -1,13 +1,17 @@
 using System;
+using Itinero_Transit.LinkedData;
+using JsonLD.Core;
 
 namespace Itinero_Transit.CSA.ConnectionProviders
 {
     public class SncbConnectionProvider : IConnectionsProvider
     {
-        
         public static readonly string Irail = "http://graph.irail.be/sncb/connections?departureTime=";
 
-        
+        public static readonly Downloader Loader = new Downloader();
+        public static readonly JsonLdProcessor IrailProcessor = new JsonLdProcessor(Loader,
+            new JsonLdOptions("http://graph.irail.be"));
+
         private readonly int _transferSecondsNeeded;
 
         public SncbConnectionProvider(int transferSecondsNeeded)
@@ -17,7 +21,6 @@ namespace Itinero_Transit.CSA.ConnectionProviders
 
         public SncbConnectionProvider() : this(3 * 60)
         {
-            
         }
 
 
@@ -30,14 +33,14 @@ namespace Itinero_Transit.CSA.ConnectionProviders
         public IConnection GetConnection(Uri id)
         {
             var c = new SncbConnection(id);
-            c.Download();
+            c.Download(SncbConnectionProvider.IrailProcessor);
             return c;
         }
 
         public ITimeTable GetTimeTable(Uri id)
         {
             var tt = new SncbTimeTable(id);
-            tt.Download();
+            tt.Download(SncbConnectionProvider.IrailProcessor);
             return tt;
         }
 

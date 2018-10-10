@@ -135,7 +135,7 @@ namespace Itinero_Transit.CSA
                 return;
             }
 
-            if (_stationJourneys.ContainsKey(c.ArrivalLocation()))
+            if (!_stationJourneys.ContainsKey(c.ArrivalLocation()))
             {
                 // NO way out of the arrival station yet
                 return;

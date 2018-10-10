@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Net.Http;
 using CacheCow.Client;
 using CacheCow.Client.FileCacheStore;
 using CacheCow.Client.Headers;
+using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
@@ -12,53 +15,41 @@ namespace Itinero_Transit.LinkedData
     /// <summary>
     /// Utilities to help downloading, caching and testing (e.g. to inject a fixed string while testing)
     /// </summary>
-    public static class Downloader
+    public class Downloader : IDocumentLoader
     {
         /// <summary>
         /// This string can be set during tests, in which this string will _always_ be given as "downloaded" string
         /// </summary>
         // ReSharper disable once MemberCanBePrivate.Global
         // ReSharper disable once FieldCanBeMadeReadOnly.Global
-        public static string AlwaysReturn = null;
+        public string AlwaysReturn = null;
 
-        public static int DownloadCounter;
-        public static int CacheHits;
-        public static double TimeDownloading;
+        public int DownloadCounter;
+        public int CacheHits;
+        public double TimeDownloading;
 
-        private static readonly HttpClient Client = CreateClient();
+        private readonly HttpClient _client;
 
-        private static HttpClient CreateClient()
+        public Downloader()
         {
             var store = new FileStore("cache");
-            var client = store.CreateClient();
-            client.DefaultRequestHeaders.Add("user-agent", "Itinero-Transit-dev/0.0.1");
-            client.DefaultRequestHeaders.Add("accept", "application/ld+json");
-            return client;
+            _client = store.CreateClient();
+            _client.DefaultRequestHeaders.Add("user-agent", "Itinero-Transit-dev/0.0.1");
+            _client.DefaultRequestHeaders.Add("accept", "application/ld+json");
         }
 
-        public static string Download(Uri uri)
+        public JToken LoadDocument(Uri uri)
         {
-            return DownloadRaw(uri);
+            return JObject.Parse(DownloadRaw(uri));
         }
 
-        public static JObject DownloadJson(Uri uri)
-        {
-            return AsJson(DownloadRaw(uri));
-        }
-
-
-        public static JObject AsJson(string contents)
-        {
-            var json = JObject.Parse(contents);
-            return json;
-        }
 
         /// <summary>
         /// Actually download the contents.
         /// </summary>
         /// <returns></returns>
         /// <exception cref="FileNotFoundException"></exception>
-        private static string DownloadRaw(Uri uri)
+        private string DownloadRaw(Uri uri)
         {
             if (AlwaysReturn != null)
             {
@@ -69,7 +60,7 @@ namespace Itinero_Transit.LinkedData
             DownloadCounter++;
             var start = DateTime.Now;
 
-            var response = Client.GetAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
+            var response = _client.GetAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
             if (response == null)
             {
                 throw new FileNotFoundException("Could not open " + uri);
@@ -88,11 +79,13 @@ namespace Itinero_Transit.LinkedData
         }
 
         // ReSharper disable once UnusedMember.Global
-        public static void ResetCounters()
+        public void ResetCounters()
         {
             TimeDownloading = 0;
             DownloadCounter = 0;
             CacheHits = 0;
         }
+
+
     }
 }

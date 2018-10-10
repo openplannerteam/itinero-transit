@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Net;
 using Itinero_Transit.LinkedData;
 using Newtonsoft.Json.Linq;
 using Serilog;
@@ -26,17 +28,17 @@ namespace Itinero_Transit.CSA
         }
 
 
-        public SncbTimeTable(JToken json) : base(new Uri(json["@id"].ToString()))
+        public SncbTimeTable(JObject json) : base(new Uri(json["@id"].ToString()))
         {
             FromJson(json);
         }
 
-        protected sealed override void FromJson(JToken json)
+        protected sealed override void FromJson(JObject json)
         {
+            File.WriteAllText("debug.json", json.ToString());
             Uri = AsUri(json["@id"].ToString());
             Next = AsUri(json["hydra:next"].ToString());
             Prev = AsUri(json["hydra:previous"].ToString());
-
             _startTime = _extractTime(AsUri(json["@id"].ToString()));
             _endTime = _extractTime(Next);
 
@@ -47,7 +49,7 @@ namespace Itinero_Transit.CSA
             {
                 try
                 {
-                    Graph.Add(new SncbConnection(conn));
+                    Graph.Add(new SncbConnection((JObject) conn));
                 }
                 catch (ArgumentException e)
                 {
