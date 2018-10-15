@@ -25,11 +25,9 @@ namespace Itinero_Transit_Tests
         {
             // YOU MIGHT HAVE TO SYMLINK THE TIMETABLES TO  Itinero-Transit-Tests/bin/Debug/netcoreapp2.0
 
-            Downloader.AlwaysReturn = "<downloading disabled for test>";
-
             var prov = new LocallyCachedConnectionsProvider(new SncbConnectionProvider(),
                 new LocalStorage("timetables-for-testing-2018-10-02"));
-            var pcs = new ProfiledConnectionScan<TransferStats>(Stations.Brugge, Stations.Gent, prov, 
+            var pcs = new ProfiledConnectionScan<TransferStats>(TestEAS.brugge, TestEAS.gent, prov, 
                 TransferStats.Factory, TransferStats.ProfileCompare, TransferStats.ParetoCompare);
 
             var journeys = pcs.CalculateJourneys(new DateTime(2018, 10, 02, 10, 00, 00), new DateTime(2018,10,02,12,00,00));
@@ -47,11 +45,9 @@ namespace Itinero_Transit_Tests
         {
             // YOU MIGHT HAVE TO SYMLINK THE TIMETABLES TO  Itinero-Transit-Tests/bin/Debug/netcoreapp2.0
 
-            Downloader.AlwaysReturn = "<downloading disabled for test>";
-
             var prov = new LocallyCachedConnectionsProvider(new SncbConnectionProvider(),
                 new LocalStorage("timetables-for-testing-2018-10-02"));
-            var pcs = new ProfiledConnectionScan<TransferStats>(Stations.Poperinge, Stations.Vielsalm, prov, 
+            var pcs = new ProfiledConnectionScan<TransferStats>(TestEAS.poperinge, TestEAS.vielsalm, prov, 
                 TransferStats.Factory, TransferStats.ProfileCompare, TransferStats.ParetoCompare);
 
             var journeys = pcs.CalculateJourneys(new DateTime(2018, 10, 02, 10, 00, 00), new DateTime(2018,10,02,20,00,00));

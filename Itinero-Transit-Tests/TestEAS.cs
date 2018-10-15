@@ -12,11 +12,11 @@ namespace Itinero_Transit_Tests
     {
         private readonly ITestOutputHelper _output;
 
-        private Uri brusselZuid = LinkedObject.AsUri("http://irail.be/stations/NMBS/008814001");
-        private Uri gent = LinkedObject.AsUri("https://irail.be/stations/NMBS/008892007");
-        private Uri brugge = LinkedObject.AsUri("https://irail.be/stations/NMBS/008891009");
-        private Uri poperinge = LinkedObject.AsUri("https://irail.be/stations/NMBS/008896735");
-        private Uri vielsalm = LinkedObject.AsUri("https://irail.be/stations/NMBS/008845146");
+        public static Uri brusselZuid = LinkedObject.AsUri("http://irail.be/stations/NMBS/008814001");
+        public static Uri gent = LinkedObject.AsUri("https://irail.be/stations/NMBS/008892007");
+        public static Uri brugge = LinkedObject.AsUri("https://irail.be/stations/NMBS/008891009");
+        public static Uri poperinge = LinkedObject.AsUri("https://irail.be/stations/NMBS/008896735");
+        public static Uri vielsalm = LinkedObject.AsUri("https://irail.be/stations/NMBS/008845146");
 
 
         public TestEAS(ITestOutputHelper output)
@@ -28,8 +28,6 @@ namespace Itinero_Transit_Tests
         public void TestEarliestArrival()
         {
             // YOU MIGHT HAVE TO SYMLINK THE TIMETABLES TO  Itinero-Transit-Tests/bin/Debug/netcoreapp2.0
-
-            Downloader.AlwaysReturn = "<downloading disabled for test>";
 
             var prov = new LocallyCachedConnectionsProvider(new SncbConnectionProvider(),
                 new LocalStorage("timetables-for-testing-2018-10-02"));
@@ -48,8 +46,6 @@ namespace Itinero_Transit_Tests
         public void TestEarliestArrival2()
         {
             // YOU MIGHT HAVE TO SYMLINK THE TIMETABLES TO  Itinero-Transit-Tests/bin/Debug/netcoreapp2.0
-
-            Downloader.AlwaysReturn = "<downloading disabled for test>";
 
             var prov = new LocallyCachedConnectionsProvider(new SncbConnectionProvider(),
                 new LocalStorage("timetables-for-testing-2018-10-02"));

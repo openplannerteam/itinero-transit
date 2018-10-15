@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Itinero_Transit.CSA;
 using Itinero_Transit.CSA.ConnectionProviders;
 using Itinero_Transit.CSA.Data;
 using Itinero_Transit.LinkedData;
 using JsonLD.Core;
+using Newtonsoft.Json.Linq;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
@@ -17,15 +19,19 @@ namespace Itinero_Transit
 
         private static void Main(string[] args)
         {
+            ConfigureLogging();
 
             Log.Information("Starting...");
             var startTime = DateTime.Now;
 
             try
             {
-                var provider = new LinkedConnectionProvider(new Uri("http://graph.irail.be"));
-                provider.GetTimeTable(new Uri("http://graph.irail.be/sncb/connections"));
-             
+            
+                var proc = new JsonLdProcessor(new Downloader(), new Uri("http://graph.irail.be/sncb/connections"));
+                var jsonld = proc.LoadExpanded(new Uri("http://graph.irail.be/sncb/connections"));
+                var prov = new LinkedConnectionProvider((JObject) jsonld["http://www.w3.org/ns/hydra/core#search"][0]);
+                var tt = prov.GetTimeTable(DateTime.Now);
+                Log.Information(tt.ToString());
             }
             catch (Exception e)
             {

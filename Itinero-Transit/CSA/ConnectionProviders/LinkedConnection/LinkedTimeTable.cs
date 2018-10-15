@@ -33,7 +33,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders
 
         protected sealed override void FromJson(JObject json)
         {
-            JsonLd.AssertTypeIs(json, "http://www.w3.org/ns/hydra/core#PagedCollection");
+          // TODO update JSON-LD and activate  json.AssertTypeIs("http://www.w3.org/ns/hydra/core#PagedCollection");
 
             Next = AsUri(json["http://www.w3.org/ns/hydra/core#next"][0]["@id"].ToString());
             Prev = AsUri(json["http://www.w3.org/ns/hydra/core#previous"][0]["@id"].ToString());
@@ -51,7 +51,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders
                 }
                 catch (ArgumentException e)
                 {
-                    Log.Warning(e, "Ignored connection due to time travelling");
+                    Log.Warning(e, "Connection ignored due to exception");
                 }
             }
         }

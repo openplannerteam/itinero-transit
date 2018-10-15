@@ -1,5 +1,6 @@
 ﻿using System;
 using Itinero_Transit.LinkedData;
+using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 
 namespace Itinero_Transit.CSA
@@ -53,16 +54,16 @@ namespace Itinero_Transit.CSA
                 $"Train connection by NMBS, {Stations.GetName(DepartureStop)} {DepartureTime:yyyy-MM-dd HH:mm:ss} --> {Stations.GetName(ArrivalStop)}" +
                 $" {ArrivalTime:yyyy-MM-dd HH:mm:ss}\n    Direction {Direction} ({Uri})";
         }
-
+        
         protected sealed override void FromJson(JObject json)
         {
             DepartureStop = AsUri(json["departureStop"].ToString());
             ArrivalStop = AsUri(json["arrivalStop"].ToString());
-            var depDel = GetInt(json, "departureDelay");
+            var depDel = json.GetInt("departureDelay");
             // Departure time already includes delay
             DepartureTime =
                 DateTime.Parse(json["departureTime"].ToString());
-            var arrDel = GetInt(json, "arrivalDelay");
+            var arrDel = json.GetInt("arrivalDelay");
             // Arrival time already includes delay
             ArrivalTime = DateTime.Parse(json["arrivalTime"].ToString());
             Direction = json["direction"].ToString();
@@ -133,14 +134,15 @@ namespace Itinero_Transit.CSA
             {
                 return false;
             }
+
             return Equals(conn);
         }
 
         protected bool Equals(SncbConnection other)
         {
-            return Equals(DepartureStop, other.DepartureStop) && Equals(ArrivalStop, other.ArrivalStop) && 
+            return Equals(DepartureStop, other.DepartureStop) && Equals(ArrivalStop, other.ArrivalStop) &&
                    DepartureTime.Equals(other.DepartureTime) && ArrivalTime.Equals(other.ArrivalTime) &&
-                   string.Equals(Direction, other.Direction) && Equals(GtfsTrip, other.GtfsTrip) && 
+                   string.Equals(Direction, other.Direction) && Equals(GtfsTrip, other.GtfsTrip) &&
                    Equals(GtfsRoute, other.GtfsRoute);
         }
 
@@ -159,5 +161,4 @@ namespace Itinero_Transit.CSA
             }
         }
     }
-    
 }

@@ -55,34 +55,35 @@ namespace Itinero_Transit.CSA
         public override string ToString()
         {
             return
-                $"Train connection by NMBS, {Stations.GetName(DepartureStop)} {DepartureTime:yyyy-MM-dd HH:mm:ss} --> {Stations.GetName(ArrivalStop)}" +
+                $"Linked Connection {DepartureStop} {DepartureTime:yyyy-MM-dd HH:mm:ss} --> {ArrivalStop}" +
                 $" {ArrivalTime:yyyy-MM-dd HH:mm:ss}\n    Direction {Direction} ({Uri})";
         }
 
+        
+      
+        
+        
         protected sealed override void FromJson(JObject json)
         {
-           json.AssertTypeIs("http://semweb.mmlab.be/ns/linkedconnections#Connection");
+           // TODO json.AssertTypeIs("http://semweb.mmlab.be/ns/linkedconnections#Connection");
 
             DepartureStop = json.GetId("http://semweb.mmlab.be/ns/linkedconnections#departureStop");
             ArrivalStop = json.GetId("http://semweb.mmlab.be/ns/linkedconnections#arrivalStop");
 
-            var depDel = json.GetInt("http://semweb.mmlab.be/ns/linkedconnections#departureDelay");
+            var depDel = json.GetInt("http://semweb.mmlab.be/ns/linkedconnections#departureDelay", 0);
             // Departure time already includes delay
-            DepartureTime =
-                DateTime.Parse(json.GetValue("http://semweb.mmlab.be/ns/linkedconnections#departureTime").ToString());
+            DepartureTime = json.GetDate("http://semweb.mmlab.be/ns/linkedconnections#departureTime");
 
-
-            var arrDel = json.GetInt( "http://semweb.mmlab.be/ns/linkedconnections#arrivalDelay");
+            var arrDel = json.GetInt( "http://semweb.mmlab.be/ns/linkedconnections#arrivalDelay", 0);
             // Arrival time already includes delay
-            ArrivalTime = DateTime.Parse(
-                json.GetValue("http://semweb.mmlab.be/ns/linkedconnections#arrivalTime").ToString());
+            ArrivalTime = json.GetDate("http://semweb.mmlab.be/ns/linkedconnections#arrivalTime");
                 
             Direction = json.GetValue("http://vocab.gtfs.org/terms#headsign").ToString();
             GtfsTrip = json.GetId("http://vocab.gtfs.org/terms#trip");
             GtfsRoute = json.GetId("http://vocab.gtfs.org/terms#route");
            
             
-            if (ArrivalTime < DepartureTime)
+            if (ArrivalTime <= DepartureTime)
             {
                 // TODO This is a workaround for issue https://github.com/iRail/iRail/issues/361
                 // Sometimes, a departure delay is already known but the arrivaldelay is not known yet
@@ -94,14 +95,14 @@ namespace Itinero_Transit.CSA
                 ArrivalTime = ArrivalTime.AddSeconds(depDel);
             }
 
-            if (ArrivalTime < DepartureTime)
+            if (ArrivalTime <= DepartureTime)
             {
                 // If there is still to much time difference, the train was probably cancelled, so we throw it out.
                 throw new ArgumentException(
                     $"WTF? Timetravellers! {DepartureTime} incl {depDel} --> {ArrivalTime} incl {arrDel}\n{json}");
             }
         }
-
+        
 
         public Uri Operator()
         {
