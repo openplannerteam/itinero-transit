@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Itinero_Transit.LinkedData;
+using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
@@ -32,7 +33,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders
 
         protected sealed override void FromJson(JObject json)
         {
-            AssertTypeIs(json, "http://www.w3.org/ns/hydra/core#PagedCollection");
+            JsonLd.AssertTypeIs(json, "http://www.w3.org/ns/hydra/core#PagedCollection");
 
             Next = AsUri(json["http://www.w3.org/ns/hydra/core#next"][0]["@id"].ToString());
             Prev = AsUri(json["http://www.w3.org/ns/hydra/core#previous"][0]["@id"].ToString());

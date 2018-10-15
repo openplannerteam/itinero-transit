@@ -45,6 +45,9 @@ namespace Itinero_Transit.CSA
         /// </summary>
         /// <param name="locationid"></param>
         /// <returns></returns>
-       // TODO Tuple<float, float> GetLocationFpr(Uri location);
+       // TODO Tuple<float, float> GetLocationFor(Uri location);
+        
+        // TODO
+        // List<Uri> GetLocationsCloseTo(Tuple<float, float> coordinates, int radiusInMeters)
     }
 }

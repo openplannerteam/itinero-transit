@@ -1,6 +1,8 @@
 ﻿using System;
 using Itinero_Transit.LinkedData;
+using JsonLD.Core;
 using Newtonsoft.Json.Linq;
+
 
 namespace Itinero_Transit.CSA
 {
@@ -59,26 +61,25 @@ namespace Itinero_Transit.CSA
 
         protected sealed override void FromJson(JObject json)
         {
-            
-            AssertTypeIs(json, "http://semweb.mmlab.be/ns/linkedconnections#Connection");
+           json.AssertTypeIs("http://semweb.mmlab.be/ns/linkedconnections#Connection");
 
-            DepartureStop = GetId(json, "http://semweb.mmlab.be/ns/linkedconnections#departureStop");
-            ArrivalStop = GetId(json, "http://semweb.mmlab.be/ns/linkedconnections#arrivalStop");
+            DepartureStop = json.GetId("http://semweb.mmlab.be/ns/linkedconnections#departureStop");
+            ArrivalStop = json.GetId("http://semweb.mmlab.be/ns/linkedconnections#arrivalStop");
 
-            var depDel = GetInt(json, "http://semweb.mmlab.be/ns/linkedconnections#departureDelay");
+            var depDel = json.GetInt("http://semweb.mmlab.be/ns/linkedconnections#departureDelay");
             // Departure time already includes delay
             DepartureTime =
-                DateTime.Parse(GetValue(json, "http://semweb.mmlab.be/ns/linkedconnections#departureTime"));
-            
-            
-            var arrDel = GetInt(json, "http://semweb.mmlab.be/ns/linkedconnections#arrivalDelay");
+                DateTime.Parse(json.GetValue("http://semweb.mmlab.be/ns/linkedconnections#departureTime").ToString());
+
+
+            var arrDel = json.GetInt( "http://semweb.mmlab.be/ns/linkedconnections#arrivalDelay");
             // Arrival time already includes delay
             ArrivalTime = DateTime.Parse(
-                GetValue(json, "http://semweb.mmlab.be/ns/linkedconnections#arrivalTime"));
+                json.GetValue("http://semweb.mmlab.be/ns/linkedconnections#arrivalTime").ToString());
                 
-            Direction = GetValue(json, "http://vocab.gtfs.org/terms#headsign");
-            GtfsTrip = GetId(json, "http://vocab.gtfs.org/terms#trip");
-            GtfsRoute = GetId(json, "http://vocab.gtfs.org/terms#route");
+            Direction = json.GetValue("http://vocab.gtfs.org/terms#headsign").ToString();
+            GtfsTrip = json.GetId("http://vocab.gtfs.org/terms#trip");
+            GtfsRoute = json.GetId("http://vocab.gtfs.org/terms#route");
            
             
             if (ArrivalTime < DepartureTime)

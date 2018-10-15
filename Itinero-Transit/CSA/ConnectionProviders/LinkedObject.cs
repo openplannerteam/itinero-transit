@@ -57,61 +57,6 @@ namespace Itinero_Transit.LinkedData
             return new Uri(s);
         }
 
-
-        public bool ArrayContains(JArray array, string expected)
-        {
-
-            foreach (var elem in array)
-            {
-                if (elem.IsString() && elem.ToString().Equals(expected))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Loads 'json["@type"]' (which should be a JArray) and
-        /// checks that `expectedType` is one of the members of this array.
-        ///
-        /// If `expectedType` is not found, an exception is thrown.
-        /// </summary>
-        /// <param name="json"></param>
-        /// <param name="expectedType"></param>
-        /// <exception cref="ArgumentException"></exception>
-        public void AssertTypeIs(JObject json, string expectedType)
-        {
-            if (ArrayContains((JArray) json["@type"], expectedType))
-            {
-                throw new ArgumentException("The passed JSON is not a Linked-Data JSon which follows the LinkedConnections ontology");
-            }
-        }
-
-        public static string GetValue(JObject json, string uriKey)
-        {
-            return json[uriKey]["@value"].ToString();
-        }
-
-        public static Uri GetId(JObject json, string uriKey)
-        {
-            return new Uri(json[uriKey]["@id"].ToString());
-        }
-        
-        /// <summary>
-        /// Gets json[uriKey][@value] and tries to parse this as an int.
-        /// If anything along the way is null, the value 0 is returned.
-        /// </summary>
-        /// <param name="json"></param>
-        /// <param name="uriKey"></param>
-        /// <returns></returns>
-        public static int GetInt(JToken json, string uriKey)
-        {
-            return int.Parse(json?[uriKey]?["@value"]?.ToString() ?? "0");
-        }
-
-
         public Uri Id()
         {
             return Uri;
