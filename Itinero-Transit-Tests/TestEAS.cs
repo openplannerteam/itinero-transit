@@ -30,12 +30,12 @@ namespace Itinero_Transit_Tests
             // YOU MIGHT HAVE TO SYMLINK THE TIMETABLES TO  Itinero-Transit-Tests/bin/Debug/netcoreapp2.0
 
             var prov = new LocallyCachedConnectionsProvider(new SncbConnectionProvider(),
-                new LocalStorage("timetables-for-testing-2018-10-02"));
+                new LocalStorage("timetables-for-testing-2018-10-17"));
             var csa = new EarliestConnectionScan<TransferStats>(brugge, gent, TransferStats.Factory, prov);
 
-            var journey = csa.CalculateJourney(new DateTime(2018, 10, 02, 10, 10, 00));
+            var journey = csa.CalculateJourney(new DateTime(2018, 10, 17, 10, 10, 00));
             Log(journey.ToString());
-            Assert.Equal("2018-10-02T10:36:00.0000000", $"{journey.Time:O}");
+            Assert.Equal("2018-10-17T10:36:00.0000000", $"{journey.Time:O}");
             Assert.Equal("00:26:00", journey.Stats.TravelTime.ToString());
             Assert.Equal(0, journey.Stats.NumberOfTransfers);
 
@@ -48,13 +48,13 @@ namespace Itinero_Transit_Tests
             // YOU MIGHT HAVE TO SYMLINK THE TIMETABLES TO  Itinero-Transit-Tests/bin/Debug/netcoreapp2.0
 
             var prov = new LocallyCachedConnectionsProvider(new SncbConnectionProvider(),
-                new LocalStorage("timetables-for-testing-2018-10-02"));
+                new LocalStorage("timetables-for-testing-2018-10-17"));
             var csa = new EarliestConnectionScan<TransferStats>(poperinge, vielsalm, TransferStats.Factory, prov);
 
-            var journey = csa.CalculateJourney(new DateTime(2018, 10, 02, 10, 0, 00));
+            var journey = csa.CalculateJourney(new DateTime(2018, 10, 17, 10, 0, 00));
             Log(journey.ToString());
             
-            Assert.Equal("2018-10-02T15:13:00.0000000", $"{journey.Time:O}");
+            Assert.Equal("2018-10-17T15:13:00.0000000", $"{journey.Time:O}");
             Assert.Equal("05:05:00", journey.Stats.TravelTime.ToString());
             Assert.Equal(5, journey.Stats.NumberOfTransfers);
         }

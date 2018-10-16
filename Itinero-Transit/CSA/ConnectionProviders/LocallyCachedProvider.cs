@@ -1,8 +1,7 @@
 using System;
-using System.Linq;
 using Itinero_Transit.CSA;
+using Itinero_Transit.CSA.ConnectionProviders;
 using Itinero_Transit.CSA.Data;
-using Serilog;
 
 namespace Itinero_Transit.LinkedData
 {
@@ -27,19 +26,11 @@ namespace Itinero_Transit.LinkedData
             _storage = storage;
         }
 
-        public IConnection GetConnection(Uri id)
-        {
-            return _storage.Contains(id.OriginalString)
-                ? _storage.Retrieve<IConnection>(id.OriginalString)
-                : _storage.Store(id.OriginalString,
-                    _fallbackProvider.GetConnection(id));
-        }
-
         public ITimeTable GetTimeTable(Uri id)
         {
             if (_storage.Contains(id.OriginalString))
             {
-                return _storage.Retrieve<SncbTimeTable>(id.OriginalString);
+                return _storage.Retrieve<LinkedTimeTable>(id.OriginalString);
             }
 
             var tt = _fallbackProvider.GetTimeTable(id);
@@ -49,13 +40,25 @@ namespace Itinero_Transit.LinkedData
 
         public Uri TimeTableIdFor(DateTime includedTime)
         {
-            var foundTt = TimeTableContaining(includedTime);
-            return foundTt != null ? foundTt.Id() : _fallbackProvider.TimeTableIdFor(includedTime);
+            var foundTt = TimeTableContaining(includedTime)?.Id();
+            return foundTt ?? _fallbackProvider.TimeTableIdFor(includedTime);
         }
 
         public IConnection CalculateInterConnection(IConnection from, IConnection to)
         {
             return _fallbackProvider.CalculateInterConnection(from, to);
+        }
+
+        public ILocationProvider LocationProvider()
+        {
+            var key = "LocationProvider";
+            if (_storage.Contains(key))
+            {
+                _storage.Retrieve<ILocationProvider>(key);
+            }
+
+            return _storage.Store(key, _fallbackProvider.LocationProvider());
+
         }
 
         /// <summary>
@@ -78,14 +81,25 @@ namespace Itinero_Transit.LinkedData
         /// <param name="date"></param>
         public ITimeTable TimeTableContaining(DateTime date)
         {
-            var wanted = _fallbackProvider.TimeTableIdFor(date).OriginalString;
-
             var keys = _storage.KnownKeys();
+            if (keys.Count == 0)
+            {
+                // The cache is empty
+                return null;
+            }
+            
+            var wanted = _fallbackProvider.TimeTableIdFor(date).OriginalString;
 
             var index = keys.BinarySearch(wanted);
             if (index >= 0)
             {
                 return GetTimeTable(new Uri(keys[index]));
+            }
+
+            if (index == -1)
+            {
+                // Date falls before earliest cached moment
+                return null;
             }
 
             if (~index - 1 >= keys.Count)

@@ -1,4 +1,5 @@
 ﻿using System;
+// ReSharper disable ImpureMethodCallOnReadonlyValueField
 
 namespace Itinero_Transit.CSA
 {
@@ -82,7 +83,8 @@ namespace Itinero_Transit.CSA
         internal bool Equals(TransferStats other)
         {
             return NumberOfTransfers == other.NumberOfTransfers &&
-                   EndTime.Equals(other.EndTime) && StartTime.Equals(other.StartTime);
+                   EndTime.Equals(other.EndTime) 
+                   && StartTime.Equals(other.StartTime);
         }
 
         public override int GetHashCode()

@@ -2,13 +2,13 @@ using System;
 using Itinero_Transit.LinkedData;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
-using Serilog;
 
 namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
 {
     /// <summary>
     /// Represents a transit location, such as a bus stop or train station
     /// </summary>
+    [Serializable]
     public class Location : LinkedObject
     {
         public string Name;
@@ -23,7 +23,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
             FromJson(obj);
         }
 
-        protected override void FromJson(JObject json)
+        protected sealed override void FromJson(JObject json)
         {
             Lat = json.GetFloat("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
             Lon = json.GetFloat("http://www.w3.org/2003/01/geo/wgs84_pos#long");

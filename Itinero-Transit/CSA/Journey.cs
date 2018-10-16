@@ -47,6 +47,14 @@ namespace Itinero_Transit.CSA
 
         public Journey(Journey<T> previousLink, DateTime time, IConnection connection)
         {
+            if (connection == null)
+            {
+                throw new ArgumentException("The connection used to initialize a Journey should not be null");
+            }
+            if (time == null)
+            {
+                throw new ArgumentException("The Time used to initialize a Journey should not be null");
+            }            
             PreviousLink = previousLink;
             Time = time;
             Connection = connection;
@@ -83,9 +91,20 @@ namespace Itinero_Transit.CSA
 
         protected bool Equals(Journey<T> other)
         {
-            var b = Time.Equals(other.Time) && Connection.Equals(other.Connection) &&
-                    Equals(PreviousLink, other.PreviousLink);
-            return b;
+
+                var b = (Time == null ? other.Time == null : Time.Equals(other.Time))
+                        && (Connection == null ? other.Connection == null : Connection.Equals(other.Connection))
+                        && Equals(PreviousLink, other.PreviousLink);
+                return b;
+        }
+
+        /// <summary>
+        /// Gets the first journey in the chain
+        /// </summary>
+        /// <returns></returns>
+        public Journey<T> First()
+        {
+            return PreviousLink?.First() ?? this;
         }
 
         public override int GetHashCode()

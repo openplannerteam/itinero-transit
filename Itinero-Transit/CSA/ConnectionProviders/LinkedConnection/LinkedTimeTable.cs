@@ -33,7 +33,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders
 
         protected sealed override void FromJson(JObject json)
         {
-          // TODO update JSON-LD and activate  json.AssertTypeIs("http://www.w3.org/ns/hydra/core#PagedCollection");
+            json.AssertTypeIs("http://www.w3.org/ns/hydra/core#PagedCollection");
 
             Next = AsUri(json["http://www.w3.org/ns/hydra/core#next"][0]["@id"].ToString());
             Prev = AsUri(json["http://www.w3.org/ns/hydra/core#previous"][0]["@id"].ToString());
@@ -47,7 +47,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders
             {
                 try
                 {
-                    Graph.Add(new LinkedConnection((JObject) conn));
+                    Graph.Add(new CSA.LinkedConnection((JObject) conn));
                 }
                 catch (ArgumentException e)
                 {
@@ -56,7 +56,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders
             }
         }
 
-        private DateTime _extractTime(Uri u)
+        private static DateTime _extractTime(Uri u)
         {
             var raw = u.OriginalString;
             var ind = raw.IndexOf("departureTime=", StringComparison.Ordinal);

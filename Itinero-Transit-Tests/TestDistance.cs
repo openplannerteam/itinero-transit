@@ -1,17 +1,14 @@
-using System;
-using Itinero_Transit.CSA.ConnectionProviders;
-using Itinero_Transit.CSA.Data;
-using Itinero_Transit.LinkedData;
+using Itinero_Transit.CSA;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Itinero_Transit_Tests
 {
-    public class StorageTest
+    public class TestDistance
     {
         private readonly ITestOutputHelper _output;
 
-        public StorageTest(ITestOutputHelper output)
+        public TestDistance(ITestOutputHelper output)
         {
             _output = output;
         }
@@ -19,40 +16,17 @@ namespace Itinero_Transit_Tests
         [Fact]
         public void TestStorage()
         {
-            var storage = new LocalStorage("test-storage");
-            storage.ClearAll();
-            storage.Store("1", "abc");
-            var found = storage.Retrieve<string>("1");
-            Assert.Equal("abc",found);
-
-
-            storage.Store("2", 42);
-            // ReSharper disable once IdentifierTypo
-            var foundi = storage.Retrieve<int>("2");
-            Assert.Equal(42, foundi);
-        }
-
-        [Fact]
-        public void TestStorageLocation()
-        {
-            var storage = new LocalStorage("timetables-for-testing-2018-10-02");
-            Assert.NotEmpty(storage.KnownKeys());
-            Log($"{storage.KnownKeys().Count}");
-            Assert.True(storage.KnownKeys().Count > 330);
-        }
-
-        [Fact]
-        public void TestSearchTimeTable()
-        {
-            var storage = new LocalStorage("timetables-for-testing-2018-10-02");
-            Assert.Equal(339, storage.KnownKeys().Count);
-
-
-            var prov = new LocallyCachedConnectionsProvider(new SncbConnectionProvider(), storage);
-
-            var tt = prov.TimeTableContaining(new DateTime(2018, 10, 02, 10, 00, 00, DateTimeKind.Local));
-            Assert.Equal("http://graph.irail.be/sncb/connections?departureTime=2018-10-02T09:59:00.000Z",
-                tt.Id().ToString());
+            var lat = 51.21576f;
+            var lon = 3.22048f;
+            var lat0 = 51.21570f;
+            var lon0 = 3.22048f;
+            var dist = DistanceBetweenPoints.DistanceInMeters(lat, lon, lat0, lon0);
+            Log("" + dist);
+            Assert.Equal(6, (int) dist);
+            var nautical = DistanceBetweenPoints.DistanceInMeters(0, 0, 1f/60, 0);
+            Log("" + nautical);
+            Assert.Equal(1852, (int) nautical);
+            
         }
 
         // ReSharper disable once UnusedMember.Local

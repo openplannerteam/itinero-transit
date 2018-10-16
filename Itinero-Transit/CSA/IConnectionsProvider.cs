@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace Itinero_Transit.CSA
 {
@@ -17,7 +16,6 @@ namespace Itinero_Transit.CSA
     /// </summary>
     public interface IConnectionsProvider
     {
-        IConnection GetConnection(Uri id);
         ITimeTable GetTimeTable(Uri id);
 
         /// <summary>
@@ -38,16 +36,12 @@ namespace Itinero_Transit.CSA
         IConnection CalculateInterConnection(IConnection from, IConnection to);
 
         /// <summary>
-        /// A provider encodes connections with a URI representing a certain location (e.g. train station Gent).
-        /// However, sometimes we will have to transfer between 'Train Station Gent' and 'Busplatform 1 in front of the station of Gent'.
-        /// Every provider offers a method to give the coordinates (lat, lon) which corresponds to a location-URI that the provider gave earlier.
-        /// These Tuples are in turn use e.g. for walking transfers.
+        /// A Connection Provider must also provide metadata about each transport stop and where this transport stop is located in the world.
+        /// This is delegated to a LocationProvider object
         /// </summary>
-        /// <param name="locationid"></param>
         /// <returns></returns>
-       // TODO Tuple<float, float> GetLocationFor(Uri location);
-        
-        // TODO
-        // List<Uri> GetLocationsCloseTo(Tuple<float, float> coordinates, int radiusInMeters)
+        ILocationProvider LocationProvider();
+
+
     }
 }

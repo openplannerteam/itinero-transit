@@ -31,12 +31,6 @@ namespace Itinero_Transit.CSA
 
 
         /// <summary>
-        /// Solely used in a few GetOrDefault values.
-        /// Never ever add something to this list!
-        /// </summary>
-        private readonly ParetoFrontier<T> _emptyJourneys;
-
-        /// <summary>
         /// Maps each stop onto a pareto front of journeys (with profiles).
         /// If the station isn't in the dictionary yet, this means no trip from this station has been already found.
         ///
@@ -75,7 +69,6 @@ namespace Itinero_Transit.CSA
             _connectionsProvider = connectionsProvider;
             _statsFactory = statsFactory;
             _profileComparator = profileComparator;
-            _emptyJourneys = new ParetoFrontier<T>(profileComparator);
             _paretoFront = new ParetoFrontier<T>(paretoComparator);
         }
 
@@ -84,7 +77,7 @@ namespace Itinero_Transit.CSA
         /// where the Uri points to the timetable of the last allowed arrival at the destination station
         /// </summary>
         /// <returns></returns>
-        public List<Journey<T>> CalculateJourneys(DateTime earliestDeparture, DateTime lastArrival)
+        public HashSet<Journey<T>> CalculateJourneys(DateTime earliestDeparture, DateTime lastArrival)
         {
             var tt = _connectionsProvider.GetTimeTable(_connectionsProvider.TimeTableIdFor(lastArrival));
             while (true)

@@ -7,12 +7,12 @@ namespace Itinero_Transit.CSA.Data
 {
     /// <summary>
     /// The local storage provides serialization to local files
-    /// This can be usefull to store the entire timetable beforehand and load later on
+    /// This can be useful to store the entire timetable beforehand and load later on
     /// It acts as a key-value store for serializable objects
     /// </summary>
     public class LocalStorage
     {
-        private readonly string root;
+        private readonly string _root;
 
         private static readonly List<string> ForbiddenDirectories =
             new List<string>()
@@ -25,7 +25,7 @@ namespace Itinero_Transit.CSA.Data
 
         public LocalStorage(string root)
         {
-            this.root = Path.GetFullPath(root + Path.DirectorySeparatorChar).Normalize();
+            _root = Path.GetFullPath(root + Path.DirectorySeparatorChar).Normalize();
             if (ForbiddenDirectories.Contains(root))
             {
                 throw new ArgumentException(
@@ -79,7 +79,7 @@ namespace Itinero_Transit.CSA.Data
         public List<string> KnownKeys()
         {
             var keys = new List<string>();
-            foreach (var path in Directory.EnumerateFiles(root))
+            foreach (var path in Directory.EnumerateFiles(_root))
             {
                 keys.Add(KeyFor(path));
             }
@@ -88,6 +88,7 @@ namespace Itinero_Transit.CSA.Data
             return keys;
         }
 
+        // ReSharper disable once MemberCanBePrivate.Global
         public void RemoveKey(string key)
         {
             File.Delete(PathFor(key));
@@ -103,13 +104,13 @@ namespace Itinero_Transit.CSA.Data
 
         private string PathFor(string key)
         {
-            return root +
+            return _root +
                    key.Replace("_", "_U").Replace("/", "_S");
         }
 
         private string KeyFor(string path)
         {
-            return path.Substring(root.Length).Replace("_S", "/").Replace("_U", "U");
+            return path.Substring(_root.Length).Replace("_S", "/").Replace("_U", "U");
         }
     }
 }

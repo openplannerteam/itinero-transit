@@ -1,36 +1,43 @@
 using System;
-using Itinero_Transit.CSA;
-using Itinero_Transit.CSA.ConnectionProviders;
-using Itinero_Transit.CSA.Data;
+using System.Collections.Generic;
+using System.Linq;
+using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection;
 using Itinero_Transit.LinkedData;
+using JsonLD.Core;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Itinero_Transit_Tests
 {
-    public class TestDistance
+    public class TestSncbLocations
     {
         private readonly ITestOutputHelper _output;
 
-        public TestDistance(ITestOutputHelper output)
+        public TestSncbLocations(ITestOutputHelper output)
         {
             _output = output;
         }
 
         [Fact]
-        public void TestStorage()
+        public void TestCloseLocations()
         {
             var lat = 51.21576f;
             var lon = 3.22048f;
-            var lat0 = 51.21570f;
-            var lon0 = 3.22048f;
-            var dist = DistanceBetweenPoints.DistanceInMeters(lat, lon, lat0, lon0);
-            Log("" + dist);
-            Assert.Equal(6, (int) dist);
-            var nautical = DistanceBetweenPoints.DistanceInMeters(0, 0, 1f/60, 0);
-            Log("" + nautical);
-            Assert.Equal(1852, (int) nautical);
-            
+
+            var uri = new Uri("http://irail.be/stations");
+            var locs = new LocationsDump(uri);
+
+
+            var loader = new Downloader(caching: false);
+            var proc = new JsonLdProcessor(loader, uri);
+
+            locs.Download(proc);
+
+            var found = (HashSet<Uri>) locs.GetLocationsCloseTo(lat, lon, 5000);
+
+            Assert.True(found.Contains(new Uri("http://irail.be/stations/NMBS/008891009")));
+            Assert.True(found.Contains(new Uri("http://irail.be/stations/NMBS/008891033")));
+            Assert.Equal(2, found.Count());
         }
 
         // ReSharper disable once UnusedMember.Local

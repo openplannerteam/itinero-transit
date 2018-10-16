@@ -8,7 +8,7 @@ namespace Itinero_Transit.CSA
     {
         private readonly StatsComparator<T> _comparator;
 
-        public readonly List<Journey<T>> Frontier = new List<Journey<T>>();
+        public readonly HashSet<Journey<T>> Frontier = new HashSet<Journey<T>>();
 
 
         public ParetoFrontier(StatsComparator<T> comparator)

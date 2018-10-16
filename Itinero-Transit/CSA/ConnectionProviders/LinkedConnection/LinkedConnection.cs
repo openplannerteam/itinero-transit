@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Itinero_Transit.LinkedData;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
@@ -36,7 +37,7 @@ namespace Itinero_Transit.CSA
 
         /// <summary>
         /// URI of the route of this train connection. (e.g. the train connection Oostende-Eupen) aspecific of time
-        /// Looks very much the same as gtfs_trip (on irail they are identical)
+        /// Looks very much the same as GTFS-trip (on IRail they are identical)
         /// </summary>
         public Uri GtfsRoute { get; set; }
 
@@ -45,7 +46,7 @@ namespace Itinero_Transit.CSA
         {
         }
 
-        public LinkedConnection(JObject json) : base(new Uri(json["@id"].ToString()))
+        public LinkedConnection(JObject json) : base(json.GetId())
         {
             FromJson(json);
         }
@@ -65,7 +66,7 @@ namespace Itinero_Transit.CSA
         
         protected sealed override void FromJson(JObject json)
         {
-           // TODO json.AssertTypeIs("http://semweb.mmlab.be/ns/linkedconnections#Connection");
+           json.AssertTypeIs("http://semweb.mmlab.be/ns/linkedconnections#Connection");
 
             DepartureStop = json.GetId("http://semweb.mmlab.be/ns/linkedconnections#departureStop");
             ArrivalStop = json.GetId("http://semweb.mmlab.be/ns/linkedconnections#arrivalStop");
@@ -78,7 +79,7 @@ namespace Itinero_Transit.CSA
             // Arrival time already includes delay
             ArrivalTime = json.GetDate("http://semweb.mmlab.be/ns/linkedconnections#arrivalTime");
                 
-            Direction = json.GetValue("http://vocab.gtfs.org/terms#headsign").ToString();
+            Direction = json.GetLDValue("http://vocab.gtfs.org/terms#headsign");
             GtfsTrip = json.GetId("http://vocab.gtfs.org/terms#trip");
             GtfsRoute = json.GetId("http://vocab.gtfs.org/terms#route");
            
@@ -151,21 +152,24 @@ namespace Itinero_Transit.CSA
 
         public override bool Equals(object obj)
         {
-            if (!(obj is SncbConnection conn))
+            if (obj is LinkedConnection lc)
             {
-                return false;
+                return Equals(lc);
             }
-            return Equals(conn);
+
+            return false;
         }
 
-        protected bool Equals(SncbConnection other)
+        protected bool Equals(LinkedConnection other)
         {
-            return Equals(DepartureStop, other.DepartureStop) && Equals(ArrivalStop, other.ArrivalStop) && 
-                   DepartureTime.Equals(other.DepartureTime) && ArrivalTime.Equals(other.ArrivalTime) &&
-                   string.Equals(Direction, other.Direction) && Equals(GtfsTrip, other.GtfsTrip) && 
-                   Equals(GtfsRoute, other.GtfsRoute);
+            return Equals(DepartureStop, other.DepartureStop) 
+                   && Equals(ArrivalStop, other.ArrivalStop)
+                   && DepartureTime.Equals(other.DepartureTime)
+                   && ArrivalTime.Equals(other.ArrivalTime) 
+                ;
         }
 
+        [SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode")]
         public override int GetHashCode()
         {
             unchecked
@@ -174,9 +178,6 @@ namespace Itinero_Transit.CSA
                 hashCode = (hashCode * 397) ^ (ArrivalStop != null ? ArrivalStop.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ DepartureTime.GetHashCode();
                 hashCode = (hashCode * 397) ^ ArrivalTime.GetHashCode();
-                hashCode = (hashCode * 397) ^ (Direction != null ? Direction.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (GtfsTrip != null ? GtfsTrip.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (GtfsRoute != null ? GtfsRoute.GetHashCode() : 0);
                 return hashCode;
             }
         }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Net.Http;
 using CacheCow.Client;
@@ -30,10 +28,18 @@ namespace Itinero_Transit.LinkedData
 
         private readonly HttpClient _client;
 
-        public Downloader()
+        public Downloader(bool caching = true)
         {
-            var store = new FileStore("cache");
-            _client = store.CreateClient();
+            if (caching)
+            {
+                var store = new FileStore("cache");
+                _client = store.CreateClient();
+            }
+            else
+            {
+                _client = new HttpClient();
+            }
+
             _client.DefaultRequestHeaders.Add("user-agent", "Itinero-Transit-dev/0.0.1");
             _client.DefaultRequestHeaders.Add("accept", "application/ld+json");
         }
@@ -56,6 +62,7 @@ namespace Itinero_Transit.LinkedData
                 // Used for testing
                 return AlwaysReturn;
             }
+
             Log.Information($"Downloading {uri}");
             DownloadCounter++;
             var start = DateTime.Now;
@@ -69,7 +76,8 @@ namespace Itinero_Transit.LinkedData
             var data = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
             var end = DateTime.Now;
 
-            if (response.Headers.GetCacheCowHeader().ToString().Contains("did-not-exist=false"))
+            if (response.Headers.GetCacheCowHeader() != null &&
+                response.Headers.GetCacheCowHeader().ToString().Contains("did-not-exist=false"))
             {
                 CacheHits++;
             }
@@ -85,7 +93,5 @@ namespace Itinero_Transit.LinkedData
             DownloadCounter = 0;
             CacheHits = 0;
         }
-
-
     }
 }
