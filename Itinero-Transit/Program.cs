@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Itinero_Transit.CSA.ConnectionProviders;
+using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection.TreeTraverse;
 using Itinero_Transit.CSA.Data;
+using Itinero_Transit.CSA.LocationProviders;
 using Itinero_Transit.LinkedData;
+using JsonLD.Core;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
@@ -11,16 +15,27 @@ namespace Itinero_Transit
 {
     public static class Program
     {
+        private static void TestStuff(Downloader loader)
+        {
+            var uri = new Uri("http://dexagod.github.io/stoplocations/t0.jsonld");
+            var wanted = new Uri("http://dexagod.github.io/stopsdata/d6.jsonld#12006");
+            
+            var proc=  new JsonLdProcessor(loader, new JsonLdOptions("http://dexagod.github.io/stopsdata/"));
+            var traverser = new RdfTreeTraverser(uri, proc);
+            Log.Information(traverser.GetCoordinateFor(wanted).ToString());
+
+        }
+
         private static void Main(string[] args)
         {
             ConfigureLogging();
 
             Log.Information("Starting...");
             var startTime = DateTime.Now;
-            Downloader loader = null;
+            var loader = new Downloader();
             try
             {
-                loader = DownloadEntireSNCBDay(new DateTime(2018, 10, 17, 0, 0, 0));
+                TestStuff(loader);
             }
             catch (Exception e)
             {

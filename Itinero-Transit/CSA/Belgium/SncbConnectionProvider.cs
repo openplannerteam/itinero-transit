@@ -25,7 +25,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders
         {
             var uri = new Uri("http://irail.be/stations");
             var proc = new JsonLdProcessor(new Downloader(caching:false), uri);
-            var dump = new LocationsDump(uri);
+            var dump = new LocationsFragment(uri);
             dump.Download(proc);
             return dump;
         }

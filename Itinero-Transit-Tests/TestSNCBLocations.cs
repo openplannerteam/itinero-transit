@@ -25,7 +25,7 @@ namespace Itinero_Transit_Tests
             var lon = 3.22048f;
 
             var uri = new Uri("http://irail.be/stations");
-            var locs = new LocationsDump(uri);
+            var locs = new LocationsFragment(uri);
 
 
             var loader = new Downloader(caching: false);
@@ -38,6 +38,20 @@ namespace Itinero_Transit_Tests
             Assert.True(found.Contains(new Uri("http://irail.be/stations/NMBS/008891009")));
             Assert.True(found.Contains(new Uri("http://irail.be/stations/NMBS/008891033")));
             Assert.Equal(2, found.Count());
+        }
+
+
+        [Fact]
+        public void TestDeLijnFragment()
+        {
+            var loader = new Downloader();
+            var uri = new Uri(
+                "https://dexagod.github.io/stopsdata/d2.jsonld");
+            var frag = new LocationsFragment(uri);
+            frag.Download(new JsonLdProcessor(loader,uri));
+            Log(frag.ToString());
+            Assert.True(frag.ToString().Length > 10000);
+            Assert.True(frag.ToString().StartsWith("Location dump with 1044 locations:\n  Location \'Stedestraat\' ("));
         }
 
         // ReSharper disable once UnusedMember.Local

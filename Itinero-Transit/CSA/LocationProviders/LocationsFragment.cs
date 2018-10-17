@@ -11,14 +11,17 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
     /// This class is meant to handle providers which offer their station data as a single big dump (such as the SNCB)
     /// </summary>
     [Serializable]
-    public class LocationsDump : LinkedObject, ILocationProvider
+    public class LocationsFragment : LinkedObject, ILocationProvider
     {
+        private readonly Reminiscence.Collections.List<Location> _locations =
+            new Reminiscence.Collections.List<Location>();
 
-        private readonly Reminiscence.Collections.List<Location> _locations = new Reminiscence.Collections.List<Location>();
-        private readonly Dictionary<Uri, Location> _locationMapping = new Dictionary<Uri, Location>();
-        private readonly Dictionary<string, Location> _nameMapping = new Dictionary<string, Location>();
-        
-        public LocationsDump(Uri uri) : base(uri)
+        private readonly Dictionary<string, Location> _locationMapping = new Dictionary<string, Location>();
+
+        private readonly Dictionary<string, HashSet<Location>> _nameMapping =
+            new Dictionary<string, HashSet<Location>>();
+
+        public LocationsFragment(Uri uri) : base(uri)
         {
         }
 
@@ -28,8 +31,14 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
             {
                 var l = new Location((JObject) loc);
                 _locations.Add(l);
-                _locationMapping.Add(l.Uri, l);
-                _nameMapping.Add(l.Name, l);
+                _locationMapping.Add(l.Uri.ToString(), l);
+
+                if (!_nameMapping.ContainsKey(l.Name))
+                {
+                    _nameMapping.Add(l.Name, new HashSet<Location>());
+                }
+
+                _nameMapping[l.Name].Add(l);
             }
         }
 
@@ -38,7 +47,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
             var overview = "";
             foreach (var location in _locations)
             {
-                overview += "  "+location + "\n";
+                overview += "  " + location + "\n";
             }
 
             return $"Location dump with {_locations.Count} locations:\n{overview}";
@@ -46,24 +55,35 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
 
         public Location GetCoordinateFor(Uri locationId)
         {
-            return _locationMapping[locationId];
+            if (!_locationMapping.ContainsKey(locationId.ToString()))
+            {
+                var examples = "";
+                var keys = new List<string>(_locationMapping.Keys).GetRange(0, 10);
+                foreach (var key in keys)
+                {
+                    examples += $"  {key}\n";
+                }
+                throw new KeyNotFoundException(
+                    $"The location {locationId} was not found in this dictionary.\nSome keys in this dictionary are:\n{examples}");
+            }
+
+            return _locationMapping[locationId.ToString()];
         }
 
-        public Uri GetLocationByName(string name)
+        public HashSet<Location> GetLocationByName(string name)
         {
-            return _nameMapping[name].Uri;
+            return _nameMapping[name];
         }
 
         public IEnumerable<Uri> GetLocationsCloseTo(float lat, float lon, int radiusInMeters)
         {
-
             if (radiusInMeters < 1)
             {
                 throw new ArgumentNullException("The radius in which locations are sought, should be at least 1m");
             }
-            
+
             var closeEnough = new HashSet<Uri>();
-            
+
             foreach (var l in _locations)
             {
                 var d = DistanceBetweenPoints.DistanceInMeters(lat, lon, l.Lat, l.Lon);
@@ -73,6 +93,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
                     closeEnough.Add(l.Uri);
                 }
             }
+
             return closeEnough;
         }
     }
