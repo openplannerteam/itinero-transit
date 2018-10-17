@@ -82,7 +82,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
                 throw new ArgumentNullException("The radius in which locations are sought, should be at least 1m");
             }
 
-            var closeEnough = new HashSet<Uri>();
+            var closeEnough = new List<Uri>();
 
             foreach (var l in _locations)
             {

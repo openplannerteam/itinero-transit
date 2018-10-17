@@ -2,20 +2,46 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection;
+using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection.TreeTraverse;
 using Itinero_Transit.LinkedData;
 using JsonLD.Core;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Itinero_Transit_Tests
 {
-    public class TestSncbLocations
+    public class TestLocations
     {
         private readonly ITestOutputHelper _output;
 
-        public TestSncbLocations(ITestOutputHelper output)
+        public TestLocations(ITestOutputHelper output)
         {
             _output = output;
+        }
+
+
+        [Fact]
+        public void TestDeLijnLocations()
+        {
+            var loader = new Downloader();
+            var uri = new Uri("http://dexagod.github.io/stoplocations/t0.jsonld");
+            var wanted = new Uri("http://dexagod.github.io/stopsdata/d6.jsonld#12006");
+            var fragLoader = new JsonLdProcessor(loader, wanted);
+            var nodeLoader = new JsonLdProcessor(loader, uri);
+
+            var traverser = new RdfTreeTraverser(uri, nodeLoader, fragLoader);
+            var found = traverser.GetLocationsCloseTo(51.21576f, 3.22001f, 250);
+            Assert.Equal(6, found.Count());
+            var names = new HashSet<string>();
+            foreach (var stop in found)
+            {
+                names.Add(traverser.GetCoordinateFor(stop).Name);
+            }
+            Assert.True(names.Contains("N.Gombertstraat"));
+            Assert.True(names.Contains("Howest"));
+            Assert.True(names.Contains("Ezelpoort"));
+
         }
 
         [Fact]
@@ -33,7 +59,7 @@ namespace Itinero_Transit_Tests
 
             locs.Download(proc);
 
-            var found = (HashSet<Uri>) locs.GetLocationsCloseTo(lat, lon, 5000);
+            var found = (List<Uri>) locs.GetLocationsCloseTo(lat, lon, 5000);
 
             Assert.True(found.Contains(new Uri("http://irail.be/stations/NMBS/008891009")));
             Assert.True(found.Contains(new Uri("http://irail.be/stations/NMBS/008891033")));

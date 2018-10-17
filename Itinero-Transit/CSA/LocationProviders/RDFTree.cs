@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Itinero_Transit.LinkedData;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
+using Serilog;
 
 namespace Itinero_Transit.CSA.LocationProviders
 {
@@ -18,7 +20,8 @@ namespace Itinero_Transit.CSA.LocationProviders
         private readonly Dictionary<string, RdfTree> _allTrees;
         private readonly List<BoundingBox> _bounds = new List<BoundingBox>();
         private readonly List<Uri> _subtrees = new List<Uri>();
-        private readonly HashSet<Uri> _members = new HashSet<Uri>();
+        // The 'hashcode' of Uri is very broken
+        public HashSet<string> Members { get; } = new HashSet<string>();
 
         private BoundingBox _bbox;
 
@@ -42,7 +45,7 @@ namespace Itinero_Transit.CSA.LocationProviders
 
         private void GetOverlappingTrees(BoundingBox box, JsonLdProcessor proc, HashSet<RdfTree> found)
         {
-            if (_bbox.Overlaps(box) && _members.Count != 0)
+            if (Members.Count != 0 && _bbox.Overlaps(box))
             {
                 found.Add(this);
             }
@@ -75,7 +78,15 @@ namespace Itinero_Transit.CSA.LocationProviders
                 json = (JObject) d["@graph"][0];
             }
 
+            Uri = json.GetId();
+            if (_allTrees.ContainsKey(Uri.ToString()))
+            {
+                Log.Warning($"Already have {Uri}, why download again?");
+                return;
+            }
+
             _allTrees.Add(Uri.ToString(), this);
+
 
             json.AssertTypeIs("https://w3id.org/tree#Node");
             _bbox = new BoundingBox(json);
@@ -103,9 +114,10 @@ namespace Itinero_Transit.CSA.LocationProviders
                 // ReSharper disable once InvertIf
                 if (child.IsDictContaining("http://www.w3.org/ns/hydra/core#member", out var dct))
                 {
-                    foreach (var member in dct["http://www.w3.org/ns/hydra/core#member"])
+                    var memberList = dct["http://www.w3.org/ns/hydra/core#member"];
+                    foreach (var member in (JArray) memberList )
                     {
-                        _members.Add(member.GetId());
+                        Members.Add(member.GetId().ToString());
                     }
                 }
             }
@@ -155,10 +167,15 @@ namespace Itinero_Transit.CSA.LocationProviders
             val = val.Substring(0, val.Length - 2);
             var parts = val.Split(", ");
 
-            _minLon = extractValue(parts[0], 0);
-            _minLat = extractValue(parts[0], 1);
-            _maxLon = extractValue(parts[2], 0);
-            _maxLat = extractValue(parts[2], 1);
+
+            var minLon = extractValue(parts[0], 0);
+            var minLat = extractValue(parts[0], 1);
+            var maxLon = extractValue(parts[2], 0);
+            var maxLat = extractValue(parts[2], 1);
+            _minLat = Math.Min(minLat, maxLat);
+            _maxLat = Math.Max(minLat, maxLat);
+            _minLon = Math.Min(minLon, maxLon);
+            _maxLon = Math.Max(minLon, maxLon);
         }
 
         private static float extractValue(string coordinate, int index)

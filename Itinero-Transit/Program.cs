@@ -17,13 +17,7 @@ namespace Itinero_Transit
     {
         private static void TestStuff(Downloader loader)
         {
-            var uri = new Uri("http://dexagod.github.io/stoplocations/t0.jsonld");
-            var wanted = new Uri("http://dexagod.github.io/stopsdata/d6.jsonld#12006");
-            
-            var proc=  new JsonLdProcessor(loader, new JsonLdOptions("http://dexagod.github.io/stopsdata/"));
-            var traverser = new RdfTreeTraverser(uri, proc);
-            Log.Information(traverser.GetCoordinateFor(wanted).ToString());
-
+           
         }
 
         private static void Main(string[] args)
@@ -32,7 +26,7 @@ namespace Itinero_Transit
 
             Log.Information("Starting...");
             var startTime = DateTime.Now;
-            var loader = new Downloader();
+            var loader = new Downloader(caching: true);
             try
             {
                 TestStuff(loader);
