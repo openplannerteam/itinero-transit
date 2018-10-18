@@ -1,6 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Itinero_Transit.CSA;
-using Reminiscence.Collections;
+using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection;
 using Serilog;
 
 namespace Itinero_Transit.CSA.ConnectionProviders
@@ -12,9 +13,9 @@ namespace Itinero_Transit.CSA.ConnectionProviders
             return prov.GetTimeTable(prov.TimeTableIdFor(time));
         }
 
-        public static List<ITimeTable> DownloadDay(this IConnectionsProvider prov, DateTime start)
+        public static Reminiscence.Collections.List<ITimeTable> DownloadDay(this IConnectionsProvider prov, DateTime start)
         {
-            var all = new List<ITimeTable>();
+            var all = new Reminiscence.Collections.List<ITimeTable>();
             var tt = prov.GetTimeTable(start);
             all.Add(tt);
             while ((tt.EndTime() - start).Days < 1)
@@ -25,6 +26,16 @@ namespace Itinero_Transit.CSA.ConnectionProviders
             }
 
             return all;
+        }
+
+        public static Location GetCoordinateFor(this IConnectionsProvider prov, Uri id)
+        {
+            return prov.LocationProvider().GetCoordinateFor(id);
+        }
+
+        public static IEnumerable<Uri> GetLocationsCloseTo(this IConnectionsProvider prov, float lat, float lon, int withinMeters)
+        {
+            return prov.LocationProvider().GetLocationsCloseTo(lat, lon, withinMeters);
         }
     }
 }

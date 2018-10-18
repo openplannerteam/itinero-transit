@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Itinero_Transit.CSA.ConnectionProviders;
 using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection.TreeTraverse;
 using Itinero_Transit.CSA.Data;
@@ -17,8 +18,24 @@ namespace Itinero_Transit
     {
         private static void TestStuff(Downloader loader)
         {
-           
+            var prov = DeLijnProvider.LocationProvider(loader);
+            var closeToHome = prov.GetLocationsCloseTo(51.21576f, 3.22f, 1000);
+
+            var closeToTarget = prov.GetLocationsCloseTo(51.19738f, 3.21736f, 500);
+
+            Log.Information($"Found {closeToHome.Count()} stops closeby, {closeToTarget.Count()} where we have to go");
+            foreach (var uri in closeToHome)
+            {
+                Log.Information($"{uri} ({prov.GetCoordinateFor(uri).Name})");
+            }
+
+            foreach (var uri in closeToTarget)
+            {
+                Log.Information($"> {uri} ({prov.GetCoordinateFor(uri).Name})");
+            }
+            
         }
+        
 
         private static void Main(string[] args)
         {

@@ -6,6 +6,12 @@ namespace Itinero_Transit.CSA
 {
     /// <summary>
     /// A journey is a part in an intermodal trip, describing the route the user takes.
+    ///
+    /// Normally, a journey is constructed with the startlocation hidden the deepest in the data structure.
+    /// The Time is mostly the arrival time.
+    ///
+    /// The above properties are reversed in the CPS algorithm. The last step of that algorithm is to reverse the journeys,
+    /// so that users of the lib get a uniform experience
     /// </summary>
     public class Journey<T> where T : IJourneyStats<T>
     {
@@ -51,10 +57,12 @@ namespace Itinero_Transit.CSA
             {
                 throw new ArgumentException("The connection used to initialize a Journey should not be null");
             }
+
             if (time == null)
             {
                 throw new ArgumentException("The Time used to initialize a Journey should not be null");
-            }            
+            }
+
             PreviousLink = previousLink;
             Time = time;
             Connection = connection;
@@ -67,6 +75,26 @@ namespace Itinero_Transit.CSA
             Time = time;
             Connection = connection;
             Stats = singleConnectionStats;
+        }
+
+        /// <summary>
+        /// Creates a new journey which goes in the opposite direction.
+        /// The 'Time' field will be set to the arrival time of the total journey.
+        /// </summary>
+        /// <returns></returns>
+        public Journey<T> Reverse()
+        {
+            // We start with the current element, which will be the last connection
+            var reversed = new Journey<T>(Stats.InitialStats(Connection), Connection.ArrivalTime(), Connection);
+
+            var current = PreviousLink;
+            while (current != null)
+            {
+                reversed = new Journey<T>(reversed, current.Connection.ArrivalTime(), current.Connection);
+                current = current.PreviousLink;
+            }
+
+            return reversed;
         }
 
 
@@ -91,11 +119,10 @@ namespace Itinero_Transit.CSA
 
         protected bool Equals(Journey<T> other)
         {
-
-                var b = (Time == null ? other.Time == null : Time.Equals(other.Time))
-                        && (Connection == null ? other.Connection == null : Connection.Equals(other.Connection))
-                        && Equals(PreviousLink, other.PreviousLink);
-                return b;
+            var b = (Time == null ? other.Time == null : Time.Equals(other.Time))
+                    && (Connection == null ? other.Connection == null : Connection.Equals(other.Connection))
+                    && Equals(PreviousLink, other.PreviousLink);
+            return b;
         }
 
         /// <summary>
@@ -125,6 +152,7 @@ namespace Itinero_Transit.CSA
             {
                 throw new ArgumentException($"Not the same: \n{Connection}\n{j.Connection}");
             }
+
             PreviousLink.VerboseDiff(j.PreviousLink);
         }
     }

@@ -98,8 +98,7 @@ namespace Itinero_Transit.CSA
                 return;
             }
 
-            var actualArrival = c.ArrivalTime();
-            if (actualArrival > GetJourneyTo(c.ArrivalLocation()).Time)
+            if (c.ArrivalTime() > GetJourneyTo(c.ArrivalLocation()).Time)
             {
                 // We will arrive later to the target stop
                 // It is no use to take the connection
@@ -107,7 +106,7 @@ namespace Itinero_Transit.CSA
             }
 
             // Jej! We can take the train! It gets us to some stop faster then previously known
-            _s[c.ArrivalLocation()] = new Journey<T>(journeyTillStop, actualArrival, c);
+            _s[c.ArrivalLocation()] = new Journey<T>(journeyTillStop, c.ArrivalTime(), c);
         }
 
         private Journey<T> GetJourneyTo(Uri stop)

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
+using Itinero.LocalGeo;
 using Itinero_Transit.LinkedData;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
@@ -19,7 +21,9 @@ namespace Itinero_Transit.CSA.LocationProviders
         // This object is shared between all nodes of the same tree; they all add their fragments to it
         private readonly Dictionary<string, RdfTree> _allTrees;
         private readonly List<BoundingBox> _bounds = new List<BoundingBox>();
+
         private readonly List<Uri> _subtrees = new List<Uri>();
+
         // The 'hashcode' of Uri is very broken
         public HashSet<string> Members { get; } = new HashSet<string>();
 
@@ -52,22 +56,23 @@ namespace Itinero_Transit.CSA.LocationProviders
 
             for (int i = 0; i < _bounds.Count; i++)
             {
-                if (_bounds[i].Overlaps(box))
+                if (!_bounds[i].Overlaps(box))
                 {
-                    var treeId = _subtrees[i];
-                    RdfTree subtree;
-                    if (!_allTrees.ContainsKey(treeId.ToString()))
-                    {
-                        subtree = new RdfTree(_allTrees, treeId);
-                        subtree.Download(proc);
-                    }
-                    else
-                    {
-                        subtree = _allTrees[treeId.ToString()];
-                    }
-
-                    subtree.GetOverlappingTrees(box, proc, found);
+                    continue;
                 }
+
+                var treeId = _subtrees[i];
+                RdfTree subtree;
+                if (!_allTrees.ContainsKey(treeId.ToString()))
+                {
+                    // We search a node, which is in a fragment as denoted by the treeId URI
+                    // E.g. tree1.json#1234 -> we download the entire tree, normally 1234 will be downloaded and added to the dict
+                    new RdfTree(_allTrees, treeId).Download(proc);
+                }
+
+                subtree = _allTrees[treeId.ToString()];
+
+                subtree.GetOverlappingTrees(box, proc, found);
             }
         }
 
@@ -78,47 +83,63 @@ namespace Itinero_Transit.CSA.LocationProviders
                 json = (JObject) d["@graph"][0];
             }
 
+            json.AssertTypeIs("https://w3id.org/tree#Node");
             Uri = json.GetId();
-            if (_allTrees.ContainsKey(Uri.ToString()))
+
+            /* There are three cases:
+                1) The Node is a leaf containing members
+                2) THe node contains other nodes
+                3) The node is only a link to another fragment
+                
+                Only in the first two cases, the RDFTree should be added to the _allTrees dict
+            */
+
+            var membersID = "http://www.w3.org/ns/hydra/core#member";
+            var hasChilds = "https://w3id.org/tree#hasChildRelation";
+
+            if (json.IsDictContaining(membersID, out _) || json.IsDictContaining(hasChilds, out _))
             {
-                Log.Warning($"Already have {Uri}, why download again?");
-                return;
+                _allTrees.Add(Uri.ToString(), this);
             }
 
-            _allTrees.Add(Uri.ToString(), this);
 
-
-            json.AssertTypeIs("https://w3id.org/tree#Node");
             _bbox = new BoundingBox(json);
 
-            var childRelation = (JObject) json["https://w3id.org/tree#hasChildRelation"][0];
-
-            childRelation.AssertTypeIs("https://w3id.org/tree#GeospatiallyContainsRelation");
-
-            var childs = (JArray) childRelation["https://w3id.org/tree#child"];
-            foreach (JObject child in childs)
+            if (json.IsDictContaining(membersID, out var dct))
             {
-                child.AssertTypeIs("https://w3id.org/tree#Node");
-
-                _subtrees.Add(child.GetId());
-                _bounds.Add(new BoundingBox(child));
-
-                if (child.IsDictContaining("https://w3id.org/tree#hasChildRelation", out var subtree))
+                // Add members, if any are present
+                var memberList = dct["http://www.w3.org/ns/hydra/core#member"];
+                foreach (var member in (JArray) memberList)
                 {
-                    // The tree will register itself in the 'allTrees' dictionary
+                    Members.Add(member.GetId().ToString());
+                }
+            }
+
+            // Add children, if any are present
+            // ReSharper disable once InvertIf
+            if (json.IsDictContaining(hasChilds, out _))
+            {
+                var childRelation = (JObject) json[hasChilds][0];
+
+                childRelation.AssertTypeIs("https://w3id.org/tree#GeospatiallyContainsRelation");
+
+                var childs = (JArray) childRelation["https://w3id.org/tree#child"];
+                foreach (JObject child in childs)
+                {
+                    child.AssertTypeIs("https://w3id.org/tree#Node");
+
+                    // We add the bounds and the ID to find our way around
+                    _subtrees.Add(child.GetId());
+                    _bounds.Add(new BoundingBox(child));
+
+                    // Does the JSON contain all the necessary information? Or are we working with a pointer?
+                    // IF we work with but a pointer, we continue
+                    // IF not, we instantiate
+
+                    // The tree will register itself if needed in the 'allTrees' dictionary
                     // Hence no need to save the tree somewhere
                     // ReSharper disable once ObjectCreationAsStatement
                     new RdfTree(_allTrees, child);
-                }
-
-                // ReSharper disable once InvertIf
-                if (child.IsDictContaining("http://www.w3.org/ns/hydra/core#member", out var dct))
-                {
-                    var memberList = dct["http://www.w3.org/ns/hydra/core#member"];
-                    foreach (var member in (JArray) memberList )
-                    {
-                        Members.Add(member.GetId().ToString());
-                    }
                 }
             }
         }
@@ -126,7 +147,7 @@ namespace Itinero_Transit.CSA.LocationProviders
         public override string ToString()
         {
             var kids = "";
-            for (int i = 0; i < Math.Min(10, _bounds.Count); i++)
+            for (var i = 0; i < Math.Min(10, _bounds.Count); i++)
             {
                 kids += $"  {_bounds[i]} --> {_subtrees[i]}\n";
             }
@@ -144,14 +165,26 @@ namespace Itinero_Transit.CSA.LocationProviders
     [Serializable]
     public class BoundingBox
     {
-        private readonly float _minLat, _maxLat, _minLon, _maxLon;
+        private readonly Polygon _outline;
 
+        [SuppressMessage("ReSharper", "InconsistentNaming")]
         public BoundingBox(float minLat, float maxLat, float minLon, float maxLon)
         {
-            _minLat = Math.Min(minLat, maxLat);
-            _maxLat = Math.Max(minLat, maxLat);
-            _minLon = Math.Min(minLon, maxLon);
-            _maxLon = Math.Max(minLon, maxLon);
+            var _minLat = Math.Min(minLat, maxLat);
+            var _maxLat = Math.Max(minLat, maxLat);
+            var _minLon = Math.Min(minLon, maxLon);
+            var _maxLon = Math.Max(minLon, maxLon);
+            _outline = new Polygon()
+            {
+                ExteriorRing = new List<Coordinate>()
+                {
+                    new Coordinate(_minLat, _minLon),
+                    new Coordinate(_minLat, _maxLon),
+                    new Coordinate(_maxLat, _maxLon),
+                    new Coordinate(_maxLat, _minLon),
+                    new Coordinate(_minLat, _minLon)
+                }
+            };
         }
 
         public BoundingBox(JObject json)
@@ -167,15 +200,13 @@ namespace Itinero_Transit.CSA.LocationProviders
             val = val.Substring(0, val.Length - 2);
             var parts = val.Split(", ");
 
+            _outline = new Polygon();
 
-            var minLon = extractValue(parts[0], 0);
-            var minLat = extractValue(parts[0], 1);
-            var maxLon = extractValue(parts[2], 0);
-            var maxLat = extractValue(parts[2], 1);
-            _minLat = Math.Min(minLat, maxLat);
-            _maxLat = Math.Max(minLat, maxLat);
-            _minLon = Math.Min(minLon, maxLon);
-            _maxLon = Math.Max(minLon, maxLon);
+            foreach (var coor in parts)
+            {
+                var coordinate = new Coordinate(extractValue(coor, 1), extractValue(coor, 0));
+                _outline.ExteriorRing.Add(coordinate);
+            }
         }
 
         private static float extractValue(string coordinate, int index)
@@ -185,31 +216,38 @@ namespace Itinero_Transit.CSA.LocationProviders
 
         public bool IsContained(float lat, float lon)
         {
-            return _minLat <= lat
-                   && _maxLat >= lat
-                   && _minLon <= lon
-                   && _maxLon >= lon;
+            return _outline.PointIn(new Coordinate(lat, lon));
         }
 
         public bool Overlaps(BoundingBox other)
         {
-            return IsContained(other._minLat, other._minLon)
-                   || IsContained(other._minLat, other._maxLon)
-                   || IsContained(other._maxLat, other._minLon)
-                   || IsContained(other._maxLat, other._maxLon);
+            foreach (var coor in other._outline.ExteriorRing)
+            {
+                if (_outline.PointIn(coor))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public bool IsContained(BoundingBox other)
         {
-            return IsContained(other._minLat, other._minLon)
-                   && IsContained(other._minLat, other._maxLon)
-                   && IsContained(other._maxLat, other._minLon)
-                   && IsContained(other._maxLat, other._maxLon);
+            foreach (var coor in other._outline.ExteriorRing)
+            {
+                if (!_outline.PointIn(coor))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public override string ToString()
         {
-            return $"BBox {_minLat}, {_minLon}; {_maxLat}, {_maxLon}";
+            return $"BBox {_outline}";
         }
     }
 }

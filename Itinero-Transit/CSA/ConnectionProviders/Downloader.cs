@@ -63,7 +63,14 @@ namespace Itinero_Transit.LinkedData
                 return AlwaysReturn;
             }
 
+            if (!string.IsNullOrEmpty(uri.Fragment))
+            {
+                var u = uri.ToString();
+                uri = new Uri(u.Substring(0, u.Length - uri.Fragment.Length));
+                
+            }
             Log.Information($"Downloading {uri}");
+            
             DownloadCounter++;
             var start = DateTime.Now;
 
@@ -75,6 +82,7 @@ namespace Itinero_Transit.LinkedData
 
             var data = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
             var end = DateTime.Now;
+            var frag = uri.Fragment;
 
             if (response.Headers.GetCacheCowHeader() != null &&
                 response.Headers.GetCacheCowHeader().ToString().Contains("did-not-exist=false"))

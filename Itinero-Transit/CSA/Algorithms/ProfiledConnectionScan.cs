@@ -197,7 +197,9 @@ namespace Itinero_Transit.CSA
             startJourneys.AddToFrontier(considered); // List is still shared with the dictionary
             if (startStation.Equals(_departureLocation))
             {
-                _paretoFront.AddToFrontier(considered);
+                // The Frontier is what will be returned; the journeys here are constructed in reverse order
+                // We already return them (it shouldn't matter anyway for the stats)
+                _paretoFront.AddToFrontier(considered.Reverse());
             }
         }
     }
