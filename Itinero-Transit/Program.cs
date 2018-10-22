@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Itinero_Transit.CSA;
 using Itinero_Transit.CSA.ConnectionProviders;
 using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection.TreeTraverse;
 using Itinero_Transit.CSA.Data;
@@ -18,24 +19,36 @@ namespace Itinero_Transit
     {
         private static void TestStuff(Downloader loader)
         {
-            var prov = DeLijnProvider.LocationProvider(loader);
-            var closeToHome = prov.GetLocationsCloseTo(51.21576f, 3.22f, 1000);
+            var delijn = new DeLijnProvider(loader);
+            var prov = new LocallyCachedConnectionsProvider(delijn, new LocalStorage("storage"));
+            var closeToHome = prov.GetLocationsCloseTo(51.21576f, 3.22f, 250);
 
             var closeToTarget = prov.GetLocationsCloseTo(51.19738f, 3.21736f, 500);
 
             Log.Information($"Found {closeToHome.Count()} stops closeby, {closeToTarget.Count()} where we have to go");
+
+            var testTime = new DateTime(2018, 10, 23, 10, 00, 00);
+            var failOver = new DateTime(2018, 10, 23, 11, 00, 00);
+
+            List<Journey<TransferStats>> startJourneys = new List<Journey<TransferStats>>();
             foreach (var uri in closeToHome)
             {
                 Log.Information($"{uri} ({prov.GetCoordinateFor(uri).Name})");
+                startJourneys.Add(new Journey<TransferStats>(uri, testTime, TransferStats.Factory));
             }
 
             foreach (var uri in closeToTarget)
             {
                 Log.Information($"> {uri} ({prov.GetCoordinateFor(uri).Name})");
             }
+
+            var eas = new EarliestConnectionScan<TransferStats>(
+                startJourneys, new List<Uri>(closeToTarget), prov, failOver);
             
+            var j = eas.CalculateJourney();
+            Log.Information(j.ToString());
         }
-        
+
 
         private static void Main(string[] args)
         {
@@ -43,7 +56,7 @@ namespace Itinero_Transit
 
             Log.Information("Starting...");
             var startTime = DateTime.Now;
-            var loader = new Downloader(caching: true);
+            var loader = new Downloader(caching: false);
             try
             {
                 TestStuff(loader);

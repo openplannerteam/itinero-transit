@@ -80,15 +80,5 @@ namespace Itinero_Transit.CSA
                 $"numberOfTransfers {NumberOfTransfers}\ntotalTrainTime {TotalTrainTime}\ntotalTransferTime {TotalTransferTime}" +
                 $"\nminTransferTime {MinTransferTime}\nmaxTransferTime {MaxTransferTime}";
         }
-
-        public int CompareTo(object obj)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsComparableTo(IJourneyStats<AdvancedStats> stats)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

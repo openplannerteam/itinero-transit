@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using System.Reflection.Metadata;
+using Itinero_Transit.CSA.ConnectionProviders;
 
 namespace Itinero_Transit.CSA
 {
@@ -17,9 +18,6 @@ namespace Itinero_Transit.CSA
     {
         public static readonly Journey<T> InfiniteJourney = new Journey<T>();
 
-
-        public static readonly Comparer<Journey<T>> TimeComparer = new CompareTime<T>();
-        public static readonly Comparer<Journey<T>> TimeCompareDesc = new CompareTimeDesc<T>();
 
         /// <summary>
         /// The previous link in this journey. Can be null if this is where we start the journey
@@ -50,6 +48,7 @@ namespace Itinero_Transit.CSA
             Stats = default(T);
         }
 
+   
 
         public Journey(Journey<T> previousLink, DateTime time, IConnection connection)
         {
@@ -69,6 +68,21 @@ namespace Itinero_Transit.CSA
             Stats = previousLink.Stats.Add(this);
         }
 
+        /// <summary>
+        /// A genesis journey with an empty walking transfer
+        /// </summary>
+        /// <param name="genesisLocation"></param>
+        /// <param name="genesisTime"></param>
+        /// <param name="statsFactory"></param>
+        public Journey(Uri genesisLocation, DateTime genesisTime, T statsFactory)
+        {
+            PreviousLink = null;
+            Time = genesisTime;
+            Connection = new WalkingConnection(genesisLocation, genesisTime);
+            Stats = statsFactory.InitialStats(Connection);
+        }
+        
+        
         public Journey(T singleConnectionStats, DateTime time, IConnection connection)
         {
             PreviousLink = null;
@@ -97,6 +111,29 @@ namespace Itinero_Transit.CSA
             return reversed;
         }
 
+        /// <summary>
+        /// Returns a new Journey where continuous connections are moved as tightly as possible onto to the journey
+        /// E.g.
+        ///
+        /// Journey is
+        /// "walk from 10:00 till 10:05 to the platform"
+        /// "take train XYZ at 10:15, arriving at station at 11:15"
+        /// "walk from 11:30 till 11:35 to your final destination"
+        ///
+        /// this will be 'pruned' to
+        /// "walk from 10:10 till 10:15 to the platform"
+        /// "take train XYZ at 10:15, arriving at station at 11:15"
+        /// "walk from 11:15 till 11:20 to your final destination"
+        /// 
+        /// Resulting in a somewhat less timeconsuming journey
+        /// </summary>
+        /// <returns></returns>
+        public Journey<T> Prune()
+        {
+            throw new NotImplementedException(); // TODO
+
+        }
+
 
         public override string ToString()
         {
@@ -117,10 +154,10 @@ namespace Itinero_Transit.CSA
             return Equals(j);
         }
 
-        protected bool Equals(Journey<T> other)
+        private bool Equals(Journey<T> other)
         {
-            var b = (Time == null ? other.Time == null : Time.Equals(other.Time))
-                    && (Connection == null ? other.Connection == null : Connection.Equals(other.Connection))
+            var b = (Time.Equals(other.Time))
+                    && (Connection?.Equals(other.Connection) ?? other.Connection == null)
                     && Equals(PreviousLink, other.PreviousLink);
             return b;
         }
@@ -144,37 +181,6 @@ namespace Itinero_Transit.CSA
                 hashCode = (hashCode * 397) ^ EqualityComparer<T>.Default.GetHashCode(Stats);
                 return hashCode;
             }
-        }
-
-        public void VerboseDiff(Journey<T> j)
-        {
-            if (!Equals(Connection, j.Connection))
-            {
-                throw new ArgumentException($"Not the same: \n{Connection}\n{j.Connection}");
-            }
-
-            PreviousLink.VerboseDiff(j.PreviousLink);
-        }
-    }
-
-
-    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-    internal class CompareTime<T> : Comparer<Journey<T>>
-        where T : IJourneyStats<T>
-    {
-        public override int Compare(Journey<T> x, Journey<T> y)
-        {
-            return x.Time.CompareTo(y.Time);
-        }
-    }
-
-    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
-    internal class CompareTimeDesc<T> : Comparer<Journey<T>>
-        where T : IJourneyStats<T>
-    {
-        public override int Compare(Journey<T> x, Journey<T> y)
-        {
-            return y.Time.CompareTo(x.Time);
         }
     }
 }

@@ -52,6 +52,7 @@ namespace Itinero_Transit.CSA
         {
             var transferred =
                 journey.Connection.Trip() != null &&
+                journey.PreviousLink.Connection.Trip() != null &&
                 !journey.Connection.Trip().Equals(journey.PreviousLink.Connection.Trip());
 
 

@@ -159,6 +159,12 @@ namespace Itinero_Transit.CSA.LocationProviders
 
             return $"RDFTreeNode {Uri} with {_bounds.Count} elements within {_bbox}:\n{kids}";
         }
+
+
+        public BoundingBox BBox()
+        {
+            return _bbox;
+        }
     }
 
 
@@ -166,6 +172,8 @@ namespace Itinero_Transit.CSA.LocationProviders
     public class BoundingBox
     {
         private readonly Polygon _outline;
+        private static readonly float LatDiffFactor = 1f/ (60 * 1852);
+
 
         [SuppressMessage("ReSharper", "InconsistentNaming")]
         public BoundingBox(float minLat, float maxLat, float minLon, float maxLon)
@@ -185,6 +193,19 @@ namespace Itinero_Transit.CSA.LocationProviders
                     new Coordinate(_minLat, _minLon)
                 }
             };
+        }
+
+        public BoundingBox(float lat, float lon, int radiusInMeters) :
+            this(lat - (radiusInMeters * LatDiffFactor), lat + (radiusInMeters * LatDiffFactor),
+                lon - LonDiff(radiusInMeters, lat), lon + LonDiff(radiusInMeters, lat))
+        {
+        }
+
+        private static float LonDiff(int radiusInMeters, float lat)
+        {
+            var latDiff = radiusInMeters * LatDiffFactor;
+            var lonDiff = (float) (latDiff * Math.Cos(lat));
+            return lonDiff;
         }
 
         public BoundingBox(JObject json)
@@ -248,6 +269,38 @@ namespace Itinero_Transit.CSA.LocationProviders
         public override string ToString()
         {
             return $"BBox {_outline}";
+        }
+
+        /// <summary>
+        /// Creates a new bounding box that bounds both this and the other box
+        /// </summary>
+        /// <param name="bBox"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public BoundingBox Expand(BoundingBox bBox)
+        {
+            var minLat = 180f;
+            var minLon = 180f;
+            var maxLat = -180f;
+            var maxLon = -180f;
+
+            foreach (var l in _outline.ExteriorRing)
+            {
+                minLat = Math.Min(l.Latitude, minLat);
+                minLon = Math.Min(l.Longitude, minLon);
+                maxLat = Math.Max(l.Latitude, maxLat);
+                maxLon = Math.Max(l.Longitude, maxLon);
+            }
+
+            foreach (var l in bBox._outline.ExteriorRing)
+            {
+                minLat = Math.Min(l.Latitude, minLat);
+                minLon = Math.Min(l.Longitude, minLon);
+                maxLat = Math.Max(l.Latitude, maxLat);
+                maxLon = Math.Max(l.Longitude, maxLon);
+            }
+
+            return new BoundingBox(minLat, maxLat, minLon, maxLon);
         }
     }
 }

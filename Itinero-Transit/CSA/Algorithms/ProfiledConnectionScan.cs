@@ -61,7 +61,7 @@ namespace Itinero_Transit.CSA
         ///     It is used to retain only the journeys with the least travel time, least number of transfers, cheapest cost, ...
         /// </param>
         public ProfiledConnectionScan(Uri departureLocation, Uri targetLocation,
-            IConnectionsProvider connectionsProvider,
+            IConnectionsProvider connectionsProvider,IConnectionsProvider footpathProv,
             T statsFactory, StatsComparator<T> profileComparator, StatsComparator<T> paretoComparator)
         {
             _departureLocation = departureLocation;
@@ -71,7 +71,7 @@ namespace Itinero_Transit.CSA
             _profileComparator = profileComparator;
             _paretoFront = new ParetoFrontier<T>(paretoComparator);
         }
-
+        
         /// <summary>
         /// Calculate possible journeys from the given provider,
         /// where the Uri points to the timetable of the last allowed arrival at the destination station

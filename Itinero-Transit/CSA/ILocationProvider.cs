@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection;
+using Itinero_Transit.CSA.LocationProviders;
+using JsonLD.Core;
 
 namespace Itinero_Transit.CSA
 {
@@ -12,8 +14,24 @@ namespace Itinero_Transit.CSA
     /// </summary>
     public interface ILocationProvider
     {
+        /// <summary>
+        /// Gets the metadata for a given location URI.
+        /// Throws an error if the key cannot be found
+        /// </summary>
+        /// <param name="locationId"></param>
+        /// <returns></returns>
         Location GetCoordinateFor(Uri locationId);
 
+        /// <summary>
+        /// Checks if the given URI can be decoded to a Location by this provider.
+        /// Locations which were returned by 'GetLocationsCloseTo' should always be resolvable by the provider
+        /// </summary>
+        /// <param name="locationId"></param>
+        /// <returns></returns>
+        bool ContainsLocation(Uri locationId);
+
         IEnumerable<Uri> GetLocationsCloseTo(float lat, float lon, int radiusInMeters);
+
+        BoundingBox BBox();
     }
 }

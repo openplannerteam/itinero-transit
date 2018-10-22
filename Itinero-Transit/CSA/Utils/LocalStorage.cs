@@ -64,10 +64,8 @@ namespace Itinero_Transit.CSA.Data
                 {
                     return item;
                 }
-                else
-                {
-                    throw new ArgumentException($"Could not read key {key}, wrong type");
-                }
+
+                throw new ArgumentException($"Could not read key {key}, wrong type");
             }
         }
 

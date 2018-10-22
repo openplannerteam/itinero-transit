@@ -25,7 +25,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection.TreeTraverse
         private readonly Dictionary<string, LocationsFragment> _fragments = new Dictionary<string, LocationsFragment>();
 
 
-        public RdfTreeTraverser(Uri treeRoot, 
+        public RdfTreeTraverser(Uri treeRoot,
             JsonLdProcessor treeNodeLoader, JsonLdProcessor locationFragmentLoader)
         {
             _treeNodeLoader = treeNodeLoader;
@@ -35,8 +35,24 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection.TreeTraverse
             _root.Download(_treeNodeLoader);
         }
 
-
         public Location GetCoordinateFor(Uri locationId)
+        {
+            var fragName = CacheFragment(locationId);
+            return _fragments[fragName].GetCoordinateFor(locationId);
+        }
+
+        public bool ContainsLocation(Uri locationId)
+        {
+            var fragName = CacheFragment(locationId);
+            return _fragments.ContainsKey(fragName) && _fragments[fragName].ContainsLocation(locationId);
+        }
+
+        /// <summary>
+        /// Gives the fragment name; chaches the fragment if needed
+        /// </summary>
+        /// <param name="locationId"></param>
+        /// <returns></returns>
+        private string CacheFragment(Uri locationId)
         {
             var fragmentsName = locationId.GetLeftPart(UriPartial.Path);
             if (!_fragments.ContainsKey(fragmentsName))
@@ -46,17 +62,13 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection.TreeTraverse
                 _fragments.Add(fragmentsName, frag);
             }
 
-            return _fragments[fragmentsName].GetCoordinateFor(locationId);
+            return fragmentsName;
         }
-
 
         public IEnumerable<Uri> GetLocationsCloseTo(float lat, float lon, int radiusInMeters)
         {
             // First, we start by figuring out which RDFNodes we exactly need
-            var latDiff = radiusInMeters * 1f/ (60 * 1852);
-            var lonDiff = (float) (latDiff * Math.Cos(lat));
-            var bbox = new BoundingBox(lat - latDiff, lat + latDiff, 
-                lon - lonDiff, lon + lonDiff);
+            var bbox = new BoundingBox(lat, lon, radiusInMeters);
             var nodesToConsider = _root.GetOverlappingTrees(bbox, _treeNodeLoader);
 
             // And now we have a look to all the members of those nodes; and only keep the ones withing the circle
@@ -74,7 +86,13 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection.TreeTraverse
                     }
                 }
             }
+
             return found;
+        }
+
+        public BoundingBox BBox()
+        {
+            return _root.BBox();
         }
     }
 }

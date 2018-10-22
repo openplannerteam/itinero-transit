@@ -62,8 +62,6 @@ namespace Itinero_Transit.CSA
 
         
       
-        
-        
         protected sealed override void FromJson(JObject json)
         {
            json.AssertTypeIs("http://semweb.mmlab.be/ns/linkedconnections#Connection");
@@ -96,8 +94,9 @@ namespace Itinero_Transit.CSA
                 ArrivalTime = ArrivalTime.AddSeconds(depDel);
             }
 
-            if (ArrivalTime <= DepartureTime)
+            if (ArrivalTime < DepartureTime)
             {
+                // We allow arrivalTime to equal Departure time, sometimes buses have less then a minute to travel
                 // If there is still to much time difference, the train was probably cancelled, so we throw it out.
                 throw new ArgumentException(
                     $"WTF? Timetravellers! {DepartureTime} incl {depDel} --> {ArrivalTime} incl {arrDel}\n{json}");

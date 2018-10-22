@@ -51,14 +51,7 @@ namespace Itinero_Transit.LinkedData
 
         public ILocationProvider LocationProvider()
         {
-            var key = "LocationProvider";
-            if (_storage.Contains(key))
-            {
-                _storage.Retrieve<ILocationProvider>(key);
-            }
-
-            return _storage.Store(key, _fallbackProvider.LocationProvider());
-
+            return _fallbackProvider.LocationProvider();
         }
 
         /// <summary>

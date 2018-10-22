@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Itinero_Transit.CSA.LocationProviders;
 using Itinero_Transit.LinkedData;
 using Newtonsoft.Json.Linq;
 
@@ -21,12 +23,18 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
         private readonly Dictionary<string, HashSet<Location>> _nameMapping =
             new Dictionary<string, HashSet<Location>>();
 
+        private BoundingBox _bounds;
+
         public LocationsFragment(Uri uri) : base(uri)
         {
         }
 
         protected override void FromJson(JObject json)
         {
+            var minLat = 180f;
+            var minLon = 180f;
+            var maxLat = -180f;
+            var maxLon = -180f;
             foreach (var loc in json["@graph"])
             {
                 var l = new Location((JObject) loc);
@@ -39,7 +47,14 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
                 }
 
                 _nameMapping[l.Name].Add(l);
+
+                minLat = Math.Min(l.Lat, minLat);
+                minLon = Math.Min(l.Lon, minLon);
+                maxLat = Math.Max(l.Lat, maxLat);
+                maxLon = Math.Max(l.Lon, maxLon);
             }
+
+            _bounds = new BoundingBox(minLat, maxLat, minLon, maxLon);
         }
 
         public override string ToString()
@@ -53,6 +68,11 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
             return $"Location dump with {_locations.Count} locations:\n{overview}";
         }
 
+        public bool ContainsLocation(Uri locationId)
+        {
+            return _locationMapping.ContainsKey(locationId.ToString());
+        }
+
         public Location GetCoordinateFor(Uri locationId)
         {
             if (!_locationMapping.ContainsKey(locationId.ToString()))
@@ -63,6 +83,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
                 {
                     examples += $"  {key}\n";
                 }
+
                 throw new KeyNotFoundException(
                     $"The location {locationId} was not found in this dictionary.\nSome keys in this dictionary are:\n{examples}");
             }
@@ -82,6 +103,11 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
                 throw new ArgumentNullException("The radius in which locations are sought, should be at least 1m");
             }
 
+            if (!_bounds.Overlaps(new BoundingBox(lat, lon, radiusInMeters)))
+            {
+                return Enumerable.Empty<Uri>();
+            }
+
             var closeEnough = new List<Uri>();
 
             foreach (var l in _locations)
@@ -95,6 +121,11 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
             }
 
             return closeEnough;
+        }
+
+        public BoundingBox BBox()
+        {
+            return _bounds;
         }
     }
 }

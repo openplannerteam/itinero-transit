@@ -75,14 +75,13 @@ namespace Itinero_Transit.LinkedData
             var start = DateTime.Now;
 
             var response = _client.GetAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
-            if (response == null)
+            if (response == null || !response.IsSuccessStatusCode)
             {
                 throw new FileNotFoundException("Could not open " + uri);
             }
 
             var data = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
             var end = DateTime.Now;
-            var frag = uri.Fragment;
 
             if (response.Headers.GetCacheCowHeader() != null &&
                 response.Headers.GetCacheCowHeader().ToString().Contains("did-not-exist=false"))
@@ -90,7 +89,9 @@ namespace Itinero_Transit.LinkedData
                 CacheHits++;
             }
 
-            TimeDownloading += (end - start).TotalMilliseconds;
+            var timeNeeded = (end - start).TotalMilliseconds;
+            Log.Information($"Downloaded completed in {timeNeeded}, got {data.Length} bytes");
+            TimeDownloading +=timeNeeded;
             return data;
         }
 

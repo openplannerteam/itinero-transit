@@ -49,10 +49,6 @@ namespace Itinero_Transit.LinkedData
 
         public static Uri AsUri(string s)
         {
-            if (s.StartsWith("https"))
-            {
-                s = "http" + s.Substring(5);
-            }
 
             return new Uri(s);
         }
