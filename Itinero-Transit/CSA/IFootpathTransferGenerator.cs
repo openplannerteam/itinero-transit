@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Itinero_Transit.CSA
 {
@@ -7,12 +8,11 @@ namespace Itinero_Transit.CSA
     /// platform to another, possibly making an intermodal transfer.
     ///
     /// This results in a 'continuous' transfer
-    /// Note that, for optimization, we can request paths from one point to multiple other points
     /// </summary>
     public interface IFootpathTransferGenerator
     {
 
-        List<IConnection> GenerateFootPaths(Uri from, List<Uri> to);
+        IConnection GenerateFootPaths(DateTime departureTime, Uri from, Uri to);
 
     }
 }
