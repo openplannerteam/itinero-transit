@@ -13,6 +13,12 @@ namespace Itinero_Transit_Tests
         {
             _output = output;
         }
+        
+        // ReSharper disable once UnusedMember.Local
+        private void Log(string s)
+        {
+            _output.WriteLine(s);
+        }
 
         [Fact]
         public void TestComparePareto()
@@ -96,10 +102,6 @@ namespace Itinero_Transit_Tests
 
         }
         
-        // ReSharper disable once UnusedMember.Local
-        private void Log(string s)
-        {
-            _output.WriteLine(s);
-        }
+
     }
 }

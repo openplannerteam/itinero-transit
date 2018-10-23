@@ -47,8 +47,10 @@ namespace Itinero_Transit_Tests
             var storage = new LocalStorage("timetables-for-testing-2018-10-17");
             Assert.Equal(340, storage.KnownKeys().Count);
 
+            var loader = new Downloader();
 
-            var prov = new LocallyCachedConnectionsProvider(new SncbConnectionProvider(), storage);
+            var sncb = new LinkedConnectionProvider(Sncb.HydraSearch(loader));
+            var prov = new LocallyCachedConnectionsProvider(sncb, storage);
 
             var tt = prov.TimeTableContaining(new DateTime(2018, 10, 17, 10, 00, 00, DateTimeKind.Local));
             Assert.NotNull(tt);

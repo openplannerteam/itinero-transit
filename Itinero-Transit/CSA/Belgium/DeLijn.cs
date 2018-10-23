@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection;
+using Itinero_Transit.CSA.Connections;
+using Itinero_Transit.CSA.Data;
 using Itinero_Transit.CSA.LocationProviders;
 using Itinero_Transit.LinkedData;
 using JsonLD.Core;
@@ -8,12 +9,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Itinero_Transit.CSA.ConnectionProviders
 {
-    public class DeLijnProvider : LinkedConnectionProvider
+    public static class DeLijn
     {
-        public static Uri StopLocationsRoot = new Uri("http://dexagod.github.io/stoplocations/t0.jsonld");
-        public static Uri StopFragmentsRoot = new Uri("http://dexagod.github.io/stopsdata/d6.jsonld");
-
-        public static List<Uri> Provinces = new List<Uri>
+        public static List<Uri> ProvincesLocations = new List<Uri>
         {
             new Uri("https://belgium.linkedconnections.org/delijn/Antwerpen/stops"),
             new Uri("https://belgium.linkedconnections.org/delijn/Oost-Vlaanderen/stops"),
@@ -24,14 +22,22 @@ namespace Itinero_Transit.CSA.ConnectionProviders
 
         public static Uri Wvl =
             new Uri(
-                "https://belgium.linkedconnections.org/delijn/West-Vlaanderen/connections?departureTime=2018-10-18T10:25:00.000Z");
+                "https://belgium.linkedconnections.org/delijn/West-Vlaanderen/connections");
 
 
-        public DeLijnProvider(Downloader loader) : base(Hydra(loader), LocationProvider(loader))
+        public static Profile<TransferStats> Profile(IDocumentLoader loader,
+            LocalStorage storage, string routerdbPath)
         {
-        }
+            var conns = new LocallyCachedConnectionsProvider(new LinkedConnectionProvider(Hydra(loader)), storage);
+            var loc = LocationProvider(loader, storage);
+            var footpath = new TransferGenerator(loc, routerdbPath);
 
-        private static JObject Hydra(Downloader loader)
+            return new Profile<TransferStats>(conns, loc, footpath,
+                TransferStats.Factory, TransferStats.ProfileCompare, TransferStats.ParetoCompare);
+        }
+       
+
+        private static JObject Hydra(IDocumentLoader loader)
         {
             var proc =
                 new JsonLdProcessor(loader, new Uri("http://graph.irail.be/sncb/connections"));
@@ -40,19 +46,16 @@ namespace Itinero_Transit.CSA.ConnectionProviders
             return (JObject) jsonld["http://www.w3.org/ns/hydra/core#search"][0];
         }
 
-        public static ILocationProvider LocationProvider(Downloader loader)
+        public static ILocationProvider LocationProvider(IDocumentLoader loader, LocalStorage storage)
         {
             var locations = new List<ILocationProvider>();
-            foreach (var prov in Provinces)
+            foreach (var prov in ProvincesLocations)
             {
-                var lf = new LocationsFragment(prov);
-                lf.Download(new JsonLdProcessor(loader, prov));
+                var proc = new JsonLdProcessor(loader, prov);
+                var lf = new CachedLocationsFragment(prov, proc, storage);
                 locations.Add(lf);
             }
             
-            //var locations = new RdfTreeTraverser(StopLocationsRoot,
-            //  new JsonLdProcessor(loader, StopLocationsRoot),
-            // new JsonLdProcessor(loader, StopFragmentsRoot));
             return new LocationCombiner(locations);
         }
         

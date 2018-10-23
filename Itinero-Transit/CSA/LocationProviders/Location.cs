@@ -2,7 +2,6 @@ using System;
 using Itinero_Transit.LinkedData;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
-using Serilog;
 
 namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
 {

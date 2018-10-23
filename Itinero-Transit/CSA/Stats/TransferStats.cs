@@ -51,10 +51,7 @@ namespace Itinero_Transit.CSA
         public TransferStats Add(Journey<TransferStats> journey)
         {
             var transferred =
-                journey.Connection.Trip() != null &&
-                journey.PreviousLink.Connection.Trip() != null &&
-                !journey.Connection.Trip().Equals(journey.PreviousLink.Connection.Trip());
-
+                journey.Connection is InternalTransfer;
 
             var dep = journey.Connection.DepartureTime();
             if (StartTime < dep)

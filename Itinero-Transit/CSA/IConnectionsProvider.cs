@@ -26,22 +26,8 @@ namespace Itinero_Transit.CSA
         /// <returns>A timetable</returns>
         Uri TimeTableIdFor(DateTime includedTime);
 
-        /// <summary>
-        /// Given two connections (e.g. within the same station; or to a bus station which is close by),
-        /// calculates an object representing the transfer (e.g. walking from platform 2 to platform 5; or walking 250 meters)
-        /// </summary>
-        /// <param name="from">The connection that the newly calculated connection continues on</param>
-        /// <param name="to">The connection that should be taken after the returned connection</param>
-        /// <returns>A connection representing the transfer. Returns null if no transfer is possible (e.g. to little time)</returns>
-        IConnection CalculateInterConnection(IConnection from, IConnection to);
-
-        /// <summary>
-        /// A Connection Provider must also provide metadata about each transport stop and where this transport stop is located in the world.
-        /// This is delegated to a LocationProvider object
-        /// </summary>
-        /// <returns></returns>
-        ILocationProvider LocationProvider();
-
+    
+     
 
     }
 }

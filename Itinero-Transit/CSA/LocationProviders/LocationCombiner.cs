@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection;
-using JsonLD.Core;
 
 namespace Itinero_Transit.CSA.LocationProviders
 {
@@ -52,6 +51,17 @@ namespace Itinero_Transit.CSA.LocationProviders
             foreach (var provider in _providers)
             {
                 allLocations.UnionWith(provider.GetLocationsCloseTo(lat, lon, radiusInMeters));
+            }
+
+            return allLocations;
+        }
+
+        public IEnumerable<Location> GetLocationByName(string name)
+        {
+            var allLocations = new HashSet<Location>();
+            foreach (var provider in _providers)
+            {
+                allLocations.UnionWith(provider.GetLocationByName(name));
             }
 
             return allLocations;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection.Metadata;
 using Itinero_Transit.CSA.ConnectionProviders;
 
 namespace Itinero_Transit.CSA
@@ -48,23 +47,13 @@ namespace Itinero_Transit.CSA
             Stats = default(T);
         }
 
-   
 
         public Journey(Journey<T> previousLink, DateTime time, IConnection connection)
         {
-            if (connection == null)
-            {
-                throw new ArgumentException("The connection used to initialize a Journey should not be null");
-            }
-
-            if (time == null)
-            {
-                throw new ArgumentException("The Time used to initialize a Journey should not be null");
-            }
-
             PreviousLink = previousLink;
             Time = time;
-            Connection = connection;
+            Connection = connection ??
+                         throw new ArgumentException("The connection used to initialize a Journey should not be null");
             Stats = previousLink.Stats.Add(this);
         }
 
@@ -81,8 +70,8 @@ namespace Itinero_Transit.CSA
             Connection = new WalkingConnection(genesisLocation, genesisTime);
             Stats = statsFactory.InitialStats(Connection);
         }
-        
-        
+
+
         public Journey(T singleConnectionStats, DateTime time, IConnection connection)
         {
             PreviousLink = null;
@@ -131,16 +120,21 @@ namespace Itinero_Transit.CSA
         public Journey<T> Prune()
         {
             throw new NotImplementedException(); // TODO
-
         }
 
 
         public override string ToString()
         {
-            var res = PreviousLink == null ? $"JOURNEY ({Time:O}): \n" : PreviousLink.ToString();
+            return ToString(null);
+        }
 
-            res += "  " + (Connection == null ? "-- No connection given--" : Connection.ToString()) + "\n";
-            res += "  " + (Stats == null ? "-- No stats -- " : Stats.ToString()) + "\n";
+
+        public string ToString(ILocationProvider locDecode)
+        {
+            var res = PreviousLink == null ? $"JOURNEY ({Time:O}): \n" :
+                PreviousLink.ToString(locDecode);
+            res += "  " + (Connection == null ? "-- No connection given--" : Connection.ToString(locDecode)) + "\n";
+            res += "    " + (Stats == null ? "-- No stats -- " : Stats.ToString()) + "\n";
             return res;
         }
 

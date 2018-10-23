@@ -1,5 +1,6 @@
 using System;
 using Itinero;
+using Itinero_Transit.CSA.LocationProviders;
 
 namespace Itinero_Transit.CSA.ConnectionProviders
 {
@@ -31,16 +32,23 @@ namespace Itinero_Transit.CSA.ConnectionProviders
             _route = null;
         }
 
-        public WalkingConnection(Route route, Uri departureLocation, Uri arrivalLocation, DateTime departureTime)
+        public WalkingConnection(Route route, Uri departureLocation, Uri arrivalLocation, DateTime departureTime, float speed)
         {
             _route = route;
             _departureLocation = departureLocation;
             _arrivalLocation = arrivalLocation;
 
             _departureTime = departureTime;
-            _arrivalTime = departureTime.AddSeconds(route.TotalTime);
+            _arrivalTime = departureTime.AddSeconds(route.TotalDistance * speed);
         }
 
+
+        public string ToString(ILocationProvider locDecode)
+        {
+            return _route == null ?
+                $"Genesis connection at {locDecode.GetNameOf(_departureLocation)} {_departureTime}" : 
+                $"Walk from {locDecode.GetNameOf(_departureLocation)} to {locDecode.GetNameOf(_arrivalLocation)}, this takes {_route.TotalTime}sec ({_route.TotalDistance}m)";
+        }
 
         public Uri DepartureLocation()
         {

@@ -17,7 +17,9 @@ namespace Itinero_Transit.CSA
     public class ProfiledConnectionScan<T> where T : IJourneyStats<T>
     {
         private readonly Uri _departureLocation, _targetLocation;
-        private readonly T _statsFactory;
+
+        private readonly Profile<T> _profile;
+
         private readonly StatsComparator<T> _profileComparator;
 
         /// <summary>
@@ -41,37 +43,41 @@ namespace Itinero_Transit.CSA
         /// </summary>
         private readonly Dictionary<Uri, ParetoFrontier<T>> _stationJourneys = new Dictionary<Uri, ParetoFrontier<T>>();
 
-        /// <summary>
-        /// Create a new ProfiledConnectionScan algorithm with the given parameters
-        /// </summary>
-        /// <param name="departureLocation">The URI-ID of the location where the traveller leaves</param>
-        /// <param name="targetLocation">The URI-ID of the location where the traveller would like to go</param>
-        /// <param name="connectionsProvider">The object providing connections from one or multiple transit operators</param>
-        /// <param name="statsFactory">The object creating the statistics for each journey</param>
-        /// <param name="profileComparator">An object comparing statistics which compares using profiles. Important:
-        ///     This comparator should _not_ filter out journeys with a suboptimal time length, but only filter shadowed time travels.
-        ///     (e.g. if a journey from starting at 10:00 and arriving at 11:00 is compared with a journey starting at 09:00 and arriving at 09:05,
-        ///     no conclusions should be drawn.
-        ///     This comparator is used in intermediate stops. Filtering away the trip 10:00 -> 11:00 at an intermediate stop
-        ///     might remove a transfer that turned out to be optimal from the starting position.
-        /// </param>
-        /// <param name="paretoComparator">
-        ///  An object comparing statistics which compares for optimal points as the user sees fit.
-        ///     This comparator is used to filter the final list of journeys.
-        ///     It is used to retain only the journeys with the least travel time, least number of transfers, cheapest cost, ...
-        /// </param>
+        ///  <summary>
+        ///  Create a new ProfiledConnectionScan algorithm.
+        /// 
+        ///  The profile is used for quite some parameters:
+        /// 
+        ///  - connectionsProvider: The object providing connections of a transit operator
+        ///  - LocationsProvider: provides mapping of a locationID onto coordinates and searches closeby stops
+        ///  - FoothpathGenerator: provides (intermodal) transfers 
+        ///  - statsFactory: The object creating the statistics for each journey
+        ///  - profileComparator: An object comparing statistics which compares using profiles. Important:
+        ///      This comparator should _not_ filter out journeys with a suboptimal time length, but only filter shadowed time travels.
+        ///      (e.g. if a journey from starting at 10:00 and arriving at 11:00 is compared with a journey starting at 09:00 and arriving at 09:05,
+        ///      no conclusions should be drawn.
+        ///      This comparator is used in intermediate stops. Filtering away the trip 10:00 -> 11:00 at an intermediate stop
+        ///      might remove a transfer that turned out to be optimal from the starting position.
+        ///  </summary>
+        ///  <param name="departureLocation">The URI-ID of the location where the traveller leaves</param>
+        ///  <param name="targetLocation">The URI-ID of the location where the traveller would like to go</param>
+        /// <param name="profile">The profile containing all the parameters as described above</param>
         public ProfiledConnectionScan(Uri departureLocation, Uri targetLocation,
-            IConnectionsProvider connectionsProvider,IConnectionsProvider footpathProv,
-            T statsFactory, StatsComparator<T> profileComparator, StatsComparator<T> paretoComparator)
+            Profile<T> profile)
         {
+            if (targetLocation.Equals(departureLocation))
+            {
+                throw new ArgumentException("Departure and target location are the same");
+            }
+
+            _profile = profile;
             _departureLocation = departureLocation;
             _targetLocation = targetLocation;
-            _connectionsProvider = connectionsProvider;
-            _statsFactory = statsFactory;
-            _profileComparator = profileComparator;
-            _paretoFront = new ParetoFrontier<T>(paretoComparator);
+            _connectionsProvider = profile.ConnectionsProvider;
+            _profileComparator = profile.ProfileCompare;
+            _paretoFront = new ParetoFrontier<T>(profile.ParetoCompare);
         }
-        
+
         /// <summary>
         /// Calculate possible journeys from the given provider,
         /// where the Uri points to the timetable of the last allowed arrival at the destination station
@@ -79,7 +85,8 @@ namespace Itinero_Transit.CSA
         /// <returns></returns>
         public HashSet<Journey<T>> CalculateJourneys(DateTime earliestDeparture, DateTime lastArrival)
         {
-            var tt = _connectionsProvider.GetTimeTable(_connectionsProvider.TimeTableIdFor(lastArrival));
+            var tt = _profile.ConnectionsProvider.GetTimeTable(
+                _profile.ConnectionsProvider.TimeTableIdFor(lastArrival));
             while (true)
             {
                 var cons = tt.Connections();
@@ -103,7 +110,6 @@ namespace Itinero_Transit.CSA
         /// <summary>
         /// Handles a connection backwards in time
         /// </summary>
-        /// <param name="c"></param>
         private void AddConnection(IConnection c)
         {
             if (c.DepartureLocation().Equals(_targetLocation))
@@ -122,7 +128,7 @@ namespace Itinero_Transit.CSA
             {
                 // We can arrive in our target location.
                 // We create a new journey and add it
-                var journey = new Journey<T>(_statsFactory.InitialStats(c), c.DepartureTime(), c);
+                var journey = new Journey<T>(_profile.StatsFactory.InitialStats(c), c.DepartureTime(), c);
 
                 ConsiderJourney(c.DepartureLocation(), journey);
                 return;
@@ -150,7 +156,7 @@ namespace Itinero_Transit.CSA
 
                     // The transfer-policy expects two connections: the start and end connection
                     // We build our journey from end to start, thus this is the order we have to pass the arguments
-                    var transferC = _connectionsProvider.CalculateInterConnection(c, j.Connection);
+                    var transferC = _profile.FootpathTransferGenerator.CalculateInterConnection(c, j.Connection);
                     if (transferC == null)
                     {
                         // Transfer-policy deemed this transfer impossible
@@ -201,6 +207,17 @@ namespace Itinero_Transit.CSA
                 // We already return them (it shouldn't matter anyway for the stats)
                 _paretoFront.AddToFrontier(considered.Reverse());
             }
+        }
+
+        /// <summary>
+        /// Returns the profile frontier for a certain departure station.
+        /// Should only be used to debug
+        /// </summary>
+        /// <param name="departureStation"></param>
+        /// <returns></returns>
+        public ParetoFrontier<T> GetProfileFor(Uri departureStation)
+        {
+            return _stationJourneys[departureStation];
         }
     }
 }

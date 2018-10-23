@@ -5,16 +5,14 @@ using Itinero_Transit.CSA.Data;
 
 namespace Itinero_Transit.LinkedData
 {
-    /// <summary>
-    /// A wrapper around any other provider. Will serialize every requested object into the storage (passed during construction).
-    /// If a request is already in the store, the stored version will be returned and the network won't be used.
-    /// (Note that this might disable realtime information.
-    ///
-    /// The 'caching policy' of this provider is simple: retain forever - although the caller can clear the storage.
-    ///
-    ///NOte that 'calculateInterConnection' is _not_ cached
-    /// 
-    /// </summary>
+    /// <inheritdoc />
+    ///  <summary>
+    ///  A wrapper around any other provider. Will serialize every requested object into the storage (passed during construction).
+    ///  If a request is already in the store, the stored version will be returned and the network won't be used.
+    ///  (Note that this might disable realtime information.
+    ///  The 'caching policy' of this provider is simple: retain forever - although the caller can clear the storage.
+    /// NOte that 'calculateInterConnection' is _not_ cached
+    ///  </summary>
     public class LocallyCachedConnectionsProvider : IConnectionsProvider
     {
         private readonly IConnectionsProvider _fallbackProvider;
@@ -42,16 +40,6 @@ namespace Itinero_Transit.LinkedData
         {
             var foundTt = TimeTableContaining(includedTime)?.Id();
             return foundTt ?? _fallbackProvider.TimeTableIdFor(includedTime);
-        }
-
-        public IConnection CalculateInterConnection(IConnection from, IConnection to)
-        {
-            return _fallbackProvider.CalculateInterConnection(from, to);
-        }
-
-        public ILocationProvider LocationProvider()
-        {
-            return _fallbackProvider.LocationProvider();
         }
 
         /// <summary>

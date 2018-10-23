@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection;
 using Itinero_Transit.CSA.LocationProviders;
-using JsonLD.Core;
 
 namespace Itinero_Transit.CSA
 {
@@ -33,5 +32,6 @@ namespace Itinero_Transit.CSA
         IEnumerable<Uri> GetLocationsCloseTo(float lat, float lon, int radiusInMeters);
 
         BoundingBox BBox();
+        IEnumerable<Location> GetLocationByName(string name);
     }
 }

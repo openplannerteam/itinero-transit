@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Itinero_Transit.CSA.ConnectionProviders;
-using Serilog;
 
 namespace Itinero_Transit.CSA
 {
@@ -32,7 +31,7 @@ namespace Itinero_Transit.CSA
         }
 
 
-        public EarliestConnectionScan(List<Journey<T>> userDepartureLocation,
+        public EarliestConnectionScan(IEnumerable<Journey<T>> userDepartureLocation,
             List<Uri> userTargetLocation, IConnectionsProvider connectionsProvider, DateTime? timeOut)
         {
             foreach (var loc in userDepartureLocation)

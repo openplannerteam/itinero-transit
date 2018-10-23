@@ -1,4 +1,6 @@
 ﻿using System;
+using Itinero_Transit.CSA.LocationProviders;
+// ReSharper disable ImpureMethodCallOnReadonlyValueField
 
 namespace Itinero_Transit.CSA
 {
@@ -10,20 +12,23 @@ namespace Itinero_Transit.CSA
     [Serializable()]
     public class InternalTransfer : IConnection
     {
-        private readonly Uri _location, _operator; // TODO should be updated to an Uri indicating the platforms
+        private readonly Uri _location;
         private readonly DateTime _departureTime, _arrivalTime;
 
-        public InternalTransfer(Uri location, Uri operatorId, DateTime arrivalTime, DateTime departureTime)
+        public InternalTransfer(Uri location, DateTime departureTime, DateTime arrivalTime)
         {
             _location = location;
             _arrivalTime = arrivalTime;
             _departureTime = departureTime;
-            _operator = operatorId;
+            if (arrivalTime < departureTime)
+            {
+                throw new ArgumentException("You are walking to the past; arrivalTime < departuretime");
+            }
         }
 
         public Uri Operator()
         {
-            return _operator;
+            return null;
         }
 
         public string Mode()
@@ -73,7 +78,12 @@ namespace Itinero_Transit.CSA
 
         public override string ToString()
         {
-            return $"Transfer in {_location} {_departureTime} --> {_arrivalTime}";
+            return ToString(null);
+        }
+
+        public string ToString(ILocationProvider locDecode)
+        {
+            return $"Transfer in {locDecode.GetNameOf(_location)} {_departureTime} --> {_arrivalTime}";
         }
 
         public override bool Equals(object obj)
@@ -88,9 +98,9 @@ namespace Itinero_Transit.CSA
 
         private bool Equals(InternalTransfer other)
         {
-            return Equals(_location, other._location) && Equals(_operator, other._operator) &&
-                   // ReSharper disable once ImpureMethodCallOnReadonlyValueField
-                   _departureTime.Equals(other._departureTime) && _arrivalTime.Equals(other._arrivalTime);
+            return Equals(_location, other._location) &&
+                   _departureTime.Equals(other._departureTime) && 
+                   _arrivalTime.Equals(other._arrivalTime);
         }
 
         public override int GetHashCode()
@@ -98,7 +108,6 @@ namespace Itinero_Transit.CSA
             unchecked
             {
                 var hashCode = (_location != null ? _location.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (_operator != null ? _operator.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ _departureTime.GetHashCode();
                 hashCode = (hashCode * 397) ^ _arrivalTime.GetHashCode();
                 return hashCode;

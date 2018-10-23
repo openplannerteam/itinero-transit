@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
 {
+    /// <inheritdoc cref="ILocationProvider" />
     /// <summary>
     /// This class is (on of) the actual classes that searches station locations.
     /// It's a very naive implementation - a brute force (but simple) approach.
@@ -15,15 +16,16 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
     [Serializable]
     public class LocationsFragment : LinkedObject, ILocationProvider
     {
-        private readonly Reminiscence.Collections.List<Location> _locations =
-            new Reminiscence.Collections.List<Location>();
+        private readonly List<Location> _locations = new List<Location>();
 
         private readonly Dictionary<string, Location> _locationMapping = new Dictionary<string, Location>();
 
         private readonly Dictionary<string, HashSet<Location>> _nameMapping =
             new Dictionary<string, HashSet<Location>>();
 
-        private BoundingBox _bounds;
+        private float _minLat, _maxLat, _minLon, _maxLon;
+
+        [NonSerialized] private BoundingBox _bounds;
 
         public LocationsFragment(Uri uri) : base(uri)
         {
@@ -31,10 +33,10 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
 
         protected override void FromJson(JObject json)
         {
-            var minLat = 180f;
-            var minLon = 180f;
-            var maxLat = -180f;
-            var maxLon = -180f;
+            _minLat = 180f;
+            _minLon = 180f;
+            _maxLat = -180f;
+            _maxLon = -180f;
             foreach (var loc in json["@graph"])
             {
                 var l = new Location((JObject) loc);
@@ -48,13 +50,11 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
 
                 _nameMapping[l.Name].Add(l);
 
-                minLat = Math.Min(l.Lat, minLat);
-                minLon = Math.Min(l.Lon, minLon);
-                maxLat = Math.Max(l.Lat, maxLat);
-                maxLon = Math.Max(l.Lon, maxLon);
+                _minLat = Math.Min(l.Lat, _minLat);
+                _minLon = Math.Min(l.Lon, _minLon);
+                _maxLat = Math.Max(l.Lat, _maxLat);
+                _maxLon = Math.Max(l.Lon, _maxLon);
             }
-
-            _bounds = new BoundingBox(minLat, maxLat, minLon, maxLon);
         }
 
         public override string ToString()
@@ -91,7 +91,8 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
             return _locationMapping[locationId.ToString()];
         }
 
-        public HashSet<Location> GetLocationByName(string name)
+        // ReSharper disable once UnusedMember.Global
+        public IEnumerable<Location> GetLocationByName(string name)
         {
             return _nameMapping[name];
         }
@@ -100,10 +101,10 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
         {
             if (radiusInMeters < 1)
             {
-                throw new ArgumentNullException("The radius in which locations are sought, should be at least 1m");
+                throw new ArgumentException("The radius in which locations are sought, should be at least 1m");
             }
 
-            if (!_bounds.Overlaps(new BoundingBox(lat, lon, radiusInMeters)))
+            if (!BBox().Overlaps(new BoundingBox(lat, lon, radiusInMeters)))
             {
                 return Enumerable.Empty<Uri>();
             }
@@ -125,7 +126,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
 
         public BoundingBox BBox()
         {
-            return _bounds;
+            return _bounds ?? (_bounds = new BoundingBox(_minLat, _maxLat, _minLon, _maxLon));
         }
     }
 }

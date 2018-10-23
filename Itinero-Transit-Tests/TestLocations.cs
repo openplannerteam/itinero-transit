@@ -7,7 +7,7 @@ using Itinero_Transit.LinkedData;
 using JsonLD.Core;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Sdk;
+// ReSharper disable PossibleMultipleEnumeration
 
 namespace Itinero_Transit_Tests
 {

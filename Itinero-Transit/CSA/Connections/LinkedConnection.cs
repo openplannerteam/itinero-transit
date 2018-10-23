@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using Itinero_Transit.CSA.LocationProviders;
 using Itinero_Transit.LinkedData;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
+// ReSharper disable MemberCanBePrivate.Global
 
 
 namespace Itinero_Transit.CSA
@@ -11,9 +13,6 @@ namespace Itinero_Transit.CSA
      * A connection represents a single connection someone can take.
      * It consists of a departure and arrival stop, departure and arrival time.
      * Note that a connection does _never_ have intermediate stops.
-     *
-     * The saved data is more then useful for barebones route planner, it is simply everything that IRail offered
-     * 
      */
     [Serializable()]
     public class LinkedConnection : LinkedObject, IConnection
@@ -42,6 +41,7 @@ namespace Itinero_Transit.CSA
         public Uri GtfsRoute { get; set; }
 
 
+        // ReSharper disable once UnusedMember.Global
         public LinkedConnection(Uri uri) : base(uri)
         {
         }
@@ -55,11 +55,16 @@ namespace Itinero_Transit.CSA
 
         public override string ToString()
         {
-            return
-                $"Linked Connection {DepartureStop} {DepartureTime:yyyy-MM-dd HH:mm:ss} --> {ArrivalStop}" +
-                $" {ArrivalTime:yyyy-MM-dd HH:mm:ss}\n    Direction {Direction} ({Uri})";
+            return ToString(null);
         }
 
+
+        public string ToString(ILocationProvider locationDecoder)
+        {
+            return
+                $"Linked Connection {locationDecoder.GetNameOf(DepartureStop)} {DepartureTime:yyyy-MM-dd HH:mm:ss} --> {locationDecoder.GetNameOf(ArrivalStop)}" +
+                $" {ArrivalTime:yyyy-MM-dd HH:mm:ss}\n    Direction {Direction} ({Uri})";
+        }
         
       
         protected sealed override void FromJson(JObject json)
@@ -84,12 +89,11 @@ namespace Itinero_Transit.CSA
             
             if (ArrivalTime <= DepartureTime)
             {
-                // TODO This is a workaround for issue https://github.com/iRail/iRail/issues/361
-                // Sometimes, a departure delay is already known but the arrivaldelay is not known yet
+                // Sometimes, a departure delay is already known but the arrival delay is not known yet
                 // Thus, the arrivalDelay defaults to 0
-                // This can lead to (esp. on short connections of only a few minutes) departuretimes which lie _after_
-                // the arrivaltime
-                // We fix this by estimating the arrivaldelay to be equal to the departureDelay
+                // This can lead to (esp. on short connections of only a few minutes) departure times which lie _after_
+                // the arrival time
+                // We fix this by estimating the arrival delay to be equal to the departureDelay
                 depDel += arrDel;
                 ArrivalTime = ArrivalTime.AddSeconds(depDel);
             }
@@ -159,7 +163,7 @@ namespace Itinero_Transit.CSA
             return false;
         }
 
-        protected bool Equals(LinkedConnection other)
+        private bool Equals(LinkedConnection other)
         {
             return Equals(DepartureStop, other.DepartureStop) 
                    && Equals(ArrivalStop, other.ArrivalStop)

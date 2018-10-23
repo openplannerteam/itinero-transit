@@ -1,62 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Itinero_Transit.CSA;
 using Itinero_Transit.CSA.ConnectionProviders;
-using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection.TreeTraverse;
+using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection;
 using Itinero_Transit.CSA.Data;
-using Itinero_Transit.CSA.LocationProviders;
 using Itinero_Transit.LinkedData;
 using JsonLD.Core;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
 
+// ReSharper disable PossibleMultipleEnumeration
+
 namespace Itinero_Transit
 {
     public static class Program
     {
-        private static void TestStuff(Downloader loader)
+        // ReSharper disable once UnusedParameter.Local
+        private static void TestStuff(IDocumentLoader loader)
         {
-            var delijn = new DeLijnProvider(loader);
-            var prov = new LocallyCachedConnectionsProvider(delijn, new LocalStorage("storage"));
-            var closeToHome = prov.GetLocationsCloseTo(51.21576f, 3.22f, 250);
+            var storage = new LocalStorage("cache/delijn");
+            var delijn = DeLijn.Profile(loader, storage, "belgium.routerdb");
 
-            var closeToTarget = prov.GetLocationsCloseTo(51.19738f, 3.21736f, 500);
+            var ezelpoort =
+                new Uri("https://data.delijn.be/stops/502101"); // or 502102 for the other location at ezelpoort
+            var stationPerron2 = new Uri("https://data.delijn.be/stops/500042");
+            var pcs = new ProfiledConnectionScan<TransferStats>(
+                ezelpoort, stationPerron2, delijn);
 
-            Log.Information($"Found {closeToHome.Count()} stops closeby, {closeToTarget.Count()} where we have to go");
+            var startDate = new DateTime(2018, 10, 23, 16, 00, 00);
+            var endTime = new DateTime(2018, 10, 23, 17, 00, 00);
 
-            var testTime = new DateTime(2018, 10, 23, 10, 00, 00);
-            var failOver = new DateTime(2018, 10, 23, 11, 00, 00);
+            var journeys = pcs.CalculateJourneys(startDate, endTime);
 
-            List<Journey<TransferStats>> startJourneys = new List<Journey<TransferStats>>();
-            foreach (var uri in closeToHome)
-            {
-                Log.Information($"{uri} ({prov.GetCoordinateFor(uri).Name})");
-                startJourneys.Add(new Journey<TransferStats>(uri, testTime, TransferStats.Factory));
-            }
-
-            foreach (var uri in closeToTarget)
-            {
-                Log.Information($"> {uri} ({prov.GetCoordinateFor(uri).Name})");
-            }
-
-            var eas = new EarliestConnectionScan<TransferStats>(
-                startJourneys, new List<Uri>(closeToTarget), prov, failOver);
+            var front = pcs.GetProfileFor(ezelpoort);
             
-            var j = eas.CalculateJourney();
-            Log.Information(j.ToString());
+            foreach (var journey in front.Frontier)
+            {
+                Log.Information(journey.ToString(delijn.LocationProvider));
+            }
+
+
+            var sncb = Sncb.Profile(loader, new LocalStorage("cache/sncb"), "belgium.routerdb");
+            var brugge = new List<Location>(sncb.LocationProvider.GetLocationByName("Brugge"))[0];
+            var brussel = new List<Location>(sncb.LocationProvider.GetLocationByName("Brussel-Centraal/Bruxelles-Central"))[0];
+            
+            pcs = new ProfiledConnectionScan<TransferStats>(brugge.Uri, brussel.Uri, sncb);
+            var js = pcs.CalculateJourneys(DateTime.Now, DateTime.Now.AddHours(2));
+            foreach (var j in js)
+            {
+                Log.Information(j.ToString(sncb.LocationProvider));
+            }
         }
+        
+        
 
 
+        // ReSharper disable once UnusedParameter.Local
         private static void Main(string[] args)
         {
             ConfigureLogging();
 
             Log.Information("Starting...");
             var startTime = DateTime.Now;
-            var loader = new Downloader(caching: false);
+            var loader = new Downloader();
             try
             {
                 TestStuff(loader);
@@ -70,14 +78,6 @@ namespace Itinero_Transit
             Log.Information($"Calculating took {(endTime - startTime).TotalSeconds}");
             Log.Information(
                 $"Downloading {loader.DownloadCounter} entries took {loader.TimeDownloading / 1000} sec; got {loader.CacheHits} cache hits");
-        }
-
-        private static Downloader DownloadEntireSNCBDay(DateTime start)
-        {
-            var sncbprov = new SncbConnectionProvider();
-            var prov = new LocallyCachedConnectionsProvider(sncbprov, new LocalStorage("testdata"));
-            prov.DownloadDay(start);
-            return sncbprov.Downloader;
         }
 
 

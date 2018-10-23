@@ -70,7 +70,9 @@ namespace Itinero_Transit.CSA
         /// </summary>
         /// <returns></returns>
         bool Continuous();
-        
-        
+
+
+        string ToString(ILocationProvider locationDecoder);
+
     }
 }

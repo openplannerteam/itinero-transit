@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using Itinero.LocalGeo;
 using Itinero_Transit.LinkedData;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
-using Serilog;
 
 namespace Itinero_Transit.CSA.LocationProviders
 {
@@ -124,8 +122,9 @@ namespace Itinero_Transit.CSA.LocationProviders
                 childRelation.AssertTypeIs("https://w3id.org/tree#GeospatiallyContainsRelation");
 
                 var childs = (JArray) childRelation["https://w3id.org/tree#child"];
-                foreach (JObject child in childs)
+                foreach (var jToken in childs)
                 {
+                    var child = (JObject) jToken;
                     child.AssertTypeIs("https://w3id.org/tree#Node");
 
                     // We add the bounds and the ID to find our way around
@@ -225,12 +224,12 @@ namespace Itinero_Transit.CSA.LocationProviders
 
             foreach (var coor in parts)
             {
-                var coordinate = new Coordinate(extractValue(coor, 1), extractValue(coor, 0));
+                var coordinate = new Coordinate(ExtractValue(coor, 1), ExtractValue(coor, 0));
                 _outline.ExteriorRing.Add(coordinate);
             }
         }
 
-        private static float extractValue(string coordinate, int index)
+        private static float ExtractValue(string coordinate, int index)
         {
             return float.Parse(coordinate.Split()[index]);
         }

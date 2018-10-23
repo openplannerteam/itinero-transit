@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Itinero_Transit.CSA.LocationProviders;
-using Itinero_Transit.LinkedData;
 using JsonLD.Core;
-using Serilog;
 
 namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection.TreeTraverse
 {
@@ -48,7 +46,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection.TreeTraverse
         }
 
         /// <summary>
-        /// Gives the fragment name; chaches the fragment if needed
+        /// Gives the fragment name; chaching the fragment if needed
         /// </summary>
         /// <param name="locationId"></param>
         /// <returns></returns>
@@ -93,6 +91,11 @@ namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection.TreeTraverse
         public BoundingBox BBox()
         {
             return _root.BBox();
+        }
+
+        public IEnumerable<Location> GetLocationByName(string name)
+        {
+            throw new NotImplementedException();
         }
     }
 }
