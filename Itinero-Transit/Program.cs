@@ -42,16 +42,6 @@ namespace Itinero_Transit
             }
 
 
-            var sncb = Sncb.Profile(loader, new LocalStorage("cache/sncb"), "belgium.routerdb");
-            var brugge = new List<Location>(sncb.LocationProvider.GetLocationByName("Brugge"))[0];
-            var brussel = new List<Location>(sncb.LocationProvider.GetLocationByName("Brussel-Centraal/Bruxelles-Central"))[0];
-            
-            pcs = new ProfiledConnectionScan<TransferStats>(brugge.Uri, brussel.Uri, sncb);
-            var js = pcs.CalculateJourneys(DateTime.Now, DateTime.Now.AddHours(2));
-            foreach (var j in js)
-            {
-                Log.Information(j.ToString(sncb.LocationProvider));
-            }
         }
         
         

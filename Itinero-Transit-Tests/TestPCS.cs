@@ -31,7 +31,7 @@ namespace Itinero_Transit_Tests
             var journeys = pcs.CalculateJourneys(new DateTime(2018, 10, 17, 10, 00, 00),
                 new DateTime(2018, 10, 17, 12, 00, 00));
 
-            Assert.Equal(2, journeys.Count);
+            Assert.Equal(9, journeys.Count);
             Assert.Equal("00:22:00", journeys.ToList()[0].Stats.TravelTime.ToString());
         }
 
@@ -55,7 +55,7 @@ namespace Itinero_Transit_Tests
                     $"Journey: {j.Connection.DepartureTime():HH:mm:ss} --> {j.First().Connection.ArrivalTime():HH:mm:ss}, {j.Stats.NumberOfTransfers} transfers");
             }
 
-            Assert.Equal(3, journeys.Count);
+            Assert.Equal(5, journeys.Count);
         }
 
         // ReSharper disable once UnusedMember.Local

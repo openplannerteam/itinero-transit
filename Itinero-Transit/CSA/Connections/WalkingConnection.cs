@@ -10,7 +10,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders
     ///
     /// Note that a 'WalkingConnection' might also be used to start or end a journey
     /// </summary>
-    public class WalkingConnection : IConnection
+    public class WalkingConnection : IContinuousConnection
     {
         private readonly Uri _arrivalLocation, _departureLocation;
         private readonly DateTime _arrivalTime, _departureTime;
@@ -41,6 +41,17 @@ namespace Itinero_Transit.CSA.ConnectionProviders
             _departureTime = departureTime;
             _arrivalTime = departureTime.AddSeconds(route.TotalDistance * speed);
         }
+        
+        
+        public WalkingConnection(Route route, Uri departureLocation, Uri arrivalLocation, DateTime departureTime, DateTime arrivalTime)
+        {
+            _route = route;
+            _departureLocation = departureLocation;
+            _arrivalLocation = arrivalLocation;
+
+            _departureTime = departureTime;
+            _arrivalTime = arrivalTime;
+        }
 
 
         public string ToString(ILocationProvider locDecode)
@@ -48,6 +59,11 @@ namespace Itinero_Transit.CSA.ConnectionProviders
             return _route == null ?
                 $"Genesis connection at {locDecode.GetNameOf(_departureLocation)} {_departureTime}" : 
                 $"Walk from {locDecode.GetNameOf(_departureLocation)} to {locDecode.GetNameOf(_arrivalLocation)}, this takes {_route.TotalTime}sec ({_route.TotalDistance}m)";
+        }
+
+        public IContinuousConnection MoveTime(int seconds)
+        {
+            return new WalkingConnection(_route, _departureLocation, _arrivalLocation, _departureTime.AddSeconds(seconds), _arrivalTime.AddSeconds(seconds));
         }
 
         public Uri DepartureLocation()

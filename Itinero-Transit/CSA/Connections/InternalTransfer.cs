@@ -1,5 +1,6 @@
 ﻿using System;
 using Itinero_Transit.CSA.LocationProviders;
+
 // ReSharper disable ImpureMethodCallOnReadonlyValueField
 
 namespace Itinero_Transit.CSA
@@ -10,7 +11,7 @@ namespace Itinero_Transit.CSA
     /// They give a fixed transfer time. Normally, the locations of both connections should be the same.
     /// </summary>
     [Serializable()]
-    public class InternalTransfer : IConnection
+    public class InternalTransfer : IContinuousConnection
     {
         private readonly Uri _location;
         private readonly DateTime _departureTime, _arrivalTime;
@@ -86,6 +87,12 @@ namespace Itinero_Transit.CSA
             return $"Transfer in {locDecode.GetNameOf(_location)} {_departureTime} --> {_arrivalTime}";
         }
 
+        public IContinuousConnection MoveTime(int seconds)
+        {
+            return new InternalTransfer(_location, _departureTime.AddSeconds(seconds),
+                _arrivalTime.AddSeconds(seconds));
+        }
+
         public override bool Equals(object obj)
         {
             if (!(obj is InternalTransfer tr))
@@ -99,7 +106,7 @@ namespace Itinero_Transit.CSA
         private bool Equals(InternalTransfer other)
         {
             return Equals(_location, other._location) &&
-                   _departureTime.Equals(other._departureTime) && 
+                   _departureTime.Equals(other._departureTime) &&
                    _arrivalTime.Equals(other._arrivalTime);
         }
 

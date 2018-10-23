@@ -45,7 +45,7 @@ namespace Itinero_Transit_Tests
         public void TestSearchTimeTable()
         {
             var storage = new LocalStorage("timetables-for-testing-2018-10-17");
-            Assert.Equal(340, storage.KnownKeys().Count);
+            Assert.Equal(341, storage.KnownKeys().Count);
 
             var loader = new Downloader();
 

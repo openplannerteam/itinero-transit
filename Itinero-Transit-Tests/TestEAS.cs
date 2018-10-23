@@ -50,7 +50,7 @@ namespace Itinero_Transit_Tests
             Log(journey.ToString());
             Assert.Equal("2018-10-17T10:49:00.0000000", $"{journey.Time:O}");
             Assert.Equal("00:39:00", journey.Stats.TravelTime.ToString());
-            Assert.Equal(0, journey.Stats.NumberOfTransfers);
+            Assert.Equal(1, journey.Stats.NumberOfTransfers);
         }
 
 
@@ -110,7 +110,7 @@ namespace Itinero_Transit_Tests
                 startJourneys, new List<Uri>(closeToTarget), deLijn.ConnectionsProvider, failOver);
             Log("Starting AES");
             var j = eas.CalculateJourney();
-            Assert.Equal(3, j.Stats.NumberOfTransfers);
+            Assert.Equal(4, j.Stats.NumberOfTransfers);
             Log("Done");
         }
 

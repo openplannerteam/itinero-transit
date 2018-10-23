@@ -22,13 +22,6 @@ namespace Itinero_Transit.CSA
 
         private readonly StatsComparator<T> _profileComparator;
 
-        /// <summary>
-        /// When a journey is found from the departure station to the arrival station,
-        /// it will have certain stats.
-        /// Only journeys performing as good as this journey 
-        /// </summary>
-        private readonly ParetoFrontier<T> _paretoFront;
-
         private readonly IConnectionsProvider _connectionsProvider;
 
 
@@ -49,8 +42,8 @@ namespace Itinero_Transit.CSA
         ///  The profile is used for quite some parameters:
         /// 
         ///  - connectionsProvider: The object providing connections of a transit operator
-        ///  - LocationsProvider: provides mapping of a locationID onto coordinates and searches closeby stops
-        ///  - FoothpathGenerator: provides (intermodal) transfers 
+        ///  - LocationsProvider: provides mapping of a locationID onto coordinates and searches close by stops
+        ///  - FootpathGenerator: provides (intermodal) transfers 
         ///  - statsFactory: The object creating the statistics for each journey
         ///  - profileComparator: An object comparing statistics which compares using profiles. Important:
         ///      This comparator should _not_ filter out journeys with a suboptimal time length, but only filter shadowed time travels.
@@ -75,7 +68,6 @@ namespace Itinero_Transit.CSA
             _targetLocation = targetLocation;
             _connectionsProvider = profile.ConnectionsProvider;
             _profileComparator = profile.ProfileCompare;
-            _paretoFront = new ParetoFrontier<T>(profile.ParetoCompare);
         }
 
         /// <summary>
@@ -97,7 +89,7 @@ namespace Itinero_Transit.CSA
                     if (c.DepartureTime() < earliestDeparture)
                     {
                         // We're done! Returning values
-                        return _paretoFront.Frontier;
+                        return _stationJourneys[_departureLocation].Frontier;
                     }
 
                     AddConnection(c);
@@ -193,20 +185,7 @@ namespace Itinero_Transit.CSA
 
             var startJourneys = _stationJourneys[startStation];
 
-            // Compare with the already known total journeys
-            if (!_paretoFront.OnTheFrontier(considered))
-            {
-                // We won't be able to outperform an already known total route, especially because this is a partial route
-                return;
-            }
-
             startJourneys.AddToFrontier(considered); // List is still shared with the dictionary
-            if (startStation.Equals(_departureLocation))
-            {
-                // The Frontier is what will be returned; the journeys here are constructed in reverse order
-                // We already return them (it shouldn't matter anyway for the stats)
-                _paretoFront.AddToFrontier(considered.Reverse());
-            }
         }
 
         /// <summary>

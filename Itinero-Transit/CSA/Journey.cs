@@ -119,7 +119,83 @@ namespace Itinero_Transit.CSA
         /// <returns></returns>
         public Journey<T> Prune()
         {
-            throw new NotImplementedException(); // TODO
+            var connections = AllConnections();
+
+            Journey<T> prunedJourney = null;
+            IContinuousConnection cc = null;
+            foreach (var connection in connections)
+            {
+                if (connection.ArrivalLocation().Equals(connection.DepartureLocation()))
+                {
+                    // Let's throw away useless (genesis) connections
+                    continue;
+                }
+
+                if (prunedJourney == null)
+                {
+                    prunedJourney = new Journey<T>(Stats.InitialStats(connection),
+                        connection.DepartureTime(), connection);
+                    continue;
+                }
+
+                cc = prunedJourney.Connection as IContinuousConnection;
+                if (cc != null && prunedJourney.PreviousLink == null)
+                {
+                    // We are considering the first connection - which is continuous
+                    // A continuous connection can be moved in time
+                    var diff = connection.DepartureTime() - prunedJourney.Connection.ArrivalTime();
+                    cc = cc.MoveTime((int) diff.TotalSeconds);
+                    prunedJourney = new Journey<T>(Stats.InitialStats(cc), cc.DepartureTime(), cc);
+                }
+
+                // Add the current connection to the journey
+                prunedJourney = new Journey<T>(prunedJourney, prunedJourney.Time, connection);
+            }
+
+            // Cleanup the last links
+            var lastConn = prunedJourney.Connection;
+            while (lastConn.ArrivalLocation().Equals(lastConn.DepartureLocation()))
+            {
+                // Remove 'empty' trailing links
+                prunedJourney = prunedJourney.PreviousLink;
+                lastConn = prunedJourney.Connection;
+            }
+
+            // Move the last walking transfer neatly
+            cc = lastConn as IContinuousConnection;
+            if (cc != null)
+            {
+                var diff = (int) (prunedJourney.PreviousLink.Connection.ArrivalTime()
+                                  - cc.DepartureTime()).TotalSeconds;
+                prunedJourney = new Journey<T>(prunedJourney.PreviousLink, prunedJourney.Time,
+                    cc.MoveTime(diff));
+            }
+
+            return prunedJourney;
+        }
+
+        public List<IConnection> AllConnections()
+        {
+            if (PreviousLink == null)
+            {
+                return new List<IConnection> {Connection};
+            }
+
+            var list = PreviousLink.AllConnections();
+            list.Add(Connection);
+            return list;
+        }
+
+        /// <summary>
+        /// Returns the tripID of the current connection.
+        /// If the current connection does not have a trip ID,
+        /// returns the last trip of the previouslink
+        /// </summary>
+        /// <returns></returns>
+        public Uri GetLastTripID()
+        {
+            return Connection.Trip() ??
+                   PreviousLink?.GetLastTripID();
         }
 
 
@@ -131,8 +207,7 @@ namespace Itinero_Transit.CSA
 
         public string ToString(ILocationProvider locDecode)
         {
-            var res = PreviousLink == null ? $"JOURNEY ({Time:O}): \n" :
-                PreviousLink.ToString(locDecode);
+            var res = PreviousLink == null ? $"JOURNEY ({Time:O}): \n" : PreviousLink.ToString(locDecode);
             res += "  " + (Connection == null ? "-- No connection given--" : Connection.ToString(locDecode)) + "\n";
             res += "    " + (Stats == null ? "-- No stats -- " : Stats.ToString()) + "\n";
             return res;
