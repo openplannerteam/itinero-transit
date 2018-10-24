@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Itinero_Transit.CSA;
 using Itinero_Transit.CSA.ConnectionProviders;
-using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection;
 using Itinero_Transit.CSA.Data;
+using Itinero_Transit.CSA.LocationProviders;
 using Itinero_Transit.LinkedData;
 using JsonLD.Core;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
-
-// ReSharper disable PossibleMultipleEnumeration
 
 namespace Itinero_Transit
 {
@@ -21,30 +20,56 @@ namespace Itinero_Transit
         private static void TestStuff(IDocumentLoader loader)
         {
             var storage = new LocalStorage("cache/delijn");
-            var delijn = DeLijn.Profile(loader, storage, "belgium.routerdb");
+            var deLijn = DeLijn.Profile(loader, storage, "belgium.routerdb");
 
-            var ezelpoort =
-                new Uri("https://data.delijn.be/stops/502101"); // or 502102 for the other location at ezelpoort
-            var stationPerron2 = new Uri("https://data.delijn.be/stops/500042");
-            var pcs = new ProfiledConnectionScan<TransferStats>(
-                ezelpoort, stationPerron2, delijn);
-
-            var startDate = new DateTime(2018, 10, 23, 16, 00, 00);
-            var endTime = new DateTime(2018, 10, 23, 17, 00, 00);
-
-            var journeys = pcs.CalculateJourneys(startDate, endTime);
-
-            var front = pcs.GetProfileFor(ezelpoort);
-            
-            foreach (var journey in front.Frontier)
+            var stops = new List<Uri>
             {
-                Log.Information(journey.ToString(delijn.LocationProvider));
+                new Uri("https://data.delijn.be/stops/502101"),
+                new Uri("https://data.delijn.be/stops/507084"),
+                new Uri("https://data.delijn.be/stops/507681"),
+                new Uri("https://data.delijn.be/stops/507080"),
+                new Uri("https://data.delijn.be/stops/500042")
+            };
+
+
+            var startDate = new DateTime(2018, 10, 24, 16, 30, 00);
+            var endTime = new DateTime(2018, 10, 24, 17, 00, 00);
+            var home = new Uri("https://www.openstreetmap.org/#map=19/51.21576/3.22048");
+            var startLocation = OsmLocationMapping.Singleton.GetCoordinateFor(home);
+
+            var station = new Uri("https://www.openstreetmap.org/#map=18/51.19738/3.21830");
+            var endLocation = OsmLocationMapping.Singleton.GetCoordinateFor(station);
+
+            var starts = deLijn.LocationProvider.GetLocationsCloseTo(startLocation.Lat, startLocation.Lon, 250);
+            var ends = deLijn.WalkFromClosebyStops(endTime, endLocation, 250);
+
+            var pcs = new ProfiledConnectionScan<TransferStats>(
+                starts, ends, startDate, endTime, deLijn);
+
+
+            var journeys = pcs.CalculateJourneys();
+            var found = 0;
+            foreach (var key in journeys.Keys)
+            {
+                var journeysFromPtStop = journeys[key];
+                var target = deLijn.LocationProvider.GetCoordinateFor(new Uri(key));
+                var walk = deLijn.FootpathTransferGenerator.GenerateFootPaths(startDate, startLocation, target);
+
+
+                foreach (var journey in journeysFromPtStop)
+                {
+                    var diff = (walk.ArrivalTime() - journey.Connection.DepartureTime()).TotalSeconds;
+                    var totalJourney = new Journey<TransferStats>(journey, walk.MoveTime(-diff));
+
+
+                    Log.Information(totalJourney.ToString(deLijn.LocationProvider));
+                }
+
+                found += journeysFromPtStop.Count();
             }
 
-
+            Log.Information($"Got {found} profiles");
         }
-        
-        
 
 
         // ReSharper disable once UnusedParameter.Local
@@ -67,7 +92,7 @@ namespace Itinero_Transit
             var endTime = DateTime.Now;
             Log.Information($"Calculating took {(endTime - startTime).TotalSeconds}");
             Log.Information(
-                $"Downloading {loader.DownloadCounter} entries took {loader.TimeDownloading / 1000} sec; got {loader.CacheHits} cache hits");
+                $"Downloading {loader.DownloadCounter} entries took {loader.TimeDownloading} sec; got {loader.CacheHits} cache hits");
         }
 
 

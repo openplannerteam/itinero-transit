@@ -30,7 +30,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders
         {
             var conns = new LocallyCachedConnectionsProvider(new LinkedConnectionProvider(Hydra(loader)), storage);
             var loc = LocationProvider(loader, storage);
-            var footpath = new TransferGenerator(loc, routerdbPath);
+            var footpath = new TransferGenerator(routerdbPath);
 
             return new Profile<TransferStats>(conns, loc, footpath,
                 TransferStats.Factory, TransferStats.ProfileCompare, TransferStats.ParetoCompare);
@@ -55,7 +55,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders
                 var lf = new CachedLocationsFragment(prov, proc, storage);
                 locations.Add(lf);
             }
-            
+            locations.Add(OsmLocationMapping.Singleton);
             return new LocationCombiner(locations);
         }
         

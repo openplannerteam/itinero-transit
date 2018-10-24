@@ -32,11 +32,11 @@ namespace Itinero_Transit_Tests
             var loader = new Downloader();
             var deLijn = DeLijn.LocationProvider(loader, new LocalStorage("DeLijn"));
             Log("Creating WCP");
-            var wcp = new TransferGenerator(deLijn,
-                "belgium.routerdb");
+            var wcp = new TransferGenerator("belgium.routerdb");
 
             DateTime start = DateTime.Now;
-            var wt = wcp.GenerateFootPaths(start, Howest, Ezelspoort);
+            var wt = wcp.GenerateFootPaths(start, deLijn.GetCoordinateFor(Howest),
+                deLijn.GetCoordinateFor(Ezelspoort));
             Log(wt.ToString());
             Assert.Equal(565, (int) (wt.ArrivalTime() - wt.DepartureTime()).TotalSeconds);
         }

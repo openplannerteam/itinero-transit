@@ -15,7 +15,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders
             var prov = new LocallyCachedConnectionsProvider(
                 new LinkedConnectionProvider(HydraSearch(loader)), storage);
             var loc = Location(storage);
-            var footpaths = new TransferGenerator(loc, routerdbPath);
+            var footpaths = new TransferGenerator(routerdbPath);
             return new Profile<TransferStats>(prov, loc, footpaths,
                 TransferStats.Factory, TransferStats.ProfileCompare, TransferStats.ParetoCompare);
         }

@@ -50,7 +50,9 @@ namespace Itinero_Transit.CSA
 
             if (c.Trip() != null && c.Trip().Equals(journey.PreviousLink.Connection.Trip()))
             {
-                var transfertime = (c.DepartureTime() - journey.PreviousLink.Time).TotalSeconds;
+                // TODO check transfertime for forward and backward situations
+                var transfertime = (c.DepartureTime() - journey.PreviousLink.Connection.ArrivalTime())
+                    .TotalSeconds;
                 return new AdvancedStats()
                 {
                     NumberOfTransfers = NumberOfTransfers + 1, //

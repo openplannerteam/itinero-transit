@@ -15,6 +15,7 @@ namespace Itinero_Transit.CSA
         private readonly List<Uri> _userTargetLocation;
 
         private readonly IConnectionsProvider _connectionsProvider;
+        private readonly Profile<T> _profile;
         private readonly DateTime? _failMoment;
 
         /// <summary>
@@ -22,25 +23,26 @@ namespace Itinero_Transit.CSA
         /// </summary>
         private readonly Dictionary<string, Journey<T>> _s = new Dictionary<string, Journey<T>>();
 
-        public EarliestConnectionScan(Uri userDepartureLocation, DateTime departureTime,
-            Uri userTargetLocation,
-            T statsFactory, IConnectionsProvider connectionsProvider, DateTime? timeOut = null) :
-            this(new List<Journey<T>> {new Journey<T>(userDepartureLocation, departureTime, statsFactory)},
-                new List<Uri> {userTargetLocation}, connectionsProvider, timeOut)
+        public EarliestConnectionScan(Uri userDepartureLocation, Uri userTargetLocation,
+            DateTime departureTime, DateTime timeOut,
+            Profile<T> profile) :
+            this(new List<Journey<T>> {new Journey<T>(userDepartureLocation, departureTime, profile.StatsFactory)},
+                new List<Uri> {userTargetLocation}, profile, timeOut)
         {
         }
 
 
         public EarliestConnectionScan(IEnumerable<Journey<T>> userDepartureLocation,
-            List<Uri> userTargetLocation, IConnectionsProvider connectionsProvider, DateTime? timeOut)
+            List<Uri> userTargetLocation, Profile<T> profile, DateTime? timeOut)
         {
             foreach (var loc in userDepartureLocation)
             {
                 _s.Add(loc.Connection.ArrivalLocation().ToString(), loc);
             }
 
+            _profile = profile;
             _userTargetLocation = userTargetLocation;
-            _connectionsProvider = connectionsProvider;
+            _connectionsProvider = profile.ConnectionsProvider;
             _failMoment = timeOut;
         }
 
@@ -75,6 +77,7 @@ namespace Itinero_Transit.CSA
                     {
                         throw new Exception("Timeout: could not calculate a route within the given time");
                     }
+
                     if (c.DepartureTime() > currentBestArrival)
                     {
                         GetBestTime(out var bestTarget);
@@ -98,7 +101,7 @@ namespace Itinero_Transit.CSA
             bestTarget = null;
             foreach (var targetLoc in _userTargetLocation)
             {
-                var arrival = GetJourneyTo(targetLoc).Time;
+                var arrival = GetJourneyTo(targetLoc).Connection.ArrivalTime();
 
                 if (arrival < currentBestArrival)
                 {
@@ -129,13 +132,28 @@ namespace Itinero_Transit.CSA
             }
 
 
-            if (c.DepartureTime() <= journeyTillStop.Time)
+            if (c.DepartureTime() < journeyTillStop.Connection.ArrivalTime())
             {
                 // This connection has already left before we can make it to the stop
                 return;
             }
 
-            if (c.ArrivalTime() > GetJourneyTo(c.ArrivalLocation()).Time)
+            // TODO remove cheat: change .Route back to .Trip when delijn fixes their GTFS
+            if (journeyTillStop.GetLastTripId() != null &&
+                !Equals(journeyTillStop.Connection.Route(), c.Route()))
+            {
+                // We have to transfer vehicles
+                var transfer =
+                    _profile.CalculateInterConnection(journeyTillStop.Connection, c);
+                if (transfer == null)
+                {
+                    // Not enough time to transfer
+                    return;
+                }
+                
+            }
+
+            if (c.ArrivalTime() > GetJourneyTo(c.ArrivalLocation()).Connection.DepartureTime())
             {
                 // We will arrive later to the target stop
                 // It is no use to take the connection
@@ -143,7 +161,7 @@ namespace Itinero_Transit.CSA
             }
 
             // Jej! We can take the train! It gets us to some stop faster then previously known
-            _s[c.ArrivalLocation().ToString()] = new Journey<T>(journeyTillStop, c.ArrivalTime(), c);
+            _s[c.ArrivalLocation().ToString()] = new Journey<T>(journeyTillStop, c);
         }
 
         private Journey<T> GetJourneyTo(Uri stop)

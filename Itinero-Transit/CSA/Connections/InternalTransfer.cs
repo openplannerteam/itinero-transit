@@ -87,7 +87,7 @@ namespace Itinero_Transit.CSA
             return $"Transfer in {locDecode.GetNameOf(_location)} {_departureTime} --> {_arrivalTime}";
         }
 
-        public IContinuousConnection MoveTime(int seconds)
+        public IContinuousConnection MoveTime(double seconds)
         {
             return new InternalTransfer(_location, _departureTime.AddSeconds(seconds),
                 _arrivalTime.AddSeconds(seconds));

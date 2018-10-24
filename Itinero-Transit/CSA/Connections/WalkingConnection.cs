@@ -58,10 +58,16 @@ namespace Itinero_Transit.CSA.ConnectionProviders
         {
             return _route == null ?
                 $"Genesis connection at {locDecode.GetNameOf(_departureLocation)} {_departureTime}" : 
-                $"Walk from {locDecode.GetNameOf(_departureLocation)} to {locDecode.GetNameOf(_arrivalLocation)}, this takes {_route.TotalTime}sec ({_route.TotalDistance}m)";
+                $"Walk from {locDecode.GetNameOf(_departureLocation)} to {locDecode.GetNameOf(_arrivalLocation)}, this takes {_route.TotalTime}sec ({_route.TotalDistance}m)\n" +
+                $"Timing to walk {_departureTime:HH:mm:ss} --> {_arrivalTime:HH:mm:ss}";
         }
 
-        public IContinuousConnection MoveTime(int seconds)
+        public Route Walk()
+        {
+            return _route;
+        }
+
+        public IContinuousConnection MoveTime(double seconds)
         {
             return new WalkingConnection(_route, _departureLocation, _arrivalLocation, _departureTime.AddSeconds(seconds), _arrivalTime.AddSeconds(seconds));
         }

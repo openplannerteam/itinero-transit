@@ -59,13 +59,10 @@ namespace Itinero_Transit_Tests
         {
             // YOU MIGHT HAVE TO SYMLINK THE TIMETABLES TO  Itinero-Transit-Tests/bin/Debug/netcoreapp2.0
             var loader = new Downloader();
-            var sncb = new LinkedConnectionProvider(Sncb.HydraSearch(loader));
-            var prov = new LocallyCachedConnectionsProvider(sncb,
-                new LocalStorage("timetables-for-testing-2018-10-17"));
+            var sncb = Sncb.Profile(loader);
             var start = new DateTime(2018, 10, 17, 10, 8, 00);
             var timeOut = new DateTime(2018, 10, 17, 23, 0, 0);
-            var csa = new EarliestConnectionScan<TransferStats>(Poperinge, start, Vielsalm, TransferStats.Factory,
-                prov, timeOut);
+            var csa = new EarliestConnectionScan<TransferStats>(Poperinge, start, Vielsalm, sncb, timeOut);
             var journey = csa.CalculateJourney();
             Log(journey.ToString());
 

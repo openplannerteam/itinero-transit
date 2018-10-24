@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Itinero_Transit.LinkedData;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
@@ -72,15 +71,35 @@ namespace Itinero_Transit.CSA.ConnectionProviders
 
         public override string ToString()
         {
-            var res =
-                $"Timetable with {Graph.Count} connections; ID: {Uri.Segments.Last()} Next: {Next.Segments.Last()} Prev: {Prev.Segments.Last()}\n";
+            return ToString(null);
+        }
+
+        public string ToString(ILocationProvider locationDecoder)
+        {
+            return ToString(locationDecoder, null);
+        }
+
+        public string ToString(ILocationProvider locationDecoder, List<Uri> whitelist)
+        {
+            var omitted = 0;
+            var cons = "";
             foreach (var conn in Graph)
             {
-                res += $"  {conn}\n";
+                if (whitelist != null && !whitelist.Contains(conn.DepartureLocation())
+                                      && !whitelist.Contains(conn.ArrivalLocation()))
+                {
+                    omitted++;
+                    continue;
+                }
+
+                cons += $"  {conn.ToString(locationDecoder)}\n";
             }
 
-            res = res.Substring(0, res.Length - 1);
-            return res;
+            cons = cons.Substring(0, cons.Length - 1);
+
+            var header =
+                $"Timetable with {Graph.Count} connections ({omitted} omitted below); ID: {Uri} Next: {Next} Prev: {Prev}\n";
+            return header + cons;
         }
 
         public DateTime StartTime()

@@ -63,7 +63,7 @@ namespace Itinero_Transit.CSA
         {
             return
                 $"Linked Connection {locationDecoder.GetNameOf(DepartureStop)} {DepartureTime:yyyy-MM-dd HH:mm:ss} --> {locationDecoder.GetNameOf(ArrivalStop)}" +
-                $" {ArrivalTime:yyyy-MM-dd HH:mm:ss}\n    Direction {Direction} ({Uri})";
+                $" {ArrivalTime:yyyy-MM-dd HH:mm:ss}\n    Direction {Direction}\n     ({Uri})";
         }
         
       

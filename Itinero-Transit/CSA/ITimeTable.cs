@@ -21,5 +21,9 @@ namespace Itinero_Transit.CSA
         /// </summary>
         /// <returns></returns>
         List<IConnection> Connections();
+
+        string ToString(ILocationProvider locationDecoder);
+        string ToString(ILocationProvider locationDecoder, List<Uri> stopsWhitelist);
+
     }
 }

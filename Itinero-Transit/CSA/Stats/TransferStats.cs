@@ -1,4 +1,6 @@
 ﻿using System;
+using Itinero_Transit.CSA.ConnectionProviders;
+
 // ReSharper disable ImpureMethodCallOnReadonlyValueField
 
 namespace Itinero_Transit.CSA
@@ -15,6 +17,8 @@ namespace Itinero_Transit.CSA
         public readonly DateTime EndTime;
         public readonly TimeSpan TravelTime;
 
+        public readonly float WalkingDistance;
+
         public static readonly MinimizeTransfers MinimizeTransfers = new MinimizeTransfers();
         public static readonly MinimizeTravelTimes MinimizeTravelTimes = new MinimizeTravelTimes();
 
@@ -29,14 +33,15 @@ namespace Itinero_Transit.CSA
 
 
         public static readonly TransferStats Factory =
-            new TransferStats(int.MaxValue, DateTime.MinValue, DateTime.MaxValue);
+            new TransferStats(int.MaxValue, DateTime.MinValue, DateTime.MaxValue, int.MaxValue);
 
-        public TransferStats(int numberOfTransfers, DateTime startTime, DateTime endTime)
+        public TransferStats(int numberOfTransfers, DateTime startTime, DateTime endTime, float walkingDistance)
         {
             NumberOfTransfers = numberOfTransfers;
             StartTime = startTime;
             EndTime = endTime;
             TravelTime = endTime - startTime;
+            WalkingDistance = walkingDistance;
             if (endTime < startTime)
             {
                 throw new ArgumentException("Arrivaltime before departuretime");
@@ -45,14 +50,20 @@ namespace Itinero_Transit.CSA
 
         public TransferStats InitialStats(IConnection c)
         {
-            return new TransferStats(0, c.DepartureTime(), c.ArrivalTime());
+            var walk = 0f;
+            if (c is WalkingConnection)
+            {
+                walk = ((WalkingConnection) c).Walk().TotalDistance;
+            }
+
+            return new TransferStats(0, c.DepartureTime(), c.ArrivalTime(), walk);
         }
 
         public TransferStats Add(Journey<TransferStats> journey)
         {
             var transferred =
-                journey.PreviousLink?.GetLastTripID() != null &&
-                !Equals(journey.PreviousLink?.GetLastTripID(), journey.GetLastTripID());
+                journey.PreviousLink?.GetLastTripId() != null &&
+                !Equals(journey.PreviousLink?.GetLastTripId(), journey.GetLastTripId());
 
             var dep = journey.Connection.DepartureTime();
             if (StartTime < dep)
@@ -66,7 +77,13 @@ namespace Itinero_Transit.CSA
                 arr = EndTime;
             }
 
-            return new TransferStats(NumberOfTransfers + (transferred ? 1 : 0), dep, arr);
+            var walk = 0f;
+            if (journey.Connection is WalkingConnection)
+            {
+                walk = ((WalkingConnection) journey.Connection).Walk().TotalDistance;
+            }
+
+            return new TransferStats(NumberOfTransfers + (transferred ? 1 : 0), dep, arr, WalkingDistance + walk);
         }
 
         public override bool Equals(object obj)
@@ -82,8 +99,9 @@ namespace Itinero_Transit.CSA
         internal bool Equals(TransferStats other)
         {
             return NumberOfTransfers == other.NumberOfTransfers &&
-                   EndTime.Equals(other.EndTime) 
-                   && StartTime.Equals(other.StartTime);
+                   EndTime.Equals(other.EndTime)
+                   && StartTime.Equals(other.StartTime)
+                   && Equals(WalkingDistance, other.WalkingDistance);
         }
 
         public override int GetHashCode()
@@ -93,7 +111,7 @@ namespace Itinero_Transit.CSA
 
         public override string ToString()
         {
-            return $"{NumberOfTransfers} transfers, {EndTime - StartTime}";
+            return $"{NumberOfTransfers} transfers, {EndTime - StartTime}, {WalkingDistance}m to walk";
         }
     }
 
@@ -123,26 +141,42 @@ namespace Itinero_Transit.CSA
                 return 0;
             }
 
-            if (S1DominatesS2(a, b))
+            var aBetterThenB = AIsBetterThenB(a, b);
+            var bBetterThenA = AIsBetterThenB(b, a);
+
+            if (aBetterThenB && bBetterThenA)
+            {
+                // No Domination either way
+                return int.MaxValue;
+            }
+
+            if (aBetterThenB)
             {
                 return -1;
             }
 
-            // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (S1DominatesS2(b, a))
+            if (bBetterThenA)
             {
                 return 1;
             }
 
-            return int.MaxValue;
+            // both perform the same
+            return 0;
         }
 
-        private bool S1DominatesS2(TransferStats s1, TransferStats s2)
+        /// <summary>
+        /// Returns true if A performs better then B in at least one aspect.
+        /// This does imply that A dominates B!
+        /// This does only imply that B does _not_ dominate A
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        private bool AIsBetterThenB(TransferStats a, TransferStats b)
         {
-            return
-                s1.NumberOfTransfers <= s2.NumberOfTransfers
-                && s1.StartTime >= s2.StartTime
-                && s1.EndTime <= s2.EndTime;
+            return a.NumberOfTransfers < b.NumberOfTransfers
+                   || a.StartTime > b.StartTime
+                   || a.EndTime < b.EndTime;
         }
     }
 
@@ -172,8 +206,8 @@ namespace Itinero_Transit.CSA
         private bool S1DominatesS2(TransferStats s1, TransferStats s2)
         {
             return
-                    (s1.NumberOfTransfers < s2.NumberOfTransfers
-                    && s1.TravelTime <= s2.TravelTime) 
+                (s1.NumberOfTransfers < s2.NumberOfTransfers
+                 && s1.TravelTime <= s2.TravelTime)
                 || (s1.NumberOfTransfers <= s2.NumberOfTransfers
                     && s1.TravelTime < s2.TravelTime);
         }

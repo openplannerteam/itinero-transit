@@ -8,7 +8,7 @@ namespace Itinero_Transit.CSA
         /// </summary>
         /// <param name="seconds"></param>
         /// <returns></returns>
-        IContinuousConnection MoveTime(int seconds);
+        IContinuousConnection MoveTime(double seconds);
 
     }
 }

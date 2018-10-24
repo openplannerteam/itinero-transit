@@ -7,7 +7,7 @@ namespace Itinero_Transit.CSA
     /// <summary>
     /// A journey is a part in an intermodal trip, describing the route the user takes.
     ///
-    /// Normally, a journey is constructed with the startlocation hidden the deepest in the data structure.
+    /// Normally, a journey is constructed with the start location hidden the deepest in the data structure.
     /// The Time is mostly the arrival time.
     ///
     /// The above properties are reversed in the CPS algorithm. The last step of that algorithm is to reverse the journeys,
@@ -25,11 +25,6 @@ namespace Itinero_Transit.CSA
 
 
         /// <summary>
-        /// The time that the journey starts or ends, depending on the used algorithm
-        /// </summary>
-        public DateTime Time { get; }
-
-        /// <summary>
         /// The connection taken for this journey
         /// </summary>
         public IConnection Connection { get; }
@@ -42,16 +37,14 @@ namespace Itinero_Transit.CSA
         private Journey()
         {
             PreviousLink = null;
-            Time = DateTime.MaxValue;
-            Connection = null;
+            Connection = new WalkingConnection(null, DateTime.MaxValue);
             Stats = default(T);
         }
 
 
-        public Journey(Journey<T> previousLink, DateTime time, IConnection connection)
+        public Journey(Journey<T> previousLink, IConnection connection)
         {
             PreviousLink = previousLink;
-            Time = time;
             Connection = connection ??
                          throw new ArgumentException("The connection used to initialize a Journey should not be null");
             Stats = previousLink.Stats.Add(this);
@@ -66,17 +59,15 @@ namespace Itinero_Transit.CSA
         public Journey(Uri genesisLocation, DateTime genesisTime, T statsFactory)
         {
             PreviousLink = null;
-            Time = genesisTime;
             Connection = new WalkingConnection(genesisLocation, genesisTime);
             Stats = statsFactory.InitialStats(Connection);
         }
 
 
-        public Journey(T singleConnectionStats, DateTime time, IConnection connection)
+        public Journey(T singleConnectionStats, IConnection connection)
         {
             PreviousLink = null;
-            Time = time;
-            Connection = connection;
+            Connection = connection ?? throw new ArgumentNullException(nameof(connection));
             Stats = singleConnectionStats;
         }
 
@@ -84,16 +75,15 @@ namespace Itinero_Transit.CSA
         /// Creates a new journey which goes in the opposite direction.
         /// The 'Time' field will be set to the arrival time of the total journey.
         /// </summary>
-        /// <returns></returns>
         public Journey<T> Reverse()
         {
             // We start with the current element, which will be the last connection
-            var reversed = new Journey<T>(Stats.InitialStats(Connection), Connection.ArrivalTime(), Connection);
+            var reversed = new Journey<T>(Stats.InitialStats(Connection), Connection);
 
             var current = PreviousLink;
             while (current != null)
             {
-                reversed = new Journey<T>(reversed, current.Connection.ArrivalTime(), current.Connection);
+                reversed = new Journey<T>(reversed, current.Connection);
                 current = current.PreviousLink;
             }
 
@@ -114,15 +104,14 @@ namespace Itinero_Transit.CSA
         /// "take train XYZ at 10:15, arriving at station at 11:15"
         /// "walk from 11:15 till 11:20 to your final destination"
         /// 
-        /// Resulting in a somewhat less timeconsuming journey
+        /// Resulting in a somewhat less time consuming journey
         /// </summary>
-        /// <returns></returns>
         public Journey<T> Prune()
         {
             var connections = AllConnections();
 
             Journey<T> prunedJourney = null;
-            IContinuousConnection cc = null;
+            IContinuousConnection cc;
             foreach (var connection in connections)
             {
                 if (connection.ArrivalLocation().Equals(connection.DepartureLocation()))
@@ -133,8 +122,7 @@ namespace Itinero_Transit.CSA
 
                 if (prunedJourney == null)
                 {
-                    prunedJourney = new Journey<T>(Stats.InitialStats(connection),
-                        connection.DepartureTime(), connection);
+                    prunedJourney = new Journey<T>(Stats.InitialStats(connection), connection);
                     continue;
                 }
 
@@ -145,14 +133,15 @@ namespace Itinero_Transit.CSA
                     // A continuous connection can be moved in time
                     var diff = connection.DepartureTime() - prunedJourney.Connection.ArrivalTime();
                     cc = cc.MoveTime((int) diff.TotalSeconds);
-                    prunedJourney = new Journey<T>(Stats.InitialStats(cc), cc.DepartureTime(), cc);
+                    prunedJourney = new Journey<T>(Stats.InitialStats(cc), cc);
                 }
 
                 // Add the current connection to the journey
-                prunedJourney = new Journey<T>(prunedJourney, prunedJourney.Time, connection);
+                prunedJourney = new Journey<T>(prunedJourney, connection);
             }
 
             // Cleanup the last links
+            // ReSharper disable once PossibleNullReferenceException
             var lastConn = prunedJourney.Connection;
             while (lastConn.ArrivalLocation().Equals(lastConn.DepartureLocation()))
             {
@@ -167,8 +156,7 @@ namespace Itinero_Transit.CSA
             {
                 var diff = (int) (prunedJourney.PreviousLink.Connection.ArrivalTime()
                                   - cc.DepartureTime()).TotalSeconds;
-                prunedJourney = new Journey<T>(prunedJourney.PreviousLink, prunedJourney.Time,
-                    cc.MoveTime(diff));
+                prunedJourney = new Journey<T>(prunedJourney.PreviousLink, cc.MoveTime(diff));
             }
 
             return prunedJourney;
@@ -189,13 +177,13 @@ namespace Itinero_Transit.CSA
         /// <summary>
         /// Returns the tripID of the current connection.
         /// If the current connection does not have a trip ID,
-        /// returns the last trip of the previouslink
+        /// returns the last trip of the previous link
         /// </summary>
-        /// <returns></returns>
-        public Uri GetLastTripID()
+        public Uri GetLastTripId()
         {
-            return Connection.Trip() ??
-                   PreviousLink?.GetLastTripID();
+            // TODO REMOVE CHEAT! Route() -> Trip()
+            return Connection.Route() ??
+                   PreviousLink?.GetLastTripId();
         }
 
 
@@ -207,7 +195,7 @@ namespace Itinero_Transit.CSA
 
         public string ToString(ILocationProvider locDecode)
         {
-            var res = PreviousLink == null ? $"JOURNEY ({Time:O}): \n" : PreviousLink.ToString(locDecode);
+            var res = PreviousLink == null ? $"JOURNEY: \n" : PreviousLink.ToString(locDecode);
             res += "  " + (Connection == null ? "-- No connection given--" : Connection.ToString(locDecode)) + "\n";
             res += "    " + (Stats == null ? "-- No stats -- " : Stats.ToString()) + "\n";
             return res;
@@ -225,8 +213,7 @@ namespace Itinero_Transit.CSA
 
         private bool Equals(Journey<T> other)
         {
-            var b = (Time.Equals(other.Time))
-                    && (Connection?.Equals(other.Connection) ?? other.Connection == null)
+            var b = (Connection?.Equals(other.Connection) ?? other.Connection == null)
                     && Equals(PreviousLink, other.PreviousLink);
             return b;
         }
@@ -245,7 +232,6 @@ namespace Itinero_Transit.CSA
             unchecked
             {
                 var hashCode = (PreviousLink != null ? PreviousLink.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ Time.GetHashCode();
                 hashCode = (hashCode * 397) ^ (Connection != null ? Connection.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ EqualityComparer<T>.Default.GetHashCode(Stats);
                 return hashCode;

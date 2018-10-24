@@ -26,16 +26,16 @@ namespace Itinero_Transit_Tests
             var tenOClock = new DateTime(2018, 09, 24, 10, 00, 00);
             // Takes one hour but no transfer
             var t1 = new TransferStats(0, tenOClock,
-                new DateTime(2018, 09, 24, 11, 00, 00));
+                new DateTime(2018, 09, 24, 11, 00, 00),0f);
 
 
             // Takes 45min, but one transfer
             var t2 = new TransferStats(1, tenOClock,
-                new DateTime(2018, 09, 24, 10, 45, 00));
+                new DateTime(2018, 09, 24, 10, 45, 00),0f);
 
             // Superior in all senses: takes no transfers and just 30 min
             var t3 = new TransferStats(0, tenOClock,
-                new DateTime(2018, 09, 24, 10, 30, 00));
+                new DateTime(2018, 09, 24, 10, 30, 00),0f);
 
             StatsComparator<TransferStats> compare = TransferStats.ProfileCompare;
             

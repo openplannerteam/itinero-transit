@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace Itinero_Transit.CSA.LocationProviders
 {
@@ -11,7 +12,7 @@ namespace Itinero_Transit.CSA.LocationProviders
                 return uri.ToString();
             }
 
-            return locProv.GetCoordinateFor(uri).Name;
+            return $"{locProv.GetCoordinateFor(uri).Name} ({uri.Segments.Last()})";
         }
     }
 }
