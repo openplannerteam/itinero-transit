@@ -53,6 +53,10 @@ namespace Itinero_Transit.CSA.ConnectionProviders
             _arrivalTime = arrivalTime;
         }
 
+        public override string ToString()
+        {
+            return ToString(null);
+        }
 
         public string ToString(ILocationProvider locDecode)
         {

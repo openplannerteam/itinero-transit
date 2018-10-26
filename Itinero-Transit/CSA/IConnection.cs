@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Itinero_Transit.CSA
 {
@@ -73,6 +74,27 @@ namespace Itinero_Transit.CSA
 
 
         string ToString(ILocationProvider locationDecoder);
-
     }
+
+    public class DepartureTimeConnectionComparer : IComparer<IConnection>
+    {
+        public static DepartureTimeConnectionComparer Singleton = new DepartureTimeConnectionComparer();
+        
+        public int Compare(IConnection x, IConnection y)
+        {
+            return x.DepartureTime().CompareTo(y.DepartureTime());
+        }
+    }
+    
+    public class DepartureTimeConnectionComparerDesc : IComparer<IConnection>
+    {
+        public static DepartureTimeConnectionComparerDesc Singleton = new DepartureTimeConnectionComparerDesc();
+        
+        public int Compare(IConnection x, IConnection y)
+        {
+            return y.DepartureTime().CompareTo(x.DepartureTime());
+        }
+    }
+
+    
 }

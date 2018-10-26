@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Itinero_Transit.CSA.ConnectionProviders;
 using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection;
+using Itinero_Transit.CSA.LocationProviders;
 
 namespace Itinero_Transit.CSA
 {
@@ -9,7 +11,8 @@ namespace Itinero_Transit.CSA
     /// Which PT-operators does he want to take? Which doesn't he?
     /// How fast does he walk? All these are stored here
     /// </summary>
-    public class Profile<T> where T : IJourneyStats<T>
+    public class Profile<T> : IConnectionsProvider, IFootpathTransferGenerator, ILocationProvider
+        where T : IJourneyStats<T>
     {
         public readonly IConnectionsProvider ConnectionsProvider;
         public readonly ILocationProvider LocationProvider;
@@ -40,6 +43,19 @@ namespace Itinero_Transit.CSA
             return eas.CalculateJourney();
         }
 
+        public IEnumerable<IContinuousConnection> CloseByGenesisConnections(Location around, int radius,
+            DateTime genesisTime)
+        {
+            var result = new List<IContinuousConnection>();
+
+            var close = GetLocationsCloseTo(around.Lat, around.Lon, radius);
+            foreach (var uri in close)
+            {
+                result.Add(new WalkingConnection(uri, genesisTime));
+            }
+
+            return result;
+        }
 
         public IEnumerable<IContinuousConnection> WalkToClosebyStops(DateTime departureTime, Location from, int radius)
         {
@@ -93,6 +109,46 @@ namespace Itinero_Transit.CSA
             }
 
             return footpath;
+        }
+
+        public Location GetCoordinateFor(Uri locationId)
+        {
+            return LocationProvider.GetCoordinateFor(locationId);
+        }
+
+        public bool ContainsLocation(Uri locationId)
+        {
+            return LocationProvider.ContainsLocation(locationId);
+        }
+
+        public IEnumerable<Uri> GetLocationsCloseTo(float lat, float lon, int radiusInMeters)
+        {
+            return LocationProvider.GetLocationsCloseTo(lat, lon, radiusInMeters);
+        }
+
+        public BoundingBox BBox()
+        {
+            return LocationProvider.BBox();
+        }
+
+        public IEnumerable<Location> GetLocationByName(string name)
+        {
+            return LocationProvider.GetLocationByName(name);
+        }
+
+        public ITimeTable GetTimeTable(Uri id)
+        {
+            return ConnectionsProvider.GetTimeTable(id);
+        }
+
+        public Uri TimeTableIdFor(DateTime includedTime)
+        {
+            return ConnectionsProvider.TimeTableIdFor(includedTime);
+        }
+
+        public IContinuousConnection GenerateFootPaths(DateTime departureTime, Location @from, Location to)
+        {
+            return FootpathTransferGenerator.GenerateFootPaths(departureTime, @from, to);
         }
     }
 }

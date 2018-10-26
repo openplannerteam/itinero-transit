@@ -32,43 +32,37 @@ namespace Itinero_Transit
             };
 
 
-            var startDate = new DateTime(2018, 10, 24, 16, 30, 00);
-            var endTime = new DateTime(2018, 10, 24, 17, 00, 00);
+            var startTime = new DateTime(2018, 10, 26, 16, 00, 00);
+            var endTime = new DateTime(2018, 10, 26, 17, 00, 00);
             var home = new Uri("https://www.openstreetmap.org/#map=19/51.21576/3.22048");
             var startLocation = OsmLocationMapping.Singleton.GetCoordinateFor(home);
 
             var station = new Uri("https://www.openstreetmap.org/#map=18/51.19738/3.21830");
             var endLocation = OsmLocationMapping.Singleton.GetCoordinateFor(station);
 
-            var starts = deLijn.LocationProvider.GetLocationsCloseTo(startLocation.Lat, startLocation.Lon, 250);
-            var ends = deLijn.WalkFromClosebyStops(endTime, endLocation, 250);
+            var starts = deLijn.WalkToClosebyStops(startTime, startLocation, 1000);
+            var ends = deLijn.WalkFromClosebyStops(endTime, endLocation, 1000);
 
             var pcs = new ProfiledConnectionScan<TransferStats>(
-                starts, ends, startDate, endTime, deLijn);
+                starts, ends, startTime, endTime, deLijn);
 
 
             var journeys = pcs.CalculateJourneys();
             var found = 0;
+            var stats = "";
             foreach (var key in journeys.Keys)
             {
                 var journeysFromPtStop = journeys[key];
-                var target = deLijn.LocationProvider.GetCoordinateFor(new Uri(key));
-                var walk = deLijn.FootpathTransferGenerator.GenerateFootPaths(startDate, startLocation, target);
-
-
                 foreach (var journey in journeysFromPtStop)
                 {
-                    var diff = (walk.ArrivalTime() - journey.Connection.DepartureTime()).TotalSeconds;
-                    var totalJourney = new Journey<TransferStats>(journey, walk.MoveTime(-diff));
-
-
-                    Log.Information(totalJourney.ToString(deLijn.LocationProvider));
+                    Log.Information(journey.ToString(deLijn.LocationProvider));
+                    stats += $"{key}: {journey.Stats}\n";
                 }
-
                 found += journeysFromPtStop.Count();
             }
 
             Log.Information($"Got {found} profiles");
+            Log.Information(stats);
         }
 
 

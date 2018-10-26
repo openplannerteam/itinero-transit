@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Itinero_Transit.CSA.ConnectionProviders;
+using PriorityQueue.Collections;
 using Serilog;
 
 namespace Itinero_Transit.CSA
@@ -26,7 +27,28 @@ namespace Itinero_Transit.CSA
         private readonly Dictionary<string, IContinuousConnection> _footpathsOut
             = new Dictionary<string, IContinuousConnection>();
 
-        private readonly HashSet<string> _departureLocations = new HashSet<string>();
+
+        /// <summary>
+        /// When arriving at bus stop, we can walk to e.g. the close by train platform.
+        /// We model these intermodal transfers as a connection which leaves the bus stop the moment that the a taken bus arrives.
+        /// This way, weird extra objects are avoided.
+        ///
+        /// In order to maintain correctness, we feed these connections only to the algorithm when they are due. In the meantime,
+        /// they are stored in this queue
+        ///
+        /// Note that the queue is kept in DESCENDING order
+        /// </summary>
+        private readonly PriorityQueue<IConnection> _queue =
+            new PriorityQueue<IConnection>(DepartureTimeConnectionComparerDesc.Singleton);
+
+        /// <summary>
+        /// Walking connections from the actual starting point to a nearby stop.
+        /// Indexed by the arrival-location of the connections;
+        /// also see the analogous _footpathsOut
+        /// </summary>
+        private readonly Dictionary<string, IContinuousConnection> _footpathsIn
+            = new Dictionary<string, IContinuousConnection>();
+
 
         private readonly Profile<T> _profile;
 
@@ -83,11 +105,13 @@ namespace Itinero_Transit.CSA
             _footpathsOut.Add(targetLocation.ToString(), new WalkingConnection(targetLocation, lastArrival));
             _connectionsProvider = profile.ConnectionsProvider;
             _profileComparator = profile.ProfileCompare;
-            _departureLocations.Add(departureLocation.ToString());
+
+            var genesis = new WalkingConnection(departureLocation, earliestDeparture);
+            _footpathsIn.Add(genesis.ArrivalLocation().ToString(), genesis);
         }
 
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-        public ProfiledConnectionScan(IEnumerable<Uri> departureLocations,
+        public ProfiledConnectionScan(IEnumerable<IContinuousConnection> departureLocations,
             IEnumerable<IContinuousConnection> targetLocations,
             DateTime earliestDeparture, DateTime lastArrival,
             Profile<T> profile)
@@ -109,7 +133,7 @@ namespace Itinero_Transit.CSA
 
             foreach (var source in departureLocations)
             {
-                _departureLocations.Add(source.ToString());
+                _footpathsIn.Add(source.ArrivalLocation().ToString(), source);
             }
 
             _earliestDeparture = earliestDeparture;
@@ -129,33 +153,48 @@ namespace Itinero_Transit.CSA
         {
             var tt = _profile.ConnectionsProvider.GetTimeTable(
                 _profile.ConnectionsProvider.TimeTableIdFor(_lastArrival));
-            while (true)
+            IConnection c = null;
+            do
             {
                 var cons = tt.Connections();
-                Log.Information($"Handling timetable{tt.StartTime():O}");
                 for (var i = cons.Count - 1; i >= 0; i--)
                 {
-                    var c = cons[i];
-                    if (c.DepartureTime() < _earliestDeparture)
-                    {
-                        // We're done! Returning values
-                        var result = new Dictionary<string, IEnumerable<Journey<T>>>();
-                        foreach (var loc in _departureLocations)
-                        {
-                            var frontier
-                                = _stationJourneys.GetValueOrDefault(loc, null)?.Frontier
-                                  ?? new HashSet<Journey<T>>();
-                            result.Add(loc, frontier);
-                        }
+                    // The list is sorted by departure time
+                    // The algorithm starts with the highest departure time and goes down
 
-                        return result;
+                    c = cons[i];
+                    while (_queue.Count > 0 && _queue.Peek().DepartureTime() >= c.DepartureTime())
+                    {
+                        // We have an interlink on the queue that should be taken care of first
+                        AddConnection(_queue.Poll());
                     }
 
                     AddConnection(c);
                 }
 
                 tt = _connectionsProvider.GetTimeTable(tt.PreviousTable());
+            } while (c != null && c.DepartureTime() >= _earliestDeparture);
+
+
+            // Post processing
+            // Prepare a neat dictionary for each final destination for the end user
+
+            var departureLocations = new HashSet<string>();
+            foreach (var inConKey in _footpathsIn.Keys)
+            {
+                departureLocations.Add(_footpathsIn[inConKey].DepartureLocation().ToString());
             }
+
+            var result = new Dictionary<string, IEnumerable<Journey<T>>>();
+            foreach (var loc in departureLocations)
+            {
+                var frontier
+                    = _stationJourneys.GetValueOrDefault(loc, null)?.Frontier
+                      ?? new HashSet<Journey<T>>();
+                result.Add(loc, frontier);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -163,27 +202,66 @@ namespace Itinero_Transit.CSA
         /// </summary>
         private void AddConnection(IConnection c)
         {
+            
+            // 1) Handle outgoing connections, they provide the first entries in 
+            // _stationjourneys
             if (_footpathsOut.ContainsKey(c.ArrivalLocation().ToString()))
             {
                 // We can arrive in one of our target locations.
-                // We create a new journey and add it
-                var endConn = _footpathsOut[c.ArrivalLocation().ToString()];
-                var diff = (c.ArrivalTime() - endConn.DepartureTime()).TotalSeconds;
-                endConn = endConn.MoveTime((int) diff);
-                var initialJourney = new Journey<T>(
-                    _profile.StatsFactory.InitialStats(endConn), endConn);
+                var walk = _footpathsOut[c.ArrivalLocation().ToString()];
+                if (!walk.DepartureLocation().Equals(walk.ArrivalLocation()))
+                {
+                    // We arrive in a stop, from which we can walk to our target
+                    // This implies that there is a 'walking connection'
+                    // which leaves at the arrival time of C
+                    var diff = (c.ArrivalTime() - walk.DepartureTime()).TotalSeconds;
+                    walk = walk.MoveTime((int) diff);
+                    var journey = new Journey<T>(_profile.StatsFactory.InitialStats(walk), walk);
+                    ConsiderJourney(journey);
+                    // The connection itself: we leave that one to be handled by the rest of the code
+                }
+                else
+                {
+                    // NO target walks; we are at one of our destinations
+                    // We can add this connection 'as is' to the stationJOurneys
+                    
+                    ConsiderJourney(new Journey<T>(
+                        _profile.StatsFactory.InitialStats(c), c));
+                    return;
+                }
 
-                var journey = new Journey<T>(initialJourney, c);
-
-                ConsiderJourney(c.DepartureLocation().ToString(), journey);
-                return;
+                // We still handle the connection as the rest of the journey
+                // Perhaps the bus will continue to drive us closer to the station
             }
-
+                
+            // 2) Can the connection be used? If not, skip
             if (!_stationJourneys.ContainsKey(c.ArrivalLocation().ToString()))
             {
                 // NO way out of the arrival station yet
                 return;
             }
+
+
+            // 3) COuld this connection be reachable by foot?
+            if (_footpathsIn.ContainsKey(c.DepartureLocation().ToString()))
+            {
+                // We have found a footpath in; thus the stop where the connection C will depart from,
+                // can be reached from the actual departure location by Walking.
+                // We model this as a new connection and queue it for pickup to the final destination
+                var footpath = _footpathsIn[c.DepartureLocation().ToString()];
+                if (!footpath.DepartureLocation().Equals(footpath.ArrivalLocation()))
+                {
+                    // Of course, the 'walking connection' should not be a trivial genesis connection
+                    var diff = (c.DepartureTime() - footpath.ArrivalTime()).TotalSeconds;
+                    footpath = footpath.MoveTime(diff);
+                    _queue.Offer(footpath);
+                }
+                // ELSE: we don't need to do anything, the start location is registered by the resting code
+
+                // Note that we continue to handle the connection to consider the journey:
+                // There could be a stop that is closer to the target!
+            }
+
 
             var journeysToEnd = _stationJourneys[c.ArrivalLocation().ToString()];
             foreach (var j in journeysToEnd.Frontier)
@@ -196,7 +274,7 @@ namespace Itinero_Transit.CSA
                 }
 
                 // TODO REMOVE CHEAT (TripID -> Route)
-                if (_profile.FootpathTransferGenerator != null && !c.Route().Equals(j.GetLastTripId()))
+                if (_profile.FootpathTransferGenerator != null && !Equals(c.Route(), j.GetLastTripId()))
                 {
                     // Create a transfer object, according to the transfer policy (if one is given)
 
@@ -215,31 +293,29 @@ namespace Itinero_Transit.CSA
 
                 // Chaining to the start of the journey, not the end -> We keep track of the departure time (although the time is not actually used)
                 var chained = new Journey<T>(journey, c);
-                ConsiderJourney(c.DepartureLocation().ToString(), chained);
+                ConsiderJourney(chained);
             }
         }
 
-        ///  <summary>
-        ///  This method is called when a new startStation can be reached with the given Journey J.
+        ///   <summary>
+        ///   This method is called when a new startStation can be reached with the given Journey J.
+        ///  
+        ///   The method will consider if this journey is profile optimal and should thus be included.
+        ///   If it is not, it will be ignored.
         /// 
-        ///  The method will consider if this journey is profile optimal and should thus be included.
-        ///  If it is not, it will be ignored.
-        ///
-        ///  If a pareto comparator is found and total journeys are already known,
-        ///  the journey is also checked against the pareto frontier
-        ///  </summary>
-        ///  <param name="startStation"></param>
-        ///  <param name="considered"></param>
-        private void ConsiderJourney(string startStation, Journey<T> considered)
+        ///   If a pareto comparator is found and total journeys are already known,
+        ///   the journey is also checked against the pareto frontier
+        ///   </summary>
+        /// <param name="considered"></param>
+        private void ConsiderJourney(Journey<T> considered)
         {
+            var startStation = considered.Connection.DepartureLocation().ToString();
             if (!_stationJourneys.ContainsKey(startStation))
             {
                 _stationJourneys.Add(startStation, new ParetoFrontier<T>(_profileComparator));
             }
 
-            var startJourneys = _stationJourneys[startStation];
-
-            startJourneys.AddToFrontier(considered); // List is still shared with the dictionary
+            _stationJourneys[startStation].AddToFrontier(considered); // List is still shared with the dictionary
         }
 
         /// <summary>
