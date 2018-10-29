@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Itinero_Transit.CSA.ConnectionProviders;
 using PriorityQueue.Collections;
+using Serilog;
 
 namespace Itinero_Transit.CSA
 {
@@ -155,6 +156,7 @@ namespace Itinero_Transit.CSA
             IConnection c = null;
             do
             {
+                Log.Information($"Handling timetable {tt.Id()}");
                 var cons = tt.ConnectionsReversed();
                 foreach (var conn in cons)
                 {
@@ -177,7 +179,7 @@ namespace Itinero_Transit.CSA
 
             // Post processing
             // Prepare a neat dictionary for each final destination for the end user
-
+            Log.Information("Doing post processing");
             var departureLocations = new HashSet<string>();
             foreach (var inConKey in _footpathsIn.Keys)
             {
@@ -193,6 +195,7 @@ namespace Itinero_Transit.CSA
                 result.Add(loc, frontier);
             }
 
+            Log.Information("PCS is all done!");
             return result;
         }
 
@@ -201,7 +204,7 @@ namespace Itinero_Transit.CSA
         /// </summary>
         private void AddConnection(IConnection c)
         {
-            
+            Log.Information($"Handling connection {c.ToString(_profile)}");
             // 1) Handle outgoing connections, they provide the first entries in 
             // _stationjourneys
             if (_footpathsOut.ContainsKey(c.ArrivalLocation().ToString()))
@@ -223,7 +226,7 @@ namespace Itinero_Transit.CSA
                 {
                     // NO target walks; we are at one of our destinations
                     // We can add this connection 'as is' to the stationJOurneys
-                    
+
                     ConsiderJourney(new Journey<T>(
                         _profile.StatsFactory.InitialStats(c), c));
                     return;
@@ -232,7 +235,7 @@ namespace Itinero_Transit.CSA
                 // We still handle the connection as the rest of the journey
                 // Perhaps the bus will continue to drive us closer to the station
             }
-                
+
             // 2) Can the connection be used? If not, skip
             if (!_stationJourneys.ContainsKey(c.ArrivalLocation().ToString()))
             {
@@ -241,7 +244,7 @@ namespace Itinero_Transit.CSA
             }
 
 
-            // 3) COuld this connection be reachable by foot?
+            // 3) Could this connection be reachable by foot?
             if (_footpathsIn.ContainsKey(c.DepartureLocation().ToString()))
             {
                 // We have found a footpath in; thus the stop where the connection C will depart from,
@@ -315,6 +318,32 @@ namespace Itinero_Transit.CSA
             }
 
             _stationJourneys[startStation].AddToFrontier(considered); // List is still shared with the dictionary
+
+            // We can reach the target station from the departure station of the journey
+            // This also means that we can reach the target station via closeby PT stops
+            // We get all connections to this station and queue them
+            if (_profile.IntermodalStopSearchRadius == 0)
+            {
+                return;
+            }
+
+            var c = considered.Connection;
+
+            if (c is WalkingConnection)
+            {
+                // We've already done our share of walking
+                return;
+            }
+            
+            var walks = _profile.WalkFromClosebyStops(
+                c.DepartureTime(),
+                _profile.GetCoordinateFor(c.DepartureLocation()),
+                _profile.IntermodalStopSearchRadius);
+            foreach (var walk in walks)
+            {
+                _queue.Offer(walk);
+            }
+            Log.Information($"Queue contains {_queue.Count} elements");
         }
 
         /// <summary>

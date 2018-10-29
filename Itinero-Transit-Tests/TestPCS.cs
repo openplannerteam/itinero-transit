@@ -4,6 +4,7 @@ using System.Linq;
 using Itinero_Transit.CSA;
 using Itinero_Transit.CSA.ConnectionProviders;
 using Itinero_Transit.CSA.Data;
+using Itinero_Transit.CSA.LocationProviders;
 using Itinero_Transit.LinkedData;
 using Xunit;
 using Xunit.Abstractions;
@@ -27,6 +28,7 @@ namespace Itinero_Transit_Tests
             var loader = new Downloader();
             var storage = new LocalStorage("timetables-for-testing-2018-10-17");
             var sncb = Sncb.Profile(loader, storage, "belgium.routerdb");
+            sncb.IntermodalStopSearchRadius = 0;
             var startTime = new DateTime(2018, 10, 17, 10, 00, 00);
             var endTime = new DateTime(2018, 10, 17, 12, 00, 00);
             var pcs = new ProfiledConnectionScan<TransferStats>(
@@ -48,6 +50,7 @@ namespace Itinero_Transit_Tests
             var loader = new Downloader();
             var storage = new LocalStorage("timetables-for-testing-2018-10-17");
             var sncb = Sncb.Profile(loader, storage, "belgium.routerdb");
+            sncb.IntermodalStopSearchRadius = 0;
             var startTime = new DateTime(2018, 10, 17, 10, 00, 00);
             var endTime = new DateTime(2018, 10, 17, 20, 00, 00);
             var pcs = new ProfiledConnectionScan<TransferStats>(
@@ -66,6 +69,93 @@ namespace Itinero_Transit_Tests
             Assert.Equal(5, journeys.Count);
         }
 
+
+        [Fact]
+        public void TestFootPaths()
+        {
+            Log("Starting");
+            var loader = new Downloader();
+            var storage = new LocalStorage("cache/delijn");
+            var deLijn = DeLijn.Profile(loader, storage, "belgium.routerdb");
+            deLijn.IntermodalStopSearchRadius = 0;
+            var startTime = new DateTime(2018, 10, 30, 16, 00, 00);
+            var endTime = new DateTime(2018, 10, 30, 17, 00, 00);
+            var home = new Uri("https://www.openstreetmap.org/#map=19/51.21576/3.22048");
+            var startLocation = OsmLocationMapping.Singleton.GetCoordinateFor(home);
+
+            var station = new Uri("https://www.openstreetmap.org/#map=18/51.19738/3.21830");
+            var endLocation = OsmLocationMapping.Singleton.GetCoordinateFor(station);
+
+            var starts = deLijn.WalkToClosebyStops(startTime, startLocation, 1000);
+            var ends = deLijn.WalkFromClosebyStops(endTime, endLocation, 1000);
+
+            var pcs = new ProfiledConnectionScan<TransferStats>(
+                starts, ends, startTime, endTime, deLijn);
+
+
+            var journeys = pcs.CalculateJourneys();
+            var found = 0;
+            var stats = "";
+            foreach (var key in journeys.Keys)
+            {
+                var journeysFromPtStop = journeys[key];
+                foreach (var journey in journeysFromPtStop)
+                {
+                    Log(journey.ToString(deLijn.LocationProvider));
+                    stats += $"{key}: {journey.Stats}\n";
+                }
+
+                found += journeysFromPtStop.Count();
+            }
+
+            Log($"Got {found} profiles");
+            Log(stats);
+        }
+
+        [Fact]
+        public void TestFootPathsInterlink()
+        {
+            Log("Starting");
+            var loader = new Downloader();
+            var storage = new LocalStorage("cache/delijn");
+            var deLijn = DeLijn.Profile(loader, storage, "belgium.routerdb");
+            
+            deLijn.IntermodalStopSearchRadius =100;
+            
+            var startTime = new DateTime(2018, 10, 30, 16, 00, 00);
+            var endTime = new DateTime(2018, 10, 30, 17, 00, 00);
+            var home = new Uri("https://www.openstreetmap.org/#map=19/51.21576/3.22048");
+            var startLocation = OsmLocationMapping.Singleton.GetCoordinateFor(home);
+
+            var station = new Uri("https://www.openstreetmap.org/#map=18/51.19738/3.21830");
+            var endLocation = OsmLocationMapping.Singleton.GetCoordinateFor(station);
+
+            var starts = deLijn.WalkToClosebyStops(startTime, startLocation, 1000);
+            var ends = deLijn.WalkFromClosebyStops(endTime, endLocation, 1000);
+
+            var pcs = new ProfiledConnectionScan<TransferStats>(
+                starts, ends, startTime, endTime, deLijn);
+
+
+            var journeys = pcs.CalculateJourneys();
+            var found = 0;
+            var stats = "";
+            foreach (var key in journeys.Keys)
+            {
+                var journeysFromPtStop = journeys[key];
+                foreach (var journey in journeysFromPtStop)
+                {
+                    Log(journey.ToString(deLijn.LocationProvider));
+                    stats += $"{key}: {journey.Stats}\n";
+                }
+
+                found += journeysFromPtStop.Count();
+            }
+
+            Log($"Got {found} profiles");
+            Log(stats);
+        }
+        
         // ReSharper disable once UnusedMember.Local
         private void Log(string s)
         {

@@ -21,6 +21,16 @@ namespace Itinero_Transit.CSA
         public readonly T StatsFactory;
         public readonly StatsComparator<T> ProfileCompare, ParetoCompare;
 
+        /// <summary>
+        /// Indicates the radius within which stops are searched during the
+        /// profile scan algorithms.
+        ///
+        /// Every stop that is reachable along the way is used to search stops close by 
+        /// </summary>
+        public int IntermodalStopSearchRadius = 250;
+
+        public int EndpointSearchRadius = 500;
+
         public Profile(IConnectionsProvider connectionsProvider,
             ILocationProvider locationProvider,
             IFootpathTransferGenerator footpathTransferGenerator,
