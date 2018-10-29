@@ -51,7 +51,7 @@ namespace Itinero_Transit.CSA
         public TransferStats InitialStats(IConnection c)
         {
             var walk = 0f;
-            if (c is WalkingConnection)
+            if (c is WalkingConnection && !c.DepartureLocation().Equals(c.ArrivalLocation()))
             {
                 walk = ((WalkingConnection) c).Walk().TotalDistance;
             }

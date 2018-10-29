@@ -13,12 +13,13 @@ namespace Itinero_Transit.CSA.ConnectionProviders
     [Serializable]
     public class LinkedTimeTable : LinkedObject, ITimeTable
     {
-        public Uri Next { get; set; }
-        public Uri Prev { get; set; }
+        private Uri Next { get; set; }
+        private Uri Prev { get; set; }
 
         private DateTime _startTime, _endTime;
 
-        public List<IConnection> Graph { get; set; }
+        private List<IConnection> Graph { get; set; }
+        [NonSerializedAttribute] private List<IConnection> ReversedGraph;
 
         public LinkedTimeTable(Uri uri) : base(uri)
         {
@@ -98,7 +99,8 @@ namespace Itinero_Transit.CSA.ConnectionProviders
             cons = cons.Substring(0, cons.Length - 1);
 
             var header =
-                $"Timetable with {Graph.Count} connections ({omitted} omitted below); ID: {Uri} Next: {Next} Prev: {Prev}\n";
+                $"Timetable with {Graph.Count} connections ({omitted} omitted below);" +
+                $" ID: {Uri} Next: {Next} Prev: {Prev}\n";
             return header + cons;
         }
 
@@ -112,6 +114,16 @@ namespace Itinero_Transit.CSA.ConnectionProviders
             return _endTime;
         }
 
+        public DateTime PreviousTableTime()
+        {
+            return _extractTime(Prev);
+        }
+
+        public DateTime NextTableTime()
+        {
+          return  _extractTime(Next);
+        }
+
         public Uri NextTable()
         {
             return Next;
@@ -122,9 +134,20 @@ namespace Itinero_Transit.CSA.ConnectionProviders
             return Prev;
         }
 
-        public List<IConnection> Connections()
+        public IEnumerable<IConnection> Connections()
         {
             return Graph;
+        }
+
+        public IEnumerable<IConnection> ConnectionsReversed()
+        {
+            if (ReversedGraph == null)
+            {
+                ReversedGraph = new List<IConnection>(Graph);
+                ReversedGraph.Reverse();
+            }
+
+            return ReversedGraph;
         }
     }
 }

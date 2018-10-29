@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Itinero_Transit.CSA;
 using Itinero_Transit.CSA.ConnectionProviders;
 using Itinero_Transit.CSA.Data;
@@ -58,11 +59,49 @@ namespace Itinero_Transit
                     Log.Information(journey.ToString(deLijn.LocationProvider));
                     stats += $"{key}: {journey.Stats}\n";
                 }
+
                 found += journeysFromPtStop.Count();
             }
 
             Log.Information($"Got {found} profiles");
             Log.Information(stats);
+        }
+
+        public static void TestStuff0(Downloader loader)
+        {
+            var deLijn = DeLijn.Profile(loader,
+                new LocalStorage("cache/delijn"), "belgium.routerdb");
+            var sncb = Sncb.Profile(loader, new LocalStorage("cache/sncb"), "belgium.routerdb");
+            var merged = new ConnectionProviderMerger(new List<IConnectionsProvider>()
+            {
+                deLijn,
+                sncb
+            });
+
+            var locs = new LocationCombiner(new List<ILocationProvider>
+            {
+                deLijn, sncb
+            });
+
+            // This moment (4AM) gives a neat mix of timetables:
+            // Few trains, few buses so that the timetable of the buses are more then one minute long
+            var moment = new DateTime(2018, 10, 30, 04, 00, 00);
+
+            
+            var tt = merged.GetTimeTable(moment);
+            
+            foreach (var conn in tt.Connections())
+            {
+                Log.Information($"{conn.DepartureTime():HH:mm} {conn.Id()}");
+            }
+
+            var sncbTT = sncb.GetTimeTable(moment);
+            Log.Information($"NMBS Table: {sncbTT.StartTime():HH:mm} --> {sncbTT.EndTime():HH:mm}, {sncbTT.Connections().Count()} entries");
+            var deLijnTT = deLijn.GetTimeTable(moment);
+            Log.Information($"De Lijn Table: {deLijnTT.StartTime():HH:mm} --> {deLijnTT.EndTime():HH:mm}, {deLijnTT.Connections().Count()} entries");
+
+            Log.Information(
+                $"Synth table with {tt.Connections().Count()} entries,  starting at {tt.StartTime()} till {tt.EndTime()}");
         }
 
 
@@ -76,7 +115,7 @@ namespace Itinero_Transit
             var loader = new Downloader();
             try
             {
-                TestStuff(loader);
+                TestStuff0(loader);
             }
             catch (Exception e)
             {

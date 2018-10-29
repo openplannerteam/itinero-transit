@@ -11,7 +11,8 @@ namespace Itinero_Transit.CSA
     {
         DateTime StartTime();
         DateTime EndTime();
-
+        DateTime PreviousTableTime();
+        DateTime NextTableTime();
         Uri NextTable();
         Uri PreviousTable();
         Uri Id();
@@ -20,7 +21,12 @@ namespace Itinero_Transit.CSA
         /// Get all the connections, earliest departure first
         /// </summary>
         /// <returns></returns>
-        List<IConnection> Connections();
+        IEnumerable<IConnection> Connections();
+        /// <summary>
+        /// Get all the connections, latest departure time first
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<IConnection> ConnectionsReversed();
 
         string ToString(ILocationProvider locationDecoder);
         string ToString(ILocationProvider locationDecoder, List<Uri> stopsWhitelist);

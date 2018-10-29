@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Itinero_Transit.CSA.ConnectionProviders;
 using PriorityQueue.Collections;
-using Serilog;
 
 namespace Itinero_Transit.CSA
 {
@@ -156,13 +155,13 @@ namespace Itinero_Transit.CSA
             IConnection c = null;
             do
             {
-                var cons = tt.Connections();
-                for (var i = cons.Count - 1; i >= 0; i--)
+                var cons = tt.ConnectionsReversed();
+                foreach (var conn in cons)
                 {
                     // The list is sorted by departure time
                     // The algorithm starts with the highest departure time and goes down
 
-                    c = cons[i];
+                    c = conn;
                     while (_queue.Count > 0 && _queue.Peek().DepartureTime() >= c.DepartureTime())
                     {
                         // We have an interlink on the queue that should be taken care of first
