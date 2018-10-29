@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Itinero_Transit.CSA;
 using Itinero_Transit.CSA.ConnectionProviders;
@@ -25,13 +26,17 @@ namespace Itinero_Transit_Tests
             // YOU MIGHT HAVE TO SYMLINK THE TIMETABLES TO  Itinero-Transit-Tests/bin/Debug/netcoreapp2.0
             var loader = new Downloader();
             var storage = new LocalStorage("timetables-for-testing-2018-10-17");
-            var pcs = new ProfiledConnectionScan<TransferStats>(TestEas.Brugge, TestEas.Gent,
-                Sncb.Profile(loader, storage, "belgium.routerdb"));
+            var sncb = Sncb.Profile(loader, storage, "belgium.routerdb");
+            var startTime = new DateTime(2018, 10, 17, 10, 00, 00);
+            var endTime = new DateTime(2018, 10, 17, 12, 00, 00);
+            var pcs = new ProfiledConnectionScan<TransferStats>(
+                TestEas.Brugge, TestEas.Gent,
+                startTime, endTime, sncb);
 
-            var journeys = pcs.CalculateJourneys(new DateTime(2018, 10, 17, 10, 00, 00),
-                new DateTime(2018, 10, 17, 12, 00, 00));
+            var journeys = new List<Journey<TransferStats>>(
+                pcs.CalculateJourneys()[TestEas.Brugge.ToString()]);
 
-            Assert.Equal(9, journeys.Count);
+            Assert.Equal(10, journeys.Count);
             Assert.Equal("00:22:00", journeys.ToList()[0].Stats.TravelTime.ToString());
         }
 
@@ -41,14 +46,17 @@ namespace Itinero_Transit_Tests
         {
             // YOU MIGHT HAVE TO SYMLINK THE TIMETABLES TO  Itinero-Transit-Tests/bin/Debug/netcoreapp2.0
             var loader = new Downloader();
-
             var storage = new LocalStorage("timetables-for-testing-2018-10-17");
+            var sncb = Sncb.Profile(loader, storage, "belgium.routerdb");
+            var startTime = new DateTime(2018, 10, 17, 10, 00, 00);
+            var endTime = new DateTime(2018, 10, 17, 20, 00, 00);
             var pcs = new ProfiledConnectionScan<TransferStats>(
                 TestEas.Poperinge, TestEas.Vielsalm,
-                Sncb.Profile(loader, storage, "belgium.routerdb"));
+                startTime, endTime, sncb);
 
-            var journeys = pcs.CalculateJourneys(new DateTime(2018, 10, 17, 10, 00, 00),
-                new DateTime(2018, 10, 17, 20, 00, 00));
+            var journeys = new List<Journey<TransferStats>>
+                (pcs.CalculateJourneys()[TestEas.Poperinge.ToString()]);
+
             foreach (var j in journeys)
             {
                 Log(

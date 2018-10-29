@@ -35,22 +35,20 @@ namespace Itinero_Transit_Tests
         [Fact]
         public void TestEarliestArrival()
         {
-            var loader = new Downloader();
             // YOU MIGHT HAVE TO SYMLINK THE TIMETABLES TO  Itinero-Transit-Tests/bin/Debug/netcoreapp2.0
-            var sncb = new LinkedConnectionProvider(Sncb.HydraSearch(loader));
-            var prov = new LocallyCachedConnectionsProvider(sncb,
-                new LocalStorage("timetables-for-testing-2018-10-17"));
-            var start = new DateTime(2018, 10, 17, 10, 10, 00);
-            var timeOut = new DateTime(2018, 10, 17, 23, 0, 0);
+            var loader = new Downloader();
+            var storage = new LocalStorage("timetables-for-testing-2018-10-17");
+            var sncb = Sncb.Profile(loader, storage, "belgium.routerdb");
+            var startTime = new DateTime(2018, 10, 17, 10, 10, 00);
+            var endTime = new DateTime(2018, 10, 17, 23, 0, 0);
 
-            var csa = new EarliestConnectionScan<TransferStats>(
-                Brugge, start, Gent, TransferStats.Factory, prov, timeOut);
+            var csa = new EarliestConnectionScan<TransferStats>(Brugge, Gent, startTime, endTime, sncb);
 
             var journey = csa.CalculateJourney();
             Log(journey.ToString());
-            Assert.Equal("2018-10-17T10:49:00.0000000", $"{journey.Time:O}");
-            Assert.Equal("00:39:00", journey.Stats.TravelTime.ToString());
-            Assert.Equal(1, journey.Stats.NumberOfTransfers);
+            Assert.Equal("2018-10-17T10:24:00.0000000", $"{journey.Connection.DepartureTime():O}");
+            Assert.Equal("00:26:00", journey.Stats.TravelTime.ToString());
+            Assert.Equal(0, journey.Stats.NumberOfTransfers);
         }
 
 
@@ -59,16 +57,19 @@ namespace Itinero_Transit_Tests
         {
             // YOU MIGHT HAVE TO SYMLINK THE TIMETABLES TO  Itinero-Transit-Tests/bin/Debug/netcoreapp2.0
             var loader = new Downloader();
-            var sncb = Sncb.Profile(loader);
-            var start = new DateTime(2018, 10, 17, 10, 8, 00);
-            var timeOut = new DateTime(2018, 10, 17, 23, 0, 0);
-            var csa = new EarliestConnectionScan<TransferStats>(Poperinge, start, Vielsalm, sncb, timeOut);
+            var storage = new LocalStorage("timetables-for-testing-2018-10-17");
+            var sncb = Sncb.Profile(loader, storage, "belgium.routerdb");
+           
+            var startTime = new DateTime(2018, 10, 17, 10, 8, 00);
+            var endTime = new DateTime(2018, 10, 17, 23, 0, 0);
+            var csa = new EarliestConnectionScan<TransferStats>(
+                Poperinge, Vielsalm, startTime, endTime, sncb);
             var journey = csa.CalculateJourney();
             Log(journey.ToString());
 
-            Assert.Equal("2018-10-17T16:13:00.0000000", $"{journey.Time:O}");
-            Assert.Equal("06:05:00", journey.Stats.TravelTime.ToString());
-            Assert.Equal(5, journey.Stats.NumberOfTransfers);
+            Assert.Equal("2018-10-17T15:01:00.0000000", $"{journey.Connection.DepartureTime():O}");
+            Assert.Equal("05:05:00", journey.Stats.TravelTime.ToString());
+            Assert.Equal(3, journey.Stats.NumberOfTransfers);
         }
 
         [Fact]
@@ -88,13 +89,13 @@ namespace Itinero_Transit_Tests
 
             Assert.True(closeToHome.Contains(new Uri("https://data.delijn.be/stops/502101")));
 
-            var testTime = new DateTime(2018, 10, 24, 10, 00, 00);
-            var failOver = new DateTime(2018, 10, 24, 11, 00, 00);
+            var startTime = new DateTime(2018, 10, 24, 10, 00, 00);
+            var endTime = new DateTime(2018, 10, 24, 11, 00, 00);
 
             var startJourneys = new List<Journey<TransferStats>>();
             foreach (var uri in closeToHome)
             {
-                startJourneys.Add(new Journey<TransferStats>(uri, testTime, TransferStats.Factory));
+                startJourneys.Add(new Journey<TransferStats>(uri, startTime, TransferStats.Factory));
                 Log($"> {uri} {deLijn.LocationProvider.GetNameOf(uri)}");
             }
 
@@ -104,10 +105,13 @@ namespace Itinero_Transit_Tests
             }
             
             var eas = new EarliestConnectionScan<TransferStats>(
-                startJourneys, new List<Uri>(closeToTarget), deLijn.ConnectionsProvider, failOver);
+                startJourneys, new List<Uri>(closeToTarget),
+                deLijn, endTime);
             Log("Starting AES");
             var j = eas.CalculateJourney();
-            Assert.Equal(4, j.Stats.NumberOfTransfers);
+            Log(j.ToString(deLijn));
+            Assert.Equal(0, j.Stats.NumberOfTransfers);
+            Assert.Equal(7, (j.Stats.EndTime - j.Stats.StartTime).TotalMinutes);
             Log("Done");
         }
 

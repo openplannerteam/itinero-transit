@@ -19,7 +19,7 @@ namespace Itinero_Transit.CSA.ConnectionProviders
         private DateTime _startTime, _endTime;
 
         private List<IConnection> Graph { get; set; }
-        [NonSerializedAttribute] private List<IConnection> ReversedGraph;
+        [NonSerializedAttribute] private List<IConnection> _reversedGraph;
 
         public LinkedTimeTable(Uri uri) : base(uri)
         {
@@ -141,13 +141,13 @@ namespace Itinero_Transit.CSA.ConnectionProviders
 
         public IEnumerable<IConnection> ConnectionsReversed()
         {
-            if (ReversedGraph == null)
+            if (_reversedGraph == null)
             {
-                ReversedGraph = new List<IConnection>(Graph);
-                ReversedGraph.Reverse();
+                _reversedGraph = new List<IConnection>(Graph);
+                _reversedGraph.Reverse();
             }
 
-            return ReversedGraph;
+            return _reversedGraph;
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Itinero_Transit.CSA
         /// </summary>
         /// <returns></returns>
         string Mode();
-        
+
         /// <summary>
         /// The identifier of this single connection (e.g. between Brussels-North and Brussels-Central)
         /// </summary>
@@ -79,22 +79,30 @@ namespace Itinero_Transit.CSA
     public class DepartureTimeConnectionComparer : IComparer<IConnection>
     {
         public static DepartureTimeConnectionComparer Singleton = new DepartureTimeConnectionComparer();
-        
+
         public int Compare(IConnection x, IConnection y)
         {
+            if (x == null || y == null)
+            {
+                throw new ArgumentNullException();
+            }
+
             return x.DepartureTime().CompareTo(y.DepartureTime());
         }
     }
-    
+
     public class DepartureTimeConnectionComparerDesc : IComparer<IConnection>
     {
         public static DepartureTimeConnectionComparerDesc Singleton = new DepartureTimeConnectionComparerDesc();
-        
+
         public int Compare(IConnection x, IConnection y)
         {
+            if (x == null || y == null)
+            {
+                throw new ArgumentNullException();
+            }
+
             return y.DepartureTime().CompareTo(x.DepartureTime());
         }
     }
-
-    
 }

@@ -18,8 +18,8 @@ namespace Itinero_Transit.CSA.ConnectionProviders
 
         private readonly List<IConnectionsProvider> _sources;
         private readonly List<ITimeTable> _curTables = new List<ITimeTable>();
-        
-        
+
+
         public ConnectionProviderMerger(List<IConnectionsProvider> sources)
         {
             _sources = sources;
@@ -41,15 +41,16 @@ namespace Itinero_Transit.CSA.ConnectionProviders
             id = id.Substring(SyntheticUri.Length);
 
             var time = DateTime.Parse(id);
-            
+
             for (var i = 0; i < _sources.Count; i++)
             {
                 var idTime = _sources[i].TimeTableIdFor(time);
-                if (_curTables[i] != null &&     _curTables[i].Id().Equals(id))
+                if (_curTables[i] != null && _curTables[i].Id().ToString().Equals(id))
                 {
                     // We already have this table, no need to download it once more
                     continue;
                 }
+
                 _curTables[i] = _sources[i].GetTimeTable(idTime);
             }
 

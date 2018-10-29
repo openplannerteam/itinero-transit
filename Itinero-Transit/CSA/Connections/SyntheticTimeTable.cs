@@ -29,8 +29,6 @@ namespace Itinero_Transit.CSA.Connections
             DateTime? previousTime = null;
             foreach (var tt in sources)
             {
-                Log.Information($"Timetable {tt.Id()}, {tt.StartTime():HH:mm:ss} --> {tt.EndTime():HH:mm:ss}");
-                
                 if (startTime == null)
                 {
                     startTime = tt.StartTime();
@@ -173,6 +171,10 @@ namespace Itinero_Transit.CSA.Connections
         public EnumeratorMerger(IEnumerable<ITimeTable> sources, bool reverse, DateTime startTime, DateTime endTime)
         {
             var sourcesList = new List<IEnumerator<IConnection>>();
+            if (reverse)
+            {
+                sourcesList.Reverse();
+            }
             _reverse = reverse;
             _startTime = startTime;
             _endTime = endTime;
