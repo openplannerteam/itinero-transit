@@ -55,7 +55,7 @@ namespace Itinero_Transit.LinkedData
         /// </summary>
         /// <returns></returns>
         /// <exception cref="FileNotFoundException"></exception>
-        private string DownloadRaw(Uri uri)
+        public string DownloadRaw(Uri uri)
         {
             if (AlwaysReturn != null)
             {

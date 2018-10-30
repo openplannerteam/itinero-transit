@@ -46,6 +46,17 @@ Before we can start creating journeys, we need a source of data. These are repre
 
 The IConnectionProvider offers an opportunity to cache. You can save the timetables to local storage with a `LocallyCachedProvider` which will store connections locally.
 
+
+Running tests
+-------------
+
+The first time you'll run the tests, most will fail. This is because
+
+1) The belgium routerdb isn't there yet. This database is used for foothpath navigation and automatically download by the test 'FixRouterDB' in  ResourcesTest. This test will download ~250mb and process the file afterwards; which can take quite some time (~15minutes, till over 1h on older hardware. Luckily, this should only be done once
+2) The local testdata (timetables-for-testing) should be copied too
+
+
+
 Algorithms
 ----------
 
@@ -56,7 +67,7 @@ For now, the following algorithms are supported:
 
  - EarliestConnectionScan: given a startlocation and time, what is the earliest time a traveller can arrive in a destination station
  - ParetoFrontier: given a list of Journeys, are they pareto-optimal with respect to each other? This class is mainly used in other algorithms
- - ProfiledConnectionScan: given a departure- and arrival-location, what are all pareto-optimal routes in a given timespan?
+ - ProfiledConnectionScan: given a departure- and arrival-location, what are all time-optimal routes in a given timespan?
 
 The inner workings of the algorithm are stated in the classes themselves.
 

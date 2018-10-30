@@ -115,6 +115,7 @@ namespace Itinero_Transit_Tests
         [Fact]
         public void TestFootPathsInterlink()
         {
+            Assert.Equal("unsupported","timeout");
             Log("Starting");
             var loader = new Downloader();
             var storage = new LocalStorage("cache/delijn");
