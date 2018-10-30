@@ -71,6 +71,8 @@ namespace Itinero.Transit.LinkedData
             }
             DownloadCounter++;
             var start = DateTime.Now;
+            
+            Log.Information($"Downloading {uri}...");
 
             var response = _client.GetAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
             if (response == null || !response.IsSuccessStatusCode)
