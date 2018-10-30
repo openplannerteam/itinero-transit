@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace Itinero_Transit.CSA.LocationProviders
+namespace Itinero.Transit.CSA.LocationProviders
 {
     public static class LocationProviderExtension
     {

@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection;
-using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection.TreeTraverse;
-using Itinero_Transit.LinkedData;
+using Itinero.Transit.CSA.ConnectionProviders.LinkedConnection;
+using Itinero.Transit.CSA.ConnectionProviders.LinkedConnection.TreeTraverse;
+using Itinero.Transit.LinkedData;
 using JsonLD.Core;
 using Xunit;
 using Xunit.Abstractions;
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace Itinero_Transit_Tests
+namespace Itinero.Transit_Tests
 {
     public class TestLocations
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace Itinero_Transit.CSA
+namespace Itinero.Transit.CSA
 {
     /// <summary>
     /// The connections-provider is an object responsible for giving all kinds of connections.

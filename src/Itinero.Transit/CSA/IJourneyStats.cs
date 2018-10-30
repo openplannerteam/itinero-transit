@@ -1,4 +1,4 @@
-﻿namespace Itinero_Transit.CSA
+﻿namespace Itinero.Transit.CSA
 {
     ///  <summary>
     ///  Every journey carries a 'journeyStats'-object.

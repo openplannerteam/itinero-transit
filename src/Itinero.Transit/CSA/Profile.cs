@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Itinero_Transit.CSA.ConnectionProviders;
-using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection;
-using Itinero_Transit.CSA.LocationProviders;
+using Itinero.Transit.CSA.ConnectionProviders;
+using Itinero.Transit.CSA.ConnectionProviders.LinkedConnection;
+using Itinero.Transit.CSA.LocationProviders;
 
-namespace Itinero_Transit.CSA
+namespace Itinero.Transit.CSA
 {
     /// <summary>
     /// A profile represents the preferences of the traveller.

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Itinero_Transit.CSA
+namespace Itinero.Transit.CSA
 {
     /// <summary>
     /// Represents an abstract connection from one point to another using a single transportation mode (e.g. train, walking, cycling, ...)

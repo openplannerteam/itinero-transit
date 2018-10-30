@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Itinero_Transit.CSA.ConnectionProviders;
+using Itinero.Transit.CSA.ConnectionProviders;
 
-namespace Itinero_Transit.CSA
+namespace Itinero.Transit.CSA
 {
     /// <summary>
     /// A journey is a part in an intermodal trip, describing the route the user takes.

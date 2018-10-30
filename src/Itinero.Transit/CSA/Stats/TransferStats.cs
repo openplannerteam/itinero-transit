@@ -1,9 +1,9 @@
 ﻿using System;
-using Itinero_Transit.CSA.ConnectionProviders;
+using Itinero.Transit.CSA.ConnectionProviders;
 
 // ReSharper disable ImpureMethodCallOnReadonlyValueField
 
-namespace Itinero_Transit.CSA
+namespace Itinero.Transit.CSA
 {
     /// <inheritdoc />
     /// <summary>

@@ -1,9 +1,9 @@
 using System;
-using Itinero_Transit.LinkedData;
+using Itinero.Transit.LinkedData;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 
-namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection
+namespace Itinero.Transit.CSA.ConnectionProviders.LinkedConnection
 {
     /// <summary>
     /// Represents a transit location, such as a bus stop or train station

@@ -1,8 +1,8 @@
-using Itinero_Transit.CSA;
+using Itinero.Transit.CSA;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Itinero_Transit_Tests
+namespace Itinero.Transit_Tests
 {
     public class TestDistance
     {

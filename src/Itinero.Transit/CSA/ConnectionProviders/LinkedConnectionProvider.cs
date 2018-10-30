@@ -1,10 +1,10 @@
 using System;
-using Itinero_Transit.LinkedData;
+using Itinero.Transit.LinkedData;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
-namespace Itinero_Transit.CSA.ConnectionProviders
+namespace Itinero.Transit.CSA.ConnectionProviders
 {
     /// <inheritdoc />
     ///  <summary>

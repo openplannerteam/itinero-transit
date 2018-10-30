@@ -5,11 +5,11 @@ using System.Runtime.InteropServices.ComTypes;
 using Itinero;
 using Itinero.IO.Osm;
 using Itinero.Osm.Vehicles;
-using Itinero_Transit.LinkedData;
+using Itinero.Transit.LinkedData;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Itinero_Transit_Tests
+namespace Itinero.Transit_Tests
 {
     public class ResourcesTest
     {

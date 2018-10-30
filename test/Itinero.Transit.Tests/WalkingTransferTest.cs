@@ -1,13 +1,13 @@
 using System;
-using Itinero_Transit.CSA.ConnectionProviders;
-using Itinero_Transit.CSA.Connections;
-using Itinero_Transit.CSA.Data;
-using Itinero_Transit.LinkedData;
+using Itinero.Transit.CSA.ConnectionProviders;
+using Itinero.Transit.CSA.Connections;
+using Itinero.Transit.CSA.Data;
+using Itinero.Transit.LinkedData;
 using Xunit;
 using Xunit.Abstractions;
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace Itinero_Transit_Tests
+namespace Itinero.Transit_Tests
 {
     public class WalkingTransferTest
     {

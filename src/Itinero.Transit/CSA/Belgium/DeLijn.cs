@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
-using Itinero_Transit.CSA.Connections;
-using Itinero_Transit.CSA.Data;
-using Itinero_Transit.CSA.LocationProviders;
-using Itinero_Transit.LinkedData;
+using Itinero.Transit.CSA.Connections;
+using Itinero.Transit.CSA.Data;
+using Itinero.Transit.CSA.LocationProviders;
+using Itinero.Transit.LinkedData;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 
-namespace Itinero_Transit.CSA.ConnectionProviders
+namespace Itinero.Transit.CSA.ConnectionProviders
 {
     public static class DeLijn
     {

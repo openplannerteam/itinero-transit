@@ -8,7 +8,7 @@ using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
-namespace Itinero_Transit.LinkedData
+namespace Itinero.Transit.LinkedData
 {
     /// <summary>
     /// Utilities to help downloading, caching and testing (e.g. to inject a fixed string while testing)

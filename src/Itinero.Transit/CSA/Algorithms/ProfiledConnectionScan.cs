@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Itinero_Transit.CSA.ConnectionProviders;
+using Itinero.Transit.CSA.ConnectionProviders;
 using PriorityQueue.Collections;
 using Serilog;
 
-namespace Itinero_Transit.CSA
+namespace Itinero.Transit.CSA
 {
     /// <summary>
     /// The ProfiledConnectionScan is a CSA that applies A* backward and builds profiles on how to reach a target stop.

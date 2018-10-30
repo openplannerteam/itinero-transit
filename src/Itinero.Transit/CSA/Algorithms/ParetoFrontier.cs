@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Itinero_Transit.CSA
+namespace Itinero.Transit.CSA
 {
     public class ParetoFrontier<T>
         where T : IJourneyStats<T>

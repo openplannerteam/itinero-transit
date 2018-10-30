@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection;
-using Itinero_Transit.CSA.LocationProviders;
+using Itinero.Transit.CSA.ConnectionProviders.LinkedConnection;
+using Itinero.Transit.CSA.LocationProviders;
 
-namespace Itinero_Transit.CSA
+namespace Itinero.Transit.CSA
 {
     /// <summary>
     /// An ILocationProvider is responsible for the conversion of location-URI's into coordinates and

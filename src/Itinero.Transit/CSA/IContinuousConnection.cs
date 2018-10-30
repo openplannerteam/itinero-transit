@@ -1,4 +1,4 @@
-namespace Itinero_Transit.CSA
+namespace Itinero.Transit.CSA
 {
     public interface IContinuousConnection : IConnection
     {

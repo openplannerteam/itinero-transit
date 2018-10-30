@@ -1,6 +1,6 @@
 using System;
 
-namespace Itinero_Transit.CSA
+namespace Itinero.Transit.CSA
 {
     /// <summary>
     ///  Small utility to calculate the length in meters between two coordinates

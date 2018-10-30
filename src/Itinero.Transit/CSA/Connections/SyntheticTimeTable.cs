@@ -1,12 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Itinero_Transit.CSA.ConnectionProviders;
+using Itinero.Transit.CSA.ConnectionProviders;
 using Serilog;
 
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace Itinero_Transit.CSA.Connections
+namespace Itinero.Transit.CSA.Connections
 {
     /// <inheritdoc />
     /// <summary>

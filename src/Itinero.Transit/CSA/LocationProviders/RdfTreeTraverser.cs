@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Itinero_Transit.CSA.LocationProviders;
+using Itinero.Transit.CSA.LocationProviders;
 using JsonLD.Core;
 
-namespace Itinero_Transit.CSA.ConnectionProviders.LinkedConnection.TreeTraverse
+namespace Itinero.Transit.CSA.ConnectionProviders.LinkedConnection.TreeTraverse
 {
     /// <inheritdoc />
     ///  <summary>

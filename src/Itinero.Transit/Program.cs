@@ -2,19 +2,19 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Itinero_Transit.CSA;
-using Itinero_Transit.CSA.ConnectionProviders;
-using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection;
-using Itinero_Transit.CSA.Connections;
-using Itinero_Transit.CSA.Data;
-using Itinero_Transit.CSA.LocationProviders;
-using Itinero_Transit.LinkedData;
+using Itinero.Transit.CSA;
+using Itinero.Transit.CSA.ConnectionProviders;
+using Itinero.Transit.CSA.ConnectionProviders.LinkedConnection;
+using Itinero.Transit.CSA.Connections;
+using Itinero.Transit.CSA.Data;
+using Itinero.Transit.CSA.LocationProviders;
+using Itinero.Transit.LinkedData;
 using JsonLD.Core;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
 
-namespace Itinero_Transit
+namespace Itinero.Transit
 {
     public static class Program
     {

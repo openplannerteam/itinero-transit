@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Itinero_Transit.CSA.ConnectionProviders.LinkedConnection;
+using Itinero.Transit.CSA.ConnectionProviders.LinkedConnection;
 
-namespace Itinero_Transit.CSA.LocationProviders
+namespace Itinero.Transit.CSA.LocationProviders
 {
     public class OsmLocationMapping : ILocationProvider
     {
