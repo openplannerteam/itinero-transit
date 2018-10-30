@@ -4,7 +4,8 @@
 **/.idea/
 **/logs/*
 **/cache/*
+**/cache-dir/*
 **/timetables-cache/*
 Itinero-Transit/timetables-for-testing-2018-10-02/*
 *.routerdb
-
+*.osm.pbf
