@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Itinero_Transit.CSA.ConnectionProviders;
+using Microsoft.VisualBasic.CompilerServices;
 using PriorityQueue.Collections;
 using Serilog;
 
@@ -108,6 +109,38 @@ namespace Itinero_Transit.CSA
 
             var genesis = new WalkingConnection(departureLocation, earliestDeparture);
             _footpathsIn.Add(genesis.ArrivalLocation().ToString(), genesis);
+        }
+
+        public ProfiledConnectionScan(IEnumerable<Uri> departureLocations,
+            IEnumerable<Uri> targetLocations,
+            DateTime earliestDeparture, DateTime lastArrival,
+            Profile<T> profile)
+        {
+            
+            
+            if (!departureLocations.Any())
+            {
+                throw new ArgumentException("No departure locations given. Cannot run PCS in this case");
+            }
+
+            if (!targetLocations.Any())
+            {
+                throw new ArgumentException("No target locations are given, Cannot run PCS in this case");
+            }
+
+
+            foreach (var source in departureLocations)
+            {
+                _footpathsIn.Add(source.ToString(), new WalkingConnection(source, earliestDeparture));
+            }
+            
+            foreach (var target in targetLocations)
+            {
+                _footpathsOut.Add(target.ToString(), new WalkingConnection(target, lastArrival));
+            }
+            _earliestDeparture = earliestDeparture;
+            _lastArrival = lastArrival;
+            _profile = profile;
         }
 
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]

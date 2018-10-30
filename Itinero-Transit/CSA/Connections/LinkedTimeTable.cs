@@ -35,9 +35,9 @@ namespace Itinero_Transit.CSA.ConnectionProviders
         {
             json.AssertTypeIs("http://www.w3.org/ns/hydra/core#PagedCollection");
 
-            Next = AsUri(json["http://www.w3.org/ns/hydra/core#next"][0]["@id"].ToString());
-            Prev = AsUri(json["http://www.w3.org/ns/hydra/core#previous"][0]["@id"].ToString());
-            _startTime = _extractTime(AsUri(json["@id"].ToString()));
+            Next = new Uri(json["http://www.w3.org/ns/hydra/core#next"][0]["@id"].ToString());
+            Prev = new Uri(json["http://www.w3.org/ns/hydra/core#previous"][0]["@id"].ToString());
+            _startTime = _extractTime(new Uri(json["@id"].ToString()));
             _endTime = _extractTime(Next);
 
 

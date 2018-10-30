@@ -66,7 +66,7 @@ namespace Itinero_Transit_Tests
 
             
             Log("Downloading routerdb...");
-            var geofabrikBE = new Uri("https://download.geofabrik.de/europe/belgium-latest.osm.pbf");
+            var geofabrikBE = new Uri("http://files.itinero.tech/data/OSM/planet/europe/belgium-latest.osm.pbf");
 
             var fileReq = (HttpWebRequest) HttpWebRequest.Create(geofabrikBE);
             var fileResp = (HttpWebResponse) fileReq.GetResponse();

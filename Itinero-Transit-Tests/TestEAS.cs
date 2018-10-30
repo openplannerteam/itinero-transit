@@ -20,11 +20,11 @@ namespace Itinero_Transit_Tests
     {
         private readonly ITestOutputHelper _output;
 
-        public static Uri BrusselZuid = LinkedObject.AsUri("http://irail.be/stations/NMBS/008814001");
-        public static Uri Gent = LinkedObject.AsUri("http://irail.be/stations/NMBS/008892007");
-        public static Uri Brugge = LinkedObject.AsUri("http://irail.be/stations/NMBS/008891009");
-        public static Uri Poperinge = LinkedObject.AsUri("http://irail.be/stations/NMBS/008896735");
-        public static Uri Vielsalm = LinkedObject.AsUri("http://irail.be/stations/NMBS/008845146");
+        public static Uri BrusselZuid = new Uri("http://irail.be/stations/NMBS/008814001");
+        public static Uri Gent = new Uri("http://irail.be/stations/NMBS/008892007");
+        public static Uri Brugge = new Uri("http://irail.be/stations/NMBS/008891009");
+        public static Uri Poperinge = new Uri("http://irail.be/stations/NMBS/008896735");
+        public static Uri Vielsalm = new Uri("http://irail.be/stations/NMBS/008845146");
 
 
         public TestEas(ITestOutputHelper output)

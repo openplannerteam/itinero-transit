@@ -18,7 +18,7 @@ namespace Itinero_Transit.LinkedData
 
         protected LinkedObject(Uri uri)
         {
-            Uri = AsUri(uri.ToString());
+            Uri = uri;
         }
 
         /// <summary>
@@ -44,13 +44,6 @@ namespace Itinero_Transit.LinkedData
                 Log.Error(e.ToString());
                 throw;
             }
-        }
-        
-
-        public static Uri AsUri(string s)
-        {
-
-            return new Uri(s);
         }
 
         public Uri Id()

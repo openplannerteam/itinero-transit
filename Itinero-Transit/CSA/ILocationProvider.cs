@@ -8,8 +8,6 @@ namespace Itinero_Transit.CSA
     /// <summary>
     /// An ILocationProvider is responsible for the conversion of location-URI's into coordinates and
     /// is responsible in finding locations nearby a certain coordinate (to search possible intermodal transfers).
-    ///
-    /// LocationProviders will often accompany a ConnectionProvider, to map the locations of that provider onto coordinates.
     /// </summary>
     public interface ILocationProvider
     {
