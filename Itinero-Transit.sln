@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1F782339-952A-4E13-A2BF-736D5B0A2A6C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Itinero.Transit", "src\Itinero.Transit\Itinero.Transit.csproj", "{D0EFE6FE-1456-48AB-9821-FE990CD62302}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E196CAD8-BD41-4E01-90B3-389EA209CECB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Itinero.Transit.Tests", "test\Itinero.Transit.Tests\Itinero.Transit.Tests.csproj", "{A931125D-D9B4-4AD2-BEED-6A61FFCAE937}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D0EFE6FE-1456-48AB-9821-FE990CD62302}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0EFE6FE-1456-48AB-9821-FE990CD62302}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0EFE6FE-1456-48AB-9821-FE990CD62302}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0EFE6FE-1456-48AB-9821-FE990CD62302}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A931125D-D9B4-4AD2-BEED-6A61FFCAE937}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A931125D-D9B4-4AD2-BEED-6A61FFCAE937}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A931125D-D9B4-4AD2-BEED-6A61FFCAE937}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A931125D-D9B4-4AD2-BEED-6A61FFCAE937}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D0EFE6FE-1456-48AB-9821-FE990CD62302} = {1F782339-952A-4E13-A2BF-736D5B0A2A6C}
+		{A931125D-D9B4-4AD2-BEED-6A61FFCAE937} = {E196CAD8-BD41-4E01-90B3-389EA209CECB}
+	EndGlobalSection
+EndGlobal

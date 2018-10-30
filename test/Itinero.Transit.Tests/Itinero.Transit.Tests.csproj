@@ -15,6 +15,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Itinero-Transit\Itinero-Transit.csproj" />
+    <ProjectReference Include="..\..\src\Itinero.Transit\Itinero.Transit.csproj" />
   </ItemGroup>
 </Project>
