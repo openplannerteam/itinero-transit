@@ -44,16 +44,25 @@ namespace Itinero.Transit_Tests
                 return;
             }
 
-            var sncb = Sncb.Profile(TestPath, "belgium.routerdb");
             try
             {
+                var sncb = Sncb.Profile(TestPath,
+                    "belgium.routerdb");
                 sncb.DownloadDay(TestDay);
+
+                var deLijn = DeLijn.Profile(TestPath, "belgium.routerdb");
+                deLijn.DownloadDay(TestDay);
             }
             catch (Exception e)
             {
                 Log(e.Message);
                 Log(e.InnerException?.Message);
                 Log(e.InnerException?.InnerException?.Message);
+
+                // NUKE THE CACHE!
+                Directory.Delete(TestPath, recursive: true);
+
+                throw e;
             }
         }
 
