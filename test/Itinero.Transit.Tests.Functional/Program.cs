@@ -38,7 +38,7 @@ namespace Itinero.Transit.Tests.Functional
             // Print the journey. Passing the profile means that human-unfriendly IDs can be replaced with names (e.g. 'Vielsalm' instead of 'https://irail.be/stations/12345')
             Log.Information(journey.ToString(profile));
         }
-        
+
         private static void EnableLogging()
         {
             // initialize serilog.

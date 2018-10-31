@@ -32,6 +32,10 @@ namespace Itinero.Transit_Tests
         // ReSharper disable once UnusedMember.Local
         private void Log(string s)
         {
+            if (s == null)
+            {
+                return;
+            }
             _output.WriteLine(s);
         }
 
