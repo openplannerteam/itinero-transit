@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Itinero.Transit.CSA;
-using Itinero.Transit.CSA.ConnectionProviders.LinkedConnection;
-using Itinero.Transit.CSA.ConnectionProviders.LinkedConnection.TreeTraverse;
-using Itinero.Transit.LinkedData;
+using Itinero.Transit;
 using JsonLD.Core;
 using Xunit;
 using Xunit.Abstractions;
@@ -48,23 +45,24 @@ namespace Itinero.Transit_Tests
         [Fact]
         public void TestCloseLocations()
         {
-            var lat = 51.21576f;
-            var lon = 3.22048f;
+            const float lat = 51.21576f;
+            const float lon = 3.22048f;
 
             var uri = new Uri("http://irail.be/stations");
-            var locs = new LocationsFragment(uri);
+            var locations = new LocationsFragment(uri);
 
 
-            var loader = new Downloader(caching: false);
+            // ReSharper disable once RedundantArgumentDefaultValue
+            var loader = new Downloader(false);
             var proc = new JsonLdProcessor(loader, uri);
 
-            locs.Download(proc);
+            locations.Download(proc);
 
-            var found = (List<Uri>) locs.GetLocationsCloseTo(lat, lon, 5000);
+            var found = (List<Uri>) locations.GetLocationsCloseTo(lat, lon, 5000);
 
             Assert.True(found.Contains(new Uri("http://irail.be/stations/NMBS/008891009")));
             Assert.True(found.Contains(new Uri("http://irail.be/stations/NMBS/008891033")));
-            Assert.Equal(2, found.Count());
+            Assert.Equal(2, found.Count);
         }
 
 

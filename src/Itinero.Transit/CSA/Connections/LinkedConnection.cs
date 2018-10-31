@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using Itinero.Transit.CSA.LocationProviders;
-using Itinero.Transit.LinkedData;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 // ReSharper disable MemberCanBePrivate.Global
 
 
-namespace Itinero.Transit.CSA
+namespace Itinero.Transit
 {
     /**
      * A connection represents a single connection someone can take.

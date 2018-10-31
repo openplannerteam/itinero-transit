@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Itinero.Transit.CSA
+namespace Itinero.Transit
 {
     /// <inheritdoc />
     /// <summary>

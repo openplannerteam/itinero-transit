@@ -1,7 +1,6 @@
 using System;
-using Itinero.Transit.CSA.ConnectionProviders.LinkedConnection;
 
-namespace Itinero.Transit.CSA
+namespace Itinero.Transit
 {
     /// <summary>
     /// The footpath-generator is the one responsible to create transfers where the traveller transfers from one

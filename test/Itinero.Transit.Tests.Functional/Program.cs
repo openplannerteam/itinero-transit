@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Itinero.Transit.CSA;
-using Itinero.Transit.CSA.ConnectionProviders;
-using Itinero.Transit.CSA.Data;
-using Itinero.Transit.LinkedData;
+using Itinero.Transit.Belgium;
 using Itinero.Transit.Tests.Functional.Staging;
 using Serilog;
 using Serilog.Events;

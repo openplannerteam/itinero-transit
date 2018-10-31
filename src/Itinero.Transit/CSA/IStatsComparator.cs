@@ -1,4 +1,4 @@
-﻿namespace Itinero.Transit.CSA
+﻿namespace Itinero.Transit
 {
     /// <summary>
     /// The interface that objects comparing statistics fullfill.

@@ -1,4 +1,4 @@
-﻿namespace Itinero.Transit.CSA
+﻿namespace Itinero.Transit
 {
     public  class ChainedComparator<T> : StatsComparator<T>
         where T : IJourneyStats<T>

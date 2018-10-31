@@ -1,4 +1,4 @@
-namespace Itinero.Transit.CSA
+namespace Itinero.Transit
 {
     /// <summary>
     /// A ContinuousConnection is a connection that can be moved in time.

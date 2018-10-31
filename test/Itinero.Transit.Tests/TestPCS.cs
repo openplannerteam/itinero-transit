@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Itinero.Transit.CSA;
-using Itinero.Transit.CSA.ConnectionProviders;
-using Itinero.Transit.CSA.Data;
-using Itinero.Transit.CSA.LocationProviders;
-using Itinero.Transit.LinkedData;
+using Itinero.Transit.Belgium;
 using Itinero.Transit_Tests;
 using Xunit;
 using Xunit.Abstractions;
+// ReSharper disable PossibleMultipleEnumeration
 
 namespace Itinero.Transit.Tests
 {

@@ -1,12 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Itinero.Transit.CSA.Connections;
-using Itinero.Transit.CSA.Data;
-using Itinero.Transit.CSA.LocationProviders;
-using Itinero.Transit.LinkedData;
 using JsonLD.Core;
 
-namespace Itinero.Transit.CSA.ConnectionProviders
+namespace Itinero.Transit.Belgium
 {
     public static class DeLijn
     {

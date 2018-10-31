@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Itinero.Transit.CSA.ConnectionProviders.LinkedConnection;
 
-namespace Itinero.Transit.CSA.LocationProviders
+namespace Itinero.Transit
 {
     public class OsmLocationMapping : ILocationProvider
     {
@@ -11,9 +10,9 @@ namespace Itinero.Transit.CSA.LocationProviders
         
         public Location GetCoordinateFor(Uri locationId)
         {
-            var coor = locationId.Fragment.Split("/");
-            var lat = float.Parse(coor[1]);
-            var lon = float.Parse(coor[2]);
+            var coordinate = locationId.Fragment.Split("/");
+            var lat = float.Parse(coordinate[1]);
+            var lon = float.Parse(coordinate[2]);
             return new Location(locationId)
             {
                 Lat = lat,

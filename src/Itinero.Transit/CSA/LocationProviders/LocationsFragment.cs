@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Itinero.LocalGeo;
-using Itinero.Transit.CSA.LocationProviders;
-using Itinero.Transit.LinkedData;
 using Newtonsoft.Json.Linq;
 
-namespace Itinero.Transit.CSA.ConnectionProviders.LinkedConnection
+namespace Itinero.Transit
 {
     /// <inheritdoc cref="ILocationProvider" />
     /// <summary>

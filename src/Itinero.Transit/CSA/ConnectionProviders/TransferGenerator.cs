@@ -1,12 +1,9 @@
 using System;
 using System.IO;
-using Itinero;
 using Itinero.Profiles;
-using Itinero.Transit.CSA.ConnectionProviders;
-using Itinero.Transit.CSA.ConnectionProviders.LinkedConnection;
 using static Itinero.Osm.Vehicles.Vehicle;
 
-namespace Itinero.Transit.CSA.Connections
+namespace Itinero.Transit
 {
     /// <inheritdoc />
     /// <summary>

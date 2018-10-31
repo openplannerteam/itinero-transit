@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Itinero.Transit.CSA.Connections;
 
-namespace Itinero.Transit.CSA.ConnectionProviders
+namespace Itinero.Transit
 {
     /// <inheritdoc />
     ///  <summary>

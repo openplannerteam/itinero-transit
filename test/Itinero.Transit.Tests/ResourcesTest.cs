@@ -2,12 +2,10 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Runtime.InteropServices.ComTypes;
-using Itinero;
 using Itinero.IO.Osm;
 using Itinero.Osm.Vehicles;
-using Itinero.Transit.CSA.ConnectionProviders;
-using Itinero.Transit.CSA.Data;
+using Itinero.Transit;
+using Itinero.Transit.Belgium;
 using Xunit;
 using Xunit.Abstractions;
 

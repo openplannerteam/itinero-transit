@@ -1,8 +1,6 @@
 using System;
-using Itinero;
-using Itinero.Transit.CSA.LocationProviders;
 
-namespace Itinero.Transit.CSA.ConnectionProviders
+namespace Itinero.Transit
 {
     /// <summary>
     /// A walking connection is a connection where the traveller takes walks (or bikes)...

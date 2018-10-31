@@ -1,14 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Itinero.Transit.CSA;
-using Itinero.Transit.CSA.ConnectionProviders;
-using Itinero.Transit.CSA.ConnectionProviders.LinkedConnection;
-using Itinero.Transit.CSA.Connections;
-using Itinero.Transit.CSA.Data;
-using Itinero.Transit.CSA.LocationProviders;
-using Itinero.Transit.LinkedData;
+using Itinero.Transit.Belgium;
 using JsonLD.Core;
 using Serilog;
 using Serilog.Events;

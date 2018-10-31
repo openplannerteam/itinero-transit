@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Itinero.Transit.CSA.ConnectionProviders.LinkedConnection;
-using Itinero.Transit.CSA.Data;
 using JsonLD.Core;
 
-namespace Itinero.Transit.CSA.LocationProviders
+namespace Itinero.Transit
 {
     public class CachedLocationsFragment : ILocationProvider
     {

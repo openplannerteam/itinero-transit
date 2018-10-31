@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Itinero.Transit.CSA;
-using Itinero.Transit.CSA.ConnectionProviders;
-using Itinero.Transit.CSA.Data;
-using Itinero.Transit.LinkedData;
+using Itinero.Transit;
+using Itinero.Transit.Belgium;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -1,9 +1,6 @@
 using System;
-using Itinero.Transit.CSA;
-using Itinero.Transit.CSA.ConnectionProviders;
-using Itinero.Transit.CSA.Connections;
-using Itinero.Transit.CSA.Data;
-using Itinero.Transit.LinkedData;
+using Itinero.Transit;
+using Itinero.Transit.Belgium;
 using Xunit;
 using Xunit.Abstractions;
 // ReSharper disable MemberCanBePrivate.Global

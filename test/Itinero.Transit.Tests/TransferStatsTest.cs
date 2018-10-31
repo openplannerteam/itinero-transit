@@ -1,5 +1,5 @@
 using System;
-using Itinero.Transit.CSA;
+using Itinero.Transit;
 using Xunit;
 using Xunit.Abstractions;
 

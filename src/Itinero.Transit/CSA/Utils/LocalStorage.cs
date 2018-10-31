@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace Itinero.Transit.CSA.Data
+namespace Itinero.Transit
 {
     /// <summary>
     /// The local storage provides serialization to local files

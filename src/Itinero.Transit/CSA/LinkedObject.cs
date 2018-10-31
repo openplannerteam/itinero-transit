@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
-namespace Itinero.Transit.LinkedData
+namespace Itinero.Transit
 {
     /**
      * A linked object is an object which has an Uniform Resource Identifier

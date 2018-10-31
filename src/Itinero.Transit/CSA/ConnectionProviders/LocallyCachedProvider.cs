@@ -1,9 +1,6 @@
 using System;
-using Itinero.Transit.CSA;
-using Itinero.Transit.CSA.ConnectionProviders;
-using Itinero.Transit.CSA.Data;
 
-namespace Itinero.Transit.LinkedData
+namespace Itinero.Transit
 {
     /// <inheritdoc />
     ///  <summary>

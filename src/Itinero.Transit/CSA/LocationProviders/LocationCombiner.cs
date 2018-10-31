@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Itinero.Transit.CSA.ConnectionProviders.LinkedConnection;
 
-namespace Itinero.Transit.CSA.LocationProviders
+namespace Itinero.Transit
 {
     public class LocationCombiner : ILocationProvider
     {

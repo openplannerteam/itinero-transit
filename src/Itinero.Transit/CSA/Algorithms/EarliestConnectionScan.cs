@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Itinero.Transit.CSA.ConnectionProviders;
 
-namespace Itinero.Transit.CSA
+namespace Itinero.Transit
 {
     /// <summary>
     /// Calculates the fastest journey from A to B starting at a given time; using CSA (forward A*).

@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Itinero.LocalGeo;
-using Itinero.Transit.LinkedData;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 
-namespace Itinero.Transit.CSA.LocationProviders
+namespace Itinero.Transit
 {
     /// <summary>
     /// A node in the RDF-tree, which pointers to it's children.

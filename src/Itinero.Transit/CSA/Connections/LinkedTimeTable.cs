@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Itinero.Transit.LinkedData;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
-namespace Itinero.Transit.CSA.ConnectionProviders
+namespace Itinero.Transit
 {
     /// <summary>
     /// Represents one entire page of connections, based on a LinkedConnections JSON-LD
@@ -47,7 +46,7 @@ namespace Itinero.Transit.CSA.ConnectionProviders
             {
                 try
                 {
-                    Graph.Add(new CSA.LinkedConnection((JObject) conn));
+                    Graph.Add(new LinkedConnection((JObject) conn));
                 }
                 catch (ArgumentException e)
                 {

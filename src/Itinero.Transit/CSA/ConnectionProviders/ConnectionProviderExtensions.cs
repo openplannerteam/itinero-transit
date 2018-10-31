@@ -1,7 +1,7 @@
 using System;
 using Serilog;
 
-namespace Itinero.Transit.CSA.ConnectionProviders
+namespace Itinero.Transit
 {
     public static class ConnectionProviderExtensions
     {
