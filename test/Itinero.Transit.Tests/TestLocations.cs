@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Itinero.Transit.CSA;
 using Itinero.Transit.CSA.ConnectionProviders.LinkedConnection;
 using Itinero.Transit.CSA.ConnectionProviders.LinkedConnection.TreeTraverse;
 using Itinero.Transit.LinkedData;

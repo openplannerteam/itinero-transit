@@ -28,11 +28,9 @@ namespace Itinero.Transit_Tests
         [Fact]
         public void TestMerging()
         {
-            var loader = new Downloader();
-            var deLijn = DeLijn.Profile(loader,
-                new LocalStorage("cache/delijn"), "belgium.routerdb");
-            var sncb = Sncb.Profile(loader, new LocalStorage("cache/sncb"), "belgium.routerdb");
-            var merged = new ConnectionProviderMerger(new List<IConnectionsProvider>()
+            var deLijn = DeLijn.Profile(ResourcesTest.TestPath, "belgium.routerdb");
+            var sncb = Sncb.Profile("cache/sncb", "belgium.routerdb");
+            var merged = new ConnectionProviderMerger(new List<IConnectionsProvider>
             {
                 deLijn,
                 sncb
@@ -40,7 +38,7 @@ namespace Itinero.Transit_Tests
 
             // This moment (4AM) gives a neat mix of timetables:
             // Few trains, few buses so that the timetable of the buses are more then one minute long
-            var moment = new DateTime(2018, 10, 30, 04, 00, 00);
+            var moment = ResourcesTest.TestMoment(4, 00);
 
 
             var tt = merged.GetTimeTable(moment);
@@ -62,9 +60,9 @@ namespace Itinero.Transit_Tests
 
             Log(
                 $"Synthetic table with {graph.Count} entries,  starting at {tt.StartTime()} till {tt.EndTime()}");
-            Assert.Equal(125, graph.Count);
-            Assert.Equal(106, sncbTt.Connections().Count());
-            Assert.Equal(73, deLijnTt.Connections().Count());
+            Assert.Equal(75, graph.Count);
+            Assert.Equal(111, sncbTt.Connections().Count());
+            Assert.Equal(80, deLijnTt.Connections().Count());
 
             var graphR = new List<IConnection>(tt.ConnectionsReversed());
 

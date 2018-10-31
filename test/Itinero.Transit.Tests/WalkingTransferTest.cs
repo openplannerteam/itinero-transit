@@ -1,4 +1,5 @@
 using System;
+using Itinero.Transit.CSA;
 using Itinero.Transit.CSA.ConnectionProviders;
 using Itinero.Transit.CSA.Connections;
 using Itinero.Transit.CSA.Data;
@@ -30,7 +31,7 @@ namespace Itinero.Transit_Tests
         public void TestCreateRoute()
         {
             var loader = new Downloader();
-            var deLijn = DeLijn.LocationProvider(loader, new LocalStorage("DeLijn"));
+            var deLijn = DeLijn.LocationProvider(new LocalStorage("DeLijn"));
             Log("Creating WCP");
             var wcp = new TransferGenerator("belgium.routerdb");
 

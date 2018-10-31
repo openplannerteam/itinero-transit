@@ -25,15 +25,19 @@ namespace Itinero.Transit.CSA.ConnectionProviders
         public LinkedConnectionProvider(JToken hydraSearch, Downloader loader = null)
         {
             _searchTemplate = hydraSearch.GetLDValue("http://www.w3.org/ns/hydra/core#template");
-            if (_searchTemplate.StartsWith("https://"))
-            {
-                _searchTemplate = "http" + _searchTemplate.Substring(5);
-            }
+           
             Log.Information($"Search template is {_searchTemplate}");
             // TODO Softcode departure time argument
             var baseString = _searchTemplate.Replace("{?departureTime}", "");
             Log.Information($"Base string is {baseString}");
             var baseUri = new Uri(baseString);
+            loader = loader ?? new Downloader();
+            _processor = new JsonLdProcessor(loader, baseUri);
+        }
+        
+        public LinkedConnectionProvider(Uri baseUri, string searchUri, Downloader loader = null)
+        {
+            _searchTemplate = searchUri;
             loader = loader ?? new Downloader();
             _processor = new JsonLdProcessor(loader, baseUri);
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
+using System.Threading.Tasks;
 using CacheCow.Client;
 using CacheCow.Client.FileCacheStore;
 using CacheCow.Client.Headers;
@@ -8,7 +9,7 @@ using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
-namespace Itinero.Transit.LinkedData
+namespace Itinero.Transit.CSA
 {
     /// <summary>
     /// Utilities to help downloading, caching and testing (e.g. to inject a fixed string while testing)
@@ -28,7 +29,7 @@ namespace Itinero.Transit.LinkedData
 
         private readonly HttpClient _client;
 
-        public Downloader(bool caching = true)
+        public Downloader(bool caching = false)
         {
             if (caching)
             {
@@ -42,11 +43,12 @@ namespace Itinero.Transit.LinkedData
 
             _client.DefaultRequestHeaders.Add("user-agent", "Itinero-Transit-dev/0.0.1");
             _client.DefaultRequestHeaders.Add("accept", "application/ld+json");
+            _client.Timeout = TimeSpan.FromMilliseconds(5000);
         }
 
         public JToken LoadDocument(Uri uri)
         {
-            return JObject.Parse(DownloadRaw(uri));
+            return JObject.Parse(DownloadRaw(uri).ConfigureAwait(false).GetAwaiter().GetResult());
         }
 
 
@@ -55,7 +57,7 @@ namespace Itinero.Transit.LinkedData
         /// </summary>
         /// <returns></returns>
         /// <exception cref="FileNotFoundException"></exception>
-        public string DownloadRaw(Uri uri)
+        public async Task<string> DownloadRaw(Uri uri)
         {
             if (AlwaysReturn != null)
             {
@@ -67,33 +69,44 @@ namespace Itinero.Transit.LinkedData
             {
                 var u = uri.ToString();
                 uri = new Uri(u.Substring(0, u.Length - uri.Fragment.Length));
-                
             }
+
             DownloadCounter++;
             var start = DateTime.Now;
-            
+
             Log.Information($"Downloading {uri}...");
 
-            var response = _client.GetAsync(uri).ConfigureAwait(false).GetAwaiter().GetResult();
-            if (response == null || !response.IsSuccessStatusCode)
+
+            try
             {
-                throw new FileNotFoundException("Could not open " + uri);
+                var response = await _client.GetAsync(uri).ConfigureAwait(false);
+                if (response == null || !response.IsSuccessStatusCode)
+                {
+                    throw new HttpRequestException("Could not open " + uri);
+                }
+
+                var data = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                var end = DateTime.Now;
+
+                var cacheHit = response.Headers.GetCacheCowHeader() != null &&
+                               response.Headers.GetCacheCowHeader().ToString().Contains("did-not-exist=false");
+                if (cacheHit)
+                {
+                    CacheHits++;
+                }
+
+                var timeNeeded = (end - start).TotalMilliseconds / 1000;
+                Log.Information(
+                    $"Downloading {uri} completed in {timeNeeded}s, got {data.Length} bytes; hit cache: {cacheHit}");
+                TimeDownloading += timeNeeded;
+                return data;
             }
-
-            var data = response.Content.ReadAsStringAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-            var end = DateTime.Now;
-
-            var cacheHit= response.Headers.GetCacheCowHeader() != null &&
-                response.Headers.GetCacheCowHeader().ToString().Contains("did-not-exist=false");
-            if (cacheHit)
+            catch (Exception e)
             {
-                CacheHits++;
+                Log.Error($"Loading {uri} failed");
+                throw new ArgumentException($"Could not download {uri}", e);
             }
-
-            var timeNeeded = (end - start).TotalMilliseconds/1000;
-            Log.Information($"Downloading {uri} completed in {timeNeeded}s, got {data.Length} bytes; hit cache: {cacheHit}");
-            TimeDownloading +=timeNeeded;
-            return data;
         }
 
         // ReSharper disable once UnusedMember.Global

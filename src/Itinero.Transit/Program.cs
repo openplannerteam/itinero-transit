@@ -21,8 +21,8 @@ namespace Itinero.Transit
         // ReSharper disable once UnusedParameter.Local
         private static void TestStuff(IDocumentLoader loader)
         {
-            var deLijn = DeLijn.Profile(loader, new LocalStorage("cache/delijn"), "belgium.routerdb");
-            var sncb = Sncb.Profile(loader, new LocalStorage("cache/sncb"), "belgium.routerdb");
+            var deLijn = DeLijn.Profile("cache/delijn", "belgium.routerdb");
+            var sncb = Sncb.Profile("cache/sncb", "belgium.routerdb");
             var connections =
                 new ConnectionProviderMerger(new List<IConnectionsProvider> {sncb, deLijn});
 

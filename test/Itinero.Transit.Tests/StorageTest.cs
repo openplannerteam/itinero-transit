@@ -39,28 +39,17 @@ namespace Itinero.Transit_Tests
         }
 
         [Fact]
-        public void TestStorageLocation()
-        {
-            var storage = new LocalStorage("timetables-for-testing-2018-10-17");
-            Assert.NotEmpty(storage.KnownKeys());
-            Log($"{storage.KnownKeys().Count}");
-            Assert.True(storage.KnownKeys().Count > 330);
-        }
-
-        [Fact]
         public void TestSearchTimeTable()
         {
-            var storage = new LocalStorage("timetables-for-testing-2018-10-17");
-            Assert.Equal(341, storage.KnownKeys().Count);
+            var storage = new LocalStorage(ResourcesTest.TestPath+"/sncb/timeTables");
+            Assert.Equal(338, storage.KnownKeys().Count);
 
-            var loader = new Downloader();
+            var prov = Sncb.Profile(ResourcesTest.TestPath, "belgium.routerdb");
 
-            var sncb = new LinkedConnectionProvider(Sncb.HydraSearch(loader));
-            var prov = new LocallyCachedConnectionsProvider(sncb, storage);
-
-            var tt = prov.TimeTableContaining(new DateTime(2018, 10, 17, 10, 00, 00, DateTimeKind.Local));
+            var tt = ((LocallyCachedConnectionsProvider) (prov.ConnectionsProvider)).
+                TimeTableContaining(ResourcesTest.TestMoment(10,00));
             Assert.NotNull(tt);
-            Assert.Equal("http://graph.irail.be/sncb/connections?departureTime=2018-10-17T09:58:00.000Z",
+            Assert.Equal("https://graph.irail.be/sncb/connections?departureTime=2018-11-26T09:58:00.000Z",
                 tt.Id().ToString());
         }
 

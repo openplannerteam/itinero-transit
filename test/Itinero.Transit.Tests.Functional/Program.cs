@@ -23,9 +23,7 @@ namespace Itinero.Transit.Tests.Functional
             var routerDb = BuildRouterDb.BuildOrLoad();
             
             // setup profile.
-            var loader = new Downloader();
-            var storage = new LocalStorage("cache-dir");
-            var profile = Sncb.Profile(loader, storage, BuildRouterDb.LocalBelgiumRouterDb);
+            var profile = Sncb.Profile("cache", BuildRouterDb.LocalBelgiumRouterDb);
             
             // specifiy the query data.
             var poperinge = new Uri("http://irail.be/stations/NMBS/008896735");

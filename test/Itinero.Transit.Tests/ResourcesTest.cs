@@ -1,11 +1,13 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices.ComTypes;
 using Itinero;
 using Itinero.IO.Osm;
 using Itinero.Osm.Vehicles;
-using Itinero.Transit.LinkedData;
+using Itinero.Transit.CSA.ConnectionProviders;
+using Itinero.Transit.CSA.Data;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,7 +16,14 @@ namespace Itinero.Transit_Tests
     public class ResourcesTest
     {
         private readonly ITestOutputHelper _output;
+        public static readonly string TestPath = "timetables-for-testing-2018-11-26";
+        public static readonly DateTime TestDay = new DateTime(2018,11,26,00,00,00);
 
+        public static DateTime TestMoment(int hours, int minutes, int seconds = 0)
+        {
+            return TestDay.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
+        }
+        
         public ResourcesTest(ITestOutputHelper output)
         {
             _output = output;
@@ -29,27 +38,28 @@ namespace Itinero.Transit_Tests
         [Fact]
         public void FixCache()
         {
-            if (Directory.Exists("timetables-for-testing-2018-10-17"))
+
+            if (Directory.Exists(TestPath+"/timetables") && 
+                Directory.EnumerateFiles(TestPath + "/timetables").Count() > 100)
             {
-                Log("Timetables are found");
                 return;
             }
 
-            var SourcePath = Path.GetFullPath("../../../testdata/timetables-for-testing-2018-10-17");
-            var DestinationPath = Path.GetFullPath("timetables-for-testing-2018-10-17");
-            Directory.CreateDirectory(DestinationPath);
-            foreach (string dirPath in Directory.GetDirectories(SourcePath, "*", 
-                SearchOption.AllDirectories))
-                Directory.CreateDirectory(dirPath.Replace(SourcePath, DestinationPath));
-
-            //Copy all the files & Replaces any files with the same name
-            foreach (string newPath in Directory.GetFiles(SourcePath, "*.*",
-                SearchOption.AllDirectories))
+            var sncb = Sncb.Profile(TestPath, "belgium.routerdb");
+            try
             {
-                Log($"{newPath} --> {newPath.Replace(SourcePath, DestinationPath)}");
-                var dest = newPath.Replace(SourcePath, DestinationPath);
-                File.Copy(newPath, dest, true);
+                sncb.DownloadDay(TestDay);
+
             }
+            catch (Exception e)
+            {
+                Log(e.Message);
+                Log(e.InnerException?.Message);
+                Log(e.InnerException?.InnerException?.Message);
+            }
+
+            
+
         }
 
         /// <summary>

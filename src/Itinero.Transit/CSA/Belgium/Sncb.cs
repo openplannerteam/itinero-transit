@@ -4,29 +4,21 @@ using Itinero.Transit.CSA.Data;
 using Itinero.Transit.CSA.LocationProviders;
 using Itinero.Transit.LinkedData;
 using JsonLD.Core;
-using Newtonsoft.Json.Linq;
 
 namespace Itinero.Transit.CSA.ConnectionProviders
 {
     public static class Sncb
     {
-        public static Profile<TransferStats> Profile(IDocumentLoader loader, LocalStorage storage, string routerdbPath)
+        public static Profile<TransferStats> Profile(string storageLocation, string routerdbPath)
         {
+            storageLocation = storageLocation + "/sncb";
             var prov = new LocallyCachedConnectionsProvider(
-                new LinkedConnectionProvider(HydraSearch(loader)), storage);
-            var loc = Location(storage);
+                new LinkedConnectionProvider(new Uri("http://graph.irail.be/sncb/"), "https://graph.irail.be/sncb/connections{?departureTime}"
+                    ), new LocalStorage(storageLocation+"/timeTables"));
+            var loc = Location(new LocalStorage(storageLocation));
             var footpaths = new TransferGenerator(routerdbPath);
             return new Profile<TransferStats>(prov, loc, footpaths,
                 TransferStats.Factory, TransferStats.ProfileCompare, TransferStats.ParetoCompare);
-        }
-
-        public static JObject HydraSearch(IDocumentLoader loader)
-        {
-            var proc =
-                new JsonLdProcessor(loader, new Uri("http://graph.irail.be/sncb/connections"));
-
-            var jsonld = proc.LoadExpanded(new Uri("http://graph.irail.be/sncb/connections"));
-            return (JObject) jsonld["http://www.w3.org/ns/hydra/core#search"][0];
         }
 
         private static ILocationProvider Location(LocalStorage storage)

@@ -3,18 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.CSA;
 using Itinero.Transit.CSA.ConnectionProviders;
-using Itinero.Transit.CSA.Data;
 using Itinero.Transit.CSA.LocationProviders;
-using Itinero.Transit.LinkedData;
+using Itinero.Transit_Tests;
 using Xunit;
 using Xunit.Abstractions;
-
-// ReSharper disable PossibleMultipleEnumeration
-
-// ReSharper disable UnusedMember.Global
 // ReSharper disable FieldCanBeMadeReadOnly.Global
+// ReSharper disable UnusedMember.Global
 
-namespace Itinero.Transit_Tests
+namespace Itinero.Transit.Tests
 {
     public class TestEas
     {
@@ -35,18 +31,15 @@ namespace Itinero.Transit_Tests
         [Fact]
         public void TestEarliestArrival()
         {
-            // YOU MIGHT HAVE TO SYMLINK THE TIMETABLES TO  Itinero-Transit-Tests/bin/Debug/netcoreapp2.0
-            var loader = new Downloader();
-            var storage = new LocalStorage("timetables-for-testing-2018-10-17");
-            var sncb = Sncb.Profile(loader, storage, "belgium.routerdb");
-            var startTime = new DateTime(2018, 10, 17, 10, 10, 00);
-            var endTime = new DateTime(2018, 10, 17, 23, 0, 0);
+            var sncb = Sncb.Profile(ResourcesTest.TestPath, "belgium.routerdb");
+            var startTime = ResourcesTest.TestMoment(10, 10);
+            var endTime = ResourcesTest.TestMoment(23, 00);
 
             var csa = new EarliestConnectionScan<TransferStats>(Brugge, Gent, startTime, endTime, sncb);
 
             var journey = csa.CalculateJourney();
             Log(journey.ToString());
-            Assert.Equal("2018-10-17T10:24:00.0000000", $"{journey.Connection.DepartureTime():O}");
+            Assert.Equal($"{ResourcesTest.TestMoment(10,24):O}", $"{journey.Connection.DepartureTime():O}");
             Assert.Equal("00:26:00", journey.Stats.TravelTime.ToString());
             Assert.Equal(0, journey.Stats.NumberOfTransfers);
         }
@@ -55,29 +48,24 @@ namespace Itinero.Transit_Tests
         [Fact]
         public void TestEarliestArrival2()
         {
-            // YOU MIGHT HAVE TO SYMLINK THE TIMETABLES TO  Itinero-Transit-Tests/bin/Debug/netcoreapp2.0
-            var loader = new Downloader();
-            var storage = new LocalStorage("timetables-for-testing-2018-10-17");
-            var sncb = Sncb.Profile(loader, storage, "belgium.routerdb");
-           
-            var startTime = new DateTime(2018, 10, 17, 10, 8, 00);
-            var endTime = new DateTime(2018, 10, 17, 23, 0, 0);
+            var sncb = Sncb.Profile(ResourcesTest.TestPath, "belgium.routerdb");
+
+            var startTime = ResourcesTest.TestMoment(10, 08);
+            var endTime = ResourcesTest.TestMoment(23, 00);
             var csa = new EarliestConnectionScan<TransferStats>(
                 Poperinge, Vielsalm, startTime, endTime, sncb);
             var journey = csa.CalculateJourney();
-            Log(journey.ToString());
+            Log(journey.ToString(sncb));
 
-            Assert.Equal("2018-10-17T15:01:00.0000000", $"{journey.Connection.DepartureTime():O}");
-            Assert.Equal("05:05:00", journey.Stats.TravelTime.ToString());
-            Assert.Equal(3, journey.Stats.NumberOfTransfers);
+            Assert.Equal($"{ResourcesTest.TestMoment(16,01):O}", $"{journey.Connection.DepartureTime():O}");
+            Assert.Equal("06:05:00", journey.Stats.TravelTime.ToString());
+            Assert.Equal(4, journey.Stats.NumberOfTransfers);
         }
 
         [Fact]
         public void TestDeLijn()
         {
-            var loader = new Downloader();
-            var storage = new LocalStorage("cache/delijn");
-            var deLijn = DeLijn.Profile(loader, storage, "belgium.routerdb");
+            var deLijn = DeLijn.Profile(ResourcesTest.TestPath, "belgium.routerdb");
             Log("Got profile");
             var closeToHome = deLijn.LocationProvider.GetLocationsCloseTo(51.21576f, 3.22f, 250);
 
@@ -89,8 +77,8 @@ namespace Itinero.Transit_Tests
 
             Assert.True(closeToHome.Contains(new Uri("https://data.delijn.be/stops/502101")));
 
-            var startTime = new DateTime(2018, 10, 24, 10, 00, 00);
-            var endTime = new DateTime(2018, 10, 24, 11, 00, 00);
+            var startTime = ResourcesTest.TestMoment(10, 00);
+            var endTime = ResourcesTest.TestMoment(11, 00);
 
             var startJourneys = new List<Journey<TransferStats>>();
             foreach (var uri in closeToHome)
