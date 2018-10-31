@@ -14,14 +14,16 @@ namespace Itinero.Transit_Tests
     public class ResourcesTest
     {
         private readonly ITestOutputHelper _output;
-        public static readonly string TestPath = "timetables-for-testing-2018-11-26";
-        public static readonly DateTime TestDay = new DateTime(2018,11,26,00,00,00);
+        public const string TestPath = "timetables-for-testing-2018-11-26";
+
+        // ReSharper disable once MemberCanBePrivate.Global
+        public static readonly DateTime TestDay = new DateTime(2018, 11, 26, 00, 00, 00);
 
         public static DateTime TestMoment(int hours, int minutes, int seconds = 0)
         {
             return TestDay.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
         }
-        
+
         public ResourcesTest(ITestOutputHelper output)
         {
             _output = output;
@@ -36,8 +38,7 @@ namespace Itinero.Transit_Tests
         [Fact]
         public void FixCache()
         {
-
-            if (Directory.Exists(TestPath+"/timetables") && 
+            if (Directory.Exists(TestPath + "/timetables") &&
                 Directory.EnumerateFiles(TestPath + "/timetables").Count() > 100)
             {
                 return;
@@ -47,7 +48,6 @@ namespace Itinero.Transit_Tests
             try
             {
                 sncb.DownloadDay(TestDay);
-
             }
             catch (Exception e)
             {
@@ -55,16 +55,13 @@ namespace Itinero.Transit_Tests
                 Log(e.InnerException?.Message);
                 Log(e.InnerException?.InnerException?.Message);
             }
-
-            
-
         }
 
         /// <summary>
         ///  This test downloads belgium.osm.pbf and builds the router database (if it doesn't exist yet)
         /// </summary>
         [Fact]
-        public void FixRouterDB()
+        public void FixRouterDb()
         {
             if (File.Exists("belgium.routerdb"))
             {
@@ -72,17 +69,20 @@ namespace Itinero.Transit_Tests
                 return;
             }
 
-            
-            Log("Downloading routerdb...");
-            var geofabrikBE = new Uri("http://files.itinero.tech/data/OSM/planet/europe/belgium-latest.osm.pbf");
 
-            var fileReq = (HttpWebRequest) HttpWebRequest.Create(geofabrikBE);
+            Log("Downloading routerdb...");
+            var itineroDownloadsBe = new Uri("http://files.itinero.tech/data/OSM/planet/europe/belgium-latest.osm.pbf");
+
+            var fileReq = (HttpWebRequest) WebRequest.Create(itineroDownloadsBe);
             var fileResp = (HttpWebResponse) fileReq.GetResponse();
-            using (var httpstream = fileResp.GetResponseStream())
+            using (var httpStream = fileResp.GetResponseStream())
             {
-                var fileStream = File.Create("belgium.osm.pbf");
-                httpstream.CopyTo(fileStream);
-                fileStream.Close();
+                using (var fileStream = File.Create("belgium.osm.pbf"))
+                {
+                    // ReSharper disable once PossibleNullReferenceException
+                    httpStream.CopyTo(fileStream);
+                    fileStream.Close();
+                }
             }
 
             using (var stream = File.OpenRead("belgium.osm.pbf"))

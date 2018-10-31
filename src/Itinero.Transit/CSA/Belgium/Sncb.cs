@@ -20,6 +20,8 @@ namespace Itinero.Transit.Belgium
         private static ILocationProvider Location(LocalStorage storage)
         {
             var uri = new Uri("http://irail.be/stations");
+            // ReSharper disable once ArgumentsStyleLiteral
+            // ReSharper disable once RedundantArgumentDefaultValue
             var proc = new JsonLdProcessor(new Downloader(caching: false), uri);
             return new CachedLocationsFragment(uri, proc, storage);
         }
