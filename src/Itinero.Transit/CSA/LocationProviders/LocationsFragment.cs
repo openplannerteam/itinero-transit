@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Itinero.LocalGeo;
 using Itinero.Transit.CSA.LocationProviders;
 using Itinero.Transit.LinkedData;
 using Newtonsoft.Json.Linq;
@@ -113,8 +114,7 @@ namespace Itinero.Transit.CSA.ConnectionProviders.LinkedConnection
 
             foreach (var l in _locations)
             {
-                var d = DistanceBetweenPoints.DistanceInMeters(lat, lon, l.Lat, l.Lon);
-
+                var d = Coordinate.DistanceEstimateInMeter(lat, lon, l.Lat, l.Lon);
                 if (d < radiusInMeters)
                 {
                     closeEnough.Add(l.Uri);

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Itinero.LocalGeo;
 using Itinero.Transit.CSA.LocationProviders;
 using JsonLD.Core;
 
@@ -78,7 +79,7 @@ namespace Itinero.Transit.CSA.ConnectionProviders.LinkedConnection.TreeTraverse
                 {
                     var location = GetCoordinateFor(new Uri(member));
 
-                    if (DistanceBetweenPoints.DistanceInMeters(location.Lat, location.Lon, lat, lon) <= radiusInMeters)
+                    if (Coordinate.DistanceEstimateInMeter(location.Lat, location.Lon, lat, lon) <= radiusInMeters)
                     {
                         found.Add(location.Uri);
                     }
