@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Itinero.Algorithms.PriorityQueues;
 using Itinero.Transit.CSA.ConnectionProviders;
-using PriorityQueue.Collections;
 using Serilog;
 
 namespace Itinero.Transit.CSA
@@ -38,8 +38,7 @@ namespace Itinero.Transit.CSA
         ///
         /// Note that the queue is kept in DESCENDING order
         /// </summary>
-        private readonly PriorityQueue<IConnection> _queue =
-            new PriorityQueue<IConnection>(DepartureTimeConnectionComparerDesc.Singleton);
+        private readonly BinaryHeap<IConnection> _queue = new BinaryHeap<IConnection>();
 
         /// <summary>
         /// Walking connections from the actual starting point to a nearby stop.
@@ -110,6 +109,9 @@ namespace Itinero.Transit.CSA
             _footpathsIn.Add(genesis.ArrivalLocation().ToString(), genesis);
         }
 
+        /// <inheritdoc />
+        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+        // ReSharper disable once UnusedMember.Global
         public ProfiledConnectionScan(IEnumerable<Uri> departureLocations,
             IEnumerable<Uri> targetLocations,
             DateTime earliestDeparture, DateTime lastArrival,
@@ -199,7 +201,7 @@ namespace Itinero.Transit.CSA
                     while (_queue.Count > 0 && _queue.Peek().DepartureTime() >= c.DepartureTime())
                     {
                         // We have an interlink on the queue that should be taken care of first
-                        AddConnection(_queue.Poll());
+                        AddConnection(_queue.Pop());
                     }
 
                     AddConnection(c);
@@ -238,7 +240,7 @@ namespace Itinero.Transit.CSA
         {
             Log.Information($"Handling connection {c.ToString(_profile)}");
             // 1) Handle outgoing connections, they provide the first entries in 
-            // _stationjourneys
+            // _stationJourneys
             if (_footpathsOut.ContainsKey(c.ArrivalLocation().ToString()))
             {
                 // We can arrive in one of our target locations.
@@ -257,7 +259,7 @@ namespace Itinero.Transit.CSA
                 else
                 {
                     // NO target walks; we are at one of our destinations
-                    // We can add this connection 'as is' to the stationJOurneys
+                    // We can add this connection 'as is' to the stationJourneys
 
                     ConsiderJourney(new Journey<T>(
                         _profile.StatsFactory.InitialStats(c), c));
@@ -288,7 +290,7 @@ namespace Itinero.Transit.CSA
                     // Of course, the 'walking connection' should not be a trivial genesis connection
                     var diff = (c.DepartureTime() - footpath.ArrivalTime()).TotalSeconds;
                     footpath = footpath.MoveTime(diff);
-                    _queue.Offer(footpath);
+                    _queue.Push(footpath, footpath.DepartureTime().Ticks);
                 }
                 // ELSE: we don't need to do anything, the start location is registered by the resting code
 
@@ -352,7 +354,7 @@ namespace Itinero.Transit.CSA
             _stationJourneys[startStation].AddToFrontier(considered); // List is still shared with the dictionary
 
             // We can reach the target station from the departure station of the journey
-            // This also means that we can reach the target station via closeby PT stops
+            // This also means that we can reach the target station via close by PT stops
             // We get all connections to this station and queue them
             if (_profile.IntermodalStopSearchRadius == 0)
             {
@@ -373,7 +375,7 @@ namespace Itinero.Transit.CSA
                 _profile.IntermodalStopSearchRadius);
             foreach (var walk in walks)
             {
-                _queue.Offer(walk);
+                _queue.Push(walk, walk.DepartureTime().Ticks);
             }
             Log.Information($"Queue contains {_queue.Count} elements");
         }
@@ -384,6 +386,7 @@ namespace Itinero.Transit.CSA
         /// </summary>
         /// <param name="departureStation"></param>
         /// <returns></returns>
+        // ReSharper disable once UnusedMember.Global
         public ParetoFrontier<T> GetProfileFor(Uri departureStation)
         {
             return _stationJourneys[departureStation.ToString()];

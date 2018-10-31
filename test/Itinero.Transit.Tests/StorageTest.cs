@@ -42,7 +42,7 @@ namespace Itinero.Transit_Tests
         public void TestSearchTimeTable()
         {
             var storage = new LocalStorage(ResourcesTest.TestPath+"/sncb/timeTables");
-            Assert.Equal(338, storage.KnownKeys().Count);
+            Assert.True(300 < storage.KnownKeys().Count);
 
             var prov = Sncb.Profile(ResourcesTest.TestPath, "belgium.routerdb");
 
