@@ -27,7 +27,7 @@ namespace Itinero.Transit_Tests
         [Fact]
         public void TestCreateRoute()
         {
-            var deLijn = DeLijn.LocationProvider(new LocalStorage("DeLijn"));
+            var deLijn = DeLijn.Profile(ResourcesTest.TestPath, "belgium.routerdb");
             Log("Creating WCP");
             var wcp = new TransferGenerator("belgium.routerdb");
 
