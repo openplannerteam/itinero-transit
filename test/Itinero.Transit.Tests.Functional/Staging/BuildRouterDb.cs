@@ -22,8 +22,6 @@ namespace Itinero.Transit.Tests.Functional.Staging
         /// <returns>The loaded routerdb.</returns>
         public static RouterDb BuildOrLoad()
         {
-            Download.DownloadBelgiumAll();
-            
             try
             {
                 if (File.Exists(LocalBelgiumRouterDb))
@@ -38,6 +36,8 @@ namespace Itinero.Transit.Tests.Functional.Staging
             {
                 Log.Error("Existing RouterDb failed to load.", e);
             }
+            
+            Download.DownloadBelgiumAll();
             
             Log.Information("RouterDb doesn't exist yet or failed to load, building...");
             var routerDb = new RouterDb();

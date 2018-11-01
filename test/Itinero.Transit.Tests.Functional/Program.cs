@@ -26,8 +26,8 @@ namespace Itinero.Transit.Tests.Functional
             // specifiy the query data.
             var poperinge = new Uri("http://irail.be/stations/NMBS/008896735");
             var vielsalm = new Uri("http://irail.be/stations/NMBS/008845146");
-            var startTime = new DateTime(2018, 10, 17, 10, 8, 00);
-            var endTime = new DateTime(2018, 10, 17, 23, 0, 0);
+            var startTime = new DateTime(2018, 11, 17, 10, 8, 00);
+            var endTime = new DateTime(2018, 12, 17, 23, 0, 0);
             
             // Initialize the algorimth
             var eas = new EarliestConnectionScan<TransferStats>(
