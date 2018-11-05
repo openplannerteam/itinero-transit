@@ -5,6 +5,7 @@ using Itinero.Transit.Belgium;
 using Itinero.Transit_Tests;
 using Xunit;
 using Xunit.Abstractions;
+
 // ReSharper disable FieldCanBeMadeReadOnly.Global
 // ReSharper disable UnusedMember.Global
 // ReSharper disable PossibleMultipleEnumeration
@@ -21,11 +22,48 @@ namespace Itinero.Transit.Tests
         public static Uri Poperinge = new Uri("http://irail.be/stations/NMBS/008896735");
         public static Uri Vielsalm = new Uri("http://irail.be/stations/NMBS/008845146");
 
+        public static Uri Howest = new Uri("https://data.delijn.be/stops/502132");
+
 
         public TestEas(ITestOutputHelper output)
         {
             _output = output;
         }
+
+
+        [Fact]
+        public void TestIntermodalEas()
+        {
+            var nmbs = Sncb.Profile(ResourcesTest.TestPath, "belgium.routerdb");
+            var delijn = DeLijn.Profile(ResourcesTest.TestPath, "belgium.routerdb");
+
+            var startLoc = Howest;
+
+            var profile = new Profile<TransferStats>(
+                new ConnectionProviderMerger(nmbs, delijn),
+                new LocationCombiner(nmbs, delijn),
+                nmbs.FootpathTransferGenerator,
+                TransferStats.Factory, TransferStats.ProfileCompare, TransferStats.ParetoCompare
+            );
+
+            var startTime = ResourcesTest.TestMoment(10, 0);
+            var endTime = ResourcesTest.TestMoment(14, 00);
+            
+            var eas = new EarliestConnectionScan<TransferStats>(
+                Howest, Gent,
+                startTime, endTime,
+                profile
+                );
+
+
+            var journey = eas.CalculateJourney();
+            Log(journey.ToString(profile));
+            
+            Assert.Equal(ResourcesTest.TestMoment(10,58), journey.Connection.ArrivalTime());
+            Assert.Equal(2, journey.Stats.NumberOfTransfers);
+
+        }
+
 
         [Fact]
         public void TestEarliestArrival()
@@ -38,7 +76,7 @@ namespace Itinero.Transit.Tests
 
             var journey = csa.CalculateJourney();
             Log(journey.ToString());
-            Assert.Equal($"{ResourcesTest.TestMoment(10,24):O}", $"{journey.Connection.DepartureTime():O}");
+            Assert.Equal($"{ResourcesTest.TestMoment(10, 24):O}", $"{journey.Connection.DepartureTime():O}");
             Assert.Equal("00:26:00", journey.Stats.TravelTime.ToString());
             Assert.Equal(0, journey.Stats.NumberOfTransfers);
         }
@@ -56,7 +94,7 @@ namespace Itinero.Transit.Tests
             var journey = csa.CalculateJourney();
             Log(journey.ToString(sncb));
 
-            Assert.Equal($"{ResourcesTest.TestMoment(16,01):O}", $"{journey.Connection.DepartureTime():O}");
+            Assert.Equal($"{ResourcesTest.TestMoment(16, 01):O}", $"{journey.Connection.DepartureTime():O}");
             Assert.Equal("06:05:00", journey.Stats.TravelTime.ToString());
             Assert.Equal(4, journey.Stats.NumberOfTransfers);
         }
@@ -90,7 +128,7 @@ namespace Itinero.Transit.Tests
             {
                 Log($"< {uri} {deLijn.LocationProvider.GetNameOf(uri)}");
             }
-            
+
             var eas = new EarliestConnectionScan<TransferStats>(
                 startJourneys, new List<Uri>(closeToTarget),
                 deLijn, endTime);

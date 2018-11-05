@@ -19,6 +19,12 @@ namespace Itinero.Transit
         private readonly List<ITimeTable> _curTables = new List<ITimeTable>();
 
 
+        public ConnectionProviderMerger(params IConnectionsProvider[] sources)
+        : this(new List<IConnectionsProvider>(sources))
+        {
+            
+        }
+        
         public ConnectionProviderMerger(List<IConnectionsProvider> sources)
         {
             _sources = sources;

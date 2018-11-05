@@ -236,5 +236,9 @@ namespace Itinero.Transit
                 return hashCode;
             }
         }
+
+
+     
+        
     }
 }

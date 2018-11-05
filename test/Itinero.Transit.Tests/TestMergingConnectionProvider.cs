@@ -57,9 +57,9 @@ namespace Itinero.Transit_Tests
 
             Log(
                 $"Synthetic table with {graph.Count} entries,  starting at {tt.StartTime()} till {tt.EndTime()}");
-            Assert.Equal(75, graph.Count);
+            Assert.Equal(176, graph.Count);
             Assert.Equal(111, sncbTt.Connections().Count());
-            Assert.Equal(80, deLijnTt.Connections().Count());
+            Assert.Equal(487, deLijnTt.Connections().Count());
 
             var graphR = new List<IConnection>(tt.ConnectionsReversed());
 

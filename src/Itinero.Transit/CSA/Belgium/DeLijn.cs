@@ -8,11 +8,11 @@ namespace Itinero.Transit.Belgium
     {
         private static readonly List<Uri> ProvincesLocations = new List<Uri>
         {
-            new Uri("https://belgium.linkedconnections.org/delijn/Antwerpen/stops"),
-            new Uri("https://belgium.linkedconnections.org/delijn/Oost-Vlaanderen/stops"),
-            new Uri("https://belgium.linkedconnections.org/delijn/West-Vlaanderen/stops"),
-            new Uri("https://belgium.linkedconnections.org/delijn/Vlaams-Brabant/stops"),
-            new Uri("https://belgium.linkedconnections.org/delijn/Limburg/stops")
+            new Uri("http://openplanner.ilabt.imec.be/delijn/Antwerpen/stops"),
+            new Uri("http://openplanner.ilabt.imec.be/delijn/Oost-Vlaanderen/stops"),
+            new Uri("http://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/stops"),
+            new Uri("http://openplanner.ilabt.imec.be/delijn/Vlaams-Brabant/stops"),
+            new Uri("http://openplanner.ilabt.imec.be/delijn/Limburg/stops")
         };
 
 
@@ -22,8 +22,8 @@ namespace Itinero.Transit.Belgium
             var loc = LocationProvider(new LocalStorage(storagePath));
             var connections = new LocallyCachedConnectionsProvider
             (new LinkedConnectionProvider(
-                    new Uri("https://belgium.linkedconnections.org/delijn/West-Vlaanderen"),
-                    "https://belgium.linkedconnections.org/delijn/West-Vlaanderen/connections{?departureTime}"),
+                    new Uri("http://openplanner.ilabt.imec.be/delijn/West-Vlaanderen"),
+                    "http://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/connections{?departureTime}"),
                 new LocalStorage(storagePath + "/timeTables"));
             var footpath = new TransferGenerator(routerdbPath);
 

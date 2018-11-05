@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Serilog;
 
 namespace Itinero.Transit
 {
@@ -138,7 +139,7 @@ namespace Itinero.Transit
             }
 
             // TODO remove cheat: change .Route back to .Trip when delijn fixes their GTFS
-            if (journeyTillStop.GetLastTripId() != null &&
+            if (!(c is IContinuousConnection) && journeyTillStop.GetLastTripId() != null &&
                 !Equals(journeyTillStop.Connection.Route(), c.Route()))
             {
                 // We have to transfer vehicles
@@ -149,7 +150,6 @@ namespace Itinero.Transit
                     // Not enough time to transfer
                     return;
                 }
-                
             }
 
             if (c.ArrivalTime() > GetJourneyTo(c.ArrivalLocation()).Connection.DepartureTime())
@@ -161,6 +161,28 @@ namespace Itinero.Transit
 
             // Jej! We can take the train! It gets us to some stop faster then previously known
             _s[c.ArrivalLocation().ToString()] = new Journey<T>(journeyTillStop, c);
+
+
+            // Alright, we are arriving at a new location. This means that we can walk from this location onto new stops
+
+            if (c is IContinuousConnection)
+            {
+                return;
+            }
+            
+            var connections = _profile.WalkToCloseByStops(c.ArrivalTime(), 
+                _profile.GetCoordinateFor(c.ArrivalLocation()),
+                _profile.IntermodalStopSearchRadius);
+
+            foreach (var walk in connections)
+            {
+                if (walk == null)
+                {
+                    continue;
+                }
+                IntegrateConnection(walk);
+            }
+            
         }
 
         private Journey<T> GetJourneyTo(Uri stop)

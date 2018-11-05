@@ -5,6 +5,7 @@ using Itinero.Transit;
 using JsonLD.Core;
 using Xunit;
 using Xunit.Abstractions;
+
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace Itinero.Transit_Tests
@@ -34,12 +35,14 @@ namespace Itinero.Transit_Tests
             var names = new HashSet<string>();
             foreach (var stop in found)
             {
-                names.Add(traverser.GetCoordinateFor(stop).Name);
+                var name = traverser.GetCoordinateFor(stop).Name;
+                names.Add(name);
+                Log($"name: {name}; {stop}");
             }
+
             Assert.True(names.Contains("N.Gombertstraat"));
             Assert.True(names.Contains("Howest"));
             Assert.True(names.Contains("Ezelpoort"));
-
         }
 
         [Fact]
@@ -73,7 +76,7 @@ namespace Itinero.Transit_Tests
             var uri = new Uri(
                 "https://dexagod.github.io/stopsdata/d2.jsonld");
             var frag = new LocationsFragment(uri);
-            frag.Download(new JsonLdProcessor(loader,uri));
+            frag.Download(new JsonLdProcessor(loader, uri));
             Log(frag.ToString());
             Assert.True(frag.ToString().Length > 10000);
             Assert.True(frag.ToString().StartsWith("Location dump with 1044 locations:\n  Location \'Stedestraat\' ("));

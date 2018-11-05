@@ -8,6 +8,12 @@ namespace Itinero.Transit
         private readonly BoundingBox _bbox;
         private readonly IEnumerable<ILocationProvider> _providers;
 
+        public LocationCombiner(params ILocationProvider[] sources)
+            : this(new List<ILocationProvider>(sources))
+        {
+            
+        }
+        
         public LocationCombiner(IReadOnlyList<ILocationProvider> backdrops)
         {
             _providers = backdrops;
