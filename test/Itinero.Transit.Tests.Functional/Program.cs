@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Itinero.Transit.Belgium;
 using Itinero.Transit.Tests.Functional.Staging;
 using OsmSharp.Logging;
@@ -13,51 +12,31 @@ namespace Itinero.Transit.Tests.Functional
 {
     class Program
     {
-        private static void Main(string[] args)
+        
+        static void Main(string[] args)
         {
             EnableLogging();
-
-            Log.Information("Starting");
-            var deLijn = DeLijn.Profile("storage", "belgium.routerdb");
-            // The only difference with the test above:
-            deLijn.IntermodalStopSearchRadius = 0;
-            var startTime = new DateTime(2018,11,26,16, 00,00);
-            var endTime = new DateTime(2018,11,26,17, 00,00);
-           
-            var home = new Uri("https://www.openstreetmap.org/#map=19/51.21576/3.22048");
-            var startLocation = OsmLocationMapping.Singleton.GetCoordinateFor(home);
-            var starts = deLijn.WalkToCloseByStops(startTime, startLocation, 1000);
-
-            var station = new Uri("https://www.openstreetmap.org/#map=18/51.19738/3.21830");
-            var endLocation = OsmLocationMapping.Singleton.GetCoordinateFor(station);
-            var ends = deLijn.WalkFromCloseByStops(endTime, endLocation, 1000);
-
-
-            var pcs = new ProfiledConnectionScan<TransferStats>(
-                starts, ends, startTime, endTime, deLijn);
-
-
-            var journeys = pcs.CalculateJourneys();
-            var found = 0;
-            var stats = "";
-            TransferStats stat = null;
-            foreach (var key in journeys.Keys)
-            {
-                var journeysFromPtStop = journeys[key];
-                foreach (var journey in journeysFromPtStop)
-                {
-                    Log.Information(journey.ToString(deLijn.LocationProvider));
-                    stats += $"{deLijn.GetNameOf(new Uri(key))}: {journey.Stats}\n";
-                }
-
-                found += journeysFromPtStop.Count();
-            }
-
             
+            // do staging, download & preprocess some data.
+            var routerDb = BuildRouterDb.BuildOrLoad();
             
+            // setup profile.
+            var profile = Sncb.Profile("cache", BuildRouterDb.LocalBelgiumRouterDb);
             
-            Log.Information($"Got {found} profiles");
-            Log.Information(stats);
+            // specifiy the query data.
+            var poperinge = new Uri("http://irail.be/stations/NMBS/008896735");
+            var vielsalm = new Uri("http://irail.be/stations/NMBS/008845146");
+            var startTime = new DateTime(2018, 11, 17, 10, 8, 00);
+            var endTime = new DateTime(2018, 12, 17, 23, 0, 0);
+            
+            // Initialize the algorimth
+            var eas = new EarliestConnectionScan<TransferStats>(
+                poperinge, vielsalm, startTime, endTime, 
+                profile);
+            var journey = eas.CalculateJourney();
+            
+            // Print the journey. Passing the profile means that human-unfriendly IDs can be replaced with names (e.g. 'Vielsalm' instead of 'https://irail.be/stations/12345')
+            Log.Information(journey.ToString(profile));
         }
 
         private static void EnableLogging()
