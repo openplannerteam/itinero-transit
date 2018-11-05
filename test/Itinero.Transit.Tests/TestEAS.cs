@@ -37,8 +37,6 @@ namespace Itinero.Transit.Tests
             var nmbs = Sncb.Profile(ResourcesTest.TestPath, "belgium.routerdb");
             var delijn = DeLijn.Profile(ResourcesTest.TestPath, "belgium.routerdb");
 
-            var startLoc = Howest;
-
             var profile = new Profile<TransferStats>(
                 new ConnectionProviderMerger(nmbs, delijn),
                 new LocationCombiner(nmbs, delijn),
@@ -58,6 +56,8 @@ namespace Itinero.Transit.Tests
 
             var journey = eas.CalculateJourney();
             Log(journey.ToString(profile));
+            
+            Log(journey.AsRoute(profile).ToGeoJson());
             
             Assert.Equal(ResourcesTest.TestMoment(10,58), journey.Connection.ArrivalTime());
             Assert.Equal(2, journey.Stats.NumberOfTransfers);

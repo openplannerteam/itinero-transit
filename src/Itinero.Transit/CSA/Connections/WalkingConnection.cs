@@ -94,11 +94,6 @@ namespace Itinero.Transit
             return _departureTime;
         }
 
-        public bool Continuous()
-        {
-            return true;
-        }
-
         public Uri Operator()
         {
             return null;
@@ -122,6 +117,11 @@ namespace Itinero.Transit
         public Uri Route()
         {
             return null;
+        }
+
+        public Route AsRoute(ILocationProvider locationProv)
+        {
+            return _route;
         }
     }
 }

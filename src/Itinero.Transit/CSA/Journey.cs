@@ -173,6 +173,17 @@ namespace Itinero.Transit
             return list;
         }
 
+        public Route AsRoute(ILocationProvider locations)
+        {
+            var routes = new List<Result<Route>>();
+            foreach (var con in AllConnections())
+            {
+                routes.Add(new Result<Route>(con.AsRoute(locations)));
+            }
+
+            return routes.Concatenate().Value;
+        }
+
         /// <summary>
         /// Returns the tripID of the current connection.
         /// If the current connection does not have a trip ID,

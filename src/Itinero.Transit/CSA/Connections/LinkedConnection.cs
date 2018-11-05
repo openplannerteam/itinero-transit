@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using Itinero.Attributes;
+using Itinero.LocalGeo;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
+using Attribute = Itinero.Attributes.Attribute;
+
 // ReSharper disable MemberCanBePrivate.Global
 
 
@@ -50,7 +54,6 @@ namespace Itinero.Transit
         }
 
 
-
         public override string ToString()
         {
             return ToString(null);
@@ -62,11 +65,11 @@ namespace Itinero.Transit
             return
                 $"Linked Connection {locationDecoder.GetNameOf(DepartureStop)} {DepartureTime:HH:mm} --> {locationDecoder.GetNameOf(ArrivalStop)} {ArrivalTime:HH:mm}";
         }
-        
-      
+
+
         protected sealed override void FromJson(JObject json)
         {
-           json.AssertTypeIs("http://semweb.mmlab.be/ns/linkedconnections#Connection");
+            json.AssertTypeIs("http://semweb.mmlab.be/ns/linkedconnections#Connection");
 
             DepartureStop = json.GetId("http://semweb.mmlab.be/ns/linkedconnections#departureStop");
             ArrivalStop = json.GetId("http://semweb.mmlab.be/ns/linkedconnections#arrivalStop");
@@ -75,15 +78,15 @@ namespace Itinero.Transit
             // Departure time already includes delay
             DepartureTime = json.GetDate("http://semweb.mmlab.be/ns/linkedconnections#departureTime");
 
-            var arrDel = json.GetInt( "http://semweb.mmlab.be/ns/linkedconnections#arrivalDelay", 0);
+            var arrDel = json.GetInt("http://semweb.mmlab.be/ns/linkedconnections#arrivalDelay", 0);
             // Arrival time already includes delay
             ArrivalTime = json.GetDate("http://semweb.mmlab.be/ns/linkedconnections#arrivalTime");
-                
+
             Direction = json.GetLDValue("http://vocab.gtfs.org/terms#headsign");
             GtfsTrip = json.GetId("http://vocab.gtfs.org/terms#trip");
             GtfsRoute = json.GetId("http://vocab.gtfs.org/terms#route");
-           
-            
+
+
             if (ArrivalTime <= DepartureTime)
             {
                 // Sometimes, a departure delay is already known but the arrival delay is not known yet
@@ -103,16 +106,16 @@ namespace Itinero.Transit
                     $"WTF? Timetravellers! {DepartureTime} incl {depDel} --> {ArrivalTime} incl {arrDel}\n{json}");
             }
         }
-        
+
 
         public Uri Operator()
         {
-            return new Uri("https://www.belgiantrain.be/");
+            return new Uri(GtfsTrip.AbsoluteUri);
         }
 
         public string Mode()
         {
-            return "Train";
+            return GtfsTrip.AbsoluteUri.ToString();
         }
 
         public Uri Trip()
@@ -145,9 +148,34 @@ namespace Itinero.Transit
             return DepartureTime;
         }
 
-        public bool Continuous()
+        public Route AsRoute(ILocationProvider locationProv)
         {
-            return false;
+            var depLoc = locationProv.GetCoordinateFor(DepartureStop);
+            var arrLoc = locationProv.GetCoordinateFor(ArrivalStop);
+
+            return new Route
+            {
+                Shape = new[]
+                {
+                    new Coordinate(depLoc.Lat, depLoc.Lon),
+                    new Coordinate(arrLoc.Lat, arrLoc.Lon)
+                },
+                ShapeMeta = new[]
+                {
+                    new Route.Meta
+                    {
+                        Profile = Mode(),
+                        Shape = 0,
+                        Time = 0f,
+                    },
+                    new Route.Meta
+                    {
+                        Profile = Mode(),
+                        Shape = 1,
+                        Time = (float) (ArrivalTime - DepartureTime).TotalSeconds,
+                    },
+                }
+            };
         }
 
         public override bool Equals(object obj)
@@ -162,10 +190,10 @@ namespace Itinero.Transit
 
         private bool Equals(LinkedConnection other)
         {
-            return Equals(DepartureStop, other.DepartureStop) 
+            return Equals(DepartureStop, other.DepartureStop)
                    && Equals(ArrivalStop, other.ArrivalStop)
                    && DepartureTime.Equals(other.DepartureTime)
-                   && ArrivalTime.Equals(other.ArrivalTime) 
+                   && ArrivalTime.Equals(other.ArrivalTime)
                 ;
         }
 
@@ -182,5 +210,4 @@ namespace Itinero.Transit
             }
         }
     }
-    
 }

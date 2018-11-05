@@ -1,4 +1,5 @@
 ﻿using System;
+using Itinero.LocalGeo;
 
 // ReSharper disable ImpureMethodCallOnReadonlyValueField
 
@@ -24,6 +25,35 @@ namespace Itinero.Transit
             {
                 throw new ArgumentException("You are walking to the past; arrivalTime < departuretime");
             }
+        }
+
+        public Route AsRoute(ILocationProvider locationProv)
+        {
+            var loc = locationProv.GetCoordinateFor(_location);
+            
+            return new Route
+            {
+                Shape = new[]
+                {
+                    new Coordinate(loc.Lat, loc.Lon),
+                    new Coordinate(loc.Lat, loc.Lon)
+                },
+                ShapeMeta = new[]
+                {
+                    new Route.Meta
+                    {
+                        Profile = "Pedestrian",
+                        Shape = 0,
+                        Time = 0f
+                    }, 
+                    new Route.Meta
+                    {
+                        Profile = "Pedestrian",
+                        Shape = 1,
+                        Time = (float) (_arrivalTime - _departureTime).TotalSeconds,
+                    }, 
+                }
+            };
         }
 
         public Uri Operator()
@@ -69,11 +99,6 @@ namespace Itinero.Transit
         public DateTime DepartureTime()
         {
             return _departureTime;
-        }
-
-        public bool Continuous()
-        {
-            return true;
         }
 
         public override string ToString()
