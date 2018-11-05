@@ -66,13 +66,6 @@ namespace Itinero.Transit
         /// <returns></returns>
         DateTime DepartureTime();
 
-        /// <summary>
-        /// Indicates that this connection is time-independent (e.g. walking)
-        /// </summary>
-        /// <returns></returns>
-        bool Continuous();
-
-
         string ToString(ILocationProvider locationDecoder);
     }
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Serilog;
 
 namespace Itinero.Transit
 {
@@ -138,9 +137,9 @@ namespace Itinero.Transit
                 return;
             }
 
-            // TODO remove cheat: change .Route back to .Trip when delijn fixes their GTFS
-            if (!(c is IContinuousConnection) && journeyTillStop.GetLastTripId() != null &&
-                !Equals(journeyTillStop.Connection.Route(), c.Route()))
+            if (!(c is IContinuousConnection) 
+                && journeyTillStop.GetLastTripId() != null &&
+                !Equals(journeyTillStop.Connection.Trip(), c.Trip()))
             {
                 // We have to transfer vehicles
                 var transfer =

@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using Itinero.Exceptions;
 using Itinero.Profiles;
 using static Itinero.Osm.Vehicles.Vehicle;
 

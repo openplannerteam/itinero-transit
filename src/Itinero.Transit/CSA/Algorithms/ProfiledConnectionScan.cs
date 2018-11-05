@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Itinero.Algorithms.PriorityQueues;
-using Serilog;
 
 namespace Itinero.Transit
 {
@@ -316,10 +314,9 @@ namespace Itinero.Transit
                     continue;
                 }
 
-                // TODO REMOVE CHEAT (TripID -> Route)
                 if (_profile.FootpathTransferGenerator != null
-                    && !Equals(c.Route(), j.GetLastTripId())
-                    && !(c is WalkingConnection || j.Connection is WalkingConnection)
+                    && !Equals(c.Trip(), j.GetLastTripId())
+                    && !(c is IContinuousConnection || j.Connection is IContinuousConnection)
                 )
                 {
                     // Create a transfer object, according to the transfer policy (if one is given)
@@ -386,6 +383,7 @@ namespace Itinero.Transit
                 i--;
                 var guard = frontier[i];
                 var duelResult = _profileComparator.ADominatesB(guard, considered);
+                // ReSharper disable once SwitchStatementMissingSomeCases
                 switch (duelResult)
                 {
                     case -1:
@@ -404,8 +402,6 @@ namespace Itinero.Transit
                     case int.MaxValue:
                         // They do not dominate each other
                         // We continue with the rest of the loop
-                        break;
-                    default:
                         break;
                 }
             }
@@ -437,7 +433,6 @@ namespace Itinero.Transit
         ///
         /// This method creates these walking connections for the journey and adds them to the queue
         /// </summary>
-        /// <param name="addedJourney"></param>
         private void ConsiderInterstopWalks(IConnection c)
         {
             // We can reach the target station from the departure station of the current journey

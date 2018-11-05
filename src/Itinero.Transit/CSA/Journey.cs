@@ -180,8 +180,7 @@ namespace Itinero.Transit
         /// </summary>
         public Uri GetLastTripId()
         {
-            // TODO REMOVE CHEAT! Route() -> Trip()
-            return Connection.Route() ??
+            return Connection.Trip() ??
                    PreviousLink?.GetLastTripId();
         }
 
