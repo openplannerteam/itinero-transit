@@ -13,6 +13,7 @@ namespace Itinero.Transit
         private readonly Uri _arrivalLocation, _departureLocation;
         private readonly DateTime _arrivalTime, _departureTime;
         private readonly Route _route;
+        private readonly float _speed;
 
         /// <summary>
         /// Constructor used to bootstrap a journey, e.g. for code that assumes that the
@@ -30,7 +31,8 @@ namespace Itinero.Transit
             _route = null;
         }
 
-        public WalkingConnection(Route route, Uri departureLocation, Uri arrivalLocation, DateTime departureTime, float speed)
+        public WalkingConnection(Route route, Uri departureLocation, Uri arrivalLocation, DateTime departureTime,
+            float speed)
         {
             _route = route;
             _departureLocation = departureLocation;
@@ -38,18 +40,9 @@ namespace Itinero.Transit
 
             _departureTime = departureTime;
             _arrivalTime = departureTime.AddSeconds(route.TotalDistance * speed);
+            _speed = speed;
         }
-        
-        
-        public WalkingConnection(Route route, Uri departureLocation, Uri arrivalLocation, DateTime departureTime, DateTime arrivalTime)
-        {
-            _route = route;
-            _departureLocation = departureLocation;
-            _arrivalLocation = arrivalLocation;
 
-            _departureTime = departureTime;
-            _arrivalTime = arrivalTime;
-        }
 
         public override string ToString()
         {
@@ -58,10 +51,10 @@ namespace Itinero.Transit
 
         public string ToString(ILocationProvider locDecode)
         {
-            return _route == null ?
-                $"Genesis connection at {locDecode.GetNameOf(_departureLocation)} {_departureTime}" : 
-                $"Walk from {locDecode.GetNameOf(_departureLocation)} to {locDecode.GetNameOf(_arrivalLocation)}, this takes {_route.TotalTime}sec ({_route.TotalDistance}m)\n" +
-                $"Timing to walk {_departureTime:HH:mm:ss} --> {_arrivalTime:HH:mm:ss}";
+            return _route == null
+                ? $"Genesis connection at {locDecode.GetNameOf(_departureLocation)} {_departureTime}"
+                : $"Walk from {locDecode.GetNameOf(_departureLocation)} to {locDecode.GetNameOf(_arrivalLocation)}, " +
+                  $"{_departureTime:HH:mm:ss} --> {_arrivalTime:HH:mm:ss} ({_route.TotalTime}sec, {_route.TotalDistance}m)";
         }
 
         public Route Walk()
@@ -71,7 +64,14 @@ namespace Itinero.Transit
 
         public IContinuousConnection MoveTime(double seconds)
         {
-            return new WalkingConnection(_route, _departureLocation, _arrivalLocation, _departureTime.AddSeconds(seconds), _arrivalTime.AddSeconds(seconds));
+            return new WalkingConnection(_route, _departureLocation, _arrivalLocation,
+                _departureTime.AddSeconds(seconds),
+                _speed);
+        }
+
+        public IContinuousConnection MoveDepartureTime(DateTime newDepartureTime)
+        {
+            return new WalkingConnection(_route, _departureLocation, _arrivalLocation, newDepartureTime, _speed);
         }
 
         public Uri DepartureLocation()

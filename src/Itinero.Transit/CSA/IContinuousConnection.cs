@@ -1,3 +1,5 @@
+using System;
+
 namespace Itinero.Transit
 {
     /// <summary>
@@ -21,6 +23,8 @@ namespace Itinero.Transit
         /// <param name="seconds"></param>
         /// <returns></returns>
         IContinuousConnection MoveTime(double seconds);
+
+        IContinuousConnection MoveDepartureTime(DateTime newDepartureTime);
 
     }
 }

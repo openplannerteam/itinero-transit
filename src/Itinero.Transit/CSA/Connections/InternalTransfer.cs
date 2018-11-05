@@ -92,6 +92,12 @@ namespace Itinero.Transit
                 _arrivalTime.AddSeconds(seconds));
         }
 
+        public IContinuousConnection MoveDepartureTime(DateTime newDepartureTime)
+        {
+            return new InternalTransfer(_location, newDepartureTime,
+                newDepartureTime.Add(_arrivalTime - _departureTime));
+        }
+
         public override bool Equals(object obj)
         {
             if (!(obj is InternalTransfer tr))

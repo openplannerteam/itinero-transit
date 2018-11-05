@@ -16,7 +16,8 @@ namespace Itinero.Transit
         public readonly IFootpathTransferGenerator FootpathTransferGenerator;
 
         public readonly T StatsFactory;
-        public readonly StatsComparator<T> ProfileCompare, ParetoCompare;
+        public readonly ProfiledStatsComparator<T> ProfileCompare;
+        public readonly  StatsComparator<T> ParetoCompare;
 
         /// <summary>
         /// Indicates the radius within which stops are searched during the
@@ -32,7 +33,7 @@ namespace Itinero.Transit
             ILocationProvider locationProvider,
             IFootpathTransferGenerator footpathTransferGenerator,
             T statsFactory,
-            StatsComparator<T> profileCompare,
+            ProfiledStatsComparator<T> profileCompare,
             StatsComparator<T> paretoCompare)
         {
             ConnectionsProvider = connectionsProvider;
@@ -50,6 +51,7 @@ namespace Itinero.Transit
             return eas.CalculateJourney();
         }
 
+        // ReSharper disable once UnusedMember.Global
         public IEnumerable<IContinuousConnection> CloseByGenesisConnections(Location around, int radius,
             DateTime genesisTime)
         {
@@ -64,7 +66,7 @@ namespace Itinero.Transit
             return result;
         }
 
-        public IEnumerable<IContinuousConnection> WalkToClosebyStops(DateTime departureTime, Location from, int radius)
+        public IEnumerable<IContinuousConnection> WalkToCloseByStops(DateTime departureTime, Location from, int radius)
         {
             var close = LocationProvider.GetLocationsCloseTo(from.Lat, from.Lon, radius);
             var result = new HashSet<IContinuousConnection>();
@@ -79,7 +81,7 @@ namespace Itinero.Transit
         }
 
 
-        public IEnumerable<IContinuousConnection> WalkFromClosebyStops(DateTime arrivalTime, Location to, int radius)
+        public IEnumerable<IContinuousConnection> WalkFromCloseByStops(DateTime arrivalTime, Location to, int radius)
         {
             var close = LocationProvider.GetLocationsCloseTo(to.Lat, to.Lon, radius);
             var result = new HashSet<IContinuousConnection>();
@@ -87,6 +89,10 @@ namespace Itinero.Transit
             {
                 var transfer = FootpathTransferGenerator.GenerateFootPaths(arrivalTime,
                     LocationProvider.GetCoordinateFor(stop), to);
+                if (transfer == null)
+                {
+                    continue;
+                }
                 var diff = transfer.ArrivalTime() - transfer.DepartureTime();
                 transfer.MoveTime(-diff.TotalSeconds);
                 result.Add(transfer);
@@ -153,9 +159,27 @@ namespace Itinero.Transit
             return ConnectionsProvider.TimeTableIdFor(includedTime);
         }
 
-        public IContinuousConnection GenerateFootPaths(DateTime departureTime, Location @from, Location to)
+        public IContinuousConnection GenerateFootPaths(DateTime departureTime, Location from, Location to)
         {
-            return FootpathTransferGenerator.GenerateFootPaths(departureTime, @from, to);
+            return FootpathTransferGenerator.GenerateFootPaths(departureTime, from, to);
+        }
+
+        /// <summary>
+        /// Creates a shallow copy of the profile, with one difference:
+        /// the TransferGenerator is wrapped into a memoizing generator
+        /// </summary>
+        /// <returns></returns>
+        public Profile<T> MemoizingPathsProfile()
+        {
+            return new Profile<T>(
+                ConnectionsProvider,
+                LocationProvider,
+                new MemoizingTransferGenerator(FootpathTransferGenerator), 
+                StatsFactory,
+                ProfileCompare,
+                ParetoCompare
+                );
+            
         }
     }
 }

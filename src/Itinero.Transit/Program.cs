@@ -49,10 +49,10 @@ namespace Itinero.Transit
             var endTime = new DateTime(2018, 10, 30, 12, 00, 00);
 
             var walksIn
-                = profile.WalkToClosebyStops
+                = profile.WalkToCloseByStops
                     (DateTime.Now, startLoc, profile.EndpointSearchRadius);
             var walksOut
-                = profile.WalkFromClosebyStops(
+                = profile.WalkFromCloseByStops(
                     DateTime.Now, endLoc, profile.EndpointSearchRadius);
             var pcs = new ProfiledConnectionScan<TransferStats>(
                 walksIn, walksOut, startTime, endTime, profile);
@@ -81,7 +81,9 @@ namespace Itinero.Transit
             try
 
             {
-                TestStuff(loader);
+               Log.Information(""+new Uri("http://data.delijn.be").GetHashCode());
+                Log.Information(""+new Uri("http://data.delijn.be/trip").GetHashCode());
+
             }
             catch (Exception e)
             {
@@ -96,7 +98,7 @@ namespace Itinero.Transit
         }
 
 
-        private static void ConfigureLogging()
+        public static void ConfigureLogging()
         {
             var date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             var logFile = Path.Combine("logs", $"log-Itinero-Transit-{date}.txt");

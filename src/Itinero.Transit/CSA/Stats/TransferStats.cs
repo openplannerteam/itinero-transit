@@ -110,7 +110,7 @@ namespace Itinero.Transit
 
         public override string ToString()
         {
-            return $"{NumberOfTransfers} transfers, {EndTime - StartTime}, {WalkingDistance}m to walk";
+            return $"{NumberOfTransfers} transfers, {StartTime:HH:mm} --> {EndTime:HH:mm} ({EndTime - StartTime} total time), {WalkingDistance}m to walk";
         }
     }
 
@@ -131,7 +131,7 @@ namespace Itinero.Transit
         }
     }
 
-    public class ProfileCompare : StatsComparator<TransferStats>
+    public class ProfileCompare : ProfiledStatsComparator<TransferStats>
     {
         public override int ADominatesB(TransferStats a, TransferStats b)
         {
