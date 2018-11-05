@@ -33,6 +33,11 @@ namespace Itinero.Transit.Tests
             var journeys = new List<Journey<TransferStats>>(
                 pcs.CalculateJourneys()[TestEas.Brugge.ToString()]);
 
+            foreach (var j in journeys)
+            {
+                Log(j.ToString(sncb));
+            }
+
             Assert.Equal(10, journeys.Count);
             Assert.Equal("00:22:00", journeys.ToList()[0].Stats.TravelTime.ToString());
         }
@@ -73,11 +78,11 @@ namespace Itinero.Transit.Tests
            
             var home = new Uri("https://www.openstreetmap.org/#map=19/51.21576/3.22048");
             var startLocation = OsmLocationMapping.Singleton.GetCoordinateFor(home);
-            var starts = deLijn.WalkToClosebyStops(startTime, startLocation, 1000);
+            var starts = deLijn.WalkToCloseByStops(startTime, startLocation, 1000);
 
             var station = new Uri("https://www.openstreetmap.org/#map=18/51.19738/3.21830");
             var endLocation = OsmLocationMapping.Singleton.GetCoordinateFor(station);
-            var ends = deLijn.WalkFromClosebyStops(endTime, endLocation, 1000);
+            var ends = deLijn.WalkFromCloseByStops(endTime, endLocation, 1000);
 
 
             var pcs = new ProfiledConnectionScan<TransferStats>(
@@ -87,13 +92,15 @@ namespace Itinero.Transit.Tests
             var journeys = pcs.CalculateJourneys();
             var found = 0;
             var stats = "";
+            TransferStats stat = null;
             foreach (var key in journeys.Keys)
             {
                 var journeysFromPtStop = journeys[key];
                 foreach (var journey in journeysFromPtStop)
                 {
                     Log(journey.ToString(deLijn.LocationProvider));
-                    stats += $"{key}: {journey.Stats}\n";
+                    stat = journey.Stats;
+                    stats += $"{key}: {stats}\n";
                 }
 
                 found += journeysFromPtStop.Count();
@@ -101,28 +108,31 @@ namespace Itinero.Transit.Tests
 
             Log($"Got {found} profiles");
             Log(stats);
+            Assert.Equal(2, found);
+            Assert.Equal(425,(int) stat.WalkingDistance);
+            Assert.Equal(23,(int) (stat.EndTime - stat.StartTime).TotalMinutes);
+
         }
 
         [Fact]
         public void TestFootPathsInterlink()
         {
-            return; // TODO FIX THIS TEST
-            Assert.Equal("unsupported","timeout");
+            Program.ConfigureLogging();
             Log("Starting");
             var deLijn = DeLijn.Profile(ResourcesTest.TestPath, "belgium.routerdb");
-            
-            deLijn.IntermodalStopSearchRadius =100;
-
+            // The only difference with the test above:
+            deLijn.IntermodalStopSearchRadius = 50;
             var startTime = ResourcesTest.TestMoment(16, 00);
             var endTime = ResourcesTest.TestMoment(17, 00);
+           
             var home = new Uri("https://www.openstreetmap.org/#map=19/51.21576/3.22048");
             var startLocation = OsmLocationMapping.Singleton.GetCoordinateFor(home);
+            var starts = deLijn.WalkToCloseByStops(startTime, startLocation, 1000);
 
             var station = new Uri("https://www.openstreetmap.org/#map=18/51.19738/3.21830");
             var endLocation = OsmLocationMapping.Singleton.GetCoordinateFor(station);
+            var ends = deLijn.WalkFromCloseByStops(endTime, endLocation, 1000);
 
-            var starts = deLijn.WalkToClosebyStops(startTime, startLocation, 1000);
-            var ends = deLijn.WalkFromClosebyStops(endTime, endLocation, 1000);
 
             var pcs = new ProfiledConnectionScan<TransferStats>(
                 starts, ends, startTime, endTime, deLijn);
@@ -131,20 +141,28 @@ namespace Itinero.Transit.Tests
             var journeys = pcs.CalculateJourneys();
             var found = 0;
             var stats = "";
+            TransferStats stat = null;
             foreach (var key in journeys.Keys)
             {
                 var journeysFromPtStop = journeys[key];
                 foreach (var journey in journeysFromPtStop)
                 {
                     Log(journey.ToString(deLijn.LocationProvider));
-                    stats += $"{key}: {journey.Stats}\n";
+                    stat = journey.Stats;
+                    stats += $"{key}: {stats}\n";
                 }
 
                 found += journeysFromPtStop.Count();
             }
 
+            
+            
+            
             Log($"Got {found} profiles");
             Log(stats);
+            Assert.Equal(2, found);
+            Assert.Equal(425,(int) stat.WalkingDistance);
+            Assert.Equal(23,(int) (stat.EndTime - stat.StartTime).TotalMinutes);
         }
         
         // ReSharper disable once UnusedMember.Local
