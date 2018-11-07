@@ -33,11 +33,14 @@ namespace Itinero.Transit
         /// </summary>
         public T Stats { get; }
 
+        public readonly Journey<T> Root;
+
         private Journey()
         {
             PreviousLink = null;
             Connection = new WalkingConnection(null, DateTime.MaxValue);
             Stats = default(T);
+            Root = this;
         }
 
 
@@ -47,6 +50,7 @@ namespace Itinero.Transit
             Connection = connection ??
                          throw new ArgumentException("The connection used to initialize a Journey should not be null");
             Stats = previousLink.Stats.Add(this);
+            Root = previousLink.Root;
         }
 
         /// <summary>
@@ -60,6 +64,7 @@ namespace Itinero.Transit
             PreviousLink = null;
             Connection = new WalkingConnection(genesisLocation, genesisTime);
             Stats = statsFactory.InitialStats(Connection);
+            Root = this;
         }
 
 
@@ -68,6 +73,7 @@ namespace Itinero.Transit
             PreviousLink = null;
             Connection = connection ?? throw new ArgumentNullException(nameof(connection));
             Stats = singleConnectionStats;
+            Root = this;
         }
 
         /// <summary>

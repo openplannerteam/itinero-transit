@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Itinero.Algorithms.PriorityQueues;
+using Serilog;
 
 namespace Itinero.Transit
 {
@@ -10,7 +11,7 @@ namespace Itinero.Transit
     /// The ProfiledConnectionScan is a CSA that applies A* backward and builds profiles on how to reach a target stop.
     ///
     /// For each stop, a number of possible journeys to the destination are tracked - where each journey is a pareto-optimal option towards the destination.
-    /// All connections are scanned (from the future to the past, in backward order) to update the journeys from stops.
+    /// All connections are scanned (from the future to the past,  in backward order) to update the journeys from stops.
     ///
     /// We stop when the time window has passed; after which we can give a number of pareto-optimal journeys to the traveller.
     /// 
@@ -28,13 +29,13 @@ namespace Itinero.Transit
 
         /// <summary>
         /// When arriving at bus stop, we can walk to e.g. the close by train platform.
-        /// We model these intermodal transfers as a connection which leaves the bus stop the moment that the a taken bus arrives.
+        /// We model these intermodal transfers as a connection which leaves the bus stop the moment that a taken bus arrives.
         /// This way, weird extra objects are avoided.
         ///
         /// In order to maintain correctness, we feed these connections only to the algorithm when they are due. In the meantime,
         /// they are stored in this queue
         ///
-        /// Note that the queue is kept in DESCENDING order
+        /// Note that the queue is kept in DESCENDING order (by departure time)
         /// </summary>
         private readonly BinaryHeap<IConnection> _queue = new BinaryHeap<IConnection>();
 
@@ -48,7 +49,7 @@ namespace Itinero.Transit
 
 
         /// <summary>
-        ///The profile of the traveller: which options he prefers
+        ///The profile of the traveller: the preferred options, allowed operators, ...
         /// </summary>
         private readonly Profile<T> _profile;
 
@@ -64,7 +65,7 @@ namespace Itinero.Transit
         /// 
         /// If the station isn't in the dictionary yet, this means no trip from this station has been already found.
         ///
-        /// Also known as 'S' in tOhe paper
+        /// Also known as 'S' in the paper
         ///
         /// </summary>
         private readonly Dictionary<string, List<Journey<T>>> _stationJourneys =
@@ -186,8 +187,7 @@ namespace Itinero.Transit
         /// <returns></returns>
         public Dictionary<string, IEnumerable<Journey<T>>> CalculateJourneys()
         {
-            var tt = _profile.ConnectionsProvider.GetTimeTable(
-                _profile.ConnectionsProvider.TimeTableIdFor(_lastArrival));
+            var tt = _profile.ConnectionsProvider.GetTimeTable(_lastArrival);
             IConnection c = null;
             do
             {
@@ -236,8 +236,13 @@ namespace Itinero.Transit
         /// </summary>
         private void AddConnection(IConnection c)
         {
-            // 1) Handle outgoing connections, they provide the first entries in 
-            // _stationJourneys
+            if (c.DepartureLocation().ToString().Equals("https://www.openstreetmap.org/#map=19/51.21576/3.22048"))
+            {
+                Log.Information("Hi");
+            }
+            
+            // 1) First, handle outgoing connections (i.e; footpaths out).
+            // They provide the first entries in _stationJourneys
             if (_footpathsOut.ContainsKey(c.ArrivalLocation().ToString()))
             {
                 // We can arrive in one of our target locations.
@@ -247,8 +252,7 @@ namespace Itinero.Transit
                     // We arrive in a stop, from which we can walk to our target
                     // This implies that there is a 'walking connection'
                     // which leaves at the arrival time of C
-                    var diff = (c.ArrivalTime() - walk.DepartureTime()).TotalSeconds;
-                    walk = walk.MoveTime((int) diff);
+                    walk = walk.MoveDepartureTime(c.ArrivalTime());
                     if (walk.ArrivalTime() <= _lastArrival)
                     {
                         var journey = new Journey<T>(_profile.StatsFactory.InitialStats(walk), walk);
@@ -278,8 +282,9 @@ namespace Itinero.Transit
                 return;
             }
 
-
+            
             // 3) Could this connection be reachable by foot, from the departure location?
+            // Ie., are there footpaths which lead us 'in' the system
             if (_footpathsIn.ContainsKey(c.DepartureLocation().ToString()))
             {
                 // We have found a footpath in; thus the stop where the connection C will depart from,
@@ -293,16 +298,18 @@ namespace Itinero.Transit
                     footpath = footpath.MoveTime(diff);
                     _queue.Push(footpath, footpath.DepartureTime().Ticks);
                 }
-                // ELSE: we don't need to do anything, the start location is registered by the resting code
-
-                // Note that we continue to handle the connection to consider the journey:
-                // There could be a stop that is closer to the target!
+                // ELSE: we don't need to do anything, the start locations will be registered by the other code
             }
 
+            // All the edge (literally) cases are handled now
+            // ---------------------------------------------------------------------
+            // Time for the core algorithm
 
+            // Get the journeys to our target, with conn.Arrival as departure
+            // We will multiply all those connections with the current connection
             var journeysToEnd = _stationJourneys[c.ArrivalLocation().ToString()];
 
-            // Will be true if this connection is taken in at least one journey
+            // The flag 'journeyAdded' be true if this connection is taken in at least one journey
             // If the connection is taken at least once, we should calculate the walking connections into the departure station
             bool journeyAdded = false;
             foreach (var j in journeysToEnd)
@@ -310,10 +317,13 @@ namespace Itinero.Transit
                 var journey = j;
                 if (c.ArrivalTime() > j.Connection.DepartureTime())
                 {
-                    // We missed this connection
-                    continue;
+                    // We missed this journey to the target
+                    // Note that the journeysToEnd are ordered from last to earliest departure
+                    // If we miss the journey j, the next will depart even earlier
+                    // So we can break the loop
+                    break;
                 }
-
+/*
                 if (_profile.FootpathTransferGenerator != null
                     && !Equals(c.Trip(), j.GetLastTripId())
                     && !(c is IContinuousConnection || j.Connection is IContinuousConnection)
@@ -332,18 +342,24 @@ namespace Itinero.Transit
                     }
 
                     journey = new Journey<T>(j, transferC);
-                }
+                }//*/
 
                 // Chaining to the start of the journey, not the end -> We keep track of the departure time (although the time is not actually used)
                 var chained = new Journey<T>(journey, c);
                 journeyAdded |= ConsiderJourney(chained);
             }
-
+    
             if (journeyAdded)
             {
+            
+
+
+                // The connection was taken in at least one journey.
+                // This means that each walk from a closeby stop into this connection
+                // should be considered as well
                 ConsiderInterstopWalks(c);
             }
-        }
+       }
 
 
         ///   <summary>
@@ -360,12 +376,15 @@ namespace Itinero.Transit
             var startStation = considered.Connection.DepartureLocation().ToString();
             if (!_stationJourneys.ContainsKey(startStation))
             {
+                // This is the first journey that takes us from this 'startstations' 
+                // towards our destination. We add it anyways, after which we are done
                 _stationJourneys.Add(startStation, new List<Journey<T>> {considered});
                 return true;
             }
-            // We actually add the journey to the list if it is not dominated
+
+            // We only add the journey to the list if it is not dominated
             // Because the connections are scanned in decreasing departure time, there cannot be a connection with an earlier departure time
-            // It is therefore sufficient for the domination test to look at the earliest pair q already in the array.
+            // It is therefore sufficient for the domination test to look at the earliest (in time = last in array) pairs already in the array.
 
 
             // As
@@ -374,14 +393,20 @@ namespace Itinero.Transit
             // The _last_ elements in the list will have the _earliest_ departure times.
             //
             // Because a profiled stats comparator will always compare the start time of the journey,
-            // we _only_ have to do a domination check against the last few elements 
+            // we _only_ have to do a domination check against the last few elements IFF the departure time is the same 
             var frontier = _stationJourneys[startStation];
 
             var i = frontier.Count;
-            while (i > 0 && frontier[i - 1].Connection.DepartureTime() == considered.Connection.DepartureTime())
+            while (i > 0)
+                //&& Equals(frontier[i - 1].Connection.DepartureTime(),      considered.Connection.DepartureTime()))
             {
                 i--;
                 var guard = frontier[i];
+                if (guard.Equals(considered))
+                {
+                    return false;
+                }
+
                 var duelResult = _profileComparator.ADominatesB(guard, considered);
                 // ReSharper disable once SwitchStatementMissingSomeCases
                 switch (duelResult)
@@ -392,35 +417,44 @@ namespace Itinero.Transit
                         return false;
                     case 0:
                         // There is no considerable improvement
-                        return false;
+                        // However, this might be another connection enabling a better transfer
+                        // We still add it
+                        continue;
                     case 1:
                         // The guard loses and is dominated by the journey
                         // The guard is removed
-                        frontier.RemoveAt(i);
-                        i--;
-                        break;
+                       // frontier.RemoveAt(i);
+                        // i--;
+                        continue;
                     case int.MaxValue:
                         // They do not dominate each other
                         // We continue with the rest of the loop
-                        break;
+                        continue;
                 }
             }
 
-            // The last boss battle
+            // The last boss battles
             // We compare with the previous element
             // This is to filter out journeys which depart long before but also arrive after the previously added journey
-            if (frontier.Count > 0)
-            {
-                var lastGuard = frontier[frontier.Count - 1];
-                var duel = _profileComparator.ADominatesB(lastGuard, considered);
-                if (duel < 0)
-                {
-                    return false;
-                }
+            // Note that the last element of the list could potentially be uncomparable (e.g. more transfers but less travel time)
+            // However, for example, the element just before the last potentially can dominate the considered journey
+            // Only travels arriving after considered.ArrivalTime are certain not to dominate the new journey anymore.
+            // Note that this journey can dominate no guard
+            /*       while (i > 0 && frontier[i - 1].Root.Connection.ArrivalTime() <=
+                          considered.Root.Connection.ArrivalTime())
+                   {
+                       i--;
+                       var lastGuard = frontier[i];
+                       var duel = _profileComparator.ADominatesB(lastGuard, considered);
+                       if (duel < 0)
+                       {
+                           return false;
+                       }
+       
+                       // 0,1 and MAX_VALUE can never occur:
+                       // The start moments are different and in favour of the lastGuard
+                   }*/
 
-                // 0,1 and MAX_VALUE can never occur:
-                // The start moments are different and in favour of the lastGuard
-            }
 
             // If the considered journey has survived up to this point, it deserves its position in the frontier
             frontier.Add(considered);
@@ -444,9 +478,10 @@ namespace Itinero.Transit
                 return;
             }
 
-            if (c is WalkingConnection)
+            if (c is IContinuousConnection)
+
             {
-                // We've already done our share of walking
+// We've already done our share of walking
                 return;
             }
 
@@ -462,8 +497,8 @@ namespace Itinero.Transit
                 }
 
 
-                // Ticks will increase. As the priority is increased, they are returned earlier
-                _queue.Push(walk, walk.DepartureTime().Ticks);
+// Ticks will increase with time. As the priority is increased, they are returned earlier
+                    _queue.Push(walk, walk.DepartureTime().Ticks);
             }
         }
 
@@ -473,7 +508,7 @@ namespace Itinero.Transit
         /// </summary>
         /// <param name="departureStation"></param>
         /// <returns></returns>
-        // ReSharper disable once UnusedMember.Global
+// ReSharper disable once UnusedMember.Global
         public List<Journey<T>> GetProfileFor(Uri departureStation)
         {
             return _stationJourneys[departureStation.ToString()];

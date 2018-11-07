@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Itinero.Transit
@@ -7,12 +8,9 @@ namespace Itinero.Transit
     {
         public static string GetNameOf(this ILocationProvider locProv, Uri uri)
         {
-            if (locProv == null)
-            {
-                return uri.ToString();
-            }
-
-            return $"{locProv.GetCoordinateFor(uri).Name} ({uri.Segments.Last()})";
+            return locProv == null
+                ? uri.ToString()
+                : $"{locProv.GetCoordinateFor(uri).Name} ({uri.Segments.Last()})";
         }
     }
 }

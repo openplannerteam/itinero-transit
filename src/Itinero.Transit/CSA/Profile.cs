@@ -17,7 +17,7 @@ namespace Itinero.Transit
 
         public readonly T StatsFactory;
         public readonly ProfiledStatsComparator<T> ProfileCompare;
-        public readonly  StatsComparator<T> ParetoCompare;
+        public readonly StatsComparator<T> ParetoCompare;
 
         /// <summary>
         /// Indicates the radius within which stops are searched during the
@@ -81,7 +81,8 @@ namespace Itinero.Transit
         }
 
 
-        public IEnumerable<IContinuousConnection> WalkFromCloseByStops(DateTime arrivalTime, Location to, int radius)
+        public IEnumerable<IContinuousConnection> WalkFromCloseByStops(DateTime arrivalTime,
+            Location to, int radius)
         {
             var close = LocationProvider.GetLocationsCloseTo(to.Lat, to.Lon, radius);
             var result = new HashSet<IContinuousConnection>();
@@ -89,12 +90,14 @@ namespace Itinero.Transit
             {
                 var transfer = FootpathTransferGenerator.GenerateFootPaths(arrivalTime,
                     LocationProvider.GetCoordinateFor(stop), to);
-                if (transfer == null)
+                if (transfer == null ||
+                    Equals(transfer.DepartureLocation(), transfer.ArrivalLocation()))
                 {
                     continue;
                 }
+
                 var diff = transfer.ArrivalTime() - transfer.DepartureTime();
-                transfer.MoveTime(-diff.TotalSeconds);
+                transfer = transfer.MoveTime(-diff.TotalSeconds);
                 result.Add(transfer);
             }
 
@@ -174,12 +177,11 @@ namespace Itinero.Transit
             return new Profile<T>(
                 ConnectionsProvider,
                 LocationProvider,
-                new MemoizingTransferGenerator(FootpathTransferGenerator), 
+                new MemoizingTransferGenerator(FootpathTransferGenerator),
                 StatsFactory,
                 ProfileCompare,
                 ParetoCompare
-                );
-            
+            );
         }
     }
 }

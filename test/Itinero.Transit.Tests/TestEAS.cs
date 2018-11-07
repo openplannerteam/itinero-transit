@@ -23,7 +23,7 @@ namespace Itinero.Transit.Tests
         public static Uri Vielsalm = new Uri("http://irail.be/stations/NMBS/008845146");
 
         public static Uri Howest = new Uri("https://data.delijn.be/stops/502132");
-
+        public static Uri BruggeStation2 = new Uri("https://data.delijn.be/stops/500042");
 
         public TestEas(ITestOutputHelper output)
         {

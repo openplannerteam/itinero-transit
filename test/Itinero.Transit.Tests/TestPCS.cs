@@ -18,6 +18,66 @@ namespace Itinero.Transit.Tests
         {
             _output = output;
         }
+        
+        
+        
+        [Fact]
+        public void TestIntermodal()
+        {
+            Log("Starting");
+            var deLijn = DeLijn.Profile(ResourcesTest.TestPath, "belgium.routerdb");
+            var nmbs = Sncb.Profile(ResourcesTest.TestPath, "belgium.routerdb");
+
+            var profile = new Profile<TransferStats>(
+                new ConnectionProviderMerger(nmbs, deLijn),
+                new LocationCombiner(nmbs, deLijn),
+                nmbs.FootpathTransferGenerator,
+                TransferStats.Factory,
+                TransferStats.ProfileTransferCompare,
+                TransferStats.ParetoCompare
+            );
+            profile.IntermodalStopSearchRadius = 100;
+            
+            var startTime = ResourcesTest.TestMoment(17, 00);
+            var endTime = ResourcesTest.TestMoment(17, 31);
+           
+            var home = new Uri("https://www.openstreetmap.org/#map=19/51.21576/3.22048");
+            var startLocation = OsmLocationMapping.Singleton.GetCoordinateFor(home);
+            var starts = deLijn.WalkToCloseByStops(startTime, startLocation, 1000);
+
+            var station = new Uri("https://www.openstreetmap.org/#map=16/51.0353/3.7096");
+            var endLocation = profile.GetCoordinateFor(TestEas.Brugge);
+                // OsmLocationMapping.Singleton.GetCoordinateFor(station);
+            var ends = profile.WalkFromCloseByStops(endTime, endLocation, 1000);
+
+
+            var pcs = new ProfiledConnectionScan<TransferStats>(
+                TestEas.Howest, TestEas.BruggeStation2, startTime, endTime, profile);
+
+
+            var journeys = pcs.CalculateJourneys();
+            var found = 0;
+            var stats = "";
+            TransferStats stat = null;
+            foreach (var key in journeys.Keys)
+            {
+                var journeysFromPtStop = journeys[key];
+                foreach (var journey in journeysFromPtStop)
+                {
+                    Log(journey.ToString(profile));
+                    stats += $"{key}: {journey.Stats}\n";
+                    stat = journey.Stats;
+                }
+
+                found += journeysFromPtStop.Count();
+            }
+
+            Log($"Got {found} profiles");
+            Log(stats);
+
+        }
+
+        
 
         [Fact]
         public void TestProfileScan()
@@ -74,7 +134,7 @@ namespace Itinero.Transit.Tests
             var deLijn = DeLijn.Profile(ResourcesTest.TestPath, "belgium.routerdb");
             deLijn.IntermodalStopSearchRadius = 0;
             var startTime = ResourcesTest.TestMoment(16, 00);
-            var endTime = ResourcesTest.TestMoment(17, 00);
+            var endTime = ResourcesTest.TestMoment(17, 01);
            
             var home = new Uri("https://www.openstreetmap.org/#map=19/51.21576/3.22048");
             var startLocation = OsmLocationMapping.Singleton.GetCoordinateFor(home);
@@ -99,8 +159,8 @@ namespace Itinero.Transit.Tests
                 foreach (var journey in journeysFromPtStop)
                 {
                     Log(journey.ToString(deLijn.LocationProvider));
+                    stats += $"{key}: {journey.Stats}\n";
                     stat = journey.Stats;
-                    stats += $"{key}: {stats}\n";
                 }
 
                 found += journeysFromPtStop.Count();
@@ -109,10 +169,14 @@ namespace Itinero.Transit.Tests
             Log($"Got {found} profiles");
             Log(stats);
             Assert.Equal(2, found);
-            Assert.Equal(425,(int) stat.WalkingDistance);
-            Assert.Equal(23,(int) (stat.EndTime - stat.StartTime).TotalMinutes);
+            Assert.Equal(1353,(int) stat.WalkingDistance);
+            Assert.Equal(32,(int) (stat.EndTime - stat.StartTime).TotalMinutes);
 
         }
+        
+        
+        
+        
 
         [Fact]
         public void TestFootPathsInterlink()
@@ -121,9 +185,9 @@ namespace Itinero.Transit.Tests
             Log("Starting");
             var deLijn = DeLijn.Profile(ResourcesTest.TestPath, "belgium.routerdb");
             // The only difference with the test above:
-            deLijn.IntermodalStopSearchRadius = 50;
+            deLijn.IntermodalStopSearchRadius = 250;
             var startTime = ResourcesTest.TestMoment(16, 00);
-            var endTime = ResourcesTest.TestMoment(17, 00);
+            var endTime = ResourcesTest.TestMoment(17, 01);
            
             var home = new Uri("https://www.openstreetmap.org/#map=19/51.21576/3.22048");
             var startLocation = OsmLocationMapping.Singleton.GetCoordinateFor(home);
@@ -149,7 +213,7 @@ namespace Itinero.Transit.Tests
                 {
                     Log(journey.ToString(deLijn.LocationProvider));
                     stat = journey.Stats;
-                    stats += $"{key}: {stats}\n";
+                    stats += $"{key}: {stat}\n";
                 }
 
                 found += journeysFromPtStop.Count();
@@ -160,9 +224,9 @@ namespace Itinero.Transit.Tests
             
             Log($"Got {found} profiles");
             Log(stats);
-            Assert.Equal(2, found);
-            Assert.Equal(425,(int) stat.WalkingDistance);
-            Assert.Equal(23,(int) (stat.EndTime - stat.StartTime).TotalMinutes);
+            Assert.Equal(3, found);
+            Assert.Equal(401,(int) stat.WalkingDistance);
+            Assert.Equal(19,(int) (stat.EndTime - stat.StartTime).TotalMinutes);
         }
         
         // ReSharper disable once UnusedMember.Local

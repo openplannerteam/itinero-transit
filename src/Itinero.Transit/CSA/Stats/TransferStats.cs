@@ -21,6 +21,7 @@ namespace Itinero.Transit
         public static readonly MinimizeTransfers MinimizeTransfers = new MinimizeTransfers();
         public static readonly MinimizeTravelTimes MinimizeTravelTimes = new MinimizeTravelTimes();
 
+        public static readonly ProfileTransferCompare ProfileTransferCompare = new ProfileTransferCompare();
         public static readonly ProfileCompare ProfileCompare = new ProfileCompare();
         public static readonly ParetoCompare ParetoCompare = new ParetoCompare();
 
@@ -110,7 +111,8 @@ namespace Itinero.Transit
 
         public override string ToString()
         {
-            return $"{NumberOfTransfers} transfers, {StartTime:HH:mm} --> {EndTime:HH:mm} ({EndTime - StartTime} total time), {WalkingDistance}m to walk";
+            return
+                $"{NumberOfTransfers} transfers, {StartTime:HH:mm:ss} --> {EndTime:HH:mm:ss} ({EndTime - StartTime} total time), {WalkingDistance}m to walk";
         }
     }
 
@@ -131,7 +133,7 @@ namespace Itinero.Transit
         }
     }
 
-    public class ProfileCompare : ProfiledStatsComparator<TransferStats>
+    public class ProfileTransferCompare : ProfiledStatsComparator<TransferStats>
     {
         public override int ADominatesB(TransferStats a, TransferStats b)
         {
@@ -175,6 +177,54 @@ namespace Itinero.Transit
         {
             return a.NumberOfTransfers < b.NumberOfTransfers
                    || a.StartTime > b.StartTime
+                   || a.EndTime < b.EndTime;
+        }
+    }
+
+
+    public class ProfileCompare : ProfiledStatsComparator<TransferStats>
+    {
+        public override int ADominatesB(TransferStats a, TransferStats b)
+        {
+            if (a.Equals(b))
+            {
+                return 0;
+            }
+
+            var aBetterThenB = AIsBetterThenB(a, b);
+            var bBetterThenA = AIsBetterThenB(b, a);
+
+            if (aBetterThenB && bBetterThenA)
+            {
+                // No Domination either way
+                return int.MaxValue;
+            }
+
+            if (aBetterThenB)
+            {
+                return -1;
+            }
+
+            if (bBetterThenA)
+            {
+                return 1;
+            }
+
+            // both perform the same
+            return 0;
+        }
+
+        /// <summary>
+        /// Returns true if A performs better then B in at least one aspect.
+        /// This does imply that A dominates B!
+        /// This does only imply that B does _not_ dominate A
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        private bool AIsBetterThenB(TransferStats a, TransferStats b)
+        {
+            return a.StartTime > b.StartTime
                    || a.EndTime < b.EndTime;
         }
     }

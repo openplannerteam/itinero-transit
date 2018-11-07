@@ -63,7 +63,8 @@ namespace Itinero.Transit
         public string ToString(ILocationProvider locationDecoder)
         {
             return
-                $"Linked Connection {locationDecoder.GetNameOf(DepartureStop)} {DepartureTime:HH:mm} --> {locationDecoder.GetNameOf(ArrivalStop)} {ArrivalTime:HH:mm}";
+                $"Linked Connection {locationDecoder.GetNameOf(DepartureStop)} {DepartureTime:HH:mm} --> {locationDecoder.GetNameOf(ArrivalStop)} {ArrivalTime:HH:mm}" +
+                $"  {Uri}";
         }
 
 
