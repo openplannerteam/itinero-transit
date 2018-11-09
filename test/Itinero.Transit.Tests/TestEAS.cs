@@ -24,6 +24,7 @@ namespace Itinero.Transit.Tests
 
         public static Uri Howest = new Uri("https://data.delijn.be/stops/502132");
         public static Uri BruggeStation2 = new Uri("https://data.delijn.be/stops/500042");
+        public static Uri BruggeNearStation = new Uri("https://data.delijn.be/stops/507076");
 
         public TestEas(ITestOutputHelper output)
         {

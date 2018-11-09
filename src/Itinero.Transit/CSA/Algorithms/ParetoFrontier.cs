@@ -8,7 +8,12 @@ namespace Itinero.Transit
     {
         private readonly StatsComparator<T> _comparator;
 
-        public readonly HashSet<Journey<T>> Frontier = new HashSet<Journey<T>>();
+        /// <summary>
+        /// Contains all the points on the frontier, in order
+        /// This is needed for certain optimalizations.
+        /// Note that most removals (if they happen) will probably be on the tail, so not have too much of an performance impact
+        /// </summary>
+        public readonly List<Journey<T>> Frontier = new List<Journey<T>>();
 
 
         public ParetoFrontier(StatsComparator<T> comparator)
@@ -63,36 +68,34 @@ namespace Itinero.Transit
         /// <returns>True if the journey was appended to the frontier</returns>
         public bool AddToFrontier(Journey<T> considered)
         {
-            var toRemove = new HashSet<Journey<T>>();
-            foreach (var guard in Frontier)
+            for (var i = Frontier.Count-1; i >= 0; i--)
             {
-                var comparison = _comparator.ADominatesB(guard, considered);
-                if (comparison < 0)
+                var guard = Frontier[i];
+                var duel = _comparator.ADominatesB(guard, considered);
+                switch (duel)
                 {
-                    // The new journey didn't make the cut
-                    return false;
+                    case -1:
+                        // The new journey didn't make the cut
+                        return false;
+                    case 1:
+                        // The new journey defeated the guard
+                        Frontier.RemoveAt(i);
+                        i--;
+                        break;
+                    case 0:
+                        // Both are equally good
+                        // They might be the same. We don't care about duplicates, so...
+                        if (considered.Equals(guard))
+                        {
+                            return false;
+                        }
+                        // As both might leave at different hours, we add the new journey as well... except if they are the same ofc
+                        break;
                 }
-
-                if (comparison == 1)
-                {
-                    // The new journey defeated the guard
-                    toRemove.Add(guard);
-                }
-
-                //if (comparison == int.MaxValue)
-                // Both are on the pareto front
-
-                //if (comparison == 0)
-                // Both are equally good
-                // As both might leave at different hours, we add the new journey as well
             }
 
-
-            foreach (var defeatedGuard in toRemove)
-            {
-                Frontier.Remove(defeatedGuard);
-            }
-
+            //if (comparison == int.MaxValue)
+            // Both are on the pareto front
             Frontier.Add(considered);
             return true;
         }
@@ -107,7 +110,5 @@ namespace Itinero.Transit
                 AddToFrontier(journey);
             }
         }
-        
-        
     }
 }

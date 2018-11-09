@@ -123,5 +123,33 @@ namespace Itinero.Transit
         {
             return _route;
         }
+
+
+        protected bool Equals(WalkingConnection other)
+        {
+            return Equals(_arrivalLocation, other._arrivalLocation) && Equals(_departureLocation, other._departureLocation) && _arrivalTime.Equals(other._arrivalTime) && _departureTime.Equals(other._departureTime) && Equals(_route.TotalDistance, other._route.TotalDistance) && _speed.Equals(other._speed);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((WalkingConnection) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (_arrivalLocation != null ? _arrivalLocation.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (_departureLocation != null ? _departureLocation.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ _arrivalTime.GetHashCode();
+                hashCode = (hashCode * 397) ^ _departureTime.GetHashCode();
+                hashCode = (hashCode * 397) ^ (_route != null ? _route.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ _speed.GetHashCode();
+                return hashCode;
+            }
+        }
     }
 }

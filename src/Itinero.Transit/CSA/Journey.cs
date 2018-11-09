@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Itinero.Transit
 {
@@ -228,11 +229,23 @@ namespace Itinero.Transit
 
         private bool Equals(Journey<T> other)
         {
-            var b = (Connection?.Equals(other.Connection) ?? other.Connection == null)
+            var b = Equals(Connection, other.Connection)
                     && Equals(PreviousLink, other.PreviousLink);
             return b;
         }
 
+        public String DebugEquality(Journey<T> other, int depth)
+        {
+            var res = $"{depth}: Connections: {Equals(Connection, other.Connection)} Same: {Equals(this, other)}\n" +
+                      $"    this.Prev {this.PreviousLink != null}; other.prev {other.PreviousLink != null}";
+            if (this.PreviousLink == null || other.PreviousLink == null)
+            {
+                return res;
+            }
+
+            return res + "\n" + PreviousLink.DebugEquality(other.PreviousLink, depth + 1);
+
+        }
         /// <summary>
         /// Gets the first journey in the chain
         /// </summary>

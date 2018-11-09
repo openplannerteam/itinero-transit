@@ -14,7 +14,7 @@ namespace Itinero.Transit.Belgium
             var loc = Location(new LocalStorage(storageLocation));
             var footpaths = new TransferGenerator(routerdbPath);
             return new Profile<TransferStats>(prov, loc, footpaths,
-                TransferStats.Factory, TransferStats.ProfileCompare, TransferStats.ParetoCompare);
+                TransferStats.Factory, TransferStats.ProfileTransferCompare, TransferStats.ParetoCompare);
         }
 
         private static ILocationProvider Location(LocalStorage storage)

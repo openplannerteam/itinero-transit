@@ -30,6 +30,13 @@ namespace Itinero.Transit
         {
         }
 
+        public LocationsFragment(Uri uri, IEnumerable<Location> locations)
+            : base(uri)
+        {
+            _locations = new List<Location>(locations);
+            ProcessLocations();
+        }
+
         protected override void FromJson(JObject json)
         {
             _minLat = 180f;
@@ -40,6 +47,15 @@ namespace Itinero.Transit
             {
                 var l = new Location((JObject) loc);
                 _locations.Add(l);
+            }
+
+            ProcessLocations();
+        }
+
+        protected void ProcessLocations()
+        {
+            foreach (var l in _locations)
+            {
                 _locationMapping.Add(l.Uri.ToString(), l);
 
                 if (!_nameMapping.ContainsKey(l.Name))

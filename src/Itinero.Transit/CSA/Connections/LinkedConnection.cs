@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using Itinero.Attributes;
 using Itinero.LocalGeo;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
-using Attribute = Itinero.Attributes.Attribute;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -116,7 +114,7 @@ namespace Itinero.Transit
 
         public string Mode()
         {
-            return GtfsTrip.AbsoluteUri.ToString();
+            return GtfsTrip.AbsoluteUri;
         }
 
         public Uri Trip()
@@ -181,6 +179,8 @@ namespace Itinero.Transit
 
         public override bool Equals(object obj)
         {
+
+            if (ReferenceEquals(this, obj)) return true;
             if (obj is LinkedConnection lc)
             {
                 return Equals(lc);
