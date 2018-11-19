@@ -1,3 +1,13 @@
+Remarks:
+
+The software itself is MIT. However, when using the default router for walks between stops, data from OpenStreetMap is used. Therefore you'll have to add a copyright notice to OSM. (Unless you don't use those footpaths, e.g. when only using station-to-station routing or when writing your own router based on another dataset).
+
+We also heavily encourage you to visualize the routes on an OpenStreetMap-background. Not only because the footpaths will neatly match, but because it fits the philosophy of the project quite well. It'll make the author happy!
+
+Keep in mind that public transport providers might enforce other restrictions on their data.
+
+
+
 MIT License
 
 Copyright (c) 2018 Anyways BVBA
