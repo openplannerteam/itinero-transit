@@ -16,7 +16,7 @@ namespace Itinero.Transit_Tests
         public const string TestPath = "timetables-for-testing-2018-11-26";
 
         // ReSharper disable once MemberCanBePrivate.Global
-        public static readonly DateTime TestDay = new DateTime(2018, 11, 26, 00, 00, 00);
+        public static readonly DateTime TestDay = new DateTime(2018, 11, 19, 00, 00, 00);
 
         public static DateTime TestMoment(int hours, int minutes, int seconds = 0)
         {

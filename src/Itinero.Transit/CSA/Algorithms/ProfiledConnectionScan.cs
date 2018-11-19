@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Serilog;
 
 namespace Itinero.Transit
 {
@@ -64,7 +63,7 @@ namespace Itinero.Transit
             new Dictionary<string, ParetoFrontier<T>>();
 
 
-        // Placeholder empty frontier
+        // Placeholder empty frontier; used when a frontier is needed but not present.
         private readonly ParetoFrontier<T> _empty;
 
         /// <summary>
@@ -206,7 +205,7 @@ namespace Itinero.Transit
                 {
                     c = conn;
                     // The list is sorted by departure time
-                    // The algorithm starts with the highest departure time and goes down
+                    // The algorithm starts with the latest departure time and goes earlier
 
 
                     if (c.DepartureTime() < _earliestDeparture)
@@ -221,7 +220,7 @@ namespace Itinero.Transit
 
 
             // Post processing
-            // Prepare a neat dictionary for each final destination for the end user
+            // Prepare a neat dictionary for each departure location of the end user
             var result = new Dictionary<string, ParetoFrontier<T>>();
             // Note that we should still append the end walks
             foreach (var depStop in _footpathsIn.Keys)
@@ -363,6 +362,8 @@ namespace Itinero.Transit
                     break;
                 }
 
+                
+                // Consider journey might also create a Transfer if needed
                 journeyAdded |= ConsiderCombination(c, j, firstTripEncounter);
             }
 
@@ -521,10 +522,7 @@ namespace Itinero.Transit
             {
                 // This is the first journey that takes us from this 'start stations' 
                 // towards our destination. We add it anyways, after which we are done
-                var frontier = new ParetoFrontier<T>(_profileComparator);
-                frontier.AddToFrontier(considered);
-                _stationJourneys[startStation] = frontier;
-                return true;
+                _stationJourneys[startStation] = new ParetoFrontier<T>(_profileComparator);
             }
 
             // We only add the journey to the list if it is not dominated
@@ -542,11 +540,14 @@ namespace Itinero.Transit
             return _stationJourneys[startStation].AddToFrontier(considered);
         }
 
+        
+        
+        
         /// <summary>
         /// Converts the list into a list of genesis connections.
-        /// Used in the constructor
+        /// Used in the constructor; small helper function
         /// </summary>
-        private static List<WalkingConnection> MapList(IEnumerable<Uri> locations, DateTime time)
+        private static IEnumerable<WalkingConnection> MapList(IEnumerable<Uri> locations, DateTime time)
         {
             var l = new List<WalkingConnection>();
             foreach (var uri in locations)

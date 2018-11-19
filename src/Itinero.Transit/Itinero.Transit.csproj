@@ -1,17 +1,34 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <title>Itinero.Transit</title>
+    <AssemblyName>itinero-transit</AssemblyName>
+    <Description>An library implementing Connection Scan Algorithm for routing of Public Transport networks, based on Linked Data</Description>
+    <Summary>This package provides an implementation for intermodal routing via Public Transport networks. It allows station-to-station routing within one operator, or allows transfers between operators by walking between them. The feed of the operators should be published in a Linked-Connections ontology, as published on linkedconnections.org .</Summary>
+    <ReleaseNotes>An initial version, somewhat working. Should be stable enough for station-to-station; but beware of bugs</ReleaseNotes>
+    <VersionPrefix>0.0.1</VersionPrefix>
+    <Authors>Pietervdvn;openplannerteam</Authors>
+    <PackageId>openplannerteam.itinero-transit</PackageId>
+    <PackageTags>CSA;Connection-Scan-Algorithm;Public-Transport;Routing;linked-data;</PackageTags>
+    <PackageIconUrl>https://avatars0.githubusercontent.com/u/30265183</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/openplannerteam/Itinero-Transit</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/openplannerteam/Itinero-Transit</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/openplannerteam/itinero-transit/blob/master/LICENSE</PackageLicenseUrl>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="CacheCow.Client" Version="2.4.2" />
     <PackageReference Include="CacheCow.Client.FileStore" Version="2.4.2" />
-    <PackageReference Include="Itinero" Version="1.4.0-pre87" />
+    <PackageReference Include="Itinero" Version="1.4.0-pre89" />
     <PackageReference Include="Itinero.IO.Osm" Version="1.4.0-pre87" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1-beta1" />
     <PackageReference Include="openplannerteam.Json-LD.net" Version="0.1.0" />
     <PackageReference Include="Serilog" Version="2.7.2-dev-01033" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.2-dev-00779" />
-    <PackageReference Include="Serilog.Sinks.File" Version="4.0.1-dev-00798" />
+    <PackageReference Include="Serilog.Sinks.File" Version="4.0.1-dev-00801" />
   </ItemGroup>
 </Project>

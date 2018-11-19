@@ -40,7 +40,7 @@ namespace Itinero.Transit.Tests
             profile.IntermodalStopSearchRadius = 500;
 
             var startTime = ResourcesTest.TestMoment(17, 00);
-            var endTime = ResourcesTest.TestMoment(19, 30);
+            var endTime = ResourcesTest.TestMoment(18, 50);
 
             var home = new Uri("https://www.openstreetmap.org/#map=19/51.21576/3.22048");
             var startLocation = OsmLocationMapping.Singleton.GetCoordinateFor(home);
