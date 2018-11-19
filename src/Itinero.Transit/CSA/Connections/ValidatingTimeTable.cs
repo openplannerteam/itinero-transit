@@ -129,7 +129,7 @@ namespace Itinero.Transit
             _backdrop.Reset();
         }
 
-        public IConnection Current { get; }
+        public IConnection Current { get; private set; }
 
         object IEnumerator.Current => Current;
 

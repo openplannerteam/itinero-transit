@@ -99,7 +99,7 @@ namespace Itinero.Transit
             
             if (ArrivalStop.Equals(DepartureStop))
             {
-             throw new ArgumentException($"This connection ends where it starts, namely at {ArrivalStop}\n{Id}");   
+             throw new ArgumentException($"This connection ends where it starts, namely at {ArrivalStop}\n{Id()}");   
             }
 
             if (ArrivalTime < DepartureTime)
