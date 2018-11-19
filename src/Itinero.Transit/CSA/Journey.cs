@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Itinero.Transit
 {
@@ -52,6 +51,11 @@ namespace Itinero.Transit
                          throw new ArgumentException("The connection used to initialize a Journey should not be null");
             Stats = previousLink.Stats.Add(this);
             Root = previousLink.Root;
+
+            if (Equals(previousLink.Connection, connection))
+            {
+                throw new ArgumentException($"Seems like you chained a connection to itself. This is a bug.\n{connection}");
+            }
         }
 
         /// <summary>
@@ -234,18 +238,19 @@ namespace Itinero.Transit
             return b;
         }
 
-        public String DebugEquality(Journey<T> other, int depth)
+        // ReSharper disable once UnusedMember.Global
+        public string DebugEquality(Journey<T> other, int depth = 0)
         {
             var res = $"{depth}: Connections: {Equals(Connection, other.Connection)} Same: {Equals(this, other)}\n" +
-                      $"    this.Prev {this.PreviousLink != null}; other.prev {other.PreviousLink != null}";
-            if (this.PreviousLink == null || other.PreviousLink == null)
+                      $"    this.Prev {PreviousLink != null}; other.prev {other.PreviousLink != null}";
+            if (PreviousLink == null || other.PreviousLink == null)
             {
                 return res;
             }
 
             return res + "\n" + PreviousLink.DebugEquality(other.PreviousLink, depth + 1);
-
         }
+
         /// <summary>
         /// Gets the first journey in the chain
         /// </summary>
@@ -265,9 +270,5 @@ namespace Itinero.Transit
                 return hashCode;
             }
         }
-
-
-     
-        
     }
 }

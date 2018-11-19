@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Itinero.Transit.Belgium
+namespace Itinero.Transit
 {
     public class TestProfile
     {
@@ -19,28 +19,30 @@ namespace Itinero.Transit.Belgium
                 hour, minute, seconds);
         }
 
-        public readonly static Uri a = new Uri("http://example.com/location/A");
-        public readonly static Uri b = new Uri("http://example.com/location/B");
-        public readonly static Uri c = new Uri("http://example.com/location/C");
-        public readonly static Uri d = new Uri("http://example.com/location/D");
+        public static readonly Uri A = new Uri("http://example.com/location/A");
+        // ReSharper disable once MemberCanBePrivate.Global
+        public static readonly Uri B = new Uri("http://example.com/location/B");
+        // ReSharper disable once MemberCanBePrivate.Global
+        public static readonly Uri C = new Uri("http://example.com/location/C");
+        public static readonly Uri D = new Uri("http://example.com/location/D");
 
         public Profile<TransferStats> CreateTestProfile()
         {
             var trainConn = new LinkedConnection(new Uri("http://example.com/conn/1"))
             {
-                DepartureStop = c, ArrivalStop = d, DepartureTime = Moment(18, 00), ArrivalTime = Moment(19, 00)
+                DepartureStop = C, ArrivalStop = D, DepartureTime = Moment(18, 00), ArrivalTime = Moment(19, 00)
             };
 
             var busConn = new LinkedConnection(new Uri("http://example.com/conn/2"))
             {
-                DepartureStop = a, ArrivalStop = b, DepartureTime = Moment(17, 00), ArrivalTime = Moment(17, 45)
+                DepartureStop = A, ArrivalStop = B, DepartureTime = Moment(17, 00), ArrivalTime = Moment(17, 45)
             };
 
             var tt = new SimpleTimeTable(new List<IConnection> {busConn, trainConn});
             var conProv = new SimpleConnProvider(tt);
 
 
-            var locA = new Location(a)
+            var locA = new Location(A)
             {
                 Name = "A",
                 Lat = 51.0f,
@@ -48,7 +50,7 @@ namespace Itinero.Transit.Belgium
             };
 
 
-            var locB = new Location(b)
+            var locB = new Location(B)
             {
                 Name = "b",
                 Lat = 51.21293f,
@@ -56,14 +58,14 @@ namespace Itinero.Transit.Belgium
                 
             };
 
-            var locC = new Location(c)
+            var locC = new Location(C)
             {
                 Name = "C",
                 Lat =  51.21635f,
                 Lon = 3.21971f
             };
 
-            var locD = new Location(d)
+            var locD = new Location(D)
             {
                 Name = "D",
                 Lat = 53.0f,
@@ -74,7 +76,7 @@ namespace Itinero.Transit.Belgium
             var profile = new Profile<TransferStats>(
                 conProv,
                 locProv,
-                new TransferGenerator("belgium.routerdb"),
+                new OsmTransferGenerator("belgium.routerdb"),
                 TransferStats.Factory,
                 TransferStats.ProfileTransferCompare,
                 TransferStats.ParetoCompare

@@ -7,44 +7,44 @@ namespace Itinero.Transit
     public class SimpleTimeTable : ITimeTable
     {
         private readonly IEnumerable<IConnection> _cons;
-        private readonly DateTime start, end;
+        private readonly DateTime _start, _end;
 
         public SimpleTimeTable(IEnumerable<IConnection> cons)
         {
             _cons = cons;
 
-            foreach (var con in cons)
+            foreach (var con in _cons)
             {
-                if (start == null || con.DepartureTime() < start)
+                if (_start == null || con.DepartureTime() < _start)
                 {
-                    start = con.DepartureTime();
+                    _start = con.DepartureTime();
                 }
 
-                if (end == null || con.ArrivalTime() > end)
+                if (_end == null || con.ArrivalTime() > _end)
                 {
-                    end = con.ArrivalTime();
+                    _end = con.ArrivalTime();
                 }
             }
         }
         
         public DateTime StartTime()
         {
-            return start;
+            return _start;
         }
 
         public DateTime EndTime()
         {
-            return end;
+            return _end;
         }
 
         public DateTime PreviousTableTime()
         {
-            return start;
+            return _start;
         }
 
         public DateTime NextTableTime()
         {
-            return end;
+            return _end;
         }
 
         public Uri NextTable()

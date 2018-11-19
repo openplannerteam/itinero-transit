@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Itinero.Transit.Belgium;
 using Itinero.Transit_Tests;
 using Xunit;
 using Xunit.Abstractions;
@@ -35,8 +34,9 @@ namespace Itinero.Transit.Tests
         [Fact]
         public void TestIntermodalEas()
         {
-            var nmbs = Sncb.Profile(ResourcesTest.TestPath, "belgium.routerdb");
-            var delijn = DeLijn.Profile(ResourcesTest.TestPath, "belgium.routerdb");
+            var st = new LocalStorage(ResourcesTest.TestPath);
+            var nmbs = Belgium.Sncb(st);
+            var delijn = Belgium.DeLijn(st);
 
             var profile = new Profile<TransferStats>(
                 new ConnectionProviderMerger(nmbs, delijn),
@@ -47,29 +47,29 @@ namespace Itinero.Transit.Tests
 
             var startTime = ResourcesTest.TestMoment(10, 0);
             var endTime = ResourcesTest.TestMoment(14, 00);
-            
+
             var eas = new EarliestConnectionScan<TransferStats>(
                 Howest, Gent,
                 startTime, endTime,
                 profile
-                );
+            );
 
 
             var journey = eas.CalculateJourney();
             Log(journey.ToString(profile));
-            
-            Log(journey.AsRoute(profile).ToGeoJson());
-            
-            Assert.Equal(ResourcesTest.TestMoment(10,58), journey.Connection.ArrivalTime());
-            Assert.Equal(2, journey.Stats.NumberOfTransfers);
 
+            Log(journey.AsRoute(profile).ToGeoJson());
+
+            Assert.Equal(ResourcesTest.TestMoment(10, 58), journey.Connection.ArrivalTime());
+            Assert.Equal(3, journey.Stats.NumberOfTransfers);
         }
 
 
         [Fact]
         public void TestEarliestArrival()
         {
-            var sncb = Sncb.Profile(ResourcesTest.TestPath, "belgium.routerdb");
+            var st = new LocalStorage(ResourcesTest.TestPath);
+            var sncb = Belgium.Sncb(st);
             var startTime = ResourcesTest.TestMoment(10, 10);
             var endTime = ResourcesTest.TestMoment(23, 00);
 
@@ -86,7 +86,8 @@ namespace Itinero.Transit.Tests
         [Fact]
         public void TestEarliestArrival2()
         {
-            var sncb = Sncb.Profile(ResourcesTest.TestPath, "belgium.routerdb");
+            var st = new LocalStorage(ResourcesTest.TestPath);
+            var sncb = Belgium.Sncb(st);
 
             var startTime = ResourcesTest.TestMoment(10, 08);
             var endTime = ResourcesTest.TestMoment(23, 00);
@@ -97,13 +98,15 @@ namespace Itinero.Transit.Tests
 
             Assert.Equal($"{ResourcesTest.TestMoment(16, 01):O}", $"{journey.Connection.DepartureTime():O}");
             Assert.Equal("06:05:00", journey.Stats.TravelTime.ToString());
-            Assert.Equal(4, journey.Stats.NumberOfTransfers);
+            Assert.Equal(3, journey.Stats.NumberOfTransfers);
         }
 
         [Fact]
         public void TestDeLijn()
         {
-            var deLijn = DeLijn.Profile(ResourcesTest.TestPath, "belgium.routerdb");
+            var st = new LocalStorage(ResourcesTest.TestPath);
+            var deLijn = Belgium.DeLijn(st);
+
             Log("Got profile");
             var closeToHome = deLijn.LocationProvider.GetLocationsCloseTo(51.21576f, 3.22f, 250);
 

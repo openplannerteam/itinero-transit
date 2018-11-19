@@ -5,7 +5,6 @@ using System.Net;
 using Itinero.IO.Osm;
 using Itinero.Osm.Vehicles;
 using Itinero.Transit;
-using Itinero.Transit.Belgium;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -42,19 +41,19 @@ namespace Itinero.Transit_Tests
         [Fact]
         public void FixCache()
         {
-            if (Directory.Exists(TestPath + "/timetables") &&
-                Directory.EnumerateFiles(TestPath + "/timetables").Count() > 100)
+            if (Directory.Exists(TestPath + "/SNCB/timetables") &&
+                Directory.EnumerateFiles(TestPath + "/SNCB/timetables").Count() > 100)
             {
                 return;
             }
 
             try
             {
-                var sncb = Sncb.Profile(TestPath,
-                    "belgium.routerdb");
+                var st = new LocalStorage(TestPath);
+                var sncb = Belgium.Sncb(st);
                 sncb.DownloadDay(TestDay);
 
-                var deLijn = DeLijn.Profile(TestPath, "belgium.routerdb");
+                var deLijn = Belgium.DeLijn(st);
                 deLijn.DownloadDay(TestDay);
             }
             catch (Exception e)
@@ -66,7 +65,7 @@ namespace Itinero.Transit_Tests
                 // NUKE THE CACHE!
                 Directory.Delete(TestPath, recursive: true);
 
-                throw e;
+                throw;
             }
         }
 

@@ -2,7 +2,7 @@ using System;
 
 namespace Itinero.Transit
 {
-    public static class IContinuousConnectionExtensions
+    public static class ContinuousConnectionExtensions
     {
         // Getting close to java names!
 

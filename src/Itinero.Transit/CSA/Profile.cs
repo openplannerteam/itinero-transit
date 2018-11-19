@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JsonLD.Core;
 
 namespace Itinero.Transit
 {
@@ -44,6 +45,58 @@ namespace Itinero.Transit
             ParetoCompare = paretoCompare;
         }
 
+
+        /// <summary>
+        ///  Creates a default profile, based on the locationsfragment-URL and conenctions-location fragment 
+        /// </summary>
+        /// <returns></returns>
+        public Profile(
+            string profileName,
+            Uri connectionsLink,
+            Uri locationsFragment,
+            string routerDbPath,
+            LocalStorage storage,
+            T statsFactory,
+            ProfiledStatsComparator<T> profileCompare,
+            StatsComparator<T> paretoCompare,
+            Downloader loader = null
+        )
+        {
+            loader = loader ?? new Downloader();
+
+            storage = storage.SubStorage(profileName);
+
+            ConnectionsProvider =
+                new LocallyCachedConnectionsProvider(
+                    new LinkedConnectionProvider
+                    (connectionsLink,
+                        connectionsLink + "{?departureTime}",
+                        loader),
+                    storage.SubStorage("timetables")
+                );
+
+
+            // Create the locations provider
+
+
+            var locProc = new JsonLdProcessor(loader, locationsFragment);
+
+            LocationProvider =
+                new CachedLocationsFragment(
+                    locationsFragment,
+                    locProc,
+                    storage.SubStorage("locations")
+                );
+
+            // Intermediate transfer generator
+            // The OsmTransferGenerator will reuse an existing routerdb if it is already loaded
+            FootpathTransferGenerator = new OsmTransferGenerator(routerDbPath);
+
+            // The other settings 
+            StatsFactory = statsFactory;
+            ProfileCompare = profileCompare;
+            ParetoCompare = paretoCompare;
+        }
 
         public Journey<T> CalculateEas(Uri departure, Uri arrival, DateTime departureTime, DateTime endTime)
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Serilog;
 
 namespace Itinero.Transit
 {
@@ -21,6 +22,11 @@ namespace Itinero.Transit
         /// This dictionary keeps, for each stop, the journey that arrives as early as possible
         /// </summary>
         private readonly Dictionary<string, Journey<T>> _s = new Dictionary<string, Journey<T>>();
+
+        /// <summary>
+        /// Keeps track of where we are on each trip, thus if we wouldn't leave a bus once we're on it
+        /// </summary>
+        private readonly Dictionary<string, Journey<T>> _trips = new Dictionary<string, Journey<T>>();
 
         public EarliestConnectionScan(Uri userDepartureLocation, Uri userTargetLocation,
             DateTime departureTime, DateTime timeOut,
@@ -68,6 +74,11 @@ namespace Itinero.Transit
 
             var timeTable = _connectionsProvider.GetTimeTable(start);
             var currentBestArrival = DateTime.MaxValue;
+            
+            // Seen connections
+            // TODO Remove when upstream bug is fixed
+            var seen = new Dictionary<string, ITimeTable>();
+            
             while (true)
             {
                 foreach (var c in timeTable.Connections())
@@ -83,6 +94,14 @@ namespace Itinero.Transit
                         return GetJourneyTo(bestTarget);
                     }
 
+
+                    if (seen.ContainsKey(c.ToString()))
+                    {
+                        Log.Warning($"Skipping already seen connection {c.Id()}");
+                        continue;
+                    }
+
+                    seen.Add(c.ToString(), timeTable);
 
                     IntegrateConnection(c);
                 }
@@ -122,6 +141,25 @@ namespace Itinero.Transit
             // The connection describes a random connection somewhere
             // Lets check if we can take it
 
+            var trip = c.Trip()?.ToString();
+            if (trip != null)
+            {
+                if (_trips.ContainsKey(trip))
+                {// We can be on this trip, lets extend the journey
+                    
+                    
+                    _trips[trip] = new Journey<T>(_trips[trip], c);
+
+                    var arrDest = c.ArrivalLocation().ToString();
+                    if (!_s.ContainsKey(arrDest)
+                        || _s[arrDest].Connection.ArrivalTime() > c.ArrivalTime())
+                    {
+                        // We can reach this destination by using this trip quicker then previously known
+                        _s[arrDest] = _trips[trip];
+                    }
+                }
+            }
+
             var journeyTillStop = GetJourneyTo(c.DepartureLocation());
             if (journeyTillStop.Equals(Journey<T>.InfiniteJourney))
             {
@@ -137,7 +175,7 @@ namespace Itinero.Transit
                 return;
             }
 
-            if (!(c is IContinuousConnection) 
+            if (!(c is IContinuousConnection)
                 && journeyTillStop.GetLastTripId() != null &&
                 !Equals(journeyTillStop.Connection.Trip(), c.Trip()))
             {
@@ -161,6 +199,10 @@ namespace Itinero.Transit
             // Jej! We can take the train! It gets us to some stop faster then previously known
             _s[c.ArrivalLocation().ToString()] = new Journey<T>(journeyTillStop, c);
 
+            if (trip != null && !_trips.ContainsKey(trip))
+            {
+                _trips[trip] =  _s[c.ArrivalLocation().ToString()];
+            }
 
             // Alright, we are arriving at a new location. This means that we can walk from this location onto new stops
 
@@ -168,8 +210,8 @@ namespace Itinero.Transit
             {
                 return;
             }
-            
-            var connections = _profile.WalkToCloseByStops(c.ArrivalTime(), 
+
+            var connections = _profile.WalkToCloseByStops(c.ArrivalTime(),
                 _profile.GetCoordinateFor(c.ArrivalLocation()),
                 _profile.IntermodalStopSearchRadius);
 
@@ -179,9 +221,9 @@ namespace Itinero.Transit
                 {
                     continue;
                 }
+
                 IntegrateConnection(walk);
             }
-            
         }
 
         private Journey<T> GetJourneyTo(Uri stop)

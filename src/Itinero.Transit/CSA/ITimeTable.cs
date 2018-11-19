@@ -9,7 +9,17 @@ namespace Itinero.Transit
     /// </summary>
     public interface ITimeTable
     {
+        
+        /// <summary>
+        /// The moment when the earliest connections of this time table leave
+        /// </summary>
+        /// <returns></returns>
         DateTime StartTime();
+        /// <summary>
+        /// The moment when no more connections of this timetable leave.
+        /// Thus: if e.g. 10:42 is given, the latest departing connections will probably depart at 10:41
+        /// </summary>
+        /// <returns></returns>
         DateTime EndTime();
         DateTime PreviousTableTime();
         DateTime NextTableTime();

@@ -4,6 +4,10 @@ using JsonLD.Core;
 
 namespace Itinero.Transit
 {
+    
+    /// <summary>
+    /// A thin wrapper around LocationsFragment.
+    /// </summary>
     public class CachedLocationsFragment : ILocationProvider
     {
         private readonly LocationsFragment _frag;

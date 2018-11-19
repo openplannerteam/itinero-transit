@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.InteropServices;
-using Itinero.Transit.Belgium;
 using Itinero.Transit_Tests;
 using Xunit;
 using Xunit.Abstractions;
@@ -26,8 +25,9 @@ namespace Itinero.Transit.Tests
         public void TestIntermodal()
         {
             Log("Starting");
-            var deLijn = DeLijn.Profile(ResourcesTest.TestPath, "belgium.routerdb");
-            var nmbs = Sncb.Profile(ResourcesTest.TestPath, "belgium.routerdb");
+            var st = new LocalStorage(ResourcesTest.TestPath);
+            var deLijn = Belgium.DeLijn(st);
+            var nmbs = Belgium.Sncb(st);
 
             var profile = new Profile<TransferStats>(
                 new ConnectionProviderMerger(nmbs, deLijn),
@@ -48,19 +48,17 @@ namespace Itinero.Transit.Tests
 
             var stationGent = new Uri("https://www.openstreetmap.org/#map=16/51.0353/3.7096");
             var endLocationGent = OsmLocationMapping.Singleton.GetCoordinateFor(stationGent);
-            var endLocationBrugge = profile.GetCoordinateFor(TestEas.Gent);
             var ends = profile.WalkFromCloseByStops(endTime, endLocationGent, 500);
 
-            
 
             var pcs = new ProfiledConnectionScan<TransferStats>(
-                starts,ends, startTime, endTime, profile);
+                starts, ends, startTime, endTime, profile);
 
 
             var journeys = pcs.CalculateJourneys();
             var found = 0;
             var stats = "";
-            TransferStats stat = null;
+            TransferStats stat;
             var time = TimeSpan.MaxValue;
             foreach (var key in journeys.Keys)
             {
@@ -82,14 +80,17 @@ namespace Itinero.Transit.Tests
             Log($"Got {found} profiles");
             Log(stats);
             Assert.True(found > 0);
-            Assert.True(time < new TimeSpan(1,00,00));
+            Assert.True(time < new TimeSpan(1, 00, 00));
         }
 
 
         [Fact]
         public void TestProfileScan()
         {
-            var sncb = Sncb.Profile(ResourcesTest.TestPath, "belgium.routerdb");
+            var st = new LocalStorage(ResourcesTest.TestPath);
+            var sncb = Belgium.Sncb(st);
+
+
             sncb.IntermodalStopSearchRadius = 0;
             var startTime = ResourcesTest.TestMoment(10, 00);
             var endTime = ResourcesTest.TestMoment(12, 00);
@@ -113,7 +114,10 @@ namespace Itinero.Transit.Tests
         [Fact]
         public void TestProfileScan2()
         {
-            var sncb = Sncb.Profile(ResourcesTest.TestPath, "belgium.routerdb");
+            var st = new LocalStorage(ResourcesTest.TestPath);
+            var sncb = Belgium.Sncb(st);
+
+
             sncb.IntermodalStopSearchRadius = 0;
             var startTime = ResourcesTest.TestMoment(9, 00);
             var endTime = ResourcesTest.TestMoment(20, 00);
@@ -136,8 +140,9 @@ namespace Itinero.Transit.Tests
         [Fact]
         public void TestDeLijn()
         {
-            Log("Starting");
-            var deLijn = DeLijn.Profile(ResourcesTest.TestPath, "belgium.routerdb");
+            var st = new LocalStorage(ResourcesTest.TestPath);
+            var deLijn = Belgium.DeLijn(st);
+
             deLijn.IntermodalStopSearchRadius = 0;
             var startTime = ResourcesTest.TestMoment(16, 00);
             var endTime = ResourcesTest.TestMoment(17, 01);
@@ -150,33 +155,39 @@ namespace Itinero.Transit.Tests
             var journeys = pcs.CalculateJourneys();
             var found = 0;
             var stats = "";
+            Journey<TransferStats> last = null;
             foreach (var key in journeys.Keys)
             {
                 var journeysFromPtStop = journeys[key];
-                Journey<TransferStats> last = null;
                 foreach (var journey in journeysFromPtStop)
                 {
                     Log(journey.ToString(deLijn.LocationProvider));
                     stats += $"{key}: {journey.Stats}\n";
 
-                    Assert.Equal(9, (int) (journey.Stats.EndTime - journey.Stats.StartTime).TotalMinutes);
-                    Assert.Equal(0, journey.Stats.NumberOfTransfers);
+                    var totalTime = (int) (journey.Stats.EndTime - journey.Stats.StartTime).TotalMinutes;
+                    Assert.True(totalTime == 9 || totalTime == 13);
+                    Assert.True(journey.Stats.NumberOfTransfers <= 1);
+                    last = journey;
                 }
 
                 found += journeysFromPtStop.Count();
             }
 
             Log($"Got {found} profiles");
-            Assert.Equal(17, found);
             Log(stats);
+            Assert.Equal(5, found);
         }
 
 
         [Fact]
+        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
         public void TestFootPaths()
         {
             Log("Starting");
-            var deLijn = DeLijn.Profile(ResourcesTest.TestPath, "belgium.routerdb");
+            var st = new LocalStorage(ResourcesTest.TestPath);
+            var deLijn = Belgium.DeLijn(st);
+
+
             deLijn.IntermodalStopSearchRadius = 0;
             var startTime = ResourcesTest.TestMoment(16, 00);
             var endTime = ResourcesTest.TestMoment(17, 01);
@@ -191,7 +202,7 @@ namespace Itinero.Transit.Tests
 
 
             var pcs = new ProfiledConnectionScan<TransferStats>(
-              starts, //  new List<IContinuousConnection>{new WalkingConnection(TestEas.Howest, startTime)}, 
+                starts, //  new List<IContinuousConnection>{new WalkingConnection(TestEas.Howest, startTime)}, 
                 ends, startTime, endTime, deLijn);
 
 
@@ -214,18 +225,19 @@ namespace Itinero.Transit.Tests
 
             Log($"Got {found} profiles");
             Log(stats);
-            Assert.Equal(15, found);
+            Assert.Equal(11, found);
             Assert.Equal(356, (int) stat.WalkingDistance);
             Assert.Equal(12, (int) (stat.EndTime - stat.StartTime).TotalMinutes);
         }
 
 
         [Fact]
+        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
         public void TestFootPathsInterlink()
         {
-            Program.ConfigureLogging();
-            Log("Starting");
-            var deLijn = DeLijn.Profile(ResourcesTest.TestPath, "belgium.routerdb");
+            var st = new LocalStorage(ResourcesTest.TestPath);
+            var deLijn = Belgium.DeLijn(st);
+
             // The only difference with the test above:
             deLijn.IntermodalStopSearchRadius = 250;
             var startTime = ResourcesTest.TestMoment(16, 00);
@@ -264,9 +276,9 @@ namespace Itinero.Transit.Tests
 
             Log($"Got {found} profiles");
             Log(stats);
-            Assert.Equal(15, found);
-            Assert.Equal(356, (int) stat.WalkingDistance);
-            Assert.Equal(12, (int) (stat.EndTime - stat.StartTime).TotalMinutes);
+            Assert.Equal(11, found);
+            Assert.Equal(1076, (int) stat.WalkingDistance);
+            Assert.Equal(28, (int) (stat.EndTime - stat.StartTime).TotalMinutes);
         }
 
         // ReSharper disable once UnusedMember.Local

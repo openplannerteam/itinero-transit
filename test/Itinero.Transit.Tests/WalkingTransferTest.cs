@@ -1,6 +1,5 @@
 using System;
 using Itinero.Transit;
-using Itinero.Transit.Belgium;
 using Xunit;
 using Xunit.Abstractions;
 // ReSharper disable MemberCanBePrivate.Global
@@ -27,9 +26,11 @@ namespace Itinero.Transit_Tests
         [Fact]
         public void TestCreateRoute()
         {
-            var deLijn = DeLijn.Profile(ResourcesTest.TestPath, "belgium.routerdb");
+            var st = new LocalStorage(ResourcesTest.TestPath);
+            var deLijn = Belgium.DeLijn(st);
+
             Log("Creating WCP");
-            var wcp = new TransferGenerator("belgium.routerdb");
+            var wcp = new OsmTransferGenerator("belgium.routerdb");
 
             DateTime start = DateTime.Now;
             var wt = wcp.GenerateFootPaths(start, deLijn.GetCoordinateFor(Howest),

@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Itinero.Transit.Belgium;
-using Itinero.Transit.Tests.Functional.Staging;
 using OsmSharp.Logging;
 using Serilog;
 using Serilog.Events;
@@ -27,7 +25,7 @@ namespace Itinero.Transit.Tests.Functional
             var prof = test.CreateTestProfile();
             prof.IntermodalStopSearchRadius = 10000;
 
-            var pcs = new ProfiledConnectionScan<TransferStats>(TestProfile.a, TestProfile.d,
+            var pcs = new ProfiledConnectionScan<TransferStats>(TestProfile.A, TestProfile.D,
                 test.Moment(17, 00), test.Moment(19, 01), prof
             );
 
@@ -37,17 +35,17 @@ namespace Itinero.Transit.Tests.Functional
             
             var found = 0;
             var stats = "";
-            TransferStats stat = null;
             foreach (var key in journeys.Keys)
             {
                 var journeysFromPtStop = journeys[key];
+                // ReSharper disable once PossibleMultipleEnumeration
                 foreach (var journey in journeysFromPtStop)
                 {
                     Log.Information(journey.ToString(prof));
                     stats += $"{key}: {journey.Stats}\n";
-                    stat = journey.Stats;
                 }
 
+                // ReSharper disable once PossibleMultipleEnumeration
                 found += journeysFromPtStop.Count();
             }
 
@@ -59,6 +57,7 @@ namespace Itinero.Transit.Tests.Functional
         static void Main(string[] args)
         {
             EnableLogging();
+            Log.Information($"{args.Length} CLI params given");
 
             TestMoreStuff();
             /*

@@ -82,7 +82,7 @@ namespace Itinero.Transit
         public string ToString(ILocationProvider locationDecoder, List<Uri> whitelist)
         {
             var omitted = 0;
-            var cons = "";
+            var cons = "  ";
             foreach (var conn in Graph)
             {
                 if (whitelist != null && !whitelist.Contains(conn.DepartureLocation())

@@ -15,7 +15,7 @@ namespace Itinero.Transit
         private readonly string _root;
 
         private static readonly List<string> ForbiddenDirectories =
-            new List<string>()
+            new List<string>
             {
                 "/",
                 "",
@@ -25,17 +25,36 @@ namespace Itinero.Transit
 
         public LocalStorage(string root)
         {
+            
+            CheckName(root);
             _root = Path.GetFullPath(root + Path.DirectorySeparatorChar).Normalize();
-            if (ForbiddenDirectories.Contains(root))
-            {
-                throw new ArgumentException(
-                    $"Using {root} as localstorage is not a good idea, specify a specific directory");
-            }
-
+           
             if (!Directory.Exists(root))
             {
                 Directory.CreateDirectory(root);
             }
+        }
+
+        
+        /// <summary>
+        /// Creates a subdirectory in the storage
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public LocalStorage SubStorage(string name)
+        {
+            CheckName(name);
+            return new LocalStorage(_root+"/"+name);
+        }
+
+        private static void CheckName(string name)
+        {
+            if (name.StartsWith("..") || ForbiddenDirectories.Contains(name))
+            {
+                throw new ArgumentException(
+                    $"Using {name} as localstorage is not a good idea, specify a specific directory");
+            }
+
         }
 
         /// <summary>

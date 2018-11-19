@@ -30,6 +30,12 @@ namespace Itinero.Transit
         {
         }
 
+        /// <summary>
+        /// Constructor with a number of preloaded locations.
+        /// Mainly used for testing
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="locations"></param>
         public LocationsFragment(Uri uri, IEnumerable<Location> locations)
             : base(uri)
         {

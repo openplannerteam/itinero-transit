@@ -198,6 +198,8 @@ namespace Itinero.Transit
         {
             var tt = _profile.ConnectionsProvider.GetTimeTable(_lastArrival);
             IConnection c = null;
+            // TODO Remove when bug is fixed
+            var seen = new HashSet<IConnection>();
             do
             {
                 var cons = tt.ConnectionsReversed();
@@ -206,21 +208,6 @@ namespace Itinero.Transit
                     c = conn;
                     // The list is sorted by departure time
                     // The algorithm starts with the highest departure time and goes down
-                    if (c.Operator().ToString().StartsWith(("http://irail.be/")))
-                    {
-                        if (!c.DepartureLocation().ToString().Equals("http://irail.be/stations/NMBS/008891009"))
-                        {
-                       //     continue;
-                        }
-                        
-                    }
-                    else
-                    {
-                        if (!c.ArrivalLocation().ToString().Equals("https://data.delijn.be/stops/500042"))
-                        {
-                     //       continue;
-                        }
-                    }
 
 
                     if (c.DepartureTime() < _earliestDeparture)
@@ -228,6 +215,14 @@ namespace Itinero.Transit
                         break;
                     }
 
+                    if (seen.Contains(c))
+                    {
+                        Log.Warning("Already seen this connection: "+c);
+                        continue;
+                    }
+
+                    seen.Add(c);
+                    
                     AddConnection(c);
                 }
 
@@ -328,7 +323,7 @@ namespace Itinero.Transit
                 }
 
                 // We still handle the connection as the rest of the journey
-                // Perhaps the bus will continue to drive us closer to the station
+                // // Perhaps the bus will continue to drive us closer to the station
             }
 
             // Could this connection be usable via a footpath?
@@ -353,7 +348,7 @@ namespace Itinero.Transit
             // ---------------------------------------------------------------------
             // Time for the core algorithm
 
-            // Get the journeys to our target, with conn.Arrival as departure
+            // Get the journeys to our target, with conn.Arrival as departure Location
             // We will multiply all those connections with the current connection
             var journeysToEnd = _stationJourneys.GetValueOrDefault(c.ArrivalLocation().ToString(), _empty);
 
@@ -362,25 +357,33 @@ namespace Itinero.Transit
             bool journeyAdded = false; // We arrive in a stop, from which we can walk to our target
 
 
-            // This is the first time we encounter this trip
-            // This means that the optimal resting journeys for this trip is the pareto-front which results
-            // from concatenating the connection and the pareto front for this location
-            // In other words, every one of the chained journeys we will be calculating anyway below
+            // This flag indicates that we encountered this trip for the first time
+            // This means that we "cannot stay seated" in this trip and have to leave at the arrival station of the connection
+            // The optimal trip journeys is thus be the resulting pareto front that we already have
             bool firstTripEncounter = c.Trip() != null && !_tripJourneys.ContainsKey(c.Trip().ToString());
-            foreach (var j in journeysToEnd.Frontier)
+
+            try
             {
-                if (c.ArrivalTime() > j.Connection.DepartureTime())
+
+                foreach (var j in journeysToEnd.Frontier)
                 {
-                    // We missed this journey to the target
-                    // Note that the journeysToEnd are ordered from last to earliest departure
-                    // If we miss the journey j, the next will depart even earlier
-                    // So we can break the loop
-                    break;
+                    if (c.ArrivalTime() > j.Connection.DepartureTime())
+                    {
+                        // We missed this journey to the target
+                        // Note that the journeysToEnd are ordered from last to earliest departure
+                        // If we miss the journey j, the next will depart even earlier
+                        // So we can break the loop
+                        break;
+                    }
+
+                    journeyAdded |= ConsiderCombination(c, j, firstTripEncounter);
                 }
 
-                journeyAdded |= ConsiderCombination(c, j, firstTripEncounter);
             }
-
+            catch (Exception e)
+            {
+                throw;
+            }
             if (!firstTripEncounter && c.Trip() != null)
             {
                 // We can also not leave the current trip
@@ -561,7 +564,6 @@ namespace Itinero.Transit
         /// Converts the list into a list of genesis connections.
         /// Used in the constructor
         /// </summary>
-        /// <param name="locations"></param>
         private static List<WalkingConnection> MapList(IEnumerable<Uri> locations, DateTime time)
         {
             var l = new List<WalkingConnection>();

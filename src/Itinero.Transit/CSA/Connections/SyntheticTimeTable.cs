@@ -18,9 +18,10 @@ namespace Itinero.Transit
 
         private readonly List<ITimeTable> _sources;
 
-        public SyntheticTimeTable(List<ITimeTable> sources, Uri uri)
+        public SyntheticTimeTable(IReadOnlyCollection<ITimeTable> sources, Uri uri)
         {
-            _sources = sources;
+            // We make a copy, the parent list might change
+            _sources = new List<ITimeTable>(sources);
             _uri = uri;
             DateTime? startTime = null;
             DateTime? endTime = null;
@@ -92,7 +93,7 @@ namespace Itinero.Transit
 
         public Uri NextTable()
         {
-            return new Uri($"{ConnectionProviderMerger.SyntheticUri}{_endTime:O}");
+            return new Uri($"{ConnectionProviderMerger.SyntheticUri}{NextTableTime():O}");
         }
 
         public Uri PreviousTable()
@@ -103,12 +104,14 @@ namespace Itinero.Transit
 
         public IEnumerable<IConnection> Connections()
         {
-            return new EnumeratorMerger(_sources, false, _startTime, _endTime);
+            return new EnumeratorMerger(_sources, _startTime, _endTime);
         }
 
         public IEnumerable<IConnection> ConnectionsReversed()
         {
-            return new EnumeratorMerger(_sources, true, _startTime, _endTime);
+            var cons = new List<IConnection>(Connections());
+            cons.Reverse();
+            return cons;
         }
 
 
@@ -162,33 +165,25 @@ namespace Itinero.Transit
         public IConnection Current { get; private set; }
 
         private readonly List<IEnumerator<IConnection>> _sources;
-        private readonly bool _reverse;
 
         private readonly DateTime _startTime, _endTime;
 
-        public EnumeratorMerger(IEnumerable<ITimeTable> sources, bool reverse, DateTime startTime, DateTime endTime)
+        public EnumeratorMerger(IEnumerable<ITimeTable> sources, DateTime startTime, DateTime endTime)
         {
             var sourcesList = new List<IEnumerator<IConnection>>();
-            if (reverse)
-            {
-                sourcesList.Reverse();
-            }
-            _reverse = reverse;
             _startTime = startTime;
             _endTime = endTime;
 
             foreach (var tt in sources)
             {
-                var iEnum = reverse
-                    ? tt.ConnectionsReversed()
-                    : tt.Connections();
+                var iEnum = tt.Connections();
                 var enumerator = iEnum.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
                     // We set the enumerators at their valid first entries
                     // Note that empty timetables are skipped
                     if (enumerator.Current.DepartureTime() >= startTime &&
-                        enumerator.Current.DepartureTime() <= endTime)
+                        enumerator.Current.DepartureTime() < endTime)
                     {
                         sourcesList.Add(enumerator);
                         break;
@@ -208,31 +203,28 @@ namespace Itinero.Transit
             {
                 var source = _sources[i];
                 var cur = source.Current;
-                if (_startTime > cur.DepartureTime() || cur.DepartureTime() > _endTime)
+                if (_startTime > cur.DepartureTime() || cur.DepartureTime() >= _endTime)
                 {
                     // Source is depleted: out of range
                     _sources.Remove(source);
                     i--;
                     continue;
                 }
+
                 // we have found a valid entry
-                if (Current == null || 
-                    (!_reverse && Current.DepartureTime() > cur.DepartureTime())
-                    || (_reverse && Current.DepartureTime() < cur.DepartureTime()))
-                {
+                if (Current == null ||
+                    Current.DepartureTime() > cur.DepartureTime()){
                     Current = cur;
                     actualSource = source;
                 }
-                
             }
-            
+
             if (actualSource != null && !actualSource.MoveNext())
             {
                 _sources.Remove(actualSource);
             }
 
             return Current != null;
-
         }
 
         public void Reset()

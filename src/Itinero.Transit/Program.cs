@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Itinero.LocalGeo;
-using Newtonsoft.Json.Linq;
 using Serilog;
 
 namespace Itinero.Transit
@@ -47,7 +45,7 @@ namespace Itinero.Transit
 
             if (_searchRadius < 1)
             {
-                // Intermodal search is disabled anyway
+                // Intermodal search is disabled anyway    
                 return;
             }
             

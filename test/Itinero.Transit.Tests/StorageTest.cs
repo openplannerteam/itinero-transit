@@ -1,5 +1,4 @@
 using Itinero.Transit;
-using Itinero.Transit.Belgium;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -39,15 +38,15 @@ namespace Itinero.Transit_Tests
         [Fact]
         public void TestSearchTimeTable()
         {
-            var storage = new LocalStorage(ResourcesTest.TestPath+"/sncb/timeTables");
-            Assert.True(300 < storage.KnownKeys().Count);
+            var storage = new LocalStorage(ResourcesTest.TestPath+"/SNCB/timetables");
+            Assert.True(storage.KnownKeys().Count> 200);
 
-            var prov = Sncb.Profile(ResourcesTest.TestPath, "belgium.routerdb");
+            var prov = Belgium.Sncb(new LocalStorage(ResourcesTest.TestPath));
 
             var tt = ((LocallyCachedConnectionsProvider) (prov.ConnectionsProvider)).
                 TimeTableContaining(ResourcesTest.TestMoment(10,00));
             Assert.NotNull(tt);
-            Assert.Equal("https://graph.irail.be/sncb/connections?departureTime=2018-11-26T09:58:00.000Z",
+            Assert.Equal("http://graph.irail.be/sncb/connections?departureTime=2018-11-26T10:00:00.000Z",
                 tt.Id().ToString());
         }
 

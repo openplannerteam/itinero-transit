@@ -16,11 +16,11 @@ namespace Itinero.Transit.Tests.Functional.Staging
         /// </summary>
         public static void DownloadBelgiumAll()
         {
-            if (File.Exists(Download.BelgiumLocal)) return;
+            if (File.Exists(BelgiumLocal)) return;
             
             var client = new WebClient();
-            client.DownloadFile(Download.BelgiumPBF,
-                Download.BelgiumLocal);
+            client.DownloadFile(BelgiumPBF,
+                BelgiumLocal);
         }
     }
 }

@@ -127,14 +127,19 @@ namespace Itinero.Transit
 
         protected bool Equals(WalkingConnection other)
         {
-            return Equals(_arrivalLocation, other._arrivalLocation) && Equals(_departureLocation, other._departureLocation) && _arrivalTime.Equals(other._arrivalTime) && _departureTime.Equals(other._departureTime) && Equals(_route.TotalDistance, other._route.TotalDistance) && _speed.Equals(other._speed);
+            return Equals(_arrivalLocation, other._arrivalLocation)
+                   && Equals(_departureLocation, other._departureLocation)
+                   && Equals(_arrivalTime, other._arrivalTime)
+                   && Equals(_departureTime, other._departureTime)
+                   && Equals(_route.TotalDistance, other._route.TotalDistance)
+                   && Equals(_speed, other._speed);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((WalkingConnection) obj);
         }
 
