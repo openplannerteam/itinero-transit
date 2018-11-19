@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Itinero.Transit.Tests.Functional.Staging;
 using OsmSharp.Logging;
 using Serilog;
 using Serilog.Events;
@@ -18,62 +19,26 @@ namespace Itinero.Transit.Tests.Functional
             return TestDay.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
         }
 
-        public static void TestMoreStuff()
-        {
-            Log.Information("Starting");
-            var test = new TestProfile(new DateTime(2018, 11, 26));
-            var prof = test.CreateTestProfile();
-            prof.IntermodalStopSearchRadius = 10000;
-
-            var pcs = new ProfiledConnectionScan<TransferStats>(TestProfile.A, TestProfile.D,
-                test.Moment(17, 00), test.Moment(19, 01), prof
-            );
-
-
-            var journeys = pcs.CalculateJourneys();
-            
-            
-            var found = 0;
-            var stats = "";
-            foreach (var key in journeys.Keys)
-            {
-                var journeysFromPtStop = journeys[key];
-                // ReSharper disable once PossibleMultipleEnumeration
-                foreach (var journey in journeysFromPtStop)
-                {
-                    Log.Information(journey.ToString(prof));
-                    stats += $"{key}: {journey.Stats}\n";
-                }
-
-                // ReSharper disable once PossibleMultipleEnumeration
-                found += journeysFromPtStop.Count();
-            }
-
-            Log.Information($"Got {found} profiles");
-            Log.Information(stats);
-        }
 
 
         static void Main(string[] args)
         {
             EnableLogging();
             Log.Information($"{args.Length} CLI params given");
-
-            TestMoreStuff();
-            /*
+            
             // do staging, download & preprocess some data.
             var routerDb = BuildRouterDb.BuildOrLoad();
 
             // setup profile.
-            var profile = Sncb.Profile("cache", BuildRouterDb.LocalBelgiumRouterDb);
+            var profile = Belgium.Sncb(new LocalStorage("cache"));
 
-            // specifiy the query data.
+            // specify the query data.
             var poperinge = new Uri("http://irail.be/stations/NMBS/008896735");
             var vielsalm = new Uri("http://irail.be/stations/NMBS/008845146");
-            var startTime = new DateTime(2018, 11, 17, 10, 8, 00);
-            var endTime = new DateTime(2018, 12, 17, 23, 0, 0);
+            var startTime = new DateTime(2018, 11, 20, 11, 00, 00);
+            var endTime = new DateTime(2018, 11, 20, 23, 0, 0);
 
-            // Initialize the algorimth
+            // Initialize the algorithm
             var eas = new EarliestConnectionScan<TransferStats>(
                 poperinge, vielsalm, startTime, endTime,
                 profile);

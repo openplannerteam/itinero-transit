@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Serilog;
 
 namespace Itinero.Transit
 {
@@ -74,13 +73,10 @@ namespace Itinero.Transit
 
             var timeTable = _connectionsProvider.GetTimeTable(start);
             var currentBestArrival = DateTime.MaxValue;
-            
-            // Seen connections
-            // TODO Remove when upstream bug is fixed
-            var seen = new Dictionary<string, ITimeTable>();
-            
+
             while (true)
             {
+                timeTable = new ValidatingTimeTable(timeTable);
                 foreach (var c in timeTable.Connections())
                 {
                     if (_failMoment != null && c.DepartureTime() > _failMoment)
@@ -93,15 +89,6 @@ namespace Itinero.Transit
                         GetBestTime(out var bestTarget);
                         return GetJourneyTo(bestTarget);
                     }
-
-
-                    if (seen.ContainsKey(c.ToString()))
-                    {
-                        Log.Warning($"Skipping already seen connection {c.Id()}");
-                        continue;
-                    }
-
-                    seen.Add(c.ToString(), timeTable);
 
                     IntegrateConnection(c);
                 }
@@ -141,27 +128,11 @@ namespace Itinero.Transit
             // The connection describes a random connection somewhere
             // Lets check if we can take it
 
-            var trip = c.Trip()?.ToString();
-            if (trip != null)
-            {
-                if (_trips.ContainsKey(trip))
-                {// We can be on this trip, lets extend the journey
-                    
-                    
-                    _trips[trip] = new Journey<T>(_trips[trip], c);
-
-                    var arrDest = c.ArrivalLocation().ToString();
-                    if (!_s.ContainsKey(arrDest)
-                        || _s[arrDest].Connection.ArrivalTime() > c.ArrivalTime())
-                    {
-                        // We can reach this destination by using this trip quicker then previously known
-                        _s[arrDest] = _trips[trip];
-                    }
-                }
-            }
-
-            var journeyTillStop = GetJourneyTo(c.DepartureLocation());
-            if (journeyTillStop.Equals(Journey<T>.InfiniteJourney))
+            var journeyTillDeparture = GetJourneyTo(c.DepartureLocation());
+            var journeyTillArrival = GetJourneyTo(c.ArrivalLocation());
+            
+            if (journeyTillDeparture
+                .Equals(Journey<T>.InfiniteJourney))
             {
                 // The stop where this connection starts, is not yet reachable
                 // Abort
@@ -169,48 +140,94 @@ namespace Itinero.Transit
             }
 
 
-            if (c.DepartureTime() < journeyTillStop.Connection.ArrivalTime())
+            if (c.DepartureTime() < journeyTillDeparture
+                    .Connection.ArrivalTime())
             {
                 // This connection has already left before we can make it to the stop
                 return;
             }
 
-            if (!(c is IContinuousConnection)
-                && journeyTillStop.GetLastTripId() != null &&
-                !Equals(journeyTillStop.Connection.Trip(), c.Trip()))
+
+            // When transferring
+            var t1 = Journey<T>.InfiniteJourney;
+
+            // When resting in a trip
+            var t2 = Journey<T>.InfiniteJourney;
+
+            // When walking
+            // Not enabled for EAS
+            //  var t3 = Journey<T>.InfiniteJourney;
+
+            var trip = c.Trip()?.ToString();
+            if (trip != null)
             {
-                // We have to transfer vehicles
-                var transfer =
-                    _profile.CalculateInterConnection(journeyTillStop.Connection, c);
-                if (transfer == null)
+                if (_trips.ContainsKey(trip))
                 {
-                    // Not enough time to transfer
-                    return;
+                    // We could be on this trip already, lets extend the journey
+                    t2 = _trips[trip] = new Journey<T>(_trips[trip], c);
+                }
+                else
+                {
+                    // We now for sure know that we can board this connection, and thus this trip
+                    // This is the first encounter of it.
+                    // The departure station should be stable in time, so we can take that journey and board
+                    // We have to take transfertime into account though
+                    var transfer =
+                        _profile.CalculateInterConnection(journeyTillDeparture
+                            .Connection, c);
+                    if (transfer != null)
+                    {
+                        // We have boarded this trip!
+                        t2 = _trips[trip]
+                            = new Journey<T>(new Journey<T>(journeyTillDeparture
+                                , transfer), c);
+                    }
                 }
             }
 
-            if (c.ArrivalTime() > GetJourneyTo(c.ArrivalLocation()).Connection.DepartureTime())
+            if (!(c is IContinuousConnection)
+                && journeyTillDeparture
+                    .GetLastTripId() != null
+                && !Equals(journeyTillDeparture
+                    .Connection.Trip(), c.Trip()))
             {
-                // We will arrive later to the target stop
-                // It is no use to take the connection
-                return;
+                // We have to transfer vehicles
+                var transfer =
+                    _profile.CalculateInterConnection(journeyTillDeparture
+                        .Connection, c);
+                if (transfer != null)
+                {
+                    // Enough time to transfer
+                    // It is an option
+
+                    t1 = new Journey<T>(
+                         new Journey<T>(
+                            journeyTillDeparture,
+                            transfer),
+                             c);
+                }
+            }
+            else
+            {
+                // This connection was a walk or something similar
+                // Or we didn't have to transfer
+                // We chain the current connection after it
+                t1 = new Journey<T>(journeyTillDeparture
+                    , c);
             }
 
-            // Jej! We can take the train! It gets us to some stop faster then previously known
-            _s[c.ArrivalLocation().ToString()] = new Journey<T>(journeyTillStop, c);
 
-            if (trip != null && !_trips.ContainsKey(trip))
-            {
-                _trips[trip] =  _s[c.ArrivalLocation().ToString()];
-            }
+            // Jej! We can take the train! 
+            // Lets see if we can make an improvement in regards to the previous solution
+            _s[c.ArrivalLocation().ToString()] = SelectLowest(journeyTillArrival, t1, t2);
 
-            // Alright, we are arriving at a new location. This means that we can walk from this location onto new stops
-
+            
             if (c is IContinuousConnection)
             {
                 return;
             }
 
+            // Alright, we are arriving at a new location. This means that we can walk from this location onto new stops
             var connections = _profile.WalkToCloseByStops(c.ArrivalTime(),
                 _profile.GetCoordinateFor(c.ArrivalLocation()),
                 _profile.IntermodalStopSearchRadius);
@@ -224,6 +241,22 @@ namespace Itinero.Transit
 
                 IntegrateConnection(walk);
             }
+        }
+
+        private Journey<T> SelectLowest(params Journey<T>[] journeys)
+        {
+            var earliest = journeys[0];
+            var earliestTime = earliest.Connection.ArrivalTime();
+            foreach (var journey in journeys)
+            {
+                if (journey.Connection.ArrivalTime() < earliestTime)
+                {
+                    earliest = journey;
+                    earliestTime = journey.Connection.ArrivalTime();
+                }
+            }
+
+            return earliest;
         }
 
         private Journey<T> GetJourneyTo(Uri stop)

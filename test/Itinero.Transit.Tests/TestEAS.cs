@@ -60,8 +60,8 @@ namespace Itinero.Transit.Tests
 
             Log(journey.AsRoute(profile).ToGeoJson());
 
-            Assert.Equal(ResourcesTest.TestMoment(10, 58), journey.Connection.ArrivalTime());
-            Assert.Equal(3, journey.Stats.NumberOfTransfers);
+            Assert.Equal(ResourcesTest.TestMoment(10, 49), journey.Connection.ArrivalTime());
+            Assert.Equal(1, journey.Stats.NumberOfTransfers);
         }
 
 
@@ -89,7 +89,7 @@ namespace Itinero.Transit.Tests
             var st = new LocalStorage(ResourcesTest.TestPath);
             var sncb = Belgium.Sncb(st);
 
-            var startTime = ResourcesTest.TestMoment(10, 08);
+            var startTime = ResourcesTest.TestMoment(11, 08);
             var endTime = ResourcesTest.TestMoment(23, 00);
             var csa = new EarliestConnectionScan<TransferStats>(
                 Poperinge, Vielsalm, startTime, endTime, sncb);
@@ -97,7 +97,7 @@ namespace Itinero.Transit.Tests
             Log(journey.ToString(sncb));
 
             Assert.Equal($"{ResourcesTest.TestMoment(16, 01):O}", $"{journey.Connection.DepartureTime():O}");
-            Assert.Equal("06:05:00", journey.Stats.TravelTime.ToString());
+            Assert.Equal("05:05:00", journey.Stats.TravelTime.ToString());
             Assert.Equal(3, journey.Stats.NumberOfTransfers);
         }
 

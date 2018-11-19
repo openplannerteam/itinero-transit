@@ -198,10 +198,9 @@ namespace Itinero.Transit
         {
             var tt = _profile.ConnectionsProvider.GetTimeTable(_lastArrival);
             IConnection c = null;
-            // TODO Remove when bug is fixed
-            var seen = new HashSet<IConnection>();
             do
             {
+                tt = new ValidatingTimeTable(tt);
                 var cons = tt.ConnectionsReversed();
                 foreach (var conn in cons)
                 {
@@ -214,20 +213,11 @@ namespace Itinero.Transit
                     {
                         break;
                     }
-
-                    if (seen.Contains(c))
-                    {
-                        Log.Warning("Already seen this connection: "+c);
-                        continue;
-                    }
-
-                    seen.Add(c);
-                    
                     AddConnection(c);
                 }
 
                 tt = _connectionsProvider.GetTimeTable(tt.PreviousTable());
-            } while (c != null && c.DepartureTime() >= _earliestDeparture);
+            } while (c != null && c.DepartureTime() >= _earliestDeparture && tt != null);
 
 
             // Post processing
@@ -362,28 +352,20 @@ namespace Itinero.Transit
             // The optimal trip journeys is thus be the resulting pareto front that we already have
             bool firstTripEncounter = c.Trip() != null && !_tripJourneys.ContainsKey(c.Trip().ToString());
 
-            try
+            foreach (var j in journeysToEnd.Frontier)
             {
-
-                foreach (var j in journeysToEnd.Frontier)
+                if (c.ArrivalTime() > j.Connection.DepartureTime())
                 {
-                    if (c.ArrivalTime() > j.Connection.DepartureTime())
-                    {
-                        // We missed this journey to the target
-                        // Note that the journeysToEnd are ordered from last to earliest departure
-                        // If we miss the journey j, the next will depart even earlier
-                        // So we can break the loop
-                        break;
-                    }
-
-                    journeyAdded |= ConsiderCombination(c, j, firstTripEncounter);
+                    // We missed this journey to the target
+                    // Note that the journeysToEnd are ordered from last to earliest departure
+                    // If we miss the journey j, the next will depart even earlier
+                    // So we can break the loop
+                    break;
                 }
 
+                journeyAdded |= ConsiderCombination(c, j, firstTripEncounter);
             }
-            catch (Exception e)
-            {
-                throw;
-            }
+
             if (!firstTripEncounter && c.Trip() != null)
             {
                 // We can also not leave the current trip

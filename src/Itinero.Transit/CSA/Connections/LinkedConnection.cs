@@ -96,10 +96,10 @@ namespace Itinero.Transit
                 depDel += arrDel;
                 ArrivalTime = ArrivalTime.AddSeconds(depDel);
             }
-            
+
             if (ArrivalStop.Equals(DepartureStop))
             {
-             throw new ArgumentException($"This connection ends where it starts, namely at {ArrivalStop}\n{Id()}");   
+                throw new ArgumentException($"This connection ends where it starts, namely at {ArrivalStop}\n{Id()}");
             }
 
             if (ArrivalTime < DepartureTime)
@@ -109,7 +109,6 @@ namespace Itinero.Transit
                 throw new ArgumentException(
                     $"WTF? Timetravellers! {DepartureTime} incl {depDel} --> {ArrivalTime} incl {arrDel}\n{json}");
             }
-
         }
 
 
@@ -185,7 +184,6 @@ namespace Itinero.Transit
 
         public override bool Equals(object obj)
         {
-
             if (ReferenceEquals(this, obj)) return true;
             if (obj is LinkedConnection lc)
             {

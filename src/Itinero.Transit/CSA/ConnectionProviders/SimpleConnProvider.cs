@@ -13,7 +13,12 @@ namespace Itinero.Transit
         
         public ITimeTable GetTimeTable(Uri id)
         {
-            return _tt;
+            if (_tt.Id() == id)
+            {
+                return _tt;
+            }
+
+            return null;
         }
 
         public Uri TimeTableIdFor(DateTime includedTime)
