@@ -104,7 +104,7 @@ namespace Itinero.Transit_Tests
         public void TestReverseMergedTable()
         {
             var st = new LocalStorage(ResourcesTest.TestPath);
-            var deLijn = Belgium.WestVlaanderen(st);
+            var deLijn = Belgium.WestVlaanderen(st, null);
             var sncb = Belgium.Sncb(st);
             var merged = new ConnectionProviderMerger(new List<IConnectionsProvider>
             {

@@ -64,17 +64,16 @@ namespace Itinero.Transit
         {
             loader = loader ?? new Downloader();
 
-            storage = storage.SubStorage(profileName);
+            storage = storage?.SubStorage(profileName);
 
-            ConnectionsProvider =
-                new LocallyCachedConnectionsProvider(
-                    new LinkedConnectionProvider
-                    (connectionsLink,
-                        connectionsLink + "{?departureTime}",
-                        loader),
-                    storage.SubStorage("timetables")
-                );
+            var conProv = new LinkedConnectionProvider
+            (connectionsLink,
+                connectionsLink + "{?departureTime}",
+                loader);
 
+            ConnectionsProvider = storage == null
+                ? (IConnectionsProvider) conProv
+                : new LocallyCachedConnectionsProvider(conProv, storage.SubStorage("timetables"));
 
             // Create the locations provider
 
@@ -82,11 +81,13 @@ namespace Itinero.Transit
             var locProc = new JsonLdProcessor(loader, locationsFragment);
 
             LocationProvider =
-                new CachedLocationsFragment(
-                    locationsFragment,
-                    locProc,
-                    storage.SubStorage("locations")
-                );
+                storage == null
+                    ? (ILocationProvider) new LocationsFragment(locationsFragment)
+                    : new CachedLocationsFragment(
+                        locationsFragment,
+                        locProc,
+                        storage.SubStorage("locations")
+                    );
 
             // Intermediate transfer generator
             // The OsmTransferGenerator will reuse an existing routerdb if it is already loaded
@@ -166,6 +167,7 @@ namespace Itinero.Transit
         /// <returns>A connection representing the transfer. Returns null if no transfer is possible (e.g. to little time)</returns>
         public IConnection CalculateInterConnection(IConnection from, IConnection to)
         {
+
             var footpath = FootpathTransferGenerator.GenerateFootPaths(
                 from.ArrivalTime(),
                 LocationProvider.GetCoordinateFor(from.ArrivalLocation()),

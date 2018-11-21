@@ -5,8 +5,8 @@ namespace Itinero.Transit
 {
     public class Belgium
     {
-        
-        public static Profile<TransferStats> Sncb(LocalStorage storage)
+
+        public static Profile<TransferStats> Sncb(LocalStorage storage, Downloader loader = null)
         {
             return new Profile<TransferStats>(
                 "SNCB",
@@ -16,20 +16,21 @@ namespace Itinero.Transit
                 storage,
                 TransferStats.Factory, 
                 TransferStats.ProfileTransferCompare,
-                TransferStats.ParetoCompare
+                TransferStats.ParetoCompare,
+                loader
             );
         }
 
 
-        public static Profile<TransferStats> DeLijn(LocalStorage storage)
+        public static Profile<TransferStats> DeLijn(LocalStorage storage, Downloader loader = null)
         {
             var profs = new List<Profile<TransferStats>>
             {
-                WestVlaanderen(storage),
-                OostVlaanderen(storage),
-                VlaamsBrabant(storage),
-                Limburg(storage),
-                Antwerpen(storage)
+                WestVlaanderen(storage, loader),
+                OostVlaanderen(storage, loader),
+                VlaamsBrabant(storage, loader),
+                Limburg(storage, loader),
+                Antwerpen(storage, loader)
             };
 
             var conn = new List<IConnectionsProvider>();
@@ -53,7 +54,8 @@ namespace Itinero.Transit
         }
         
         
-        private static Profile<TransferStats> CreateDeLijnProfile(string province, LocalStorage storage)
+        private static Profile<TransferStats> CreateDeLijnProfile(string province, LocalStorage storage,
+            Downloader loader)
         {
             storage = storage.SubStorage("DeLijn");
             
@@ -65,36 +67,37 @@ namespace Itinero.Transit
                 storage,
                 TransferStats.Factory, 
                 TransferStats.ProfileCompare,
-                TransferStats.ParetoCompare
+                TransferStats.ParetoCompare,
+                loader
             );
         }
 
-        public static Profile<TransferStats> WestVlaanderen(LocalStorage storage)
+        public static Profile<TransferStats> WestVlaanderen(LocalStorage storage, Downloader loader)
         {
-            return CreateDeLijnProfile("West-Vlaanderen", storage);
+            return CreateDeLijnProfile("West-Vlaanderen", storage, loader);
         }
         
         
-        public static Profile<TransferStats> OostVlaanderen(LocalStorage storage)
+        public static Profile<TransferStats> OostVlaanderen(LocalStorage storage, Downloader loader)
         {
-            return CreateDeLijnProfile("Oost-Vlaanderen", storage);
+            return CreateDeLijnProfile("Oost-Vlaanderen", storage, loader);
         }
         
         
-        public static Profile<TransferStats> Limburg(LocalStorage storage)
+        public static Profile<TransferStats> Limburg(LocalStorage storage, Downloader loader)
         {
-            return CreateDeLijnProfile("Limburg", storage);
+            return CreateDeLijnProfile("Limburg", storage, loader);
         }
         
         
-        public static Profile<TransferStats> VlaamsBrabant(LocalStorage storage)
+        public static Profile<TransferStats> VlaamsBrabant(LocalStorage storage, Downloader loader)
         {
-            return CreateDeLijnProfile("Vlaams-Brabant", storage);
+            return CreateDeLijnProfile("Vlaams-Brabant", storage, loader);
         }
         
-        public static Profile<TransferStats> Antwerpen(LocalStorage storage)
+        public static Profile<TransferStats> Antwerpen(LocalStorage storage, Downloader loader)
         {
-            return CreateDeLijnProfile("Antwerpen", storage);
+            return CreateDeLijnProfile("Antwerpen", storage, loader);
         }
 
       

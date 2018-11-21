@@ -24,6 +24,8 @@ namespace Itinero.Transit
 
         private float _minLat, _maxLat, _minLon, _maxLon;
 
+        private static readonly IEnumerable<Uri> _empty = new List<Uri>();
+
         [NonSerialized] private BoundingBox _bounds;
 
         public LocationsFragment(Uri uri) : base(uri)
@@ -122,7 +124,7 @@ namespace Itinero.Transit
         {
             if (radiusInMeters < 1)
             {
-                throw new ArgumentException("The radius in which locations are sought, should be at least 1m");
+                return _empty;
             }
 
             if (!BBox().Overlaps(new BoundingBox(lat, lon, radiusInMeters)))
