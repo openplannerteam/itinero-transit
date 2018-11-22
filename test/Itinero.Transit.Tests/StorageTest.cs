@@ -46,7 +46,7 @@ namespace Itinero.Transit_Tests
             var tt = ((LocallyCachedConnectionsProvider) (prov.ConnectionsProvider)).
                 TimeTableContaining(ResourcesTest.TestMoment(10,00));
             Assert.NotNull(tt);
-            Assert.Equal("http://graph.irail.be/sncb/connections?departureTime=2018-11-26T10:00:00.000Z",
+            Assert.Equal("http://graph.irail.be/sncb/connections?departureTime=2018-12-12T10:00:00.000Z",
                 tt.Id().ToString());
         }
 

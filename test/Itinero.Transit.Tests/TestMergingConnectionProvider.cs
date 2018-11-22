@@ -73,16 +73,16 @@ namespace Itinero.Transit_Tests
 
             Log(
                 $"Synthetic table with {graph.Count} entries,  starting at {tt.StartTime()} till {tt.EndTime()}");
-            Assert.Equal(ResourcesTest.TestMoment(4, 00), deLijnTt.StartTime());
+            Assert.Equal(ResourcesTest.TestMoment(3, 53), deLijnTt.StartTime());
 
             Assert.Equal(ResourcesTest.TestMoment(4, 05), deLijnTt.EndTime());
 
-            Assert.Equal(ResourcesTest.TestMoment(3, 51), sncbTt.StartTime());
-            Assert.Equal(ResourcesTest.TestMoment(4, 05), sncbTt.EndTime());
+            Assert.Equal(ResourcesTest.TestMoment(3, 58), sncbTt.StartTime());
+            Assert.Equal(ResourcesTest.TestMoment(4, 06), sncbTt.EndTime());
 
-            Assert.Equal(538, graph.Count);
-            Assert.Equal(111, sncbTt.Connections().Count());
-            Assert.Equal(497, deLijnTt.Connections().Count());
+            Assert.Equal(518, graph.Count);
+            Assert.Equal(112, sncbTt.Connections().Count());
+            Assert.Equal(645, deLijnTt.Connections().Count());
 
             foreach (var conn in graph)
             {

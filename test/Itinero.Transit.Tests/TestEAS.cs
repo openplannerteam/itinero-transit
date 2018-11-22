@@ -60,8 +60,8 @@ namespace Itinero.Transit.Tests
 
             Log(journey.AsRoute(profile).ToGeoJson());
 
-            Assert.Equal(ResourcesTest.TestMoment(10, 49), journey.Connection.ArrivalTime());
-            Assert.Equal(1, journey.Stats.NumberOfTransfers);
+            Assert.Equal(ResourcesTest.TestMoment(11, 14), journey.Connection.ArrivalTime());
+            Assert.Equal(2, journey.Stats.NumberOfTransfers);
         }
 
 
@@ -77,9 +77,9 @@ namespace Itinero.Transit.Tests
 
             var journey = csa.CalculateJourney();
             Log(journey.ToString());
-            Assert.Equal($"{ResourcesTest.TestMoment(10, 24):O}", $"{journey.Connection.DepartureTime():O}");
-            Assert.Equal("00:26:00", journey.Stats.TravelTime.ToString());
-            Assert.Equal(0, journey.Stats.NumberOfTransfers);
+            Assert.Equal($"{ResourcesTest.TestMoment(11, 09):O}", $"{journey.Connection.DepartureTime():O}");
+            Assert.Equal("01:04:00", journey.Stats.TravelTime.ToString());
+            Assert.Equal(1, journey.Stats.NumberOfTransfers);
         }
 
 
@@ -96,8 +96,8 @@ namespace Itinero.Transit.Tests
             var journey = csa.CalculateJourney();
             Log(journey.ToString(sncb));
 
-            Assert.Equal($"{ResourcesTest.TestMoment(16, 01):O}", $"{journey.Connection.DepartureTime():O}");
-            Assert.Equal("05:05:00", journey.Stats.TravelTime.ToString());
+            Assert.Equal($"{ResourcesTest.TestMoment(18, 01):O}", $"{journey.Connection.DepartureTime():O}");
+            Assert.Equal("07:05:00", journey.Stats.TravelTime.ToString());
             Assert.Equal(3, journey.Stats.NumberOfTransfers);
         }
 

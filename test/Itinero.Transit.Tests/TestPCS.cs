@@ -175,7 +175,7 @@ namespace Itinero.Transit.Tests
 
             Log($"Got {found} profiles");
             Log(stats);
-            Assert.Equal(5, found);
+            Assert.Equal(8, found);
         }
 
 
@@ -225,7 +225,7 @@ namespace Itinero.Transit.Tests
 
             Log($"Got {found} profiles");
             Log(stats);
-            Assert.Equal(11, found);
+            Assert.Equal(9, found);
             Assert.Equal(356, (int) stat.WalkingDistance);
             Assert.Equal(12, (int) (stat.EndTime - stat.StartTime).TotalMinutes);
         }
@@ -276,9 +276,9 @@ namespace Itinero.Transit.Tests
 
             Log($"Got {found} profiles");
             Log(stats);
-            Assert.Equal(11, found);
-            Assert.Equal(1076, (int) stat.WalkingDistance);
-            Assert.Equal(28, (int) (stat.EndTime - stat.StartTime).TotalMinutes);
+            Assert.Equal(9, found);
+            Assert.Equal(356, (int) stat.WalkingDistance);
+            Assert.Equal(12, (int) (stat.EndTime - stat.StartTime).TotalMinutes);
         }
 
 
