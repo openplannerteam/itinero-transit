@@ -539,9 +539,6 @@ namespace Itinero.Transit
             // TODO Implement this optimalization, in ParetoFrontier for example
             return _stationJourneys[startStation].AddToFrontier(considered);
         }
-
-        
-        
         
         /// <summary>
         /// Converts the list into a list of genesis connections.
