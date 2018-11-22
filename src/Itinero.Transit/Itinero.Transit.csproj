@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <title>Itinero.Transit</title>
-    <VersionPrefix>0.0.4</VersionPrefix>
+    <VersionPrefix>0.0.5</VersionPrefix>
     <AssemblyName>itinero-transit</AssemblyName>
     <Description>An library implementing Connection Scan Algorithm for routing of Public Transport networks, based on Linked Data</Description>
     <Summary>This package provides an implementation for intermodal routing via Public Transport networks. It allows station-to-station routing within one operator, or allows transfers between operators by walking between them. The feed of the operators should be published in a Linked-Connections ontology, as published on linkedconnections.org .</Summary>
-    <ReleaseNotes>An initial version, somewhat working. Should be stable enough for station-to-station; but beware of bugs</ReleaseNotes>
+    <ReleaseNotes>Early alpha release with updated Connections-format	</ReleaseNotes>
     <Authors>Pietervdvn;openplannerteam</Authors>
     <PackageId>openplannerteam.itinero-transit</PackageId>
     <PackageTags>CSA;Connection-Scan-Algorithm;Public-Transport;Routing;linked-data;</PackageTags>
