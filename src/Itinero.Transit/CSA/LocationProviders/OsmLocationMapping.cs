@@ -10,7 +10,7 @@ namespace Itinero.Transit
         
         public Location GetCoordinateFor(Uri locationId)
         {
-            var coordinate = locationId.Fragment.Split("/");
+            var coordinate = locationId.Fragment.Split('/');
             var lat = float.Parse(coordinate[1]);
             var lon = float.Parse(coordinate[2]);
             return new Location(locationId)

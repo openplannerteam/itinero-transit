@@ -6,8 +6,8 @@ namespace Itinero.Transit
 {
     public class SimpleTimeTable : ITimeTable
     {
-        private readonly IEnumerable<IConnection> _cons;
-        private readonly DateTime _start, _end;
+        private IEnumerable<IConnection> _cons;
+        private DateTime _start, _end;
 
         public SimpleTimeTable(IEnumerable<IConnection> cons)
         {

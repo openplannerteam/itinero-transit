@@ -13,8 +13,8 @@ namespace Itinero.Transit
     [Serializable()]
     public class InternalTransfer : IContinuousConnection
     {
-        private readonly Uri _location;
-        private readonly DateTime _departureTime, _arrivalTime;
+        private Uri _location;
+        private DateTime _departureTime, _arrivalTime;
 
         public InternalTransfer(Uri location, DateTime departureTime, DateTime arrivalTime)
         {

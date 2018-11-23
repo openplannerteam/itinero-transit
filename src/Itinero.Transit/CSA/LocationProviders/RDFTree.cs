@@ -217,7 +217,7 @@ namespace Itinero.Transit
             var val = json.GetLDValue();
             val = val.Substring("POLYGON ((".Length);
             val = val.Substring(0, val.Length - 2);
-            var parts = val.Split(", ");
+            var parts = val.Split(',');
 
             _outline = new Polygon();
 

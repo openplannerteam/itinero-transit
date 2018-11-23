@@ -212,6 +212,7 @@ namespace Itinero.Transit
                     {
                         break;
                     }
+
                     AddConnection(c);
                 }
 
@@ -339,7 +340,8 @@ namespace Itinero.Transit
 
             // Get the journeys to our target, with conn.Arrival as departure Location
             // We will multiply all those connections with the current connection
-            var journeysToEnd = _stationJourneys.GetValueOrDefault(c.ArrivalLocation().ToString(), _empty);
+            var journeysToEnd = GetStationJourney(c.ArrivalLocation(), _empty);
+
 
             // The flag 'journeyAdded' be true if this connection is taken in at least one journey
             // If the connection is taken at least once, we should calculate the walking connections into the departure station
@@ -362,7 +364,7 @@ namespace Itinero.Transit
                     break;
                 }
 
-                
+
                 // Consider journey might also create a Transfer if needed
                 journeyAdded |= ConsiderCombination(c, j, firstTripEncounter);
             }
@@ -391,7 +393,7 @@ namespace Itinero.Transit
                         continue;
                     }
 
-                    var remoteJourneys = _stationJourneys.GetValueOrDefault(remoteStation.ToString(), _empty).Frontier;
+                    var remoteJourneys = GetStationJourney(remoteStation, _empty).Frontier;
                     foreach (var journey in remoteJourneys)
                     {
                         var timedWalk = walk.MoveDepartureTime(c.ArrivalTime());
@@ -540,9 +542,7 @@ namespace Itinero.Transit
             return _stationJourneys[startStation].AddToFrontier(considered);
         }
 
-        
-        
-        
+
         /// <summary>
         /// Converts the list into a list of genesis connections.
         /// Used in the constructor; small helper function
@@ -556,6 +556,16 @@ namespace Itinero.Transit
             }
 
             return l;
+        }
+
+        private ParetoFrontier<T> GetStationJourney(Uri key, ParetoFrontier<T> value)
+        {
+            return GetStationJourney(key.ToString(), value);
+        }
+
+        private ParetoFrontier<T> GetStationJourney(string key, ParetoFrontier<T> value)
+        {
+            return _stationJourneys.ContainsKey(key) ? _stationJourneys[key] : value;
         }
     }
 }
