@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Itinero.Transit.Tests.Functional.Staging;
 using OsmSharp.Logging;
 using Serilog;
@@ -27,7 +26,7 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information($"{args.Length} CLI params given");
             
             // do staging, download & preprocess some data.
-            var routerDb = BuildRouterDb.BuildOrLoad();
+            BuildRouterDb.BuildOrLoad();
 
             // setup profile.
             var profile = Belgium.Sncb(new LocalStorage("cache"));

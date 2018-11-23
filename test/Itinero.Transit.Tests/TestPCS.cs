@@ -125,8 +125,8 @@ namespace Itinero.Transit.Tests
                 Log(j.ToString(sncb));
             }
 
-            Assert.Equal(7, journeys.Count);
-            Assert.Equal("00:24:00", journeys.ToList()[0].Stats.TravelTime.ToString());
+            Assert.Equal(11, journeys.Count);
+            Assert.Equal("00:26:00", journeys.ToList()[0].Stats.TravelTime.ToString());
         }
 
 
@@ -153,7 +153,7 @@ namespace Itinero.Transit.Tests
                     $"Journey: {j.Root.Connection.DepartureTime():HH:mm:ss} --> {j.Connection.ArrivalTime():HH:mm:ss}, {j.Stats.NumberOfTransfers} transfers");
             }
 
-            Assert.Equal(6, journeys.Count);
+            Assert.Equal(8, journeys.Count);
         }
 
         [Fact]
@@ -183,7 +183,7 @@ namespace Itinero.Transit.Tests
                     stats += $"{key}: {journey.Stats}\n";
 
                     var totalTime = (int) (journey.Stats.EndTime - journey.Stats.StartTime).TotalMinutes;
-                    Assert.True(totalTime == 9 || totalTime == 13);
+                    Assert.True(totalTime >= 9 || totalTime <= 14);
                     Assert.True(journey.Stats.NumberOfTransfers <= 1);
                 }
 
@@ -192,7 +192,7 @@ namespace Itinero.Transit.Tests
 
             Log($"Got {found} profiles");
             Log(stats);
-            Assert.Equal(8, found);
+            Assert.Equal(10, found);
         }
 
 
@@ -242,7 +242,7 @@ namespace Itinero.Transit.Tests
 
             Log($"Got {found} profiles");
             Log(stats);
-            Assert.Equal(9, found);
+            Assert.Equal(13, found);
             Assert.Equal(356, (int) stat.WalkingDistance);
             Assert.Equal(12, (int) (stat.EndTime - stat.StartTime).TotalMinutes);
         }
@@ -293,9 +293,9 @@ namespace Itinero.Transit.Tests
 
             Log($"Got {found} profiles");
             Log(stats);
-            Assert.Equal(9, found);
-            Assert.Equal(356, (int) stat.WalkingDistance);
-            Assert.Equal(12, (int) (stat.EndTime - stat.StartTime).TotalMinutes);
+            Assert.Equal(13, found);
+            Assert.Equal(878, (int) stat.WalkingDistance);
+            Assert.Equal(24, (int) (stat.EndTime - stat.StartTime).TotalMinutes);
         }
 
 

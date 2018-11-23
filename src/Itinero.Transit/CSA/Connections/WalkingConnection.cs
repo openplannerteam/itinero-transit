@@ -10,10 +10,10 @@ namespace Itinero.Transit
     /// </summary>
     public class WalkingConnection : IContinuousConnection
     {
-        private Uri _arrivalLocation, _departureLocation;
-        private DateTime _arrivalTime, _departureTime;
-        private Route _route;
-        private float _speed;
+        private readonly Uri _arrivalLocation, _departureLocation;
+        private readonly DateTime _arrivalTime, _departureTime;
+        private readonly Route _route;
+        private readonly float _speed;
 
         /// <summary>
         /// Constructor used to bootstrap a journey, e.g. for code that assumes that the
@@ -94,30 +94,6 @@ namespace Itinero.Transit
             return _departureTime;
         }
 
-        public Uri Operator()
-        {
-            return null;
-        }
-
-        public string Mode()
-        {
-            return "Walking";
-        }
-
-        public Uri Id()
-        {
-            return null;
-        }
-
-        public Uri Trip()
-        {
-            return null;
-        }
-
-        public Uri Route()
-        {
-            return null;
-        }
 
         public Route AsRoute(ILocationProvider locationProv)
         {

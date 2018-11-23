@@ -116,7 +116,12 @@ namespace Itinero.Transit
                 // We allow arrivalTime to equal Departure time, sometimes buses have less then a minute to travel
                 // If there is still to much time difference, the train was probably cancelled, so we throw it out.
                 throw new ArgumentException(
-                    $"WTF? Timetravellers! {_departureTime} incl {depDel} --> {_arrivalTime} incl {arrDel}\n{json}");
+                    $"WTF? Time travellers! {_departureTime} incl {depDel} --> {_arrivalTime} incl {arrDel}\n{json}");
+            }
+
+            if (_departureStop == null || _arrivalStop == null)
+            {
+                throw new ArgumentNullException("_departureStop", "_arrivalStop");
             }
         }
 
@@ -151,7 +156,7 @@ namespace Itinero.Transit
             return _arrivalStop;
         }
 
-       public  DateTime ArrivalTime()
+        public DateTime ArrivalTime()
         {
             return _arrivalTime;
         }

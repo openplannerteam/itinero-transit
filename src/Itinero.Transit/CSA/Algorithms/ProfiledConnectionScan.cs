@@ -304,7 +304,7 @@ namespace Itinero.Transit
                 walk = walk.MoveDepartureTime(c.ArrivalTime());
                 if (walk.ArrivalTime() <= _lastArrival)
                 {
-                    var journey = new Journey<T>(_profile.StatsFactory.InitialStats(walk), (IJourneyPart) walk);
+                    var journey = new Journey<T>(_profile.StatsFactory.InitialStats(walk), walk);
 
                     ConsiderJourney(journey);
                     ConsiderTripJourney(journey);
@@ -429,26 +429,6 @@ namespace Itinero.Transit
         /// </summary>
         private bool ConsiderCombination(IConnection c, Journey<T> journey, bool considerTripJourney)
         {
-            if (_profile.FootpathTransferGenerator != null
-                && !Equals(c.Trip(), journey.GetLastTripId())
-                && !(c is IContinuousConnection || journey.Connection is IContinuousConnection)
-            )
-            {
-                // Create a transfer object, according to the transfer policy (if one is given)
-
-                // The transfer-policy expects two connections: the start and end connection
-                // We build our journey from end to start, thus this is the order we have to pass the arguments
-                var transferC = _profile.CalculateInterConnection(c, journey.Connection);
-                if (transferC == null)
-                {
-                    // Transfer-policy deemed this transfer impossible
-                    // We skip the connection
-                    return false;
-                }
-
-                journey = new Journey<T>(journey, transferC);
-            }
-
             // Chaining to the start of the journey, not the end -> We keep track of the departure time (although the time is not actually used)
             var chained = new Journey<T>(journey, c);
             // We keep track if we actually use this connection

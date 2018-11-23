@@ -1,4 +1,5 @@
 using System;
+using Reminiscence.Collections;
 using Serilog;
 
 namespace Itinero.Transit
@@ -11,7 +12,7 @@ namespace Itinero.Transit
         }
 
         // ReSharper disable once UnusedMember.Global
-        public static void DownloadDay(this IConnectionsProvider prov, DateTime start)
+        public static List<ITimeTable> DownloadDay(this IConnectionsProvider prov, DateTime start)
         {
             var all = new Reminiscence.Collections.List<ITimeTable>();
             var tt = prov.GetTimeTable(start);
@@ -22,6 +23,8 @@ namespace Itinero.Transit
                 Log.Information($"Got timetable starting at {tt.StartTime()}");
                 all.Add(tt);
             }
+
+            return all;
         }
     }
 }
