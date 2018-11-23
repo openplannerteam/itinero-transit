@@ -329,7 +329,7 @@ namespace Itinero.Transit.Data.Tiles
         /// <summary>
         /// An enumerator.
         /// </summary>
-        public struct Enumerator
+        public class Enumerator
         {
             private readonly TiledLocationIndex _index;
 
@@ -362,6 +362,39 @@ namespace Itinero.Transit.Data.Tiles
                 _currentTileDataPointer = uint.MaxValue;
                 _currentTileCapacity = uint.MaxValue;
                 this.LocalId = uint.MaxValue;
+            }
+
+            /// <summary>
+            /// Moves this enumerator to the given location.
+            /// </summary>
+            /// <param name="localTileId">The tile id of the location.</param>
+            /// <param name="localId">The local id of the location.</param>
+            public bool MoveTo(uint localTileId, uint localId)
+            {
+                var (tileDataPointer, tileIndexPointer, capacity) = _index.FindTile(localTileId);
+                if (localId >= capacity)
+                { // local id doesn't exist.
+                    return false;
+                }
+                var tile = Tile.FromLocalId(localTileId, _index._zoom);
+                
+                var (longitude, latitude, hasData) = _index.GetEncodedLocation(tileDataPointer + localId, tile);
+                if (!hasData)
+                { // no data found at location.
+                    return false;
+                }
+
+                _currentTile = tile;
+                _currentTileCapacity = (uint)capacity;
+                _currentTileDataPointer = tileDataPointer;
+                _currentTileIndexPointer = tileIndexPointer;
+                this.Latitude = latitude;
+                this.Longitude = longitude;
+                this.LocalId = localId;
+                this.LocalTileId = localTileId;
+                this.DataPointer = _currentTileDataPointer + localId;
+
+                return true;
             }
 
             /// <summary>
