@@ -153,7 +153,7 @@ namespace Itinero.Transit.Tests
                     $"Journey: {j.Root.Connection.DepartureTime():HH:mm:ss} --> {j.Connection.ArrivalTime():HH:mm:ss}, {j.Stats.NumberOfTransfers} transfers");
             }
 
-            Assert.Equal(8, journeys.Count);
+            Assert.Equal(10, journeys.Count);
         }
 
         [Fact]
