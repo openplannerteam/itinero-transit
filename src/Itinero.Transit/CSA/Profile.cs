@@ -165,7 +165,7 @@ namespace Itinero.Transit
         /// <param name="from">The connection that the newly calculated connection continues on</param>
         /// <param name="to">The connection that should be taken after the returned connection</param>
         /// <returns>A connection representing the transfer. Returns null if no transfer is possible (e.g. to little time)</returns>
-        public IConnection CalculateInterConnection(IConnection from, IConnection to)
+        public IJourneyPart CalculateInterConnection(IJourneyPart from, IJourneyPart to)
         {
 
             var footpath = FootpathTransferGenerator.GenerateFootPaths(

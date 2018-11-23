@@ -174,7 +174,6 @@ namespace Itinero.Transit.Tests
             var journeys = pcs.CalculateJourneys();
             var found = 0;
             var stats = "";
-            Journey<TransferStats> last = null;
             foreach (var key in journeys.Keys)
             {
                 var journeysFromPtStop = journeys[key];
@@ -186,7 +185,6 @@ namespace Itinero.Transit.Tests
                     var totalTime = (int) (journey.Stats.EndTime - journey.Stats.StartTime).TotalMinutes;
                     Assert.True(totalTime == 9 || totalTime == 13);
                     Assert.True(journey.Stats.NumberOfTransfers <= 1);
-                    last = journey;
                 }
 
                 found += journeysFromPtStop.Count();

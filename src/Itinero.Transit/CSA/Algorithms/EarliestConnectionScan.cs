@@ -123,7 +123,7 @@ namespace Itinero.Transit
         /// Handle a single connection, update the stop positions with new times if possible
         /// </summary>
         /// <param name="c"></param>
-        private void IntegrateConnection(IConnection c)
+        private void IntegrateConnection(IJourneyPart c)
         {
             // The connection describes a random connection somewhere
             // Lets check if we can take it
@@ -158,7 +158,7 @@ namespace Itinero.Transit
             // Not enabled for EAS
             //  var t3 = Journey<T>.InfiniteJourney;
 
-            var trip = c.Trip()?.ToString();
+            var trip = (c as IConnection)?.Trip()?.ToString();
             if (trip != null)
             {
                 if (_trips.ContainsKey(trip))
@@ -171,7 +171,7 @@ namespace Itinero.Transit
                     // We now for sure know that we can board this connection, and thus this trip
                     // This is the first encounter of it.
                     // The departure station should be stable in time, so we can take that journey and board
-                    // We have to take transfertime into account though
+                    // We have to take transfer time into account though
                     var transfer =
                         _profile.CalculateInterConnection(journeyTillDeparture
                             .Connection, c);
@@ -185,11 +185,11 @@ namespace Itinero.Transit
                 }
             }
 
-            if (!(c is IContinuousConnection)
+            if (c is IConnection conn
                 && journeyTillDeparture
                     .GetLastTripId() != null
                 && !Equals(journeyTillDeparture
-                    .Connection.Trip(), c.Trip()))
+                    .GetLastTripId(), conn.Trip()))
             {
                 // We have to transfer vehicles
                 var transfer =

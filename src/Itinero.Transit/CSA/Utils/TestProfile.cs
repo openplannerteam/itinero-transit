@@ -28,15 +28,10 @@ namespace Itinero.Transit
 
         public Profile<TransferStats> CreateTestProfile()
         {
-            var trainConn = new LinkedConnection(new Uri("http://example.com/conn/1"))
-            {
-                DepartureStop = C, ArrivalStop = D, DepartureTime = Moment(18, 00), ArrivalTime = Moment(19, 00)
-            };
+            var trainConn = new LinkedConnection(new Uri("http://example.com/conn/1"), C, D, Moment(18,00), Moment(19,00));
 
-            var busConn = new LinkedConnection(new Uri("http://example.com/conn/2"))
-            {
-                DepartureStop = A, ArrivalStop = B, DepartureTime = Moment(17, 00), ArrivalTime = Moment(17, 45)
-            };
+            var busConn = new LinkedConnection(new Uri("http://example.com/conn/2"), A, B, Moment(17, 00),
+                Moment(17, 45));
 
             var tt = new SimpleTimeTable(new List<IConnection> {busConn, trainConn});
             var conProv = new SimpleConnProvider(tt);

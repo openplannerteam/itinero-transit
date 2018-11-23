@@ -17,11 +17,11 @@ namespace Itinero.Transit
     [Serializable()]
     public class LinkedConnection : LinkedObject, IConnection
     {
-        public Uri DepartureStop { get; set; }
-        public Uri ArrivalStop { get; set; }
+        private Uri _departureStop;
+        private Uri _arrivalStop;
 
-        public DateTime DepartureTime { get; set; }
-        public DateTime ArrivalTime { get; set; }
+        private DateTime _departureTime;
+        private DateTime _arrivalTime;
 
         /// <summary>
         /// Human readable name where the vehicle is heading (e.g. "Brugge")
@@ -46,6 +46,15 @@ namespace Itinero.Transit
         {
         }
 
+        public LinkedConnection(Uri id, Uri departureStop, Uri arrivalStop, DateTime departureTime,
+            DateTime arrivalTime) : base(id)
+        {
+            _departureTime = departureTime;
+            _arrivalTime = arrivalTime;
+            _arrivalStop = arrivalStop;
+            _departureStop = departureStop;
+        }
+
         public LinkedConnection(JObject json) : base(json.GetId())
         {
             FromJson(json);
@@ -61,7 +70,7 @@ namespace Itinero.Transit
         public string ToString(ILocationProvider locationDecoder)
         {
             return
-                $"Linked Connection {locationDecoder.GetNameOf(DepartureStop)} {DepartureTime:HH:mm} --> {locationDecoder.GetNameOf(ArrivalStop)} {ArrivalTime:HH:mm}" +
+                $"Linked Connection {locationDecoder.GetNameOf(_departureStop)} {_departureTime:HH:mm} --> {locationDecoder.GetNameOf(_arrivalStop)} {_arrivalTime:HH:mm}" +
                 $"  {Uri}";
         }
 
@@ -70,23 +79,23 @@ namespace Itinero.Transit
         {
             json.AssertTypeIs("http://semweb.mmlab.be/ns/linkedconnections#Connection");
 
-            DepartureStop = json.GetId("http://semweb.mmlab.be/ns/linkedconnections#departureStop");
-            ArrivalStop = json.GetId("http://semweb.mmlab.be/ns/linkedconnections#arrivalStop");
+            _departureStop = json.GetId("http://semweb.mmlab.be/ns/linkedconnections#departureStop");
+            _arrivalStop = json.GetId("http://semweb.mmlab.be/ns/linkedconnections#arrivalStop");
 
             var depDel = json.GetInt("http://semweb.mmlab.be/ns/linkedconnections#departureDelay", 0);
             // Departure time already includes delay
-            DepartureTime = json.GetDate("http://semweb.mmlab.be/ns/linkedconnections#departureTime");
+            _departureTime = json.GetDate("http://semweb.mmlab.be/ns/linkedconnections#departureTime");
 
             var arrDel = json.GetInt("http://semweb.mmlab.be/ns/linkedconnections#arrivalDelay", 0);
             // Arrival time already includes delay
-            ArrivalTime = json.GetDate("http://semweb.mmlab.be/ns/linkedconnections#arrivalTime");
+            _arrivalTime = json.GetDate("http://semweb.mmlab.be/ns/linkedconnections#arrivalTime");
 
             Direction = json.GetLDValue("http://vocab.gtfs.org/terms#headsign");
             GtfsTrip = json.GetId("http://vocab.gtfs.org/terms#trip");
             GtfsRoute = json.GetId("http://vocab.gtfs.org/terms#route");
 
 
-            if (ArrivalTime <= DepartureTime)
+            if (_arrivalTime <= _departureTime)
             {
                 // Sometimes, a departure delay is already known but the arrival delay is not known yet
                 // Thus, the arrivalDelay defaults to 0
@@ -94,20 +103,20 @@ namespace Itinero.Transit
                 // the arrival time
                 // We fix this by estimating the arrival delay to be equal to the departureDelay
                 depDel += arrDel;
-                ArrivalTime = ArrivalTime.AddSeconds(depDel);
+                _arrivalTime = _arrivalTime.AddSeconds(depDel);
             }
 
-            if (ArrivalStop.Equals(DepartureStop))
+            if (_arrivalStop.Equals(_departureStop))
             {
-                throw new ArgumentException($"This connection ends where it starts, namely at {ArrivalStop}\n{Id()}");
+                throw new ArgumentException($"This connection ends where it starts, namely at {_arrivalStop}\n{Id()}");
             }
 
-            if (ArrivalTime < DepartureTime)
+            if (_arrivalTime < _departureTime)
             {
                 // We allow arrivalTime to equal Departure time, sometimes buses have less then a minute to travel
                 // If there is still to much time difference, the train was probably cancelled, so we throw it out.
                 throw new ArgumentException(
-                    $"WTF? Timetravellers! {DepartureTime} incl {depDel} --> {ArrivalTime} incl {arrDel}\n{json}");
+                    $"WTF? Timetravellers! {_departureTime} incl {depDel} --> {_arrivalTime} incl {arrDel}\n{json}");
             }
         }
 
@@ -134,28 +143,28 @@ namespace Itinero.Transit
 
         public Uri DepartureLocation()
         {
-            return DepartureStop;
+            return _departureStop;
         }
 
         public Uri ArrivalLocation()
         {
-            return ArrivalStop;
+            return _arrivalStop;
         }
 
-        DateTime IConnection.ArrivalTime()
+       public  DateTime ArrivalTime()
         {
-            return ArrivalTime;
+            return _arrivalTime;
         }
 
-        DateTime IConnection.DepartureTime()
+        public DateTime DepartureTime()
         {
-            return DepartureTime;
+            return _departureTime;
         }
 
         public Route AsRoute(ILocationProvider locationProv)
         {
-            var depLoc = locationProv.GetCoordinateFor(DepartureStop);
-            var arrLoc = locationProv.GetCoordinateFor(ArrivalStop);
+            var depLoc = locationProv.GetCoordinateFor(_departureStop);
+            var arrLoc = locationProv.GetCoordinateFor(_arrivalStop);
 
             return new Route
             {
@@ -176,7 +185,7 @@ namespace Itinero.Transit
                     {
                         Profile = Mode(),
                         Shape = 1,
-                        Time = (float) (ArrivalTime - DepartureTime).TotalSeconds,
+                        Time = (float) (ArrivalTime() - DepartureTime()).TotalSeconds,
                     },
                 }
             };
@@ -195,10 +204,10 @@ namespace Itinero.Transit
 
         private bool Equals(LinkedConnection other)
         {
-            return Equals(DepartureStop, other.DepartureStop)
-                   && Equals(ArrivalStop, other.ArrivalStop)
-                   && DepartureTime.Equals(other.DepartureTime)
-                   && ArrivalTime.Equals(other.ArrivalTime)
+            return Equals(_departureStop, other._departureStop)
+                   && Equals(_arrivalStop, other._arrivalStop)
+                   && DepartureTime().Equals(other.DepartureTime())
+                   && ArrivalTime().Equals(other.ArrivalTime())
                 ;
         }
 
@@ -207,10 +216,10 @@ namespace Itinero.Transit
         {
             unchecked
             {
-                var hashCode = (DepartureStop != null ? DepartureStop.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (ArrivalStop != null ? ArrivalStop.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ DepartureTime.GetHashCode();
-                hashCode = (hashCode * 397) ^ ArrivalTime.GetHashCode();
+                var hashCode = (_departureStop != null ? _departureStop.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (_arrivalStop != null ? _arrivalStop.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ DepartureTime().GetHashCode();
+                hashCode = (hashCode * 397) ^ ArrivalTime().GetHashCode();
                 return hashCode;
             }
         }

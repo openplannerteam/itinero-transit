@@ -304,7 +304,7 @@ namespace Itinero.Transit
                 walk = walk.MoveDepartureTime(c.ArrivalTime());
                 if (walk.ArrivalTime() <= _lastArrival)
                 {
-                    var journey = new Journey<T>(_profile.StatsFactory.InitialStats(walk), walk);
+                    var journey = new Journey<T>(_profile.StatsFactory.InitialStats(walk), (IJourneyPart) walk);
 
                     ConsiderJourney(journey);
                     ConsiderTripJourney(journey);
@@ -491,7 +491,7 @@ namespace Itinero.Transit
         /// <returns></returns>
         private bool ConsiderTripJourney(Journey<T> considered)
         {
-            var trip = considered.Connection.Trip()?.ToString();
+            var trip = (considered.Connection as IConnection)?.Trip()?.ToString();
             if (trip == null)
             {
                 return false;

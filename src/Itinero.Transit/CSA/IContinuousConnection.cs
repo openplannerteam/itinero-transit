@@ -14,7 +14,7 @@ namespace Itinero.Transit
     /// However, they can be moved around freely with `MoveTime`
     /// 
     /// </summary>
-    public interface IContinuousConnection : IConnection
+    public interface IContinuousConnection : IJourneyPart
     {
 
         /// <summary>
