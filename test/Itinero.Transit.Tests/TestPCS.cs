@@ -103,8 +103,6 @@ namespace Itinero.Transit.Tests
             Log(""+journeys.Count());
         }
 
->>>>>>> develop
-
         [Fact]
         public void TestProfileScan()
         {
