@@ -66,12 +66,12 @@ namespace Itinero.Transit
         /// <returns></returns>
         DateTime DepartureTime();
 
-        /// <summary>
-        /// Gives this connection as an Itinero-route.
-        /// Used mainly to convert into GeoJSON afterwards.
-        /// </summary>
-        /// <returns></returns>
-        Route AsRoute(ILocationProvider locationProv);
+//        /// <summary>
+//        /// Gives this connection as an Itinero-route.
+//        /// Used mainly to convert into GeoJSON afterwards.
+//        /// </summary>
+//        /// <returns></returns>
+//        Route AsRoute(ILocationProvider locationProv);
 
         string ToString(ILocationProvider locationDecoder);
         

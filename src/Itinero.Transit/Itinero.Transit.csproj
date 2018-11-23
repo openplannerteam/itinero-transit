@@ -34,4 +34,17 @@
   <ItemGroup>
     <Folder Include="Data\Attributes" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="CSA\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="CSA\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="CSA\**" />
+    <None Remove="Itinero.Transit.csproj.DotSettings" />
+  </ItemGroup>
 </Project>

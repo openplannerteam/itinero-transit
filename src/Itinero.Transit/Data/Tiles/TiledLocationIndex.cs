@@ -1,3 +1,25 @@
+// The MIT License (MIT)
+
+// Copyright (c) 2018 Anyways B.V.B.A.
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 using System;
 using Reminiscence.Arrays;
 
@@ -35,7 +57,7 @@ namespace Itinero.Transit.Data.Tiles
         /// <param name="latitude">The latitude.</param>
         /// <param name="longitude">The longitude</param>
         /// <returns>The tile id, the local id and a data pointer.</returns>
-        public (uint localId, uint localTileId, uint dataPointer) Add(double latitude, double longitude)
+        public (uint localId, uint localTileId, uint dataPointer) Add(double longitude, double latitude)
         {
             // get the local tile id.
             var tile = Tile.WorldToTile(longitude, latitude, _zoom);
@@ -59,13 +81,18 @@ namespace Itinero.Transit.Data.Tiles
             else
             { // find the last empty slot.
                 nextEmpty = (uint)(tileDataPointer + capacity - 1);
-                for (var p = nextEmpty - 1; p >= tileDataPointer; p--)
+                if (nextEmpty > _tileDataPointer)
                 {
-                    if (!GetEncodedLocation(p, tile).hasData)
-                    { // non-empty slot found.
-                        break;
+                    for (var p = nextEmpty - 1; p >= tileDataPointer; p--)
+                    {
+                        if (GetEncodedLocation(p, tile).hasData)
+                        {
+                            // non-empty slot found.
+                            break;
+                        }
+
+                        nextEmpty = p;
                     }
-                    nextEmpty = p;
                 }
             }
             
@@ -120,6 +147,27 @@ namespace Itinero.Transit.Data.Tiles
             }
 
             return (TileNotLoaded, uint.MaxValue, 0);
+        }
+
+        /// <summary>
+        /// Reads meta-data about a tile and its data.
+        /// </summary>
+        /// <param name="tileIndexPointer">The pointer to the tile in the index.</param>
+        /// <returns>The meta-data about the tile and its data.</returns>
+        private (uint tileDataPointer, uint localTileId, uint capacity) ReadTile(uint tileIndexPointer)
+        {
+            var tileBytes = new byte[4];
+            for (var b = 0; b < 4; b++)
+            {
+                tileBytes[b] = _tileIndex[tileIndexPointer + b];
+            }
+            var tileId = BitConverter.ToUInt32(tileBytes, 0);
+            for (var b = 0; b < 4; b++)
+            {
+                tileBytes[b] = _tileIndex[tileIndexPointer + b + 4];
+            }
+
+            return (BitConverter.ToUInt32(tileBytes, 0), tileId, (uint)(1 << _tileIndex[tileIndexPointer + 8]));
         }
 
         /// <summary>
@@ -180,14 +228,19 @@ namespace Itinero.Transit.Data.Tiles
             }
             
             // make sure locations array is the proper size.
-            var length = _locations.Length / CoordinateSizeInBytes;
-            while (_tileDataPointer + (oldCapacity * 2) >= length)
+            var length = _locations.Length;
+            while (_tileDataPointer + (oldCapacity * 2) * CoordinateSizeInBytes >= length)
             {
                 length += 1024;
             }
-            if (length >= _locations.Length / CoordinateSizeInBytes)
+            if (length > _locations.Length)
             {
-                _locations.Resize(length * CoordinateSizeInBytes);
+                var p = _locations.Length;
+                _locations.Resize(length);
+                for (var i = p; i < _locations.Length; i++)
+                {
+                    _locations[i] = byte.MaxValue;
+                }
             }
             
             // copy all the data over.
@@ -204,12 +257,12 @@ namespace Itinero.Transit.Data.Tiles
 
         private void CopyLocations(uint pointer1, uint pointer2)
         {
-            var vertexPointer1 = pointer1 * CoordinateSizeInBytes;
-            var vertexPointer2 = pointer2 * CoordinateSizeInBytes;
+            var locationPointer1 = pointer1 * CoordinateSizeInBytes;
+            var locationPointer2 = pointer2 * CoordinateSizeInBytes;
 
             for (var b = 0; b < CoordinateSizeInBytes; b++)
             {
-                _locations[vertexPointer2 + b] = _locations[vertexPointer1 + b];
+                _locations[locationPointer2 + b] = _locations[locationPointer1 + b];
             }
         }
         
@@ -217,21 +270,26 @@ namespace Itinero.Transit.Data.Tiles
         private (double longitude, double latitude, bool hasData) GetEncodedLocation(uint pointer, Tile tile)
         {
             const int TileResolutionInBits = CoordinateSizeInBytes * 8 / 2;
-            var stopPointer = pointer * (long)CoordinateSizeInBytes;
+            var locationPointer = pointer * (long)CoordinateSizeInBytes;
 
-            var bytes = new byte[4];
-            for (var b = 0; b < CoordinateSizeInBytes; b++)
-            {
-                bytes[b] = _locations[stopPointer + b];
-            }
-
-            var localCoordinatesEncoded = BitConverter.ToInt32(bytes, 0);
-            if (localCoordinatesEncoded == uint.MaxValue)
+            if (locationPointer + 4 > _locations.Length)
             {
                 return (0, 0, false);
             }
-            var y = localCoordinatesEncoded % (1 << TileResolutionInBits);
-            var x = localCoordinatesEncoded >> TileResolutionInBits;
+            
+            var bytes = new byte[4];
+            for (var b = 0; b < CoordinateSizeInBytes; b++)
+            {
+                bytes[b] = _locations[locationPointer + b];
+            }
+
+            var localCoordinatesEncoded = BitConverter.ToUInt32(bytes, 0);
+            if (localCoordinatesEncoded == 16777215) // 3 bytes at max
+            {
+                return (0, 0, false);
+            }
+            var y = (int)localCoordinatesEncoded % (1 << TileResolutionInBits);
+            var x = (int)localCoordinatesEncoded >> TileResolutionInBits;
 
             var (longitude, latitude) = tile.FromLocalCoordinates(x, y, 1 << TileResolutionInBits);
 
@@ -243,11 +301,160 @@ namespace Itinero.Transit.Data.Tiles
             var localCoordinates = tile.ToLocalCoordinates(longitude, latitude, 1 << TileResolutionInBits);
             var localCoordinatesEncoded = (localCoordinates.x << TileResolutionInBits) + localCoordinates.y;
             var localCoordinatesBits = BitConverter.GetBytes(localCoordinatesEncoded);
-            var vertexPointer = pointer * (long)CoordinateSizeInBytes;
+            var tileDataPointer = pointer * (long)CoordinateSizeInBytes;
+            if (tileDataPointer + CoordinateSizeInBytes > _locations.Length)
+            {
+                var p = _locations.Length;
+                _locations.Resize(_locations.Length + 1024);
+                for (var i = p; i < _locations.Length; i++)
+                {
+                    _locations[i] = byte.MaxValue;
+                }
+            }
             for (var b = 0; b < CoordinateSizeInBytes; b++)
             {
-                _locations[vertexPointer + b] = localCoordinatesBits[b];
+                _locations[tileDataPointer + b] = localCoordinatesBits[b];
             }
+        }
+
+        /// <summary>
+        /// Gets the enumerator.
+        /// </summary>
+        /// <returns>The enumerator.</returns>
+        public Enumerator GetEnumerator()
+        {
+            return new Enumerator(this);
+        }
+
+        /// <summary>
+        /// An enumerator.
+        /// </summary>
+        public struct Enumerator
+        {
+            private readonly TiledLocationIndex _index;
+
+            public Enumerator(TiledLocationIndex index)
+            {
+                _index = index;
+
+                _currentTileIndexPointer = uint.MaxValue;
+                _currentTileDataPointer = uint.MaxValue;
+                _currentTileCapacity = uint.MaxValue;
+                this.LocalId = uint.MaxValue;
+                _currentTile = null;
+                this.DataPointer = uint.MaxValue;
+                this.Latitude = double.MaxValue;
+                this.Longitude = double.MaxValue;
+                this.LocalTileId = uint.MaxValue;
+            }
+
+            private uint _currentTileIndexPointer;
+            private Tile _currentTile;
+            private uint _currentTileDataPointer;
+            private uint _currentTileCapacity;
+
+            /// <summary>
+            /// Resets this enumerator.
+            /// </summary>
+            public void Reset()
+            {
+                _currentTileIndexPointer = uint.MaxValue;
+                _currentTileDataPointer = uint.MaxValue;
+                _currentTileCapacity = uint.MaxValue;
+                this.LocalId = uint.MaxValue;
+            }
+
+            /// <summary>
+            /// Move to the next location.
+            /// </summary>
+            /// <returns>True if there is a location available, false otherwise.</returns>
+            public bool MoveNext()
+            {
+                if (_currentTileIndexPointer == uint.MaxValue)
+                { // first move, move to first tile and first pointer.
+                    if (_index._tileIndexPointer == 0)
+                    { // no data.
+                        return false;
+                    }
+
+                    // first tile exists, get its data.
+                    _currentTileIndexPointer = 0;
+                    uint localTileId;
+                    (_currentTileDataPointer, localTileId, _currentTileCapacity) = _index.ReadTile(_currentTileIndexPointer);
+                    
+                    // if the tile is empty, keep moving until a non-empty tile is found.
+                    while (_currentTileCapacity <= 0)
+                    {
+                        _currentTileIndexPointer += 9;
+                        if (_currentTileIndexPointer >= _index._tileIndexPointer) return false; // this was the last tile.
+                        (_currentTileDataPointer, localTileId, _currentTileCapacity) = _index.ReadTile(_currentTileIndexPointer);
+                    }
+
+                    _currentTile = Tile.FromLocalId(localTileId, _index._zoom);
+                    this.LocalTileId = localTileId;
+                    this.LocalId = 0;
+                }
+                else
+                { // there is a current tile.
+                    if (this.LocalId == _currentTileCapacity - 1)
+                    { // this was the last location in this tile, move to the next tile.
+                        var localTileId = uint.MaxValue;
+                        do
+                        {
+                            _currentTileIndexPointer += 9;
+                            if (_currentTileIndexPointer >= _index._tileIndexPointer)
+                                return false; // this was the last tile.
+                            (_currentTileDataPointer, localTileId, _currentTileCapacity) = _index.ReadTile(_currentTileIndexPointer);
+                        } while (_currentTileCapacity <= 0);
+
+                        _currentTile = Tile.FromLocalId(localTileId, _index._zoom);
+                        this.LocalTileId = localTileId;
+                        this.LocalId = 0;
+                    }
+                    else
+                    {
+                        // move to the next location.
+                        this.LocalId++;
+                    }
+                }
+
+                var (longitude, latitude, hasData) = _index.GetEncodedLocation(_currentTileDataPointer + this.LocalId, _currentTile);
+                if (!hasData)
+                {
+                    return this.MoveNext();
+                }
+
+                this.Longitude = longitude;
+                this.Latitude = latitude;
+                this.DataPointer = _currentTileDataPointer;
+
+                return true;
+            }
+            
+            /// <summary>
+            /// Gets the data pointer.
+            /// </summary>
+            public uint DataPointer { get; private set; }
+            
+            /// <summary>
+            /// Gets the tile id.
+            /// </summary>
+            public uint LocalTileId { get; private set; }
+            
+            /// <summary>
+            /// Gets the local id.
+            /// </summary>
+            public uint LocalId { get; private set; }
+            
+            /// <summary>
+            /// Gets the latitude.
+            /// </summary>
+            public double Latitude { get; private set; }
+            
+            /// <summary>
+            /// Gets the longitude.
+            /// </summary>
+            public double Longitude { get; private set; }
         }
     }
 }

@@ -21,7 +21,10 @@
 // THE SOFTWARE.
 
 using System;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
 namespace Itinero.Transit.Data.Tiles
 {
     internal class Tile
