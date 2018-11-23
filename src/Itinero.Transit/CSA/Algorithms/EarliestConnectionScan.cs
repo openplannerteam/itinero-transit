@@ -130,7 +130,7 @@ namespace Itinero.Transit
 
             var journeyTillDeparture = GetJourneyTo(c.DepartureLocation());
             var journeyTillArrival = GetJourneyTo(c.ArrivalLocation());
-            
+
             if (journeyTillDeparture
                 .Equals(Journey<T>.InfiniteJourney))
             {
@@ -201,10 +201,10 @@ namespace Itinero.Transit
                     // It is an option
 
                     t1 = new Journey<T>(
-                         new Journey<T>(
+                        new Journey<T>(
                             journeyTillDeparture,
                             transfer),
-                             c);
+                        c);
                 }
             }
             else
@@ -221,7 +221,7 @@ namespace Itinero.Transit
             // Lets see if we can make an improvement in regards to the previous solution
             _s[c.ArrivalLocation().ToString()] = SelectLowest(journeyTillArrival, t1, t2);
 
-            
+
             if (c is IContinuousConnection)
             {
                 return;
@@ -261,7 +261,10 @@ namespace Itinero.Transit
 
         private Journey<T> GetJourneyTo(Uri stop)
         {
-            return _s.GetValueOrDefault(stop.ToString(), Journey<T>.InfiniteJourney);
+            return
+                _s.ContainsKey(stop.ToString())
+                    ? Journey<T>.InfiniteJourney
+                    : _s[stop.ToString()];
         }
     }
 }

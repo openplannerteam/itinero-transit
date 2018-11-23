@@ -92,7 +92,9 @@ namespace Itinero.Transit
 
         public IEnumerable<IContinuousConnection> WalksFrom(Uri uri)
         {
-            return _closeByLocations.GetValueOrDefault(uri.ToString(), null);
+            return _closeByLocations.ContainsKey(uri.ToString())
+                ? _closeByLocations[uri.ToString()]
+                : null;
         }
     }
 }
