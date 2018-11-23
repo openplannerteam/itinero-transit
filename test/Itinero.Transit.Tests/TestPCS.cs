@@ -125,8 +125,8 @@ namespace Itinero.Transit.Tests
                 Log(j.ToString(sncb));
             }
 
-            Assert.Equal(9, journeys.Count);
-            Assert.Equal("00:22:00", journeys.ToList()[0].Stats.TravelTime.ToString());
+            Assert.Equal(7, journeys.Count);
+            Assert.Equal("00:24:00", journeys.ToList()[0].Stats.TravelTime.ToString());
         }
 
 

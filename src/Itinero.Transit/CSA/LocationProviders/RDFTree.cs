@@ -230,7 +230,7 @@ namespace Itinero.Transit
 
         private static float ExtractValue(string coordinate, int index)
         {
-            return float.Parse(coordinate.Split()[index]);
+            return float.Parse(coordinate.Trim().Split(' ')[index]);
         }
 
         public bool IsContained(float lat, float lon)

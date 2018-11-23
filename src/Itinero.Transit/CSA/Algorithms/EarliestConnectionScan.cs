@@ -76,7 +76,7 @@ namespace Itinero.Transit
 
             while (true)
             {
-                timeTable = new ValidatingTimeTable(timeTable);
+                timeTable = new ValidatingTimeTable(_profile, timeTable);
                 foreach (var c in timeTable.Connections())
                 {
                     if (_failMoment != null && c.DepartureTime() > _failMoment)
@@ -263,8 +263,8 @@ namespace Itinero.Transit
         {
             return
                 _s.ContainsKey(stop.ToString())
-                    ? Journey<T>.InfiniteJourney
-                    : _s[stop.ToString()];
+                    ? _s[stop.ToString()]
+                    : Journey<T>.InfiniteJourney;
         }
     }
 }

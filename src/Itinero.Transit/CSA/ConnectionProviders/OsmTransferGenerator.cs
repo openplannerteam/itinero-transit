@@ -54,6 +54,10 @@ namespace Itinero.Transit
                 using (var fs = new FileStream(routerdbPath, FileMode.Open, FileAccess.Read))
                 {
                     var routerDb = RouterDb.Deserialize(fs);
+                    if (routerDb == null)
+                    {
+                        throw new NullReferenceException("Could not load the routerDb");
+                    }
                     KnownRouters[routerdbPath] = new Router(routerDb);
                 }
             }

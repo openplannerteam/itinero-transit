@@ -199,7 +199,7 @@ namespace Itinero.Transit
             IConnection c = null;
             do
             {
-                tt = new ValidatingTimeTable(tt);
+                tt = new ValidatingTimeTable(_profile, tt);
                 var cons = tt.ConnectionsReversed();
                 foreach (var conn in cons)
                 {
