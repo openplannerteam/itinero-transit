@@ -83,6 +83,25 @@ namespace Itinero.Transit.Tests
             Assert.True(time < new TimeSpan(1, 00, 00));
         }
 
+        [Fact]
+        public void TestStationToStation()
+        {
+            // route?from=&to=&date=121218&time=1230
+            var depStation = new Uri("http://irail.be/stations/NMBS/008891009");// Brugge
+            var arrival = new Uri("http://irail.be/stations/NMBS/008896735");
+            var date = ResourcesTest.TestMoment(12, 30);
+
+            var sncb = Belgium.Sncb(new LocalStorage(ResourcesTest.TestPath));
+            var pcs = new ProfiledConnectionScan<TransferStats>(
+                depStation, arrival, date, date.AddHours(24), sncb);
+
+
+            var journeys = pcs.CalculateJourneys()
+                .GetValueOrDefault(depStation.ToString(), new List<Journey<TransferStats>>());
+
+            Log(""+journeys.Count());
+        }
+
 
         [Fact]
         public void TestProfileScan()
