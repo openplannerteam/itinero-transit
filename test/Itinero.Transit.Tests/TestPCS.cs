@@ -21,7 +21,7 @@ namespace Itinero.Transit.Tests
         }
 
 
-        [Fact]
+      /*  [Fact]
         public void TestIntermodal()
         {
             Log("Starting");
@@ -82,6 +82,7 @@ namespace Itinero.Transit.Tests
             Assert.True(found > 0);
             Assert.True(time < new TimeSpan(1, 00, 00));
         }
+*/
 
         [Fact]
         public void TestStationToStation()
@@ -101,7 +102,6 @@ namespace Itinero.Transit.Tests
 
             Log(""+journeys.Count());
         }
-
 
         [Fact]
         public void TestProfileScan()

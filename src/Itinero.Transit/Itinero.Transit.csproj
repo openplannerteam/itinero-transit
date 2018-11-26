@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <title>Itinero.Transit</title>
-    <VersionPrefix>0.0.6</VersionPrefix>
+    <VersionPrefix>0.0.7</VersionPrefix>
     <AssemblyName>itinero-transit</AssemblyName>
     <Description>An library implementing Connection Scan Algorithm for routing of Public Transport networks, based on Linked Data</Description>
     <Summary>This package provides an implementation for intermodal routing via Public Transport networks. It allows station-to-station routing within one operator, or allows transfers between operators by walking between them. The feed of the operators should be published in a Linked-Connections ontology, as published on linkedconnections.org .</Summary>
-    <ReleaseNotes>Targeting netstandard2.0</ReleaseNotes>
+    <ReleaseNotes>Dev version with fixed caching</ReleaseNotes>
     <Authors>Pietervdvn;openplannerteam</Authors>
     <PackageId>openplannerteam.itinero-transit</PackageId>
     <PackageTags>CSA;Connection-Scan-Algorithm;Public-Transport;Routing;linked-data;</PackageTags>
@@ -25,7 +25,7 @@
     <PackageReference Include="CacheCow.Client.FileStore" Version="2.4.2" />
     <PackageReference Include="Itinero" Version="1.4.0-pre89" />
     <PackageReference Include="Itinero.IO.Osm" Version="1.4.0-pre87" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1-beta1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1-beta2" />
     <PackageReference Include="openplannerteam.Json-LD.net" Version="0.1.0" />
     <PackageReference Include="Serilog" Version="2.7.2-dev-01033" />
     <PackageReference Include="Serilog.Sinks.Console" Version="3.1.2-dev-00779" />

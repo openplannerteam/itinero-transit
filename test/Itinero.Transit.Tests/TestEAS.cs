@@ -116,7 +116,7 @@ namespace Itinero.Transit.Tests
             Assert.Equal(6, closeToHome.Count());
             Assert.Equal(16, closeToTarget.Count());
 
-            Assert.True(closeToHome.Contains(new Uri("https://data.delijn.be/stops/502101")));
+            Assert.Contains(new Uri("https://data.delijn.be/stops/502101"), closeToHome);
 
             var startTime = ResourcesTest.TestMoment(10, 00);
             var endTime = ResourcesTest.TestMoment(11, 00);
