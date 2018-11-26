@@ -121,7 +121,7 @@ namespace Itinero.Transit
 
             if (_departureStop == null || _arrivalStop == null)
             {
-                throw new ArgumentNullException("_departureStop", "_arrivalStop");
+                throw new NullReferenceException("_departureStop or _arrivalStop is null in the JSON");
             }
         }
 

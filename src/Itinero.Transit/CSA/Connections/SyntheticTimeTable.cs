@@ -180,8 +180,14 @@ namespace Itinero.Transit
                 var enumerator = iEnum.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
+                    if (enumerator.Current == null)
+                    {
+                        break;
+                    }
+                    
                     // We set the enumerators at their valid first entries
                     // Note that empty timetables are skipped
+                    // ReSharper disable once InvertIf
                     if (enumerator.Current.DepartureTime() >= startTime &&
                         enumerator.Current.DepartureTime() < endTime)
                     {
@@ -203,7 +209,7 @@ namespace Itinero.Transit
             {
                 var source = _sources[i];
                 var cur = source.Current;
-                if (_startTime > cur.DepartureTime() || cur.DepartureTime() >= _endTime)
+                if (cur == null || _startTime > cur.DepartureTime() || cur.DepartureTime() >= _endTime)
                 {
                     // Source is depleted: out of range
                     _sources.Remove(source);

@@ -128,7 +128,7 @@ namespace Itinero.Transit
         {
         }
 
-        public Task AddOrUpdateAsync(CacheKey key, HttpResponseMessage response)
+        public new Task AddOrUpdateAsync(CacheKey key, HttpResponseMessage response)
         {
             /*
              * TODO Fix this when upstream fixes the issue

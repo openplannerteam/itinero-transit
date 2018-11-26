@@ -14,7 +14,7 @@ namespace Itinero.Transit
         // ReSharper disable once UnusedMember.Global
         public static List<ITimeTable> DownloadDay(this IConnectionsProvider prov, DateTime start)
         {
-            var all = new Reminiscence.Collections.List<ITimeTable>();
+            var all = new List<ITimeTable>();
             var tt = prov.GetTimeTable(start);
             all.Add(tt);
             while ((tt.EndTime() - start).Days < 1)
