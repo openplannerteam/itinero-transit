@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CacheCow.Client;
 using CacheCow.Client.FileCacheStore;
 using CacheCow.Client.Headers;
+using CacheCow.Common;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 using Serilog;
@@ -41,10 +42,12 @@ namespace Itinero.Transit
                 _client = new HttpClient();
             }
 
-            _client.DefaultRequestHeaders.Add("user-agent", "Itinero-Transit-dev/0.0.2 (anyways.eu; pieter@anyways.eu)");
+            _client.DefaultRequestHeaders.Add("user-agent",
+                "Itinero-Transit-dev/0.0.2 (anyways.eu; pieter@anyways.eu)");
             _client.DefaultRequestHeaders.Add("accept", "application/ld+json");
             _client.Timeout = TimeSpan.FromMilliseconds(5000);
         }
+
 
         public JToken LoadDocument(Uri uri)
         {
@@ -115,6 +118,35 @@ namespace Itinero.Transit
             TimeDownloading = 0;
             DownloadCounter = 0;
             CacheHits = 0;
+        }
+    }
+
+
+    public class FileStoreBugFixer : FileStore
+    {
+        public FileStoreBugFixer(string cacheRoot) : base(cacheRoot)
+        {
+        }
+
+        public Task AddOrUpdateAsync(CacheKey key, HttpResponseMessage response)
+        {
+            /*
+             * TODO Fix this when upstream fixes the issue
+             * So, as it turns out, there is some bug in HttpResponseMessage.
+             * Deserializing does not work well and crashes on the 'Server' header.
+             *
+             * Not so useful thus....
+             *
+             * As a workaround, I throw away the server-header. We don't need it anyway
+             *
+             * See issues:
+             * https://github.com/aliostad/CacheCow/issues/213
+             * https://github.com/dotnet/corefx/issues/31918
+             * https://github.com/aspnet/AspNetWebStack/issues/193#issuecomment-418529386
+             */
+
+            response.Headers.Remove("Server");
+            return base.AddOrUpdateAsync(key, response);
         }
     }
 }

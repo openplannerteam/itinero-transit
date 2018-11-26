@@ -40,9 +40,10 @@ namespace Itinero.Transit_Tests
                 Log($"name: {name}; {stop}");
             }
 
-            Assert.True(names.Contains("N.Gombertstraat"));
-            Assert.True(names.Contains("Howest"));
-            Assert.True(names.Contains("Ezelpoort"));
+
+            Assert.Contains("N.Gombertstraat", names);
+            Assert.Contains("Howest", names);
+            Assert.Contains("Ezelpoort", names);
         }
 
         [Fact]
@@ -63,8 +64,8 @@ namespace Itinero.Transit_Tests
 
             var found = (List<Uri>) locations.GetLocationsCloseTo(lat, lon, 5000);
 
-            Assert.True(found.Contains(new Uri("http://irail.be/stations/NMBS/008891009")));
-            Assert.True(found.Contains(new Uri("http://irail.be/stations/NMBS/008891033")));
+            Assert.Contains(new Uri("http://irail.be/stations/NMBS/008891009"), found);
+            Assert.Contains(new Uri("http://irail.be/stations/NMBS/008891033"), found);
             Assert.Equal(2, found.Count);
         }
 
