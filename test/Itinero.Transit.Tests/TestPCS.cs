@@ -10,15 +10,8 @@ using Xunit.Abstractions;
 
 namespace Itinero.Transit.Tests
 {
-    public class TestPcs
+    public class TestPcs : SuperTest
     {
-        private readonly ITestOutputHelper _output;
-
-
-        public TestPcs(ITestOutputHelper output)
-        {
-            _output = output;
-        }
 
 
       /*  [Fact]
@@ -83,6 +76,10 @@ namespace Itinero.Transit.Tests
             Assert.True(time < new TimeSpan(1, 00, 00));
         }
 */
+
+        public TestPcs(ITestOutputHelper output) : base(output)
+        {
+        }
 
         [Fact]
         public void TestStationToStation()
@@ -334,12 +331,6 @@ namespace Itinero.Transit.Tests
 
             Log($"Got {found} profiles");
             Log(stats);
-        }
-
-        // ReSharper disable once UnusedMember.Local
-        private void Log(string s)
-        {
-            _output.WriteLine(s);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace Itinero.Transit
         {
             if (caching)
             {
-                var store = new FileStoreLocal("cache");
+                var store = new FileStoreBugFixer("cache");
                 _client = store.CreateClient();
             }
             else

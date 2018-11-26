@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit;
+using Itinero.Transit.Tests;
 using JsonLD.Core;
 using Xunit;
 using Xunit.Abstractions;
@@ -10,15 +11,11 @@ using Xunit.Abstractions;
 
 namespace Itinero.Transit_Tests
 {
-    public class TestLocations
+    public class TestLocations : SuperTest
     {
-        private readonly ITestOutputHelper _output;
-
-        public TestLocations(ITestOutputHelper output)
+        public TestLocations(ITestOutputHelper output) : base(output)
         {
-            _output = output;
         }
-
 
         [Fact]
         public void TestDeLijnLocations()
@@ -83,10 +80,5 @@ namespace Itinero.Transit_Tests
             Assert.True(frag.ToString().StartsWith("Location dump with 1044 locations:\n  Location \'Stedestraat\' ("));
         }
 
-        // ReSharper disable once UnusedMember.Local
-        private void Log(string s)
-        {
-            _output.WriteLine(s);
-        }
     }
 }

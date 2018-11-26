@@ -9,23 +9,11 @@ using Xunit.Abstractions;
 
 namespace Itinero.Transit.Tests
 {
-    public class TestCatalog
+    public class TestCatalog : SuperTest
     {
-        private readonly ITestOutputHelper _output;
-
-        public TestCatalog(ITestOutputHelper output)
+        public TestCatalog(ITestOutputHelper output) : base(output)
         {
-            _output = output;
         }
-
-
-
-        // ReSharper disable once UnusedMember.Local
-        private void Log(string s)
-        {
-            _output.WriteLine(s);
-        }
-
 
         [Fact]
         public void TestDeLijnCatalog()

@@ -1,22 +1,14 @@
 using Itinero.Transit;
+using Itinero.Transit.Tests;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Itinero.Transit_Tests
 {
-    public class StorageTest
+    public class StorageTest : SuperTest
     {
-        private readonly ITestOutputHelper _output;
-
-        public StorageTest(ITestOutputHelper output)
+        public StorageTest(ITestOutputHelper output) : base(output)
         {
-            _output = output;
-        }
-        
-        // ReSharper disable once UnusedMember.Local
-        private void Log(string s)
-        {
-            _output.WriteLine(s);
         }
 
         [Fact]

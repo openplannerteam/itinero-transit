@@ -5,37 +5,26 @@ using System.Net;
 using Itinero.IO.Osm;
 using Itinero.Osm.Vehicles;
 using Itinero.Transit;
+using Itinero.Transit.Tests;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Itinero.Transit_Tests
 {
-    public class ResourcesTest
+    public class ResourcesTest: SuperTest
     {
-        private readonly ITestOutputHelper _output;
         public const string TestPath = "timetables-for-testing-2018-12-12";
 
         // ReSharper disable once MemberCanBePrivate.Global
         public static readonly DateTime TestDay = new DateTime(2018, 12, 12, 00, 00, 00);
 
+        public ResourcesTest(ITestOutputHelper output) : base(output)
+        {
+        }
+
         public static DateTime TestMoment(int hours, int minutes, int seconds = 0)
         {
             return TestDay.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
-        }
-
-        public ResourcesTest(ITestOutputHelper output)
-        {
-            _output = output;
-        }
-
-        // ReSharper disable once UnusedMember.Local
-        private void Log(string s)
-        {
-            if (s == null)
-            {
-                return;
-            }
-            _output.WriteLine(s);
         }
 
         [Fact]

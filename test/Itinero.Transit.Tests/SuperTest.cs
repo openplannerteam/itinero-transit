@@ -8,6 +8,7 @@ namespace Itinero.Transit.Tests
 
         public SuperTest(ITestOutputHelper output)
         {
+            
             _output = output;
         }
         

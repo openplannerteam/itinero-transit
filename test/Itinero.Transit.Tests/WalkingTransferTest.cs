@@ -1,26 +1,20 @@
 using System;
 using Itinero.Transit;
+using Itinero.Transit.Tests;
 using Xunit;
 using Xunit.Abstractions;
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace Itinero.Transit_Tests
 {
-    public class WalkingTransferTest
+    public class WalkingTransferTest : SuperTest
     {
-        private readonly ITestOutputHelper _output;
         public static readonly Uri Howest = new Uri("https://data.delijn.be/stops/502132");
         public static readonly Uri Ezelspoort = new Uri("https://data.delijn.be/stops/502102");
 
-        public WalkingTransferTest(ITestOutputHelper output)
-        {
-            _output = output;
-        }
 
-        // ReSharper disable once UnusedMember.Local
-        private void Log(string s)
+        public WalkingTransferTest(ITestOutputHelper output) : base(output)
         {
-            _output.WriteLine(s);
         }
 
         [Fact]
