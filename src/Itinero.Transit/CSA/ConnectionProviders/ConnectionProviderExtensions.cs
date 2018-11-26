@@ -1,5 +1,5 @@
 using System;
-using Reminiscence.Collections;
+using System.Collections.Generic;
 using Serilog;
 
 namespace Itinero.Transit
