@@ -149,7 +149,7 @@ namespace Itinero.Transit.Data
             AddDepartureIndex(internalId);
             
             // update arrival time index.
-            //AddArrivalIndex(internalId);
+            AddArrivalIndex(internalId);
 
             return internalId;
         }
@@ -261,6 +261,24 @@ namespace Itinero.Transit.Data
             }
 
             return BitConverter.ToUInt32(bytes, 0);
+        }
+
+        private uint GetConnectionArrival(uint internalId)
+        {           
+            var dataPointer = internalId * ConnectionSizeInBytes;
+            if (_data.Length <= dataPointer + ConnectionSizeInBytes)
+            {
+                return uint.MaxValue;
+            }
+            
+            var bytes = new byte[6];
+            for (var b = 0; b < 6; b++)
+            {
+                bytes[b] = _data[dataPointer + 16 + b];
+            }
+
+            return BitConverter.ToUInt32(bytes, 0) +
+                   BitConverter.ToUInt16(bytes, 4);
         }
 
         private void SetTrip(uint internalId, uint tripId)
@@ -380,12 +398,75 @@ namespace Itinero.Transit.Data
                 },windowPointer, windowPointer + windowSize - 1);
         }
 
-        private void CopyConnection(uint dataPointerFrom, uint dataPointerTo)
+        private void AddArrivalIndex(uint internalId)
         {
-            for (var p = 0; p < ConnectionSizeInBytes; p++)
-            {
-                _data[dataPointerTo + p] = _data[dataPointerFrom + p];
+            // determine window.
+            var arrival = GetConnectionArrival(internalId);
+            var window = (uint)System.Math.Floor(DateTimeExtensions.FromUnixTime(arrival).TimeOfDay.TotalSeconds / _windowSizeInSeconds);
+
+            var nextEmpty = uint.MaxValue;
+            var windowPointer = _arrivalWindowPointers[window * 2 + 0];
+            if (_arrivalWindowPointers[window * 2 + 0] == NoData)
+            { // add a new window.
+                nextEmpty = _arrivalPointer;
+                _arrivalPointer += 1;
+                
+                // update the window.
+                _arrivalWindowPointers[window * 2 + 0] = nextEmpty;
+                _arrivalWindowPointers[window * 2 + 1] = 1;
             }
+            else
+            { // there is already data in the window.
+                var windowSize = _arrivalWindowPointers[window * 2 + 1];
+                if ((windowSize & (windowSize - 1)) == 0)
+                { // power of 2, time to increase the window capacity.
+                    // allocate new space.
+                    var newWindowPointer = _arrivalPointer;
+                    _arrivalPointer += windowSize * 2;
+                    
+                    // copy over data.
+                    while (_arrivalPointers.Length <= _arrivalPointer)
+                    {
+                        _arrivalPointers.Resize(_arrivalPointers.Length + 1024);
+                    }
+                    for (var c = 0; c < windowSize; c++)
+                    {
+                        _arrivalPointers[newWindowPointer + c] =
+                            _arrivalPointers[windowPointer + c];
+                    }
+
+                    windowPointer = newWindowPointer;
+                    _arrivalWindowPointers[window * 2 + 0] = newWindowPointer;
+                }
+
+                // increase size.
+                _arrivalWindowPointers[window * 2 + 1] = windowSize + 1;
+                nextEmpty = windowPointer + windowSize;
+            }
+            
+            // set the data.
+            while (_arrivalPointers.Length <= nextEmpty)
+            {
+                _arrivalPointers.Resize(_arrivalPointers.Length + 1024);
+            }
+            _arrivalPointers[nextEmpty] = internalId;
+            
+            // sort the window.
+            SortArrivalWindow(window);
+        }
+
+        private void SortArrivalWindow(uint window)
+        {
+            var windowPointer = _arrivalWindowPointers[window * 2 + 0];
+            var windowSize = _arrivalWindowPointers[window * 2 + 1];
+            
+            QuickSort.Sort((i) => GetConnectionArrival(_arrivalPointers[i]),
+                (i1, i2) =>
+                {
+                    var temp = _arrivalPointers[i1];
+                    _arrivalPointers[i1] = _arrivalPointers[i2];
+                    _arrivalPointers[i2] = temp;
+                },windowPointer, windowPointer + windowSize - 1);
         }
 
         /// <summary>
@@ -595,6 +676,140 @@ namespace Itinero.Transit.Data
 
                 // move the reader to the correct location.
                 _reader.MoveTo(_db._departurePointers[_windowPointer + _windowPosition]);
+                
+                return true;
+            }
+
+            /// <summary>
+            /// Gets the first stop.
+            /// </summary>
+            public (uint localTileId, uint localId) Stop1 => _reader.Stop1;
+
+            /// <summary>
+            /// Gets the second stop.
+            /// </summary>
+            public (uint localTileId, uint localId) Stop2 => _reader.Stop2;
+
+            /// <summary>
+            /// Gets the departure time.
+            /// </summary>
+            public uint DepartureTime => _reader.DepartureTime;
+
+            /// <summary>
+            /// Gets the travel time.
+            /// </summary>
+            public ushort TravelTime => _reader.TravelTime;
+            
+            /// <summary>
+            /// Gets the global id.
+            /// </summary>
+            public string GlobalId => _reader.GlobalId;
+            
+            /// <summary>
+            /// Gets the trip id.
+            /// </summary>
+            public uint TripId => _reader.TripId;
+        }
+
+        /// <summary>
+        /// Gets an enumerator enumerating connections sorted by their arrival time.
+        /// </summary>
+        /// <returns>The arrival enumerator.</returns>
+        public ArrivalEnumerator GetArrivalEnumerator()
+        {
+            return new ArrivalEnumerator(this);
+        }
+
+        /// <summary>
+        /// A enumerator by arrival.
+        /// </summary>
+        public class ArrivalEnumerator
+        {
+            private readonly ConnectionsDb _db;
+            private readonly ConnectionsDbReader _reader;
+
+            internal ArrivalEnumerator(ConnectionsDb db)
+            {
+                _db = db;
+
+                _reader = _db.GetReader();
+            }
+
+            private uint _window = uint.MaxValue;
+            private uint _windowPosition = uint.MaxValue;
+            private uint _windowPointer = uint.MaxValue;
+            private uint _windowSize = uint.MaxValue;
+
+            /// <summary>
+            /// Resets the enumerator.
+            /// </summary>
+            public void Reset()
+            {
+                _window = uint.MaxValue;
+                _windowPosition = uint.MaxValue;
+                _windowSize = uint.MaxValue;
+            }
+
+            /// <summary>
+            /// Moves this enumerator to the next connection.
+            /// </summary>
+            /// <returns></returns>
+            public bool MoveNext()
+            {
+                if (_window == uint.MaxValue)
+                { // no data, find first window with data.
+                    for (uint w = 0; w < _db._arrivalWindowPointers.Length / 2; w++)
+                    {
+                        var windowSize = _db._arrivalWindowPointers[w * 2 + 1];
+                        if (windowSize <= 0) continue;
+                        
+                        _window = w;
+                        _windowSize = windowSize;
+                        break;
+                    }
+
+                    if (_window == uint.MaxValue)
+                    { // no window with data found.
+                        return false;
+                    }
+
+                    // window changed.
+                    _windowPointer = _db._arrivalWindowPointers[_window * 2 + 0];
+                    _windowPosition = 0;
+                }
+                else
+                { // there is an active window, try to move to the next window.
+                    if (_windowPosition + 1 >= _windowSize)
+                    { // move to next window.
+                        var w = _window + 1;
+                        _window = uint.MaxValue;
+                        for (; w < _db._arrivalWindowPointers.Length / 2; w++)
+                        {
+                            var windowSize = _db._arrivalWindowPointers[w * 2 + 1];
+                            if (windowSize <= 0) continue;
+                        
+                            _window = w;
+                            _windowSize = windowSize;
+                            break;
+                        }
+                        
+                        if (_window == uint.MaxValue)
+                        { // no more windows with data found.
+                            return false;
+                        }
+
+                        // window changed.
+                        _windowPointer = _db._arrivalWindowPointers[_window * 2 + 0];
+                        _windowPosition = 0;
+                    }
+                    else
+                    { // move to the next connection.
+                        _windowPosition++;
+                    }
+                }
+
+                // move the reader to the correct location.
+                _reader.MoveTo(_db._arrivalPointers[_windowPointer + _windowPosition]);
                 
                 return true;
             }
