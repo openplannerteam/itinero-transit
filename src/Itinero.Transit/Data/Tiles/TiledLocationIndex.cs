@@ -232,7 +232,7 @@ namespace Itinero.Transit.Data.Tiles
             
             // make sure locations array is the proper size.
             var length = _locations.Length;
-            while (_tileDataPointer + (oldCapacity * 2) * CoordinateSizeInBytes >= length)
+            while ((_tileDataPointer + (oldCapacity * 2)) * CoordinateSizeInBytes >= length)
             {
                 length += 1024;
             }

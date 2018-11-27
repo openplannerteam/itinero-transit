@@ -70,6 +70,10 @@ namespace Itinero.Transit.Data
         /// <param name="count">The number of locations that moved.</param>
         private void Move(uint from, uint to, uint count)
         {
+            while (_stopIds.Length <= to + count)
+            {
+                _stopIds.Resize(_stopIds.Length + 1024);
+            }
             for (var s = 0; s < count; s++)
             {
                 _stopIds[to + s] = _stopIds[from + s];

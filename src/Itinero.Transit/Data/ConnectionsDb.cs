@@ -159,7 +159,7 @@ namespace Itinero.Transit.Data
         {
             // make sure the data array is big enough.
             var dataPointer = internalId * ConnectionSizeInBytes;
-            while (_data.Length <= dataPointer)
+            while (_data.Length <= dataPointer + ConnectionSizeInBytes)
             {
                 var oldLength = _data.Length;
                 _data.Resize(_data.Length + 1024);
