@@ -152,35 +152,35 @@ namespace Itinero.Transit
             return DepartureTime;
         }
 
-//        public Route AsRoute(ILocationProvider locationProv)
-//        {
-//            var depLoc = locationProv.GetCoordinateFor(DepartureStop);
-//            var arrLoc = locationProv.GetCoordinateFor(ArrivalStop);
-//
-//            return new Route
-//            {
-//                Shape = new[]
-//                {
-//                    new Coordinate(depLoc.Lat, depLoc.Lon),
-//                    new Coordinate(arrLoc.Lat, arrLoc.Lon)
-//                },
-//                ShapeMeta = new[]
-//                {
-//                    new Route.Meta
-//                    {
-//                        Profile = Mode(),
-//                        Shape = 0,
-//                        Time = 0f,
-//                    },
-//                    new Route.Meta
-//                    {
-//                        Profile = Mode(),
-//                        Shape = 1,
-//                        Time = (float) (ArrivalTime - DepartureTime).TotalSeconds,
-//                    },
-//                }
-//            };
-//        }
+        public Route AsRoute(ILocationProvider locationProv)
+        {
+            var depLoc = locationProv.GetCoordinateFor(DepartureStop);
+            var arrLoc = locationProv.GetCoordinateFor(ArrivalStop);
+
+            return new Route
+            {
+                Shape = new[]
+                {
+                    new Coordinate(depLoc.Lat, depLoc.Lon),
+                    new Coordinate(arrLoc.Lat, arrLoc.Lon)
+                },
+                ShapeMeta = new[]
+                {
+                    new Route.Meta
+                    {
+                        Profile = Mode(),
+                        Shape = 0,
+                        Time = 0f,
+                    },
+                    new Route.Meta
+                    {
+                        Profile = Mode(),
+                        Shape = 1,
+                        Time = (float) (ArrivalTime - DepartureTime).TotalSeconds,
+                    },
+                }
+            };
+        }
 
         public override bool Equals(object obj)
         {

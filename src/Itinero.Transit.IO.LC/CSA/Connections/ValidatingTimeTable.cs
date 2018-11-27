@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Serilog;
 
 namespace Itinero.Transit
 {
@@ -10,22 +11,24 @@ namespace Itinero.Transit
     /// </summary>
     public class ValidatingTimeTable : ITimeTable
     {
+        private readonly ILocationProvider _locations;
         private readonly ITimeTable _backdrop;
 
-        public ValidatingTimeTable(ITimeTable backdrop)
+        public ValidatingTimeTable(ILocationProvider locations, ITimeTable backdrop)
         {
+            _locations = locations;
             _backdrop = backdrop;
         }
 
 
         public IEnumerable<IConnection> Connections()
         {
-            return new ValidatingEnumerable(_backdrop.Connections());
+            return new ValidatingEnumerable(_backdrop.Connections(), _backdrop, _locations);
         }
 
         public IEnumerable<IConnection> ConnectionsReversed()
         {
-            return new ValidatingEnumerable(_backdrop.ConnectionsReversed());
+            return new ValidatingEnumerable(_backdrop.ConnectionsReversed(), _backdrop, _locations);
         }
 
 
@@ -78,15 +81,19 @@ namespace Itinero.Transit
    public  class ValidatingEnumerable : IEnumerable<IConnection>
     {
         private readonly IEnumerable<IConnection> _backdrop;
+        private readonly ITimeTable _source;
+        private readonly ILocationProvider _locations;
 
-        public ValidatingEnumerable(IEnumerable<IConnection> backdrop)
+        public ValidatingEnumerable(IEnumerable<IConnection> backdrop, ITimeTable source, ILocationProvider locations)
         {
             _backdrop = backdrop;
+            _source = source;
+            _locations = locations;
         }
 
         public IEnumerator<IConnection> GetEnumerator()
         {
-            return new ValidatingEnumerator(_backdrop.GetEnumerator());
+            return new ValidatingEnumerator(_source, _backdrop.GetEnumerator(), _locations);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -98,18 +105,45 @@ namespace Itinero.Transit
 
     class ValidatingEnumerator : IEnumerator<IConnection>
     {
+        private readonly ITimeTable _source;
         private readonly IEnumerator<IConnection> _backdrop;
         private readonly HashSet<IConnection> _alreadySeen = new HashSet<IConnection>();
+        private readonly ILocationProvider _location;
 
-        public ValidatingEnumerator(IEnumerator<IConnection> backdrop)
+        public ValidatingEnumerator(ITimeTable source, IEnumerator<IConnection> backdrop, ILocationProvider location)
         {
+            _source = source;
             _backdrop = backdrop;
+            _location = location;
         }
 
+
+        private bool IsValid(IConnection current)
+        {
+
+            if (_alreadySeen.Contains(current))
+            {
+#if DEBUG
+                Log.Warning($"Already seen this connection.\nDuplicate connection:{current}\nTable:{_source.Id()}");
+#endif
+                return false;
+            }
+
+            if (!_location.ContainsLocation(current.DepartureLocation()) ||
+                !_location.ContainsLocation(current.ArrivalLocation()))
+            {
+                Log.Warning("Connection contains unknown stations. The locations fragment might be out of date.");
+                return false;
+            }
+
+            return true;
+
+        }
+        
         public bool MoveNext()
         {
             bool found = _backdrop.MoveNext();
-            while (found && _alreadySeen.Contains(_backdrop.Current))
+            while (found && !IsValid(_backdrop.Current))
             {
                 found = _backdrop.MoveNext();
             }

@@ -76,7 +76,7 @@ namespace Itinero.Transit
             var profile = new Profile<TransferStats>(
                 conProv,
                 locProv,
-                null, //new OsmTransferGenerator("belgium.routerdb"),
+                new OsmTransferGenerator("belgium.routerdb"),
                 TransferStats.Factory,
                 TransferStats.ProfileTransferCompare,
                 TransferStats.ParetoCompare

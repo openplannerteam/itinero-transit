@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <title>Itinero.Transit</title>
-    <VersionPrefix>0.0.5</VersionPrefix>
-    <AssemblyName>itinero-transit</AssemblyName>
+    <VersionPrefix>0.0.5-alpha</VersionPrefix>
+    <AssemblyName>Itinero.Transit</AssemblyName>
     <Description>An library implementing Connection Scan Algorithm for routing of Public Transport networks, based on Linked Data</Description>
     <Summary>This package provides an implementation for intermodal routing via Public Transport networks. It allows station-to-station routing within one operator, or allows transfers between operators by walking between them. The feed of the operators should be published in a Linked-Connections ontology, as published on linkedconnections.org .</Summary>
     <ReleaseNotes>Early alpha release with updated Connections-format	</ReleaseNotes>
     <Authors>Pietervdvn;openplannerteam</Authors>
-    <PackageId>openplannerteam.itinero-transit</PackageId>
+    <PackageId>Itinero.Transit</PackageId>
     <PackageTags>CSA;Connection-Scan-Algorithm;Public-Transport;Routing;linked-data;</PackageTags>
     <PackageIconUrl>https://avatars0.githubusercontent.com/u/30265183</PackageIconUrl>
     <PackageProjectUrl>https://github.com/openplannerteam/Itinero-Transit</PackageProjectUrl>
@@ -17,18 +17,11 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CacheCow.Client" Version="2.4.2" />
-    <PackageReference Include="CacheCow.Client.FileStore" Version="2.4.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1-beta1" />
-    <PackageReference Include="openplannerteam.Json-LD.net" Version="0.1.0" />
     <PackageReference Include="Reminiscence" Version="1.2.0-pre08" />
-    <PackageReference Include="Serilog" Version="2.7.2-dev-01033" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.2-dev-00779" />
-    <PackageReference Include="Serilog.Sinks.File" Version="4.0.1-dev-00801" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,15 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="CSA\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="CSA\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="CSA\**" />
     <None Remove="Itinero.Transit.csproj.DotSettings" />
   </ItemGroup>
 </Project>

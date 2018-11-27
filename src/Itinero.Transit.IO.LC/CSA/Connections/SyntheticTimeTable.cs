@@ -16,7 +16,7 @@ namespace Itinero.Transit
         private readonly DateTime _startTime, _endTime, _previousTime;
         private readonly Uri _uri;
 
-        private readonly List<ITimeTable> _sources;
+        private List<ITimeTable> _sources;
 
         public SyntheticTimeTable(IReadOnlyCollection<ITimeTable> sources, Uri uri)
         {

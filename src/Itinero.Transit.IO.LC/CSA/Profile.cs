@@ -89,9 +89,9 @@ namespace Itinero.Transit
                         storage.SubStorage("locations")
                     );
 
-//            // Intermediate transfer generator
-//            // The OsmTransferGenerator will reuse an existing routerdb if it is already loaded
-//            FootpathTransferGenerator = new OsmTransferGenerator(routerDbPath);
+            // Intermediate transfer generator
+            // The OsmTransferGenerator will reuse an existing routerdb if it is already loaded
+            FootpathTransferGenerator = new OsmTransferGenerator(routerDbPath);
 
             // The other settings 
             StatsFactory = statsFactory;

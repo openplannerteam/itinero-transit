@@ -217,7 +217,7 @@ namespace Itinero.Transit
             var val = json.GetLDValue();
             val = val.Substring("POLYGON ((".Length);
             val = val.Substring(0, val.Length - 2);
-            var parts = val.Split(", ");
+            var parts = val.Split(',');
 
             _outline = new Polygon();
 
@@ -230,7 +230,7 @@ namespace Itinero.Transit
 
         private static float ExtractValue(string coordinate, int index)
         {
-            return float.Parse(coordinate.Split()[index]);
+            return float.Parse(coordinate.Trim().Split(' ')[index]);
         }
 
         public bool IsContained(float lat, float lon)
