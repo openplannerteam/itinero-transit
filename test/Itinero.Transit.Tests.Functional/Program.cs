@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Itinero.Logging;
 using Itinero.Transit.Data;
+using Itinero.Transit.Tests.Functional.Performance;
 using Itinero.Transit.Tests.Functional.Staging;
 using Serilog;
 using Serilog.Events;
@@ -93,22 +95,35 @@ namespace Itinero.Transit.Tests.Functional
             
             Log.Information($"Added {sc} stops and {cc} connection.");
 
+            var tt = 0;
+            var ce = 0;
             var departureEnumerator = connectionsDb.GetDepartureEnumerator();
-            var totalTime = 0;
-            Log.Information($"Enumerating connections by departure time.");
-            while (departureEnumerator.MoveNext())
+            Action departureEnumeration = () =>
             {
-                //Log.Information($"Connection {departureEnumerator.GlobalId}: [{departureEnumerator.Stop1} -> {departureEnumerator.Stop2}]@{departureEnumerator.DepartureTime} ({departureEnumerator.TravelTime}s)");
-                totalTime += departureEnumerator.TravelTime;
-            }
+                while (departureEnumerator.MoveNext())
+                {
+                    //Log.Information($"Connection {arrivalEnumerator.GlobalId}: [{arrivalEnumerator.Stop1} -> {arrivalEnumerator.Stop2}]@{arrivalEnumerator.DepartureTime} ({arrivalEnumerator.TravelTime}s)");
+                    tt += departureEnumerator.TravelTime;
+                    ce++;
+                }
+            };
+            departureEnumeration.TestPerf("Enumerate by departure time.", 10);
+            Log.Information($"Enumerated {tt} with {ce}");
             
+            tt = 0;
+            ce = 0;
             var arrivalEnumerator = connectionsDb.GetArrivalEnumerator();
-            Log.Information($"Enumerating connections by arrival time.");
-            while (arrivalEnumerator.MoveNext())
+            Action arrivalEnumeration = () =>
             {
-                //Log.Information($"Connection {arrivalEnumerator.GlobalId}: [{arrivalEnumerator.Stop1} -> {arrivalEnumerator.Stop2}]@{arrivalEnumerator.DepartureTime} ({arrivalEnumerator.TravelTime}s)");
-                totalTime += departureEnumerator.TravelTime;
-            }
+                while (arrivalEnumerator.MoveNext())
+                {
+                    //Log.Information($"Connection {arrivalEnumerator.GlobalId}: [{arrivalEnumerator.Stop1} -> {arrivalEnumerator.Stop2}]@{arrivalEnumerator.DepartureTime} ({arrivalEnumerator.TravelTime}s)");
+                    tt += arrivalEnumerator.TravelTime;
+                    ce++;
+                }
+            };
+            arrivalEnumeration.TestPerf("Enumerate by arrival time.", 10);
+            Log.Information($"Enumerated {tt} with {ce}");
 //
 //            // specify the query data.
 //            var poperinge = new Uri("http://irail.be/stations/NMBS/008896735");
@@ -139,6 +154,44 @@ namespace Itinero.Transit.Tests.Functional
                 .WriteTo.File(new JsonFormatter(), logFile)
                 .WriteTo.Console()
                 .CreateLogger();
+            
+#if DEBUG
+            var loggingBlacklist = new HashSet<string>();
+#else
+            var loggingBlacklist = new HashSet<string>();
+#endif
+            Logger.LogAction = (o, level, message, parameters) =>
+            {
+                if (loggingBlacklist.Contains(o))
+                {
+                    return;
+                }
+
+                if (level == TraceEventType.Verbose.ToString().ToLower())
+                {
+                    Log.Debug(string.Format("[{0}] {1} - {2}", o, level, message));
+                }
+                else if (level == TraceEventType.Information.ToString().ToLower())
+                {
+                    Log.Information(string.Format("[{0}] {1} - {2}", o, level, message));
+                }
+                else if (level == TraceEventType.Warning.ToString().ToLower())
+                {
+                    Log.Warning(string.Format("[{0}] {1} - {2}", o, level, message));
+                }
+                else if (level == TraceEventType.Critical.ToString().ToLower())
+                {
+                    Log.Fatal(string.Format("[{0}] {1} - {2}", o, level, message));
+                }
+                else if (level == TraceEventType.Error.ToString().ToLower())
+                {
+                    Log.Error(string.Format("[{0}] {1} - {2}", o, level, message));
+                }
+                else
+                {
+                    Log.Debug(string.Format("[{0}] {1} - {2}", o, level, message));
+                }
+            };
         }
     }
 }
