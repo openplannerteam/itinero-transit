@@ -30,16 +30,16 @@ namespace Itinero.Transit
     internal static class DateTimeExtensions
     {
         /// <summary>
-        /// Ticks since 1/1/1970
+        /// 1/1/1970
         /// </summary>
-        private static readonly long EpochTicks = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks;
+        private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     
         /// <summary>
         /// Converts a number of milliseconds from 1/1/1970 into a standard DateTime.
         /// </summary>
         public static DateTime FromUnixTime(long seconds)
         {
-            return new DateTime(EpochTicks + seconds * 10000000); // to a multiple of 100 nanosec or ticks.
+            return Epoch.AddSeconds(seconds); // to a multiple of 100 nanosec or ticks.
         }
     
         /// <summary>
@@ -47,15 +47,7 @@ namespace Itinero.Transit
         /// </summary>
         public static long ToUnixTime(this DateTime date)
         {
-            return (date.Ticks - EpochTicks) / 10000000; // from a multiple of 100 nanosec or ticks to milliseconds.
-        }
-    
-        /// <summary>
-        /// Converts a standard DateTime into the number of seconds since 1/1/1970.
-        /// </summary>
-        public static int ToUnixDay(this DateTime date)
-        {
-            return (int)(new TimeSpan(date.Ticks - EpochTicks).TotalDays);
+            return (long)(date - Epoch).TotalSeconds; // from a multiple of 100 nanosec or ticks to milliseconds.
         }
     }
 }
