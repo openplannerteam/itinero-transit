@@ -21,11 +21,14 @@
 // THE SOFTWARE.
 
 using System;
+using System.Runtime.CompilerServices;
 using Reminiscence.Arrays;
 
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
 namespace Itinero.Transit.Data.Tiles
 {
-    public class TiledLocationIndex
+    internal class TiledLocationIndex
     {
         private readonly int _zoom;
         

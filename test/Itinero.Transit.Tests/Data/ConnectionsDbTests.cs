@@ -29,14 +29,48 @@ namespace Itinero.Transit.Tests.Data
     public class ConnectionsDbTests
     {
         [Fact]
-        public void ConnectionsDb_ShouldStoreWithWindowId()
+        public void ConnectionsDb_ShouldStoreConnection()
         {
             var db = new ConnectionsDb(60);
             var departureTime = new DateTime(2018, 11, 14, 2, 3, 9);
-            var id = db.Add((100, 0), (100, 1), departureTime, 1024, 10245);
+            var id = db.Add((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545", departureTime, 1024, 10245);
             
-            Assert.Equal((uint)0, id.localId);
-            Assert.Equal((uint)System.Math.Floor(departureTime.TimeOfDay.TotalSeconds / 60), id.window);
+            Assert.Equal((uint)0, id);
+        }
+        
+        [Fact]
+        public void ConnectionsDbReader_ShouldMoveToConnection()
+        {
+            var db = new ConnectionsDb(60);
+            var departureTime = new DateTime(2018, 11, 14, 2, 3, 9);
+            var id = db.Add((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545", departureTime, 1024, 10245);
+
+            var reader = db.GetReader();
+            Assert.True(reader.MoveTo(id));
+        }
+        
+        [Fact]
+        public void ConnectionsDbReader_ShouldReturnGlobalId()
+        {
+            var db = new ConnectionsDb(60);
+            var departureTime = new DateTime(2018, 11, 14, 2, 3, 9);
+            var id = db.Add((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545", departureTime, 1024, 10245);
+
+            var reader = db.GetReader();
+            reader.MoveTo(id);
+            Assert.Equal("http://irail.be/connections/8813003/20181216/IC1545", reader.GlobalId);
+        }
+        
+        [Fact]
+        public void ConnectionsDbReader_ShouldReturnTripId()
+        {
+            var db = new ConnectionsDb(60);
+            var departureTime = new DateTime(2018, 11, 14, 2, 3, 9);
+            var id = db.Add((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545", departureTime, 1024, 10245);
+
+            var reader = db.GetReader();
+            reader.MoveTo(id);
+            Assert.Equal((uint)10245, reader.TripId);
         }
     }
 }

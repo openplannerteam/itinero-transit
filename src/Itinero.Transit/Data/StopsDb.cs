@@ -21,9 +21,12 @@
 // THE SOFTWARE.
 
 using System;
+using System.Runtime.CompilerServices;
 using Itinero.Transit.Data.Tiles;
 using Reminiscence.Arrays;
 
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
 namespace Itinero.Transit.Data
 {
     /// <summary>
@@ -79,7 +82,7 @@ namespace Itinero.Transit.Data
         /// <param name="globalId">The global stop id.</param>
         /// <param name="longitude">The stop longitude.</param>
         /// <param name="latitude">The stop latitude.</param>
-        /// <returns>An internal id representing stop.</returns>
+        /// <returns>An internal id representing the stop in this transit db.</returns>
         public (uint localTileId, uint localId) Add(string globalId, double longitude, double latitude)
         {
             // store location.
