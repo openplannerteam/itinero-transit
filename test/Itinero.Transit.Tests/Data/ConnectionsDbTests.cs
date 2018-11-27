@@ -39,7 +39,7 @@ namespace Itinero.Transit.Tests.Data
         }
         
         [Fact]
-        public void ConnectionsDbReader_ShouldMoveToConnection()
+        public void ConnectionsDbReader_ShouldMoveToConnectionByInternalId()
         {
             var db = new ConnectionsDb(60);
             var departureTime = new DateTime(2018, 11, 14, 2, 3, 9);
@@ -47,6 +47,18 @@ namespace Itinero.Transit.Tests.Data
 
             var reader = db.GetReader();
             Assert.True(reader.MoveTo(id));
+        }
+        
+        [Fact]
+        public void ConnectionsDbReader_ShouldMoveToConnectionByGlobalId()
+        {
+            var db = new ConnectionsDb(60);
+            var departureTime = new DateTime(2018, 11, 14, 2, 3, 9);
+            var id = db.Add((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545", departureTime, 1024, 10245);
+
+            var reader = db.GetReader();
+            Assert.True(reader.MoveTo("http://irail.be/connections/8813003/20181216/IC1545"));
+            Assert.Equal((uint)10245, reader.TripId);
         }
         
         [Fact]
