@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Serilog;
 
@@ -20,6 +21,8 @@ namespace Itinero.Transit.IO.LC
             StopsDb stopsDb, (DateTime start, TimeSpan duration) window)
         {
             var stopsDbReader = stopsDb.GetReader();
+
+            var trips = new Dictionary<string, uint>();
             
             var cc = 0;
             var sc = 0;
@@ -56,10 +59,19 @@ namespace Itinero.Transit.IO.LC
                         stop2InternalId = stopsDbReader.Id;
                     }
 
+                    var tripUri = connection.Trip().ToString();
+                    if (!trips.TryGetValue(tripUri, out var tripId))
+                    {
+                        tripId = (uint) trips.Count;
+                        trips[tripUri] = tripId;
+                        
+                        //Log.Information($"Added new trip {tripUri} with {tripId}");
+                    }
+
                     var connectionId = connection.Id().ToString();
                     connectionsDb.Add(stop1InternalId, stop2InternalId, connectionId,
                         connection.DepartureTime(),
-                        (ushort) (connection.ArrivalTime() - connection.DepartureTime()).TotalSeconds, 0);
+                        (ushort) (connection.ArrivalTime() - connection.DepartureTime()).TotalSeconds, tripId);
                     cc++;
                 }
 
