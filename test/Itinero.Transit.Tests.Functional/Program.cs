@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Itinero.Logging;
 using Itinero.Transit.Data;
+using Itinero.Transit.IO.LC;
 using Itinero.Transit.Tests.Functional.Performance;
 using Itinero.Transit.Tests.Functional.Staging;
 using Serilog;
@@ -24,133 +25,22 @@ namespace Itinero.Transit.Tests.Functional
         static void Main(string[] args)
         {
             EnableLogging();
-//            Log.Information($"{args.Length} CLI params given");
-//            
-            // do staging, download & preprocess some data.
-            var routerDb = BuildRouterDb.BuildOrLoad();
 
             // setup profile.
             var profile = Belgium.Sncb(new LocalStorage("cache"));
             
             // create a stops db and connections db.
             var stopsDb = new StopsDb();
-            var stopsDbReader = stopsDb.GetReader();
             var connectionsDb = new ConnectionsDb();
             
-            // get current connections for the next day or so.
-            Action enumerateConnections1 = () =>
-            {
-                var cc = 0;
-                var sc = 0;
-                var timeTable = profile.GetTimeTable(DateTime.Now);
-                do
-                {
-//                    Log.Information(
-//                        $"Processing timetable {timeTable.Id()}: [{timeTable.StartTime()},{timeTable.EndTime()}]");
-                    foreach (var connection in timeTable.Connections())
-                    {
-                        cc++;
-                    }
-
-                    if ((timeTable.NextTableTime() - DateTime.Now) > new TimeSpan(1, 0, 0, 0))
-                    {
-                        break;
-                    }
-
-                    var nextTimeTableUri = timeTable.NextTable();
-                    timeTable = profile.GetTimeTable(nextTimeTableUri);
-                } while (true);
-                Log.Information($"Added {sc} stops and {cc} connection.");
-            };
-            enumerateConnections1.TestPerf("Enumerating connections - first pass.");
-            
-            // get current connections for the next day or so.
-            Action enumerateConnections2 = () =>
-            {
-                var cc = 0;
-                var sc = 0;
-                var timeTable = profile.GetTimeTable(DateTime.Now);
-                do
-                {
-//                    Log.Information(
-//                        $"Processing timetable {timeTable.Id()}: [{timeTable.StartTime()},{timeTable.EndTime()}]");
-                    foreach (var connection in timeTable.Connections())
-                    {
-                        cc++;
-                    }
-
-                    if ((timeTable.NextTableTime() - DateTime.Now) > new TimeSpan(1, 0, 0, 0))
-                    {
-                        break;
-                    }
-
-                    var nextTimeTableUri = timeTable.NextTable();
-                    timeTable = profile.GetTimeTable(nextTimeTableUri);
-                } while (true);
-                Log.Information($"Added {sc} stops and {cc} connection.");
-            };
-            enumerateConnections2.TestPerf("Enumerating connections - second pass.");
-            
-            // load connections into routerdb.
+            // load connections for the next day.
             Action loadConnections = () =>
             {
-                var cc = 0;
-                var sc = 0;
-                var timeTable = profile.GetTimeTable(DateTime.Now);
-                do
-                {
-//                    Log.Information(
-//                        $"Processing timetable {timeTable.Id()}: [{timeTable.StartTime()},{timeTable.EndTime()}]");
-                    foreach (var connection in timeTable.Connections())
-                    {
-                        var stop1Uri = connection.DepartureLocation();
-                        var stop1Location = profile.GetCoordinateFor(stop1Uri);
-                        var stop1Id = stop1Uri.ToString();
-                        (uint localTileId, uint localId) stop1InternalId;
-                        if (!stopsDbReader.MoveTo(stop1Id))
-                        {
-                            stop1InternalId = stopsDb.Add(stop1Id, stop1Location.Lon, stop1Location.Lon);
-                            sc++;
-                        }
-                        else
-                        {
-                            stop1InternalId = stopsDbReader.Id;
-                        }
-
-                        var stop2Uri = connection.ArrivalLocation();
-                        var stop2Location = profile.GetCoordinateFor(stop2Uri);
-                        var stop2Id = stop2Uri.ToString();
-                        (uint localTileId, uint localId) stop2InternalId;
-                        if (!stopsDbReader.MoveTo(stop2Id))
-                        {
-                            stop2InternalId = stopsDb.Add(stop2Id, stop2Location.Lon, stop2Location.Lon);
-                            sc++;
-                        }
-                        else
-                        {
-                            stop2InternalId = stopsDbReader.Id;
-                        }
-
-                        var connectionId = connection.Id().ToString();
-                        connectionsDb.Add(stop1InternalId, stop2InternalId, connectionId,
-                            connection.DepartureTime(),
-                            (ushort) (connection.ArrivalTime() - connection.DepartureTime()).TotalSeconds, 0);
-                        cc++;
-                    }
-
-                    if ((timeTable.NextTableTime() - DateTime.Now) > new TimeSpan(1, 0, 0, 0))
-                    {
-                        break;
-                    }
-
-                    var nextTimeTableUri = timeTable.NextTable();
-                    timeTable = profile.GetTimeTable(nextTimeTableUri);
-                } while (true);
-                Log.Information($"Added {sc} stops and {cc} connection.");
+                connectionsDb.LoadConnections(profile, stopsDb, (DateTime.Now, new TimeSpan(1, 0, 0, 0)));
             };
             loadConnections.TestPerf("Loading connections.");
             
-
+            // enumerate connections by departure time.
             var tt = 0;
             var ce = 0;
             var departureEnumerator = connectionsDb.GetDepartureEnumerator();
@@ -158,28 +48,14 @@ namespace Itinero.Transit.Tests.Functional
             {
                 while (departureEnumerator.MoveNext())
                 {
-                    //Log.Information($"Connection {arrivalEnumerator.GlobalId}: [{arrivalEnumerator.Stop1} -> {arrivalEnumerator.Stop2}]@{arrivalEnumerator.DepartureTime} ({arrivalEnumerator.TravelTime}s)");
+                    //var departureDate = DateTimeExtensions.FromUnixTime(departureEnumerator.DepartureTime);
+                    //Log.Information($"Connection {departureEnumerator.GlobalId}: @{departureDate} ({departureEnumerator.TravelTime}s [{departureEnumerator.Stop1} -> {departureEnumerator.Stop2}])");
                     tt += departureEnumerator.TravelTime;
                     ce++;
                 }
             };
             departureEnumeration.TestPerf("Enumerate by departure time.", 10);
-            Log.Information($"Enumerated {tt} with {ce}");
-            
-            tt = 0;
-            ce = 0;
-            var arrivalEnumerator = connectionsDb.GetArrivalEnumerator();
-            Action arrivalEnumeration = () =>
-            {
-                while (arrivalEnumerator.MoveNext())
-                {
-                    //Log.Information($"Connection {arrivalEnumerator.GlobalId}: [{arrivalEnumerator.Stop1} -> {arrivalEnumerator.Stop2}]@{arrivalEnumerator.DepartureTime} ({arrivalEnumerator.TravelTime}s)");
-                    tt += arrivalEnumerator.TravelTime;
-                    ce++;
-                }
-            };
-            arrivalEnumeration.TestPerf("Enumerate by arrival time.", 10);
-            Log.Information($"Enumerated {tt} with {ce}");
+            Log.Information($"Enumerated {ce} connections!");
 //
 //            // specify the query data.
 //            var poperinge = new Uri("http://irail.be/stations/NMBS/008896735");

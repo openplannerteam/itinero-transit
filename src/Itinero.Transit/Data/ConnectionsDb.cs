@@ -29,6 +29,7 @@ using Reminiscence.Arrays;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests.Functional")]
 namespace Itinero.Transit.Data
 {
     /// <summary>
