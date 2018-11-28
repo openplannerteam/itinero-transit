@@ -23,7 +23,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
         /// </summary>
         public static void TestPerf(this Action action, string name, int count)
         {
-            var info = new PerformanceInfoConsumer(name + " x " + count.ToInvariantString(), 10000);
+            var info = new PerformanceInfoConsumer(name + " x " + count.ToInvariantString(), 10000, count);
             info.Start();
             var message = string.Empty;
             while (count > 0)

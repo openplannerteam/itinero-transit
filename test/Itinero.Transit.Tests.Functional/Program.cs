@@ -38,62 +38,118 @@ namespace Itinero.Transit.Tests.Functional
             var connectionsDb = new ConnectionsDb();
             
             // get current connections for the next day or so.
-            var cc = 0;
-            var sc = 0;
-            var timeTable = profile.GetTimeTable(DateTime.Now);
-            do
+            Action enumerateConnections1 = () =>
             {
-                Log.Information($"Processing timetable {timeTable.Id()}: [{timeTable.StartTime()},{timeTable.EndTime()}]");
-                foreach (var connection in timeTable.Connections())
+                var cc = 0;
+                var sc = 0;
+                var timeTable = profile.GetTimeTable(DateTime.Now);
+                do
                 {
-                    var stop1Uri = connection.DepartureLocation();
-                    var stop1Location = profile.GetCoordinateFor(stop1Uri);
-                    var stop1Id = stop1Uri.ToString();
-                    (uint localTileId, uint localId) stop1InternalId;
-                    if (!stopsDbReader.MoveTo(stop1Id))
+//                    Log.Information(
+//                        $"Processing timetable {timeTable.Id()}: [{timeTable.StartTime()},{timeTable.EndTime()}]");
+                    foreach (var connection in timeTable.Connections())
                     {
-                        stop1InternalId = stopsDb.Add(stop1Id, stop1Location.Lon, stop1Location.Lon);
-                        Log.Information($"Stop {stop1Id} added: {stop1InternalId}");
-                        sc++;
-                    }
-                    else
-                    {
-                        stop1InternalId = stopsDbReader.Id;
-                    }
-                
-                    var stop2Uri = connection.ArrivalLocation();
-                    var stop2Location = profile.GetCoordinateFor(stop2Uri);
-                    var stop2Id = stop2Uri.ToString();
-                    (uint localTileId, uint localId) stop2InternalId;
-                    if (!stopsDbReader.MoveTo(stop2Id))
-                    {
-                        stop2InternalId = stopsDb.Add(stop2Id, stop2Location.Lon, stop2Location.Lon);
-                        Log.Information($"Stop {stop2Id} added: {stop2InternalId}");
-                        sc++;
-                    }
-                    else
-                    {
-                        stop2InternalId = stopsDbReader.Id;
+                        cc++;
                     }
 
-                    var connectionId = connection.Id().ToString();
-                    connectionsDb.Add(stop1InternalId, stop2InternalId, connectionId,
-                        connection.DepartureTime(),
-                        (ushort) (connection.ArrivalTime() - connection.DepartureTime()).TotalSeconds, 0);
-                    //Log.Information($"Connection {connectionId} added.");
-                    cc++;
-                }
+                    if ((timeTable.NextTableTime() - DateTime.Now) > new TimeSpan(1, 0, 0, 0))
+                    {
+                        break;
+                    }
 
-                if ((timeTable.NextTableTime() - DateTime.Now) > new TimeSpan(1, 0, 0, 0))
-                {
-                    break;
-                }
-                
-                var nextTimeTableUri = timeTable.NextTable();
-                timeTable = profile.GetTimeTable(nextTimeTableUri);
-            } while (true);
+                    var nextTimeTableUri = timeTable.NextTable();
+                    timeTable = profile.GetTimeTable(nextTimeTableUri);
+                } while (true);
+                Log.Information($"Added {sc} stops and {cc} connection.");
+            };
+            enumerateConnections1.TestPerf("Enumerating connections - first pass.");
             
-            Log.Information($"Added {sc} stops and {cc} connection.");
+            // get current connections for the next day or so.
+            Action enumerateConnections2 = () =>
+            {
+                var cc = 0;
+                var sc = 0;
+                var timeTable = profile.GetTimeTable(DateTime.Now);
+                do
+                {
+//                    Log.Information(
+//                        $"Processing timetable {timeTable.Id()}: [{timeTable.StartTime()},{timeTable.EndTime()}]");
+                    foreach (var connection in timeTable.Connections())
+                    {
+                        cc++;
+                    }
+
+                    if ((timeTable.NextTableTime() - DateTime.Now) > new TimeSpan(1, 0, 0, 0))
+                    {
+                        break;
+                    }
+
+                    var nextTimeTableUri = timeTable.NextTable();
+                    timeTable = profile.GetTimeTable(nextTimeTableUri);
+                } while (true);
+                Log.Information($"Added {sc} stops and {cc} connection.");
+            };
+            enumerateConnections2.TestPerf("Enumerating connections - second pass.");
+            
+            // load connections into routerdb.
+            Action loadConnections = () =>
+            {
+                var cc = 0;
+                var sc = 0;
+                var timeTable = profile.GetTimeTable(DateTime.Now);
+                do
+                {
+//                    Log.Information(
+//                        $"Processing timetable {timeTable.Id()}: [{timeTable.StartTime()},{timeTable.EndTime()}]");
+                    foreach (var connection in timeTable.Connections())
+                    {
+                        var stop1Uri = connection.DepartureLocation();
+                        var stop1Location = profile.GetCoordinateFor(stop1Uri);
+                        var stop1Id = stop1Uri.ToString();
+                        (uint localTileId, uint localId) stop1InternalId;
+                        if (!stopsDbReader.MoveTo(stop1Id))
+                        {
+                            stop1InternalId = stopsDb.Add(stop1Id, stop1Location.Lon, stop1Location.Lon);
+                            sc++;
+                        }
+                        else
+                        {
+                            stop1InternalId = stopsDbReader.Id;
+                        }
+
+                        var stop2Uri = connection.ArrivalLocation();
+                        var stop2Location = profile.GetCoordinateFor(stop2Uri);
+                        var stop2Id = stop2Uri.ToString();
+                        (uint localTileId, uint localId) stop2InternalId;
+                        if (!stopsDbReader.MoveTo(stop2Id))
+                        {
+                            stop2InternalId = stopsDb.Add(stop2Id, stop2Location.Lon, stop2Location.Lon);
+                            sc++;
+                        }
+                        else
+                        {
+                            stop2InternalId = stopsDbReader.Id;
+                        }
+
+                        var connectionId = connection.Id().ToString();
+                        connectionsDb.Add(stop1InternalId, stop2InternalId, connectionId,
+                            connection.DepartureTime(),
+                            (ushort) (connection.ArrivalTime() - connection.DepartureTime()).TotalSeconds, 0);
+                        cc++;
+                    }
+
+                    if ((timeTable.NextTableTime() - DateTime.Now) > new TimeSpan(1, 0, 0, 0))
+                    {
+                        break;
+                    }
+
+                    var nextTimeTableUri = timeTable.NextTable();
+                    timeTable = profile.GetTimeTable(nextTimeTableUri);
+                } while (true);
+                Log.Information($"Added {sc} stops and {cc} connection.");
+            };
+            loadConnections.TestPerf("Loading connections.");
+            
 
             var tt = 0;
             var ce = 0;

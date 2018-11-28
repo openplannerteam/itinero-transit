@@ -14,22 +14,25 @@ namespace Itinero.Transit.Tests.Functional.Performance
         private readonly System.Threading.Timer _memoryUsageTimer; // Holds the memory usage timer.
         private readonly List<double> _memoryUsageLog = new List<double>(); // Holds the memory usage log.
         private long _memoryUsageLoggingDuration = 0; // Holds the time spent on logging memory usage.
+        private readonly int _iterations = 1;
 
         /// <summary>
         /// Creates the a new performance info consumer.
         /// </summary>
-        public PerformanceInfoConsumer(string name)
+        public PerformanceInfoConsumer(string name, int iterations = 1)
         {
             _name = name;
+            _iterations = iterations;
         }
 
         /// <summary>
         /// Creates the a new performance info consumer.
         /// </summary>
-        public PerformanceInfoConsumer(string name, int memUseLoggingInterval)
+        public PerformanceInfoConsumer(string name, int memUseLoggingInterval, int iterations = 1)
         {
             _name = name;
             _memoryUsageTimer = new System.Threading.Timer(LogMemoryUsage, null, memUseLoggingInterval, memUseLoggingInterval);
+            _iterations = iterations;
         }
 
         /// <summary>
@@ -124,6 +127,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
             lock (_memoryUsageLog)
             {
                 var seconds = new TimeSpan(DateTime.Now.Ticks - _ticks.Value - _memoryUsageLoggingDuration).TotalMilliseconds / 1000.0;
+                var secondsPerIteration = seconds / _iterations;
 
                 GC.Collect();
                 var p = Process.GetCurrentProcess();
@@ -134,16 +138,41 @@ namespace Itinero.Transit.Tests.Functional.Performance
                     message = ":" + message;
                 }
 
-                if (_memoryUsageLog.Count > 0)
-                { // there was memory usage logging.
-                    var max = _memoryUsageLog.Max();
-                    Itinero.Logging.Logger.Log("Test", Itinero.Logging.TraceEventType.Information, "Spent {0}s:" + _name + message,
-                        seconds.ToString("F3"), memoryDiff, max);
+                if (_iterations > 1)
+                {
+                    if (_memoryUsageLog.Count > 0)
+                    {
+                        // there was memory usage logging.
+                        var max = _memoryUsageLog.Max();
+                        Itinero.Logging.Logger.Log("Test", Itinero.Logging.TraceEventType.Information,
+                            "Spent {0}s({1}s/r):" + _name + message,
+                            seconds.ToString("F3"), secondsPerIteration.ToString("F3"), memoryDiff, max);
+                    }
+                    else
+                    {
+                        // no memory usage logged.
+                        Itinero.Logging.Logger.Log("Test", Itinero.Logging.TraceEventType.Information,
+                            "Spent {0}s:({1}s/r)" + _name + message,
+                            seconds.ToString("F3"), secondsPerIteration.ToString("F3"), memoryDiff);
+                    }
                 }
                 else
-                { // no memory usage logged.
-                    Itinero.Logging.Logger.Log("Test", Itinero.Logging.TraceEventType.Information, "Spent {0}s:" + _name + message,
-                        seconds.ToString("F3"), memoryDiff);
+                {
+                    if (_memoryUsageLog.Count > 0)
+                    {
+                        // there was memory usage logging.
+                        var max = _memoryUsageLog.Max();
+                        Itinero.Logging.Logger.Log("Test", Itinero.Logging.TraceEventType.Information,
+                            "Spent {0}s:" + _name + message,
+                            seconds.ToString("F3"), memoryDiff, max);
+                    }
+                    else
+                    {
+                        // no memory usage logged.
+                        Itinero.Logging.Logger.Log("Test", Itinero.Logging.TraceEventType.Information,
+                            "Spent {0}s:" + _name + message,
+                            seconds.ToString("F3"), memoryDiff);
+                    }
                 }
             }
         }
