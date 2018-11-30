@@ -28,6 +28,7 @@ namespace Itinero.Transit
         public static readonly ChainedComparator<TransferStats> MinimizeTransfersFirst =
             new ChainedComparator<TransferStats>(MinimizeTransfers, MinimizeTravelTimes);
 
+        // ReSharper disable once UnusedMember.Global
         public static readonly ChainedComparator<TransferStats> MinimizeTravelTimeFirst =
             new ChainedComparator<TransferStats>(MinimizeTravelTimes, MinimizeTransfers);
 
@@ -44,16 +45,16 @@ namespace Itinero.Transit
             WalkingDistance = walkingDistance;
             if (endTime < startTime)
             {
-                throw new ArgumentException("Arrivaltime before departuretime");
+                throw new ArgumentException("Arrival time is before departure time");
             }
         }
 
-        public TransferStats InitialStats(IConnection c)
+        public TransferStats InitialStats(IJourneyPart c)
         {
             var walk = 0f;
-            if (c is WalkingConnection && !c.DepartureLocation().Equals(c.ArrivalLocation()))
+            if (c is WalkingConnection connection && !connection.DepartureLocation().Equals(connection.ArrivalLocation()))
             {
-                walk = ((WalkingConnection) c).Walk().TotalDistance;
+                walk = connection.Walk().TotalDistance;
             }
 
             return new TransferStats(0, c.DepartureTime(), c.ArrivalTime(), walk);
@@ -78,9 +79,9 @@ namespace Itinero.Transit
             }
 
             var walk = 0f;
-            if (journey.Connection is WalkingConnection)
+            if (journey.Connection is WalkingConnection connection)
             {
-                walk = ((WalkingConnection) journey.Connection).Walk().TotalDistance;
+                walk = connection.Walk().TotalDistance;
             }
 
             return new TransferStats(NumberOfTransfers + (transferred ? 1 : 0), dep, arr, WalkingDistance + walk);

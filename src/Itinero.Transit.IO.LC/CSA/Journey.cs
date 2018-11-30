@@ -26,7 +26,7 @@ namespace Itinero.Transit
         /// <summary>
         /// The connection taken for this journey
         /// </summary>
-        public IConnection Connection { get; }
+        public IJourneyPart Connection { get; }
 
         /// <summary>
         /// Keeps some statistics about the journey
@@ -44,7 +44,7 @@ namespace Itinero.Transit
         }
 
 
-        public Journey(Journey<T> previousLink, IConnection connection)
+        public Journey(Journey<T> previousLink, IJourneyPart connection)
         {
             PreviousLink = previousLink;
             Connection = connection ??
@@ -73,7 +73,7 @@ namespace Itinero.Transit
         }
 
 
-        public Journey(T singleConnectionStats, IConnection connection)
+        public Journey(T singleConnectionStats, IJourneyPart connection)
         {
             PreviousLink = null;
             Connection = connection ?? throw new ArgumentNullException(nameof(connection));
@@ -100,86 +100,15 @@ namespace Itinero.Transit
             return reversed;
         }
 
-        /// <summary>
-        /// Returns a new Journey where continuous connections are moved as tightly as possible onto to the journey
-        /// E.g.
-        ///
-        /// Journey is
-        /// "walk from 10:00 till 10:05 to the platform"
-        /// "take train XYZ at 10:15, arriving at station at 11:15"
-        /// "walk from 11:30 till 11:35 to your final destination"
-        ///
-        /// this will be 'pruned' to
-        /// "walk from 10:10 till 10:15 to the platform"
-        /// "take train XYZ at 10:15, arriving at station at 11:15"
-        /// "walk from 11:15 till 11:20 to your final destination"
-        /// 
-        /// Resulting in a somewhat less time consuming journey
-        /// </summary>
-        public Journey<T> Prune()
-        {
-            var connections = AllConnections();
-
-            Journey<T> prunedJourney = null;
-            IContinuousConnection cc;
-            foreach (var connection in connections)
-            {
-                if (connection.ArrivalLocation().Equals(connection.DepartureLocation()))
-                {
-                    // Let's throw away useless (genesis) connections
-                    continue;
-                }
-
-                if (prunedJourney == null)
-                {
-                    prunedJourney = new Journey<T>(Stats.InitialStats(connection), connection);
-                    continue;
-                }
-
-                cc = prunedJourney.Connection as IContinuousConnection;
-                if (cc != null && prunedJourney.PreviousLink == null)
-                {
-                    // We are considering the first connection - which is continuous
-                    // A continuous connection can be moved in time
-                    var diff = connection.DepartureTime() - prunedJourney.Connection.ArrivalTime();
-                    cc = cc.MoveTime((int) diff.TotalSeconds);
-                    prunedJourney = new Journey<T>(Stats.InitialStats(cc), cc);
-                }
-
-                // Add the current connection to the journey
-                prunedJourney = new Journey<T>(prunedJourney, connection);
-            }
-
-            // Cleanup the last links
-            // ReSharper disable once PossibleNullReferenceException
-            var lastConn = prunedJourney.Connection;
-            while (lastConn.ArrivalLocation().Equals(lastConn.DepartureLocation()))
-            {
-                // Remove 'empty' trailing links
-                prunedJourney = prunedJourney.PreviousLink;
-                lastConn = prunedJourney.Connection;
-            }
-
-            // Move the last walking transfer neatly
-            cc = lastConn as IContinuousConnection;
-            if (cc != null)
-            {
-                var diff = (int) (prunedJourney.PreviousLink.Connection.ArrivalTime()
-                                  - cc.DepartureTime()).TotalSeconds;
-                prunedJourney = new Journey<T>(prunedJourney.PreviousLink, cc.MoveTime(diff));
-            }
-
-            return prunedJourney;
-        }
-
-        public List<IConnection> AllConnections()
+        // ReSharper disable once MemberCanBePrivate.Global
+        public List<IJourneyPart> AllJourneyParts()
         {
             if (PreviousLink == null)
             {
-                return new List<IConnection> {Connection};
+                return new List<IJourneyPart> {Connection};
             }
 
-            var list = PreviousLink.AllConnections();
+            var list = PreviousLink.AllJourneyParts();
             list.Add(Connection);
             return list;
         }
@@ -187,7 +116,7 @@ namespace Itinero.Transit
         public Route AsRoute(ILocationProvider locations)
         {
             var routes = new List<Result<Route>>();
-            foreach (var con in AllConnections())
+            foreach (var con in AllJourneyParts())
             {
                 routes.Add(new Result<Route>(con.AsRoute(locations)));
             }
@@ -202,7 +131,7 @@ namespace Itinero.Transit
         /// </summary>
         public Uri GetLastTripId()
         {
-            return Connection.Trip() ??
+            return (Connection as IConnection)?.Trip() ??
                    PreviousLink?.GetLastTripId();
         }
 

@@ -1,4 +1,4 @@
-    using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace Itinero.Transit
 {
@@ -68,7 +68,7 @@ namespace Itinero.Transit
         /// <returns>True if the journey was appended to the frontier</returns>
         public bool AddToFrontier(Journey<T> considered)
         {
-            for (var i = Frontier.Count-1; i >= 0; i--)
+            for (var i = Frontier.Count - 1; i >= 0; i--)
             {
                 var guard = Frontier[i];
                 var duel = _comparator.ADominatesB(guard, considered);
@@ -89,6 +89,7 @@ namespace Itinero.Transit
                         {
                             return false;
                         }
+
                         // As both might leave at different hours, we add the new journey as well... except if they are the same ofc
                         break;
                 }

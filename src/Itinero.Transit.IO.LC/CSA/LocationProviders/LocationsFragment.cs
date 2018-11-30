@@ -24,7 +24,7 @@ namespace Itinero.Transit
 
         private float _minLat, _maxLat, _minLon, _maxLon;
 
-        private static readonly IEnumerable<Uri> _empty = new List<Uri>();
+        private static readonly IEnumerable<Uri> Empty = new List<Uri>();
 
         [NonSerialized] private BoundingBox _bounds;
 
@@ -124,7 +124,7 @@ namespace Itinero.Transit
         {
             if (radiusInMeters < 1)
             {
-                return _empty;
+                return Empty;
             }
 
             if (!BBox().Overlaps(new BoundingBox(lat, lon, radiusInMeters)))

@@ -15,7 +15,7 @@
         /// Create statistics for a single connection, used to start the journey statistics.
         /// </summary>
         /// <returns></returns>
-        T InitialStats(IConnection c);
+        T InitialStats(IJourneyPart c);
 
         /// <summary>
         /// A new statistics object that represents the new statistics when this connection is taken.

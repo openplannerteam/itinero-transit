@@ -34,7 +34,7 @@ namespace Itinero.Transit
         {
             if (caching)
             {
-                var store = new FileStore("cache");
+                var store = new FileStoreBugFixer("cache");
                 _client = store.CreateClient();
             }
             else
@@ -128,7 +128,7 @@ namespace Itinero.Transit
         {
         }
 
-        public Task AddOrUpdateAsync(CacheKey key, HttpResponseMessage response)
+        public new Task AddOrUpdateAsync(CacheKey key, HttpResponseMessage response)
         {
             /*
              * TODO Fix this when upstream fixes the issue

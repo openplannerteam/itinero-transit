@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Itinero.Logging;
 using Itinero.Transit.Data;
 using Itinero.Transit.IO.LC;
@@ -25,6 +24,10 @@ namespace Itinero.Transit.Tests.Functional
         static void Main(string[] args)
         {
             EnableLogging();
+            Log.Information($"{args.Length} CLI params given");
+            
+            // do staging, download & preprocess some data.
+            BuildRouterDb.BuildOrLoad();
 
             // setup profile.
             var profile = Belgium.Sncb(new LocalStorage("cache"));

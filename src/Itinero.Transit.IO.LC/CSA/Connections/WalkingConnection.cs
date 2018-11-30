@@ -94,30 +94,6 @@ namespace Itinero.Transit
             return _departureTime;
         }
 
-        public Uri Operator()
-        {
-            return null;
-        }
-
-        public string Mode()
-        {
-            return "Walking";
-        }
-
-        public Uri Id()
-        {
-            return null;
-        }
-
-        public Uri Trip()
-        {
-            return null;
-        }
-
-        public Uri Route()
-        {
-            return null;
-        }
 
         public Route AsRoute(ILocationProvider locationProv)
         {
