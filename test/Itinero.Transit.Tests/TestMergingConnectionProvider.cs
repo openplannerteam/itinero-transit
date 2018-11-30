@@ -69,12 +69,12 @@ namespace Itinero.Transit_Tests
 
             Assert.Equal(ResourcesTest.TestMoment(4, 05), deLijnTt.EndTime());
 
-            Assert.Equal(ResourcesTest.TestMoment(3, 58), sncbTt.StartTime());
-            Assert.Equal(ResourcesTest.TestMoment(4, 06), sncbTt.EndTime());
+            Assert.True(ResourcesTest.TestMoment(3, 50) < sncbTt.StartTime());
+            Assert.True(ResourcesTest.TestMoment(4, 10) > sncbTt.EndTime());
 
-            Assert.Equal(518, graph.Count);
-            Assert.Equal(112, sncbTt.Connections().Count());
-            Assert.Equal(645, deLijnTt.Connections().Count());
+            Assert.True(518 < graph.Count);
+            Assert.True(100 < sncbTt.Connections().Count());
+            Assert.True(600 < deLijnTt.Connections().Count());
 
             foreach (var conn in graph)
             {

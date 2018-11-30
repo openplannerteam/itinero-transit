@@ -34,7 +34,9 @@ namespace Itinero.Transit_Tests
             Assert.True(storage.KnownKeys().Count> 200);
 
             var prov = Belgium.Sncb(new LocalStorage(ResourcesTest.TestPath));
-
+            var tt0 = ((LocallyCachedConnectionsProvider) (prov.ConnectionsProvider)).
+                TimeTableContaining(ResourcesTest.TestMoment(10,01));
+            Assert.NotNull(tt0);
             var tt = ((LocallyCachedConnectionsProvider) (prov.ConnectionsProvider)).
                 TimeTableContaining(ResourcesTest.TestMoment(10,00));
             Assert.NotNull(tt);
