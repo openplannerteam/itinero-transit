@@ -1,11 +1,12 @@
 using System;
+using Itinero.IO.LC;
 using Itinero.Transit;
 using Itinero.Transit.Tests;
 using Xunit;
 using Xunit.Abstractions;
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace Itinero.Transit_Tests
+namespace Itinero.IO.LC.Tests
 {
     public class WalkingTransferTest : SuperTest
     {

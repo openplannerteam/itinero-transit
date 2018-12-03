@@ -3,8 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 // ReSharper disable PossibleMultipleEnumeration
-
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /// <inheritdoc />
     /// <summary>
@@ -184,7 +183,7 @@ namespace Itinero.Transit
                     {
                         break;
                     }
-                    
+
                     // We set the enumerators at their valid first entries
                     // Note that empty timetables are skipped
                     // ReSharper disable once InvertIf
@@ -219,7 +218,8 @@ namespace Itinero.Transit
 
                 // we have found a valid entry
                 if (Current == null ||
-                    Current.DepartureTime() > cur.DepartureTime()){
+                    Current.DepartureTime() > cur.DepartureTime())
+                {
                     Current = cur;
                     actualSource = source;
                 }

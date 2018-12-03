@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     public class SimpleTimeTable : ITimeTable
     {

@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Itinero.IO.LC;
 using Itinero.Transit_Tests;
 using Xunit;
 using Xunit.Abstractions;
 
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace Itinero.Transit.Tests
+namespace Itinero.IO.LC.Tests
 {
     public class TestPcs : SuperTest
     {

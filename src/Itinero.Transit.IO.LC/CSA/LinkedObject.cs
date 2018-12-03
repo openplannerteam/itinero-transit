@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /**
      * A linked object is an object which has an Uniform Resource Identifier
@@ -45,11 +45,10 @@ namespace Itinero.Transit
                 throw;
             }
         }
-        
+
 
         public static Uri AsUri(string s)
         {
-
             return new Uri(s);
         }
 

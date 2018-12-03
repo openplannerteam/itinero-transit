@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Serilog;
 
-namespace Itinero.Transit.IO.LC
-{
+namespace Itinero.IO.LC{
     /// <summary>
     /// Contains extensions methods related to the connections db.
     /// </summary>

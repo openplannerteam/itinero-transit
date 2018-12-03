@@ -1,7 +1,6 @@
 ﻿using System;
 
-namespace Itinero.Transit
-{
+namespace Itinero.IO.LC{
     /// <inheritdoc />
     /// <summary>
     /// Represents an abstract connection from one point to another using a single transportation mode (e.g. train, walking, cycling, ...)

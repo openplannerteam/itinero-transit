@@ -1,4 +1,4 @@
-﻿namespace Itinero.IO.LC
+﻿namespace Itinero.Transit
 {
     /// <summary>
     /// The interface that objects comparing statistics fullfill.
@@ -11,9 +11,16 @@
     /// Note that this will be very user-specific
     /// 
     /// </summary>
-    public abstract class IStatsComparator<T>
+    public abstract class StatsComparator<T>
         where T : IJourneyStats<T>
     {
+       
+        
+        public const int ADominates = -1;
+        public const int BDominates = 1;
+        public const int Equals = 0;
+        public const int NotComparable = int.MaxValue;
+
         /// <summary>
         /// Returns (-1) if A is smaller (and thus more optimized),
         /// Return 1 if B is smaller (and thus more optimized)
@@ -23,12 +30,8 @@
         /// <param name="a">The first statistics to compare</param>
         /// <param name="b">The second statistics to compare</param>
         /// <returns></returns>
-        public abstract int ADominatesB(T a, T b);
-
-
-        public int ADominatesB(Journey<T> a, Journey<T> b)
-        {
-            return ADominatesB(a.Stats, b.Stats);
-        }
+        public abstract int ADominatesB(Journey<T> a, Journey<T> b);
+        
+        
     }
 }

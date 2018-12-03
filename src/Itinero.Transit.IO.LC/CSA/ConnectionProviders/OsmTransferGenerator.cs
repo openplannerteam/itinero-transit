@@ -4,7 +4,7 @@ using System.IO;
 using Itinero.Profiles;
 using static Itinero.Osm.Vehicles.Vehicle;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /// <inheritdoc />
     /// <summary>
@@ -58,6 +58,7 @@ namespace Itinero.Transit
                     {
                         throw new NullReferenceException("Could not load the routerDb");
                     }
+
                     KnownRouters[routerdbPath] = new Router(routerDb);
                 }
             }

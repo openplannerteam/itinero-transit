@@ -1,4 +1,5 @@
 using System;
+using Itinero.IO.LC;
 using JsonLD.Core;
 using Xunit;
 using Xunit.Abstractions;
@@ -7,7 +8,7 @@ using Xunit.Abstractions;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace Itinero.Transit.Tests
+namespace Itinero.IO.LC.Tests
 {
     public class TestCatalog : SuperTest
     {

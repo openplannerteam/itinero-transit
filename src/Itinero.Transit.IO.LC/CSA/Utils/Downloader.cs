@@ -10,7 +10,7 @@ using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /// <summary>
     /// Utilities to help downloading, caching and testing (e.g. to inject a fixed string while testing)

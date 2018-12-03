@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using JsonLD.Core;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     
     /// <summary>

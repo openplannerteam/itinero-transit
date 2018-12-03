@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Serilog;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     public static class ConnectionProviderExtensions
     {

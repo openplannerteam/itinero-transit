@@ -1,8 +1,17 @@
 ﻿using System;
+using Itinero.Transit.Data;
+
+// ReSharper disable BuiltInTypeReferenceStyle
 
 // ReSharper disable ImpureMethodCallOnReadonlyValueField
-namespace Itinero.IO.LC
+
+namespace Itinero.Transit
 {
+    using TimeSpan = UInt16;
+    using Time = UInt32;
+    using Id = UInt32;
+
+
     /// <inheritdoc />
     /// <summary>
     /// A simple statistic keeping track of the number of trains taken and the total travel time.
@@ -10,12 +19,7 @@ namespace Itinero.IO.LC
     /// </summary>
     public class TransferStats : IJourneyStats<TransferStats>
     {
-        public readonly int NumberOfTransfers;
-        public readonly DateTime StartTime;
-        public readonly DateTime EndTime;
-        public readonly TimeSpan TravelTime;
-
-        public readonly float WalkingDistance;
+        //------------------ ALL KINDS OF COMPARATORS -------------------
 
         public static readonly MinimizeTransfers MinimizeTransfers = new MinimizeTransfers();
         public static readonly MinimizeTravelTimes MinimizeTravelTimes = new MinimizeTravelTimes();
@@ -32,111 +36,89 @@ namespace Itinero.IO.LC
             new ChainedComparator<TransferStats>(MinimizeTravelTimes, MinimizeTransfers);
 
 
-        public static readonly TransferStats Factory =
-            new TransferStats(int.MaxValue, DateTime.MinValue, DateTime.MaxValue, int.MaxValue);
+        // ----------------- ZERO ELEMENT ------------------
 
-        public TransferStats(int numberOfTransfers, DateTime startTime, DateTime endTime, float walkingDistance)
+        public static readonly TransferStats Factory =
+            new TransferStats(null, int.MaxValue, TimeSpan.MaxValue, int.MaxValue);
+
+
+        // ---------------- ACTUAL STATISTICS -------------------------
+
+        public readonly int NumberOfTransfers;
+
+        public readonly TimeSpan TravelTime;
+
+        public readonly float WalkingDistance;
+
+
+        public readonly ConnectionsDb ConnectionsDb;
+
+
+        /// <summary>
+        /// Construct the first version of the TransferStats with a reference to the transitDB
+        /// </summary>
+        public TransferStats(ConnectionsDb db)
         {
-            NumberOfTransfers = numberOfTransfers;
-            StartTime = startTime;
-            EndTime = endTime;
-            TravelTime = endTime - startTime;
-            WalkingDistance = walkingDistance;
-            if (endTime < startTime)
-            {
-                throw new ArgumentException("Arrival time is before departure time");
-            }
+            ConnectionsDb = db;
         }
 
-        public TransferStats InitialStats(IJourneyPart c)
+        private TransferStats(ConnectionsDb db,
+            int numberOfTransfers,
+            TimeSpan travelTime,
+            float walkingDistance)
         {
-            var walk = 0f;
-            if (c is WalkingConnection connection &&
-                !connection.DepartureLocation().Equals(connection.ArrivalLocation()))
-            {
-                walk = connection.Walk().TotalDistance;
-            }
+            ConnectionsDb = db;
+            NumberOfTransfers = numberOfTransfers;
+            TravelTime = travelTime;
+            WalkingDistance = walkingDistance;
+        }
 
-            return new TransferStats(0, c.DepartureTime(), c.ArrivalTime(), walk);
+        public TransferStats EmptyStat()
+        {
+            return new TransferStats(ConnectionsDb, 0, 0, 0);
         }
 
         public TransferStats Add(Journey<TransferStats> journey)
         {
+            var conn
+                = ConnectionsDb.GetConnection(journey.Connection);
             var transferred =
-                journey.PreviousLink?.GetLastTripId() != null &&
-                !Equals(journey.PreviousLink?.GetLastTripId(), journey.GetLastTripId());
+                !Equals(journey.PreviousLink.LastTripId(ConnectionsDb),
+                    journey.LastTripId(ConnectionsDb));
 
-            var dep = journey.Connection.DepartureTime();
-            if (StartTime < dep)
-            {
-                dep = StartTime;
-            }
-
-            var arr = journey.Connection.ArrivalTime();
-            if (EndTime > arr)
-            {
-                arr = EndTime;
-            }
-
-            var walk = 0f;
-            if (journey.Connection is WalkingConnection connection)
-            {
-                walk = connection.Walk().TotalDistance;
-            }
-
-            return new TransferStats(NumberOfTransfers + (transferred ? 1 : 0), dep, arr, WalkingDistance + walk);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is TransferStats other)
-            {
-                return Equals(other);
-            }
-
-            return false;
-        }
-
-        internal bool Equals(TransferStats other)
-        {
-            return NumberOfTransfers == other.NumberOfTransfers &&
-                   EndTime.Equals(other.EndTime)
-                   && StartTime.Equals(other.StartTime)
-                   && Equals(WalkingDistance, other.WalkingDistance);
-        }
-
-        public override int GetHashCode()
-        {
-            return NumberOfTransfers + (EndTime - StartTime).GetHashCode();
+            return new TransferStats(ConnectionsDb,
+                NumberOfTransfers + (transferred ? 1 : 0),
+                conn.travelTime,
+                WalkingDistance + 0);
         }
 
         public override string ToString()
         {
             return
-                $"{NumberOfTransfers} transfers, {StartTime:HH:mm:ss} --> {EndTime:HH:mm:ss} ({EndTime - StartTime} total time), {WalkingDistance}m to walk";
+                $"Stats: {NumberOfTransfers} transfers, {TravelTime} total time), {WalkingDistance}m to walk";
         }
     }
 
 
-    public class MinimizeTransfers : IStatsComparator<TransferStats>
+    public class MinimizeTransfers : StatsComparator<TransferStats>
     {
-        public override int ADominatesB(TransferStats a, TransferStats b)
+        public override int ADominatesB(Journey<TransferStats> a, Journey<TransferStats> b)
         {
-            return a.NumberOfTransfers.CompareTo(b.NumberOfTransfers);
+            return a.Stats.NumberOfTransfers.CompareTo(b.Stats.NumberOfTransfers);
         }
     }
 
-    public class MinimizeTravelTimes : IStatsComparator<TransferStats>
+    public class MinimizeTravelTimes : StatsComparator<TransferStats>
     {
-        public override int ADominatesB(TransferStats a, TransferStats b)
+        public override int ADominatesB(Journey<TransferStats> a, Journey<TransferStats> b)
         {
-            return (a.EndTime - a.StartTime).CompareTo(b.EndTime - b.StartTime);
+            return (a.Stats.TravelTime).CompareTo(b.Stats.TravelTime);
         }
     }
 
     public class ProfileTransferCompare : ProfiledStatsComparator<TransferStats>
     {
-        public override int ADominatesB(TransferStats a, TransferStats b)
+        public override int ADominatesB(Journey<TransferStats> a, Journey<TransferStats> b)
         {
             if (a.Equals(b))
             {
@@ -174,18 +156,18 @@ namespace Itinero.IO.LC
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        private bool AIsBetterThenB(TransferStats a, TransferStats b)
+        private bool AIsBetterThenB(Journey<TransferStats> a, Journey<TransferStats> b)
         {
-            return a.NumberOfTransfers < b.NumberOfTransfers
-                   || a.StartTime > b.StartTime
-                   || a.EndTime < b.EndTime;
+            return a.Stats.NumberOfTransfers < b.Stats.NumberOfTransfers
+                   || a.PreviousLink.Time > b.PreviousLink.Time
+                   || a.Time < b.Time;
         }
     }
 
 
     public class ProfileCompare : ProfiledStatsComparator<TransferStats>
     {
-        public override int ADominatesB(TransferStats a, TransferStats b)
+        public override int ADominatesB(Journey<TransferStats> a, Journey<TransferStats> b)
         {
             if (a.Equals(b))
             {
@@ -223,29 +205,30 @@ namespace Itinero.IO.LC
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        private bool AIsBetterThenB(TransferStats a, TransferStats b)
+        private bool AIsBetterThenB(Journey<TransferStats> a, Journey<TransferStats> b)
         {
-            return a.StartTime > b.StartTime
-                   || a.EndTime < b.EndTime;
+            return a.PreviousLink.Time > b.PreviousLink.Time
+                   || a.Time < b.Time;
         }
     }
 
-    public class ParetoCompare : IStatsComparator<TransferStats>
+    public class ParetoCompare : StatsComparator<TransferStats>
     {
-        public override int ADominatesB(TransferStats a, TransferStats b)
+        public override int ADominatesB(Journey<TransferStats> a, Journey<TransferStats> b)
         {
-            if (a.TravelTime.Equals(b.TravelTime) && a.NumberOfTransfers.Equals(b.NumberOfTransfers))
+            if (a.Stats.TravelTime.Equals(b.Stats.TravelTime) &&
+                a.Stats.NumberOfTransfers.Equals(b.Stats.NumberOfTransfers))
             {
                 return 0;
             }
 
-            if (S1DominatesS2(a, b))
+            if (S1DominatesS2(a.Stats, b.Stats))
             {
                 return -1;
             }
 
             // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (S1DominatesS2(b, a))
+            if (S1DominatesS2(b.Stats, a.Stats))
             {
                 return 1;
             }

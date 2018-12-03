@@ -3,7 +3,7 @@ using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /// <inheritdoc />
     ///  <summary>
@@ -24,7 +24,7 @@ namespace Itinero.Transit
         public LinkedConnectionProvider(JToken hydraSearch, Downloader loader = null)
         {
             _searchTemplate = hydraSearch.GetLDValue("http://www.w3.org/ns/hydra/core#template");
-           
+
             Log.Information($"Search template is {_searchTemplate}");
             // TODO Softcode departure time argument
             var baseString = _searchTemplate.Replace("{?departureTime}", "");
@@ -33,7 +33,7 @@ namespace Itinero.Transit
             loader = loader ?? new Downloader();
             _processor = new JsonLdProcessor(loader, baseUri);
         }
-        
+
         public LinkedConnectionProvider(Uri baseUri, string searchUri, Downloader loader = null)
         {
             _searchTemplate = searchUri;

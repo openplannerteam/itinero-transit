@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     public class TestProfile
     {
@@ -20,15 +20,18 @@ namespace Itinero.Transit
         }
 
         public static readonly Uri A = new Uri("http://example.com/location/A");
+
         // ReSharper disable once MemberCanBePrivate.Global
         public static readonly Uri B = new Uri("http://example.com/location/B");
+
         // ReSharper disable once MemberCanBePrivate.Global
         public static readonly Uri C = new Uri("http://example.com/location/C");
         public static readonly Uri D = new Uri("http://example.com/location/D");
 
         public Profile<TransferStats> CreateTestProfile()
         {
-            var trainConn = new LinkedConnection(new Uri("http://example.com/conn/1"), C, D, Moment(18,00), Moment(19,00));
+            var trainConn = new LinkedConnection(new Uri("http://example.com/conn/1"), C, D, Moment(18, 00),
+                Moment(19, 00));
 
             var busConn = new LinkedConnection(new Uri("http://example.com/conn/2"), A, B, Moment(17, 00),
                 Moment(17, 45));
@@ -50,13 +53,12 @@ namespace Itinero.Transit
                 Name = "b",
                 Lat = 51.21293f,
                 Lon = 3.21870f
-                
             };
 
             var locC = new Location(C)
             {
                 Name = "C",
-                Lat =  51.21635f,
+                Lat = 51.21635f,
                 Lon = 3.21971f
             };
 

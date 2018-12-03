@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Itinero.IO.LC;
 using Itinero.Transit_Tests;
 using Xunit;
 using Xunit.Abstractions;
@@ -9,7 +10,7 @@ using Xunit.Abstractions;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace Itinero.Transit.Tests
+namespace Itinero.IO.LC.Tests
 {
     public class TestEas
     {

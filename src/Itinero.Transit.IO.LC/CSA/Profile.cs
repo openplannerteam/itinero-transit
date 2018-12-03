@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using JsonLD.Core;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /// <summary>
     /// A profile represents the preferences of the traveller.
@@ -18,7 +18,7 @@ namespace Itinero.Transit
 
         public readonly T StatsFactory;
         public readonly ProfiledStatsComparator<T> ProfileCompare;
-        public readonly StatsComparator<T> ParetoCompare;
+        public readonly IStatsComparator<T> ParetoCompare;
 
         /// <summary>
         /// Indicates the radius within which stops are searched during the
@@ -35,7 +35,7 @@ namespace Itinero.Transit
             IFootpathTransferGenerator footpathTransferGenerator,
             T statsFactory,
             ProfiledStatsComparator<T> profileCompare,
-            StatsComparator<T> paretoCompare)
+            IStatsComparator<T> paretoCompare)
         {
             ConnectionsProvider = connectionsProvider;
             LocationProvider = locationProvider;
@@ -58,7 +58,7 @@ namespace Itinero.Transit
             LocalStorage storage,
             T statsFactory,
             ProfiledStatsComparator<T> profileCompare,
-            StatsComparator<T> paretoCompare,
+            IStatsComparator<T> paretoCompare,
             Downloader loader = null
         )
         {
@@ -167,7 +167,6 @@ namespace Itinero.Transit
         /// <returns>A connection representing the transfer. Returns null if no transfer is possible (e.g. to little time)</returns>
         public IJourneyPart CalculateInterConnection(IJourneyPart from, IJourneyPart to)
         {
-
             var footpath = FootpathTransferGenerator.GenerateFootPaths(
                 from.ArrivalTime(),
                 LocationProvider.GetCoordinateFor(from.ArrivalLocation()),

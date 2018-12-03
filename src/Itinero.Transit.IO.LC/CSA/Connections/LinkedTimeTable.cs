@@ -4,7 +4,7 @@ using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /// <summary>
     /// Represents one entire page of connections, based on a LinkedConnections JSON-LD

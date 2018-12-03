@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 
-namespace Itinero.Transit
-{
+namespace Itinero.IO.LC{
     
     
     /// <summary>

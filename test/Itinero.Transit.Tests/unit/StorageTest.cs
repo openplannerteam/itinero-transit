@@ -1,9 +1,11 @@
+using Itinero.IO.LC;
+using Itinero.IO.LC.Tests;
 using Itinero.Transit;
 using Itinero.Transit.Tests;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Itinero.Transit_Tests
+namespace Itinero.IO.LC.Tests
 {
     public class StorageTest : SuperTest
     {
@@ -26,24 +28,6 @@ namespace Itinero.Transit_Tests
             var foundi = storage.Retrieve<int>("2");
             Assert.Equal(42, foundi);
         }
-
-        [Fact]
-        public void TestSearchTimeTable()
-        {
-            var storage = new LocalStorage(ResourcesTest.TestPath+"/SNCB/timetables");
-            Assert.True(storage.KnownKeys().Count> 200);
-
-            var prov = Belgium.Sncb(new LocalStorage(ResourcesTest.TestPath));
-            var tt0 = ((LocallyCachedConnectionsProvider) (prov.ConnectionsProvider)).
-                TimeTableContaining(ResourcesTest.TestMoment(10,01));
-            Assert.NotNull(tt0);
-            var tt = ((LocallyCachedConnectionsProvider) (prov.ConnectionsProvider)).
-                TimeTableContaining(ResourcesTest.TestMoment(10,00));
-            Assert.NotNull(tt);
-            Assert.Equal("http://graph.irail.be/sncb/connections?departureTime=2018-12-12T10:00:00.000Z",
-                tt.Id().ToString());
-        }
-
 
     }
 }

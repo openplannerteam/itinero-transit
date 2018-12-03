@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Itinero.IO.LC;
 using Itinero.Transit;
 using Itinero.Transit.Tests;
 using JsonLD.Core;
@@ -9,7 +10,7 @@ using Xunit.Abstractions;
 
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace Itinero.Transit_Tests
+namespace Itinero.IO.LC.Tests
 {
     public class TestLocations : SuperTest
     {

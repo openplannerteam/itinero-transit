@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Serilog;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /// <summary>
     /// Tracks which stops have already been visited

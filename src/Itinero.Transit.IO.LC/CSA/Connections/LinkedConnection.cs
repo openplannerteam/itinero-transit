@@ -6,8 +6,7 @@ using Newtonsoft.Json.Linq;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /**
      * A connection represents a single connection someone can take.

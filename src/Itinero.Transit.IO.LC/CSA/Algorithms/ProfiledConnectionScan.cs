@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /// <summary>
     /// The ProfiledConnectionScan is a CSA that applies A* backward and builds profiles on how to reach a target stop.

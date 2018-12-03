@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     public class LocationCombiner : ILocationProvider
     {

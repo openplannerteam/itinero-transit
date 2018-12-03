@@ -1,6 +1,6 @@
 using System;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     public class InternalTransferGenerator : IFootpathTransferGenerator
     {

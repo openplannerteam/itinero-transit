@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using Itinero.IO.LC;
 using Itinero.Transit;
 using Itinero.Transit.Tests;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Itinero.Transit_Tests
+namespace Itinero.IO.LC.Tests
 {
     public class TestMergingConnectionProvider : SuperTest
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Itinero.IO.LC;
 using Itinero.Logging;
 using Itinero.Transit.Data;
-using Itinero.Transit.IO.LC;
 using Itinero.Transit.Tests.Functional.Performance;
 using Itinero.Transit.Tests.Functional.Staging;
 using Serilog;

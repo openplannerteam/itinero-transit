@@ -5,7 +5,7 @@ using Itinero.LocalGeo;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /// <summary>
     /// A node in the RDF-tree, which pointers to it's children.
@@ -170,7 +170,7 @@ namespace Itinero.Transit
     public class BoundingBox
     {
         private readonly Polygon _outline;
-        private static readonly float LatDiffFactor = 1f/ (60 * 1852);
+        private static readonly float LatDiffFactor = 1f / (60 * 1852);
 
 
         [SuppressMessage("ReSharper", "InconsistentNaming")]

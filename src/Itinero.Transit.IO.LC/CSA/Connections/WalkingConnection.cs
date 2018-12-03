@@ -1,6 +1,5 @@
 using System;
-
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /// <summary>
     /// A walking connection is a connection where the traveller takes walks (or bikes)...

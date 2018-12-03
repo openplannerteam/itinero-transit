@@ -1,7 +1,6 @@
 using System;
 
-namespace Itinero.Transit
-{
+namespace Itinero.IO.LC{
     /// <summary>
     /// The footpath-generator is the one responsible to create transfers where the traveller transfers from one
     /// platform to another, possibly making an intermodal transfer.

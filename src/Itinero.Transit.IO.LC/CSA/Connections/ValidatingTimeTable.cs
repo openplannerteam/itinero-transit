@@ -2,8 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Serilog;
-
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /// <summary>
     /// The validating time table is a wrapper around a normal timetable.

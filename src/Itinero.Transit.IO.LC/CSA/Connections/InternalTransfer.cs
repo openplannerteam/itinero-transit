@@ -2,8 +2,7 @@
 using Itinero.LocalGeo;
 
 // ReSharper disable ImpureMethodCallOnReadonlyValueField
-
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /// <inheritdoc />
     /// <summary>

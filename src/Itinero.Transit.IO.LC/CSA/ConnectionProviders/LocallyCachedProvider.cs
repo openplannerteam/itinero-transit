@@ -1,6 +1,6 @@
 using System;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /// <inheritdoc />
     ///  <summary>
@@ -65,7 +65,7 @@ namespace Itinero.Transit
                 // The cache is empty
                 return null;
             }
-            
+
             var wanted = _fallbackProvider.TimeTableIdFor(date).OriginalString;
 
             var index = keys.BinarySearch(wanted);
@@ -84,6 +84,7 @@ namespace Itinero.Transit
             {
                 return null;
             }
+
             // We have found the time table in cache which might contain the requested time table
             // Lets instantiate it
             var tt = GetTimeTable(new Uri(keys[~index - 1])); // Always cached

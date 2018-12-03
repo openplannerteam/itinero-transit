@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Itinero.LocalGeo;
 using JsonLD.Core;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /// <inheritdoc />
     ///  <summary>

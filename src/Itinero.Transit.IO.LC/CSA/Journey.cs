@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /// <summary>
     /// A journey is a part in an intermodal trip, describing the route the user takes.
@@ -9,8 +9,8 @@ namespace Itinero.Transit
     /// Normally, a journey is constructed with the start location hidden the deepest in the data structure.
     /// The Time is mostly the arrival time.
     ///
-    /// The above properties are reversed in the CPS algorithm. The last step of that algorithm is to reverse the journeys,
-    /// so that users of the lib get a uniform experience
+    /// The above properties are reversed in the PCS algorithm. The last step of that algorithm is to reverse the journeys,
+    /// so that users of the lib get a uniform experience.
     /// </summary>
     public class Journey<T> where T : IJourneyStats<T>
     {
@@ -54,7 +54,8 @@ namespace Itinero.Transit
 
             if (Equals(previousLink.Connection, connection))
             {
-                throw new ArgumentException($"Seems like you chained a connection to itself. This is a bug.\n{connection}");
+                throw new ArgumentException(
+                    $"Seems like you chained a connection to itself. This is a bug.\n{connection}");
             }
         }
 

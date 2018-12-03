@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     public class ParetoFrontier<T>
         where T : IJourneyStats<T>
 
     {
-        private readonly StatsComparator<T> _comparator;
+        private readonly IStatsComparator<T> _comparator;
 
         /// <summary>
         /// Contains all the points on the frontier, in order
@@ -16,7 +16,7 @@ namespace Itinero.Transit
         public readonly List<Journey<T>> Frontier = new List<Journey<T>>();
 
 
-        public ParetoFrontier(StatsComparator<T> comparator)
+        public ParetoFrontier(IStatsComparator<T> comparator)
         {
             _comparator = comparator;
         }

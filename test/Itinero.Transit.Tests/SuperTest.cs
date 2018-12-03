@@ -1,7 +1,7 @@
 using System;
 using Xunit.Abstractions;
 
-namespace Itinero.Transit.Tests
+namespace Itinero.IO.LC.Tests
 {
     public class SuperTest
     {

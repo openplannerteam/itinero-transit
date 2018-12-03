@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
+using Itinero.IO.LC;
+using Itinero.IO.LC.Tests;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Itinero.Transit.Tests.unit.io.lc
+namespace Itinero.IO.LC.Tests
 {
     public class PCSUnitTest : SuperTest
     {

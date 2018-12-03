@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /// <summary>
     /// A TimeTable is an object containing multiple connections (often Public Transport).

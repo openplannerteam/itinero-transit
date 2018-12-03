@@ -1,7 +1,6 @@
 using System;
 
-namespace Itinero.Transit
-{
+namespace Itinero.IO.LC{
     /// <summary>
     /// The connections-provider is an object responsible for giving all kinds of connections.
     /// It is able to provide connections for

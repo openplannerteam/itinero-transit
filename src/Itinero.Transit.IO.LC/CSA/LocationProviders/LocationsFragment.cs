@@ -4,7 +4,7 @@ using System.Linq;
 using Itinero.LocalGeo;
 using Newtonsoft.Json.Linq;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /// <inheritdoc cref="ILocationProvider" />
     /// <summary>

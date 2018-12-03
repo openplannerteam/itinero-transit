@@ -1,6 +1,6 @@
 using System;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     public class SimpleConnProvider : IConnectionsProvider
     {
@@ -10,7 +10,7 @@ namespace Itinero.Transit
         {
             _tt = tt;
         }
-        
+
         public ITimeTable GetTimeTable(Uri id)
         {
             if (_tt.Id() == id)

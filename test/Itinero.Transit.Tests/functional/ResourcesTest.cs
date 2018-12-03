@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net;
+using Itinero.IO.LC;
 using Itinero.IO.Osm;
 using Itinero.Osm.Vehicles;
 using Itinero.Transit;
@@ -9,7 +10,7 @@ using Itinero.Transit.Tests;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Itinero.Transit_Tests
+namespace Itinero.IO.LC.Tests
 {
     public class ResourcesTest: SuperTest
     {
@@ -26,6 +27,25 @@ namespace Itinero.Transit_Tests
         {
             return TestDay.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
         }
+        
+        [Fact]
+        public void TestSearchTimeTable()
+        {
+            var storage = new LocalStorage(TestPath+"/SNCB/timetables");
+            Assert.True(storage.KnownKeys().Count> 200);
+
+            var prov = Belgium.Sncb(new LocalStorage(TestPath));
+            var tt0 = ((LocallyCachedConnectionsProvider) (prov.ConnectionsProvider)).
+                TimeTableContaining(TestMoment(10,01));
+            Assert.NotNull(tt0);
+            var tt = ((LocallyCachedConnectionsProvider) (prov.ConnectionsProvider)).
+                TimeTableContaining(TestMoment(10,00));
+            Assert.NotNull(tt);
+            Assert.Equal("http://graph.irail.be/sncb/connections?departureTime=2018-12-12T10:00:00.000Z",
+                tt.Id().ToString());
+        }
+
+
 
         [Fact]
         public void FixCache()

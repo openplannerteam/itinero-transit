@@ -1,4 +1,7 @@
-﻿namespace Itinero.IO.LC
+﻿using System;
+using Itinero.Transit.Data;
+
+namespace Itinero.Transit
 {
     ///  <summary>
     ///  Every journey carries a 'journeyStats'-object.
@@ -12,10 +15,10 @@
         where T : IJourneyStats<T>
     {
         /// <summary>
-        /// Create statistics for a single connection, used to start the journey statistics.
+        /// Gives an object representing a journey which hasn't begun yet.
+        /// 'Even the longest journey begins with the zeroth step'
         /// </summary>
-        /// <returns></returns>
-        T InitialStats(IJourneyPart c);
+        T EmptyStat();
 
         /// <summary>
         /// A new statistics object that represents the new statistics when this connection is taken.

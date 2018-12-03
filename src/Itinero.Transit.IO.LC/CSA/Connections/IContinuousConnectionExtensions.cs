@@ -1,6 +1,5 @@
 using System;
-
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     public static class ContinuousConnectionExtensions
     {

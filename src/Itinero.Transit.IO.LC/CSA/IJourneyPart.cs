@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Itinero.Transit
-{
+namespace Itinero.IO.LC{
     /// <summary>
     /// An IJourneyPart represents a single part in the journey.
     /// It has a departure and arrival time and location.

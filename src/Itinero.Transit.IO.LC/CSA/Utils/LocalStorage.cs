@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace Itinero.Transit
-{
+namespace Itinero.IO.LC{
     /// <summary>
     /// The local storage provides serialization to local files
     /// This can be useful to store the entire timetable beforehand and load later on

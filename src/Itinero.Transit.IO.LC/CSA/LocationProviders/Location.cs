@@ -2,7 +2,7 @@ using System;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 
-namespace Itinero.Transit
+namespace Itinero.IO.LC
 {
     /// <summary>
     /// Represents a transit location, such as a bus stop or train station
