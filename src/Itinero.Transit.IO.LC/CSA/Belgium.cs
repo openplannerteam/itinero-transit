@@ -10,8 +10,8 @@ namespace Itinero.IO.LC
         {
             return new Profile<TransferStats>(
                 "SNCB",
-                new Uri("http://graph.irail.be/sncb/connections"),
-                new Uri("http://irail.be/stations"),
+                new Uri("https://graph.irail.be/sncb/connections"),
+                new Uri("https://irail.be/stations"),
                 "belgium.routerdb",
                 storage,
                 TransferStats.Factory, 
@@ -61,8 +61,8 @@ namespace Itinero.IO.LC
             
             return new Profile<TransferStats>(
                 "DeLijnWvl",
-                new Uri($"http://openplanner.ilabt.imec.be/delijn/{province}/connections"),
-                new Uri($"http://openplanner.ilabt.imec.be/delijn/{province}/stops"),
+                new Uri($"https://openplanner.ilabt.imec.be/delijn/{province}/connections"),
+                new Uri($"https://openplanner.ilabt.imec.be/delijn/{province}/stops"),
                 "belgium.routerdb",
                 storage,
                 TransferStats.Factory, 

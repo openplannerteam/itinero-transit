@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 
 namespace Itinero.IO.LC.Tests
 {
-    public class ResourcesTest: SuperTest
+    public class ResourcesTest : SuperTest
     {
         public const string TestPath = "timetables-for-testing-2018-12-12";
 
@@ -27,24 +27,23 @@ namespace Itinero.IO.LC.Tests
         {
             return TestDay.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
         }
-        
+
         [Fact]
         public void TestSearchTimeTable()
         {
-            var storage = new LocalStorage(TestPath+"/SNCB/timetables");
-            Assert.True(storage.KnownKeys().Count> 200);
+            var storage = new LocalStorage(TestPath + "/SNCB/timetables");
+            Assert.True(storage.KnownKeys().Count > 200);
 
             var prov = Belgium.Sncb(new LocalStorage(TestPath));
-            var tt0 = ((LocallyCachedConnectionsProvider) (prov.ConnectionsProvider)).
-                TimeTableContaining(TestMoment(10,01));
+            var tt0 =
+                ((LocallyCachedConnectionsProvider) (prov.ConnectionsProvider)).TimeTableContaining(TestMoment(10, 01));
             Assert.NotNull(tt0);
-            var tt = ((LocallyCachedConnectionsProvider) (prov.ConnectionsProvider)).
-                TimeTableContaining(TestMoment(10,00));
+            var tt =
+                ((LocallyCachedConnectionsProvider) (prov.ConnectionsProvider)).TimeTableContaining(TestMoment(10, 00));
             Assert.NotNull(tt);
-            Assert.Equal("http://graph.irail.be/sncb/connections?departureTime=2018-12-12T10:00:00.000Z",
+            Assert.Equal("https://graph.irail.be/sncb/connections?departureTime=2018-12-12T10:00:00.000Z",
                 tt.Id().ToString());
         }
-
 
 
         [Fact]
@@ -72,7 +71,7 @@ namespace Itinero.IO.LC.Tests
                 Log(e.InnerException?.InnerException?.Message);
 
                 // NUKE THE CACHE!
-            //    Directory.Delete(TestPath, recursive: true);
+                //    Directory.Delete(TestPath, recursive: true);
 
                 throw;
             }
@@ -117,6 +116,22 @@ namespace Itinero.IO.LC.Tests
                     routerDb.Serialize(outStream);
                     Log("DONE!");
                 }
+            }
+        }
+
+        [Fact]
+        public void DownloadPast()
+        {
+            var sncb = Belgium.Sncb(new LocalStorage("SNCB-Past"));
+            try
+            {
+                var tt = sncb.ConnectionsProvider.GetTimeTable(new DateTime(2018, 1, 1));
+                throw new Exception("Downloading this much in the past should have failed");
+            }
+            catch(ArgumentException e)
+            {
+                // Indeed, should error
+                Assert.True(true);
             }
         }
     }
