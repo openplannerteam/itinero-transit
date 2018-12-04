@@ -2,18 +2,16 @@
 using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Serilog;
+
 // ReSharper disable BuiltInTypeReferenceStyle
 
 namespace Itinero.Transit
 {
-    
-        
     using TimeSpan = UInt16;
-    using Time = UInt32;
-    using Id = UInt32;
+    using Time = UInt64;
+    using LocId = UInt64;
 
 
-    
     /// <summary>
     /// A journey is a part in an intermodal trip, describing the route the user takes.
     ///
@@ -42,7 +40,7 @@ namespace Itinero.Transit
         /// Indicates that this journeyPart is not a simple PT-connection,
         /// but rather something as a walk, transfer, ...
         /// </summary>
-        public readonly bool SpecialConnection = false;
+        public readonly bool SpecialConnection;
 
         /// <summary>
         /// The connection id, taken in this last part of this journey
@@ -56,8 +54,17 @@ namespace Itinero.Transit
         /// </summary>
         public readonly uint Connection;
 
+        /// <summary>
+        /// Constant indicating that the journey starts here
+        /// </summary>
         public const uint GENESIS = 1;
+
+        /// <summary>
+        /// Constant indicating that the traveller doesn't move, but waits or changes platform
+        /// Also used as filler between the genesis and first departure
+        /// </summary>
         public const uint TRANSFER = 2;
+
         public const uint WALK = 3;
 
         /// <summary>
@@ -67,7 +74,7 @@ namespace Itinero.Transit
         /// 
         /// Only for the genesis connection, this is the departure location.
         /// </summary>
-        public readonly Id Location;
+        public readonly LocId Location;
 
         /// <summary>
         /// Keep track of Time.
@@ -95,16 +102,38 @@ namespace Itinero.Transit
             Root = this;
             PreviousLink = this;
             Connection = int.MaxValue;
-            Location = int.MaxValue;
+            Location = LocId.MaxValue;
             Time = Time.MaxValue;
+            SpecialConnection = true;
         }
 
+        /// <summary>
+        /// All-exposing constructor. I like the 'readonly' aspect of code.
+        /// Note that Stats will not be saved, but be used as constructor with 'stats.add(this)' is
+        /// </summary>
+        /// <param name="root"></param>
+        /// <param name="previousLink"></param>
+        /// <param name="connection"></param>
+        /// <param name="location"></param>
+        /// <param name="time"></param>
+        /// <param name="stats"></param>
+        private Journey(Journey<T> root, Journey<T> previousLink, bool specialLink, uint connection,
+            LocId location, Time time, T stats)
+        {
+            Root = root;
+            SpecialConnection = specialLink;
+            PreviousLink = previousLink;
+            Connection = connection;
+            Location = location;
+            Time = time;
+            Stats = stats.Add(this);
+        }
 
         /// <summary>
         /// Genesis constructor.
         /// This constructor creates a root journey
         /// </summary>
-        public Journey(Id location, Time departureTime, T statsFactory)
+        public Journey(LocId location, Time departureTime, T statsFactory)
         {
             Root = this;
             PreviousLink = null;
@@ -117,18 +146,33 @@ namespace Itinero.Transit
 
         /// <summary>
         /// Chaining constructor
-        /// Takes a previous journey and a current connection to build onto
+        /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
-        public Journey(Journey<T> previousLink, uint connection, Time arrivalTime, Id location)
+        public Journey<T> Chain(uint connection, Time arrivalTime, LocId location)
         {
-            Root = previousLink.Root;
-            PreviousLink = previousLink;
-            Connection = connection;
-            Time = arrivalTime;
-            Location = location;
+            return new Journey<T>(
+                Root, this, false, connection, location, arrivalTime, Stats);
+        }
 
-            // Stats will read out the value from this journey. It is thus important to create it as last element
-            Stats = previousLink.Stats.Add(this);
+        /// <summary>
+        /// Extends this journey with the given connection. If there is waiting time between this journey and the next,
+        /// a 'Transfer' link is included.
+        /// Transfer links _should not_ be used to calculate the number of transfers, the differences in trip-ids should be used for this! 
+        /// </summary>
+        /// <param name="connection"></param>
+        public Journey<T> Transfer(uint connection, Time departureTime, Time arrivalTime, LocId arrivalLocation)
+        {
+            if (Time == departureTime)
+            {
+                // No transfer needed: seamless link
+                return Chain(connection, arrivalTime, arrivalLocation);
+            }
+
+            // We have to create the transfer. Lets create that
+            var transfer = new Journey<T>(
+                // ReSharper disable once ArrangeThisQualifier
+                Root, this, true, TRANSFER, this.Location, departureTime, Stats);
+            return transfer.Chain(connection, arrivalTime, arrivalLocation);
         }
 
 
@@ -138,6 +182,16 @@ namespace Itinero.Transit
         public uint? LastTripId(ConnectionsDb db)
         {
             return SpecialConnection ? PreviousLink?.LastTripId(db) : db.GetTripId(Connection);
+        }
+
+        public Time StartTime()
+        {
+            if (SpecialConnection && Connection == GENESIS)
+            {
+                return Time;
+            }
+
+            return PreviousLink.Time;
         }
     }
 }

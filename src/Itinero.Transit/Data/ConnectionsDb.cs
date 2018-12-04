@@ -24,6 +24,7 @@ using System;
 using System.Data.Common;
 using System.Runtime.CompilerServices;
 using Itinero.Algorithms.Search;
+using Itinero.Profiles.Lua;
 using Itinero.Transit.Algorithms.Sorting;
 using Reminiscence.Arrays;
 
@@ -33,12 +34,11 @@ using Reminiscence.Arrays;
 
 namespace Itinero.Transit.Data
 {
-    
     using TimeSpan = UInt16;
     using Time = UInt32;
+    using LocId = UInt64;
     using Id = UInt32;
-    
-    
+
     public class ConnectionsDb
     {
         // this is a connections database, it needs to support:
@@ -237,8 +237,7 @@ namespace Itinero.Transit.Data
 
         public ((uint localTileId, uint localId) departureLocation,
             (Id localTileId, Id localId) arrivalLocation,
-            Time departureTime, TimeSpan travelTime) 
-            
+            Time departureTime, TimeSpan travelTime)
             GetConnection(uint internalId)
         {
             var dataPointer = internalId * ConnectionSizeInBytes;
@@ -575,6 +574,8 @@ namespace Itinero.Transit.Data
             /// </summary>
             public ushort TravelTime => _travelTime;
 
+            public uint CurrentId => _internalId;
+
             /// <summary>
             /// Moves this reader to the connection with the given internal id.
             /// </summary>
@@ -737,14 +738,36 @@ namespace Itinero.Transit.Data
             }
 
             /// <summary>
+            /// Same as 'MoveNext', but throws an IndexOutOfRange exception with the given error message if unsuccessful
+            /// </summary>
+            /// <param name="errMessage"></param>
+            public void MoveNext(string errMessage)
+            {
+                if (!MoveNext())
+                {
+                    throw new IndexOutOfRangeException(errMessage);
+                }
+            }
+
+            /// <summary>
             /// Gets the first stop.
             /// </summary>
-            public (uint localTileId, uint localId) Stop1 => _reader.Stop1;
+            public (uint localTileId, uint localId) DepartureStop => _reader.Stop1;
 
             /// <summary>
             /// Gets the second stop.
             /// </summary>
-            public (uint localTileId, uint localId) Stop2 => _reader.Stop2;
+            public (uint localTileId, uint localId) ArrivalStop => _reader.Stop2;
+
+            public LocId ArrivalLocation()
+            {
+                return ArrivalStop.localTileId * int.MaxValue + ArrivalStop.localId;
+            }
+
+            public LocId DepartureLocation()
+            {
+                return DepartureStop.localTileId * int.MaxValue + DepartureStop.localId;
+            }
 
             /// <summary>
             /// Gets the departure time.
@@ -756,6 +779,11 @@ namespace Itinero.Transit.Data
             /// </summary>
             public ushort TravelTime => _reader.TravelTime;
 
+            public uint ArrivalTime()
+            {
+                return _reader.DepartureTime + _reader.TravelTime;
+            }
+
             /// <summary>
             /// Gets the global id.
             /// </summary>
@@ -765,6 +793,8 @@ namespace Itinero.Transit.Data
             /// Gets the trip id.
             /// </summary>
             public uint TripId => _reader.TripId;
+
+            public uint CurrentId => _reader.CurrentId;
         }
 
         /// <summary>
