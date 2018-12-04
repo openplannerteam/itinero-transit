@@ -41,7 +41,7 @@ namespace Itinero.Transit
         /// <summary>
         /// Converts a number of milliseconds from 1/1/1970 into a standard DateTime.
         /// </summary>
-        public static DateTime FromUnixTime(long seconds)
+        public static DateTime FromUnixTime(ulong seconds)
         {
             return Epoch.AddSeconds(seconds); // to a multiple of 100 nanosec or ticks.
         }
@@ -49,9 +49,9 @@ namespace Itinero.Transit
         /// <summary>
         /// Converts a standard DateTime into the number of seconds since 1/1/1970.
         /// </summary>
-        public static uint ToUnixTime(this DateTime date)
+        public static ulong ToUnixTime(this DateTime date)
         {
-            return (uint) (date - Epoch).TotalSeconds; // from a multiple of 100 nanosec or ticks to milliseconds.
+            return (ulong) (date - Epoch).TotalSeconds; // from a multiple of 100 nanosec or ticks to milliseconds.
         }
     }
 }

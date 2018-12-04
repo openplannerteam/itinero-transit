@@ -5,7 +5,7 @@ using Itinero.Transit.Data;
 namespace Itinero.Transit
 {
     using LocId = UInt64;
-    using Time = UInt32;
+    using Time = UInt64;
 
     /// <summary>
     /// Calculates the fastest journey from A to B starting at a given time; using CSA (forward A*).

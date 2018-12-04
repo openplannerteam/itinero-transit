@@ -29,7 +29,7 @@ namespace Itinero.Transit.Data.Walks
         private Journey<T> CreateInternalTransfer(Journey<T> buildOn, uint conn, uint timeNearTransfer,
             uint timeNearHead, ulong locationNearHead, uint tripId)
         {
-            uint timeDiff;
+            ulong timeDiff;
             if (timeNearTransfer < buildOn.Time)
             {
                 timeDiff = buildOn.Time - timeNearTransfer;

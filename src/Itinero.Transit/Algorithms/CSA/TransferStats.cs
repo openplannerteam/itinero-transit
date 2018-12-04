@@ -74,7 +74,7 @@ namespace Itinero.Transit
                 !Equals(journey.PreviousLink.LastTripId(),
                     journey.LastTripId());
 
-            uint travelTime;
+            ulong travelTime;
 
             if (journey.Time > journey.PreviousLink.Time)
             {
@@ -86,7 +86,7 @@ namespace Itinero.Transit
             }
             
             return new TransferStats((uint) (NumberOfTransfers + (transferred ? 1 : 0)),
-                TravelTime + travelTime,
+                (uint) (TravelTime + travelTime),
                 WalkingDistance + 0);
         }
 

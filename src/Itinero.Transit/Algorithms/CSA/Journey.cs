@@ -8,7 +8,7 @@ using Serilog;
 namespace Itinero.Transit
 {
     using TimeSpan = UInt16;
-    using UnixTime = UInt32;
+    using UnixTime = UInt64;
     using LocId = UInt64;
 
 
