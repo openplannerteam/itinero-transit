@@ -85,6 +85,11 @@ namespace Itinero.Transit
         /// </summary>
         public readonly UnixTime Time;
 
+        /// <summary>
+        /// The trip id of the connection
+        /// </summary>
+        public readonly uint TripId;
+
 
         /// <summary>
         /// Keeps some statistics about the journey
@@ -105,6 +110,7 @@ namespace Itinero.Transit
             Location = LocId.MaxValue;
             Time = UnixTime.MaxValue;
             SpecialConnection = true;
+            TripId = uint.MaxValue;
         }
 
         /// <summary>
@@ -118,7 +124,7 @@ namespace Itinero.Transit
         /// <param name="time"></param>
         /// <param name="stats"></param>
         private Journey(Journey<T> root, Journey<T> previousLink, bool specialLink, uint connection,
-            LocId location, UnixTime time, T stats)
+            LocId location, UnixTime time, uint tripId, T stats)
         {
             Root = root;
             SpecialConnection = specialLink;
@@ -127,6 +133,7 @@ namespace Itinero.Transit
             Location = location;
             Time = time;
             Stats = stats.Add(this);
+            TripId = tripId;
         }
 
         /// <summary>
@@ -142,16 +149,17 @@ namespace Itinero.Transit
             Location = location;
             Time = departureTime;
             Stats = statsFactory;
+            TripId = uint.MaxValue;
         }
 
         /// <summary>
         /// Chaining constructor
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
-        public Journey<T> Chain(uint connection, UnixTime arrivalTime, LocId location)
+        public Journey<T> Chain(uint connection, UnixTime arrivalTime, LocId location, uint TripId)
         {
             return new Journey<T>(
-                Root, this, false, connection, location, arrivalTime, Stats);
+                Root, this, false, connection, location, arrivalTime, TripId, Stats);
         }
         
         /// <summary>
@@ -161,7 +169,7 @@ namespace Itinero.Transit
         public Journey<T> ChainSpecial(uint specialCode, UnixTime arrivalTime, LocId location)
         {
             return new Journey<T>(
-                Root, this, true, specialCode, location, arrivalTime, Stats);
+                Root, this, true, specialCode, location, arrivalTime, uint.MaxValue, Stats);
         }
 
         /// <summary>
@@ -170,28 +178,28 @@ namespace Itinero.Transit
         /// Transfer links _should not_ be used to calculate the number of transfers, the differences in trip-ids should be used for this! 
         /// </summary>
         /// <param name="connection"></param>
-        public Journey<T> Transfer(uint connection, UnixTime departureTime, UnixTime arrivalTime, LocId arrivalLocation)
+        public Journey<T> Transfer(uint connection, UnixTime departureTime, UnixTime arrivalTime, LocId arrivalLocation, uint tripId)
         {
             if (Time == departureTime)
             {
                 // No transfer needed: seamless link
-                return Chain(connection, arrivalTime, arrivalLocation);
+                return Chain(connection, arrivalTime, arrivalLocation, tripId);
             }
 
             // We have to create the transfer. Lets create that
             var transfer = new Journey<T>(
                 // ReSharper disable once ArrangeThisQualifier
-                Root, this, true, TRANSFER, this.Location, departureTime, Stats);
-            return transfer.Chain(connection, arrivalTime, arrivalLocation);
+                Root, this, true, TRANSFER, this.Location, departureTime, uint.MaxValue, Stats);
+            return transfer.Chain(connection, arrivalTime, arrivalLocation, tripId);
         }
 
 
         /// <summary>
         /// Returns the trip id of the most recent connection which has a valid trip.
         /// </summary>
-        public uint? LastTripId(ConnectionsDb db)
+        public uint? LastTripId()
         {
-            return SpecialConnection ? PreviousLink?.LastTripId(db) : db.GetTripId(Connection);
+            return SpecialConnection ? PreviousLink?.LastTripId() : TripId;
         }
 
         public UnixTime StartTime()

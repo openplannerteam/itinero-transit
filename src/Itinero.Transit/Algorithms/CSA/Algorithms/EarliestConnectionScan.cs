@@ -32,6 +32,14 @@ namespace Itinero.Transit
         /// </summary>
         private readonly Dictionary<LocId, Journey<T>> _trips = new Dictionary<LocId, Journey<T>>();
 
+
+        /// <summary>
+        /// This dictionary maps arrival times on the respective locations (when the traveller could arriva at that location)
+        /// When the algorithm comes at that arrival time, the walks from that arrival are calculated
+        /// </summary>
+     //   private readonly Dictionary<Time, HashSet<LocId>> _knownDepartures = new Dictionary<uint, HashSet<ulong>>();
+        
+        
         public EarliestConnectionScan(IEnumerable<LocId> userDepartureLocation,
             List<LocId> userTargetLocation, Time earliestDeparture, Time lastDeparture,
             ConnectionsDb connectionsProvider, StopsDb locationsProvider, T statsFactory)
@@ -99,14 +107,7 @@ namespace Itinero.Transit
             var lastDeparture = _lastDeparture;
             while (enumerator.DepartureTime < lastDeparture)
             {
-                var lastDepartureTime = enumerator.DepartureTime;
-                do
-                {
-                    IntegrateConnection(enumerator);
-
-                    enumerator.MoveNext(
-                        "Could not calculate AES: enumerator depleted, the query is probably to far in the future or the database isn't loaded sufficiently");
-                } while (lastDepartureTime == enumerator.DepartureTime);
+                IntegrateBatch(enumerator);
 
                 // we have reached a new batch of departure times
                 // Let's first check if we can reach an end destination already
@@ -138,25 +139,53 @@ namespace Itinero.Transit
             lastDeparture = depArrivalToTimeout(journey.Root.Time, journey.Time);
             while (enumerator.DepartureTime < lastDeparture)
             {
-                IntegrateConnection(enumerator);
-
-                enumerator.MoveNext(
-                    "Could not finish AES profile: enumerator depleted, the query is probably to far in the future or the database isn't loaded sufficiently");
+                IntegrateBatch(enumerator);
             }
+
 
             return journey;
         }
-
 
         /// <summary>
         /// Integrates all connections which happen to have the same departure time.
         /// Once all those connections are handled, the walks from the improved locations are batched
         /// </summary>
-        private void IntegrateBatch()
+        /// <param name="enumerator"></param>
+        private void IntegrateBatch(ConnectionsDb.DepartureEnumerator enumerator)
         {
+            var lastDepartureTime = enumerator.DepartureTime;
+            do
+            {
+                var l = IntegrateConnection(enumerator);
+
+             /*   if (l.improvedLocation != LocId.MaxValue)
+                {
+                    // The location has improved - we add it to the _knownDepartures
+                    
+                    // First, remove it from the previous departure time set
+                    if (!_knownDepartures.ContainsKey(l.previousTime))
+                    {
+                        _knownDepartures[l.previousTime].Remove(l.improvedLocation);
+                    }
+
+                    if (!_knownDepartures.ContainsKey(enumerator.ArrivalTime))
+                    {
+                        _knownDepartures[enumerator.ArrivalTime] = new HashSet<ulong>();
+                    }
+
+                    // We add it to the correct bucket
+                    _knownDepartures[enumerator.ArrivalTime].Add(l.improvedLocation);
+                }
+                */
+                enumerator.MoveNext(
+                    "Could not calculate AES: enumerator depleted, the query is probably to far in the future or the database isn't loaded sufficiently");
+            } while (lastDepartureTime == enumerator.DepartureTime);
+            
+            // The timeblock 
+            
             
         }
-        
+
 
         /// <summary>
         /// Handle a single connection, update the stop positions with new times if possible.
@@ -165,27 +194,27 @@ namespace Itinero.Transit
         /// If not, MaxValue is returned
         /// 
         /// </summary>
-        private LocId IntegrateConnection(ConnectionsDb.DepartureEnumerator c)
+        private (LocId improvedLocation, Time previousTime) IntegrateConnection(ConnectionsDb.DepartureEnumerator c)
         {
             /// <param name="c">A DepartureEnumeration, which is used here as if it were a single connection object</param>
             // The connection describes a random connection somewhere
             // Lets check if we can take it
 
-            var journeyTillDeparture = GetJourneyTo(c.DepartureLocation());
+            var journeyTillDeparture = GetJourneyTo(c.DepartureLocation);
 
             if (journeyTillDeparture
                 .Equals(Journey<T>.InfiniteJourney))
             {
                 // The stop where this connection starts, is not yet reachable
                 // Abort
-                return;
+                return (LocId.MaxValue, Time.MaxValue);
             }
 
 
             if (c.DepartureTime < journeyTillDeparture.Time)
             {
                 // This connection has already left before we can make it to the stop
-                return;
+                return (LocId.MaxValue, Time.MaxValue);
             }
 
 
@@ -203,7 +232,7 @@ namespace Itinero.Transit
             if (_trips.ContainsKey(trip))
             {
                 // We could be on this trip already, lets extend the journey
-                t2 = _trips[trip] = _trips[trip].Chain(c.CurrentId, c.ArrivalTime(), c.ArrivalLocation());
+                t2 = _trips[trip] = _trips[trip].Chain(c.CurrentId, c.ArrivalTime, c.ArrivalLocation, c.TripId);
             }
             else
             {
@@ -213,59 +242,38 @@ namespace Itinero.Transit
 
 
                 t2 = _trips[trip] = journeyTillDeparture.Transfer
-                    (c.CurrentId, c.DepartureTime, c.ArrivalTime(), c.ArrivalLocation());
+                    (c.CurrentId, c.DepartureTime, c.ArrivalTime, c.ArrivalLocation, c.TripId);
             }
 
 
-            if (journeyTillDeparture.LastTripId(_connectionsProvider) != null
+            if (journeyTillDeparture.LastTripId() != null
                 && !Equals(journeyTillDeparture
-                    .LastTripId(_connectionsProvider), c.TripId))
+                    .LastTripId(), c.TripId))
             {
                 // We have to transfer vehicles
                 t1 = journeyTillDeparture.Transfer(
-                    c.CurrentId, c.DepartureTime, c.ArrivalTime(), c.ArrivalLocation());
+                    c.CurrentId, c.DepartureTime, c.ArrivalTime, c.ArrivalLocation, c.TripId);
             }
             else
             {
                 // This connection was a walk or something similar
                 // Or we didn't have to transfer
                 // We chain the current connection after it
-                t1 = journeyTillDeparture.Chain(c.CurrentId, c.ArrivalTime(), c.ArrivalLocation());
+                t1 = journeyTillDeparture.Chain(c.CurrentId, c.ArrivalTime, c.ArrivalLocation, c.TripId);
             }
 
-            var journeyTillArrival = GetJourneyTo(c.ArrivalLocation());
+            var journeyTillArrival = GetJourneyTo(c.ArrivalLocation);
 
 
             // Jej! We can take the train! 
             // Lets see if we can make an improvement in regards to the previous solution
             var newJourney = SelectEarliest(journeyTillArrival, t1, t2);
-            _s[c.ArrivalLocation()] = newJourney;
+            _s[c.ArrivalLocation] = newJourney;
 
 
             var improved = newJourney != journeyTillArrival;
-            return improved ? c.ArrivalLocation() : LocId.MaxValue;
-        } /*
-            if (c is IContinuousConnection)
-            {
-                return;
-            }
-
-            // Alright, we are arriving at a new location. This means that we can walk from this location onto new stops
-            var connections = _profile.WalkToCloseByStops(c.ArrivalTime(),
-                _profile.GetCoordinateFor(c.ArrivalLocation()),
-                _profile.IntermodalStopSearchRadius);
-
-            foreach (var walk in connections)
-            {
-                if (walk == null)
-                {
-                    continue;
-                }
-
-                IntegrateConnection(walk);
-            }
-        }
-*/
+            return (improved ? c.ArrivalLocation : LocId.MaxValue, journeyTillArrival.Time);
+        } 
 
         /// <summary>
         /// Iterates all the target locations.

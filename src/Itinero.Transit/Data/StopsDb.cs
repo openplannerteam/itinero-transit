@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Data.Tiles;
 using Reminiscence.Arrays;
@@ -60,6 +62,12 @@ namespace Itinero.Transit.Data
                 _stopIdPointersPerHash[h] = NoData;
             }
             _stopIdLinkedList = new MemoryArray<uint>(0);
+        }
+
+
+        public IEnumerable<ulong> StopsCloseBy(ulong stopID)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

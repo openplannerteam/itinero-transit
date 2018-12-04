@@ -235,7 +235,7 @@ namespace Itinero.Transit.Data
             offset += 2;
         }
 
-        public ((uint localTileId, uint localId) departureLocation,
+        private ((uint localTileId, uint localId) departureLocation,
             (Id localTileId, Id localId) arrivalLocation,
             Time departureTime, TimeSpan travelTime)
             GetConnection(uint internalId)
@@ -276,7 +276,7 @@ namespace Itinero.Transit.Data
             return (stop1, stop2, departureTime, travelTime);
         }
 
-        public uint GetTripId(uint internalId)
+        private uint GetTripId(uint internalId)
         {
             return _tripIds[internalId];
         }
@@ -541,7 +541,8 @@ namespace Itinero.Transit.Data
             private uint _internalId;
             private (uint localTileId, uint localId) _stop1;
             private (uint localTileId, uint localId) _stop2;
-            private uint _departureTime;
+            private ulong _arrivalLocation, _departureLocation;
+            private uint _departureTime, _arrivalTime;
             private ushort _travelTime;
 
             /// <summary>
@@ -574,7 +575,12 @@ namespace Itinero.Transit.Data
             /// </summary>
             public ushort TravelTime => _travelTime;
 
+            public uint ArrivalTime => _arrivalTime;
+
             public uint CurrentId => _internalId;
+            public ulong ArrivalLocation => _arrivalLocation;
+            public ulong DepartureLocation => _departureLocation;
+
 
             /// <summary>
             /// Moves this reader to the connection with the given internal id.
@@ -595,7 +601,12 @@ namespace Itinero.Transit.Data
                 _stop2 = details.arrivalLocation;
                 _departureTime = details.departureTime;
                 _travelTime = details.travelTime;
+                _arrivalTime = details.departureTime + details.travelTime;
 
+                _departureLocation = details.departureLocation.localTileId * uint.MaxValue +
+                                     details.departureLocation.localId;
+                _arrivalLocation = details.arrivalLocation.localTileId * uint.MaxValue +
+                                     details.arrivalLocation.localId;
                 return true;
             }
 
@@ -759,15 +770,8 @@ namespace Itinero.Transit.Data
             /// </summary>
             public (uint localTileId, uint localId) ArrivalStop => _reader.Stop2;
 
-            public LocId ArrivalLocation()
-            {
-                return ArrivalStop.localTileId * int.MaxValue + ArrivalStop.localId;
-            }
-
-            public LocId DepartureLocation()
-            {
-                return DepartureStop.localTileId * int.MaxValue + DepartureStop.localId;
-            }
+            public LocId ArrivalLocation => _reader.ArrivalLocation;
+            public LocId DepartureLocation => _reader.DepartureLocation;
 
             /// <summary>
             /// Gets the departure time.
@@ -779,10 +783,7 @@ namespace Itinero.Transit.Data
             /// </summary>
             public ushort TravelTime => _reader.TravelTime;
 
-            public uint ArrivalTime()
-            {
-                return _reader.DepartureTime + _reader.TravelTime;
-            }
+            public uint ArrivalTime => _reader.ArrivalTime;
 
             /// <summary>
             /// Gets the global id.

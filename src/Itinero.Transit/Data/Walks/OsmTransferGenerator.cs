@@ -32,7 +32,6 @@ namespace Itinero.Transit
         private static readonly Dictionary<string, Router> KnownRouters
             = new Dictionary<string, Router>();
 
-        private readonly int _internalTransferTime;
 
         /// <summary>
         /// Generate a new transfer generator, which takes into account
@@ -51,11 +50,6 @@ namespace Itinero.Transit
         {
             _speed = speed;
             _stopsDb = stopsReader;
-            _internalTransferTime = internalTransferTime;
-            if (internalTransferTime < 0)
-            {
-                throw new ArgumentException("The internal transfer time should be >= 0");
-            }
 
             _walkingProfile = walkingProfile ?? Pedestrian.Fastest();
             routerdbPath = Path.GetFullPath(routerdbPath);
@@ -76,36 +70,6 @@ namespace Itinero.Transit
             _router = KnownRouters[routerdbPath];
         }
 
-        /// <summary>
-        /// Creates an internal transfer.
-        /// </summary>
-        /// <param name="buildOn"></param>
-        /// <param name="conn"></param>
-        /// <param name="timeNearTransfer">The departure time in the normal case, the arrival time if building journeys from en </param>
-        /// <param name="timeNearHead"></param>
-        /// <param name="locationNearHead"></param>
-        /// <returns></returns>
-        private Journey<T> CreateInternalTransfer(Journey<T> buildOn, uint conn, uint timeNearTransfer,
-            uint timeNearHead, ulong locationNearHead)
-        {
-            uint timeDiff;
-            if (timeNearTransfer < buildOn.Time)
-            {
-                timeDiff = buildOn.Time - timeNearTransfer;
-            }
-            else
-            {
-                timeDiff = timeNearTransfer - buildOn.Time;
-            }
-
-
-            if (timeDiff <= _internalTransferTime)
-            {
-                return null; // Too little time to transfer
-            }
-
-            return buildOn.Transfer(conn, timeNearTransfer, timeNearHead, locationNearHead);
-        }
 
         /// <summary>
         /// Tries to calculate a route between the two given point.
@@ -143,7 +107,7 @@ namespace Itinero.Transit
 
         public Journey<T> CreateDepartureTransfer(Journey<T> buildOn, uint nextConnection,
             uint connDeparture, ulong connDepartureLoc,
-            uint connArr, ulong connArrLoc)
+            uint connArr, ulong connArrLoc, uint tripId)
         {
             if (connDeparture < buildOn.Time)
             {
@@ -153,8 +117,7 @@ namespace Itinero.Transit
 
             if (connDepartureLoc == buildOn.Location)
             {
-                return CreateInternalTransfer(buildOn, 
-                    nextConnection, connDeparture, connArr, connArrLoc);
+                return null;
             }
 
             var route = CreateRouteBetween(buildOn.Location, connDepartureLoc);
@@ -169,12 +132,12 @@ namespace Itinero.Transit
 
             var withWalk = buildOn.ChainSpecial(
                 Journey<T>.WALK, (uint) (route.TotalTime + connDeparture), connDepartureLoc);
-            return withWalk.Chain(nextConnection, connArr, connArrLoc);
+            return withWalk.Chain(nextConnection, connArr, connArrLoc, tripId);
         }
 
         public Journey<T> CreateArrivingTransfer(Journey<T> buildOn, uint nextConnection,
             uint connDeparture, ulong connDepartureLoc,
-            uint connArr, ulong connArrLoc)
+            uint connArr, ulong connArrLoc, uint tripId)
         {
             if (connArr > buildOn.Time)
             {
@@ -184,8 +147,7 @@ namespace Itinero.Transit
 
             if (connArrLoc == buildOn.Location)
             {
-                return CreateInternalTransfer(buildOn, nextConnection,
-                    connArr, connDeparture, connDepartureLoc);
+                return null;
             }
 
             var route = CreateRouteBetween(buildOn.Location, connDepartureLoc);
@@ -200,7 +162,7 @@ namespace Itinero.Transit
 
             var withWalk = buildOn.ChainSpecial(
                 Journey<T>.WALK, (uint) (connArr - route.TotalTime), connArrLoc);
-            return withWalk.Chain(nextConnection, connDeparture, connDepartureLoc);
+            return withWalk.Chain(nextConnection, connDeparture, connDepartureLoc, tripId);
         }
     }
 }

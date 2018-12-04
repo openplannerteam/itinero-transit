@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using OsmSharp.API;
 
 namespace Itinero.Transit.Data.Walks
@@ -23,24 +24,31 @@ namespace Itinero.Transit.Data.Walks
         /// <param name="nextConnection"></param>
         /// <param name="connDeparture"></param>
         /// <param name="connDepartureLoc"></param>
+        /// <param name="connArrival"></param>
+        /// <param name="connArrLoc"></param>
+        /// <param name="tripId"></param>
         /// <returns></returns>
-        Journey<T> CreateDepartureTransfer(Journey<T> buildOn,uint nextConnection, 
-            UnixTime connDeparture,LocId connDepartureLoc, 
-            UnixTime connArrival, LocId connArrLoc);
-        
-        
+        Journey<T> CreateDepartureTransfer(Journey<T> buildOn, uint nextConnection,
+            uint connDeparture, ulong connDepartureLoc,
+            uint connArrival, ulong connArrLoc, uint tripId);
+
+
         /// <summary>
         /// Reverse add connection. Chains the transfer and connection to the given journey.
         /// However, this is the method to use for journeys which are built backwards in time 
         /// </summary>
         /// <param name="buildOn"></param>
         /// <param name="previousConnection"></param>
+        /// <param name="connDeparture"></param>
+        /// <param name="connDepartureLoc"></param>
         /// <param name="connArrival"></param>
+        /// <param name="connArrLoc"></param>
+        /// <param name="tripId"></param>
         /// <param name="connArrivalLoc"></param>
         /// <returns></returns>
-        Journey<T> CreateArrivingTransfer(Journey<T> buildOn, uint previousConnection, 
-            UnixTime connDeparture, LocId connDepartureLoc,
-            UnixTime connArrival, LocId connArrLoc);
+        Journey<T> CreateArrivingTransfer(Journey<T> buildOn, uint previousConnection,
+            uint connDeparture, ulong connDepartureLoc,
+            uint connArrival, ulong connArrLoc, uint tripId);
 
     }
 }

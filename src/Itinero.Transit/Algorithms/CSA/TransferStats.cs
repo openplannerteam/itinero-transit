@@ -1,5 +1,4 @@
 ﻿using System;
-using Itinero.Transit.Data;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 
@@ -7,7 +6,7 @@ using Itinero.Transit.Data;
 
 namespace Itinero.Transit
 {
-    using TimeSpan = UInt16;
+    using TimeSpan = UInt32;
     using Time = UInt32;
     using Id = UInt32;
 
@@ -39,56 +38,55 @@ namespace Itinero.Transit
         // ----------------- ZERO ELEMENT ------------------
 
         public static readonly TransferStats Factory =
-            new TransferStats(null, int.MaxValue, TimeSpan.MaxValue, int.MaxValue);
+            new TransferStats(int.MaxValue, TimeSpan.MaxValue, int.MaxValue);
 
 
         // ---------------- ACTUAL STATISTICS -------------------------
 
-        public readonly int NumberOfTransfers;
+        public readonly uint NumberOfTransfers;
 
         public readonly TimeSpan TravelTime;
 
         public readonly float WalkingDistance;
 
 
-        public readonly ConnectionsDb ConnectionsDb;
-
-
-        /// <summary>
-        /// Construct the first version of the TransferStats with a reference to the transitDB
-        /// </summary>
-        public TransferStats(ConnectionsDb db)
-        {
-            ConnectionsDb = db;
-        }
-
-        private TransferStats(ConnectionsDb db,
-            int numberOfTransfers,
+        private TransferStats(uint numberOfTransfers,
             TimeSpan travelTime,
             float walkingDistance)
         {
-            ConnectionsDb = db;
             NumberOfTransfers = numberOfTransfers;
             TravelTime = travelTime;
             WalkingDistance = walkingDistance;
         }
 
+        public TransferStats() : this(0,0,0)
+        {
+        }
+
         public TransferStats EmptyStat()
         {
-            return new TransferStats(ConnectionsDb, 0, 0, 0);
+            return new TransferStats();
         }
 
         public TransferStats Add(Journey<TransferStats> journey)
         {
-            var conn
-                = ConnectionsDb.GetConnection(journey.Connection);
             var transferred =
-                !Equals(journey.PreviousLink.LastTripId(ConnectionsDb),
-                    journey.LastTripId(ConnectionsDb));
+                !Equals(journey.PreviousLink.LastTripId(),
+                    journey.LastTripId());
 
-            return new TransferStats(ConnectionsDb,
-                NumberOfTransfers + (transferred ? 1 : 0),
-                conn.travelTime,
+            uint travelTime;
+
+            if (journey.Time > journey.PreviousLink.Time)
+            {
+                travelTime = journey.Time - journey.PreviousLink.Time;
+            }
+            else
+            {
+                travelTime = journey.PreviousLink.Time - journey.Time;
+            }
+            
+            return new TransferStats((uint) (NumberOfTransfers + (transferred ? 1 : 0)),
+                TravelTime + travelTime,
                 WalkingDistance + 0);
         }
 

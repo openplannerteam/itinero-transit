@@ -49,9 +49,9 @@ namespace Itinero.Transit
         /// <summary>
         /// Converts a standard DateTime into the number of seconds since 1/1/1970.
         /// </summary>
-        public static long ToUnixTime(this DateTime date)
+        public static uint ToUnixTime(this DateTime date)
         {
-            return (long)(date - Epoch).TotalSeconds; // from a multiple of 100 nanosec or ticks to milliseconds.
+            return (uint) (date - Epoch).TotalSeconds; // from a multiple of 100 nanosec or ticks to milliseconds.
         }
     }
 }
