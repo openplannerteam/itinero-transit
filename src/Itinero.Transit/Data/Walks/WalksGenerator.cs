@@ -3,7 +3,7 @@ using OsmSharp.API;
 
 namespace Itinero.Transit.Data.Walks
 {
-    using Time =UInt64;
+    using UnixTime =UInt32;
     using LocId = UInt64;
     
     
@@ -24,7 +24,9 @@ namespace Itinero.Transit.Data.Walks
         /// <param name="connDeparture"></param>
         /// <param name="connDepartureLoc"></param>
         /// <returns></returns>
-        Journey<T> CreateDepartureTransfer(Journey<T> buildOn, uint nextConnection, Time connDeparture, LocId connDepartureLoc);
+        Journey<T> CreateDepartureTransfer(Journey<T> buildOn,uint nextConnection, 
+            UnixTime connDeparture,LocId connDepartureLoc, 
+            UnixTime connArrival, LocId connArrLoc);
         
         
         /// <summary>
@@ -36,7 +38,9 @@ namespace Itinero.Transit.Data.Walks
         /// <param name="connArrival"></param>
         /// <param name="connArrivalLoc"></param>
         /// <returns></returns>
-        Journey<T> CreateArrivingTransfer(Journey<T> buildOn, uint previousConnection, Time connArrival, LocId connArrivalLoc);
+        Journey<T> CreateArrivingTransfer(Journey<T> buildOn, uint previousConnection, 
+            UnixTime connDeparture, LocId connDepartureLoc,
+            UnixTime connArrival, LocId connArrLoc);
 
     }
 }

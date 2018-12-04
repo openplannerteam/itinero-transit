@@ -5,7 +5,7 @@ using Itinero.Transit.Data;
 namespace Itinero.Transit
 {
     using LocId = UInt64;
-    using Time = UInt64;
+    using Time = UInt32;
 
     /// <summary>
     /// Calculates the fastest journey from A to B starting at a given time; using CSA (forward A*).
@@ -149,9 +149,23 @@ namespace Itinero.Transit
 
 
         /// <summary>
-        /// Handle a single connection, update the stop positions with new times if possible
+        /// Integrates all connections which happen to have the same departure time.
+        /// Once all those connections are handled, the walks from the improved locations are batched
         /// </summary>
-        private void IntegrateConnection(ConnectionsDb.DepartureEnumerator c)
+        private void IntegrateBatch()
+        {
+            
+        }
+        
+
+        /// <summary>
+        /// Handle a single connection, update the stop positions with new times if possible.
+        ///
+        /// Returns connection.ArrivalLocation iff this an improvement has been made to reach this location.
+        /// If not, MaxValue is returned
+        /// 
+        /// </summary>
+        private LocId IntegrateConnection(ConnectionsDb.DepartureEnumerator c)
         {
             /// <param name="c">A DepartureEnumeration, which is used here as if it were a single connection object</param>
             // The connection describes a random connection somewhere
@@ -182,7 +196,7 @@ namespace Itinero.Transit
             var t2 = Journey<T>.InfiniteJourney;
 
             // When walking
-           // Walks are handled downwards
+            // Walks are handled downwards
 
             var trip = c.TripId;
 
@@ -201,9 +215,7 @@ namespace Itinero.Transit
                 t2 = _trips[trip] = journeyTillDeparture.Transfer
                     (c.CurrentId, c.DepartureTime, c.ArrivalTime(), c.ArrivalLocation());
             }
-            
-            
-            
+
 
             if (journeyTillDeparture.LastTripId(_connectionsProvider) != null
                 && !Equals(journeyTillDeparture
@@ -223,19 +235,15 @@ namespace Itinero.Transit
 
             var journeyTillArrival = GetJourneyTo(c.ArrivalLocation());
 
-            
-            
+
             // Jej! We can take the train! 
             // Lets see if we can make an improvement in regards to the previous solution
-           var newJourney = SelectEarliest(journeyTillArrival, t1, t2);
+            var newJourney = SelectEarliest(journeyTillArrival, t1, t2);
             _s[c.ArrivalLocation()] = newJourney;
 
-            
+
             var improved = newJourney != journeyTillArrival;
-            // if we made an improvement, we should mark all locations that can be reached via foothpaths as reachable
-            // TODO
-
-
+            return improved ? c.ArrivalLocation() : LocId.MaxValue;
         } /*
             if (c is IContinuousConnection)
             {

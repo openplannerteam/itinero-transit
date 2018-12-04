@@ -172,6 +172,11 @@ namespace Itinero.Transit.Data
                 return _locationEnumerator.MoveTo(localTileId, localId);
             }
 
+            public bool MoveTo(ulong locationId)
+            {
+                return MoveTo((uint) (locationId / uint.MaxValue), (uint) (locationId % uint.MaxValue));
+            }
+
             /// <summary>
             /// Moves this enumerator to the stop with the given global id.
             /// </summary>

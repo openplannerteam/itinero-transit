@@ -8,7 +8,7 @@ using Serilog;
 namespace Itinero.Transit
 {
     using TimeSpan = UInt16;
-    using Time = UInt64;
+    using UnixTime = UInt32;
     using LocId = UInt64;
 
 
@@ -57,15 +57,15 @@ namespace Itinero.Transit
         /// <summary>
         /// Constant indicating that the journey starts here
         /// </summary>
-        public const uint GENESIS = 1;
+        public static uint GENESIS = 1;
 
         /// <summary>
         /// Constant indicating that the traveller doesn't move, but waits or changes platform
         /// Also used as filler between the genesis and first departure
         /// </summary>
-        public const uint TRANSFER = 2;
+        public static uint TRANSFER = 2;
 
-        public const uint WALK = 3;
+        public static uint WALK = 3;
 
         /// <summary>
         /// Keep track of Location.
@@ -83,7 +83,7 @@ namespace Itinero.Transit
         /// 
         /// Only for the genesis connection, this is the departure time.
         /// </summary>
-        public readonly Time Time;
+        public readonly UnixTime Time;
 
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace Itinero.Transit
             PreviousLink = this;
             Connection = int.MaxValue;
             Location = LocId.MaxValue;
-            Time = Time.MaxValue;
+            Time = UnixTime.MaxValue;
             SpecialConnection = true;
         }
 
@@ -118,7 +118,7 @@ namespace Itinero.Transit
         /// <param name="time"></param>
         /// <param name="stats"></param>
         private Journey(Journey<T> root, Journey<T> previousLink, bool specialLink, uint connection,
-            LocId location, Time time, T stats)
+            LocId location, UnixTime time, T stats)
         {
             Root = root;
             SpecialConnection = specialLink;
@@ -133,7 +133,7 @@ namespace Itinero.Transit
         /// Genesis constructor.
         /// This constructor creates a root journey
         /// </summary>
-        public Journey(LocId location, Time departureTime, T statsFactory)
+        public Journey(LocId location, UnixTime departureTime, T statsFactory)
         {
             Root = this;
             PreviousLink = null;
@@ -148,10 +148,20 @@ namespace Itinero.Transit
         /// Chaining constructor
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
-        public Journey<T> Chain(uint connection, Time arrivalTime, LocId location)
+        public Journey<T> Chain(uint connection, UnixTime arrivalTime, LocId location)
         {
             return new Journey<T>(
                 Root, this, false, connection, location, arrivalTime, Stats);
+        }
+        
+        /// <summary>
+        /// Chaining constructor
+        /// Gives a new journey which extends this journey with the given connection.
+        /// </summary>
+        public Journey<T> ChainSpecial(uint specialCode, UnixTime arrivalTime, LocId location)
+        {
+            return new Journey<T>(
+                Root, this, true, specialCode, location, arrivalTime, Stats);
         }
 
         /// <summary>
@@ -160,7 +170,7 @@ namespace Itinero.Transit
         /// Transfer links _should not_ be used to calculate the number of transfers, the differences in trip-ids should be used for this! 
         /// </summary>
         /// <param name="connection"></param>
-        public Journey<T> Transfer(uint connection, Time departureTime, Time arrivalTime, LocId arrivalLocation)
+        public Journey<T> Transfer(uint connection, UnixTime departureTime, UnixTime arrivalTime, LocId arrivalLocation)
         {
             if (Time == departureTime)
             {
@@ -184,7 +194,7 @@ namespace Itinero.Transit
             return SpecialConnection ? PreviousLink?.LastTripId(db) : db.GetTripId(Connection);
         }
 
-        public Time StartTime()
+        public UnixTime StartTime()
         {
             if (SpecialConnection && Connection == GENESIS)
             {
