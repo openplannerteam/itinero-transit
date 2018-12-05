@@ -123,17 +123,17 @@ namespace Itinero.Transit.Data
             return (tileId, localId);
         }
 
-        private int Hash(string id)
+        private uint Hash(string id)
         { // https://stackoverflow.com/questions/5154970/how-do-i-create-a-hashcode-in-net-c-for-a-string-that-is-safe-to-store-in-a
             unchecked
             {
-                var hash = 23;
+                var hash = (uint) 23;
                 foreach (var c in id)
                 {
                     hash = hash * 31 + c;
                 }
 
-                return hash % _stopIdHashSize;
+                return  (uint) (hash % _stopIdHashSize);
             }
         }
 
