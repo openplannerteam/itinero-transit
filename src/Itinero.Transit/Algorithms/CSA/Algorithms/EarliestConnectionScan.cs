@@ -15,6 +15,8 @@ namespace Itinero.Transit
     public class EarliestConnectionScan<T>
         where T : IJourneyStats<T>
     {
+        private readonly Profile<T> _profile;
+
         private readonly List<LocId> _userTargetLocation;
 
         private readonly ConnectionsDb _connectionsProvider;
@@ -37,21 +39,40 @@ namespace Itinero.Transit
         /// This dictionary maps arrival times on the respective locations (when the traveller could arriva at that location)
         /// When the algorithm comes at that arrival time, the walks from that arrival are calculated
         /// </summary>
-     //   private readonly Dictionary<Time, HashSet<LocId>> _knownDepartures = new Dictionary<uint, HashSet<ulong>>();
+        //   private readonly Dictionary<Time, HashSet<LocId>> _knownDepartures = new Dictionary<uint, HashSet<ulong>>();
         
         
+        /// <summary>
+        /// Construct a AES
+        /// </summary>
+        /// <param name="userDepartureLocation"></param>
+        /// <param name="userTargetLocation"></param>
+        /// <param name="earliestDeparture"></param>
+        /// <param name="lastDeparture"></param>
+        /// <param name="profile"></param>
+        public EarliestConnectionScan(LocId userDepartureLocation, LocId userTargetLocation,
+            Time earliestDeparture, Time lastDeparture,
+            Profile<T> profile) : this(
+            new List<ulong> {userDepartureLocation}, new List<ulong> {userTargetLocation},
+            earliestDeparture, lastDeparture,
+            profile)
+        {
+        }
+
+
         public EarliestConnectionScan(IEnumerable<LocId> userDepartureLocation,
             List<LocId> userTargetLocation, Time earliestDeparture, Time lastDeparture,
-            ConnectionsDb connectionsProvider, StopsDb locationsProvider, T statsFactory)
+            Profile<T> profile)
         {
-            _locationsProvider = locationsProvider;
+            _profile = profile;
+            _locationsProvider = profile.StopsDb;
             _lastDeparture = lastDeparture;
-            _connectionsProvider = connectionsProvider;
+            _connectionsProvider = profile.ConnectionsDb;
 
             _userTargetLocation = userTargetLocation;
             foreach (var loc in userDepartureLocation)
             {
-                _s.Add(loc, new Journey<T>(loc, earliestDeparture, statsFactory));
+                _s.Add(loc, new Journey<T>(loc, earliestDeparture, profile.StatsFactory));
             }
         }
 
@@ -158,32 +179,30 @@ namespace Itinero.Transit
             {
                 var l = IntegrateConnection(enumerator);
 
-             /*   if (l.improvedLocation != LocId.MaxValue)
-                {
-                    // The location has improved - we add it to the _knownDepartures
-                    
-                    // First, remove it from the previous departure time set
-                    if (!_knownDepartures.ContainsKey(l.previousTime))
-                    {
-                        _knownDepartures[l.previousTime].Remove(l.improvedLocation);
-                    }
-
-                    if (!_knownDepartures.ContainsKey(enumerator.ArrivalTime))
-                    {
-                        _knownDepartures[enumerator.ArrivalTime] = new HashSet<ulong>();
-                    }
-
-                    // We add it to the correct bucket
-                    _knownDepartures[enumerator.ArrivalTime].Add(l.improvedLocation);
-                }
-                */
+                /*   if (l.improvedLocation != LocId.MaxValue)
+                   {
+                       // The location has improved - we add it to the _knownDepartures
+                       
+                       // First, remove it from the previous departure time set
+                       if (!_knownDepartures.ContainsKey(l.previousTime))
+                       {
+                           _knownDepartures[l.previousTime].Remove(l.improvedLocation);
+                       }
+   
+                       if (!_knownDepartures.ContainsKey(enumerator.ArrivalTime))
+                       {
+                           _knownDepartures[enumerator.ArrivalTime] = new HashSet<ulong>();
+                       }
+   
+                       // We add it to the correct bucket
+                       _knownDepartures[enumerator.ArrivalTime].Add(l.improvedLocation);
+                   }
+                   */
                 enumerator.MoveNext(
                     "Could not calculate AES: enumerator depleted, the query is probably to far in the future or the database isn't loaded sufficiently");
             } while (lastDepartureTime == enumerator.DepartureTime);
-            
+
             // The timeblock 
-            
-            
         }
 
 
@@ -194,7 +213,7 @@ namespace Itinero.Transit
         /// If not, MaxValue is returned
         /// 
         /// </summary>
-        private (LocId improvedLocation, Time previousTime) IntegrateConnection(ConnectionsDb.DepartureEnumerator c)
+        private (LocId improvedLocation, Time previousTime) IntegrateConnection(Connection c)
         {
             /// <param name="c">A DepartureEnumeration, which is used here as if it were a single connection object</param>
             // The connection describes a random connection somewhere
@@ -232,7 +251,7 @@ namespace Itinero.Transit
             if (_trips.ContainsKey(trip))
             {
                 // We could be on this trip already, lets extend the journey
-                t2 = _trips[trip] = _trips[trip].Chain(c.CurrentId, c.ArrivalTime, c.ArrivalLocation, c.TripId);
+                t2 = _trips[trip] = _trips[trip].ChainForward(c);
             }
             else
             {
@@ -241,8 +260,10 @@ namespace Itinero.Transit
                 // The departure station should be stable in time, so we can take that journey and board
 
 
-                t2 = _trips[trip] = journeyTillDeparture.Transfer
-                    (c.CurrentId, c.DepartureTime, c.ArrivalTime, c.ArrivalLocation, c.TripId);
+                t2 = _trips[trip] =
+                    // TODO
+                    journeyTillDeparture.Transfer
+                        (c.Id, c.DepartureTime, c.ArrivalTime, c.ArrivalLocation, c.TripId);
             }
 
 
@@ -252,14 +273,14 @@ namespace Itinero.Transit
             {
                 // We have to transfer vehicles
                 t1 = journeyTillDeparture.Transfer(
-                    c.CurrentId, c.DepartureTime, c.ArrivalTime, c.ArrivalLocation, c.TripId);
+                    c.Id, c.DepartureTime, c.ArrivalTime, c.ArrivalLocation, c.TripId);
             }
             else
             {
                 // This connection was a walk or something similar
                 // Or we didn't have to transfer
                 // We chain the current connection after it
-                t1 = journeyTillDeparture.Chain(c.CurrentId, c.ArrivalTime, c.ArrivalLocation, c.TripId);
+                t1 = journeyTillDeparture.ChainForward(c);
             }
 
             var journeyTillArrival = GetJourneyTo(c.ArrivalLocation);
@@ -273,7 +294,7 @@ namespace Itinero.Transit
 
             var improved = newJourney != journeyTillArrival;
             return (improved ? c.ArrivalLocation : LocId.MaxValue, journeyTillArrival.Time);
-        } 
+        }
 
         /// <summary>
         /// Iterates all the target locations.

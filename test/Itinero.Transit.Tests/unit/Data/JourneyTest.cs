@@ -16,11 +16,41 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void TestSimpleJourney()
         {
+            var connDb = new ConnectionsDb();
+            var c0 = connDb.Add((0, 0), (0, 1),
+                "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 16, 20, 00),
+                10 * 60, 0);
+
+            var c1 = connDb.Add((0, 0), (0, 1),
+                "https://example.com/connections/1",
+                new DateTime(2018, 12, 04, 16, 33, 00),
+                10 * 60, 1);
+
+
             var time = new DateTime(2018, 12, 04, 16, 20, 00).ToUnixTime();
             var j = new Journey<TransferStats>(0, time,
                 new TransferStats());
+
+            var reader = connDb.GetReader();
+            reader.MoveTo(c0);
+
+            j = j.ChainForward(reader);
+            Assert.NotNull(j.Stats);
+            Assert.Equal((uint) 10 * 60, j.Stats.TravelTime);
+            Assert.Equal((uint) 0, j.Stats.NumberOfTransfers);
+
+
+            reader.MoveTo(c1);
+            j = j.TransferForward(reader);
+
             
+            Assert.NotNull(j.Stats);
+            Assert.Equal((uint) 23 * 60, j.Stats.TravelTime);
+            Assert.Equal((uint) 1, j.Stats.NumberOfTransfers);
             
+            Assert.Equal(reader.DepartureTime, j.StartTime());
+
         }
     }
 }

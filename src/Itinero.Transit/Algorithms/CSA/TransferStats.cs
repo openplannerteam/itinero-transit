@@ -59,7 +59,7 @@ namespace Itinero.Transit
             WalkingDistance = walkingDistance;
         }
 
-        public TransferStats() : this(0,0,0)
+        public TransferStats() : this(0, 0, 0)
         {
         }
 
@@ -70,9 +70,9 @@ namespace Itinero.Transit
 
         public TransferStats Add(Journey<TransferStats> journey)
         {
-            var transferred =
-                !Equals(journey.PreviousLink.LastTripId(),
-                    journey.LastTripId());
+            var transferred = journey.PreviousLink.LastTripId() != journey.LastTripId()
+                              && !(journey.PreviousLink.SpecialConnection &&
+                                   journey.PreviousLink.Connection == Journey<TransferStats>.GENESIS);
 
             ulong travelTime;
 
@@ -84,7 +84,7 @@ namespace Itinero.Transit
             {
                 travelTime = journey.PreviousLink.Time - journey.Time;
             }
-            
+
             return new TransferStats((uint) (NumberOfTransfers + (transferred ? 1 : 0)),
                 (uint) (TravelTime + travelTime),
                 WalkingDistance + 0);

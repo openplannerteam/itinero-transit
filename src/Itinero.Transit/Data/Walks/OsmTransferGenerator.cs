@@ -20,7 +20,7 @@ namespace Itinero.Transit
     /// transfer is generate.
     /// If not, the OpenStreetMap database is queried to generate a path between them.
     /// </summary>
-    public class OsmTransferGenerator<T> : WalksGenerator<T> where T : IJourneyStats<T>
+    public class OsmTransferGenerator : WalksGenerator
     {
         private readonly Router _router;
         private readonly Profile _walkingProfile;
@@ -105,24 +105,22 @@ namespace Itinero.Transit
             return route.Value;
         }
 
-        public Journey<T> CreateDepartureTransfer(Journey<T> buildOn, uint nextConnection,
-            uint connDeparture, ulong connDepartureLoc,
-            uint connArr, ulong connArrLoc, uint tripId)
+        public Journey<T> CreateDepartureTransfer<T>(Journey<T> buildOn, Connection c) where T : IJourneyStats<T>
         {
-            if (connDeparture < buildOn.Time)
+            if (c.DepartureTime < buildOn.Time)
             {
                 throw new ArgumentException(
                     "Seems like the connection you gave departs before the journey arrives. Are you building backward routes? Use the other method (CreateArrivingTransfer)");
             }
 
-            if (connDepartureLoc == buildOn.Location)
+            if (c.DepartureLocation == buildOn.Location)
             {
                 return null;
             }
 
-            var route = CreateRouteBetween(buildOn.Location, connDepartureLoc);
+            var route = CreateRouteBetween(buildOn.Location, c.DepartureLocation);
 
-            var timeAvailable = connDeparture - buildOn.Time;
+            var timeAvailable = c.DepartureTime - buildOn.Time;
             if (timeAvailable < route.TotalTime)
             {
                 // Not enough time to walk
@@ -131,28 +129,26 @@ namespace Itinero.Transit
 
 
             var withWalk = buildOn.ChainSpecial(
-                Journey<T>.WALK, (uint) (route.TotalTime + connDeparture), connDepartureLoc);
-            return withWalk.Chain(nextConnection, connArr, connArrLoc, tripId);
+                Journey<T>.WALK, (uint) (route.TotalTime + c.DepartureTime), c.DepartureLocation);
+            return withWalk.ChainForward(c);
         }
 
-        public Journey<T> CreateArrivingTransfer(Journey<T> buildOn, uint nextConnection,
-            uint connDeparture, ulong connDepartureLoc,
-            uint connArr, ulong connArrLoc, uint tripId)
+        public Journey<T> CreateArrivingTransfer<T>(Journey<T> buildOn, Connection c) where T : IJourneyStats<T>
         {
-            if (connArr > buildOn.Time)
+            if (c.ArrivalTime > buildOn.Time)
             {
                 throw new ArgumentException(
                     "Seems like the connection you gave arrives after the rest journey departs. Are you building forward routes? Use the other method (CreateDepartingTransfer)");
             }
 
-            if (connArrLoc == buildOn.Location)
+            if (c.ArrivalLocation == buildOn.Location)
             {
                 return null;
             }
 
-            var route = CreateRouteBetween(buildOn.Location, connDepartureLoc);
+            var route = CreateRouteBetween(buildOn.Location, c.DepartureLocation);
 
-            var timeAvailable = connDeparture - buildOn.Time;
+            var timeAvailable = c.DepartureTime - buildOn.Time;
             if (timeAvailable < route.TotalTime)
             {
                 // Not enough time to walk
@@ -161,8 +157,8 @@ namespace Itinero.Transit
 
 
             var withWalk = buildOn.ChainSpecial(
-                Journey<T>.WALK, (uint) (connArr - route.TotalTime), connArrLoc);
-            return withWalk.Chain(nextConnection, connDeparture, connDepartureLoc, tripId);
+                Journey<T>.WALK, (uint) (c.ArrivalTime - route.TotalTime), c.ArrivalLocation);
+            return withWalk.ChainBackward(c);
         }
     }
 }

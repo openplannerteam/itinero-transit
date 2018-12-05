@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using Itinero.Transit.Data;
-using Serilog;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 
@@ -57,15 +55,19 @@ namespace Itinero.Transit
         /// <summary>
         /// Constant indicating that the journey starts here
         /// </summary>
-        public static uint GENESIS = 1;
+// ReSharper disable once InconsistentNaming
+        public const uint GENESIS = 1;
 
         /// <summary>
         /// Constant indicating that the traveller doesn't move, but waits or changes platform
         /// Also used as filler between the genesis and first departure
         /// </summary>
-        public static uint TRANSFER = 2;
+// ReSharper disable once MemberCanBePrivate.Global
+// ReSharper disable once InconsistentNaming
+        public const uint TRANSFER = 2;
 
-        public static uint WALK = 3;
+        // ReSharper disable once InconsistentNaming
+        public const uint WALK = 3;
 
         /// <summary>
         /// Keep track of Location.
@@ -122,6 +124,7 @@ namespace Itinero.Transit
         /// <param name="connection"></param>
         /// <param name="location"></param>
         /// <param name="time"></param>
+        /// <param name="tripId"></param>
         /// <param name="stats"></param>
         private Journey(Journey<T> root, Journey<T> previousLink, bool specialLink, uint connection,
             LocId location, UnixTime time, uint tripId, T stats)
@@ -132,8 +135,8 @@ namespace Itinero.Transit
             Connection = connection;
             Location = location;
             Time = time;
-            Stats = stats.Add(this);
             TripId = tripId;
+            Stats = stats.Add(this);
         }
 
         /// <summary>
@@ -161,6 +164,17 @@ namespace Itinero.Transit
             return new Journey<T>(
                 Root, this, false, connection, location, arrivalTime, TripId, Stats);
         }
+
+        public Journey<T> ChainForward(Connection c)
+        {
+            return Chain(c.Id, c.ArrivalTime, c.ArrivalLocation, c.TripId);
+        }
+        
+        public Journey<T> ChainBackward(Connection c)
+        {
+            return Chain(c.Id, c.DepartureTime, c.DepartureLocation, c.TripId);
+        }
+
         
         /// <summary>
         /// Chaining constructor
@@ -191,6 +205,11 @@ namespace Itinero.Transit
                 // ReSharper disable once ArrangeThisQualifier
                 Root, this, true, TRANSFER, this.Location, departureTime, uint.MaxValue, Stats);
             return transfer.Chain(connection, arrivalTime, arrivalLocation, tripId);
+        }
+
+        public Journey<T> TransferForward(Connection c)
+        {
+            return Transfer(c.Id, c.DepartureTime, c.ArrivalTime, c.ArrivalLocation, c.TripId);
         }
 
 

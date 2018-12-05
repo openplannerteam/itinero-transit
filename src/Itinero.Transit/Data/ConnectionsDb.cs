@@ -21,12 +21,10 @@
 // THE SOFTWARE.
 
 using System;
-using System.Data.Common;
 using System.Runtime.CompilerServices;
-using Itinero.Algorithms.Search;
-using Itinero.Profiles.Lua;
 using Itinero.Transit.Algorithms.Sorting;
 using Reminiscence.Arrays;
+// ReSharper disable RedundantAssignment
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
@@ -35,7 +33,7 @@ using Reminiscence.Arrays;
 namespace Itinero.Transit.Data
 {
     using TimeSpan = UInt16;
-    using Time = UInt32;
+    using Time = UInt64;
     using LocId = UInt64;
     using Id = UInt32;
 
@@ -70,6 +68,7 @@ namespace Itinero.Transit.Data
         // this stores the connections global id index.
         private readonly int _globalIdHashSize = ushort.MaxValue;
         private readonly ArrayBase<uint> _globalIdPointersPerHash;
+        // ReSharper disable once RedundantDefaultMemberInitializer
         private uint _globalIdLinkedListPointer = 0;
         private readonly ArrayBase<uint> _globalIdLinkedList;
 
@@ -94,7 +93,7 @@ namespace Itinero.Transit.Data
         private uint _arrivalPointer;
 
         private const uint NoData = uint.MaxValue;
-        private readonly long _windowSizeInSeconds = 60; // one window per minute.
+        private readonly long _windowSizeInSeconds; // one window per minute by default
         private const int ConnectionSizeInBytes = 8 + 8 + 4 + 2;
 
         /// <summary>
@@ -124,9 +123,9 @@ namespace Itinero.Transit.Data
 
             // initialize the sorting data structures.
             _departureWindowPointers =
-                new MemoryArray<uint>((long) System.Math.Ceiling(24d * 60 * 60 / _windowSizeInSeconds) * 2);
+                new MemoryArray<uint>((long) Math.Ceiling(24d * 60 * 60 / _windowSizeInSeconds) * 2);
             _arrivalWindowPointers =
-                new MemoryArray<uint>((long) System.Math.Ceiling(24d * 60 * 60 / _windowSizeInSeconds) * 2);
+                new MemoryArray<uint>((long) Math.Ceiling(24d * 60 * 60 / _windowSizeInSeconds) * 2);
             for (var w = 0; w < _departureWindowPointers.Length / 2; w++)
             {
                 _departureWindowPointers[w * 2 + 0] = NoData; // point to nothing.
@@ -276,11 +275,6 @@ namespace Itinero.Transit.Data
             return (stop1, stop2, departureTime, travelTime);
         }
 
-        private uint GetTripId(uint internalId)
-        {
-            return _tripIds[internalId];
-        }
-
         private uint GetConnectionDeparture(uint internalId)
         {
             var dataPointer = internalId * ConnectionSizeInBytes;
@@ -367,7 +361,7 @@ namespace Itinero.Transit.Data
         {
             // determine window.
             var departure = GetConnectionDeparture(internalId);
-            var window = (uint) System.Math.Floor(DateTimeExtensions.FromUnixTime(departure).TimeOfDay.TotalSeconds /
+            var window = (uint) Math.Floor(DateTimeExtensions.FromUnixTime(departure).TimeOfDay.TotalSeconds /
                                                   _windowSizeInSeconds);
 
             var nextEmpty = uint.MaxValue;
@@ -444,7 +438,7 @@ namespace Itinero.Transit.Data
         {
             // determine window.
             var arrival = GetConnectionArrival(internalId);
-            var window = (uint) System.Math.Floor(DateTimeExtensions.FromUnixTime(arrival).TimeOfDay.TotalSeconds /
+            var window = (uint) Math.Floor(DateTimeExtensions.FromUnixTime(arrival).TimeOfDay.TotalSeconds /
                                                   _windowSizeInSeconds);
 
             var nextEmpty = uint.MaxValue;
@@ -529,7 +523,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// A connections DB reader is an object which allows accessing properties of a single connection contained in the DB
         /// </summary>
-        public class ConnectionsDbReader
+        public class ConnectionsDbReader : Connection
         {
             private readonly ConnectionsDb _db;
 
@@ -542,7 +536,7 @@ namespace Itinero.Transit.Data
             private (uint localTileId, uint localId) _stop1;
             private (uint localTileId, uint localId) _stop2;
             private ulong _arrivalLocation, _departureLocation;
-            private uint _departureTime, _arrivalTime;
+            private Time _departureTime, _arrivalTime;
             private ushort _travelTime;
 
             /// <summary>
@@ -568,16 +562,17 @@ namespace Itinero.Transit.Data
             /// <summary>
             /// Gets the departure time.
             /// </summary>
-            public uint DepartureTime => _departureTime;
+            public Time DepartureTime => _departureTime;
 
             /// <summary>
             /// Gets the travel time.
             /// </summary>
             public ushort TravelTime => _travelTime;
 
-            public uint ArrivalTime => _arrivalTime;
+            public Time ArrivalTime => _arrivalTime;
 
             public uint CurrentId => _internalId;
+            public uint Id => _internalId;
             public ulong ArrivalLocation => _arrivalLocation;
             public ulong DepartureLocation => _departureLocation;
 
@@ -606,7 +601,7 @@ namespace Itinero.Transit.Data
                 _departureLocation = details.departureLocation.localTileId * uint.MaxValue +
                                      details.departureLocation.localId;
                 _arrivalLocation = details.arrivalLocation.localTileId * uint.MaxValue +
-                                     details.arrivalLocation.localId;
+                                   details.arrivalLocation.localId;
                 return true;
             }
 
@@ -623,9 +618,9 @@ namespace Itinero.Transit.Data
                 {
                     var internalId = _db._globalIdLinkedList[pointer + 0];
 
-                    if (this.MoveTo(internalId))
+                    if (MoveTo(internalId))
                     {
-                        var potentialMatch = this.GlobalId;
+                        var potentialMatch = GlobalId;
                         if (potentialMatch == globalId)
                         {
                             return true;
@@ -651,7 +646,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// A enumerator by departure.
         /// </summary>
-        public class DepartureEnumerator
+        public class DepartureEnumerator : Connection
         {
             private readonly ConnectionsDb _db;
             private readonly ConnectionsDbReader _reader;
@@ -671,6 +666,7 @@ namespace Itinero.Transit.Data
             /// <summary>
             /// Resets the enumerator.
             /// </summary>
+            // ReSharper disable once UnusedMember.Global
             public void Reset()
             {
                 _window = uint.MaxValue;
@@ -763,11 +759,13 @@ namespace Itinero.Transit.Data
             /// <summary>
             /// Gets the first stop.
             /// </summary>
+            // ReSharper disable once UnusedMember.Global
             public (uint localTileId, uint localId) DepartureStop => _reader.Stop1;
 
             /// <summary>
             /// Gets the second stop.
             /// </summary>
+            // ReSharper disable once UnusedMember.Global
             public (uint localTileId, uint localId) ArrivalStop => _reader.Stop2;
 
             public LocId ArrivalLocation => _reader.ArrivalLocation;
@@ -776,14 +774,15 @@ namespace Itinero.Transit.Data
             /// <summary>
             /// Gets the departure time.
             /// </summary>
-            public uint DepartureTime => _reader.DepartureTime;
+            public Time DepartureTime => _reader.DepartureTime;
 
             /// <summary>
             /// Gets the travel time.
             /// </summary>
             public ushort TravelTime => _reader.TravelTime;
 
-            public uint ArrivalTime => _reader.ArrivalTime;
+            public uint Id => _reader.CurrentId;
+            public Time ArrivalTime => _reader.ArrivalTime;
 
             /// <summary>
             /// Gets the global id.
@@ -794,8 +793,6 @@ namespace Itinero.Transit.Data
             /// Gets the trip id.
             /// </summary>
             public uint TripId => _reader.TripId;
-
-            public uint CurrentId => _reader.CurrentId;
         }
 
         /// <summary>
@@ -810,7 +807,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// A enumerator by arrival.
         /// </summary>
-        public class ArrivalEnumerator
+        public class ArrivalEnumerator : Connection
         {
             private readonly ConnectionsDb _db;
             private readonly ConnectionsDbReader _reader;
@@ -920,7 +917,9 @@ namespace Itinero.Transit.Data
             /// <summary>
             /// Gets the departure time.
             /// </summary>
-            public uint DepartureTime => _reader.DepartureTime;
+            public Time DepartureTime => _reader.DepartureTime;
+
+            public Time ArrivalTime => _reader.ArrivalTime;
 
             /// <summary>
             /// Gets the travel time.
@@ -936,6 +935,25 @@ namespace Itinero.Transit.Data
             /// Gets the trip id.
             /// </summary>
             public uint TripId => _reader.TripId;
+
+            public ulong ArrivalLocation => _reader.ArrivalLocation;
+            public ulong DepartureLocation => _reader.DepartureLocation;
+
+            public uint Id => _reader.CurrentId;
         }
+    }
+
+
+    public interface Connection
+    {
+        
+        uint Id { get; }
+        Time ArrivalTime { get; }
+        Time DepartureTime { get; }
+        ushort TravelTime { get; }
+        uint TripId { get; }
+        ulong DepartureLocation { get; }
+        ulong ArrivalLocation { get; }
+
     }
 }

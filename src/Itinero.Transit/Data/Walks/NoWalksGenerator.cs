@@ -5,8 +5,7 @@ namespace Itinero.Transit.Data.Walks
     /// <summary>
     ///  Generates internal transfers if there is enough time
     /// </summary>
-    public class NoWalksGenerator<T> : WalksGenerator<T>
-        where T : IJourneyStats<T>
+    public class NoWalksGenerator : WalksGenerator
     {
         private readonly uint _internalTransferTime;
 
@@ -26,8 +25,8 @@ namespace Itinero.Transit.Data.Walks
         /// <param name="locationNearHead"></param>
         /// <param name="tripId"></param>
         /// <returns></returns>
-        private Journey<T> CreateInternalTransfer(Journey<T> buildOn, uint conn, uint timeNearTransfer,
-            uint timeNearHead, ulong locationNearHead, uint tripId)
+        private Journey<T> CreateInternalTransfer<T>(Journey<T> buildOn, uint conn, ulong timeNearTransfer,
+            ulong timeNearHead, ulong locationNearHead, uint tripId) where T : IJourneyStats<T>
         {
             ulong timeDiff;
             if (timeNearTransfer < buildOn.Time)
@@ -40,7 +39,7 @@ namespace Itinero.Transit.Data.Walks
             }
 
 
-            if (timeDiff <= _internalTransferTime)
+            if (timeDiff < _internalTransferTime)
             {
                 return null; // Too little time to transfer
             }
@@ -48,42 +47,38 @@ namespace Itinero.Transit.Data.Walks
             return buildOn.Transfer(conn, timeNearTransfer, timeNearHead, locationNearHead, tripId);
         }
 
-        public Journey<T> CreateDepartureTransfer(Journey<T> buildOn, uint nextConnection,
-            uint connDeparture, ulong connDepartureLoc,
-            uint connArr, ulong connArrLoc, uint tripId)
+        public Journey<T> CreateDepartureTransfer<T>(Journey<T> buildOn, Connection c) where T : IJourneyStats<T>
         {
-            if (connDeparture < buildOn.Time)
+            if (c.DepartureTime < buildOn.Time)
             {
                 throw new ArgumentException(
                     "Seems like the connection you gave departs before the journey arrives. Are you building backward routes? Use the other method (CreateArrivingTransfer)");
             }
 
-            if (connDepartureLoc != buildOn.Location)
+            if (c.DepartureLocation != buildOn.Location)
             {
                 return null;
             }
 
             return CreateInternalTransfer(buildOn,
-                nextConnection, connDeparture, connArr, connArrLoc, tripId);
+                c.Id, c.DepartureTime, c.ArrivalTime, c.ArrivalLocation, c.TripId);
         }
 
-        public Journey<T> CreateArrivingTransfer(Journey<T> buildOn, uint nextConnection,
-            uint connDeparture, ulong connDepartureLoc,
-            uint connArr, ulong connArrLoc, uint tripId)
+        public Journey<T> CreateArrivingTransfer<T>(Journey<T> buildOn, Connection c) where T : IJourneyStats<T>
         {
-            if (connArr > buildOn.Time)
+            if (c.ArrivalTime > buildOn.Time)
             {
                 throw new ArgumentException(
                     "Seems like the connection you gave arrives after the rest journey departs. Are you building forward routes? Use the other method (CreateDepartingTransfer)");
             }
 
-            if (connArrLoc != buildOn.Location)
+            if (c.ArrivalLocation != buildOn.Location)
             {
                 return null;
             }
 
-            return CreateInternalTransfer(buildOn, nextConnection,
-                connArr, connDeparture, connDepartureLoc, tripId);
+            return CreateInternalTransfer(buildOn, c.Id,
+                c.ArrivalTime, c.DepartureTime, c.DepartureLocation, c.TripId);
         }
     }
 }
