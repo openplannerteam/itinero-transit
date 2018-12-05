@@ -21,7 +21,7 @@ namespace Itinero.IO.LC.Tests
             // We add a very late connection in order to be able to run the algos and not run out of connections
             connDb.Add((0, 2), (0, 3),
                 "https://example.com/connections/2",
-                new DateTime(2019, 12, 04),
+                new DateTime(2018, 12, 04,23,30,00),
                 120, 2
             );
             return connDb;
