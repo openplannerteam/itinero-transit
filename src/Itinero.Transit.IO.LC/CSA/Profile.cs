@@ -206,6 +206,11 @@ namespace Itinero.IO.LC
             return LocationProvider.GetLocationByName(name);
         }
 
+        public IEnumerable<Location> GetAllLocations()
+        {
+            return LocationProvider.GetAllLocations();
+        }
+
         public ITimeTable GetTimeTable(Uri id)
         {
             return ConnectionsProvider.GetTimeTable(id);

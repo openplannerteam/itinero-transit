@@ -50,5 +50,10 @@ namespace Itinero.IO.LC
         {
             return _frag.GetLocationByName(name);
         }
+
+        public IEnumerable<Location> GetAllLocations()
+        {
+            return _frag.GetAllLocations();
+        }
     }
 }

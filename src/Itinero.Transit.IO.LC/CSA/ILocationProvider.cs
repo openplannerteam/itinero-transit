@@ -29,5 +29,8 @@ namespace Itinero.IO.LC
 
         BoundingBox BBox();
         IEnumerable<Location> GetLocationByName(string name);
+
+        IEnumerable<Location> GetAllLocations();
+
     }
 }

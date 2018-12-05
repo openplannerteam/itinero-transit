@@ -24,6 +24,7 @@ using System;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Algorithms.Sorting;
 using Reminiscence.Arrays;
+
 // ReSharper disable RedundantAssignment
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
@@ -598,9 +599,9 @@ namespace Itinero.Transit.Data
                 _travelTime = details.travelTime;
                 _arrivalTime = details.departureTime + details.travelTime;
 
-                _departureLocation = details.departureLocation.localTileId * uint.MaxValue +
+                _departureLocation = (ulong) details.departureLocation.localTileId * uint.MaxValue +
                                      details.departureLocation.localId;
-                _arrivalLocation = details.arrivalLocation.localTileId * uint.MaxValue +
+                _arrivalLocation = (ulong) details.arrivalLocation.localTileId * uint.MaxValue +
                                    details.arrivalLocation.localId;
                 return true;
             }

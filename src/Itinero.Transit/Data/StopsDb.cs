@@ -164,6 +164,7 @@ namespace Itinero.Transit.Data
             /// <summary>
             /// Resets this enumerator.
             /// </summary>
+            // ReSharper disable once UnusedMember.Global
             public void Reset()
             {
                 _locationEnumerator.Reset();

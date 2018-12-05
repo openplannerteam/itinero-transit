@@ -97,5 +97,10 @@ namespace Itinero.IO.LC
         {
             throw new NotImplementedException();
         }
+
+        public IEnumerable<Location> GetAllLocations()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
