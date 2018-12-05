@@ -1,5 +1,6 @@
 ﻿using System;
 using Itinero.Transit.Data;
+using Serilog;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 
@@ -229,6 +230,28 @@ namespace Itinero.Transit
             }
 
             return PreviousLink.Time;
+        }
+
+        public override string ToString()
+        {
+
+            if (SpecialConnection)
+            {
+
+                switch (Connection)
+                {
+                        case GENESIS: return $"Genesis at {Location}, time is {DateTimeExtensions.FromUnixTime(Time):hh:mm}";
+                        case WALK:
+                            return
+                                $"Walk from {PreviousLink.Location} to {Location} in {Time - PreviousLink.Time} seconds";
+                        case TRANSFER:
+                            return $"Transfer/Wait for {Time - PreviousLink.Time} seconds in {Location}";
+                }
+                throw new ArgumentException($"Unknown Special Connection code {Connection}");   
+            }
+
+            return $"Connection {Connection} to {Location}, arriving at {Time}";
+
         }
     }
 }

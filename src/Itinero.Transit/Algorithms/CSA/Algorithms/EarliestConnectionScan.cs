@@ -199,7 +199,7 @@ namespace Itinero.Transit
                    }
                    */
                 enumerator.MoveNext(
-                    "Could not calculate AES: enumerator depleted, the query is probably to far in the future or the database isn't loaded sufficiently");
+                    "Could not calculate Earliest Connection: enumerator depleted, the query is probably to far in the future or the database isn't loaded sufficiently");
             } while (lastDepartureTime == enumerator.DepartureTime);
 
             // The timeblock 
