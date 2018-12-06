@@ -222,7 +222,7 @@ namespace Itinero.Transit
         /// If not, MaxValue is returned
         /// 
         /// </summary>
-        private (LocId improvedLocation, Time previousTime) IntegrateConnection(Connection c)
+        private (LocId improvedLocation, Time previousTime) IntegrateConnection(IConnection c)
         {
             /// <param name="c">A DepartureEnumeration, which is used here as if it were a single connection object</param>
             // The connection describes a random connection somewhere

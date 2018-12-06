@@ -4,6 +4,7 @@ using Itinero.Transit.Data;
 using Itinero.Transit.Tests.Functional.Performance;
 using Reminiscence.Collections;
 using Serilog;
+// ReSharper disable UnusedMember.Global
 
 namespace Itinero.Transit.Tests.Functional
 {
@@ -13,8 +14,8 @@ namespace Itinero.Transit.Tests.Functional
         private static ConnectionsDb _conns;
         private static StopsDb _stops;
 
-        private static System.Collections.Generic.Dictionary<string, ulong> _stopIds =
-            new System.Collections.Generic.Dictionary<string, ulong>();
+        private static System.Collections.Generic.Dictionary<string, (uint localTileId, uint localId)> _stopIds =
+            new System.Collections.Generic.Dictionary<string, (uint localTileId, uint localId)>();
 
 
         public static string BrusselZuid = "http://irail.be/stations/NMBS/008814001";
@@ -34,7 +35,8 @@ namespace Itinero.Transit.Tests.Functional
 
         public abstract void Test();
 
-        public static (ConnectionsDb conns, StopsDb stops, System.Collections.Generic.Dictionary<string, ulong> mapping)
+        public static (ConnectionsDb conns, StopsDb stops, 
+            System.Collections.Generic.Dictionary<string, (uint localTileId, uint localId)> mapping)
             GetTestDb()
         {
             if (_conns != null)
@@ -45,22 +47,19 @@ namespace Itinero.Transit.Tests.Functional
             var profile = Belgium.Sncb(new LocalStorage("cache"));
 
             // create a stops db and connections db.
-            var stopsDb = new StopsDb();
             var connectionsDb = new ConnectionsDb();
-
-
             var dayToLoad = DateTime.Now.Date.AddHours(2);
-            // load connections for the next day.
             connectionsDb.LoadConnections(profile, stopsDb,
                 (dayToLoad, new TimeSpan(0, 20, 0, 0)));
 
 
             var locations = profile.LocationProvider;
 
+            var stopsDb = new StopsDb();
             foreach (var loc in locations.GetAllLocations())
             {
                 var v = stopsDb.Add(loc.Uri.ToString(), loc.Lon, loc.Lat);
-                _stopIds[loc.Uri.ToString()] = (ulong) v.localTileId * uint.MaxValue + v.localId;
+                _stopIds[loc.Uri.ToString()] = v;
             }
 
             _conns = connectionsDb;

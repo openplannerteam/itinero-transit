@@ -61,6 +61,13 @@ namespace Itinero.Transit.Tests.Functional
                     Log.Information($"{i + 1}/{tests.Count}: [FAILED] {e.Message}");
                     Log.Error(e.Message + "\n" + e.StackTrace);
                     failed++;
+
+
+                    if (tests.Count == 1)
+                    {
+                        throw;
+                    }
+                    
                 }
 
                 var end = DateTime.Now;

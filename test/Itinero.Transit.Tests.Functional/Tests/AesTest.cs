@@ -20,7 +20,7 @@ namespace Itinero.Transit.Tests.Functional.Tests
 
             var depTime = DateTime.Now.Date.AddHours(10);
 
-            
+         /*   
             var eas = new EarliestConnectionScan<TransferStats>(
                 stopIds[Brugge], stopIds[Gent],
                depTime.ToUnixTime(), depTime.AddHours(3).ToUnixTime(), p);
@@ -32,7 +32,8 @@ namespace Itinero.Transit.Tests.Functional.Tests
             
             
             EarliestConnectionScan<TransferStats>.StartPoint = stopIds[Brugge];
-            var journey = eas.CalculateJourney();
+           */
+            Journey<TransferStats> journey = null; //eas.CalculateJourney();
             if (journey == null)
             {
                 throw new Exception("No journey found");

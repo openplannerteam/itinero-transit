@@ -166,12 +166,12 @@ namespace Itinero.Transit
                 Root, this, false, connection, location, arrivalTime, TripId, Stats);
         }
 
-        public Journey<T> ChainForward(Connection c)
+        public Journey<T> ChainForward(IConnection c)
         {
             return Chain(c.Id, c.ArrivalTime, c.ArrivalLocation, c.TripId);
         }
         
-        public Journey<T> ChainBackward(Connection c)
+        public Journey<T> ChainBackward(IConnection c)
         {
             return Chain(c.Id, c.DepartureTime, c.DepartureLocation, c.TripId);
         }
@@ -208,7 +208,7 @@ namespace Itinero.Transit
             return transfer.Chain(connection, arrivalTime, arrivalLocation, tripId);
         }
 
-        public Journey<T> TransferForward(Connection c)
+        public Journey<T> TransferForward(IConnection c)
         {
             return Transfer(c.Id, c.DepartureTime, c.ArrivalTime, c.ArrivalLocation, c.TripId);
         }

@@ -524,7 +524,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// A connections DB reader is an object which allows accessing properties of a single connection contained in the DB
         /// </summary>
-        public class ConnectionsDbReader : Connection
+        public class ConnectionsDbReader : IConnection
         {
             private readonly ConnectionsDb _db;
 
@@ -647,7 +647,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// A enumerator by departure.
         /// </summary>
-        public class DepartureEnumerator : Connection
+        public class DepartureEnumerator : IConnection
         {
             private readonly ConnectionsDb _db;
             private readonly ConnectionsDbReader _reader;
@@ -670,6 +670,7 @@ namespace Itinero.Transit.Data
             // ReSharper disable once UnusedMember.Global
             public void Reset()
             {
+       
                 _window = uint.MaxValue;
                 _windowPosition = uint.MaxValue;
                 _windowSize = uint.MaxValue;
@@ -808,7 +809,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// A enumerator by arrival.
         /// </summary>
-        public class ArrivalEnumerator : Connection
+        public class ArrivalEnumerator : IConnection
         {
             private readonly ConnectionsDb _db;
             private readonly ConnectionsDbReader _reader;
@@ -942,19 +943,5 @@ namespace Itinero.Transit.Data
 
             public uint Id => _reader.CurrentId;
         }
-    }
-
-
-    public interface Connection
-    {
-        
-        uint Id { get; }
-        Time ArrivalTime { get; }
-        Time DepartureTime { get; }
-        ushort TravelTime { get; }
-        uint TripId { get; }
-        ulong DepartureLocation { get; }
-        ulong ArrivalLocation { get; }
-
     }
 }

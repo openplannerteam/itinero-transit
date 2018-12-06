@@ -47,7 +47,7 @@ namespace Itinero.Transit.Data.Walks
             return buildOn.Transfer(conn, timeNearTransfer, timeNearHead, locationNearHead, tripId);
         }
 
-        public Journey<T> CreateDepartureTransfer<T>(Journey<T> buildOn, Connection c) where T : IJourneyStats<T>
+        public Journey<T> CreateDepartureTransfer<T>(Journey<T> buildOn, IConnection c) where T : IJourneyStats<T>
         {
             if (c.DepartureTime < buildOn.Time)
             {
@@ -64,7 +64,7 @@ namespace Itinero.Transit.Data.Walks
                 c.Id, c.DepartureTime, c.ArrivalTime, c.ArrivalLocation, c.TripId);
         }
 
-        public Journey<T> CreateArrivingTransfer<T>(Journey<T> buildOn, Connection c) where T : IJourneyStats<T>
+        public Journey<T> CreateArrivingTransfer<T>(Journey<T> buildOn, IConnection c) where T : IJourneyStats<T>
         {
             if (c.ArrivalTime > buildOn.Time)
             {

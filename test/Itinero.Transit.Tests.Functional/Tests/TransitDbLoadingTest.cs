@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Reminiscence.Arrays;
 using Serilog;
@@ -17,27 +18,32 @@ namespace Itinero.Transit.Tests.Functional.Tests
 
             var enumerator = connsDb.GetDepartureEnumerator();
 
-            var reverseMapping = new Dictionary<ulong, string>();
+            var reverseMapping = new Dictionary<(uint localTileId, uint localId), string>();
             foreach (var pair in ids)
             {
                 reverseMapping[pair.Value] = pair.Key;
             }
-            
-            
-            
+
+
             var found = 0;
             while (enumerator.MoveNext())
             {
-                Log.Information($"{reverseMapping[enumerator.DepartureLocation]} -> {reverseMapping[enumerator.ArrivalLocation]}");
-                if (enumerator.DepartureLocation == brugge && enumerator.ArrivalLocation == gent)
+                try
                 {
-                    Log.Information($"Found a connection Brugge -> Gent at {enumerator.DepartureTime}");
-                    found++;
+                    Log.Information(
+                        $"{reverseMapping[enumerator.DepartureStop]} -> {reverseMapping[enumerator.ArrivalStop]}");
+     /*               if (enumerator.DepartureLocation == brugge && enumerator.ArrivalLocation == gent)
+                        Log.Information($"Found a connection Brugge -> Gent at {enumerator.DepartureTime}");
+                        found++;
+                    }*/
+                }
+                catch (Exception e)
+                {
+                    Log.Information(e.Message);
                 }
             }
-            
+
             Log.Information($"Found {found} entries");
-            
         }
     }
 }
