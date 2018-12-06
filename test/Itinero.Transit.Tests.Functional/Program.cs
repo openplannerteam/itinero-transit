@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Itinero.Logging;
 using Itinero.Transit.Tests.Functional.Staging;
 using Itinero.Transit.Tests.Functional.Tests;
@@ -37,7 +38,7 @@ namespace Itinero.Transit.Tests.Functional
 
             var tests = AllTests;
 
-            var failed = 0;
+            var failed = new List<FunctionalTest>();
 
             for (int i = 0; i < tests.Count; i++)
             {
@@ -54,7 +55,7 @@ namespace Itinero.Transit.Tests.Functional
                 {
                     Log.Information($"{i + 1}/{tests.Count}: [FAILED] {e.Message}");
                     Log.Error(e.Message + "\n" + e.StackTrace);
-                    failed++;
+                    failed.Add(tests[i]);
 
 
                     if (tests.Count == 1)
@@ -69,10 +70,17 @@ namespace Itinero.Transit.Tests.Functional
 
 
             Log.Information("3) Tests are done");
-            if (failed > 0)
+
+            foreach (var failedTest in failed)
             {
-                Log.Information($"{failed} tests failed");
-                throw new Exception($"{failed} failed tests");
+                Log.Information($"Test {failedTest.GetType().Name} failed");
+                
+            }
+            
+            if (failed.Count > 0)
+            {
+                Log.Information($"{failed.Count} tests failed");
+                throw new Exception($"{failed.Count} failed tests");
             }
 
             Log.Information($"All {tests.Count} tests successful!");

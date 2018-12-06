@@ -27,7 +27,7 @@ namespace Itinero.Transit.Tests.Functional.Tests
             Assert.NotNull(journey);
             Log.Information(journey.ToString());
             // This will fail very hard on days when there are disruptions
-            Assert.True(journey.Stats.TravelTime < 8 * 60 * 60);
+            Assert.True(journey.Stats.TravelTime < 10 * 60 * 60);
             Assert.True(journey.Stats.NumberOfTransfers <= 8);
         }
     }
