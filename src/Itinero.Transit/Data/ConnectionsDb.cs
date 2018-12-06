@@ -23,7 +23,6 @@
 using System;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Algorithms.Sorting;
-using OsmSharp.IO.PBF;
 using Reminiscence.Arrays;
 
 // ReSharper disable RedundantAssignment

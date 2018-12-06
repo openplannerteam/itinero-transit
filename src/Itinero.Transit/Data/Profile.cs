@@ -9,12 +9,12 @@ namespace Itinero.Transit.Data
     {
         public readonly ConnectionsDb ConnectionsDb;
         public readonly StopsDb StopsDb;
-        public readonly WalksGenerator WalksGenerator;
+        public readonly IWalksGenerator WalksGenerator;
         public readonly T StatsFactory;
         
         
 
-        public Profile(ConnectionsDb connectionsDb, StopsDb stopsDb, WalksGenerator walksGenerator, T statsFactory)
+        public Profile(ConnectionsDb connectionsDb, StopsDb stopsDb, IWalksGenerator walksGenerator, T statsFactory)
         {
             ConnectionsDb = connectionsDb;
             StopsDb = stopsDb;

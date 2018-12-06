@@ -5,7 +5,7 @@ namespace Itinero.Transit.Data.Walks
     /// <summary>
     ///  Generates internal transfers if there is enough time
     /// </summary>
-    public class NoWalksGenerator : WalksGenerator
+    public class NoWalksGenerator : IWalksGenerator
     {
         private readonly uint _internalTransferTime;
 

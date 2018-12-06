@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using OsmSharp.API;
 
 namespace Itinero.Transit.Data.Walks
 {
@@ -12,7 +10,7 @@ namespace Itinero.Transit.Data.Walks
     /// The transfergenerator takes a journey and a next connection.
     /// Using those, it extends the journey if this is possible.
     /// </summary>
-    public interface WalksGenerator
+    public interface IWalksGenerator
     {
         /// <summary>
         /// Create a new journey, which extends 'buildOn' with 'nextConnection'
