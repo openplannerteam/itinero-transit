@@ -23,6 +23,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Algorithms.Sorting;
+using OsmSharp.IO.PBF;
 using Reminiscence.Arrays;
 // ReSharper disable RedundantAssignment
 
@@ -96,6 +97,9 @@ namespace Itinero.Transit.Data
         private readonly long _windowSizeInSeconds; // one window per minute by default
         private const int ConnectionSizeInBytes = 8 + 8 + 4 + 2;
 
+        private uint _earliestDate = uint.MaxValue;
+        private uint _latestDate = uint.MinValue;
+
         /// <summary>
         /// Creates a new connections db.
         /// </summary>
@@ -159,6 +163,17 @@ namespace Itinero.Transit.Data
             // set this connection info int the data array.
             var departureSeconds = (uint) departureTime.ToUnixTime();
             SetConnection(internalId, stop1, stop2, departureSeconds, travelTime);
+            
+            // check if this connections is the 'earliest' or 'latest' date-wise.
+            var departureDateSeconds = DateTimeExtensions.ExtractDate(departureSeconds);
+            if (departureDateSeconds < _earliestDate)
+            {
+                _earliestDate = (uint) departureDateSeconds;
+            }
+            if (departureDateSeconds > _latestDate)
+            {
+                _latestDate = (uint) departureDateSeconds;
+            }
 
             // set trip and global ids.
             SetTrip(internalId, tripId);
@@ -656,18 +671,28 @@ namespace Itinero.Transit.Data
                 _db = db;
 
                 _reader = _db.GetReader();
+                _date = _db._earliestDate;
             }
 
             private uint _window = uint.MaxValue;
             private uint _windowPosition = uint.MaxValue;
             private uint _windowPointer = uint.MaxValue;
             private uint _windowSize = uint.MaxValue;
+            private uint _date;
 
             /// <summary>
             /// Resets the enumerator.
             /// </summary>
-            // ReSharper disable once UnusedMember.Global
             public void Reset()
+            {
+                this.ResetIgnoreDate();
+                _date = _db._earliestDate;
+            }
+
+            /// <summary>
+            /// Resets the enumerator.
+            /// </summary>
+            private void ResetIgnoreDate()
             {
                 _window = uint.MaxValue;
                 _windowPosition = uint.MaxValue;
@@ -675,10 +700,42 @@ namespace Itinero.Transit.Data
             }
 
             /// <summary>
-            /// Moves this enumerator to the next connection.
+            /// Moves to the next connection.
             /// </summary>
             /// <returns></returns>
             public bool MoveNext()
+            {
+                if (_date == uint.MaxValue) return false;
+
+                while (true)
+                {
+                    if (!this.MoveNextIgnoreDate())
+                    { 
+                        // move to next date. 
+                        _date = (uint)DateTimeExtensions.AddDay(_date);
+                        if (_date > _db._latestDate)
+                        {
+                            return false;
+                        }
+                        
+                        // reset enumerator.
+                        this.ResetIgnoreDate();
+                    }
+                    else
+                    {
+                        if (_date == DateTimeExtensions.ExtractDate(_reader.DepartureTime))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Moves this enumerator to the next connection ignoring the data component.
+            /// </summary>
+            /// <returns></returns>
+            private bool MoveNextIgnoreDate()
             {
                 if (_window == uint.MaxValue)
                 {
@@ -745,18 +802,6 @@ namespace Itinero.Transit.Data
             }
 
             /// <summary>
-            /// Same as 'MoveNext', but throws an IndexOutOfRange exception with the given error message if unsuccessful
-            /// </summary>
-            /// <param name="errMessage"></param>
-            public void MoveNext(string errMessage)
-            {
-                if (!MoveNext())
-                {
-                    throw new IndexOutOfRangeException(errMessage);
-                }
-            }
-
-            /// <summary>
             /// Gets the first stop.
             /// </summary>
             // ReSharper disable once UnusedMember.Global
@@ -817,17 +862,28 @@ namespace Itinero.Transit.Data
                 _db = db;
 
                 _reader = _db.GetReader();
+                _date = _db._earliestDate;
             }
 
             private uint _window = uint.MaxValue;
             private uint _windowPosition = uint.MaxValue;
             private uint _windowPointer = uint.MaxValue;
             private uint _windowSize = uint.MaxValue;
+            private uint _date;
 
             /// <summary>
             /// Resets the enumerator.
             /// </summary>
             public void Reset()
+            {
+                this.ResetIgnoreDate();
+                _date = _db._earliestDate;
+            }
+
+            /// <summary>
+            /// Resets the enumerator but not the date component.
+            /// </summary>
+            private void ResetIgnoreDate()
             {
                 _window = uint.MaxValue;
                 _windowPosition = uint.MaxValue;
@@ -839,6 +895,38 @@ namespace Itinero.Transit.Data
             /// </summary>
             /// <returns></returns>
             public bool MoveNext()
+            {
+                if (_date == uint.MaxValue) return false;
+
+                while (true)
+                {
+                    if (!this.MoveNextIgnoreDate())
+                    { 
+                        // move to next date. 
+                        _date++;
+                        if (_date > _db._latestDate)
+                        {
+                            return false;
+                        }
+                        
+                        // reset enumerator.
+                        this.ResetIgnoreDate();
+                    }
+                    else
+                    {
+                        if (_date == DateTimeExtensions.ExtractDate(_reader.DepartureTime))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            
+            /// <summary>
+            /// Moves this enumerator to the next connection ignore the date component.
+            /// </summary>
+            /// <returns></returns>
+            private bool MoveNextIgnoreDate()
             {
                 if (_window == uint.MaxValue)
                 {

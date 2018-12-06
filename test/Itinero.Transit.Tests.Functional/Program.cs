@@ -49,10 +49,11 @@ namespace Itinero.Transit.Tests.Functional
             var departureEnumerator = connectionsDb.GetDepartureEnumerator();
             Action departureEnumeration = () =>
             {
+                departureEnumerator.Reset();
                 while (departureEnumerator.MoveNext())
                 {
                     //var departureDate = DateTimeExtensions.FromUnixTime(departureEnumerator.DepartureTime);
-                    //Log.Information($"Connection {departureEnumerator.GlobalId}: @{departureDate} ({departureEnumerator.TravelTime}s [{departureEnumerator.Stop1} -> {departureEnumerator.Stop2}])");
+                    //Log.Information($"Connection {departureEnumerator.GlobalId}: @{departureDate} ({departureEnumerator.TravelTime}s [{departureEnumerator.DepartureStop} -> {departureEnumerator.ArrivalStop}])");
                     tt += departureEnumerator.TravelTime;
                     ce++;
                 }
