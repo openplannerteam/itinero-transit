@@ -48,13 +48,24 @@ namespace Itinero.Transit
         /// <param name="lastDeparture"></param>
         /// <param name="profile"></param>
         public EarliestConnectionScan(LocId userDepartureLocation, LocId userTargetLocation,
-            Time earliestDeparture, Time lastDeparture,
+            DateTime earliestDeparture, DateTime lastDeparture,
+            Profile<T> profile) : this(
+            new List<ulong> {userDepartureLocation}, new List<ulong> {userTargetLocation},
+            earliestDeparture.ToUnixTime(), lastDeparture.ToUnixTime(),
+            profile)
+        {
+        }
+
+        
+        public EarliestConnectionScan(LocId userDepartureLocation, LocId userTargetLocation,
+            ulong earliestDeparture, ulong lastDeparture,
             Profile<T> profile) : this(
             new List<ulong> {userDepartureLocation}, new List<ulong> {userTargetLocation},
             earliestDeparture, lastDeparture,
             profile)
         {
         }
+
 
 
         public EarliestConnectionScan(IEnumerable<LocId> userDepartureLocation,

@@ -20,7 +20,7 @@ namespace Itinero.Transit.Tests.Functional.Tests
 
             var eas = new EarliestConnectionScan<TransferStats>(
                 GetLocation(Brugge), GetLocation(Gent),
-                depTime.ToUnixTime(), depTime.AddHours(3).ToUnixTime(), p);
+                depTime, depTime.AddHours(3), p);
 
             var journey = eas.CalculateJourney();
 

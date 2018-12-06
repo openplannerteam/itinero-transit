@@ -1,10 +1,6 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 using Itinero.IO.LC;
 using Itinero.Transit.Data;
-using Itinero.Transit.Tests.Functional.Performance;
-using Reminiscence.Collections;
-using Serilog;
 
 // ReSharper disable UnusedMember.Global
 
@@ -49,17 +45,12 @@ namespace Itinero.Transit.Tests.Functional
             var profile = Belgium.Sncb(new LocalStorage("cache"));
 
             var stopsDb = new StopsDb();
-            var locations = profile.LocationProvider;
-            foreach (var loc in locations.GetAllLocations())
-            {
-                var v = stopsDb.Add(loc.Uri.ToString(), loc.Lon, loc.Lat);
-                _stopIds[loc.Uri.ToString()] = (ulong) v.localTileId * uint.MaxValue + v.localId;
-            }
+            stopsDb.LoadAllLocations(profile);
 
             var connectionsDb = new ConnectionsDb();
             var dayToLoad = DateTime.Now.Date.AddHours(2);
-            var count = connectionsDb.LoadConnections(profile, stopsDb,
-                (dayToLoad, new TimeSpan(0, 20, 0, 0)), countStart, countEnd);
+            connectionsDb.LoadConnections(profile, stopsDb,
+                (dayToLoad, new TimeSpan(0, 20, 0, 0)), out var count, countStart, countEnd);
 
             _conns = connectionsDb;
             _stops = stopsDb;

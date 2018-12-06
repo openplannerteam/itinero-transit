@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Itinero.Transit.Data;
 
 // ReSharper disable BuiltInTypeReferenceStyle
@@ -19,7 +20,8 @@ namespace Itinero.Transit
     /// The above properties are reversed in the CPS algorithm. The last step of that algorithm is to reverse the journeys,
     /// so that users of the lib get a uniform experience
     /// </summary>
-    public class Journey<T> where T : IJourneyStats<T>
+    public class Journey<T> 
+        where T : IJourneyStats<T>
     {
         public static readonly Journey<T> InfiniteJourney = new Journey<T>();
 
@@ -170,13 +172,13 @@ namespace Itinero.Transit
         {
             return Chain(c.Id, c.ArrivalTime, c.ArrivalLocation, c.TripId);
         }
-        
+
         public Journey<T> ChainBackward(IConnection c)
         {
             return Chain(c.Id, c.DepartureTime, c.DepartureLocation, c.TripId);
         }
 
-        
+
         /// <summary>
         /// Chaining constructor
         /// Gives a new journey which extends this journey with the given connection.
@@ -192,7 +194,8 @@ namespace Itinero.Transit
         /// a 'Transfer' link is included.
         /// Transfer links _should not_ be used to calculate the number of transfers, the differences in trip-ids should be used for this! 
         /// </summary>
-        public Journey<T> Transfer(uint connection, UnixTime departureTime, UnixTime arrivalTime, LocId arrivalLocation, uint tripId)
+        public Journey<T> Transfer(uint connection, UnixTime departureTime, UnixTime arrivalTime, LocId arrivalLocation,
+            uint tripId)
         {
             if (Time == departureTime)
             {
@@ -231,6 +234,19 @@ namespace Itinero.Transit
             return PreviousLink.Time;
         }
 
+        public List<Journey<T>> AllParts()
+        {
+            var parts = new List<Journey<T>>();
+            var current = this;
+            do
+            {
+                parts.Add(current);
+                current = current.PreviousLink;
+            } while (current != null && current != current.PreviousLink);
+
+            return parts;
+        }
+
         public override string ToString()
         {
             var previous = "";
@@ -244,24 +260,23 @@ namespace Itinero.Transit
 
         public string PartToString()
         {
-
             if (SpecialConnection)
             {
-
                 switch (Connection)
                 {
-                        case GENESIS: return $"Genesis at {Location}, time is {DateTimeExtensions.FromUnixTime(Time):hh:mm}";
-                        case WALK:
-                            return
-                                $"Walk from {PreviousLink.Location} to {Location} in {Time - PreviousLink.Time} seconds";
-                        case TRANSFER:
-                            return $"Transfer/Wait for {Time - PreviousLink.Time} seconds in {Location}";
+                    case GENESIS:
+                        return $"Genesis at {Location}, time is {DateTimeExtensions.FromUnixTime(Time):hh:mm}";
+                    case WALK:
+                        return
+                            $"Walk from {PreviousLink.Location} to {Location} in {Time - PreviousLink.Time} seconds";
+                    case TRANSFER:
+                        return $"Transfer/Wait for {Time - PreviousLink.Time} seconds in {Location}";
                 }
-                throw new ArgumentException($"Unknown Special Connection code {Connection}");   
+
+                throw new ArgumentException($"Unknown Special Connection code {Connection}");
             }
 
             return $"Connection {Connection} to {Location}, arriving at {DateTimeExtensions.FromUnixTime(Time):hh:mm}";
-
         }
     }
 }

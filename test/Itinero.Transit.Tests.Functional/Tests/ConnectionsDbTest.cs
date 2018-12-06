@@ -1,9 +1,7 @@
 using System;
-using System.Threading;
 using Itinero.IO.LC;
 using Itinero.Transit.Data;
 using Itinero.Transit.Tests.Functional.Performance;
-using Itinero.Transit.Tests.Functional.Staging;
 using Serilog;
 
 namespace Itinero.Transit.Tests.Functional.Tests
@@ -22,7 +20,7 @@ namespace Itinero.Transit.Tests.Functional.Tests
             // load connections for the next day.
             Action loadConnections = () =>
             {
-                connectionsDb.LoadConnections(profile, stopsDb, (DateTime.Now, new TimeSpan(1, 0, 0, 0)));
+                connectionsDb.LoadConnections(profile, stopsDb, (DateTime.Now, new TimeSpan(1, 0, 0, 0)), out _);
             };
             loadConnections.TestPerf("Loading connections.");
 
@@ -41,8 +39,8 @@ namespace Itinero.Transit.Tests.Functional.Tests
                     ce++;
                 }
             };
-            departureEnumeration.TestPerf("Enumerate by departure time.", 10);
-            Log.Information($"Enumerated {ce} connections!");
+            departureEnumeration.TestPerf("Enumerate by departure time", 10);
+            Log.Information($"Enumerated {ce} connections! Sum is {tt}");
         }
     }
 }

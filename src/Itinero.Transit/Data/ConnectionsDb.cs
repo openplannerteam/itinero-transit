@@ -530,7 +530,7 @@ namespace Itinero.Transit.Data
         /// Gets a reader.
         /// </summary>
         /// <returns></returns>
-        internal ConnectionsDbReader GetReader()
+        public ConnectionsDbReader GetReader()
         {
             return new ConnectionsDbReader(this);
         }
@@ -1027,6 +1027,9 @@ namespace Itinero.Transit.Data
             public ulong ArrivalLocation => _reader.ArrivalLocation;
             public ulong DepartureLocation => _reader.DepartureLocation;
 
+            /// <summary>
+            /// The internal ID within the DB
+            /// </summary>
             public uint Id => _reader.CurrentId;
         }
     }

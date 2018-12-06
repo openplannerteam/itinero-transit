@@ -10,6 +10,18 @@ namespace Itinero.IO.LC
     /// </summary>
     public static class ConnectionsDbExtensions
     {
+        public static Dictionary<string, ulong> LoadAllLocations(this StopsDb stopsDb, ILocationProvider locations)
+        {
+            var stopIds = new Dictionary<string, ulong>();
+            foreach (var loc in locations.GetAllLocations())
+            {
+                var v = stopsDb.Add(loc.Uri.ToString(), loc.Lon, loc.Lat);
+                stopIds[loc.Uri.ToString()] = (ulong) v.localTileId * uint.MaxValue + v.localId;
+            }
+
+            return stopIds;
+        }
+
         /// <summary>
         /// Loads connections into the connections db and the given stops db from the given profile.
         /// </summary>
@@ -19,9 +31,11 @@ namespace Itinero.IO.LC
         /// <param name="window">The window, a start time and duration.</param>
         /// <param name="countStart">(For testing): if you want to count the number of connections departing here (and arriving at countEnd), pass a paramater with the URI of the departure location</param>
         /// <param name="countEnd">See countStart</param>
-        public static int LoadConnections(this ConnectionsDb connectionsDb, Profile<TransferStats> profile,
-            StopsDb stopsDb, (DateTime start, TimeSpan duration) window, string countStart = "", string countEnd = "")
+        public static Dictionary<ulong, Uri> LoadConnections(this ConnectionsDb connectionsDb, Profile<TransferStats> profile,
+            StopsDb stopsDb, (DateTime start, TimeSpan duration) window, out int count, string countStart = "", string countEnd = "")
         {
+            
+            var idToUri = new Dictionary<ulong, Uri>();
             var stopsDbReader = stopsDb.GetReader();
 
             var trips = new Dictionary<string, uint>();
@@ -29,7 +43,7 @@ namespace Itinero.IO.LC
             var connectionCount = 0;
             var stopCount = 0;
             var timeTable = profile.GetTimeTable(window.start);
-            int specificDebugCount = 0;
+            count = 0;
             do
             {
                 foreach (var connection in timeTable.Connections())
@@ -37,7 +51,7 @@ namespace Itinero.IO.LC
                     if (connection.DepartureLocation().ToString() == countStart &&
                         connection.ArrivalLocation().ToString() == countEnd)
                     {
-                        specificDebugCount++;
+                        count++;
                     }
 
                     var stop1Uri = connection.DepartureLocation();
@@ -94,7 +108,7 @@ namespace Itinero.IO.LC
             } while (true);
 
             Log.Information($"Added {stopCount} stops and {connectionCount} connection.");
-            return specificDebugCount;
+            return idToUri;
         }
     }
 }
