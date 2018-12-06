@@ -6,7 +6,7 @@ namespace Itinero.IO.LC
         where T : IJourneyStats<T>
 
     {
-        private readonly IStatsComparator<T> _comparator;
+        private readonly StatsComparator<T> _comparator;
 
         /// <summary>
         /// Contains all the points on the frontier, in order
@@ -16,7 +16,7 @@ namespace Itinero.IO.LC
         public readonly List<Journey<T>> Frontier = new List<Journey<T>>();
 
 
-        public ParetoFrontier(IStatsComparator<T> comparator)
+        public ParetoFrontier(StatsComparator<T> comparator)
         {
             _comparator = comparator;
         }

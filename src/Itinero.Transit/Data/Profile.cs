@@ -1,4 +1,3 @@
-using System;
 using Itinero.Transit.Data.Walks;
 
 namespace Itinero.Transit.Data

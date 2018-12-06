@@ -1,6 +1,4 @@
 using System;
-using Itinero.IO.LC;
-using Itinero.Transit.Tests;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -29,7 +27,7 @@ namespace Itinero.IO.LC.Tests
             var t3 = new TransferStats(0, tenOClock,
                 new DateTime(2018, 09, 24, 10, 30, 00),0f);
 
-            IStatsComparator<TransferStats> compare = TransferStats.ProfileTransferCompare;
+            StatsComparator<TransferStats> compare = TransferStats.ProfileTransferCompare;
             
             Assert.Equal(0, compare.ADominatesB(t1, t1));
             Assert.Equal(0, compare.ADominatesB(t2, t2));

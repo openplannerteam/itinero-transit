@@ -1,7 +1,4 @@
-﻿using System;
-using Itinero.Transit.Data;
-
-namespace Itinero.Transit
+﻿namespace Itinero.Transit
 {
     ///  <summary>
     ///  Every journey carries a 'journeyStats'-object.

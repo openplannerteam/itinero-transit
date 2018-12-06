@@ -39,7 +39,7 @@ namespace Itinero.IO.LC.Tests
         {
             var stopsDb = new StopsDb();
 
-            var id = stopsDb.Add("https://example.com/stops/0", 0, 0.0);
+            stopsDb.Add("https://example.com/stops/0", 0, 0.0);
             stopsDb.Add("https://example.com/stops/0", 0.1, 0.1);
 
 

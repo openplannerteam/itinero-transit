@@ -44,7 +44,7 @@ namespace Itinero.Transit.Algorithms.Sorting
                 while (stack.Count > 0)
                 {
                     var pair = stack.Pop();
-                    var pivot = QuickSort.Partition(value, swap, pair.Left, pair.Right);
+                    var pivot = Partition(value, swap, pair.Left, pair.Right);
                     if (pair.Left < pivot)
                     {
                         stack.Push(new Pair(pair.Left, pivot - 1));
@@ -80,8 +80,8 @@ namespace Itinero.Transit.Algorithms.Sorting
             public Pair(long left, long right)
                 : this()
             {
-                this.Left = left;
-                this.Right = right;
+                Left = left;
+                Right = right;
             }
 
             public long Left { get; set; }
@@ -101,7 +101,7 @@ namespace Itinero.Transit.Algorithms.Sorting
             }
 
             // select the middle one as the pivot value.
-            var pivot = (left + right) / (long)2;
+            var pivot = (left + right) / 2;
             if (pivot != left)
             { // switch.
                 swap(pivot, left);
@@ -161,7 +161,7 @@ namespace Itinero.Transit.Algorithms.Sorting
         public static void ThreewayPartition(Func<long, long> value, Action<long, long> swap, long left, long right,
             out long highestLowest, out long lowestHighest)
         {
-            QuickSort.ThreewayPartition(value, swap, left, right, left, out highestLowest, out lowestHighest); // default, the left a pivot.
+            ThreewayPartition(value, swap, left, right, left, out highestLowest, out lowestHighest); // default, the left a pivot.
         }
 
         /// <summary>

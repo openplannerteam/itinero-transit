@@ -12,7 +12,7 @@ namespace Itinero.Transit.Tests.Functional
 {
     class Program
     {
-        public static List<FunctionalTest> allTests = new List<FunctionalTest>
+        public static readonly List<FunctionalTest> AllTests = new List<FunctionalTest>
         {
             new TransitDbLoadingTest(),
             new ConnectionsDbTest(),
@@ -34,7 +34,7 @@ namespace Itinero.Transit.Tests.Functional
 
             Log.Information("2) Starting tests");
 
-            var tests = allTests;
+            var tests = AllTests;
 
             var failed = 0;
 

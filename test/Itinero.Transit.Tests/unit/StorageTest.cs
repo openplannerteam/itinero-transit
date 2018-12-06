@@ -1,7 +1,3 @@
-using Itinero.IO.LC;
-using Itinero.IO.LC.Tests;
-using Itinero.Transit;
-using Itinero.Transit.Tests;
 using Xunit;
 using Xunit.Abstractions;
 

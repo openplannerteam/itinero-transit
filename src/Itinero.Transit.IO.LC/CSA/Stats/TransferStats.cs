@@ -118,7 +118,7 @@ namespace Itinero.IO.LC
     }
 
 
-    public class MinimizeTransfers : IStatsComparator<TransferStats>
+    public class MinimizeTransfers : StatsComparator<TransferStats>
     {
         public override int ADominatesB(TransferStats a, TransferStats b)
         {
@@ -126,7 +126,7 @@ namespace Itinero.IO.LC
         }
     }
 
-    public class MinimizeTravelTimes : IStatsComparator<TransferStats>
+    public class MinimizeTravelTimes : StatsComparator<TransferStats>
     {
         public override int ADominatesB(TransferStats a, TransferStats b)
         {
@@ -230,7 +230,7 @@ namespace Itinero.IO.LC
         }
     }
 
-    public class ParetoCompare : IStatsComparator<TransferStats>
+    public class ParetoCompare : StatsComparator<TransferStats>
     {
         public override int ADominatesB(TransferStats a, TransferStats b)
         {

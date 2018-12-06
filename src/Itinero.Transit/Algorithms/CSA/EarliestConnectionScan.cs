@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
-using Serilog;
 
 namespace Itinero.Transit
 {
@@ -16,12 +15,9 @@ namespace Itinero.Transit
     public class EarliestConnectionScan<T>
         where T : IJourneyStats<T>
     {
-        private readonly Profile<T> _profile;
-
         private readonly List<LocId> _userTargetLocation;
 
         private readonly ConnectionsDb _connectionsProvider;
-        private readonly StopsDb _locationsProvider;
 
         private readonly Time _lastDeparture;
 
@@ -41,8 +37,8 @@ namespace Itinero.Transit
         /// When the algorithm comes at that arrival time, the walks from that arrival are calculated
         /// </summary>
         //   private readonly Dictionary<Time, HashSet<LocId>> _knownDepartures = new Dictionary<uint, HashSet<ulong>>();
-        
-        
+
+
         /// <summary>
         /// Construct a AES
         /// </summary>
@@ -65,8 +61,6 @@ namespace Itinero.Transit
             List<LocId> userTargetLocation, Time earliestDeparture, Time lastDeparture,
             Profile<T> profile)
         {
-            _profile = profile;
-            _locationsProvider = profile.StopsDb;
             _lastDeparture = lastDeparture;
             _connectionsProvider = profile.ConnectionsDb;
 
@@ -169,8 +163,6 @@ namespace Itinero.Transit
             return journey;
         }
 
-        public static ulong StartPoint;
-
         /// <summary>
         /// Integrates all connections which happen to have the same departure time.
         /// Once all those connections are handled, the walks from the improved locations are batched
@@ -181,7 +173,6 @@ namespace Itinero.Transit
             var lastDepartureTime = enumerator.DepartureTime;
             do
             {
-                
                 var l = IntegrateConnection(enumerator);
 
                 /*   if (l.improvedLocation != LocId.MaxValue)
@@ -221,9 +212,9 @@ namespace Itinero.Transit
         /// If not, MaxValue is returned
         /// 
         /// </summary>
+        /// <param name="c">A DepartureEnumeration, which is used here as if it were a single connection object</param>
         private (LocId improvedLocation, Time previousTime) IntegrateConnection(IConnection c)
         {
-            /// <param name="c">A DepartureEnumeration, which is used here as if it were a single connection object</param>
             // The connection describes a random connection somewhere
             // Lets check if we can take it
 
@@ -246,10 +237,10 @@ namespace Itinero.Transit
 
 
             // When transferring
-            var t1 = Journey<T>.InfiniteJourney;
+            Journey<T> t1;
 
             // When resting in a trip
-            var t2 = Journey<T>.InfiniteJourney;
+            Journey<T> t2;
 
             // When walking
             // Walks are handled downwards

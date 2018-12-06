@@ -1,6 +1,6 @@
 namespace Itinero.Transit.Data
 {
-    public static class ConnectionsDBExtensions
+    public static class ConnectionsDbExtensions
     {
 
 
@@ -8,11 +8,10 @@ namespace Itinero.Transit.Data
         /// Gets a reader() which is loaded on the connection.
         /// Use this for testing only, it is slow
         /// </summary>
-        /// <param name="id"></param>
         /// <returns></returns>
-        public static IConnection LoadConnection(this ConnectionsDb Db, uint id)
+        public static IConnection LoadConnection(this ConnectionsDb db, uint id)
         {
-            var reader = Db.GetReader();
+            var reader = db.GetReader();
             reader.MoveTo(id);
             return reader;
         }

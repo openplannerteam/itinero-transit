@@ -1,6 +1,5 @@
 ﻿using System;
 using Itinero.Transit.Data;
-using Serilog;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 
@@ -122,6 +121,7 @@ namespace Itinero.Transit
         /// </summary>
         /// <param name="root"></param>
         /// <param name="previousLink"></param>
+        /// <param name="specialLink"></param>
         /// <param name="connection"></param>
         /// <param name="location"></param>
         /// <param name="time"></param>
@@ -160,10 +160,10 @@ namespace Itinero.Transit
         /// Chaining constructor
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
-        public Journey<T> Chain(uint connection, UnixTime arrivalTime, LocId location, uint TripId)
+        public Journey<T> Chain(uint connection, UnixTime arrivalTime, LocId location, uint tripId)
         {
             return new Journey<T>(
-                Root, this, false, connection, location, arrivalTime, TripId, Stats);
+                Root, this, false, connection, location, arrivalTime, tripId, Stats);
         }
 
         public Journey<T> ChainForward(IConnection c)
@@ -192,7 +192,6 @@ namespace Itinero.Transit
         /// a 'Transfer' link is included.
         /// Transfer links _should not_ be used to calculate the number of transfers, the differences in trip-ids should be used for this! 
         /// </summary>
-        /// <param name="connection"></param>
         public Journey<T> Transfer(uint connection, UnixTime departureTime, UnixTime arrivalTime, LocId arrivalLocation, uint tripId)
         {
             if (Time == departureTime)

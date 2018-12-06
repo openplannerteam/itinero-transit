@@ -9,10 +9,12 @@ namespace Itinero.IO.LC
     /// </summary>
     public class WalkingConnection : IContinuousConnection
     {
-        private Uri _arrivalLocation, _departureLocation;
-        private DateTime _arrivalTime, _departureTime;
-        private Route _route;
-        private float _speed;
+        private readonly Uri _arrivalLocation;
+        private readonly Uri _departureLocation;
+        private readonly DateTime _arrivalTime;
+        private readonly DateTime _departureTime;
+        private readonly Route _route;
+        private readonly float _speed;
 
         /// <summary>
         /// Constructor used to bootstrap a journey, e.g. for code that assumes that the

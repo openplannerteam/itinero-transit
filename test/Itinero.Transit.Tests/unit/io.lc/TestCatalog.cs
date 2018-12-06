@@ -1,5 +1,4 @@
 using System;
-using Itinero.IO.LC;
 using JsonLD.Core;
 using Xunit;
 using Xunit.Abstractions;

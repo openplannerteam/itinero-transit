@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Itinero.Transit.Data;
 using Serilog;
 
@@ -18,6 +17,8 @@ namespace Itinero.IO.LC
         /// <param name="profile">The profile.</param>
         /// <param name="stopsDb">The stops db.</param>
         /// <param name="window">The window, a start time and duration.</param>
+        /// <param name="countStart">(For testing): if you want to count the number of connections departing here (and arriving at countEnd), pass a paramater with the URI of the departure location</param>
+        /// <param name="countEnd">See countStart</param>
         public static int LoadConnections(this ConnectionsDb connectionsDb, Profile<TransferStats> profile,
             StopsDb stopsDb, (DateTime start, TimeSpan duration) window, string countStart = "", string countEnd = "")
         {

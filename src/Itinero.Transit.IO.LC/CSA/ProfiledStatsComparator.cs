@@ -14,7 +14,7 @@ namespace Itinero.IO.LC
     ///
     /// Note that this calss does not implement extra methods. It acts purely as a marker
     /// </summary>
-    public abstract class ProfiledStatsComparator<T> : IStatsComparator<T>
+    public abstract class ProfiledStatsComparator<T> : StatsComparator<T>
         where T : IJourneyStats<T>
     {
     }

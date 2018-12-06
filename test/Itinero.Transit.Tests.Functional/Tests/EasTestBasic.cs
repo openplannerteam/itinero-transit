@@ -22,7 +22,7 @@ namespace Itinero.Transit.Tests.Functional.Tests
                 GetLocation(Brugge), GetLocation(Gent),
                 depTime.ToUnixTime(), depTime.AddHours(3).ToUnixTime(), p);
 
-            EarliestConnectionScan<TransferStats>.StartPoint = GetLocation(Brugge);
+            GetLocation(Brugge);
             var journey = eas.CalculateJourney();
 
             Assert.NotNull(journey);

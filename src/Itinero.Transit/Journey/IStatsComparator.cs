@@ -18,7 +18,7 @@
         
         public const int ADominates = -1;
         public const int BDominates = 1;
-        public const int Equals = 0;
+        public const int EqualsCode = 0;
         public const int NotComparable = int.MaxValue;
 
         /// <summary>

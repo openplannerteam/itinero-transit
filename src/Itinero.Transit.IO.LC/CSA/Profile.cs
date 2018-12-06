@@ -18,7 +18,7 @@ namespace Itinero.IO.LC
 
         public readonly T StatsFactory;
         public readonly ProfiledStatsComparator<T> ProfileCompare;
-        public readonly IStatsComparator<T> ParetoCompare;
+        public readonly StatsComparator<T> ParetoCompare;
 
         /// <summary>
         /// Indicates the radius within which stops are searched during the
@@ -35,7 +35,7 @@ namespace Itinero.IO.LC
             IFootpathTransferGenerator footpathTransferGenerator,
             T statsFactory,
             ProfiledStatsComparator<T> profileCompare,
-            IStatsComparator<T> paretoCompare)
+            StatsComparator<T> paretoCompare)
         {
             ConnectionsProvider = connectionsProvider;
             LocationProvider = locationProvider;
@@ -58,7 +58,7 @@ namespace Itinero.IO.LC
             LocalStorage storage,
             T statsFactory,
             ProfiledStatsComparator<T> profileCompare,
-            IStatsComparator<T> paretoCompare,
+            StatsComparator<T> paretoCompare,
             Downloader loader = null
         )
         {

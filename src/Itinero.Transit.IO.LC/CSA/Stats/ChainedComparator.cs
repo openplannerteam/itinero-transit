@@ -1,11 +1,11 @@
 ﻿namespace Itinero.IO.LC
 {
-    public class ChainedComparator<T> : IStatsComparator<T>
+    public class ChainedComparator<T> : StatsComparator<T>
         where T : IJourneyStats<T>
     {
-        private readonly IStatsComparator<T> _firstComparator, _spillOver;
+        private readonly StatsComparator<T> _firstComparator, _spillOver;
 
-        public ChainedComparator(IStatsComparator<T> firstComparator, IStatsComparator<T> spillOver)
+        public ChainedComparator(StatsComparator<T> firstComparator, StatsComparator<T> spillOver)
         {
             _firstComparator = firstComparator;
             _spillOver = spillOver;

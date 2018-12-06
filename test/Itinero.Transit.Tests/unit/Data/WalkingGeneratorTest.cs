@@ -1,9 +1,6 @@
-using System;
-using Itinero.IO.LC;
 using Itinero.IO.LC.Tests;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Xunit;
 
 namespace Itinero.Transit.Tests.Data
@@ -15,6 +12,7 @@ namespace Itinero.Transit.Tests.Data
         {
             var connDb = Db.GetDefaultTestDb();
 
+            // ReSharper disable once RedundantArgumentDefaultValue
             var transfGen = new NoWalksGenerator(180);
             var c0 = connDb.LoadConnection(0);
             var c1 = connDb.LoadConnection(1);

@@ -11,7 +11,7 @@
     /// Note that this will be very user-specific
     /// 
     /// </summary>
-    public abstract class IStatsComparator<T>
+    public abstract class StatsComparator<T>
         where T : IJourneyStats<T>
     {
         /// <summary>
