@@ -234,6 +234,17 @@ namespace Itinero.Transit
 
         public override string ToString()
         {
+            var previous = "";
+            if (PreviousLink != null && PreviousLink != this)
+            {
+                previous = PreviousLink.ToString();
+            }
+
+            return $"{previous}\n  {PartToString()}\n    {Stats} (Trip {TripId})";
+        }
+
+        public string PartToString()
+        {
 
             if (SpecialConnection)
             {
@@ -250,7 +261,7 @@ namespace Itinero.Transit
                 throw new ArgumentException($"Unknown Special Connection code {Connection}");   
             }
 
-            return $"Connection {Connection} to {Location}, arriving at {Time}";
+            return $"Connection {Connection} to {Location}, arriving at {DateTimeExtensions.FromUnixTime(Time):hh:mm}";
 
         }
     }

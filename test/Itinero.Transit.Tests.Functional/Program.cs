@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Itinero.IO.LC;
 using Itinero.Logging;
-using Itinero.Transit.Data;
-using Itinero.Transit.Tests.Functional.Performance;
 using Itinero.Transit.Tests.Functional.Staging;
 using Itinero.Transit.Tests.Functional.Tests;
 using Serilog;
@@ -16,12 +12,12 @@ namespace Itinero.Transit.Tests.Functional
 {
     class Program
     {
-        private static void BuildTests()
+        public static List<FunctionalTest> allTests = new List<FunctionalTest>
         {
-            //  new ConnectionsDbTest();
-            //  new AesTest();
-            new TransitDbLoadingTest();
-        }
+            new TransitDbLoadingTest(),
+            new ConnectionsDbTest(),
+            new EasTestBasic()
+        };
 
         public static void Main(string[] args)
         {
@@ -38,10 +34,7 @@ namespace Itinero.Transit.Tests.Functional
 
             Log.Information("2) Starting tests");
 
-            BuildTests();
-
-
-            var tests = FunctionalTest.tests;
+            var tests = allTests;
 
             var failed = 0;
 
@@ -67,7 +60,6 @@ namespace Itinero.Transit.Tests.Functional
                     {
                         throw;
                     }
-                    
                 }
 
                 var end = DateTime.Now;

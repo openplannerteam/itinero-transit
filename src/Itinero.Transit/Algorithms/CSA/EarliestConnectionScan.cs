@@ -148,7 +148,7 @@ namespace Itinero.Transit
 
 
             // We grab the journey we need
-            var journey = _s[(uint) route.bestLocation];
+            var journey = _s[(ulong) route.bestLocation];
 
             if (depArrivalToTimeout == null)
             {
@@ -163,7 +163,6 @@ namespace Itinero.Transit
             {
                 IntegrateBatch(enumerator);
             }
-
 
             return journey;
         }
@@ -180,11 +179,6 @@ namespace Itinero.Transit
             var lastDepartureTime = enumerator.DepartureTime;
             do
             {
-
-                if (enumerator.DepartureLocation == StartPoint)
-                {
-                    Log.Information("Startpoint");
-                }
                 
                 var l = IntegrateConnection(enumerator);
 

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Itinero.Transit.Data;
 using Serilog;
 
-namespace Itinero.IO.LC{
+namespace Itinero.IO.LC
+{
     /// <summary>
     /// Contains extensions methods related to the connections db.
     /// </summary>
@@ -16,20 +18,27 @@ namespace Itinero.IO.LC{
         /// <param name="profile">The profile.</param>
         /// <param name="stopsDb">The stops db.</param>
         /// <param name="window">The window, a start time and duration.</param>
-        public static void LoadConnections(this ConnectionsDb connectionsDb, Profile<TransferStats> profile,
-            StopsDb stopsDb, (DateTime start, TimeSpan duration) window)
+        public static int LoadConnections(this ConnectionsDb connectionsDb, Profile<TransferStats> profile,
+            StopsDb stopsDb, (DateTime start, TimeSpan duration) window, string countStart = "", string countEnd = "")
         {
             var stopsDbReader = stopsDb.GetReader();
 
             var trips = new Dictionary<string, uint>();
-            
-            var cc = 0;
-            var sc = 0;
+
+            var connectionCount = 0;
+            var stopCount = 0;
             var timeTable = profile.GetTimeTable(window.start);
+            int specificDebugCount = 0;
             do
             {
                 foreach (var connection in timeTable.Connections())
                 {
+                    if (connection.DepartureLocation().ToString() == countStart &&
+                        connection.ArrivalLocation().ToString() == countEnd)
+                    {
+                        specificDebugCount++;
+                    }
+
                     var stop1Uri = connection.DepartureLocation();
                     var stop1Location = profile.GetCoordinateFor(stop1Uri);
                     var stop1Id = stop1Uri.ToString();
@@ -37,7 +46,7 @@ namespace Itinero.IO.LC{
                     if (!stopsDbReader.MoveTo(stop1Id))
                     {
                         stop1InternalId = stopsDb.Add(stop1Id, stop1Location.Lon, stop1Location.Lon);
-                        sc++;
+                        stopCount++;
                     }
                     else
                     {
@@ -51,7 +60,7 @@ namespace Itinero.IO.LC{
                     if (!stopsDbReader.MoveTo(stop2Id))
                     {
                         stop2InternalId = stopsDb.Add(stop2Id, stop2Location.Lon, stop2Location.Lon);
-                        sc++;
+                        stopCount++;
                     }
                     else
                     {
@@ -63,7 +72,7 @@ namespace Itinero.IO.LC{
                     {
                         tripId = (uint) trips.Count;
                         trips[tripUri] = tripId;
-                        
+
                         //Log.Information($"Added new trip {tripUri} with {tripId}");
                     }
 
@@ -71,10 +80,10 @@ namespace Itinero.IO.LC{
                     connectionsDb.Add(stop1InternalId, stop2InternalId, connectionId,
                         connection.DepartureTime(),
                         (ushort) (connection.ArrivalTime() - connection.DepartureTime()).TotalSeconds, tripId);
-                    cc++;
+                    connectionCount++;
                 }
 
-                if ((timeTable.NextTableTime() - window.start) > window.duration)
+                if (timeTable.NextTableTime() > window.start + window.duration)
                 {
                     break;
                 }
@@ -83,7 +92,8 @@ namespace Itinero.IO.LC{
                 timeTable = profile.GetTimeTable(nextTimeTableUri);
             } while (true);
 
-            Log.Information($"Added {sc} stops and {cc} connection.");
+            Log.Information($"Added {stopCount} stops and {connectionCount} connection.");
+            return specificDebugCount;
         }
     }
 }
