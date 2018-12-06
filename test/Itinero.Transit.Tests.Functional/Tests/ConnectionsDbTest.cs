@@ -10,7 +10,6 @@ namespace Itinero.Transit.Tests.Functional.Tests
 {
     public class ConnectionsDbTest : FunctionalTest
     {
-        
         public override void Test()
         {
             // setup profile.
@@ -33,6 +32,7 @@ namespace Itinero.Transit.Tests.Functional.Tests
             var departureEnumerator = connectionsDb.GetDepartureEnumerator();
             Action departureEnumeration = () =>
             {
+                departureEnumerator.Reset();
                 while (departureEnumerator.MoveNext())
                 {
                     //var departureDate = DateTimeExtensions.FromUnixTime(departureEnumerator.DepartureTime);

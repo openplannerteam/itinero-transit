@@ -33,11 +33,10 @@ namespace Itinero.Transit
     /// </summary>
     internal static class DateTimeExtensions
     {
-        /// <summary>
-        /// 1/1/1970
-        /// </summary>
         private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-    
+
+        public const ulong SecondsInADay = 24 * 60 * 60;
+
         /// <summary>
         /// Converts a number of milliseconds from 1/1/1970 into a standard DateTime.
         /// </summary>
@@ -52,6 +51,28 @@ namespace Itinero.Transit
         public static ulong ToUnixTime(this DateTime date)
         {
             return (ulong) (date - Epoch).TotalSeconds; // from a multiple of 100 nanosec or ticks to milliseconds.
+        }
+
+        /// <summary>
+        /// Extracts the date component.
+        /// </summary>
+        /// <param name="seconds">The unix time in seconds.</param>
+        /// <returns></returns>
+        public static ulong ExtractDate(ulong seconds)
+        {
+            return (seconds - (seconds % SecondsInADay));
+        }
+
+        /// <summary>
+        /// Jumps to the next day.
+        /// </summary>
+        /// <param name="seconds">The unix time in seconds.</param>
+        /// <returns></returns>
+        public static ulong AddDay(ulong seconds)
+        {
+            var date = FromUnixTime(seconds);
+            date = date.AddDays(1);
+            return date.ToUnixTime();
         }
     }
 }

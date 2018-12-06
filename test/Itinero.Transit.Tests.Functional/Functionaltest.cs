@@ -36,7 +36,7 @@ namespace Itinero.Transit.Tests.Functional
         {
             return _stopIds[id];
         }
-        
+
         public static (ConnectionsDb conns, StopsDb stops, System.Collections.Generic.Dictionary<string, ulong> mapping,
             int count)
             GetTestDb(string countStart = "", string countEnd = "")
@@ -56,12 +56,10 @@ namespace Itinero.Transit.Tests.Functional
                 _stopIds[loc.Uri.ToString()] = (ulong) v.localTileId * uint.MaxValue + v.localId;
             }
 
-            // create a stops db and connections db.
             var connectionsDb = new ConnectionsDb();
             var dayToLoad = DateTime.Now.Date.AddHours(2);
             var count = connectionsDb.LoadConnections(profile, stopsDb,
                 (dayToLoad, new TimeSpan(0, 20, 0, 0)), countStart, countEnd);
-
 
             _conns = connectionsDb;
             _stops = stopsDb;

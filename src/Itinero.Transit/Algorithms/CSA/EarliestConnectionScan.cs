@@ -121,10 +121,12 @@ namespace Itinero.Transit
             // Move the enumerator to the start time
             while (enumerator.DepartureTime < start)
             {
-                enumerator.MoveNext(
-                    "Could not calculate AES: departure time not found. Either to little connections are loaded in the database, or the query is to far in the future or in the past");
+                if (!enumerator.MoveNext())
+                {
+                    throw new Exception(
+                        "Could not calculate AES: departure time not found. Either to little connections are loaded in the database, or the query is to far in the future or in the past");
+                }
             }
-
 
             var lastDeparture = _lastDeparture;
             while (enumerator.DepartureTime < lastDeparture)
@@ -201,8 +203,11 @@ namespace Itinero.Transit
                        _knownDepartures[enumerator.ArrivalTime].Add(l.improvedLocation);
                    }
                    */
-                enumerator.MoveNext(
-                    "Could not calculate Earliest Connection: enumerator depleted, the query is probably to far in the future or the database isn't loaded sufficiently");
+                if (!enumerator.MoveNext())
+                {
+                    throw new Exception(
+                        "Could not calculate Earliest Connection: enumerator depleted, the query is probably to far in the future or the database isn't loaded sufficiently");
+                }
             } while (lastDepartureTime == enumerator.DepartureTime);
 
             // The timeblock 
