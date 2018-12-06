@@ -16,7 +16,8 @@ namespace Itinero.Transit.Tests.Functional
         {
             new TransitDbLoadingTest(),
             new ConnectionsDbTest(),
-            new EasTestBasic()
+            new EasTestBasic(),
+            new EasTestAdvanced()
         };
 
         public static void Main(string[] args)

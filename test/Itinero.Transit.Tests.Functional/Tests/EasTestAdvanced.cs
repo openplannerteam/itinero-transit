@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Itinero.Transit.Tests.Functional.Tests
 {
-    public class EasTestBasic : FunctionalTest
+    public class EasTestAdvanced : FunctionalTest
     {
         public override void Test()
         {
@@ -16,19 +16,19 @@ namespace Itinero.Transit.Tests.Functional.Tests
                 connections, stopsDb,
                 new NoWalksGenerator(), new TransferStats());
 
-            var depTime = DateTime.Now.Date.AddMinutes(10 * 60 + 25);
+            var depTime = DateTime.Now.Date.AddHours(8);
 
             var eas = new EarliestConnectionScan<TransferStats>(
-                GetLocation(Brugge), GetLocation(Gent),
-                depTime.ToUnixTime(), depTime.AddHours(3).ToUnixTime(), p);
+                GetLocation(Poperinge), GetLocation(Vielsalm),
+                depTime.ToUnixTime(), depTime.AddHours(12).ToUnixTime(), p);
 
             var journey = eas.CalculateJourney();
 
             Assert.NotNull(journey);
             Log.Information(journey.ToString());
-            // This will fail very hard on days when there are works between Ghent & Bruges
-            Assert.True(journey.Stats.TravelTime < 45 * 60);
-            Assert.True(journey.Stats.NumberOfTransfers <= 1);
+            // This will fail very hard on days when there are disruptions
+            Assert.True(journey.Stats.TravelTime < 8 * 60 * 60);
+            Assert.True(journey.Stats.NumberOfTransfers <= 8);
         }
     }
 }
