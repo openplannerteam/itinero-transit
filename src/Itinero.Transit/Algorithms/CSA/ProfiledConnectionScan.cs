@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Itinero.Transit;
 using Itinero.Transit.Data;
 
 namespace Itinero.IO.LC
 {
+    
+    
+    using UnixTime = UInt64;
+    
+    
     /// <summary>
     /// The ProfiledConnectionScan is a CSA that applies A* backward and builds profiles on how to reach a target stop.
     ///
@@ -20,26 +24,20 @@ namespace Itinero.IO.LC
     public class ProfiledConnectionScan<T> where T : IJourneyStats<T>
     {
         /// <summary>
-        /// Represents multiple 'target' stations, or walking transfers to the last stop.
-        /// The key of this dictionary is where this footpath can be taken (thus the contained connections.DepartureStation)
+        /// Represents multiple 'target' stations.
+        /// Each target stop can include a certain penalty (e.g. walking to the real target destination)
         /// </summary>
-        private readonly Dictionary<string, IContinuousConnection> _footpathsOut
-            = new Dictionary<string, IContinuousConnection>();
+        private readonly Dictionary<ulong, T> _footpathsOut
+            = new Dictionary<ulong, T>();
 
         /// <summary>
         /// Walking connections from the actual starting point to a nearby stop.
         /// Indexed by the arrival-location of the connections;
         /// also see the analogous _footpathsOut
         /// </summary>
-        private readonly Dictionary<string, IContinuousConnection> _footpathsIn
-            = new Dictionary<string, IContinuousConnection>();
+        private readonly Dictionary<ulong, T> _footpathsIn
+            = new Dictionary<ulong, T>();
 
-
-        /// <summary>
-        /// Keeps track of what stops are already reached by the backwards A*
-        /// Used for the intermodal transfers
-        /// </summary>
-        private readonly ActiveLocationTracker<T> _knownLocations;
 
         /// <summary>
         ///The profile of the traveller: the preferred options, allowed operators, ...
@@ -48,8 +46,8 @@ namespace Itinero.IO.LC
 
         private readonly ProfiledStatsComparator<T> _profileComparator;
 
-        private readonly IConnectionsProvider _connectionsProvider;
-        private readonly DateTime _earliestDeparture, _lastArrival;
+        private readonly ConnectionsDb _connectionsProvider;
+        private readonly UnixTime _earliestDeparture, _lastArrival;
 
         /// <summary> Maps each stop onto a list of non-dominated journeys.
         /// The list is ordered from latest to earliest departure.
@@ -61,8 +59,8 @@ namespace Itinero.IO.LC
         /// Also known as 'S' in the paper
         ///
         /// </summary>
-        private readonly Dictionary<string, ParetoFrontier<T>> _stationJourneys =
-            new Dictionary<string, ParetoFrontier<T>>();
+        private readonly Dictionary<ulong, ParetoFrontier<T>> _stationJourneys =
+            new Dictionary<ulong, ParetoFrontier<T>>();
 
 
         // Placeholder empty frontier; used when a frontier is needed but not present.
@@ -102,8 +100,8 @@ namespace Itinero.IO.LC
         /// (Note that I thought it was not needed at first and all could be modelled with just the station journeys.
         /// I've spent a few days figuring out why certain routes where omitted)
         /// </summary>
-        private readonly Dictionary<string, ParetoFrontier<T>> _tripJourneys =
-            new Dictionary<string, ParetoFrontier<T>>();
+        private readonly Dictionary<ulong, ParetoFrontier<T>> _tripJourneys =
+            new Dictionary<ulong, ParetoFrontier<T>>();
 
         ///  <summary>
         ///  Create a new ProfiledConnectionScan algorithm.
@@ -121,37 +119,11 @@ namespace Itinero.IO.LC
         ///      This comparator is used in intermediate stops. Filtering away the trip 10:00 -> 11:00 at an intermediate stop
         ///      might remove a transfer that turned out to be optimal from the starting position.
         ///  </summary>
-        ///  <param name="departureLocation">The URI-ID of the location where the traveller leaves</param>
-        ///  <param name="targetLocation">The URI-ID of the location where the traveller would like to go</param>
-        /// <param name="profile">The profile containing all the parameters as described above</param>
-        /// <param name="earliestDeparture">The earliest moment that the traveller starts his/her travel</param>
-        /// <param name="lastArrival">When the traveller wants to arrive at last</param>
-        public ProfiledConnectionScan(Uri departureLocation, Uri targetLocation,
-            DateTime earliestDeparture, DateTime lastArrival,
-            Profile<T> profile)
-            : this(new List<Uri> {departureLocation}, new List<Uri> {targetLocation}, earliestDeparture, lastArrival,
-                profile)
-        {
-            if (targetLocation.Equals(departureLocation))
-            {
-                throw new ArgumentException("Departure and target location are the same");
-            }
-        }
-
-        /// <inheritdoc />
-        public ProfiledConnectionScan(IEnumerable<Uri> departureLocations,
-            IEnumerable<Uri> targetLocations,
-            DateTime earliestDeparture, DateTime lastArrival,
-            Profile<T> profile) : this
-        (MapList(departureLocations, earliestDeparture), MapList(targetLocations, lastArrival),
-            earliestDeparture, lastArrival, profile)
-        {
-        }
-
-        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-        public ProfiledConnectionScan(IEnumerable<IContinuousConnection> departureLocations,
-            IEnumerable<IContinuousConnection> targetLocations,
-            DateTime earliestDeparture, DateTime lastArrival,
+       
+        public ProfiledConnectionScan(
+            Dictionary<ulong, T> departureLocations,
+            Dictionary<ulong, T> arrivalStations,
+            UnixTime earliestDeparture, UnixTime lastArrival,
             Profile<T> profile)
         {
             if (!departureLocations.Any())
@@ -159,7 +131,7 @@ namespace Itinero.IO.LC
                 throw new ArgumentException("No departure locations given. Cannot run PCS in this case");
             }
 
-            if (!targetLocations.Any())
+            if (!arrivalStations.Any())
             {
                 throw new ArgumentException("No target locations are given, Cannot run PCS in this case");
             }
@@ -170,26 +142,52 @@ namespace Itinero.IO.LC
                     "Departure time falls after arrival time. Do you intend to travel backwards in time? If so, lend me that time machine!");
             }
 
-            foreach (var target in targetLocations)
-            {
-                _footpathsOut.Add(target.DepartureLocation().ToString(), target);
-            }
 
-            foreach (var source in departureLocations)
-            {
-                _footpathsIn.Add(source.ArrivalLocation().ToString(), source);
-            }
-
+            _footpathsIn = departureLocations;
+            _footpathsOut = arrivalStations;
+            
             _earliestDeparture = earliestDeparture;
             _lastArrival = lastArrival;
 
-            _connectionsProvider = profile.ConnectionsProvider;
-            _profileComparator = profile.ProfileCompare;
-            _profile = profile.MemoizingPathsProfile();
-            _knownLocations = new ActiveLocationTracker<T>(earliestDeparture, profile);
+            _connectionsProvider = profile.ConnectionsDb;
+            _profileComparator = profile.ProfileComparator;
+            _profile = profile;
             _empty = new ParetoFrontier<T>(_profileComparator);
         }
 
+        
+        
+        
+        public IEnumerable<Journey<T>> CalculateJourneys()
+        {
+        
+            var enumerator = _connectionsProvider.GetDepartureEnumerator();
+
+            // Move the enumerator to the start time
+            while (enumerator.DepartureTime <= _lastArrival)
+            {
+                if (!enumerator.MoveNext())
+                {
+                    throw new Exception(
+                        "Could not calculate AES: departure time not found. Either to little connections are loaded in the database, or the query is to far in the future or in the past");
+                }
+            }
+
+            enumerator.MoveNext();
+
+            while (enumerator.DepartureTime < lastDeparture)
+            {
+                IntegrateBatch(enumerator);
+
+                // we have reached a new batch of departure times
+                // Let's first check if we can reach an end destination already
+
+                lastDeparture = Math.Min(GetBestTime().bestTime, lastDeparture);
+            }
+        
+        
+        
+        
         /// <summary>
         /// Calculate possible journeys from the given provider,
         /// where the Uri points to the timetable of the last allowed arrival at the destination station
@@ -201,7 +199,6 @@ namespace Itinero.IO.LC
             IConnection c = null;
             do
             {
-                tt = new ValidatingTimeTable(_profile, tt);
                 var cons = tt.ConnectionsReversed();
                 foreach (var conn in cons)
                 {
@@ -446,25 +443,10 @@ namespace Itinero.IO.LC
             return added;
         }
 
-        private void ExtendTrip(IConnection c)
-        {
-            if (c.Trip() == null)
-            {
-                return;
-            }
-
-            var key = c.Trip().ToString();
-            if (!_tripJourneys.ContainsKey(key))
-            {
-                return;
-            }
-
-            var frontier = _tripJourneys[key].Frontier;
-            for (var i = 0; i < frontier.Count; i++)
-            {
-                frontier[i] = new Journey<T>(frontier[i], c);
-            }
-        }
+        
+        
+        
+ 
 
         /// <summary>
         /// Considers the given journey for the trip.
@@ -489,6 +471,10 @@ namespace Itinero.IO.LC
 
             return _tripJourneys[trip].AddToFrontier(considered);
         }
+        
+        
+        
+        
 
         ///   <summary>
         ///   This method is called when a new startStation can be reached with the given Journey `considered`.
@@ -523,29 +509,40 @@ namespace Itinero.IO.LC
             // TODO Implement this optimalization, in ParetoFrontier for example
             return _stationJourneys[startStation].AddToFrontier(considered);
         }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
-
+        
+        
+        
         /// <summary>
-        /// Converts the list into a list of genesis connections.
-        /// Used in the constructor; small helper function
+        /// Chains the given connection to the needed trips
         /// </summary>
-        private static IEnumerable<WalkingConnection> MapList(IEnumerable<Uri> locations, DateTime time)
+        /// <param name="c"></param>
+        private void ExtendTrip(IConnection c)
         {
-            var l = new List<WalkingConnection>();
-            foreach (var uri in locations)
+            var key = c.TripId;
+            if (!_tripJourneys.ContainsKey(key))
             {
-                l.Add(new WalkingConnection(uri, time));
+                return;
             }
 
-            return l;
+            var frontier = _tripJourneys[key].Frontier;
+            for (var i = 0; i < frontier.Count; i++)
+            {
+                frontier[i] = frontier[i].ChainBackward(c);
+            }
         }
 
-        private ParetoFrontier<T> GetStationJourney(Uri key, ParetoFrontier<T> value)
-        {
-            return GetStationJourney(key.ToString(), value);
-        }
-
-        private ParetoFrontier<T> GetStationJourney(string key, ParetoFrontier<T> value)
+        private ParetoFrontier<T> GetStationJourney(ulong key, ParetoFrontier<T> value)
         {
             return _stationJourneys.ContainsKey(key) ? _stationJourneys[key] : value;
         }

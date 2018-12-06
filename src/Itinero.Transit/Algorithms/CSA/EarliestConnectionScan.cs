@@ -19,7 +19,7 @@ namespace Itinero.Transit
 
         private readonly ConnectionsDb _connectionsProvider;
 
-        private readonly Time _lastDeparture;
+        private readonly Time _earliestDeparture, _lastDeparture;
 
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as early as possible
@@ -61,6 +61,7 @@ namespace Itinero.Transit
             List<LocId> userTargetLocation, Time earliestDeparture, Time lastDeparture,
             Profile<T> profile)
         {
+            _earliestDeparture = earliestDeparture;
             _lastDeparture = lastDeparture;
             _connectionsProvider = profile.ConnectionsDb;
 
@@ -90,30 +91,11 @@ namespace Itinero.Transit
         /// <exception cref="Exception"></exception>
         public Journey<T> CalculateJourney(Func<Time, Time, Time> depArrivalToTimeout = null)
         {
-            // Calculate when we will start the journey
-            Time? startTime = null;
-            // A few locations will already have a start location
-            foreach (var k in _s.Keys)
-            {
-                var j = _s[k];
-                var t = j.StartTime();
-                if (startTime == null)
-                {
-                    startTime = t;
-                }
-                else if (t < startTime)
-                {
-                    startTime = t;
-                }
-            }
-
-            var start = startTime ?? throw new ArgumentException("Can not EAS without a start journey ");
-
-
-            ConnectionsDb.DepartureEnumerator enumerator = _connectionsProvider.GetDepartureEnumerator();
+        
+            var enumerator = _connectionsProvider.GetDepartureEnumerator();
 
             // Move the enumerator to the start time
-            while (enumerator.DepartureTime < start)
+            while (enumerator.DepartureTime < _earliestDeparture)
             {
                 if (!enumerator.MoveNext())
                 {

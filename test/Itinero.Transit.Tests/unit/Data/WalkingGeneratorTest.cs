@@ -13,7 +13,7 @@ namespace Itinero.Transit.Tests.Data
             var connDb = Db.GetDefaultTestDb();
 
             // ReSharper disable once RedundantArgumentDefaultValue
-            var transfGen = new NoWalksGenerator(180);
+            var transfGen = new InternalTransferGenerator(180);
             var c0 = connDb.LoadConnection(0);
             var c1 = connDb.LoadConnection(1);
 
@@ -29,7 +29,7 @@ namespace Itinero.Transit.Tests.Data
 
 
             // We need more time with luggage
-            var transferWithLuggage = new NoWalksGenerator(240);
+            var transferWithLuggage = new InternalTransferGenerator(240);
 
             jtransfered = transferWithLuggage.CreateDepartureTransfer(j, c1);
             Assert.Null(jtransfered); // we didn't make the transfer!

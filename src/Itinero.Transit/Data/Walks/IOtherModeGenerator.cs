@@ -10,8 +10,11 @@ namespace Itinero.Transit.Data.Walks
     /// The transfergenerator takes a journey and a next connection.
     /// Using those, it extends the journey if this is possible.
     /// </summary>
-    public interface IWalksGenerator
+    public interface IOtherModeGenerator
     {
+        
+        
+        
         /// <summary>
         /// Create a new journey, which extends 'buildOn' with 'nextConnection'
         /// This might return null if the transfer time is too short.

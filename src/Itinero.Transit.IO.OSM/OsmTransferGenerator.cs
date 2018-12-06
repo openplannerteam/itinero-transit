@@ -20,7 +20,7 @@ namespace Itinero.Transit
     /// transfer is generate.
     /// If not, the OpenStreetMap database is queried to generate a path between them.
     /// </summary>
-    public class OsmTransferGenerator : IWalksGenerator
+    public class OsmTransferGenerator : IOtherModeGenerator
     {
         private readonly Router _router;
         private readonly Profile _walkingProfile;

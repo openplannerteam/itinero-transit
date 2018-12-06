@@ -16,7 +16,7 @@ namespace Itinero.Transit.Tests.Algorithm
             var stops = Db.GetDefaultStopsDb();
 
             var profile = new Profile<TransferStats>(
-                db, stops, new NoWalksGenerator(), new TransferStats()
+                db, stops, new InternalTransferGenerator(), new TransferStats()
             );
 
             var eas = new EarliestConnectionScan<TransferStats>(

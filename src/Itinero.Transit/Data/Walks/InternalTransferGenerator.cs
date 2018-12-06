@@ -3,13 +3,14 @@ using System;
 namespace Itinero.Transit.Data.Walks
 {
     /// <summary>
-    ///  Generates internal transfers if there is enough time
+    ///  Generates internal (thus within the station) transfers if there is enough time to make the transfer.
+    /// Returns null if two different locations are given
     /// </summary>
-    public class NoWalksGenerator : IWalksGenerator
+    public class InternalTransferGenerator : IOtherModeGenerator
     {
         private readonly uint _internalTransferTime;
 
-        public NoWalksGenerator(uint internalTransferTime = 180)
+        public InternalTransferGenerator(uint internalTransferTime = 180)
         {
             _internalTransferTime = internalTransferTime;
         }

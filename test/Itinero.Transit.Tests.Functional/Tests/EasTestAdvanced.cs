@@ -14,7 +14,7 @@ namespace Itinero.Transit.Tests.Functional.Tests
             var stopsDb = GetTestDb().stops;
             var p = new Profile<TransferStats>(
                 connections, stopsDb,
-                new NoWalksGenerator(), new TransferStats());
+                new InternalTransferGenerator(), new TransferStats());
 
             var depTime = DateTime.Now.Date.AddHours(8);
 
