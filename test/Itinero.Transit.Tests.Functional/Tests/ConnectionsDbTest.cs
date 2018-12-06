@@ -43,6 +43,24 @@ namespace Itinero.Transit.Tests.Functional.Tests
             };
             departureEnumeration.TestPerf("Enumerate by departure time.", 10);
             Log.Information($"Enumerated {ce} connections!");
+
+            // enumerate connections by departure time.
+            tt = 0;
+            ce = 0;
+            departureEnumeration = () =>
+            {
+                departureEnumerator.Reset();
+                while (departureEnumerator.MovePrevious())
+                {
+                    //var departureDate = DateTimeExtensions.FromUnixTime(departureEnumerator.DepartureTime);
+                    //Log.Information($"Connection ({departureEnumerator.Window}-{departureEnumerator.WindowPosition}) {departureEnumerator.GlobalId}: @{departureDate} ({departureEnumerator.TravelTime}s " +
+                    //                $"[{departureEnumerator.DepartureStop} -> {departureEnumerator.ArrivalStop}])");
+                    tt += departureEnumerator.TravelTime;
+                    ce++;
+                }
+            };
+            departureEnumeration.TestPerf("Enumerate by departure time.", 10);
+            Log.Information($"Enumerated {ce} connections!");
         }
     }
 }

@@ -74,5 +74,17 @@ namespace Itinero.Transit
             date = date.AddDays(1);
             return date.ToUnixTime();
         }
+
+        /// <summary>
+        /// Jumps to the previous day.
+        /// </summary>
+        /// <param name="seconds">The unix time in seconds.</param>
+        /// <returns></returns>
+        public static ulong RemoveDay(ulong seconds)
+        {
+            var date = FromUnixTime(seconds);
+            date = date.AddDays(-1);
+            return date.ToUnixTime();
+        }
     }
 }
