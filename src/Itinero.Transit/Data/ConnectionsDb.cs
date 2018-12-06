@@ -25,6 +25,7 @@ using System.Runtime.CompilerServices;
 using Itinero.Transit.Algorithms.Sorting;
 using OsmSharp.IO.PBF;
 using Reminiscence.Arrays;
+
 // ReSharper disable RedundantAssignment
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
@@ -538,7 +539,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// A connections DB reader is an object which allows accessing properties of a single connection contained in the DB
         /// </summary>
-        public class ConnectionsDbReader : Connection
+        public class ConnectionsDbReader : IConnection
         {
             private readonly ConnectionsDb _db;
 
@@ -613,9 +614,9 @@ namespace Itinero.Transit.Data
                 _travelTime = details.travelTime;
                 _arrivalTime = details.departureTime + details.travelTime;
 
-                _departureLocation = details.departureLocation.localTileId * uint.MaxValue +
+                _departureLocation = (ulong) details.departureLocation.localTileId * uint.MaxValue +
                                      details.departureLocation.localId;
-                _arrivalLocation = details.arrivalLocation.localTileId * uint.MaxValue +
+                _arrivalLocation = (ulong) details.arrivalLocation.localTileId * uint.MaxValue +
                                    details.arrivalLocation.localId;
                 return true;
             }
@@ -661,7 +662,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// A enumerator by departure.
         /// </summary>
-        public class DepartureEnumerator : Connection
+        public class DepartureEnumerator : IConnection
         {
             private readonly ConnectionsDb _db;
             private readonly ConnectionsDbReader _reader;
@@ -852,7 +853,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// A enumerator by arrival.
         /// </summary>
-        public class ArrivalEnumerator : Connection
+        public class ArrivalEnumerator : IConnection
         {
             private readonly ConnectionsDb _db;
             private readonly ConnectionsDbReader _reader;
@@ -903,7 +904,7 @@ namespace Itinero.Transit.Data
                     if (!this.MoveNextIgnoreDate())
                     { 
                         // move to next date. 
-                        _date++;
+                        _date = (uint)DateTimeExtensions.AddDay(_date);
                         if (_date > _db._latestDate)
                         {
                             return false;
@@ -1029,19 +1030,5 @@ namespace Itinero.Transit.Data
 
             public uint Id => _reader.CurrentId;
         }
-    }
-
-
-    public interface Connection
-    {
-        
-        uint Id { get; }
-        Time ArrivalTime { get; }
-        Time DepartureTime { get; }
-        ushort TravelTime { get; }
-        uint TripId { get; }
-        ulong DepartureLocation { get; }
-        ulong ArrivalLocation { get; }
-
     }
 }

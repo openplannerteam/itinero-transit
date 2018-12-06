@@ -10,4 +10,14 @@
       <ProjectReference Include="..\..\src\Itinero.Transit\Itinero.Transit.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="cache\SNCB\locations" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="xunit.core, Version=2.4.1.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c">
+        <HintPath>..\..\..\..\.nuget\packages\xunit.extensibility.core\2.4.1\lib\netstandard1.1\xunit.core.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>

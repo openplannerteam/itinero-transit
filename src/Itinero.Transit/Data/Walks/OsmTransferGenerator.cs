@@ -105,7 +105,7 @@ namespace Itinero.Transit
             return route.Value;
         }
 
-        public Journey<T> CreateDepartureTransfer<T>(Journey<T> buildOn, Connection c) where T : IJourneyStats<T>
+        public Journey<T> CreateDepartureTransfer<T>(Journey<T> buildOn, IConnection c) where T : IJourneyStats<T>
         {
             if (c.DepartureTime < buildOn.Time)
             {
@@ -133,7 +133,7 @@ namespace Itinero.Transit
             return withWalk.ChainForward(c);
         }
 
-        public Journey<T> CreateArrivingTransfer<T>(Journey<T> buildOn, Connection c) where T : IJourneyStats<T>
+        public Journey<T> CreateArrivingTransfer<T>(Journey<T> buildOn, IConnection c) where T : IJourneyStats<T>
         {
             if (c.ArrivalTime > buildOn.Time)
             {

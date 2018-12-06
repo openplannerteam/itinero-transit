@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
+using Serilog;
 
 namespace Itinero.Transit
 {
@@ -169,6 +170,8 @@ namespace Itinero.Transit
             return journey;
         }
 
+        public static ulong StartPoint;
+
         /// <summary>
         /// Integrates all connections which happen to have the same departure time.
         /// Once all those connections are handled, the walks from the improved locations are batched
@@ -179,6 +182,12 @@ namespace Itinero.Transit
             var lastDepartureTime = enumerator.DepartureTime;
             do
             {
+
+                if (enumerator.DepartureLocation == StartPoint)
+                {
+                    Log.Information("Startpoint");
+                }
+                
                 var l = IntegrateConnection(enumerator);
 
                 /*   if (l.improvedLocation != LocId.MaxValue)
@@ -218,7 +227,7 @@ namespace Itinero.Transit
         /// If not, MaxValue is returned
         /// 
         /// </summary>
-        private (LocId improvedLocation, Time previousTime) IntegrateConnection(Connection c)
+        private (LocId improvedLocation, Time previousTime) IntegrateConnection(IConnection c)
         {
             /// <param name="c">A DepartureEnumeration, which is used here as if it were a single connection object</param>
             // The connection describes a random connection somewhere

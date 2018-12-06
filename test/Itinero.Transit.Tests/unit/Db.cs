@@ -28,7 +28,7 @@ namespace Itinero.IO.LC.Tests
         }
 
 
-        public static Connection GetConn(this ConnectionsDb db, uint id)
+        public static Transit.Data.IConnection GetConn(this ConnectionsDb db, uint id)
         {
             var reader = db.GetReader();
             reader.MoveTo(id);

@@ -1,5 +1,4 @@
 using System;
-using OsmSharp.IO.PBF;
 using Xunit;
 
 namespace Itinero.Transit.Tests.Data
@@ -12,13 +11,16 @@ namespace Itinero.Transit.Tests.Data
         public void TestMaxDateTime()
         {
 
-            var zero = new DateTime(2006, 2, 7).ToUnixTime();
-            var pointInTime = zero;
-            var newDate = DateTimeExtensions.FromUnixTime(pointInTime + uint.MaxValue);
-            var point2 = newDate.ToUnixTime();
-            Assert.False(pointInTime == point2);
-            Assert.True(point2 > pointInTime);
-
+            
+            var now = new DateTime(2105, 1, 1);
+            var nextYear = now.AddYears(1);
+            
+            Assert.True(now.ToUnixTime() < nextYear.ToUnixTime());
+            Assert.True(DateTimeExtensions.FromUnixTime(now.ToUnixTime())<
+                        DateTimeExtensions.FromUnixTime(nextYear.ToUnixTime()));
+            Assert.True(nextYear == DateTimeExtensions.FromUnixTime(nextYear.ToUnixTime()));
+            
+            
         }
         
     }

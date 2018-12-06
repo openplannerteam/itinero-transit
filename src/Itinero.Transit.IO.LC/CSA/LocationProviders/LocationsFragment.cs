@@ -15,7 +15,7 @@ namespace Itinero.IO.LC
     [Serializable]
     public class LocationsFragment : LinkedObject, ILocationProvider
     {
-        private readonly List<Location> _locations = new List<Location>();
+        public readonly List<Location> Locations = new List<Location>();
 
         private readonly Dictionary<string, Location> _locationMapping = new Dictionary<string, Location>();
 
@@ -41,7 +41,7 @@ namespace Itinero.IO.LC
         public LocationsFragment(Uri uri, IEnumerable<Location> locations)
             : base(uri)
         {
-            _locations = new List<Location>(locations);
+            Locations = new List<Location>(locations);
             ProcessLocations();
         }
 
@@ -54,7 +54,7 @@ namespace Itinero.IO.LC
             foreach (var loc in json["@graph"])
             {
                 var l = new Location((JObject) loc);
-                _locations.Add(l);
+                Locations.Add(l);
             }
 
             ProcessLocations();
@@ -62,7 +62,7 @@ namespace Itinero.IO.LC
 
         protected void ProcessLocations()
         {
-            foreach (var l in _locations)
+            foreach (var l in Locations)
             {
                 _locationMapping.Add(l.Uri.ToString(), l);
 
@@ -83,12 +83,12 @@ namespace Itinero.IO.LC
         public override string ToString()
         {
             var overview = "";
-            foreach (var location in _locations)
+            foreach (var location in Locations)
             {
                 overview += "  " + location + "\n";
             }
 
-            return $"Location dump with {_locations.Count} locations:\n{overview}";
+            return $"Location dump with {Locations.Count} locations:\n{overview}";
         }
 
         public bool ContainsLocation(Uri locationId)
@@ -120,6 +120,11 @@ namespace Itinero.IO.LC
             return _nameMapping[name];
         }
 
+        public IEnumerable<Location> GetAllLocations()
+        {
+            return Locations;
+        }
+
         public IEnumerable<Uri> GetLocationsCloseTo(float lat, float lon, int radiusInMeters)
         {
             if (radiusInMeters < 1)
@@ -134,7 +139,7 @@ namespace Itinero.IO.LC
 
             var closeEnough = new List<Uri>();
 
-            foreach (var l in _locations)
+            foreach (var l in Locations)
             {
                 var d = Coordinate.DistanceEstimateInMeter(lat, lon, l.Lat, l.Lon);
                 if (d < radiusInMeters)

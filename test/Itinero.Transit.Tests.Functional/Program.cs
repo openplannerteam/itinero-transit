@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Itinero.IO.LC;
 using Itinero.Logging;
 using Itinero.Transit.Data;
 using Itinero.Transit.Tests.Functional.Performance;
 using Itinero.Transit.Tests.Functional.Staging;
+using Itinero.Transit.Tests.Functional.Tests;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
@@ -14,68 +16,73 @@ namespace Itinero.Transit.Tests.Functional
 {
     class Program
     {
-        public static readonly DateTime TestDay = new DateTime(2018, 11, 26, 00, 00, 00);
-
-        public static DateTime TestMoment(int hours, int minutes, int seconds = 0)
+        private static void BuildTests()
         {
-            return TestDay.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
+            //  new ConnectionsDbTest();
+            //  new AesTest();
+            new TransitDbLoadingTest();
         }
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             EnableLogging();
             Log.Information($"{args.Length} CLI params given");
-            
+
+            Log.Information("Starting the Functional Tests...");
+
+            Log.Information("1) Running Staging");
+
             // do staging, download & preprocess some data.
             BuildRouterDb.BuildOrLoad();
 
-            // setup profile.
-            var profile = Belgium.Sncb(new LocalStorage("cache"));
-            
-            // create a stops db and connections db.
-            var stopsDb = new StopsDb();
-            var connectionsDb = new ConnectionsDb();
-            
-            // load connections for the next day.
-            Action loadConnections = () =>
+
+            Log.Information("2) Starting tests");
+
+            BuildTests();
+
+
+            var tests = FunctionalTest.tests;
+
+            var failed = 0;
+
+            for (int i = 0; i < tests.Count; i++)
             {
-                connectionsDb.LoadConnections(profile, stopsDb, (DateTime.Now, new TimeSpan(1, 0, 0, 0)));
-            };
-            loadConnections.TestPerf("Loading connections.");
-            
-            // enumerate connections by departure time.
-            var tt = 0;
-            var ce = 0;
-            var departureEnumerator = connectionsDb.GetDepartureEnumerator();
-            Action departureEnumeration = () =>
-            {
-                departureEnumerator.Reset();
-                while (departureEnumerator.MoveNext())
+                Log.Information($"{i + 1}/{tests.Count}: Running {tests[i].GetType().Name}");
+
+                var start = DateTime.Now;
+                try
                 {
-                    //var departureDate = DateTimeExtensions.FromUnixTime(departureEnumerator.DepartureTime);
-                    //Log.Information($"Connection {departureEnumerator.GlobalId}: @{departureDate} ({departureEnumerator.TravelTime}s [{departureEnumerator.DepartureStop} -> {departureEnumerator.ArrivalStop}])");
-                    tt += departureEnumerator.TravelTime;
-                    ce++;
+                    tests[i].Test();
+
+                    Log.Information($"{i + 1}/{tests.Count}: [OK]");
                 }
-            };
-            departureEnumeration.TestPerf("Enumerate by departure time.", 10);
-            Log.Information($"Enumerated {ce} connections!");
-//
-//            // specify the query data.
-//            var poperinge = new Uri("http://irail.be/stations/NMBS/008896735");
-//            var vielsalm = new Uri("http://irail.be/stations/NMBS/008845146");
-//            var startTime = new DateTime(2018, 11, 20, 11, 00, 00);
-//            var endTime = new DateTime(2018, 11, 20, 23, 0, 0);
-//
-//            // Initialize the algorithm
-//            var eas = new EarliestConnectionScan<TransferStats>(
-//                poperinge, vielsalm, startTime, endTime,
-//                profile);
-//            var journey = eas.CalculateJourney();
-//
-//            // Print the journey. Passing the profile means that human-unfriendly IDs can be replaced with names (e.g. 'Vielsalm' instead of 'https://irail.be/stations/12345')
-//            Log.Information(journey.ToString(profile));
-            //*/
+                catch (Exception e)
+                {
+                    Log.Information($"{i + 1}/{tests.Count}: [FAILED] {e.Message}");
+                    Log.Error(e.Message + "\n" + e.StackTrace);
+                    failed++;
+
+
+                    if (tests.Count == 1)
+                    {
+                        throw;
+                    }
+                    
+                }
+
+                var end = DateTime.Now;
+                Log.Information($"{i + 1}/{tests.Count}: Took {(end - start).TotalMilliseconds}ms");
+            }
+
+
+            Log.Information("3) Tests are done");
+            if (failed > 0)
+            {
+                Log.Information($"{failed} tests failed");
+                throw new Exception($"{failed} failed tests");
+            }
+
+            Log.Information($"All {tests.Count} tests successful!");
         }
 
         private static void EnableLogging()
@@ -90,7 +97,7 @@ namespace Itinero.Transit.Tests.Functional
                 .WriteTo.File(new JsonFormatter(), logFile)
                 .WriteTo.Console()
                 .CreateLogger();
-            
+
 #if DEBUG
             var loggingBlacklist = new HashSet<string>();
 #else

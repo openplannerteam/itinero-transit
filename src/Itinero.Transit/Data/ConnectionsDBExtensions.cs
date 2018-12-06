@@ -10,7 +10,7 @@ namespace Itinero.Transit.Data
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static Connection LoadConnection(this ConnectionsDb Db, uint id)
+        public static IConnection LoadConnection(this ConnectionsDb Db, uint id)
         {
             var reader = Db.GetReader();
             reader.MoveTo(id);

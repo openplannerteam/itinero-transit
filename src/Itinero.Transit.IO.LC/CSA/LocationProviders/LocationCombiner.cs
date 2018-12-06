@@ -72,6 +72,18 @@ namespace Itinero.IO.LC
             return allLocations;
         }
 
+        public IEnumerable<Location> GetAllLocations()
+        {
+            
+            var allLocations = new List<Location>();
+            foreach (var p in _providers)
+            {
+                allLocations.AddRange(p.GetAllLocations());
+            }
+
+            return allLocations;
+        }
+
         public BoundingBox BBox()
         {
             return _bbox;
