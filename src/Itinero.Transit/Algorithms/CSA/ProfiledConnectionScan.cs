@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Itinero.Transit;
+using Itinero.Transit.Data;
 
 namespace Itinero.IO.LC
 {

@@ -99,12 +99,6 @@ namespace Itinero.IO.LC
             ParetoCompare = paretoCompare;
         }
 
-        public Journey<T> CalculateEas(Uri departure, Uri arrival, DateTime departureTime, DateTime endTime)
-        {
-            var eas = new EarliestConnectionScan<T>(departure, arrival, departureTime, endTime, this);
-            return eas.CalculateJourney();
-        }
-
         // ReSharper disable once UnusedMember.Global
         public IEnumerable<IContinuousConnection> CloseByGenesisConnections(Location around, int radius,
             DateTime genesisTime)

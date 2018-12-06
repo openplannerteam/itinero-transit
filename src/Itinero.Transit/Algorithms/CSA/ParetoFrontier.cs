@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Itinero.Transit;
 
 namespace Itinero.IO.LC
 {
@@ -10,7 +11,7 @@ namespace Itinero.IO.LC
 
         /// <summary>
         /// Contains all the points on the frontier, in order
-        /// This is needed for certain optimalizations.
+        /// This is needed for certain optimalisations.
         /// Note that most removals (if they happen) will probably be on the tail, so not have too much of an performance impact
         /// </summary>
         public readonly List<Journey<T>> Frontier = new List<Journey<T>>();
@@ -22,10 +23,6 @@ namespace Itinero.IO.LC
         }
 
 
-        public bool OnTheFrontier(Journey<T> journey)
-        {
-            return OnTheFrontier(journey.Stats);
-        }
 
         /// <summary>
         /// Are the given statistics on the current frontier?
@@ -33,11 +30,11 @@ namespace Itinero.IO.LC
         /// </summary>
         /// <param name="considered">The considered statistics</param>
         /// <returns></returns>
-        public bool OnTheFrontier(T considered)
+        public bool OnTheFrontier(Journey<T> considered)
         {
             foreach (var guard in Frontier)
             {
-                var comparison = _comparator.ADominatesB(guard.Stats, considered);
+                var comparison = _comparator.ADominatesB(guard, considered);
                 if (comparison < 0)
                 {
                     // The new journey didn't make the cut

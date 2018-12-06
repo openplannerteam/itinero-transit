@@ -21,7 +21,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Algorithms\CSA\Algorithms" />
     <Folder Include="Data\Attributes" />
   </ItemGroup>
 
