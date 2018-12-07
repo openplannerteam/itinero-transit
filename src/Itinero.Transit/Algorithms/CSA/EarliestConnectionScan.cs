@@ -129,7 +129,8 @@ namespace Itinero.Transit
                 if (!enumerator.MoveNext())
                 {
                     throw new Exception(
-                        "Could not calculate AES: departure time not found. Either to little connections are loaded in the database, or the query is to far in the future or in the past");
+                        $"Could not calculate AES: departure time {start} ({DateTimeExtensions.FromUnixTime(start):O})not found." +
+                        "Either to little connections are loaded in the database, or th    e query is to far in the future or in the past");
                 }
             }
 

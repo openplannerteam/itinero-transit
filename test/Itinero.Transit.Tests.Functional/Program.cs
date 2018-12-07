@@ -8,10 +8,11 @@ using Itinero.Transit.Tests.Functional.Tests;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
+using Xunit;
 
 namespace Itinero.Transit.Tests.Functional
 {
-    class Program
+    public class Program
     {
         public static readonly List<FunctionalTest> AllTests = new List<FunctionalTest>
         {
@@ -21,11 +22,10 @@ namespace Itinero.Transit.Tests.Functional
             new EasTestAdvanced()
         };
 
-        public static void Main(string[] args)
+        [Fact]
+        public static void Main0()
         {
             EnableLogging();
-            Log.Information($"{args.Length} CLI params given");
-
             Log.Information("Starting the Functional Tests...");
 
             Log.Information("1) Running Staging");
