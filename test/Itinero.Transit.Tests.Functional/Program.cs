@@ -16,10 +16,10 @@ namespace Itinero.Transit.Tests.Functional
     {
         public static readonly List<FunctionalTest> AllTests = new List<FunctionalTest>
         {
-            new TransitDbLoadingTest(),
+            //new TransitDbLoadingTest(),
             new ConnectionsDbTest(),
-            new EasTestBasic(),
-            new EasTestAdvanced()
+            //new EasTestBasic(),
+            //new EasTestAdvanced()
         };
 
         [Fact]
@@ -45,24 +45,24 @@ namespace Itinero.Transit.Tests.Functional
                 Log.Information($"{i + 1}/{tests.Count}: Running {tests[i].GetType().Name}");
 
                 var start = DateTime.Now;
-                try
-                {
+//                try
+//                {
                     tests[i].Test();
 
                     Log.Information($"{i + 1}/{tests.Count}: [OK]");
-                }
-                catch (Exception e)
-                {
-                    Log.Information($"{i + 1}/{tests.Count}: [FAILED] {e.Message}");
-                    Log.Error(e.Message + "\n" + e.StackTrace);
-                    failed.Add(tests[i]);
-
-
-                    if (tests.Count == 1)
-                    {
-                        throw;
-                    }
-                }
+//                }
+//                catch (Exception e)
+//                {
+//                    Log.Information($"{i + 1}/{tests.Count}: [FAILED] {e.Message}");
+//                    Log.Error(e.Message + "\n" + e.StackTrace);
+//                    failed.Add(tests[i]);
+//
+//
+//                    if (tests.Count == 1)
+//                    {
+//                        throw;
+//                    }
+//                }
 
                 var end = DateTime.Now;
                 Log.Information($"{i + 1}/{tests.Count}: Took {(end - start).TotalMilliseconds}ms");

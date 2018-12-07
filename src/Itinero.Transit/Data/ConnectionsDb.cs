@@ -671,11 +671,11 @@ namespace Itinero.Transit.Data
                 _db = db;
 
                 _reader = _db.GetReader();
-                _date = _db._earliestDate;
+                _date = uint.MaxValue;
             }
 
             private uint _window = uint.MaxValue;
-            private uint _windowPosition = uint.MaxValue;
+            private long _windowPosition = long.MaxValue;
             private uint _windowPointer = uint.MaxValue;
             private uint _windowSize = uint.MaxValue;
             private uint _date;
@@ -686,7 +686,7 @@ namespace Itinero.Transit.Data
             public void Reset()
             {
                 this.ResetIgnoreDate();
-                _date = _db._earliestDate;
+                _date = uint.MaxValue;
             }
 
             /// <summary>
@@ -705,7 +705,12 @@ namespace Itinero.Transit.Data
             /// <returns></returns>
             public bool MoveNext()
             {
-                if (_date == uint.MaxValue) return false;
+                if (_date == uint.MaxValue)
+                {
+                    if (_db._earliestDate == uint.MaxValue) return false;
+
+                    _date = _db._earliestDate;
+                }
 
                 while (true)
                 {
@@ -802,6 +807,120 @@ namespace Itinero.Transit.Data
             }
 
             /// <summary>
+            /// Moves to the previous connection.
+            /// </summary>
+            /// <returns></returns>
+            public bool MovePrevious()
+            {
+                if (_date == uint.MaxValue)
+                {
+                    if (_db._latestDate == uint.MaxValue) return false;
+
+                    _date = _db._latestDate;
+                }
+
+                while (true)
+                {
+                    if (!this.MovePreviousIgnoreDate())
+                    { 
+                        // move to next date. 
+                        _date = (uint)DateTimeExtensions.RemoveDay(_date);
+                        if (_date < _db._earliestDate)
+                        {
+                            return false;
+                        }
+                        
+                        // reset enumerator.
+                        this.ResetIgnoreDate();
+                    }
+                    else
+                    {
+                        if (_date == DateTimeExtensions.ExtractDate(_reader.DepartureTime))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Moves this enumerator to the previous connection ignoring the data component.
+            /// </summary>
+            /// <returns></returns>
+            private bool MovePreviousIgnoreDate()
+            {
+                if (_window == uint.MaxValue)
+                {
+                    // no data, find last window with data.
+                    for (var w = _db._departureWindowPointers.Length / 2 - 1; w >= 0; w--)
+                    {
+                        var windowSize = _db._departureWindowPointers[w * 2 + 1];
+                        if (windowSize <= 0) continue;
+
+                        _window = (uint)w;
+                        _windowSize = windowSize;
+                        break;
+                    }
+
+                    if (_window == uint.MaxValue)
+                    {
+                        // no window with data found.
+                        return false;
+                    }
+
+                    // window changed.
+                    _windowPosition = _windowSize - 1;
+                    _windowPointer = _db._departureWindowPointers[_window * 2 + _windowPosition];
+                }
+                else
+                {
+                    // there is an active window, try to move to the previous window.
+                    if (_windowPosition <= 0)
+                    {
+                        // move to next window.
+                        var w = (long)_window - 1;
+                        _window = uint.MaxValue;
+                        for (; w >= 0; w--)
+                        {
+                            var windowSize = _db._departureWindowPointers[w * 2 + 1];
+                            if (windowSize <= 0) continue;
+
+                            _window = (uint)w;
+                            _windowSize = windowSize;
+                            break;
+                        }
+
+                        if (_window == uint.MaxValue)
+                        {
+                            // no more windows with data found.
+                            return false;
+                        }
+
+                        // window changed.
+                        _windowPosition = _windowSize - 1;
+                        _windowPointer = _db._departureWindowPointers[_window * 2 + _windowPosition];
+
+                        if (_windowPointer == uint.MaxValue)
+                        {
+                            //Console.WriteLine($"{_date}:{_window}-{_windowPosition}: Invalid pointer here, there is supposed to be one here.");
+                            _windowPosition = 0;
+                            return this.MovePreviousIgnoreDate();
+                        }
+                    }
+                    else
+                    {
+                        // move to the next connection.
+                        _windowPosition--;
+                    }
+                }
+
+                // move the reader to the correct location.
+                _reader.MoveTo(_db._departurePointers[_windowPointer + _windowPosition]);
+
+                return true;
+            }
+
+            /// <summary>
             /// Gets the first stop.
             /// </summary>
             // ReSharper disable once UnusedMember.Global
@@ -838,6 +957,10 @@ namespace Itinero.Transit.Data
             /// Gets the trip id.
             /// </summary>
             public uint TripId => _reader.TripId;
+
+            internal uint Window => _window;
+            internal uint WindowSize => _windowSize;
+            internal long WindowPosition => _windowPosition;
         }
 
         /// <summary>
