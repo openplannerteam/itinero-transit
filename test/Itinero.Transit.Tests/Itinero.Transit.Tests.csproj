@@ -4,7 +4,10 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.0-preview-20181205-02" />
+    <PackageReference Include="openplannerteam.Itinero.Transit" Version="0.0.13-alpha" />
+    <PackageReference Include="openplannerteam.Itinero.Transit.IO.LC" Version="0.0.10-alpha" />
+    <PackageReference Include="openplannerteam.Json-LD.net" Version="0.1.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
@@ -16,6 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Itinero.Transit.IO.LC\Itinero.Transit.IO.LC.csproj" />
+    <ProjectReference Include="..\..\src\Itinero.Transit.IO.OSM\Itinero.Transit.IO.OSM.csproj" />
     <ProjectReference Include="..\..\src\Itinero.Transit\Itinero.Transit.csproj" />
   </ItemGroup>
 </Project>

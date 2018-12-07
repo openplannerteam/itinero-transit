@@ -19,7 +19,7 @@ namespace Itinero.Transit
 
         private readonly ConnectionsDb _connectionsProvider;
 
-        private readonly Time _lastDeparture;
+        private readonly Time _lastDeparture, _earliestDeparture;
 
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as early as possible
@@ -51,12 +51,12 @@ namespace Itinero.Transit
             DateTime earliestDeparture, DateTime lastDeparture,
             Profile<T> profile) : this(
             new List<ulong> {userDepartureLocation}, new List<ulong> {userTargetLocation},
-            earliestDeparture.ToUnixTime(), lastDeparture.ToUnixTime(),
+            (uint) earliestDeparture.ToUnixTime(), (uint) lastDeparture.ToUnixTime(),
             profile)
         {
         }
 
-        
+
         public EarliestConnectionScan(LocId userDepartureLocation, LocId userTargetLocation,
             ulong earliestDeparture, ulong lastDeparture,
             Profile<T> profile) : this(
@@ -67,7 +67,6 @@ namespace Itinero.Transit
         }
 
 
-
         public EarliestConnectionScan(IEnumerable<LocId> userDepartureLocation,
             List<LocId> userTargetLocation, Time earliestDeparture, Time lastDeparture,
             Profile<T> profile)
@@ -76,6 +75,7 @@ namespace Itinero.Transit
             _connectionsProvider = profile.ConnectionsDb;
 
             _userTargetLocation = userTargetLocation;
+            _earliestDeparture = earliestDeparture;
             foreach (var loc in userDepartureLocation)
             {
                 _s.Add(loc, new Journey<T>(loc, earliestDeparture, profile.StatsFactory));
@@ -101,36 +101,17 @@ namespace Itinero.Transit
         /// <exception cref="Exception"></exception>
         public Journey<T> CalculateJourney(Func<Time, Time, Time> depArrivalToTimeout = null)
         {
-            // Calculate when we will start the journey
-            Time? startTime = null;
-            // A few locations will already have a start location
-            foreach (var k in _s.Keys)
-            {
-                var j = _s[k];
-                var t = j.StartTime();
-                if (startTime == null)
-                {
-                    startTime = t;
-                }
-                else if (t < startTime)
-                {
-                    startTime = t;
-                }
-            }
-
-            var start = startTime ?? throw new ArgumentException("Can not EAS without a start journey ");
-
 
             ConnectionsDb.DepartureEnumerator enumerator = _connectionsProvider.GetDepartureEnumerator();
 
             // Move the enumerator to the start time
-            while (enumerator.DepartureTime < start)
+            while (enumerator.DepartureTime < _earliestDeparture)
             {
                 if (!enumerator.MoveNext())
                 {
                     throw new Exception(
-                        $"Could not calculate AES: departure time {start} ({DateTimeExtensions.FromUnixTime(start):O})not found." +
-                        "Either to little connections are loaded in the database, or th    e query is to far in the future or in the past");
+                        $"Could not calculate AES: departure time {_earliestDeparture} ({DateTimeExtensions.FromUnixTime(_earliestDeparture):O})not found." +
+                        "Either to little connections are loaded in the database, or the query is to far in the future or in the past");
                 }
             }
 

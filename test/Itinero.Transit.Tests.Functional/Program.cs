@@ -22,8 +22,7 @@ namespace Itinero.Transit.Tests.Functional
             //new EasTestAdvanced()
         };
 
-        [Fact]
-        public static void Main0()
+        public static void Main()
         {
             EnableLogging();
             Log.Information("Starting the Functional Tests...");
