@@ -16,4 +16,6 @@ The TransitDb is:
 
 It contains stops, connections and trips. The stops can be retrieved, updated or deleted by their IDs and queried by their geographical location. The connections can be enumerated either by their departure or arrival time and can be retrieved, updated or deleted by their ID.
 
+A high-level overview of how these things tie together:
 
+![transit-db-diagram](docs/images/transit-db-lc-io-diagram.png)
