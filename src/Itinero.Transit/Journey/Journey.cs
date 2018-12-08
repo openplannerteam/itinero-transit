@@ -8,7 +8,7 @@ namespace Itinero.Transit
 {
     using TimeSpan = UInt16;
     using UnixTime = UInt64;
-    using LocId = UInt64;
+    //using LocId = UInt64;
 
 
     /// <summary>
@@ -78,7 +78,7 @@ namespace Itinero.Transit
         /// 
         /// Only for the genesis connection, this is the departure location.
         /// </summary>
-        public readonly LocId Location;
+        public readonly (uint localTileId, uint localId) Location;
 
         /// <summary>
         /// Keep track of Time.
@@ -111,7 +111,7 @@ namespace Itinero.Transit
             Root = this;
             PreviousLink = this;
             Connection = int.MaxValue;
-            Location = LocId.MaxValue;
+            Location = (uint.MaxValue, uint.MaxValue);
             Time = UnixTime.MaxValue;
             SpecialConnection = true;
             TripId = uint.MaxValue;
@@ -130,7 +130,7 @@ namespace Itinero.Transit
         /// <param name="tripId"></param>
         /// <param name="stats"></param>
         private Journey(Journey<T> root, Journey<T> previousLink, bool specialLink, uint connection,
-            LocId location, UnixTime time, uint tripId, T stats)
+            (uint localTileId, uint localId) location, UnixTime time, uint tripId, T stats)
         {
             Root = root;
             SpecialConnection = specialLink;
@@ -146,7 +146,7 @@ namespace Itinero.Transit
         /// Genesis constructor.
         /// This constructor creates a root journey
         /// </summary>
-        public Journey(LocId location, UnixTime departureTime, T statsFactory)
+        public Journey((uint localTileId, uint localId) location, UnixTime departureTime, T statsFactory)
         {
             Root = this;
             PreviousLink = null;
@@ -162,7 +162,7 @@ namespace Itinero.Transit
         /// Chaining constructor
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
-        public Journey<T> Chain(uint connection, UnixTime arrivalTime, LocId location, uint tripId)
+        public Journey<T> Chain(uint connection, UnixTime arrivalTime, (uint localTileId, uint localId) location, uint tripId)
         {
             return new Journey<T>(
                 Root, this, false, connection, location, arrivalTime, tripId, Stats);
@@ -170,12 +170,12 @@ namespace Itinero.Transit
 
         public Journey<T> ChainForward(IConnection c)
         {
-            return Chain(c.Id, c.ArrivalTime, c.ArrivalLocation, c.TripId);
+            return Chain(c.Id, c.ArrivalTime, c.ArrivalStop, c.TripId);
         }
 
         public Journey<T> ChainBackward(IConnection c)
         {
-            return Chain(c.Id, c.DepartureTime, c.DepartureLocation, c.TripId);
+            return Chain(c.Id, c.DepartureTime, c.DepartureStop, c.TripId);
         }
 
 
@@ -183,7 +183,7 @@ namespace Itinero.Transit
         /// Chaining constructor
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
-        public Journey<T> ChainSpecial(uint specialCode, UnixTime arrivalTime, LocId location)
+        public Journey<T> ChainSpecial(uint specialCode, UnixTime arrivalTime, (uint localTileId, uint localId) location)
         {
             return new Journey<T>(
                 Root, this, true, specialCode, location, arrivalTime, uint.MaxValue, Stats);
@@ -194,7 +194,7 @@ namespace Itinero.Transit
         /// a 'Transfer' link is included.
         /// Transfer links _should not_ be used to calculate the number of transfers, the differences in trip-ids should be used for this! 
         /// </summary>
-        public Journey<T> Transfer(uint connection, UnixTime departureTime, UnixTime arrivalTime, LocId arrivalLocation,
+        public Journey<T> Transfer(uint connection, UnixTime departureTime, UnixTime arrivalTime, (uint localTileId, uint localId) arrivalLocation,
             uint tripId)
         {
             if (Time == departureTime)
@@ -212,7 +212,7 @@ namespace Itinero.Transit
 
         public Journey<T> TransferForward(IConnection c)
         {
-            return Transfer(c.Id, c.DepartureTime, c.ArrivalTime, c.ArrivalLocation, c.TripId);
+            return Transfer(c.Id, c.DepartureTime, c.ArrivalTime, c.ArrivalStop, c.TripId);
         }
 
 

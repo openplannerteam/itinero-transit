@@ -1,4 +1,5 @@
 using System;
+using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Serilog;
@@ -29,16 +30,10 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var departure = reader.Id;
             True(reader.MoveTo(input.arrivalStopId));
             var arrival = reader.Id;
-
-            // TODO: these conversions should not be needed.
-            var departureId = (ulong) departure.localTileId * uint.MaxValue +
-                         departure.localId;
-            var arrivalId = (ulong) arrival.localTileId * uint.MaxValue +
-                           arrival.localId;
             
             // instantiate and run EAS.
             var eas = new EarliestConnectionScan<TransferStats>(
-                departureId, arrivalId,
+                departure, arrival,
                 depTime, depTime.AddHours(24), p);
             var journey = eas.CalculateJourney();
 

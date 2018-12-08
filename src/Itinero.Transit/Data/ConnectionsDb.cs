@@ -549,8 +549,8 @@ namespace Itinero.Transit.Data
             }
 
             private uint _internalId;
-            private (uint localTileId, uint localId) _stop1;
-            private (uint localTileId, uint localId) _stop2;
+            private (uint localTileId, uint localId) _departureStop;
+            private (uint localTileId, uint localId) _arrivalStop;
             private ulong _arrivalLocation, _departureLocation;
             private Time _departureTime, _arrivalTime;
             private ushort _travelTime;
@@ -568,12 +568,12 @@ namespace Itinero.Transit.Data
             /// <summary>
             /// Gets the first stop.
             /// </summary>
-            public (uint localTileId, uint localId) Stop1 => _stop1;
+            public (uint localTileId, uint localId) DepartureStop => _departureStop;
 
             /// <summary>
             /// Gets the second stop.
             /// </summary>
-            public (uint localTileId, uint localId) Stop2 => _stop2;
+            public (uint localTileId, uint localId) ArrivalStop => _arrivalStop;
 
             /// <summary>
             /// Gets the departure time.
@@ -609,8 +609,8 @@ namespace Itinero.Transit.Data
                 }
 
                 _internalId = internalId;
-                _stop1 = details.departureLocation;
-                _stop2 = details.arrivalLocation;
+                _departureStop = details.departureLocation;
+                _arrivalStop = details.arrivalLocation;
                 _departureTime = details.departureTime;
                 _travelTime = details.travelTime;
                 _arrivalTime = details.departureTime + details.travelTime;
@@ -926,29 +926,33 @@ namespace Itinero.Transit.Data
             /// Gets the first stop.
             /// </summary>
             // ReSharper disable once UnusedMember.Global
-            public (uint localTileId, uint localId) DepartureStop => _reader.Stop1;
+            public (uint localTileId, uint localId) DepartureStop => _reader.DepartureStop;
 
             /// <summary>
             /// Gets the second stop.
             /// </summary>
             // ReSharper disable once UnusedMember.Global
-            public (uint localTileId, uint localId) ArrivalStop => _reader.Stop2;
-
-            public LocId ArrivalLocation => _reader.ArrivalLocation;
-            public LocId DepartureLocation => _reader.DepartureLocation;
+            public (uint localTileId, uint localId) ArrivalStop => _reader.ArrivalStop;
 
             /// <summary>
             /// Gets the departure time.
             /// </summary>
             public Time DepartureTime => _reader.DepartureTime;
+            
+            /// <summary>
+            /// Gets the arrival time.
+            /// </summary>
+            public Time ArrivalTime => _reader.ArrivalTime;
 
             /// <summary>
             /// Gets the travel time.
             /// </summary>
             public ushort TravelTime => _reader.TravelTime;
 
+            /// <summary>
+            /// Gets the internal connection id.
+            /// </summary>
             public uint Id => _reader.CurrentId;
-            public Time ArrivalTime => _reader.ArrivalTime;
 
             /// <summary>
             /// Gets the global id.
@@ -977,7 +981,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// A enumerator by arrival.
         /// </summary>
-        public class ArrivalEnumerator : IConnection
+        public class ArrivalEnumerator
         {
             private readonly ConnectionsDb _db;
             private readonly ConnectionsDbReader _reader;
@@ -1120,18 +1124,21 @@ namespace Itinero.Transit.Data
             /// <summary>
             /// Gets the first stop.
             /// </summary>
-            public (uint localTileId, uint localId) Stop1 => _reader.Stop1;
+            public (uint localTileId, uint localId) DepartureStop => _reader.DepartureStop;
 
             /// <summary>
             /// Gets the second stop.
             /// </summary>
-            public (uint localTileId, uint localId) Stop2 => _reader.Stop2;
+            public (uint localTileId, uint localId) ArrivalStop => _reader.ArrivalStop;
 
             /// <summary>
             /// Gets the departure time.
             /// </summary>
             public Time DepartureTime => _reader.DepartureTime;
 
+            /// <summary>
+            /// Gets the arrival time.
+            /// </summary>
             public Time ArrivalTime => _reader.ArrivalTime;
 
             /// <summary>
@@ -1148,9 +1155,6 @@ namespace Itinero.Transit.Data
             /// Gets the trip id.
             /// </summary>
             public uint TripId => _reader.TripId;
-
-            public ulong ArrivalLocation => _reader.ArrivalLocation;
-            public ulong DepartureLocation => _reader.DepartureLocation;
 
             /// <summary>
             /// The internal ID within the DB
