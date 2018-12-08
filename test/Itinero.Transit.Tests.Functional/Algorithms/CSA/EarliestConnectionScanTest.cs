@@ -39,7 +39,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             // instantiate and run EAS.
             var eas = new EarliestConnectionScan<TransferStats>(
                 departureId, arrivalId,
-                depTime, depTime.AddHours(3), p);
+                depTime, depTime.AddHours(24), p);
             var journey = eas.CalculateJourney();
 
             // verify result.

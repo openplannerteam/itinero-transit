@@ -36,6 +36,8 @@ namespace Itinero.Transit.Tests.Functional
                 DateTime.Now.Date.AddHours(10)));
             Algorithms.CSA.EasTestBasic.Default.Run((db.connections, db.stops, BruggeUri, Poperinge,
                 DateTime.Now.Date.AddHours(10)));
+            Algorithms.CSA.EasTestBasic.Default.Run((db.connections, db.stops, BruggeUri, Vielsalm,
+                DateTime.Now.Date.AddHours(10)));
         }
 
         private static void EnableLogging()
