@@ -101,8 +101,8 @@ namespace Itinero.Transit
         /// <exception cref="Exception"></exception>
         public Journey<T> CalculateJourney(Func<Time, Time, Time> depArrivalToTimeout = null)
         {
-
-            ConnectionsDb.DepartureEnumerator enumerator = _connectionsProvider.GetDepartureEnumerator();
+            var enumerator = _connectionsProvider.GetDepartureEnumerator();
+            enumerator.MoveNext();
 
             // Move the enumerator to the start time
             while (enumerator.DepartureTime < _earliestDeparture)

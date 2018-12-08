@@ -33,6 +33,7 @@ using Reminiscence.Arrays;
 
 namespace Itinero.Transit.Data
 {
+    // TODO: consider removing these aliases, this is very unusual in C# to use.
     using TimeSpan = UInt16;
     using Time = UInt64;
     using LocId = UInt64;
@@ -588,9 +589,10 @@ namespace Itinero.Transit.Data
 
             public uint CurrentId => _internalId;
             public uint Id => _internalId;
+            
+            // TODO: remove these, use the (uint, uint) structs.
             public ulong ArrivalLocation => _arrivalLocation;
             public ulong DepartureLocation => _departureLocation;
-
 
             /// <summary>
             /// Moves this reader to the connection with the given internal id.

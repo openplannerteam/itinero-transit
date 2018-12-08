@@ -91,7 +91,8 @@ namespace Itinero.IO.LC
 
             // Intermediate transfer generator
             // The OsmTransferGenerator will reuse an existing routerdb if it is already loaded
-            FootpathTransferGenerator = new OsmTransferGenerator(routerDbPath);
+            // TODO: remove all links to Itinero and routing on road networks.
+            //FootpathTransferGenerator = new OsmTransferGenerator(routerDbPath);
 
             // The other settings 
             StatsFactory = statsFactory;

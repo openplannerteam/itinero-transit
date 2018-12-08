@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Itinero.Logging;
-using Itinero.Transit.Tests.Functional.Staging;
-using Itinero.Transit.Tests.Functional.Tests;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
@@ -14,75 +12,30 @@ namespace Itinero.Transit.Tests.Functional
 {
     public class Program
     {
-        public static readonly List<FunctionalTest> AllTests = new List<FunctionalTest>
-        {
-            //new TransitDbLoadingTest(),
-            new ConnectionsDbTest(),
-            //new EasTestBasic(),
-            //new EasTestAdvanced()
-        };
-
+        private const string GentUri = "http://irail.be/stations/NMBS/008892007";
+        private const string BruggeUri = "http://irail.be/stations/NMBS/008891009";
+        private const string Poperinge = "http://irail.be/stations/NMBS/008896735";
+        private const string Vielsalm = "http://irail.be/stations/NMBS/008845146";
+        private const string BrusselZuid = "http://irail.be/stations/NMBS/008814001";
+        
         public static void Main()
         {
             EnableLogging();
             Log.Information("Starting the Functional Tests...");
 
-            Log.Information("1) Running Staging");
-
-            // do staging, download & preprocess some data.
-            BuildRouterDb.BuildOrLoad();
-
-
-            Log.Information("2) Starting tests");
-
-            var tests = AllTests;
-
-            var failed = new List<FunctionalTest>();
-
-            for (int i = 0; i < tests.Count; i++)
-            {
-                Log.Information($"{i + 1}/{tests.Count}: Running {tests[i].GetType().Name}");
-
-                var start = DateTime.Now;
-//                try
-//                {
-                    tests[i].Test();
-
-                    Log.Information($"{i + 1}/{tests.Count}: [OK]");
-//                }
-//                catch (Exception e)
-//                {
-//                    Log.Information($"{i + 1}/{tests.Count}: [FAILED] {e.Message}");
-//                    Log.Error(e.Message + "\n" + e.StackTrace);
-//                    failed.Add(tests[i]);
-//
-//
-//                    if (tests.Count == 1)
-//                    {
-//                        throw;
-//                    }
-//                }
-
-                var end = DateTime.Now;
-                Log.Information($"{i + 1}/{tests.Count}: Took {(end - start).TotalMilliseconds}ms");
-            }
-
-
-            Log.Information("3) Tests are done");
-
-            foreach (var failedTest in failed)
-            {
-                Log.Information($"Test {failedTest.GetType().Name} failed");
-                
-            }
+            // test loading a connections db
+            var db = IO.LC.LoadConnectionsTest.Default.Run((DateTime.Now.Date, new TimeSpan(1, 0, 0, 0)));
             
-            if (failed.Count > 0)
-            {
-                Log.Information($"{failed.Count} tests failed");
-                throw new Exception($"{failed.Count} failed tests");
-            }
-
-            Log.Information($"All {tests.Count} tests successful!");
+            // test enumerating a connections db.
+            Data.ConnectionsDbDepartureEnumeratorTest.Default.Run(db.connections);
+            
+            // run basic EAS test.
+            Algorithms.CSA.EasTestBasic.Default.Run((db.connections, db.stops, BruggeUri, GentUri,
+                DateTime.Now.Date.AddHours(10)));
+            Algorithms.CSA.EasTestBasic.Default.Run((db.connections, db.stops, GentUri, BrusselZuid,
+                DateTime.Now.Date.AddHours(10)));
+            Algorithms.CSA.EasTestBasic.Default.Run((db.connections, db.stops, BruggeUri, Poperinge,
+                DateTime.Now.Date.AddHours(10)));
         }
 
         private static void EnableLogging()
