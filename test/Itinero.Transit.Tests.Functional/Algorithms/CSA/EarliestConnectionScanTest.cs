@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
-    public class EasTestBasic : FunctionalTest<string, (ConnectionsDb connections, StopsDb stops,
+    public class EasTestBasic : FunctionalTest<Journey<TransferStats>, (ConnectionsDb connections, StopsDb stops,
         string departureStopId, string arrivalStopId, DateTime departureTime)>
     {
         /// <summary>
@@ -15,7 +15,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         /// </summary>
         public static EasTestBasic Default => new EasTestBasic();
         
-        protected override string Execute((ConnectionsDb connections, StopsDb stops,
+        protected override Journey<TransferStats> Execute((ConnectionsDb connections, StopsDb stops,
             string departureStopId, string arrivalStopId, DateTime departureTime) input)
         {
             var p = new Profile<TransferStats>(
@@ -41,7 +41,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             Assert.NotNull(journey);
             Information(journey.ToString());
 
-            return journey.ToString();
+            return journey;
         }
     }
 }

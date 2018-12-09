@@ -78,7 +78,7 @@ namespace Itinero.Transit
         /// 
         /// Only for the genesis connection, this is the departure location.
         /// </summary>
-        public readonly (uint localTileId, uint localId) Location;
+        public readonly (uint tileId, uint localId) Location;
 
         /// <summary>
         /// Keep track of Time.

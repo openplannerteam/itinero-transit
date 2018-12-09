@@ -97,8 +97,6 @@ namespace Itinero.Transit.Data.Tiles
                         return true;
                     }
                 }
-
-                return false;
             }
 
             public void Reset()

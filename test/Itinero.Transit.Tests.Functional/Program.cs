@@ -31,14 +31,18 @@ namespace Itinero.Transit.Tests.Functional
             Data.ConnectionsDbDepartureEnumeratorTest.Default.Run(db.connections);
             
             // run basic EAS test.
-            Algorithms.CSA.EasTestBasic.Default.Run((db.connections, db.stops, BruggeUri, GentUri,
+            var journey = Algorithms.CSA.EasTestBasic.Default.Run((db.connections, db.stops, BruggeUri, GentUri,
                 DateTime.Now.Date.AddHours(10)));
-            Algorithms.CSA.EasTestBasic.Default.Run((db.connections, db.stops, GentUri, BrusselZuid,
+            var json = journey.ToGeoJson(db.stops);
+            journey = Algorithms.CSA.EasTestBasic.Default.Run((db.connections, db.stops, GentUri, BrusselZuid,
                 DateTime.Now.Date.AddHours(10)));
-            Algorithms.CSA.EasTestBasic.Default.Run((db.connections, db.stops, BruggeUri, Poperinge,
+            json = journey.ToGeoJson(db.stops);
+            journey = Algorithms.CSA.EasTestBasic.Default.Run((db.connections, db.stops, BruggeUri, Poperinge,
                 DateTime.Now.Date.AddHours(10)));
-            Algorithms.CSA.EasTestBasic.Default.Run((db.connections, db.stops, BruggeUri, Vielsalm,
+            json = journey.ToGeoJson(db.stops);
+            journey = Algorithms.CSA.EasTestBasic.Default.Run((db.connections, db.stops, BruggeUri, Vielsalm,
                 DateTime.Now.Date.AddHours(10)));
+            json = journey.ToGeoJson(db.stops);
             
             // search closest stops.
             var stop1 = Algorithms.Search.StopSearchTest.Default.Run((db.stops, 4.336209297180176,
