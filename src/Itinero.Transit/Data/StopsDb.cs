@@ -63,12 +63,6 @@ namespace Itinero.Transit.Data
             _stopIdLinkedList = new MemoryArray<uint>(0);
         }
 
-
-        public IEnumerable<ulong> StopsCloseBy(ulong stopID)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Called when a block of locations has moved.
         /// </summary>
@@ -148,7 +142,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// A stops reader.
         /// </summary>
-        public class StopsDbReader
+        public class StopsDbReader : IStop
         {
             private readonly StopsDb _stopsDb;
             private readonly TiledLocationIndex.Enumerator _locationEnumerator;
@@ -180,9 +174,14 @@ namespace Itinero.Transit.Data
                 return _locationEnumerator.MoveTo(localTileId, localId);
             }
 
-            public bool MoveTo(ulong locationId)
+            /// <summary>
+            /// Moves this enumerator to the given stop.
+            /// </summary>
+            /// <param name="stop">The stop.</param>
+            /// <returns>True if there is more data.</returns>
+            public bool MoveTo((uint localTileId, uint localId) stop)
             {
-                return MoveTo((uint) (locationId / uint.MaxValue), (uint) (locationId % uint.MaxValue));
+                return _locationEnumerator.MoveTo(stop.localTileId, stop.localId);
             }
 
             /// <summary>

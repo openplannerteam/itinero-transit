@@ -60,17 +60,17 @@ namespace Itinero.Transit.Data.Tiles
         /// <param name="latitude">The latitude.</param>
         /// <param name="longitude">The longitude</param>
         /// <returns>The tile id, the local id and a data pointer.</returns>
-        public (uint localId, uint localTileId, uint dataPointer) Add(double longitude, double latitude)
+        public (uint tileId, uint localId, uint dataPointer) Add(double longitude, double latitude)
         {
             // get the local tile id.
             var tile = Tile.WorldToTile(longitude, latitude, _zoom);
-            var localTileId = tile.LocalId;
+            var tileId = tile.LocalId;
 
             // try to find the tile.
-            var (tileDataPointer, tileIndexPointer, capacity) = FindTile(localTileId);
+            var (tileDataPointer, tileIndexPointer, capacity) = FindTile(tileId);
             if (tileDataPointer == TileNotLoaded)
             { // create the tile if it doesn't exist yet.
-                (tileDataPointer, tileIndexPointer, capacity) = AddTile(localTileId);
+                (tileDataPointer, tileIndexPointer, capacity) = AddTile(tileId);
             }
 
             // find or create a place to store the location.
@@ -104,8 +104,13 @@ namespace Itinero.Transit.Data.Tiles
             // set the vertex data.
             SetEncodedLocation(nextEmpty, tile, longitude, latitude);
 
-            return (localId, localTileId, nextEmpty);
+            return (tileId, localId, nextEmpty);
         }
+
+        /// <summary>
+        /// Gets the zoom.
+        /// </summary>
+        public int Zoom => _zoom;
 
         /// <summary>
         /// A delegate to notify listeners that a block of locations has moved.
