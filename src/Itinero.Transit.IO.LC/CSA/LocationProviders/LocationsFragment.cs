@@ -95,23 +95,31 @@ namespace Itinero.IO.LC
         {
             return _locationMapping.ContainsKey(locationId.ToString());
         }
+        
+        public bool TryGetCoordinateFor(Uri locationId, out Location location)
+        {
+            return _locationMapping.TryGetValue(locationId.ToString(), out location);
+        }
 
         public Location GetCoordinateFor(Uri locationId)
         {
-            if (!_locationMapping.ContainsKey(locationId.ToString()))
+            if (_locationMapping.TryGetValue(locationId.ToString(), out var value))
             {
-                var examples = "";
-                var keys = new List<string>(_locationMapping.Keys).GetRange(0, 10);
-                foreach (var key in keys)
-                {
-                    examples += $"  {key}\n";
-                }
-
-                throw new KeyNotFoundException(
-                    $"The location {locationId} was not found in this dictionary.\nSome keys in this dictionary are:\n{examples}");
+                return value;
             }
 
-            return _locationMapping[locationId.ToString()];
+            //TODO: figure out what this fails.
+//            var examples = "";
+//            var keys = new List<string>(_locationMapping.Keys).GetRange(0, 10);
+//            foreach (var key in keys)
+//            {
+//                examples += $"  {key}\n";
+//            }
+//
+//            throw new KeyNotFoundException(
+//                $"The location {locationId} was not found in this dictionary.\nSome keys in this dictionary are:\n{examples}");
+
+            return null;
         }
 
         // ReSharper disable once UnusedMember.Global

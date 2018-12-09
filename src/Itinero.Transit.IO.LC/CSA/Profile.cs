@@ -181,7 +181,7 @@ namespace Itinero.IO.LC
 
             return footpath;
         }
-
+        
         public Location GetCoordinateFor(Uri locationId)
         {
             return LocationProvider.GetCoordinateFor(locationId);

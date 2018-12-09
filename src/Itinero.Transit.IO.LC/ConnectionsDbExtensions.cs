@@ -43,11 +43,15 @@ namespace Itinero.IO.LC
 
                     var stop1Uri = connection.DepartureLocation();
                     var stop1Location = profile.GetCoordinateFor(stop1Uri);
+                    if (stop1Location == null)
+                    {
+                        continue;
+                    }
                     var stop1Id = stop1Uri.ToString();
                     (uint localTileId, uint localId) stop1InternalId;
                     if (!stopsDbReader.MoveTo(stop1Id))
                     {
-                        stop1InternalId = stopsDb.Add(stop1Id, stop1Location.Lon, stop1Location.Lon);
+                        stop1InternalId = stopsDb.Add(stop1Id, stop1Location.Lon, stop1Location.Lat);
                         stopCount++;
                     }
                     else
@@ -57,11 +61,15 @@ namespace Itinero.IO.LC
 
                     var stop2Uri = connection.ArrivalLocation();
                     var stop2Location = profile.GetCoordinateFor(stop2Uri);
+                    if (stop2Location == null)
+                    {
+                        continue;
+                    }
                     var stop2Id = stop2Uri.ToString();
                     (uint localTileId, uint localId) stop2InternalId;
                     if (!stopsDbReader.MoveTo(stop2Id))
                     {
-                        stop2InternalId = stopsDb.Add(stop2Id, stop2Location.Lon, stop2Location.Lon);
+                        stop2InternalId = stopsDb.Add(stop2Id, stop2Location.Lon, stop2Location.Lat);
                         stopCount++;
                     }
                     else
