@@ -2,6 +2,7 @@ using System;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
+using Itinero.Transit.Journeys;
 using Xunit;
 
 namespace Itinero.Transit.Tests.unit.Algorithm.CSA

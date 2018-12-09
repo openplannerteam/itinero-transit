@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Itinero.IO.LC
+namespace Itinero.Transit.IO.LC.CSA.Connections
 {
-    public class SimpleTimeTable : ITimeTable
+    internal class SimpleTimeTable : ITimeTable
     {
         private IEnumerable<IConnection> _cons;
         private DateTime _start, _end;

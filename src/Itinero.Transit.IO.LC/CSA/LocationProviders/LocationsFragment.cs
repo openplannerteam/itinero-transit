@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Itinero.LocalGeo;
 using Newtonsoft.Json.Linq;
 
-namespace Itinero.IO.LC
+namespace Itinero.Transit.IO.LC.CSA.LocationProviders
 {
     /// <inheritdoc cref="ILocationProvider" />
     /// <summary>
@@ -13,7 +12,7 @@ namespace Itinero.IO.LC
     /// This class is meant to handle providers which offer their station data as a single big dump (such as the SNCB)
     /// </summary>
     [Serializable]
-    public class LocationsFragment : LinkedObject, ILocationProvider
+    internal class LocationsFragment : LinkedObject, ILocationProvider
     {
         public readonly List<Location> Locations = new List<Location>();
 
@@ -26,7 +25,7 @@ namespace Itinero.IO.LC
 
         private static readonly IEnumerable<Uri> Empty = new List<Uri>();
 
-        [NonSerialized] private BoundingBox _bounds;
+        //[NonSerialized] private BoundingBox _bounds;
 
         public LocationsFragment(Uri uri) : base(uri)
         {
@@ -133,35 +132,35 @@ namespace Itinero.IO.LC
             return Locations;
         }
 
-        public IEnumerable<Uri> GetLocationsCloseTo(float lat, float lon, int radiusInMeters)
-        {
-            if (radiusInMeters < 1)
-            {
-                return Empty;
-            }
-
-            if (!BBox().Overlaps(new BoundingBox(lat, lon, radiusInMeters)))
-            {
-                return Enumerable.Empty<Uri>();
-            }
-
-            var closeEnough = new List<Uri>();
-
-            foreach (var l in Locations)
-            {
-                var d = Coordinate.DistanceEstimateInMeter(lat, lon, l.Lat, l.Lon);
-                if (d < radiusInMeters)
-                {
-                    closeEnough.Add(l.Uri);
-                }
-            }
-
-            return closeEnough;
-        }
-
-        public BoundingBox BBox()
-        {
-            return _bounds ?? (_bounds = new BoundingBox(_minLat, _maxLat, _minLon, _maxLon));
-        }
+//        public IEnumerable<Uri> GetLocationsCloseTo(float lat, float lon, int radiusInMeters)
+//        {
+//            if (radiusInMeters < 1)
+//            {
+//                return Empty;
+//            }
+//
+//            if (!BBox().Overlaps(new BoundingBox(lat, lon, radiusInMeters)))
+//            {
+//                return Enumerable.Empty<Uri>();
+//            }
+//
+//            var closeEnough = new List<Uri>();
+//
+//            foreach (var l in Locations)
+//            {
+//                var d = Coordinate.DistanceEstimateInMeter(lat, lon, l.Lat, l.Lon);
+//                if (d < radiusInMeters)
+//                {
+//                    closeEnough.Add(l.Uri);
+//                }
+//            }
+//
+//            return closeEnough;
+//        }
+//
+//        public BoundingBox BBox()
+//        {
+//            return _bounds ?? (_bounds = new BoundingBox(_minLat, _maxLat, _minLon, _maxLon));
+//        }
     }
 }

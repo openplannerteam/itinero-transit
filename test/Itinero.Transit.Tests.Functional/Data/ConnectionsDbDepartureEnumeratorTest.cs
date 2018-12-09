@@ -1,5 +1,4 @@
 using Itinero.Transit.Data;
-using Serilog;
 
 namespace Itinero.Transit.Tests.Functional.Data
 {

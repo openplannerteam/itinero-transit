@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using Itinero.LocalGeo;
+using Itinero.Transit.IO.LC.CSA.LocationProviders;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace Itinero.IO.LC
+namespace Itinero.Transit.IO.LC.CSA.Connections
 {
     /**
      * A connection represents a single connection someone can take.
@@ -14,7 +14,7 @@ namespace Itinero.IO.LC
      * Note that a connection does _never_ have intermediate stops.
      */
     [Serializable()]
-    public class LinkedConnection : LinkedObject, IConnection
+    internal class LinkedConnection : LinkedObject, IConnection
     {
         private Uri _departureStop;
         private Uri _arrivalStop;
@@ -165,35 +165,35 @@ namespace Itinero.IO.LC
             return _departureTime;
         }
 
-        public Route AsRoute(ILocationProvider locationProv)
-        {
-            var depLoc = locationProv.GetCoordinateFor(_departureStop);
-            var arrLoc = locationProv.GetCoordinateFor(_arrivalStop);
-
-            return new Route
-            {
-                Shape = new[]
-                {
-                    new Coordinate(depLoc.Lat, depLoc.Lon),
-                    new Coordinate(arrLoc.Lat, arrLoc.Lon)
-                },
-                ShapeMeta = new[]
-                {
-                    new Route.Meta
-                    {
-                        Profile = Mode(),
-                        Shape = 0,
-                        Time = 0f,
-                    },
-                    new Route.Meta
-                    {
-                        Profile = Mode(),
-                        Shape = 1,
-                        Time = (float) (ArrivalTime() - DepartureTime()).TotalSeconds,
-                    },
-                }
-            };
-        }
+//        public Route AsRoute(ILocationProvider locationProv)
+//        {
+//            var depLoc = locationProv.GetCoordinateFor(_departureStop);
+//            var arrLoc = locationProv.GetCoordinateFor(_arrivalStop);
+//
+//            return new Route
+//            {
+//                Shape = new[]
+//                {
+//                    new Coordinate(depLoc.Lat, depLoc.Lon),
+//                    new Coordinate(arrLoc.Lat, arrLoc.Lon)
+//                },
+//                ShapeMeta = new[]
+//                {
+//                    new Route.Meta
+//                    {
+//                        Profile = Mode(),
+//                        Shape = 0,
+//                        Time = 0f,
+//                    },
+//                    new Route.Meta
+//                    {
+//                        Profile = Mode(),
+//                        Shape = 1,
+//                        Time = (float) (ArrivalTime() - DepartureTime()).TotalSeconds,
+//                    },
+//                }
+//            };
+//        }
 
         public override bool Equals(object obj)
         {

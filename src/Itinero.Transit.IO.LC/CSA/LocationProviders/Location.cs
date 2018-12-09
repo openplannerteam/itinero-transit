@@ -1,8 +1,11 @@
 using System;
+using System.Runtime.CompilerServices;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 
-namespace Itinero.IO.LC
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
+namespace Itinero.Transit.IO.LC.CSA.LocationProviders
 {
     /// <summary>
     /// Represents a transit location, such as a bus stop or train station

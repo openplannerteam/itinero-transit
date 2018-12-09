@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
-using Serilog;
+using Itinero.Transit.IO.LC.CSA.Stats;
+using Itinero.Transit.IO.LC.CSA.ConnectionProviders;
+using Itinero.Transit.Logging;
 
-namespace Itinero.IO.LC
+namespace Itinero.Transit.IO.LC
 {
     /// <summary>
     /// Contains extensions methods related to the connections db.
@@ -19,7 +21,8 @@ namespace Itinero.IO.LC
         /// <param name="window">The window, a start time and duration.</param>
         /// <param name="countStart">(For testing): if you want to count the number of connections departing here (and arriving at countEnd), pass a paramater with the URI of the departure location</param>
         /// <param name="countEnd">See countStart</param>
-        public static Dictionary<ulong, Uri> LoadConnections(this ConnectionsDb connectionsDb, Profile<TransferStats> profile,
+        public static Dictionary<ulong, Uri> LoadConnections(this ConnectionsDb connectionsDb, 
+            Itinero.Transit.IO.LC.CSA.Profile<TransferStats> profile,
             StopsDb stopsDb, (DateTime start, TimeSpan duration) window, out int count, string countStart = "", string countEnd = "")
         {
             var idToUri = new Dictionary<ulong, Uri>();
@@ -83,7 +86,7 @@ namespace Itinero.IO.LC
                         tripId = (uint) trips.Count;
                         trips[tripUri] = tripId;
 
-                        //Log.Information($"Added new trip {tripUri} with {tripId}");
+                        Log.Information($"Added new trip {tripUri} with {tripId}");
                     }
 
                     var connectionId = connection.Id().ToString();

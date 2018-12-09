@@ -1,6 +1,5 @@
 using System;
 using Itinero.Transit.Tests.Functional.Performance;
-using Serilog;
 using Xunit;
 
 // ReSharper disable UnusedMember.Global

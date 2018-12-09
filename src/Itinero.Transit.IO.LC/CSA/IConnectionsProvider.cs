@@ -1,6 +1,7 @@
 using System;
 
-namespace Itinero.IO.LC{
+namespace Itinero.Transit.IO.LC.CSA
+{
     /// <summary>
     /// The connections-provider is an object responsible for giving all kinds of connections.
     /// It is able to provide connections for
@@ -13,7 +14,7 @@ namespace Itinero.IO.LC{
     /// ConnectionsProviders can be highly specific (e.g. foldable bike, private shuttle services, ...)
     ///
     /// </summary>
-    public interface IConnectionsProvider
+    internal interface IConnectionsProvider
     {
         ITimeTable GetTimeTable(Uri id);
 

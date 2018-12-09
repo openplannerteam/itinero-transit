@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Itinero.Transit.IO.LC.CSA.LocationProviders;
 
-namespace Itinero.IO.LC
+namespace Itinero.Transit.IO.LC.CSA
 {
     /// <summary>
     /// An ILocationProvider is responsible for the conversion of location-URI's into coordinates and
@@ -25,9 +26,9 @@ namespace Itinero.IO.LC
         /// <returns></returns>
         bool ContainsLocation(Uri locationId);
 
-        IEnumerable<Uri> GetLocationsCloseTo(float lat, float lon, int radiusInMeters);
+        //IEnumerable<Uri> GetLocationsCloseTo(float lat, float lon, int radiusInMeters);
 
-        BoundingBox BBox();
+        //BoundingBox BBox();
         IEnumerable<Location> GetLocationByName(string name);
 
         IEnumerable<Location> GetAllLocations();

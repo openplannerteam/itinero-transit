@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 
-namespace Itinero.IO.LC{
+namespace Itinero.Transit.IO.LC.CSA
+{
     /// <summary>
     /// An IJourneyPart represents a single part in the journey.
     /// It has a departure and arrival time and location.
@@ -36,20 +37,20 @@ namespace Itinero.IO.LC{
         /// </summary>
         /// <returns></returns>
         DateTime DepartureTime();
-
-        /// <summary>
-        /// Gives this connection as an Itinero-route.
-        /// Used mainly to convert into GeoJSON afterwards.
-        /// </summary>
-        /// <returns></returns>
-        Route AsRoute(ILocationProvider locationProv);
+//
+//        /// <summary>
+//        /// Gives this connection as an Itinero-route.
+//        /// Used mainly to convert into GeoJSON afterwards.
+//        /// </summary>
+//        /// <returns></returns>
+//        Route AsRoute(ILocationProvider locationProv);
 
         string ToString(ILocationProvider locationDecoder);
 
     }
 
 
-    public class DepartureTimeConnectionComparer : IComparer<IConnection>
+    internal class DepartureTimeConnectionComparer : IComparer<IConnection>
     {
         public static DepartureTimeConnectionComparer Singleton = new DepartureTimeConnectionComparer();
 
@@ -64,7 +65,7 @@ namespace Itinero.IO.LC{
         }
     }
 
-    public class DepartureTimeConnectionComparerDesc : IComparer<IConnection>
+    internal class DepartureTimeConnectionComparerDesc : IComparer<IConnection>
     {
         public static DepartureTimeConnectionComparerDesc Singleton = new DepartureTimeConnectionComparerDesc();
 

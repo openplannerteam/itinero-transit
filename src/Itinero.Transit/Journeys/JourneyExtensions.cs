@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Itinero.Transit.Data;
 
-namespace Itinero.Transit
+namespace Itinero.Transit.Journeys
 {
     public static class JourneyExtensions
     {

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
+using Itinero.Transit.Logging;
 using JsonLD.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Serilog;
 
-namespace Itinero.IO.LC
+namespace Itinero.Transit.IO.LC.CSA
 {
     /**
      * A linked object is an object which has an Uniform Resource Identifier

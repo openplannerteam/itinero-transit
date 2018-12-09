@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 
-namespace Itinero.IO.LC{
-    
-    
+namespace Itinero.Transit.IO.LC.CSA.Utils
+{
     /// <summary>
     /// The linked connections catalog is responsible for parsing a catalog.
     /// A catalog contains links to the providers of connections.
     /// These connection provider are in turn returned by this object
     /// </summary>
-    public class LinkedConnectionsCatalog : LinkedObject
+    internal class LinkedConnectionsCatalog : LinkedObject
     {
         public readonly List<Uri> Catalogae = new List<Uri>();
         

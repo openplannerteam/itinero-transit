@@ -1,8 +1,8 @@
 using System;
-using Itinero.IO.LC;
+using Itinero.Transit.IO.LC;
 using Itinero.Transit.Data;
-using Itinero.Transit.Tests.Functional.Performance;
-using Serilog;
+using Itinero.Transit.IO.LC.CSA;
+using Itinero.Transit.IO.LC.CSA.Utils;
 
 namespace Itinero.Transit.Tests.Functional.IO.LC
 {

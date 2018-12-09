@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
+using Itinero.Transit.IO.LC.CSA.Utils;
 using JsonLD.Core;
 
-namespace Itinero.IO.LC
+namespace Itinero.Transit.IO.LC.CSA.LocationProviders
 {
     
     /// <summary>
     /// A thin wrapper around LocationsFragment.
     /// </summary>
-    public class CachedLocationsFragment : ILocationProvider
+    internal class CachedLocationsFragment : ILocationProvider
     {
         private readonly LocationsFragment _frag;
 
@@ -36,15 +37,15 @@ namespace Itinero.IO.LC
             return _frag.ContainsLocation(locationId);
         }
 
-        public IEnumerable<Uri> GetLocationsCloseTo(float lat, float lon, int radiusInMeters)
-        {
-            return _frag.GetLocationsCloseTo(lat, lon, radiusInMeters);
-        }
-
-        public BoundingBox BBox()
-        {
-            return _frag.BBox();
-        }
+//        public IEnumerable<Uri> GetLocationsCloseTo(float lat, float lon, int radiusInMeters)
+//        {
+//            return _frag.GetLocationsCloseTo(lat, lon, radiusInMeters);
+//        }
+//
+//        public BoundingBox BBox()
+//        {
+//            return _frag.BBox();
+//        }
 
         public IEnumerable<Location> GetLocationByName(string name)
         {

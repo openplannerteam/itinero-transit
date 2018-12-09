@@ -1,9 +1,11 @@
 using System;
+using Itinero.Transit.IO.LC.CSA.Connections;
+using Itinero.Transit.IO.LC.CSA.Utils;
+using Itinero.Transit.Logging;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
-using Serilog;
 
-namespace Itinero.IO.LC
+namespace Itinero.Transit.IO.LC.CSA.ConnectionProviders
 {
     /// <inheritdoc />
     ///  <summary>
@@ -11,7 +13,7 @@ namespace Itinero.IO.LC
     ///  whom offers the public transport data in LinkedConnections-format.
     ///  The ontology can be found here
     ///  </summary>
-    public class LinkedConnectionProvider : IConnectionsProvider
+    internal class LinkedConnectionProvider : IConnectionsProvider
     {
         private readonly JsonLdProcessor _processor;
 

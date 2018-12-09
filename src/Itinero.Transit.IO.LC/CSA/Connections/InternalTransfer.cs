@@ -1,8 +1,12 @@
 ﻿using System;
-using Itinero.LocalGeo;
+using System.Runtime.CompilerServices;
+using Itinero.Transit.IO.LC.CSA.LocationProviders;
 
 // ReSharper disable ImpureMethodCallOnReadonlyValueField
-namespace Itinero.IO.LC
+
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
+namespace Itinero.Transit.IO.LC.CSA.Connections
 {
     /// <inheritdoc />
     /// <summary>
@@ -10,7 +14,7 @@ namespace Itinero.IO.LC
     /// They give a fixed transfer time. Normally, the locations of both connections should be the same.
     /// </summary>
     [Serializable()]
-    public class InternalTransfer : IContinuousConnection
+    internal class InternalTransfer : IContinuousConnection
     {
         private readonly Uri _location;
         private readonly DateTime _departureTime;
@@ -27,34 +31,34 @@ namespace Itinero.IO.LC
             }
         }
 
-        public Route AsRoute(ILocationProvider locationProv)
-        {
-            var loc = locationProv.GetCoordinateFor(_location);
-            
-            return new Route
-            {
-                Shape = new[]
-                {
-                    new Coordinate(loc.Lat, loc.Lon),
-                    new Coordinate(loc.Lat, loc.Lon)
-                },
-                ShapeMeta = new[]
-                {
-                    new Route.Meta
-                    {
-                        Profile = "Pedestrian",
-                        Shape = 0,
-                        Time = 0f
-                    }, 
-                    new Route.Meta
-                    {
-                        Profile = "Pedestrian",
-                        Shape = 1,
-                        Time = (float) (_arrivalTime - _departureTime).TotalSeconds,
-                    }, 
-                }
-            };
-        }
+//        public Route AsRoute(ILocationProvider locationProv)
+//        {
+//            var loc = locationProv.GetCoordinateFor(_location);
+//            
+//            return new Route
+//            {
+//                Shape = new[]
+//                {
+//                    new Coordinate(loc.Lat, loc.Lon),
+//                    new Coordinate(loc.Lat, loc.Lon)
+//                },
+//                ShapeMeta = new[]
+//                {
+//                    new Route.Meta
+//                    {
+//                        Profile = "Pedestrian",
+//                        Shape = 0,
+//                        Time = 0f
+//                    }, 
+//                    new Route.Meta
+//                    {
+//                        Profile = "Pedestrian",
+//                        Shape = 1,
+//                        Time = (float) (_arrivalTime - _departureTime).TotalSeconds,
+//                    }, 
+//                }
+//            };
+//        }
 
         public Uri Operator()
         {

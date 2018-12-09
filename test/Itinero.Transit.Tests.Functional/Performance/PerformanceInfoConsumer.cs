@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Serilog;
 
 namespace Itinero.Transit.Tests.Functional.Performance
 {
@@ -88,7 +89,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
         /// </summary>
         public void Report(string message)
         {
-            Itinero.Logging.Logger.Log("Test", Itinero.Logging.TraceEventType.Information, _name + ":" + message);
+            Log.Information(_name + ":" + message);
         }
 
         /// <summary>
@@ -96,7 +97,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
         /// </summary>
         public void Report(string message, params object[] args)
         {
-            Itinero.Logging.Logger.Log("Test", Itinero.Logging.TraceEventType.Information, _name + ":" + message, args);
+            Log.Information(_name + ":" + message, args);
         }
 
         private int _previousPercentage = 0;
@@ -108,7 +109,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
         {
             var currentPercentage = (int)System.Math.Round((i / (double)max) * 10, 0);
             if (_previousPercentage == currentPercentage) return;
-            Itinero.Logging.Logger.Log("Test", Itinero.Logging.TraceEventType.Information, _name + ":" + message, currentPercentage * 10);
+            Log.Information(_name + ":" + message, currentPercentage * 10);
             _previousPercentage = currentPercentage;
         }
 
@@ -144,16 +145,14 @@ namespace Itinero.Transit.Tests.Functional.Performance
                     {
                         // there was memory usage logging.
                         var max = _memoryUsageLog.Max();
-                        Itinero.Logging.Logger.Log("Test", Itinero.Logging.TraceEventType.Information,
-                            "Spent {0}s({1}s/r):" + _name + message,
-                            seconds.ToString("F3"), secondsPerIteration.ToString("F3"), memoryDiff, max);
+                        Log.Information(string.Format("Spent {0}s({1}s/r):" + _name + message,
+                            seconds.ToString("F3"), secondsPerIteration.ToString("F3"), memoryDiff, max));
                     }
                     else
                     {
                         // no memory usage logged.
-                        Itinero.Logging.Logger.Log("Test", Itinero.Logging.TraceEventType.Information,
-                            "Spent {0}s:({1}s/r)" + _name + message,
-                            seconds.ToString("F3"), secondsPerIteration.ToString("F3"), memoryDiff);
+                        Log.Information(string.Format("Spent {0}s:({1}s/r)" + _name + message,
+                            seconds.ToString("F3"), secondsPerIteration.ToString("F3"), memoryDiff));
                     }
                 }
                 else
@@ -162,16 +161,14 @@ namespace Itinero.Transit.Tests.Functional.Performance
                     {
                         // there was memory usage logging.
                         var max = _memoryUsageLog.Max();
-                        Itinero.Logging.Logger.Log("Test", Itinero.Logging.TraceEventType.Information,
-                            "Spent {0}s:" + _name + message,
-                            seconds.ToString("F3"), memoryDiff, max);
+                        Log.Information(string.Format("Spent {0}s:" + _name + message,
+                            seconds.ToString("F3"), memoryDiff, max));
                     }
                     else
                     {
                         // no memory usage logged.
-                        Itinero.Logging.Logger.Log("Test", Itinero.Logging.TraceEventType.Information,
-                            "Spent {0}s:" + _name + message,
-                            seconds.ToString("F3"), memoryDiff);
+                        Log.Information(string.Format("Spent {0}s:" + _name + message,
+                            seconds.ToString("F3"), memoryDiff));
                     }
                 }
             }

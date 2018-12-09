@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
+using Itinero.Transit.Logging;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
-using Serilog;
 
-namespace Itinero.IO.LC
+namespace Itinero.Transit.IO.LC.CSA.Connections
 {
     /// <summary>
     /// Represents one entire page of connections, based on a LinkedConnections JSON-LD
     /// </summary>
     [Serializable]
-    public class LinkedTimeTable : LinkedObject, ITimeTable
+    internal class LinkedTimeTable : LinkedObject, ITimeTable
     {
         private Uri Next { get; set; }
         private Uri Prev { get; set; }
@@ -97,7 +97,7 @@ namespace Itinero.IO.LC
                     continue;
                 }
 
-                cons += $"  {conn.ToString(locationDecoder)}\n";
+                cons += $"  {conn.ToString()}\n";
             }
 
             cons = cons.Substring(0, cons.Length - 1);

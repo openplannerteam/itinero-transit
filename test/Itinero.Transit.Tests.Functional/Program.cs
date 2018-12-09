@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Itinero.Logging;
-using Itinero.Transit.Data;
+using Itinero.Transit.Journeys;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
-using Xunit;
 
 namespace Itinero.Transit.Tests.Functional
 {
@@ -75,30 +72,30 @@ namespace Itinero.Transit.Tests.Functional
 #else
             var loggingBlacklist = new HashSet<string>();
 #endif
-            Logger.LogAction = (o, level, message, parameters) =>
+            Logging.Logger.LogAction = (o, level, message, parameters) =>
             {
                 if (loggingBlacklist.Contains(o))
                 {
                     return;
                 }
 
-                if (level == TraceEventType.Verbose.ToString().ToLower())
+                if (level == Logging.TraceEventType.Verbose.ToString().ToLower())
                 {
                     Log.Debug(string.Format("[{0}] {1} - {2}", o, level, message));
                 }
-                else if (level == TraceEventType.Information.ToString().ToLower())
+                else if (level == Logging.TraceEventType.Information.ToString().ToLower())
                 {
                     Log.Information(string.Format("[{0}] {1} - {2}", o, level, message));
                 }
-                else if (level == TraceEventType.Warning.ToString().ToLower())
+                else if (level == Logging.TraceEventType.Warning.ToString().ToLower())
                 {
                     Log.Warning(string.Format("[{0}] {1} - {2}", o, level, message));
                 }
-                else if (level == TraceEventType.Critical.ToString().ToLower())
+                else if (level == Logging.TraceEventType.Critical.ToString().ToLower())
                 {
                     Log.Fatal(string.Format("[{0}] {1} - {2}", o, level, message));
                 }
-                else if (level == TraceEventType.Error.ToString().ToLower())
+                else if (level == Logging.TraceEventType.Error.ToString().ToLower())
                 {
                     Log.Error(string.Format("[{0}] {1} - {2}", o, level, message));
                 }

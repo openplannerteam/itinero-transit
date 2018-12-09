@@ -4,7 +4,7 @@ using Itinero.Transit.Data;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 
-namespace Itinero.Transit
+namespace Itinero.Transit.Journeys
 {
     using TimeSpan = UInt16;
     using UnixTime = UInt64;
