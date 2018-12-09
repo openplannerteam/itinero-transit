@@ -104,6 +104,24 @@ namespace Itinero.Transit.Tests.Functional.Performance
             info.Stop(res.Message);
             return res.Result;
         }
+
+        /// <summary>
+        /// Tests performance for the given function.
+        /// </summary>
+        public static TResult TestPerf<T, TResult>(this Func<T, PerformanceTestResult<TResult>> func, string name, T a, int count)
+        {
+            var info = new PerformanceInfoConsumer(name);
+            info.Start();
+            var res = func(a);
+            count--;
+            while (count > 0)
+            {
+                res = func(a);
+                count--;
+            }
+            info.Stop(res.Message);
+            return res.Result;
+        }
     }
 
     /// <summary>

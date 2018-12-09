@@ -7,13 +7,13 @@ using Xunit;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
-    public class EasTestBasic : FunctionalTest<Journey<TransferStats>, (ConnectionsDb connections, StopsDb stops,
+    public class EarliestConnectionScanTest : FunctionalTest<Journey<TransferStats>, (ConnectionsDb connections, StopsDb stops,
         string departureStopId, string arrivalStopId, DateTime departureTime)>
     {
         /// <summary>
         /// Gets the default test.
         /// </summary>
-        public static EasTestBasic Default => new EasTestBasic();
+        public static EarliestConnectionScanTest Default => new EarliestConnectionScanTest();
         
         protected override Journey<TransferStats> Execute((ConnectionsDb connections, StopsDb stops,
             string departureStopId, string arrivalStopId, DateTime departureTime) input)
@@ -39,7 +39,6 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 
             // verify result.
             Assert.NotNull(journey);
-            Information(journey.ToString());
 
             return journey;
         }

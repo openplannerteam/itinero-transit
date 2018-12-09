@@ -46,13 +46,25 @@ namespace Itinero.Transit.Tests.Functional
         {
             if (this.TrackPerformance)
             {
-                Func<TIn, PerformanceTestResult<TOut>> executeFunc = (i) => new PerformanceTestResult<TOut>(this.Execute(i));
-                return executeFunc.TestPerf<TIn, TOut>(this.Name, input);
+                return this.RunPerformance(input, 1);
             }
             else
             {
                 return this.Execute(input);
             }
+        }
+
+        /// <summary>
+        /// Executes this test for the given input.
+        /// </summary>
+        /// <param name="input">The input.</param>
+        /// <param name="count">The # of times to repeat the test.</param>
+        /// <returns>The output.</returns>
+        public virtual TOut RunPerformance(TIn input, int count = 1)
+        {
+            Func<TIn, PerformanceTestResult<TOut>>
+                executeFunc = (i) => new PerformanceTestResult<TOut>(this.Execute(i));
+            return executeFunc.TestPerf<TIn, TOut>(this.Name, input, count);
         }
 
         /// <summary>

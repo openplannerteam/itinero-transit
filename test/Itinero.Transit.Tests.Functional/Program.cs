@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using Itinero.Transit.Journeys;
+using Itinero.Transit.Tests.Functional.Algorithms.CSA;
+using Itinero.Transit.Tests.Functional.Algorithms.Search;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
@@ -28,29 +30,29 @@ namespace Itinero.Transit.Tests.Functional
             Data.ConnectionsDbDepartureEnumeratorTest.Default.Run(db.connections);
             
             // run basic EAS test.
-            var journey = Algorithms.CSA.EasTestBasic.Default.Run((db.connections, db.stops, BruggeUri, GentUri,
-                DateTime.Now.Date.AddHours(10)));
+            var journey = EarliestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, BruggeUri, GentUri,
+                DateTime.Now.Date.AddHours(10)), 100);
             var json = journey.ToGeoJson(db.stops);
-            journey = Algorithms.CSA.EasTestBasic.Default.Run((db.connections, db.stops, GentUri, BrusselZuid,
-                DateTime.Now.Date.AddHours(10)));
+            journey = EarliestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, GentUri, BrusselZuid,
+                DateTime.Now.Date.AddHours(10)), 100);
             json = journey.ToGeoJson(db.stops);
-            journey = Algorithms.CSA.EasTestBasic.Default.Run((db.connections, db.stops, BruggeUri, Poperinge,
-                DateTime.Now.Date.AddHours(10)));
+            journey = EarliestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, BruggeUri, Poperinge,
+                DateTime.Now.Date.AddHours(10)), 100);
             json = journey.ToGeoJson(db.stops);
-            journey = Algorithms.CSA.EasTestBasic.Default.Run((db.connections, db.stops, BruggeUri, Vielsalm,
-                DateTime.Now.Date.AddHours(10)));
+            journey = EarliestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, BruggeUri, Vielsalm,
+                DateTime.Now.Date.AddHours(10)), 100);
             json = journey.ToGeoJson(db.stops);
             
             // search closest stops.
-            var stop1 = Algorithms.Search.StopSearchTest.Default.Run((db.stops, 4.336209297180176,
-                50.83567623496864, 1000));
-            var stop2 = Algorithms.Search.StopSearchTest.Default.Run((db.stops, 4.436824321746825,
-                50.41119778957908, 1000));
-            var stop3 = Algorithms.Search.StopSearchTest.Default.Run((db.stops, 3.329758644104004,
-                50.99052927907061, 1000));
+            var stop1 = StopSearchTest.Default.RunPerformance((db.stops, 4.336209297180176,
+                50.83567623496864, 1000), 100);
+            var stop2 = StopSearchTest.Default.RunPerformance((db.stops, 4.436824321746825,
+                50.41119778957908, 1000), 100);
+            var stop3 = StopSearchTest.Default.RunPerformance((db.stops, 3.329758644104004,
+                50.99052927907061, 1000), 100);
             
             // test routing from lat/lon to lat/lon
-            Algorithms.CSA.EasTestBasic.Default.Run((db.connections, db.stops, stop1.GlobalId, stop2.GlobalId,
+            Algorithms.CSA.EarliestConnectionScanTest.Default.Run((db.connections, db.stops, stop1.GlobalId, stop2.GlobalId,
                 DateTime.Now.Date.AddHours(10)));
         }
 
