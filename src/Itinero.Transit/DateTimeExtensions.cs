@@ -9,11 +9,11 @@ namespace Itinero.Transit
     /// <summary>
     /// Contains extension methods to handle unix time.
     /// </summary>
-    internal static class DateTimeExtensions
+    public static class DateTimeExtensions
     {
         private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        public const ulong SecondsInADay = 24 * 60 * 60;
+        internal const ulong SecondsInADay = 24 * 60 * 60;
 
         /// <summary>
         /// Converts a number of milliseconds from 1/1/1970 into a standard DateTime.
@@ -36,7 +36,7 @@ namespace Itinero.Transit
         /// </summary>
         /// <param name="seconds">The unix time in seconds.</param>
         /// <returns></returns>
-        public static ulong ExtractDate(ulong seconds)
+        internal static ulong ExtractDate(ulong seconds)
         {
             return (seconds - (seconds % SecondsInADay));
         }
@@ -46,7 +46,7 @@ namespace Itinero.Transit
         /// </summary>
         /// <param name="seconds">The unix time in seconds.</param>
         /// <returns></returns>
-        public static ulong AddDay(ulong seconds)
+        internal static ulong AddDay(ulong seconds)
         {
             var date = FromUnixTime(seconds);
             date = date.AddDays(1);
@@ -58,7 +58,7 @@ namespace Itinero.Transit
         /// </summary>
         /// <param name="seconds">The unix time in seconds.</param>
         /// <returns></returns>
-        public static ulong RemoveDay(ulong seconds)
+        internal static ulong RemoveDay(ulong seconds)
         {
             var date = FromUnixTime(seconds);
             date = date.AddDays(-1);
