@@ -19,13 +19,10 @@ namespace Itinero.Transit.IO.LC
         /// <param name="profile">The profile.</param>
         /// <param name="stopsDb">The stops db.</param>
         /// <param name="window">The window, a start time and duration.</param>
-        /// <param name="countStart">(For testing): if you want to count the number of connections departing here (and arriving at countEnd), pass a paramater with the URI of the departure location</param>
-        /// <param name="countEnd">See countStart</param>
-        public static Dictionary<ulong, Uri> LoadConnections(this ConnectionsDb connectionsDb, 
+        public static void LoadConnections(this ConnectionsDb connectionsDb, 
             Itinero.Transit.IO.LC.CSA.Profile<TransferStats> profile,
-            StopsDb stopsDb, (DateTime start, TimeSpan duration) window, out int count, string countStart = "", string countEnd = "")
+            StopsDb stopsDb, (DateTime start, TimeSpan duration) window)
         {
-            var idToUri = new Dictionary<ulong, Uri>();
             var stopsDbReader = stopsDb.GetReader();
 
             var trips = new Dictionary<string, uint>();
@@ -33,17 +30,10 @@ namespace Itinero.Transit.IO.LC
             var connectionCount = 0;
             var stopCount = 0;
             var timeTable = profile.GetTimeTable(window.start);
-            count = 0;
             do
             {
                 foreach (var connection in timeTable.Connections())
                 {
-                    if (connection.DepartureLocation().ToString() == countStart &&
-                        connection.ArrivalLocation().ToString() == countEnd)
-                    {
-                        count++;
-                    }
-
                     var stop1Uri = connection.DepartureLocation();
                     var stop1Location = profile.GetCoordinateFor(stop1Uri);
                     if (stop1Location == null)
@@ -106,7 +96,6 @@ namespace Itinero.Transit.IO.LC
             } while (true);
 
             Log.Information($"Added {stopCount} stops and {connectionCount} connection.");
-            return idToUri;
         }
     }
 }

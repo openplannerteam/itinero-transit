@@ -27,7 +27,7 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
             var connectionsDb = new ConnectionsDb();
 
             // load connections for the current day.
-            connectionsDb.LoadConnections(profile, stopsDb, (input.date, input.window), out _);
+            connectionsDb.LoadConnections(profile, stopsDb, (input.date, input.window));
 
             return (connectionsDb, stopsDb);
         }
