@@ -88,10 +88,10 @@ namespace Itinero.Transit.Data
         /// <param name="longitude">The stop longitude.</param>
         /// <param name="latitude">The stop latitude.</param>
         /// <returns>An internal id representing the stop in this transit db.</returns>
-        public (uint localTileId, uint localId) Add(string globalId, double longitude, double latitude)
+        public (uint tileId, uint localId) Add(string globalId, double longitude, double latitude)
         {
             // store location.
-            var (localId, tileId, dataPointer) = _stopLocations.Add(longitude, latitude);
+            var (tileId, localId, dataPointer) = _stopLocations.Add(longitude, latitude);
 
             // store stop id at the resulting data pointer.
             while (_stopIds.Length <= dataPointer)
@@ -115,6 +115,11 @@ namespace Itinero.Transit.Data
 
             return (tileId, localId);
         }
+
+        /// <summary>
+        /// Gets the stop locations index.
+        /// </summary>
+        internal TiledLocationIndex StopLocations => _stopLocations;
 
         private uint Hash(string id)
         { // https://stackoverflow.com/questions/5154970/how-do-i-create-a-hashcode-in-net-c-for-a-string-that-is-safe-to-store-in-a
@@ -230,8 +235,8 @@ namespace Itinero.Transit.Data
             /// <summary>
             /// Gets the stop id.
             /// </summary>
-            public (uint localTileId, uint localId) Id =>
-                (_locationEnumerator.LocalTileId, _locationEnumerator.LocalId);
+            public (uint tileId, uint localId) Id =>
+                (_locationEnumerator.TileId, _locationEnumerator.LocalId);
 
             /// <summary>
             /// Gets the latitude.

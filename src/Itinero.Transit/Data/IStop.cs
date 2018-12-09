@@ -13,7 +13,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// Gets the id.
         /// </summary>
-        (uint localTileId, uint localId) Id { get; }
+        (uint tileId, uint localId) Id { get; }
         
         /// <summary>
         /// Gets the longitude.

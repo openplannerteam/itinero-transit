@@ -72,7 +72,7 @@ namespace Itinero.Transit.Data.Tiles
                     return false;
                 }
 
-                do
+                while (true)
                 {
                     _currentLocal++;
                     if (_locationEnumerator.MoveTo(_currentTile, _currentLocal))
@@ -83,8 +83,20 @@ namespace Itinero.Transit.Data.Tiles
                         return true;
                     }
 
+                    if (!_tileEnumerator.MoveNext())
+                    {
+                        return false;
+                    }
                     _currentLocal = 0;
-                } while (_tileEnumerator.MoveNext());
+                    _currentTile = _tileEnumerator.Current.LocalId;
+                    if (_locationEnumerator.MoveTo(_currentTile, _currentLocal))
+                    {
+                        _currentLatitude = _locationEnumerator.Latitude;
+                        _currentLongitude = _locationEnumerator.Longitude;
+
+                        return true;
+                    }
+                }
 
                 return false;
             }
@@ -97,6 +109,10 @@ namespace Itinero.Transit.Data.Tiles
             public (uint tileId, uint localId, uint dataPointer) Current => (_currentTile, _currentLocal, _locationEnumerator.DataPointer);
 
             object IEnumerator.Current => Current;
+
+            public double Longitude => _currentLongitude;
+
+            public double Latitude => _currentLatitude;
 
             public void Dispose()
             {

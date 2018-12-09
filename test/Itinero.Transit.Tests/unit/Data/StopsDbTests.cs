@@ -39,7 +39,7 @@ namespace Itinero.Transit.Tests.Data
             var id = db.Add("http://irail.be/stations/NMBS/008863008", 4.786863327026367, 51.26277419739382);
 
             var tile = Tile.WorldToTile(4.786863327026367, 51.26277419739382, 14);
-            Assert.Equal(tile.LocalId, id.localTileId);
+            Assert.Equal(tile.LocalId, id.tileId);
             Assert.Equal((uint)0, id.localId);
         }
 
@@ -53,7 +53,7 @@ namespace Itinero.Transit.Tests.Data
             Assert.True(enumerator.MoveNext());
             Assert.Equal(4.78686332702636700, enumerator.Longitude, P);
             Assert.Equal(51.26277419739382, enumerator.Latitude, P);
-            Assert.Equal(id.localTileId, enumerator.Id.localTileId);
+            Assert.Equal(id.tileId, enumerator.Id.tileId);
             Assert.Equal(id.localId, enumerator.Id.localId);
             Assert.Equal("http://irail.be/stations/NMBS/008863008", enumerator.GlobalId);
         }
@@ -91,10 +91,10 @@ namespace Itinero.Transit.Tests.Data
             var id6 = db.Add("http://irail.be/stations/NMBS/008863012", 5.538825988769531, 51.177621156752494);
 
             var enumerator = db.GetReader();
-            Assert.True(enumerator.MoveTo(id4.localTileId, id4.localId));
+            Assert.True(enumerator.MoveTo(id4.tileId, id4.localId));
             Assert.Equal(4.955863952636719, enumerator.Longitude, P);
             Assert.Equal(51.32546294433130, enumerator.Latitude, P);
-            Assert.Equal(id4.localTileId, enumerator.Id.localTileId);
+            Assert.Equal(id4.tileId, enumerator.Id.tileId);
             Assert.Equal(id4.localId, enumerator.Id.localId);
             Assert.Equal("http://irail.be/stations/NMBS/008863010", enumerator.GlobalId);
         }
@@ -114,7 +114,7 @@ namespace Itinero.Transit.Tests.Data
             Assert.True(enumerator.MoveTo("http://irail.be/stations/NMBS/008863010"));
             Assert.Equal(4.955863952636719, enumerator.Longitude, P);
             Assert.Equal(51.32546294433130, enumerator.Latitude, P);
-            Assert.Equal(id4.localTileId, enumerator.Id.localTileId);
+            Assert.Equal(id4.tileId, enumerator.Id.tileId);
             Assert.Equal(id4.localId, enumerator.Id.localId);
             Assert.Equal("http://irail.be/stations/NMBS/008863010", enumerator.GlobalId);
         }

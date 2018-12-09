@@ -10,18 +10,6 @@ namespace Itinero.IO.LC
     /// </summary>
     public static class ConnectionsDbExtensions
     {
-        public static Dictionary<string, ulong> LoadAllLocations(this StopsDb stopsDb, ILocationProvider locations)
-        {
-            var stopIds = new Dictionary<string, ulong>();
-            foreach (var loc in locations.GetAllLocations())
-            {
-                var v = stopsDb.Add(loc.Uri.ToString(), loc.Lon, loc.Lat);
-                stopIds[loc.Uri.ToString()] = (ulong) v.localTileId * uint.MaxValue + v.localId;
-            }
-
-            return stopIds;
-        }
-
         /// <summary>
         /// Loads connections into the connections db and the given stops db from the given profile.
         /// </summary>
@@ -34,7 +22,6 @@ namespace Itinero.IO.LC
         public static Dictionary<ulong, Uri> LoadConnections(this ConnectionsDb connectionsDb, Profile<TransferStats> profile,
             StopsDb stopsDb, (DateTime start, TimeSpan duration) window, out int count, string countStart = "", string countEnd = "")
         {
-            
             var idToUri = new Dictionary<ulong, Uri>();
             var stopsDbReader = stopsDb.GetReader();
 

@@ -353,7 +353,7 @@ namespace Itinero.Transit.Data.Tiles
                 this.DataPointer = uint.MaxValue;
                 this.Latitude = double.MaxValue;
                 this.Longitude = double.MaxValue;
-                this.LocalTileId = uint.MaxValue;
+                this.TileId = uint.MaxValue;
             }
 
             private uint _currentTileIndexPointer;
@@ -399,7 +399,7 @@ namespace Itinero.Transit.Data.Tiles
                 this.Latitude = latitude;
                 this.Longitude = longitude;
                 this.LocalId = localId;
-                this.LocalTileId = localTileId;
+                this.TileId = localTileId;
                 this.DataPointer = _currentTileDataPointer + localId;
 
                 return true;
@@ -432,7 +432,7 @@ namespace Itinero.Transit.Data.Tiles
                     }
 
                     _currentTile = Tile.FromLocalId(localTileId, _index._zoom);
-                    this.LocalTileId = localTileId;
+                    this.TileId = localTileId;
                     this.LocalId = 0;
                 }
                 else
@@ -449,7 +449,7 @@ namespace Itinero.Transit.Data.Tiles
                         } while (_currentTileCapacity <= 0);
 
                         _currentTile = Tile.FromLocalId(localTileId, _index._zoom);
-                        this.LocalTileId = localTileId;
+                        this.TileId = localTileId;
                         this.LocalId = 0;
                     }
                     else
@@ -480,7 +480,7 @@ namespace Itinero.Transit.Data.Tiles
             /// <summary>
             /// Gets the tile id.
             /// </summary>
-            public uint LocalTileId { get; private set; }
+            public uint TileId { get; private set; }
             
             /// <summary>
             /// Gets the local id.
