@@ -7,7 +7,7 @@ namespace Itinero.IO.LC
         where T : IJourneyStats<T>
 
     {
-        private readonly StatsComparator<T> _comparator;
+        public readonly StatsComparator<T> Comparator;
 
         /// <summary>
         /// Contains all the points on the frontier, in order
@@ -19,7 +19,7 @@ namespace Itinero.IO.LC
 
         public ParetoFrontier(StatsComparator<T> comparator)
         {
-            _comparator = comparator;
+            Comparator = comparator;
         }
 
 
@@ -34,7 +34,7 @@ namespace Itinero.IO.LC
         {
             foreach (var guard in Frontier)
             {
-                var comparison = _comparator.ADominatesB(guard, considered);
+                var comparison = Comparator.ADominatesB(guard, considered);
                 if (comparison < 0)
                 {
                     // The new journey didn't make the cut
@@ -68,7 +68,7 @@ namespace Itinero.IO.LC
             for (var i = Frontier.Count - 1; i >= 0; i--)
             {
                 var guard = Frontier[i];
-                var duel = _comparator.ADominatesB(guard, considered);
+                var duel = Comparator.ADominatesB(guard, considered);
                 switch (duel)
                 {
                     case -1:

@@ -146,7 +146,7 @@ namespace Itinero.Transit.Journeys
         /// Genesis constructor.
         /// This constructor creates a root journey
         /// </summary>
-        public Journey((uint localTileId, uint localId) location, UnixTime departureTime, T statsFactory)
+        public Journey((uint localTileId, uint localId) location, UnixTime departureTime, T initialStats)
         {
             Root = this;
             PreviousLink = null;
@@ -154,7 +154,7 @@ namespace Itinero.Transit.Journeys
             SpecialConnection = true;
             Location = location;
             Time = departureTime;
-            Stats = statsFactory;
+            Stats = initialStats;
             TripId = uint.MaxValue;
         }
 
