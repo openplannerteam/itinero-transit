@@ -1,25 +1,3 @@
-// The MIT License (MIT)
-
-// Copyright (c) 2018 Anyways B.V.B.A.
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-
 using System;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Algorithms.Sorting;
@@ -33,6 +11,7 @@ using Reminiscence.Arrays;
 
 namespace Itinero.Transit.Data
 {
+    // TODO: consider removing these aliases, this is very unusual in C# to use.
     using TimeSpan = UInt16;
     using Time = UInt64;
     using LocId = UInt64;
@@ -530,7 +509,7 @@ namespace Itinero.Transit.Data
         /// Gets a reader.
         /// </summary>
         /// <returns></returns>
-        internal ConnectionsDbReader GetReader()
+        public ConnectionsDbReader GetReader()
         {
             return new ConnectionsDbReader(this);
         }
@@ -548,8 +527,8 @@ namespace Itinero.Transit.Data
             }
 
             private uint _internalId;
-            private (uint localTileId, uint localId) _stop1;
-            private (uint localTileId, uint localId) _stop2;
+            private (uint localTileId, uint localId) _departureStop;
+            private (uint localTileId, uint localId) _arrivalStop;
             private ulong _arrivalLocation, _departureLocation;
             private Time _departureTime, _arrivalTime;
             private ushort _travelTime;
@@ -567,12 +546,12 @@ namespace Itinero.Transit.Data
             /// <summary>
             /// Gets the first stop.
             /// </summary>
-            public (uint localTileId, uint localId) Stop1 => _stop1;
+            public (uint localTileId, uint localId) DepartureStop => _departureStop;
 
             /// <summary>
             /// Gets the second stop.
             /// </summary>
-            public (uint localTileId, uint localId) Stop2 => _stop2;
+            public (uint localTileId, uint localId) ArrivalStop => _arrivalStop;
 
             /// <summary>
             /// Gets the departure time.
@@ -588,9 +567,10 @@ namespace Itinero.Transit.Data
 
             public uint CurrentId => _internalId;
             public uint Id => _internalId;
+            
+            // TODO: remove these, use the (uint, uint) structs.
             public ulong ArrivalLocation => _arrivalLocation;
             public ulong DepartureLocation => _departureLocation;
-
 
             /// <summary>
             /// Moves this reader to the connection with the given internal id.
@@ -607,8 +587,8 @@ namespace Itinero.Transit.Data
                 }
 
                 _internalId = internalId;
-                _stop1 = details.departureLocation;
-                _stop2 = details.arrivalLocation;
+                _departureStop = details.departureLocation;
+                _arrivalStop = details.arrivalLocation;
                 _departureTime = details.departureTime;
                 _travelTime = details.travelTime;
                 _arrivalTime = details.departureTime + details.travelTime;
@@ -671,11 +651,11 @@ namespace Itinero.Transit.Data
                 _db = db;
 
                 _reader = _db.GetReader();
-                _date = _db._earliestDate;
+                _date = uint.MaxValue;
             }
 
             private uint _window = uint.MaxValue;
-            private uint _windowPosition = uint.MaxValue;
+            private long _windowPosition = long.MaxValue;
             private uint _windowPointer = uint.MaxValue;
             private uint _windowSize = uint.MaxValue;
             private uint _date;
@@ -686,7 +666,7 @@ namespace Itinero.Transit.Data
             public void Reset()
             {
                 this.ResetIgnoreDate();
-                _date = _db._earliestDate;
+                _date = uint.MaxValue;
             }
 
             /// <summary>
@@ -705,7 +685,12 @@ namespace Itinero.Transit.Data
             /// <returns></returns>
             public bool MoveNext()
             {
-                if (_date == uint.MaxValue) return false;
+                if (_date == uint.MaxValue)
+                {
+                    if (_db._earliestDate == uint.MaxValue) return false;
+
+                    _date = _db._earliestDate;
+                }
 
                 while (true)
                 {
@@ -802,32 +787,150 @@ namespace Itinero.Transit.Data
             }
 
             /// <summary>
+            /// Moves to the previous connection.
+            /// </summary>
+            /// <returns></returns>
+            public bool MovePrevious()
+            {
+                if (_date == uint.MaxValue)
+                {
+                    if (_db._latestDate == uint.MaxValue) return false;
+
+                    _date = _db._latestDate;
+                }
+
+                while (true)
+                {
+                    if (!this.MovePreviousIgnoreDate())
+                    { 
+                        // move to next date. 
+                        _date = (uint)DateTimeExtensions.RemoveDay(_date);
+                        if (_date < _db._earliestDate)
+                        {
+                            return false;
+                        }
+                        
+                        // reset enumerator.
+                        this.ResetIgnoreDate();
+                    }
+                    else
+                    {
+                        if (_date == DateTimeExtensions.ExtractDate(_reader.DepartureTime))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Moves this enumerator to the previous connection ignoring the data component.
+            /// </summary>
+            /// <returns></returns>
+            private bool MovePreviousIgnoreDate()
+            {
+                if (_window == uint.MaxValue)
+                {
+                    // no data, find last window with data.
+                    for (var w = _db._departureWindowPointers.Length / 2 - 1; w >= 0; w--)
+                    {
+                        var windowSize = _db._departureWindowPointers[w * 2 + 1];
+                        if (windowSize <= 0) continue;
+
+                        _window = (uint)w;
+                        _windowSize = windowSize;
+                        break;
+                    }
+
+                    if (_window == uint.MaxValue)
+                    {
+                        // no window with data found.
+                        return false;
+                    }
+
+                    // window changed.
+                    _windowPosition = _windowSize - 1;
+                    _windowPointer = _db._departureWindowPointers[_window * 2 + _windowPosition];
+                }
+                else
+                {
+                    // there is an active window, try to move to the previous window.
+                    if (_windowPosition <= 0)
+                    {
+                        // move to next window.
+                        var w = (long)_window - 1;
+                        _window = uint.MaxValue;
+                        for (; w >= 0; w--)
+                        {
+                            var windowSize = _db._departureWindowPointers[w * 2 + 1];
+                            if (windowSize <= 0) continue;
+
+                            _window = (uint)w;
+                            _windowSize = windowSize;
+                            break;
+                        }
+
+                        if (_window == uint.MaxValue)
+                        {
+                            // no more windows with data found.
+                            return false;
+                        }
+
+                        // window changed.
+                        _windowPosition = _windowSize - 1;
+                        _windowPointer = _db._departureWindowPointers[_window * 2 + _windowPosition];
+
+                        if (_windowPointer == uint.MaxValue)
+                        {
+                            //Console.WriteLine($"{_date}:{_window}-{_windowPosition}: Invalid pointer here, there is supposed to be one here.");
+                            _windowPosition = 0;
+                            return this.MovePreviousIgnoreDate();
+                        }
+                    }
+                    else
+                    {
+                        // move to the next connection.
+                        _windowPosition--;
+                    }
+                }
+
+                // move the reader to the correct location.
+                _reader.MoveTo(_db._departurePointers[_windowPointer + _windowPosition]);
+
+                return true;
+            }
+
+            /// <summary>
             /// Gets the first stop.
             /// </summary>
             // ReSharper disable once UnusedMember.Global
-            public (uint localTileId, uint localId) DepartureStop => _reader.Stop1;
+            public (uint localTileId, uint localId) DepartureStop => _reader.DepartureStop;
 
             /// <summary>
             /// Gets the second stop.
             /// </summary>
             // ReSharper disable once UnusedMember.Global
-            public (uint localTileId, uint localId) ArrivalStop => _reader.Stop2;
-
-            public LocId ArrivalLocation => _reader.ArrivalLocation;
-            public LocId DepartureLocation => _reader.DepartureLocation;
+            public (uint localTileId, uint localId) ArrivalStop => _reader.ArrivalStop;
 
             /// <summary>
             /// Gets the departure time.
             /// </summary>
             public Time DepartureTime => _reader.DepartureTime;
+            
+            /// <summary>
+            /// Gets the arrival time.
+            /// </summary>
+            public Time ArrivalTime => _reader.ArrivalTime;
 
             /// <summary>
             /// Gets the travel time.
             /// </summary>
             public ushort TravelTime => _reader.TravelTime;
 
+            /// <summary>
+            /// Gets the internal connection id.
+            /// </summary>
             public uint Id => _reader.CurrentId;
-            public Time ArrivalTime => _reader.ArrivalTime;
 
             /// <summary>
             /// Gets the global id.
@@ -838,6 +941,10 @@ namespace Itinero.Transit.Data
             /// Gets the trip id.
             /// </summary>
             public uint TripId => _reader.TripId;
+
+            internal uint Window => _window;
+            internal uint WindowSize => _windowSize;
+            internal long WindowPosition => _windowPosition;
         }
 
         /// <summary>
@@ -852,7 +959,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// A enumerator by arrival.
         /// </summary>
-        public class ArrivalEnumerator : IConnection
+        public class ArrivalEnumerator
         {
             private readonly ConnectionsDb _db;
             private readonly ConnectionsDbReader _reader;
@@ -995,18 +1102,21 @@ namespace Itinero.Transit.Data
             /// <summary>
             /// Gets the first stop.
             /// </summary>
-            public (uint localTileId, uint localId) Stop1 => _reader.Stop1;
+            public (uint localTileId, uint localId) DepartureStop => _reader.DepartureStop;
 
             /// <summary>
             /// Gets the second stop.
             /// </summary>
-            public (uint localTileId, uint localId) Stop2 => _reader.Stop2;
+            public (uint localTileId, uint localId) ArrivalStop => _reader.ArrivalStop;
 
             /// <summary>
             /// Gets the departure time.
             /// </summary>
             public Time DepartureTime => _reader.DepartureTime;
 
+            /// <summary>
+            /// Gets the arrival time.
+            /// </summary>
             public Time ArrivalTime => _reader.ArrivalTime;
 
             /// <summary>
@@ -1024,9 +1134,9 @@ namespace Itinero.Transit.Data
             /// </summary>
             public uint TripId => _reader.TripId;
 
-            public ulong ArrivalLocation => _reader.ArrivalLocation;
-            public ulong DepartureLocation => _reader.DepartureLocation;
-
+            /// <summary>
+            /// The internal ID within the DB
+            /// </summary>
             public uint Id => _reader.CurrentId;
         }
     }

@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using Itinero.Transit.Data;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 
-namespace Itinero.Transit
+namespace Itinero.Transit.Journeys
 {
     using TimeSpan = UInt16;
     using UnixTime = UInt64;
-    using LocId = UInt64;
+    //using LocId = UInt64;
 
 
     /// <summary>
@@ -19,7 +20,8 @@ namespace Itinero.Transit
     /// The above properties are reversed in the CPS algorithm. The last step of that algorithm is to reverse the journeys,
     /// so that users of the lib get a uniform experience
     /// </summary>
-    public class Journey<T> where T : IJourneyStats<T>
+    public class Journey<T> 
+        where T : IJourneyStats<T>
     {
         public static readonly Journey<T> InfiniteJourney = new Journey<T>();
 
@@ -76,7 +78,7 @@ namespace Itinero.Transit
         /// 
         /// Only for the genesis connection, this is the departure location.
         /// </summary>
-        public readonly LocId Location;
+        public readonly (uint tileId, uint localId) Location;
 
         /// <summary>
         /// Keep track of Time.
@@ -109,7 +111,7 @@ namespace Itinero.Transit
             Root = this;
             PreviousLink = this;
             Connection = int.MaxValue;
-            Location = LocId.MaxValue;
+            Location = (uint.MaxValue, uint.MaxValue);
             Time = UnixTime.MaxValue;
             SpecialConnection = true;
             TripId = uint.MaxValue;
@@ -128,7 +130,7 @@ namespace Itinero.Transit
         /// <param name="tripId"></param>
         /// <param name="stats"></param>
         private Journey(Journey<T> root, Journey<T> previousLink, bool specialLink, uint connection,
-            LocId location, UnixTime time, uint tripId, T stats)
+            (uint localTileId, uint localId) location, UnixTime time, uint tripId, T stats)
         {
             Root = root;
             SpecialConnection = specialLink;
@@ -144,7 +146,7 @@ namespace Itinero.Transit
         /// Genesis constructor.
         /// This constructor creates a root journey
         /// </summary>
-        public Journey(LocId location, UnixTime departureTime, T statsFactory)
+        public Journey((uint localTileId, uint localId) location, UnixTime departureTime, T statsFactory)
         {
             Root = this;
             PreviousLink = null;
@@ -160,7 +162,7 @@ namespace Itinero.Transit
         /// Chaining constructor
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
-        public Journey<T> Chain(uint connection, UnixTime arrivalTime, LocId location, uint tripId)
+        public Journey<T> Chain(uint connection, UnixTime arrivalTime, (uint localTileId, uint localId) location, uint tripId)
         {
             return new Journey<T>(
                 Root, this, false, connection, location, arrivalTime, tripId, Stats);
@@ -168,20 +170,20 @@ namespace Itinero.Transit
 
         public Journey<T> ChainForward(IConnection c)
         {
-            return Chain(c.Id, c.ArrivalTime, c.ArrivalLocation, c.TripId);
-        }
-        
-        public Journey<T> ChainBackward(IConnection c)
-        {
-            return Chain(c.Id, c.DepartureTime, c.DepartureLocation, c.TripId);
+            return Chain(c.Id, c.ArrivalTime, c.ArrivalStop, c.TripId);
         }
 
-        
+        public Journey<T> ChainBackward(IConnection c)
+        {
+            return Chain(c.Id, c.DepartureTime, c.DepartureStop, c.TripId);
+        }
+
+
         /// <summary>
         /// Chaining constructor
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
-        public Journey<T> ChainSpecial(uint specialCode, UnixTime arrivalTime, LocId location)
+        public Journey<T> ChainSpecial(uint specialCode, UnixTime arrivalTime, (uint localTileId, uint localId) location)
         {
             return new Journey<T>(
                 Root, this, true, specialCode, location, arrivalTime, uint.MaxValue, Stats);
@@ -192,7 +194,8 @@ namespace Itinero.Transit
         /// a 'Transfer' link is included.
         /// Transfer links _should not_ be used to calculate the number of transfers, the differences in trip-ids should be used for this! 
         /// </summary>
-        public Journey<T> Transfer(uint connection, UnixTime departureTime, UnixTime arrivalTime, LocId arrivalLocation, uint tripId)
+        public Journey<T> Transfer(uint connection, UnixTime departureTime, UnixTime arrivalTime, (uint localTileId, uint localId) arrivalLocation,
+            uint tripId)
         {
             if (Time == departureTime)
             {
@@ -209,7 +212,7 @@ namespace Itinero.Transit
 
         public Journey<T> TransferForward(IConnection c)
         {
-            return Transfer(c.Id, c.DepartureTime, c.ArrivalTime, c.ArrivalLocation, c.TripId);
+            return Transfer(c.Id, c.DepartureTime, c.ArrivalTime, c.ArrivalStop, c.TripId);
         }
 
 
@@ -231,6 +234,19 @@ namespace Itinero.Transit
             return PreviousLink.Time;
         }
 
+        public List<Journey<T>> AllParts()
+        {
+            var parts = new List<Journey<T>>();
+            var current = this;
+            do
+            {
+                parts.Add(current);
+                current = current.PreviousLink;
+            } while (current != null && current != current.PreviousLink);
+
+            return parts;
+        }
+
         public override string ToString()
         {
             var previous = "";
@@ -244,24 +260,23 @@ namespace Itinero.Transit
 
         public string PartToString()
         {
-
             if (SpecialConnection)
             {
-
                 switch (Connection)
                 {
-                        case GENESIS: return $"Genesis at {Location}, time is {DateTimeExtensions.FromUnixTime(Time):hh:mm}";
-                        case WALK:
-                            return
-                                $"Walk from {PreviousLink.Location} to {Location} in {Time - PreviousLink.Time} seconds";
-                        case TRANSFER:
-                            return $"Transfer/Wait for {Time - PreviousLink.Time} seconds in {Location}";
+                    case GENESIS:
+                        return $"Genesis at {Location}, time is {DateTimeExtensions.FromUnixTime(Time):hh:mm}";
+                    case WALK:
+                        return
+                            $"Walk from {PreviousLink.Location} to {Location} in {Time - PreviousLink.Time} seconds";
+                    case TRANSFER:
+                        return $"Transfer/Wait for {Time - PreviousLink.Time} seconds in {Location}";
                 }
-                throw new ArgumentException($"Unknown Special Connection code {Connection}");   
+
+                throw new ArgumentException($"Unknown Special Connection code {Connection}");
             }
 
             return $"Connection {Connection} to {Location}, arriving at {DateTimeExtensions.FromUnixTime(Time):hh:mm}";
-
         }
     }
 }

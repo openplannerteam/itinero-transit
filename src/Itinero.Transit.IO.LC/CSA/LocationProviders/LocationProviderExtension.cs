@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 
-namespace Itinero.IO.LC
+namespace Itinero.Transit.IO.LC.CSA.LocationProviders
 {
-    public static class LocationProviderExtension
+    internal static class LocationProviderExtension
     {
         public static string GetNameOf(this ILocationProvider locProv, Uri uri)
         {

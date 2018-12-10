@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 
-namespace Itinero.IO.LC
+namespace Itinero.Transit.IO.LC.CSA.LocationProviders
 {
-    public class LocationCombiner : ILocationProvider
+    internal class LocationCombiner : ILocationProvider
     {
-        private readonly BoundingBox _bbox;
+        //private readonly BoundingBox _bbox;
         private readonly IEnumerable<ILocationProvider> _providers;
 
         public LocationCombiner(params ILocationProvider[] sources)
@@ -17,11 +17,11 @@ namespace Itinero.IO.LC
         public LocationCombiner(IReadOnlyList<ILocationProvider> backdrops)
         {
             _providers = backdrops;
-            _bbox = backdrops[0].BBox();
-            foreach (var prov in backdrops)
-            {
-                _bbox = _bbox.Expand(prov.BBox());
-            }
+//            _bbox = backdrops[0].BBox();
+//            foreach (var prov in backdrops)
+//            {
+//                _bbox = _bbox.Expand(prov.BBox());
+//            }
         }
 
         public bool ContainsLocation(Uri locationId)
@@ -50,16 +50,16 @@ namespace Itinero.IO.LC
             throw new KeyNotFoundException($"This combiner does not contain {locationId}");
         }
 
-        public IEnumerable<Uri> GetLocationsCloseTo(float lat, float lon, int radiusInMeters)
-        {
-            var allLocations = new HashSet<Uri>();
-            foreach (var provider in _providers)
-            {
-                allLocations.UnionWith(provider.GetLocationsCloseTo(lat, lon, radiusInMeters));
-            }
-
-            return allLocations;
-        }
+//        public IEnumerable<Uri> GetLocationsCloseTo(float lat, float lon, int radiusInMeters)
+//        {
+//            var allLocations = new HashSet<Uri>();
+//            foreach (var provider in _providers)
+//            {
+//                allLocations.UnionWith(provider.GetLocationsCloseTo(lat, lon, radiusInMeters));
+//            }
+//
+//            return allLocations;
+//        }
 
         public IEnumerable<Location> GetLocationByName(string name)
         {
@@ -84,9 +84,9 @@ namespace Itinero.IO.LC
             return allLocations;
         }
 
-        public BoundingBox BBox()
-        {
-            return _bbox;
-        }
+//        public BoundingBox BBox()
+//        {
+//            return _bbox;
+//        }
     }
 }

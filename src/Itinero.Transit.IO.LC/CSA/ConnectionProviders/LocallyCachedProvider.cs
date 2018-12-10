@@ -1,6 +1,8 @@
 using System;
+using Itinero.Transit.IO.LC.CSA.Connections;
+using Itinero.Transit.IO.LC.CSA.Utils;
 
-namespace Itinero.IO.LC
+namespace Itinero.Transit.IO.LC.CSA.ConnectionProviders
 {
     /// <inheritdoc />
     ///  <summary>
@@ -10,7 +12,7 @@ namespace Itinero.IO.LC
     ///  The 'caching policy' of this provider is simple: retain forever - although the caller can clear the storage.
     /// NOte that 'calculateInterConnection' is _not_ cached
     ///  </summary>
-    public class LocallyCachedConnectionsProvider : IConnectionsProvider
+    internal class LocallyCachedConnectionsProvider : IConnectionsProvider
     {
         private readonly IConnectionsProvider _fallbackProvider;
         private readonly LocalStorage _storage;

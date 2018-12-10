@@ -1,3 +1,4 @@
+using Itinero.Transit.IO.LC.CSA.Utils;
 using Xunit;
 using Xunit.Abstractions;
 

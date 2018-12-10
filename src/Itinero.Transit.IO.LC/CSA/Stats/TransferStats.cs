@@ -1,7 +1,7 @@
 ﻿using System;
 
 // ReSharper disable ImpureMethodCallOnReadonlyValueField
-namespace Itinero.IO.LC
+namespace Itinero.Transit.IO.LC.CSA.Stats
 {
     /// <inheritdoc />
     /// <summary>
@@ -10,32 +10,32 @@ namespace Itinero.IO.LC
     /// </summary>
     public class TransferStats : IJourneyStats<TransferStats>
     {
-        public readonly int NumberOfTransfers;
-        public readonly DateTime StartTime;
-        public readonly DateTime EndTime;
-        public readonly TimeSpan TravelTime;
+        internal readonly int NumberOfTransfers;
+        internal readonly DateTime StartTime;
+        internal readonly DateTime EndTime;
+        internal readonly TimeSpan TravelTime;
 
-        public readonly float WalkingDistance;
+        internal readonly float WalkingDistance;
 
-        public static readonly MinimizeTransfers MinimizeTransfers = new MinimizeTransfers();
-        public static readonly MinimizeTravelTimes MinimizeTravelTimes = new MinimizeTravelTimes();
+//        internal static readonly MinimizeTransfers MinimizeTransfers = new MinimizeTransfers();
+//        internal static readonly MinimizeTravelTimes MinimizeTravelTimes = new MinimizeTravelTimes();
+//
+//        internal static readonly ProfileTransferCompare ProfileTransferCompare = new ProfileTransferCompare();
+//        internal static readonly ProfileCompare ProfileCompare = new ProfileCompare();
+//        internal static readonly ParetoCompare ParetoCompare = new ParetoCompare();
+//
+//        internal static readonly ChainedComparator<TransferStats> MinimizeTransfersFirst =
+//            new ChainedComparator<TransferStats>(MinimizeTransfers, MinimizeTravelTimes);
+//
+//        // ReSharper disable once UnusedMember.Global
+//        internal static readonly ChainedComparator<TransferStats> MinimizeTravelTimeFirst =
+//            new ChainedComparator<TransferStats>(MinimizeTravelTimes, MinimizeTransfers);
 
-        public static readonly ProfileTransferCompare ProfileTransferCompare = new ProfileTransferCompare();
-        public static readonly ProfileCompare ProfileCompare = new ProfileCompare();
-        public static readonly ParetoCompare ParetoCompare = new ParetoCompare();
 
-        public static readonly ChainedComparator<TransferStats> MinimizeTransfersFirst =
-            new ChainedComparator<TransferStats>(MinimizeTransfers, MinimizeTravelTimes);
-
-        // ReSharper disable once UnusedMember.Global
-        public static readonly ChainedComparator<TransferStats> MinimizeTravelTimeFirst =
-            new ChainedComparator<TransferStats>(MinimizeTravelTimes, MinimizeTransfers);
-
-
-        public static readonly TransferStats Factory =
+        internal static readonly TransferStats Factory =
             new TransferStats(int.MaxValue, DateTime.MinValue, DateTime.MaxValue, int.MaxValue);
 
-        public TransferStats(int numberOfTransfers, DateTime startTime, DateTime endTime, float walkingDistance)
+        internal TransferStats(int numberOfTransfers, DateTime startTime, DateTime endTime, float walkingDistance)
         {
             NumberOfTransfers = numberOfTransfers;
             StartTime = startTime;
@@ -48,44 +48,44 @@ namespace Itinero.IO.LC
             }
         }
 
-        public TransferStats InitialStats(IJourneyPart c)
-        {
-            var walk = 0f;
-            if (c is WalkingConnection connection &&
-                !connection.DepartureLocation().Equals(connection.ArrivalLocation()))
-            {
-                walk = connection.Walk().TotalDistance;
-            }
+//        public TransferStats InitialStats(IJourneyPart c)
+//        {
+//            var walk = 0f;
+////            if (c is WalkingConnection connection &&
+////                !connection.DepartureLocation().Equals(connection.ArrivalLocation()))
+////            {
+////                walk = connection.Walk().TotalDistance;
+////            }
+//
+//            return new TransferStats(0, c.DepartureTime(), c.ArrivalTime(), walk);
+//        }
 
-            return new TransferStats(0, c.DepartureTime(), c.ArrivalTime(), walk);
-        }
-
-        public TransferStats Add(Journey<TransferStats> journey)
-        {
-            var transferred =
-                journey.PreviousLink?.GetLastTripId() != null &&
-                !Equals(journey.PreviousLink?.GetLastTripId(), journey.GetLastTripId());
-
-            var dep = journey.Connection.DepartureTime();
-            if (StartTime < dep)
-            {
-                dep = StartTime;
-            }
-
-            var arr = journey.Connection.ArrivalTime();
-            if (EndTime > arr)
-            {
-                arr = EndTime;
-            }
-
-            var walk = 0f;
-            if (journey.Connection is WalkingConnection connection)
-            {
-                walk = connection.Walk().TotalDistance;
-            }
-
-            return new TransferStats(NumberOfTransfers + (transferred ? 1 : 0), dep, arr, WalkingDistance + walk);
-        }
+//        internal TransferStats Add(Journey<TransferStats> journey)
+//        {
+//            var transferred =
+//                journey.PreviousLink?.GetLastTripId() != null &&
+//                !Equals(journey.PreviousLink?.GetLastTripId(), journey.GetLastTripId());
+//
+//            var dep = journey.Connection.DepartureTime();
+//            if (StartTime < dep)
+//            {
+//                dep = StartTime;
+//            }
+//
+//            var arr = journey.Connection.ArrivalTime();
+//            if (EndTime > arr)
+//            {
+//                arr = EndTime;
+//            }
+//
+//            var walk = 0f;
+////            if (journey.Connection is WalkingConnection connection)
+////            {
+////                walk = connection.Walk().TotalDistance;
+////            }
+//
+//            return new TransferStats(NumberOfTransfers + (transferred ? 1 : 0), dep, arr, WalkingDistance + walk);
+//        }
 
         public override bool Equals(object obj)
         {
@@ -117,149 +117,149 @@ namespace Itinero.IO.LC
         }
     }
 
-
-    public class MinimizeTransfers : StatsComparator<TransferStats>
-    {
-        public override int ADominatesB(TransferStats a, TransferStats b)
-        {
-            return a.NumberOfTransfers.CompareTo(b.NumberOfTransfers);
-        }
-    }
-
-    public class MinimizeTravelTimes : StatsComparator<TransferStats>
-    {
-        public override int ADominatesB(TransferStats a, TransferStats b)
-        {
-            return (a.EndTime - a.StartTime).CompareTo(b.EndTime - b.StartTime);
-        }
-    }
-
-    public class ProfileTransferCompare : ProfiledStatsComparator<TransferStats>
-    {
-        public override int ADominatesB(TransferStats a, TransferStats b)
-        {
-            if (a.Equals(b))
-            {
-                return 0;
-            }
-
-            var aBetterThenB = AIsBetterThenB(a, b);
-            var bBetterThenA = AIsBetterThenB(b, a);
-
-            if (aBetterThenB && bBetterThenA)
-            {
-                // No Domination either way
-                return int.MaxValue;
-            }
-
-            if (aBetterThenB)
-            {
-                return -1;
-            }
-
-            if (bBetterThenA)
-            {
-                return 1;
-            }
-
-            // both perform the same
-            return 0;
-        }
-
-        /// <summary>
-        /// Returns true if A performs better then B in at least one aspect.
-        /// This does imply that A dominates B!
-        /// This does only imply that B does _not_ dominate A
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        private bool AIsBetterThenB(TransferStats a, TransferStats b)
-        {
-            return a.NumberOfTransfers < b.NumberOfTransfers
-                   || a.StartTime > b.StartTime
-                   || a.EndTime < b.EndTime;
-        }
-    }
-
-
-    public class ProfileCompare : ProfiledStatsComparator<TransferStats>
-    {
-        public override int ADominatesB(TransferStats a, TransferStats b)
-        {
-            if (a.Equals(b))
-            {
-                return 0;
-            }
-
-            var aBetterThenB = AIsBetterThenB(a, b);
-            var bBetterThenA = AIsBetterThenB(b, a);
-
-            if (aBetterThenB && bBetterThenA)
-            {
-                // No Domination either way
-                return int.MaxValue;
-            }
-
-            if (aBetterThenB)
-            {
-                return -1;
-            }
-
-            if (bBetterThenA)
-            {
-                return 1;
-            }
-
-            // both perform the same
-            return 0;
-        }
-
-        /// <summary>
-        /// Returns true if A performs better then B in at least one aspect.
-        /// This does imply that A dominates B!
-        /// This does only imply that B does _not_ dominate A
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        private bool AIsBetterThenB(TransferStats a, TransferStats b)
-        {
-            return a.StartTime > b.StartTime
-                   || a.EndTime < b.EndTime;
-        }
-    }
-
-    public class ParetoCompare : StatsComparator<TransferStats>
-    {
-        public override int ADominatesB(TransferStats a, TransferStats b)
-        {
-            if (a.TravelTime.Equals(b.TravelTime) && a.NumberOfTransfers.Equals(b.NumberOfTransfers))
-            {
-                return 0;
-            }
-
-            if (S1DominatesS2(a, b))
-            {
-                return -1;
-            }
-
-            // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (S1DominatesS2(b, a))
-            {
-                return 1;
-            }
-
-            return int.MaxValue;
-        }
-
-        private bool S1DominatesS2(TransferStats s1, TransferStats s2)
-        {
-            return
-                (s1.NumberOfTransfers < s2.NumberOfTransfers
-                 && s1.TravelTime <= s2.TravelTime)
-                || (s1.NumberOfTransfers <= s2.NumberOfTransfers
-                    && s1.TravelTime < s2.TravelTime);
-        }
-    }
+//
+//    internal class MinimizeTransfers : StatsComparator<TransferStats>
+//    {
+//        public override int ADominatesB(TransferStats a, TransferStats b)
+//        {
+//            return a.NumberOfTransfers.CompareTo(b.NumberOfTransfers);
+//        }
+//    }
+//
+//    internal class MinimizeTravelTimes : StatsComparator<TransferStats>
+//    {
+//        public override int ADominatesB(TransferStats a, TransferStats b)
+//        {
+//            return (a.EndTime - a.StartTime).CompareTo(b.EndTime - b.StartTime);
+//        }
+//    }
+//
+//    internal class ProfileTransferCompare : ProfiledStatsComparator<TransferStats>
+//    {
+//        public override int ADominatesB(TransferStats a, TransferStats b)
+//        {
+//            if (a.Equals(b))
+//            {
+//                return 0;
+//            }
+//
+//            var aBetterThenB = AIsBetterThenB(a, b);
+//            var bBetterThenA = AIsBetterThenB(b, a);
+//
+//            if (aBetterThenB && bBetterThenA)
+//            {
+//                // No Domination either way
+//                return int.MaxValue;
+//            }
+//
+//            if (aBetterThenB)
+//            {
+//                return -1;
+//            }
+//
+//            if (bBetterThenA)
+//            {
+//                return 1;
+//            }
+//
+//            // both perform the same
+//            return 0;
+//        }
+//
+//        /// <summary>
+//        /// Returns true if A performs better then B in at least one aspect.
+//        /// This does imply that A dominates B!
+//        /// This does only imply that B does _not_ dominate A
+//        /// </summary>
+//        /// <param name="a"></param>
+//        /// <param name="b"></param>
+//        /// <returns></returns>
+//        private bool AIsBetterThenB(TransferStats a, TransferStats b)
+//        {
+//            return a.NumberOfTransfers < b.NumberOfTransfers
+//                   || a.StartTime > b.StartTime
+//                   || a.EndTime < b.EndTime;
+//        }
+//    }
+//
+//
+//    internal class ProfileCompare : ProfiledStatsComparator<TransferStats>
+//    {
+//        public override int ADominatesB(TransferStats a, TransferStats b)
+//        {
+//            if (a.Equals(b))
+//            {
+//                return 0;
+//            }
+//
+//            var aBetterThenB = AIsBetterThenB(a, b);
+//            var bBetterThenA = AIsBetterThenB(b, a);
+//
+//            if (aBetterThenB && bBetterThenA)
+//            {
+//                // No Domination either way
+//                return int.MaxValue;
+//            }
+//
+//            if (aBetterThenB)
+//            {
+//                return -1;
+//            }
+//
+//            if (bBetterThenA)
+//            {
+//                return 1;
+//            }
+//
+//            // both perform the same
+//            return 0;
+//        }
+//
+//        /// <summary>
+//        /// Returns true if A performs better then B in at least one aspect.
+//        /// This does imply that A dominates B!
+//        /// This does only imply that B does _not_ dominate A
+//        /// </summary>
+//        /// <param name="a"></param>
+//        /// <param name="b"></param>
+//        /// <returns></returns>
+//        private bool AIsBetterThenB(TransferStats a, TransferStats b)
+//        {
+//            return a.StartTime > b.StartTime
+//                   || a.EndTime < b.EndTime;
+//        }
+//    }
+//
+//    internal class ParetoCompare : StatsComparator<TransferStats>
+//    {
+//        public override int ADominatesB(TransferStats a, TransferStats b)
+//        {
+//            if (a.TravelTime.Equals(b.TravelTime) && a.NumberOfTransfers.Equals(b.NumberOfTransfers))
+//            {
+//                return 0;
+//            }
+//
+//            if (S1DominatesS2(a, b))
+//            {
+//                return -1;
+//            }
+//
+//            // ReSharper disable once ConvertIfStatementToReturnStatement
+//            if (S1DominatesS2(b, a))
+//            {
+//                return 1;
+//            }
+//
+//            return int.MaxValue;
+//        }
+//
+//        private bool S1DominatesS2(TransferStats s1, TransferStats s2)
+//        {
+//            return
+//                (s1.NumberOfTransfers < s2.NumberOfTransfers
+//                 && s1.TravelTime <= s2.TravelTime)
+//                || (s1.NumberOfTransfers <= s2.NumberOfTransfers
+//                    && s1.TravelTime < s2.TravelTime);
+//        }
+//    }
 }

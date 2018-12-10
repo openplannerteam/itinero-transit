@@ -1,7 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Itinero.Transit.IO.LC.CSA.ConnectionProviders;
+using Itinero.Transit.IO.LC.CSA.LocationProviders;
+using Itinero.Transit.IO.LC.CSA.Stats;
+using Itinero.Transit.IO.LC.CSA.Utils;
 
-namespace Itinero.IO.LC
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
+namespace Itinero.Transit.IO.LC.CSA
 {
     public class Belgium
     {
@@ -15,8 +22,6 @@ namespace Itinero.IO.LC
                 "belgium.routerdb",
                 storage,
                 TransferStats.Factory, 
-                TransferStats.ProfileTransferCompare,
-                TransferStats.ParetoCompare,
                 loader
             );
         }
@@ -40,15 +45,12 @@ namespace Itinero.IO.LC
                 conn.Add(prof);
                 locs.Add(prof);
             }
-            locs.Add(OsmLocationMapping.Singleton);
+            //locs.Add(OsmLocationMapping.Singleton);
             return new Profile<TransferStats>(
                 new ConnectionProviderMerger(conn), 
                 new LocationCombiner(locs), 
                 profs[0].FootpathTransferGenerator,
-                TransferStats.Factory, 
-                TransferStats.ProfileTransferCompare,
-                TransferStats.ParetoCompare
-                );
+                TransferStats.Factory);
 
 
         }
@@ -66,8 +68,6 @@ namespace Itinero.IO.LC
                 "belgium.routerdb",
                 storage,
                 TransferStats.Factory, 
-                TransferStats.ProfileCompare,
-                TransferStats.ParetoCompare,
                 loader
             );
         }

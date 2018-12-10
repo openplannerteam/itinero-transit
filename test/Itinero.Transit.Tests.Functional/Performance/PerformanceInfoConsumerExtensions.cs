@@ -23,7 +23,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
         /// </summary>
         public static void TestPerf(this Action action, string name, int count)
         {
-            var info = new PerformanceInfoConsumer(name + " x " + count.ToInvariantString(), 10000, count);
+            var info = new PerformanceInfoConsumer(name + " x " + count.ToString(), 10000, count);
             info.Start();
             var message = string.Empty;
             while (count > 0)
@@ -51,7 +51,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
         /// </summary>
         public static void TestPerf(this Func<string> action, string name, int count)
         {
-            var info = new PerformanceInfoConsumer(name + " x " + count.ToInvariantString(), 10000);
+            var info = new PerformanceInfoConsumer(name + " x " + count.ToString(), 10000);
             info.Start();
             var message = string.Empty;
             while (count > 0)
@@ -80,7 +80,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
         /// </summary>
         public static T TestPerf<T>(this Func<PerformanceTestResult<T>> func, string name, int count)
         {
-            var info = new PerformanceInfoConsumer(name + " x " + count.ToInvariantString(), 10000);
+            var info = new PerformanceInfoConsumer(name + " x " + count.ToString(), 10000);
             info.Start();
             PerformanceTestResult<T> res = null;
             while (count > 0)
@@ -101,6 +101,24 @@ namespace Itinero.Transit.Tests.Functional.Performance
             var info = new PerformanceInfoConsumer(name);
             info.Start();
             var res = func(a);
+            info.Stop(res.Message);
+            return res.Result;
+        }
+
+        /// <summary>
+        /// Tests performance for the given function.
+        /// </summary>
+        public static TResult TestPerf<T, TResult>(this Func<T, PerformanceTestResult<TResult>> func, string name, T a, int count)
+        {
+            var info = new PerformanceInfoConsumer(name);
+            info.Start();
+            var res = func(a);
+            count--;
+            while (count > 0)
+            {
+                res = func(a);
+                count--;
+            }
             info.Stop(res.Message);
             return res.Result;
         }

@@ -1,14 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Serilog;
-namespace Itinero.IO.LC
+using Itinero.Transit.Logging;
+
+namespace Itinero.Transit.IO.LC.CSA.Connections
 {
     /// <summary>
     /// The validating time table is a wrapper around a normal timetable.
     /// It filters out faulty data that should be fixed upstream.
     /// </summary>
-    public class ValidatingTimeTable : ITimeTable
+    internal class ValidatingTimeTable : ITimeTable
     {
         private readonly ILocationProvider _locations;
         private readonly ITimeTable _backdrop;
@@ -77,7 +78,7 @@ namespace Itinero.IO.LC
         }
     }
 
-   public  class ValidatingEnumerable : IEnumerable<IConnection>
+    internal class ValidatingEnumerable : IEnumerable<IConnection>
     {
         private readonly IEnumerable<IConnection> _backdrop;
         private readonly ITimeTable _source;
@@ -102,7 +103,7 @@ namespace Itinero.IO.LC
     }
 
 
-    class ValidatingEnumerator : IEnumerator<IConnection>
+    internal class ValidatingEnumerator : IEnumerator<IConnection>
     {
         private readonly ITimeTable _source;
         private readonly IEnumerator<IConnection> _backdrop;

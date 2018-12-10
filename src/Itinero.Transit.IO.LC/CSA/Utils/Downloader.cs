@@ -1,16 +1,19 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using CacheCow.Client;
 using CacheCow.Client.FileCacheStore;
 using CacheCow.Client.Headers;
 using CacheCow.Common;
+using Itinero.Transit.Logging;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
-using Serilog;
 
-namespace Itinero.IO.LC
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
+namespace Itinero.Transit.IO.LC.CSA.Utils
 {
     /// <summary>
     /// Utilities to help downloading, caching and testing (e.g. to inject a fixed string while testing)
@@ -122,7 +125,7 @@ namespace Itinero.IO.LC
     }
 
 
-    public class FileStoreBugFixer : FileStore
+    internal class FileStoreBugFixer : FileStore
     {
         public FileStoreBugFixer(string cacheRoot) : base(cacheRoot)
         {

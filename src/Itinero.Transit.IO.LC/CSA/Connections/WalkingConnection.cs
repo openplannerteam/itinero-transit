@@ -1,5 +1,6 @@
 using System;
-namespace Itinero.IO.LC
+
+namespace Itinero.Transit.IO.LC.CSA.Connections
 {
     /// <summary>
     /// A walking connection is a connection where the traveller takes walks (or bikes)...
@@ -7,13 +8,13 @@ namespace Itinero.IO.LC
     ///
     /// Note that a 'WalkingConnection' might also be used to start or end a journey
     /// </summary>
-    public class WalkingConnection : IContinuousConnection
+    internal class WalkingConnection : IContinuousConnection
     {
         private readonly Uri _arrivalLocation;
         private readonly Uri _departureLocation;
         private readonly DateTime _arrivalTime;
         private readonly DateTime _departureTime;
-        private readonly Route _route;
+//        private readonly Route _route;
         private readonly float _speed;
 
         /// <summary>
@@ -29,20 +30,20 @@ namespace Itinero.IO.LC
 
             _arrivalTime = genesisTime;
             _departureTime = genesisTime;
-            _route = null;
+            //_route = null;
         }
-
-        public WalkingConnection(Route route, Uri departureLocation, Uri arrivalLocation, DateTime departureTime,
-            float speed)
-        {
-            _route = route;
-            _departureLocation = departureLocation;
-            _arrivalLocation = arrivalLocation;
-
-            _departureTime = departureTime;
-            _arrivalTime = departureTime.AddSeconds(route.TotalDistance * speed);
-            _speed = speed;
-        }
+//
+//        public WalkingConnection(Route route, Uri departureLocation, Uri arrivalLocation, DateTime departureTime,
+//            float speed)
+//        {
+//            _route = route;
+//            _departureLocation = departureLocation;
+//            _arrivalLocation = arrivalLocation;
+//
+//            _departureTime = departureTime;
+//            _arrivalTime = departureTime.AddSeconds(route.TotalDistance * speed);
+//            _speed = speed;
+//        }
 
 
         public override string ToString()
@@ -52,27 +53,30 @@ namespace Itinero.IO.LC
 
         public string ToString(ILocationProvider locDecode)
         {
-            return _route == null
-                ? $"Genesis connection at {locDecode.GetNameOf(_departureLocation)} {_departureTime}"
-                : $"Walk from {locDecode.GetNameOf(_departureLocation)} to {locDecode.GetNameOf(_arrivalLocation)}, " +
-                  $"{_departureTime:HH:mm:ss} --> {_arrivalTime:HH:mm:ss} ({_route.TotalTime}sec, {_route.TotalDistance}m)";
+            return string.Empty;
+//            return _route == null
+//                ? $"Genesis connection at {locDecode.GetNameOf(_departureLocation)} {_departureTime}"
+//                : $"Walk from {locDecode.GetNameOf(_departureLocation)} to {locDecode.GetNameOf(_arrivalLocation)}, " +
+//                  $"{_departureTime:HH:mm:ss} --> {_arrivalTime:HH:mm:ss} ({_route.TotalTime}sec, {_route.TotalDistance}m)";
         }
 
-        public Route Walk()
-        {
-            return _route;
-        }
+//        public Route Walk()
+//        {
+//            return _route;
+//        }
 
         public IContinuousConnection MoveTime(double seconds)
         {
-            return new WalkingConnection(_route, _departureLocation, _arrivalLocation,
-                _departureTime.AddSeconds(seconds),
-                _speed);
+            return null;
+//            return new WalkingConnection(_route, _departureLocation, _arrivalLocation,
+//                _departureTime.AddSeconds(seconds),
+//                _speed);
         }
 
         public IContinuousConnection MoveDepartureTime(DateTime newDepartureTime)
         {
-            return new WalkingConnection(_route, _departureLocation, _arrivalLocation, newDepartureTime, _speed);
+            return null;
+//            return new WalkingConnection(_route, _departureLocation, _arrivalLocation, newDepartureTime, _speed);
         }
 
         public Uri DepartureLocation()
@@ -96,10 +100,10 @@ namespace Itinero.IO.LC
         }
 
 
-        public Route AsRoute(ILocationProvider locationProv)
-        {
-            return _route;
-        }
+//        public Route AsRoute(ILocationProvider locationProv)
+//        {
+//            return _route;
+//        }
 
 
         protected bool Equals(WalkingConnection other)
@@ -108,7 +112,7 @@ namespace Itinero.IO.LC
                    && Equals(_departureLocation, other._departureLocation)
                    && Equals(_arrivalTime, other._arrivalTime)
                    && Equals(_departureTime, other._departureTime)
-                   && Equals(_route.TotalDistance, other._route.TotalDistance)
+                   //&& Equals(_route.TotalDistance, other._route.TotalDistance)
                    && Equals(_speed, other._speed);
         }
 
@@ -128,7 +132,7 @@ namespace Itinero.IO.LC
                 hashCode = (hashCode * 397) ^ (_departureLocation != null ? _departureLocation.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ _arrivalTime.GetHashCode();
                 hashCode = (hashCode * 397) ^ _departureTime.GetHashCode();
-                hashCode = (hashCode * 397) ^ (_route != null ? _route.GetHashCode() : 0);
+                //hashCode = (hashCode * 397) ^ (_route != null ? _route.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ _speed.GetHashCode();
                 return hashCode;
             }

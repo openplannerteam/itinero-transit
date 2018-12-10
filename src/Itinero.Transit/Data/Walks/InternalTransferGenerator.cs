@@ -1,4 +1,5 @@
 using System;
+using Itinero.Transit.Journeys;
 
 namespace Itinero.Transit.Data.Walks
 {
@@ -27,7 +28,7 @@ namespace Itinero.Transit.Data.Walks
         /// <param name="tripId"></param>
         /// <returns></returns>
         private Journey<T> CreateInternalTransfer<T>(Journey<T> buildOn, uint conn, ulong timeNearTransfer,
-            ulong timeNearHead, ulong locationNearHead, uint tripId) where T : IJourneyStats<T>
+            ulong timeNearHead, (uint localTileId, uint localId) locationNearHead, uint tripId) where T : IJourneyStats<T>
         {
             ulong timeDiff;
             if (timeNearTransfer < buildOn.Time)
@@ -56,13 +57,13 @@ namespace Itinero.Transit.Data.Walks
                     "Seems like the connection you gave departs before the journey arrives. Are you building backward routes? Use the other method (CreateArrivingTransfer)");
             }
 
-            if (c.DepartureLocation != buildOn.Location)
+            if (c.DepartureStop != buildOn.Location)
             {
                 return null;
             }
 
             return CreateInternalTransfer(buildOn,
-                c.Id, c.DepartureTime, c.ArrivalTime, c.ArrivalLocation, c.TripId);
+                c.Id, c.DepartureTime, c.ArrivalTime, c.ArrivalStop, c.TripId);
         }
 
         public Journey<T> CreateArrivingTransfer<T>(Journey<T> buildOn, IConnection c) where T : IJourneyStats<T>
@@ -73,13 +74,13 @@ namespace Itinero.Transit.Data.Walks
                     "Seems like the connection you gave arrives after the rest journey departs. Are you building forward routes? Use the other method (CreateDepartingTransfer)");
             }
 
-            if (c.ArrivalLocation != buildOn.Location)
+            if (c.ArrivalStop != buildOn.Location)
             {
                 return null;
             }
 
             return CreateInternalTransfer(buildOn, c.Id,
-                c.ArrivalTime, c.DepartureTime, c.DepartureLocation, c.TripId);
+                c.ArrivalTime, c.DepartureTime, c.DepartureStop, c.TripId);
         }
     }
 }

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Itinero.IO.LC
+namespace Itinero.Transit.IO.LC.CSA
 {
     /// <summary>
     /// A TimeTable is an object containing multiple connections (often Public Transport).
@@ -9,7 +9,6 @@ namespace Itinero.IO.LC
     /// </summary>
     public interface ITimeTable
     {
-        
         /// <summary>
         /// The moment when the earliest connections of this time table leave
         /// </summary>

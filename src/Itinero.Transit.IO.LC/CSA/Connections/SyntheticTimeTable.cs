@@ -1,16 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Itinero.Transit.IO.LC.CSA.ConnectionProviders;
 
 // ReSharper disable PossibleMultipleEnumeration
-namespace Itinero.IO.LC
+namespace Itinero.Transit.IO.LC.CSA.Connections
 {
     /// <inheritdoc />
     /// <summary>
     /// A synthetic Time Table merges multiple time tables into one.
     /// It is used to offer intermodality
     /// </summary>
-    public class SyntheticTimeTable : ITimeTable
+    internal class SyntheticTimeTable : ITimeTable
     {
         private readonly DateTime _startTime, _endTime, _previousTime;
         private readonly Uri _uri;
@@ -159,7 +160,7 @@ namespace Itinero.IO.LC
     /// <summary>
     /// This enumerator takes multiple sources and takes the earliest departure of each
     /// </summary>
-    public class EnumeratorMerger : IEnumerator<IConnection>, IEnumerable<IConnection>
+    internal class EnumeratorMerger : IEnumerator<IConnection>, IEnumerable<IConnection>
     {
         public IConnection Current { get; private set; }
 

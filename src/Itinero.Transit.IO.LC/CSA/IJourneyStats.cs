@@ -1,4 +1,4 @@
-﻿namespace Itinero.IO.LC
+﻿namespace Itinero.Transit.IO.LC.CSA
 {
     ///  <summary>
     ///  Every journey carries a 'journeyStats'-object.
@@ -11,17 +11,17 @@
     public interface IJourneyStats<T>
         where T : IJourneyStats<T>
     {
-        /// <summary>
-        /// Create statistics for a single connection, used to start the journey statistics.
-        /// </summary>
-        /// <returns></returns>
-        T InitialStats(IJourneyPart c);
+//        /// <summary>
+//        /// Create statistics for a single connection, used to start the journey statistics.
+//        /// </summary>
+//        /// <returns></returns>
+//        T InitialStats(IJourneyPart c);
 
-        /// <summary>
-        /// A new statistics object that represents the new statistics when this connection is taken.
-        /// nextPiece.PreviousLink should not be null
-        /// </summary>
-        T Add(Journey<T> journey);
+//        /// <summary>
+//        /// A new statistics object that represents the new statistics when this connection is taken.
+//        /// nextPiece.PreviousLink should not be null
+//        /// </summary>
+//        T Add(Journey<T> journey);
         
 
     }

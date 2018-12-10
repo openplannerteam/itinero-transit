@@ -4,7 +4,7 @@
 
 // ReSharper disable ImpureMethodCallOnReadonlyValueField
 
-namespace Itinero.Transit
+namespace Itinero.Transit.Journeys
 {
     using TimeSpan = UInt32;
     using Time = UInt32;

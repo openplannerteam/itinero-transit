@@ -1,4 +1,4 @@
-﻿namespace Itinero.Transit
+﻿namespace Itinero.Transit.Journeys
 {
     ///  <summary>
     ///  Every journey carries a 'journeyStats'-object.

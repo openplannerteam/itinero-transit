@@ -1,25 +1,3 @@
-// The MIT License (MIT)
-
-// Copyright (c) 2018 Anyways B.V.B.A.
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-
 using System;
 using System.Runtime.CompilerServices;
 using Reminiscence.Arrays;
@@ -60,17 +38,17 @@ namespace Itinero.Transit.Data.Tiles
         /// <param name="latitude">The latitude.</param>
         /// <param name="longitude">The longitude</param>
         /// <returns>The tile id, the local id and a data pointer.</returns>
-        public (uint localId, uint localTileId, uint dataPointer) Add(double longitude, double latitude)
+        public (uint tileId, uint localId, uint dataPointer) Add(double longitude, double latitude)
         {
             // get the local tile id.
             var tile = Tile.WorldToTile(longitude, latitude, _zoom);
-            var localTileId = tile.LocalId;
+            var tileId = tile.LocalId;
 
             // try to find the tile.
-            var (tileDataPointer, tileIndexPointer, capacity) = FindTile(localTileId);
+            var (tileDataPointer, tileIndexPointer, capacity) = FindTile(tileId);
             if (tileDataPointer == TileNotLoaded)
             { // create the tile if it doesn't exist yet.
-                (tileDataPointer, tileIndexPointer, capacity) = AddTile(localTileId);
+                (tileDataPointer, tileIndexPointer, capacity) = AddTile(tileId);
             }
 
             // find or create a place to store the location.
@@ -104,8 +82,13 @@ namespace Itinero.Transit.Data.Tiles
             // set the vertex data.
             SetEncodedLocation(nextEmpty, tile, longitude, latitude);
 
-            return (localId, localTileId, nextEmpty);
+            return (tileId, localId, nextEmpty);
         }
+
+        /// <summary>
+        /// Gets the zoom.
+        /// </summary>
+        public int Zoom => _zoom;
 
         /// <summary>
         /// A delegate to notify listeners that a block of locations has moved.
@@ -348,7 +331,7 @@ namespace Itinero.Transit.Data.Tiles
                 this.DataPointer = uint.MaxValue;
                 this.Latitude = double.MaxValue;
                 this.Longitude = double.MaxValue;
-                this.LocalTileId = uint.MaxValue;
+                this.TileId = uint.MaxValue;
             }
 
             private uint _currentTileIndexPointer;
@@ -394,7 +377,7 @@ namespace Itinero.Transit.Data.Tiles
                 this.Latitude = latitude;
                 this.Longitude = longitude;
                 this.LocalId = localId;
-                this.LocalTileId = localTileId;
+                this.TileId = localTileId;
                 this.DataPointer = _currentTileDataPointer + localId;
 
                 return true;
@@ -427,7 +410,7 @@ namespace Itinero.Transit.Data.Tiles
                     }
 
                     _currentTile = Tile.FromLocalId(localTileId, _index._zoom);
-                    this.LocalTileId = localTileId;
+                    this.TileId = localTileId;
                     this.LocalId = 0;
                 }
                 else
@@ -444,7 +427,7 @@ namespace Itinero.Transit.Data.Tiles
                         } while (_currentTileCapacity <= 0);
 
                         _currentTile = Tile.FromLocalId(localTileId, _index._zoom);
-                        this.LocalTileId = localTileId;
+                        this.TileId = localTileId;
                         this.LocalId = 0;
                     }
                     else
@@ -475,7 +458,7 @@ namespace Itinero.Transit.Data.Tiles
             /// <summary>
             /// Gets the tile id.
             /// </summary>
-            public uint LocalTileId { get; private set; }
+            public uint TileId { get; private set; }
             
             /// <summary>
             /// Gets the local id.

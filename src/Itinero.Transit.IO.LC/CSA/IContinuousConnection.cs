@@ -1,5 +1,6 @@
 using System;
-namespace Itinero.IO.LC
+
+namespace Itinero.Transit.IO.LC.CSA
 {
     /// <summary>
     /// A ContinuousConnection is a connection that can be moved in time.
@@ -13,7 +14,7 @@ namespace Itinero.IO.LC
     /// However, they can be moved around freely with `MoveTime`
     /// 
     /// </summary>
-    public interface IContinuousConnection : IJourneyPart
+    internal interface IContinuousConnection : IJourneyPart
     {
 
         /// <summary>

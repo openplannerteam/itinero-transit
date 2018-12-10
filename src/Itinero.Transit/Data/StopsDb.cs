@@ -1,25 +1,3 @@
-// The MIT License (MIT)
-
-// Copyright (c) 2018 Anyways B.V.B.A.
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -63,12 +41,6 @@ namespace Itinero.Transit.Data
             _stopIdLinkedList = new MemoryArray<uint>(0);
         }
 
-
-        public IEnumerable<ulong> StopsCloseBy(ulong stopID)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Called when a block of locations has moved.
         /// </summary>
@@ -94,10 +66,10 @@ namespace Itinero.Transit.Data
         /// <param name="longitude">The stop longitude.</param>
         /// <param name="latitude">The stop latitude.</param>
         /// <returns>An internal id representing the stop in this transit db.</returns>
-        public (uint localTileId, uint localId) Add(string globalId, double longitude, double latitude)
+        public (uint tileId, uint localId) Add(string globalId, double longitude, double latitude)
         {
             // store location.
-            var (localId, tileId, dataPointer) = _stopLocations.Add(longitude, latitude);
+            var (tileId, localId, dataPointer) = _stopLocations.Add(longitude, latitude);
 
             // store stop id at the resulting data pointer.
             while (_stopIds.Length <= dataPointer)
@@ -121,6 +93,11 @@ namespace Itinero.Transit.Data
 
             return (tileId, localId);
         }
+
+        /// <summary>
+        /// Gets the stop locations index.
+        /// </summary>
+        internal TiledLocationIndex StopLocations => _stopLocations;
 
         private uint Hash(string id)
         { // https://stackoverflow.com/questions/5154970/how-do-i-create-a-hashcode-in-net-c-for-a-string-that-is-safe-to-store-in-a
@@ -148,7 +125,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// A stops reader.
         /// </summary>
-        public class StopsDbReader
+        public class StopsDbReader : IStop
         {
             private readonly StopsDb _stopsDb;
             private readonly TiledLocationIndex.Enumerator _locationEnumerator;
@@ -180,9 +157,14 @@ namespace Itinero.Transit.Data
                 return _locationEnumerator.MoveTo(localTileId, localId);
             }
 
-            public bool MoveTo(ulong locationId)
+            /// <summary>
+            /// Moves this enumerator to the given stop.
+            /// </summary>
+            /// <param name="stop">The stop.</param>
+            /// <returns>True if there is more data.</returns>
+            public bool MoveTo((uint localTileId, uint localId) stop)
             {
-                return MoveTo((uint) (locationId / uint.MaxValue), (uint) (locationId % uint.MaxValue));
+                return _locationEnumerator.MoveTo(stop.localTileId, stop.localId);
             }
 
             /// <summary>
@@ -231,8 +213,8 @@ namespace Itinero.Transit.Data
             /// <summary>
             /// Gets the stop id.
             /// </summary>
-            public (uint localTileId, uint localId) Id =>
-                (_locationEnumerator.LocalTileId, _locationEnumerator.LocalId);
+            public (uint tileId, uint localId) Id =>
+                (_locationEnumerator.TileId, _locationEnumerator.LocalId);
 
             /// <summary>
             /// Gets the latitude.

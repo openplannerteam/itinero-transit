@@ -1,6 +1,7 @@
 using System;
 using System.Security.Cryptography;
 using Itinero.IO.LC.Tests;
+using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Xunit;

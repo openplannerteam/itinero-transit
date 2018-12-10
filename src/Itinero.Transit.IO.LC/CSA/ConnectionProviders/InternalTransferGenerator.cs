@@ -1,8 +1,8 @@
 using System;
 
-namespace Itinero.IO.LC
+namespace Itinero.Transit.IO.LC.CSA.ConnectionProviders
 {
-    public class InternalTransferGenerator : IFootpathTransferGenerator
+    internal class InternalTransferGenerator : IFootpathTransferGenerator
     {
         private readonly int _secondsToTransferNeeded;
 
@@ -11,16 +11,16 @@ namespace Itinero.IO.LC
             _secondsToTransferNeeded = secondsToTransferNeeded;
         }
 
-        public IContinuousConnection GenerateFootPaths(DateTime departureTime,
-            Location from, Location to)
-        {
-            if (!Equals(from, to))
-            {
-                return null;
-            }
-
-            return new InternalTransfer(from.Id(), departureTime,
-                departureTime.AddSeconds(_secondsToTransferNeeded));
-        }
+//        public IContinuousConnection GenerateFootPaths(DateTime departureTime,
+//            Location from, Location to)
+//        {
+//            if (!Equals(from, to))
+//            {
+//                return null;
+//            }
+//
+//            return new InternalTransfer(from.Id(), departureTime,
+//                departureTime.AddSeconds(_secondsToTransferNeeded));
+//        }
     }
 }

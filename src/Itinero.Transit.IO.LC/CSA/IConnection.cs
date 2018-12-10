@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace Itinero.IO.LC{
+namespace Itinero.Transit.IO.LC.CSA
+{
     /// <inheritdoc />
     /// <summary>
     /// Represents an abstract connection from one point to another using a single transportation mode (e.g. train, walking, cycling, ...)
@@ -19,8 +20,7 @@ namespace Itinero.IO.LC{
         /// </summary>
         /// <returns></returns>
         Uri Id();
-
-
+        
         /// <summary>
         /// The identifier of the longer trip (e.g. Oostende-Eupen, leaving at 10:10), which can contain multiple single connections.
         /// Will be null for some connections, e.g. when walking.
@@ -33,8 +33,5 @@ namespace Itinero.IO.LC{
         /// </summary>
         /// <returns></returns>
         Uri Route();
-
-        
     }
-
 }

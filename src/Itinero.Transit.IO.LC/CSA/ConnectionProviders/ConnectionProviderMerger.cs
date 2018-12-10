@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Itinero.Transit.IO.LC.CSA.Connections;
 
-namespace Itinero.IO.LC
+namespace Itinero.Transit.IO.LC.CSA.ConnectionProviders
 {
     /// <inheritdoc />
     ///  <summary>
@@ -10,7 +11,7 @@ namespace Itinero.IO.LC
     ///  They all provide their timetables at various schedules.
     ///  This class takes multiple such timetables and 'fuses' them into an synthetic table.
     ///  </summary>
-    public class ConnectionProviderMerger : IConnectionsProvider
+    internal class ConnectionProviderMerger : IConnectionsProvider
     {
         public static readonly string SyntheticUri = "https://pt.anyways.eu/connections?departureTime=";
 

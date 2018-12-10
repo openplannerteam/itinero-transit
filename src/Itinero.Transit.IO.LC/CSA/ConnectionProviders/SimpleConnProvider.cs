@@ -1,8 +1,8 @@
 using System;
 
-namespace Itinero.IO.LC
+namespace Itinero.Transit.IO.LC.CSA.ConnectionProviders
 {
-    public class SimpleConnProvider : IConnectionsProvider
+    internal class SimpleConnProvider : IConnectionsProvider
     {
         private readonly ITimeTable _tt;
 

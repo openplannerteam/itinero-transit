@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Itinero.IO.LC
+namespace Itinero.Transit.IO.LC.CSA.LocationProviders
 {
-    public class MemoizingTransferGenerator : IFootpathTransferGenerator
+    internal class MemoizingTransferGenerator : IFootpathTransferGenerator
     {
         private readonly Dictionary<int, IContinuousConnection> _memoizationCache
             = new Dictionary<int, IContinuousConnection>();
@@ -16,21 +16,22 @@ namespace Itinero.IO.LC
         }
 
 
-        public IContinuousConnection GenerateFootPaths(DateTime departureTime, Location from, Location to)
-        {
-            var key = from.Uri.GetHashCode() + to.Uri.GetHashCode();
-            IContinuousConnection conn;
-            if (_memoizationCache.ContainsKey(key))
-            {
-                conn = _memoizationCache[key];
-            }
-            else
-            {
-                conn = _fallback.GenerateFootPaths(DateTime.MinValue, from, to);
-                _memoizationCache[key] = conn;
-            }
-
-            return conn?.MoveDepartureTime(departureTime);
-        }
+//        public IContinuousConnection GenerateFootPaths(DateTime departureTime, Location from, Location to)
+//        {
+////            var key = from.Uri.GetHashCode() + to.Uri.GetHashCode();
+////            IContinuousConnection conn;
+////            if (_memoizationCache.ContainsKey(key))
+////            {
+////                conn = _memoizationCache[key];
+////            }
+////            else
+////            {
+////                conn = _fallback.GenerateFootPaths(DateTime.MinValue, from, to);
+////                _memoizationCache[key] = conn;
+////            }
+////
+////            return conn?.MoveDepartureTime(departureTime);
+//            return null;
+//        }
     }
 }

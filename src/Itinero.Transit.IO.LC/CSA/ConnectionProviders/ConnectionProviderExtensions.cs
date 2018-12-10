@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
-using Serilog;
+using System.Runtime.CompilerServices;
+using Itinero.Transit.Logging;
 
-namespace Itinero.IO.LC
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
+namespace Itinero.Transit.IO.LC.CSA.ConnectionProviders
 {
-    public static class ConnectionProviderExtensions
+    internal static class ConnectionProviderExtensions
     {
         public static ITimeTable GetTimeTable(this IConnectionsProvider prov, DateTime time)
         {
