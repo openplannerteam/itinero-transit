@@ -276,7 +276,7 @@ namespace Itinero.Transit.Journeys
                 throw new ArgumentException($"Unknown Special Connection code {Connection}");
             }
 
-            return $"Connection {Connection} to {Location}, arriving at {DateTimeExtensions.FromUnixTime(Time):hh:mm}";
+            return $"Connection {Connection} to {Location}, arriving at {DateTimeExtensions.FromUnixTime(Time):HH:mm}";
         }
     }
 }

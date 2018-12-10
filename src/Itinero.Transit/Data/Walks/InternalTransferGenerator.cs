@@ -71,7 +71,7 @@ namespace Itinero.Transit.Data.Walks
             if (c.ArrivalTime > buildOn.Time)
             {
                 throw new ArgumentException(
-                    "Seems like the connection you gave arrives after the rest journey departs. Are you building forward routes? Use the other method (CreateDepartingTransfer)");
+                    "Seems like the connection you gave arrives after the rest of the journey departs. Are you building forward routes? Use the other method (CreateDepartingTransfer)");
             }
 
             if (c.ArrivalStop != buildOn.Location)

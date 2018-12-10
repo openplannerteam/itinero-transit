@@ -29,6 +29,12 @@ namespace Itinero.Transit.Algorithms.CSA
 
             foreach (var journey in pareto.Frontier)
             {
+                if (journey.Time <= c.ArrivalTime)
+                {
+                    // We can not hop on this journey
+                    continue;
+                }
+                
                 var extendedJourney = transferPolicy.CreateArrivingTransfer(journey, c);
                 if (extendedJourney != null)
                 {
@@ -73,10 +79,12 @@ namespace Itinero.Transit.Algorithms.CSA
             return biggest;
         }
 
-        public static ParetoFrontier<T> PickBestJourneys<T>(Journey<T> j, ParetoFrontier<T> a, ParetoFrontier<T> b) where T : IJourneyStats<T>
+        public static ParetoFrontier<T> PickBestJourneys<T>(Journey<T> j, ParetoFrontier<T> a, ParetoFrontier<T> b)
+            where T : IJourneyStats<T>
         {
             var frontier = Combine(a, b);
             frontier.AddToFrontier(j);
+
             return frontier;
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Itinero.Transit;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
@@ -91,6 +92,16 @@ namespace Itinero.IO.LC
             new Dictionary<ulong, ParetoFrontier<T>>();
 
 
+
+        public ProfiledConnectionScan(
+            (uint, uint) departureStop,
+            (uint, uint) arrivalStop,
+            DateTime earliestDeparture, DateTime lastArrival,
+            Profile<T> profile):
+            this(departureStop, arrivalStop, earliestDeparture.ToUnixTime(), lastArrival.ToUnixTime(), profile)
+        {
+        }
+
         ///  <summary>
         ///  Create a new ProfiledConnectionScan algorithm.
         ///  </summary>
@@ -166,10 +177,17 @@ namespace Itinero.IO.LC
         private void IntegrateBatch(ConnectionsDb.DepartureEnumerator enumerator)
         {
             var depTime = enumerator.DepartureTime;
+            var tripId = enumerator.Id;
             do
             {
                 IntegrateConnection(enumerator);
                 enumerator.MovePrevious();
+                if (enumerator.Id == tripId)
+                {
+                    throw new Exception("Stuck in a loop: we have reached the first element of the database");
+                }
+
+                tripId = enumerator.Id;
             } while (depTime == enumerator.DepartureTime);
         }
 
@@ -200,7 +218,7 @@ namespace Itinero.IO.LC
 
             /*What if we transfer in this station?
              */
-            var journeyT3 = TransferAfter(c); // TODO
+            var journeyT3 = TransferAfter(c);
 
 
             /* Lets pick out the best journeys that have C in them*/

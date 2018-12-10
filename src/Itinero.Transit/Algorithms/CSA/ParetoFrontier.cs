@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Itinero.Transit.Journeys;
 
@@ -19,6 +20,10 @@ namespace Itinero.IO.LC
 
         public ParetoFrontier(StatsComparator<T> comparator)
         {
+            if (comparator == null)
+            {
+                throw new ArgumentNullException("A Pareto Frontier can not operate without comparator");
+            }
             Comparator = comparator;
         }
 
@@ -65,6 +70,12 @@ namespace Itinero.IO.LC
         /// <returns>True if the journey was appended to the frontier</returns>
         public bool AddToFrontier(Journey<T> considered)
         {
+            if (considered == null || considered == Journey<T>.InfiniteJourney)
+            {
+                return false;
+            }
+            
+            
             for (var i = Frontier.Count - 1; i >= 0; i--)
             {
                 var guard = Frontier[i];
