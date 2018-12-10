@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
+using Itinero.Transit.Journeys;
 using static Itinero.Osm.Vehicles.Vehicle;
 using Profile = Itinero.Profiles.Profile;
 
 namespace Itinero.Transit
 {
     using UnixTime = UInt32;
-    using LocId = UInt64;
 
 
     /// <inheritdoc />
@@ -24,7 +24,7 @@ namespace Itinero.Transit
     {
         private readonly Router _router;
         private readonly Profile _walkingProfile;
-        private readonly float _speed;
+        
         private const float SearchDistance = 50f;
         private readonly StopsDb.StopsDbReader _stopsDb;
 
@@ -33,22 +33,18 @@ namespace Itinero.Transit
             = new Dictionary<string, Router>();
 
 
-        /// <summary>
-        /// Generate a new transfer generator, which takes into account
-        /// the time needed to transfer, walk, ...
-        ///
-        /// Footpaths are generated using an Osm-based router database
-        /// </summary>
-        /// <param name="routerdbPath">To create paths</param>
-        /// <param name="speed">The walking speed (in meter/second)</param>
-        /// <param name="internalTransferTime">How many seconds does it take to go from one platform to another. Default is 180s</param>
+        ///  <summary>
+        ///  Generate a new transfer generator, which takes into account
+        ///  the time needed to transfer, walk, ...
+        /// 
+        ///  Footpaths are generated using an Osm-based router database
+        ///  </summary>
+        ///  <param name="routerdbPath">To create paths</param>
+        /// <param name="stopsReader">The database containing all the stops</param>
         /// <param name="walkingProfile">How does the user transport himself over the OSM graph? Default is pedestrian</param>
         public OsmTransferGenerator(string routerdbPath, StopsDb.StopsDbReader stopsReader,
-            float speed = 1.3f,
-            int internalTransferTime = 180,
             Profile walkingProfile = null)
         {
-            _speed = speed;
             _stopsDb = stopsReader;
 
             _walkingProfile = walkingProfile ?? Pedestrian.Fastest();
@@ -78,7 +74,8 @@ namespace Itinero.Transit
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <returns></returns>
-        private Route CreateRouteBetween(ulong start, ulong end)
+        private Route CreateRouteBetween((uint localTileId, uint localId) start, 
+            (uint localTileId, uint localId) end)
         {
             _stopsDb.MoveTo(start);
             var lat = (float) _stopsDb.Latitude;
@@ -88,7 +85,9 @@ namespace Itinero.Transit
             var latE = (float) _stopsDb.Latitude;
             var lonE = (float) _stopsDb.Longitude;
 
+            // ReSharper disable once RedundantArgumentDefaultValue
             var startPoint = _router.TryResolve(_walkingProfile, lat, lon, SearchDistance);
+            // ReSharper disable once RedundantArgumentDefaultValue
             var endPoint = _router.TryResolve(_walkingProfile, latE, lonE, SearchDistance);
 
             if (startPoint.IsError || endPoint.IsError)
@@ -97,12 +96,7 @@ namespace Itinero.Transit
             }
 
             var route = _router.TryCalculate(_walkingProfile, startPoint.Value, endPoint.Value);
-            if (route.IsError)
-            {
-                return null;
-            }
-
-            return route.Value;
+            return route.IsError ? null : route.Value;
         }
 
         public Journey<T> CreateDepartureTransfer<T>(Journey<T> buildOn, IConnection c) where T : IJourneyStats<T>
@@ -113,12 +107,12 @@ namespace Itinero.Transit
                     "Seems like the connection you gave departs before the journey arrives. Are you building backward routes? Use the other method (CreateArrivingTransfer)");
             }
 
-            if (c.DepartureLocation == buildOn.Location)
+            if (Equals(c.DepartureStop, buildOn.Location))
             {
                 return null;
             }
 
-            var route = CreateRouteBetween(buildOn.Location, c.DepartureLocation);
+            var route = CreateRouteBetween(buildOn.Location, c.DepartureStop);
 
             var timeAvailable = c.DepartureTime - buildOn.Time;
             if (timeAvailable < route.TotalTime)
@@ -127,9 +121,8 @@ namespace Itinero.Transit
                 return null;
             }
 
-
             var withWalk = buildOn.ChainSpecial(
-                Journey<T>.WALK, (uint) (route.TotalTime + c.DepartureTime), c.DepartureLocation);
+                Journey<T>.WALK, (uint) (buildOn.Time + route.TotalDistance), c.DepartureStop);
             return withWalk.ChainForward(c);
         }
 
@@ -141,14 +134,14 @@ namespace Itinero.Transit
                     "Seems like the connection you gave arrives after the rest journey departs. Are you building forward routes? Use the other method (CreateDepartingTransfer)");
             }
 
-            if (c.ArrivalLocation == buildOn.Location)
+            if (Equals(c.ArrivalStop, buildOn.Location))
             {
                 return null;
             }
 
-            var route = CreateRouteBetween(buildOn.Location, c.DepartureLocation);
+            var route = CreateRouteBetween(buildOn.Location, c.DepartureStop);
 
-            var timeAvailable = c.DepartureTime - buildOn.Time;
+            var timeAvailable = buildOn.Time - c.ArrivalTime;
             if (timeAvailable < route.TotalTime)
             {
                 // Not enough time to walk
@@ -157,7 +150,7 @@ namespace Itinero.Transit
 
 
             var withWalk = buildOn.ChainSpecial(
-                Journey<T>.WALK, (uint) (c.ArrivalTime - route.TotalTime), c.ArrivalLocation);
+                Journey<T>.WALK, (uint) (c.ArrivalTime + route.TotalTime), c.ArrivalStop);
             return withWalk.ChainBackward(c);
         }
     }

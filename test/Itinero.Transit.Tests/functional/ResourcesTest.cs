@@ -136,6 +136,11 @@ namespace Itinero.IO.LC.Tests
                 // Indeed, should error
                 Assert.True(true);
             }
+            catch(IOException e)
+            {
+                // Indeed, should error
+                Assert.True(true);
+            }
         }
     }
 }

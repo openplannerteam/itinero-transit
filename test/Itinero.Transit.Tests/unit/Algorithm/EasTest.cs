@@ -4,6 +4,7 @@ using Itinero.IO.LC.Tests;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
+using Itinero.Transit.Journeys;
 using Xunit;
 
 namespace Itinero.Transit.Tests.Algorithm
@@ -17,11 +18,12 @@ namespace Itinero.Transit.Tests.Algorithm
             var stops = Db.GetDefaultStopsDb();
 
             var profile = new Profile<TransferStats>(
-                db, stops, new InternalTransferGenerator(), new TransferStats()
+                db, stops, new InternalTransferGenerator(), new TransferStats(),
+                TransferStats.ProfileTransferCompare
             );
 
             var eas = new EarliestConnectionScan<TransferStats>(
-                0, 1, db.GetConn(0).DepartureTime, db.GetConn(0).DepartureTime + 60 * 60 * 6,
+                (0, 0), (0, 1), db.GetConn(0).DepartureTime, db.GetConn(0).DepartureTime + 60 * 60 * 6,
                 profile
             );
 
@@ -32,7 +34,7 @@ namespace Itinero.Transit.Tests.Algorithm
 
 
             eas = new EarliestConnectionScan<TransferStats>(
-                0, 2, db.GetConn(0).DepartureTime, db.GetConn(0).DepartureTime + 60 * 60 * 2,
+                (0,0),(0, 2), db.GetConn(0).DepartureTime, db.GetConn(0).DepartureTime + 60 * 60 * 2,
                 profile
             );
 

@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit;
 using Itinero.Transit.Data;
+using Itinero.Transit.Journeys;
 
 namespace Itinero.IO.LC
 {
     
     
     using UnixTime = UInt64;
-    
-    
+
+
     /// <summary>
     /// The ProfiledConnectionScan is a CSA that applies A* backward and builds profiles on how to reach a target stop.
     ///
@@ -23,6 +24,7 @@ namespace Itinero.IO.LC
     /// </summary>
     public class ProfiledConnectionScan<T> where T : IJourneyStats<T>
     {
+        /*
         /// <summary>
         /// Represents multiple 'target' stations.
         /// Each target stop can include a certain penalty (e.g. walking to the real target destination)
@@ -545,6 +547,6 @@ namespace Itinero.IO.LC
         private ParetoFrontier<T> GetStationJourney(ulong key, ParetoFrontier<T> value)
         {
             return _stationJourneys.ContainsKey(key) ? _stationJourneys[key] : value;
-        }
+    }*/
     }
 }

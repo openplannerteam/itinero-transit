@@ -5,23 +5,23 @@ using Itinero.Transit.IO.LC.CSA.ConnectionProviders;
 using Itinero.Transit.IO.LC.CSA.LocationProviders;
 using Itinero.Transit.IO.LC.CSA.Stats;
 using Itinero.Transit.IO.LC.CSA.Utils;
+// ReSharper disable MemberCanBePrivate.Global
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
+
 namespace Itinero.Transit.IO.LC.CSA
 {
-    public class Belgium
+    public static class Belgium
     {
-
         public static Profile<TransferStats> Sncb(LocalStorage storage, Downloader loader = null)
         {
             return new Profile<TransferStats>(
                 "SNCB",
                 new Uri("https://graph.irail.be/sncb/connections"),
                 new Uri("https://irail.be/stations"),
-                "belgium.routerdb",
                 storage,
-                TransferStats.Factory, 
+                TransferStats.Factory,
                 loader
             );
         }
@@ -39,35 +39,31 @@ namespace Itinero.Transit.IO.LC.CSA
             };
 
             var conn = new List<IConnectionsProvider>();
-            var locs = new List<ILocationProvider>();
+            var locations = new List<ILocationProvider>();
             foreach (var prof in profs)
             {
                 conn.Add(prof);
-                locs.Add(prof);
+                locations.Add(prof);
             }
-            //locs.Add(OsmLocationMapping.Singleton);
+
             return new Profile<TransferStats>(
-                new ConnectionProviderMerger(conn), 
-                new LocationCombiner(locs), 
-                profs[0].FootpathTransferGenerator,
+                new ConnectionProviderMerger(conn),
+                new LocationCombiner(locations),
                 TransferStats.Factory);
-
-
         }
-        
-        
+
+
         private static Profile<TransferStats> CreateDeLijnProfile(string province, LocalStorage storage,
             Downloader loader)
         {
             storage = storage.SubStorage("DeLijn");
-            
+
             return new Profile<TransferStats>(
                 "DeLijnWvl",
                 new Uri($"https://openplanner.ilabt.imec.be/delijn/{province}/connections"),
                 new Uri($"https://openplanner.ilabt.imec.be/delijn/{province}/stops"),
-                "belgium.routerdb",
                 storage,
-                TransferStats.Factory, 
+                TransferStats.Factory,
                 loader
             );
         }
@@ -76,30 +72,28 @@ namespace Itinero.Transit.IO.LC.CSA
         {
             return CreateDeLijnProfile("West-Vlaanderen", storage, loader);
         }
-        
-        
+
+
         public static Profile<TransferStats> OostVlaanderen(LocalStorage storage, Downloader loader)
         {
             return CreateDeLijnProfile("Oost-Vlaanderen", storage, loader);
         }
-        
-        
+
+
         public static Profile<TransferStats> Limburg(LocalStorage storage, Downloader loader)
         {
             return CreateDeLijnProfile("Limburg", storage, loader);
         }
-        
-        
+
+
         public static Profile<TransferStats> VlaamsBrabant(LocalStorage storage, Downloader loader)
         {
             return CreateDeLijnProfile("Vlaams-Brabant", storage, loader);
         }
-        
+
         public static Profile<TransferStats> Antwerpen(LocalStorage storage, Downloader loader)
         {
             return CreateDeLijnProfile("Antwerpen", storage, loader);
         }
-
-      
     }
 }

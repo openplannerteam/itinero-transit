@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Itinero.Transit;
+using Itinero.Transit.Journeys;
 
 namespace Itinero.IO.LC
 {
@@ -11,7 +11,7 @@ namespace Itinero.IO.LC
 
         /// <summary>
         /// Contains all the points on the frontier, in order
-        /// This is needed for certain optimalisations.
+        /// This is needed for certain optimisations.
         /// Note that most removals (if they happen) will probably be on the tail, so not have too much of an performance impact
         /// </summary>
         public readonly List<Journey<T>> Frontier = new List<Journey<T>>();

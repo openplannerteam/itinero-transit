@@ -1,4 +1,5 @@
 using Itinero.Transit.Data.Walks;
+using Itinero.Transit.Journeys;
 
 namespace Itinero.Transit.Data
 {
@@ -12,10 +13,11 @@ namespace Itinero.Transit.Data
         public readonly IOtherModeGenerator WalksGenerator;
         public readonly T StatsFactory;
         public readonly ProfiledStatsComparator<T> ProfileComparator;
-        
-        
 
-        public Profile(ConnectionsDb connectionsDb, StopsDb stopsDb, IOtherModeGenerator walksGenerator, T statsFactory, ProfiledStatsComparator<T> profileComparator)
+
+        public Profile(ConnectionsDb connectionsDb, StopsDb stopsDb,
+            IOtherModeGenerator walksGenerator, T statsFactory,
+            ProfiledStatsComparator<T> profileComparator)
         {
             ConnectionsDb = connectionsDb;
             StopsDb = stopsDb;
