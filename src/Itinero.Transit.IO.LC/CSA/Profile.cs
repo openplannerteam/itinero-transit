@@ -12,14 +12,10 @@ namespace Itinero.Transit.IO.LC.CSA
     /// Which PT-operators does he want to take? Which doesn't he?
     /// How fast does he walk? All these are stored here
     /// </summary>
-    public class Profile<T> : IConnectionsProvider, IFootpathTransferGenerator, ILocationProvider
-        where T : IJourneyStats<T>
+    public class Profile : IConnectionsProvider, ILocationProvider
     {
         internal readonly IConnectionsProvider ConnectionsProvider;
         internal readonly ILocationProvider LocationProvider;
-
-        internal readonly T StatsFactory;
-        //public readonly ProfiledStatsComparator<T> ProfileCompare;
 
         /// <summary>
         /// Indicates the radius within which stops are searched during the
@@ -32,12 +28,10 @@ namespace Itinero.Transit.IO.LC.CSA
         internal int EndpointSearchRadius = 500;
 
         internal Profile(IConnectionsProvider connectionsProvider,
-            ILocationProvider locationProvider,
-            T statsFactory)
+            ILocationProvider locationProvider)
         {
             ConnectionsProvider = connectionsProvider;
             LocationProvider = locationProvider;
-            StatsFactory = statsFactory;
         }
 
 
@@ -50,7 +44,6 @@ namespace Itinero.Transit.IO.LC.CSA
             Uri connectionsLink,
             Uri locationsFragment,
             LocalStorage storage,
-            T statsFactory,
             Downloader loader = null
         )
         {
@@ -81,13 +74,6 @@ namespace Itinero.Transit.IO.LC.CSA
                         storage.SubStorage("locations")
                     );
 
-            // Intermediate transfer generator
-            // The OsmTransferGenerator will reuse an existing routerdb if it is already loaded
-            // TODO: remove all links to Itinero and routing on road networks.
-            //FootpathTransferGenerator = new OsmTransferGenerator(routerDbPath);
-
-            // The other settings 
-            StatsFactory = statsFactory;
         }
 
 

@@ -14,7 +14,6 @@ namespace Itinero.Transit.IO.LC.CSA.ConnectionProviders
             return prov.GetTimeTable(prov.TimeTableIdFor(time));
         }
 
-        // ReSharper disable once UnusedMember.Global
         public static List<ITimeTable> DownloadDay(this IConnectionsProvider prov, DateTime start)
         {
             var all = new List<ITimeTable>();

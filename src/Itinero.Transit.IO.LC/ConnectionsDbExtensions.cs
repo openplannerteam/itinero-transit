@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
-using Itinero.Transit.IO.LC.CSA.Stats;
 using Itinero.Transit.IO.LC.CSA.ConnectionProviders;
 using Itinero.Transit.Logging;
 
@@ -20,7 +19,7 @@ namespace Itinero.Transit.IO.LC
         /// <param name="stopsDb">The stops db.</param>
         /// <param name="window">The window, a start time and duration.</param>
         public static void LoadConnections(this ConnectionsDb connectionsDb, 
-            Itinero.Transit.IO.LC.CSA.Profile<TransferStats> profile,
+            CSA.Profile profile,
             StopsDb stopsDb, (DateTime start, TimeSpan duration) window)
         {
             var stopsDbReader = stopsDb.GetReader();
