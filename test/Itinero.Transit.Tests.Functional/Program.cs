@@ -22,6 +22,7 @@ namespace Itinero.Transit.Tests.Functional
         {
             EnableLogging();
             Log.Information("Starting the Functional Tests...");
+            Log.Information("If you get a deserialization-exception: clear the cache");
 
             // test loading a connections db
             var db = IO.LC.LoadConnectionsTest.Default.Run((DateTime.Now.Date, new TimeSpan(1, 0, 0, 0)));

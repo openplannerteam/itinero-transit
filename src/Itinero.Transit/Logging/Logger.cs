@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Itinero.Transit.Logging
 {
-   /// <summary>
+    /// <summary>
     /// A logger.
     /// </summary>
     public class Logger
@@ -53,7 +53,9 @@ namespace Itinero.Transit.Logging
                     System.Diagnostics.Debug.WriteLine($"[{o}] {level} - {localmessage}");
                 };
             }
-            Logger.LogAction(name, type.ToString().ToLower(), string.Format(message, args), null);
+
+            var toLog = args == null || args.Length == 0 ? message : string.Format(message, args);
+            Logger.LogAction(name, type.ToString().ToLower(), toLog, null);
         }
 
         /// <summary>
@@ -69,10 +71,6 @@ namespace Itinero.Transit.Logging
         /// <summary>
         /// Gets or sets the action to actually log a message.
         /// </summary>
-        public static LogActionFunction LogAction
-        {
-            get;
-            set;
-        }
+        public static LogActionFunction LogAction { get; set; }
     }
 }
