@@ -29,6 +29,9 @@ namespace Itinero.Transit.IO.LC
             var connectionCount = 0;
             var stopCount = 0;
             var timeTable = profile.GetTimeTable(window.start);
+
+            var tripsAdded = 0;
+            
             do
             {
                 foreach (var connection in timeTable.Connections())
@@ -74,8 +77,11 @@ namespace Itinero.Transit.IO.LC
                     {
                         tripId = (uint) trips.Count;
                         trips[tripUri] = tripId;
-
-                        Log.Information($"Added new trip {tripUri} with {tripId}");
+                        tripsAdded++;
+                        if (tripsAdded % 250 == 0)
+                        {
+                        Log.Information($"{tripsAdded} trips loaded in the DB so far");
+                        }
                     }
 
                     var connectionId = connection.Id().ToString();

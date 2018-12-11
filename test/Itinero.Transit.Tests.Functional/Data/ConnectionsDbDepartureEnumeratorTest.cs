@@ -1,3 +1,4 @@
+using System;
 using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Tests.Functional.Data
@@ -23,13 +24,19 @@ namespace Itinero.Transit.Tests.Functional.Data
 //                                    $"({departureEnumerator.TravelTime}s [{departureEnumerator.DepartureStop} -> {departureEnumerator.ArrivalStop}])");
                 tt += departureEnumerator.TravelTime;
                 ce++;
+                if (ce > 1000)
+                {
+                    break;
+                }
             }
             Information($"Enumerated {ce} connections!");
 
+            Information("Starting backwards enumeration");
             while (departureEnumerator.MovePrevious())
             {
                 tt -= departureEnumerator.TravelTime;
                 ce++;
+                Information($"{ConnectionExtensions.ToString(departureEnumerator)}");
             }
             Information($"Enumerated back, {tt}");
 

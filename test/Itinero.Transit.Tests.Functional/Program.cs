@@ -30,14 +30,14 @@ namespace Itinero.Transit.Tests.Functional
             var db = IO.LC.LoadConnectionsTest.Default.Run((DateTime.Now.Date, new TimeSpan(1, 0, 0, 0)));
 
             // test enumerating a connections db.
-            Data.ConnectionsDbDepartureEnumeratorTest.Default.Run(db.connections);
 
 /*
+            Data.ConnectionsDbDepartureEnumeratorTest.Default.Run(db.connections);
             TestEAS(db);
             TestClosestStops(db);
             TestClosestStopsAndRouting(db);
             //*/
-      //      TestPCS(db);
+            TestPCS(db);
         }
 
 
