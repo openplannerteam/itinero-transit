@@ -1,7 +1,8 @@
 using System;
+using Itinero.Transit.Logging;
 using Xunit.Abstractions;
 
-namespace Itinero.IO.LC.Tests
+namespace Itinero.Transit.Tests
 {
     public class SuperTest
     {
@@ -10,8 +11,13 @@ namespace Itinero.IO.LC.Tests
 
         public SuperTest(ITestOutputHelper output)
         {
-            
+
             _output = output;
+            Logger.LogAction = (origin, level, message, parameters) =>
+                {
+                    output.WriteLine($"[{level}] {origin}: {message}", parameters); 
+                };
+
         }
 
         protected void Tic()

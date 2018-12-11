@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Itinero.Transit;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
+using Itinero.Transit.Logging;
 
 namespace Itinero.IO.LC
 {
@@ -92,12 +94,11 @@ namespace Itinero.IO.LC
             new Dictionary<ulong, ParetoFrontier<T>>();
 
 
-
         public ProfiledConnectionScan(
             (uint, uint) departureStop,
             (uint, uint) arrivalStop,
             DateTime earliestDeparture, DateTime lastArrival,
-            Profile<T> profile):
+            Profile<T> profile) :
             this(departureStop, arrivalStop, earliestDeparture.ToUnixTime(), lastArrival.ToUnixTime(), profile)
         {
         }
@@ -149,24 +150,19 @@ namespace Itinero.IO.LC
                         "Could not calculate PCS: departure time not found. Either to little connections are loaded in the database, or the query is to far in the future or in the past");
                 }
             }
+
             enumerator.MovePrevious();
-            
-            
-            
+
 
             while (enumerator.DepartureTime >= _earliestDeparture)
             {
                 IntegrateBatch(enumerator);
             }
-            
-            
-            
-            
+
+
             // We have scanned all connections in the given timeframe
             // Time to extract the wanted journeys
             return _stationJourneys[_departureLocation]?.Frontier;
-
-
         }
 
 
@@ -208,22 +204,27 @@ namespace Itinero.IO.LC
                 return;
             }
 
+            Log.Information($"Handling connection {ConnectionExtensions.ToString(c)}");
 
             /*What if we went by foot after taking C?*/
             var journeyT1 = WalkToTargetFrom(c);
 
+            Log.Verbose($"Walking to target gave {journeyT1}");
+
             /*What are the optimal journeys when remaining seated on this connection?*/
             var journeyT2 = ExtendTrip(c);
 
+            Log.Verbose($"Extended trip gave {journeyT2}");
 
             /*What if we transfer in this station?
              */
             var journeyT3 = TransferAfter(c);
+            Log.Verbose($"Transfering gave {journeyT3}");
 
 
             /* Lets pick out the best journeys that have C in them*/
             var journeys = ParetoExtensions.PickBestJourneys(journeyT1, journeyT2, journeyT3);
-
+            Log.Verbose($"End result is {journeys}");
             /*
              We have handled this connection and have a few journeys containing C
              This means we can update the various tables for the rest of the algo.
@@ -232,7 +233,7 @@ namespace Itinero.IO.LC
              it'll know wat to do best
              */
             _tripJourneys[c.TripId] = journeys;
-            
+
             /*
              * And ofc, we have a pretty good way out from the departure stop as well
              */
@@ -240,6 +241,7 @@ namespace Itinero.IO.LC
             {
                 _stationJourneys[c.DepartureStop] = new ParetoFrontier<T>(_comparator);
             }
+
             _stationJourneys[c.DepartureStop].AddAllToFrontier(journeys.Frontier);
 
 
@@ -315,8 +317,8 @@ namespace Itinero.IO.LC
             // .. and we extend them with c. What is non-dominated, we return
             return pareto.ExtendFrontier(c, _transferPolicy);
         }
-        
-        
+
+
         /// <summary>
         /// When a departure stop can be reached by a new journey, each closeby stop can be reached via walking too
         /// This method creates all those footpaths and transfers 
@@ -327,7 +329,5 @@ namespace Itinero.IO.LC
         {
             // TODO incorporate intermodality
         }
-
-
     }
 }

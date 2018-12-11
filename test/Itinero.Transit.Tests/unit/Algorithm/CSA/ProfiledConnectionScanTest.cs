@@ -6,11 +6,16 @@ using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Itinero.Transit.Tests.unit.Algorithm.CSA
 {
-    public class ProfiledConnectionScanTest
+    public class ProfiledConnectionScanTest : SuperTest
     {
+        public ProfiledConnectionScanTest(ITestOutputHelper output) : base(output)
+        {
+        }
+        
         [Fact]
         public void TestPcsSimple()
         {
@@ -20,6 +25,8 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
                 db, Db.GetDefaultStopsDb(), new InternalTransferGenerator(60),
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
+            Pr("Starting PCS from (0,0) to (0,3)");
+            
             var pcs = new ProfiledConnectionScan<TransferStats>(
                 (0, 0), (0, 3),
                 new DateTime(2018, 12, 04, 16, 00, 00),
@@ -27,10 +34,20 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
                 profile);
 
             var journeys = pcs.CalculateJourneys();
-            Assert.True(journeys.Count() > 0);
+            
+            
+            Pr("---------------- DONE ----------------");
+            foreach (var j in journeys)
+            {
+                Pr(j.ToString());
+            }
+            
+            Assert.True(journeys.Count() == 2);
             
             
             
         }
+
+       
     }
 }

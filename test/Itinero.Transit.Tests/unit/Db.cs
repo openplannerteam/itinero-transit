@@ -13,25 +13,31 @@ namespace Itinero.IO.LC.Tests
                 new DateTime(2018, 12, 04, 16, 20, 00),
                 10 * 60, 0);
 
+
+
+            
+            
             connDb.Add((0, 1), (0, 2),
                 "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 16, 33, 00),
                 10 * 60, 1);
 
+            connDb.Add((0, 2), (0, 3),
+                "https://example.com/connections/3",
+                new DateTime(2018, 12, 04, 16, 46, 00),
+                10 * 60, 1);
 
             // Continues trip 0
             connDb.Add((0, 1), (0, 3),
                 "https://example.com/connections/2",
-                new DateTime(2018, 12, 04, 16, 23, 00),
+                new DateTime(2018, 12, 04, 16, 35, 00),
                 40 * 60, 0);
 
 
-            connDb.Add((0, 1), (0, 3),
-                "https://example.com/connections/3",
-                new DateTime(2018, 12, 04, 16, 25, 00),
-                10 * 60, 2);
-
-
+            
+            
+            
+            
             // We add a very early and late connection in order to be able to run the algos and not run out of connections
             connDb.Add((0, 10), (0, 11),
                 "https://example.com/connections/100",

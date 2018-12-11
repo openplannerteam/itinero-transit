@@ -40,5 +40,10 @@ namespace Itinero.Transit.Logging
         {
             Logger.Log(string.Empty, TraceEventType.Error, message);
         }
+
+        public static void Verbose(string message)
+        {
+            Logger.Log(string.Empty, TraceEventType.Verbose, message);
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using Itinero.Transit.IO.LC.CSA.Utils;
+using Itinero.Transit.Tests;
 using JsonLD.Core;
 using Xunit;
 using Xunit.Abstractions;

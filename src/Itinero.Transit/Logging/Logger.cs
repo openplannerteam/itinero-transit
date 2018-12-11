@@ -59,7 +59,7 @@ namespace Itinero.Transit.Logging
         }
 
         /// <summary>
-        /// Defines the log action function.
+        /// Defines the log action fuoriginoriginnction.
         /// </summary>
         /// <param name="origin">The origin of the message, a class or module name.</param>
         /// <param name="level">The level of the message, 'critical', 'error', 'warning', 'verbose' or 'information'.</param>

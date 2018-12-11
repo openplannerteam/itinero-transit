@@ -119,5 +119,18 @@ namespace Itinero.IO.LC
                 AddToFrontier(journey);
             }
         }
+
+
+        public override string ToString()
+        {
+            var result = $"Pareto frontier with {Frontier.Count} entries";
+
+            foreach (var j in Frontier)
+            {
+                result += "\n" + j;
+            }
+            
+            return result;
+        }
     }
 }

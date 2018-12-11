@@ -95,6 +95,32 @@ namespace Itinero.Transit.Journeys
             return
                 $"Stats: {NumberOfTransfers} transfers, {TravelTime} total time), {WalkingDistance}m to walk";
         }
+
+        protected bool Equals(TransferStats other)
+        {
+            return NumberOfTransfers == other.NumberOfTransfers
+                   && TravelTime == other.TravelTime
+                   && WalkingDistance.Equals(other.WalkingDistance);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((TransferStats) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (int) NumberOfTransfers;
+                hashCode = (hashCode * 397) ^ (int) TravelTime;
+                hashCode = (hashCode * 397) ^ WalkingDistance.GetHashCode();
+                return hashCode;
+            }
+        }
     }
 
 

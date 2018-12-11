@@ -1,4 +1,5 @@
 using Itinero.Transit.IO.LC.CSA.Utils;
+using Itinero.Transit.Tests;
 using Xunit;
 using Xunit.Abstractions;
 
