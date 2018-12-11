@@ -33,6 +33,9 @@ namespace Itinero.IO.LC
 
         private readonly T _statsFactory;
 
+        // Indicates if connections can not be taken due to external reasons (e.g. earlier scan)
+        private readonly IConnectionFilter _filter;
+
         /// <summary>
         /// Rules how much penalty is given to go from one connection to another
         /// </summary>
@@ -98,8 +101,9 @@ namespace Itinero.IO.LC
             (uint, uint) departureStop,
             (uint, uint) arrivalStop,
             DateTime earliestDeparture, DateTime lastArrival,
-            Profile<T> profile) :
-            this(departureStop, arrivalStop, earliestDeparture.ToUnixTime(), lastArrival.ToUnixTime(), profile)
+            Profile<T> profile,
+            IConnectionFilter filter = null) :
+            this(departureStop, arrivalStop, earliestDeparture.ToUnixTime(), lastArrival.ToUnixTime(), profile, filter)
         {
         }
 
@@ -110,7 +114,8 @@ namespace Itinero.IO.LC
             (uint, uint) departureStop,
             (uint, uint) arrivalStop,
             UnixTime earliestDeparture, UnixTime lastArrival,
-            Profile<T> profile)
+            Profile<T> profile,
+            IConnectionFilter filter = null)
         {
             if (Equals(departureStop, arrivalStop))
             {
@@ -134,7 +139,8 @@ namespace Itinero.IO.LC
             _empty = new ParetoFrontier<T>(_comparator);
             _statsFactory = profile.StatsFactory;
             _transferPolicy = profile.WalksGenerator;
-            
+            _filter = filter;
+            filter?.CheckWindow(_earliestDeparture, _lastArrival);
             Log.Information($"Searching PCS from {_departureLocation} to {_targetLocation}," +
                             $" time window is {DateTimeExtensions.FromUnixTime(_earliestDeparture):HH:mm} - {DateTimeExtensions.FromUnixTime(_lastArrival):HH:mm}");
         }
@@ -145,15 +151,7 @@ namespace Itinero.IO.LC
             var enumerator = _connectionsProvider.GetDepartureEnumerator();
 
             // Move the enumerator after the last arrival time
-            while (enumerator.DepartureTime < _lastArrival)
-            {
-                if (!enumerator.MoveNext())
-                {
-                    throw new Exception(
-                        "Could not calculate PCS: departure time not found. Either to little connections are loaded in the database, or the query is to far in the future or in the past");
-                }
-            }
-
+            enumerator.MovePrevious();
             while (enumerator.DepartureTime > _lastArrival)
             {
                 if (!enumerator.MovePrevious())
@@ -164,12 +162,13 @@ namespace Itinero.IO.LC
             }
 
 
-
             while (enumerator.DepartureTime >= _earliestDeparture)
             {
                 IntegrateBatch(enumerator);
             }
 
+            Log.Information(
+                $"PCS Done. Last enumerator time: {DateTimeExtensions.FromUnixTime(enumerator.DepartureTime):yyyy:MM:dd HH:mm}");
 
             // We have scanned all connections in the given timeframe
             // Time to extract the wanted journeys
@@ -204,6 +203,7 @@ namespace Itinero.IO.LC
                 {
                     throw new Exception("Enumerator depleted");
                 }
+
                 if (enumerator.Id == tripId)
                 {
                     throw new Exception("Stuck in a loop: we have reached the first element of the database");
@@ -229,8 +229,19 @@ namespace Itinero.IO.LC
             {
                 return;
             }
-            
-            Log.Verbose($"Connection departs at {DateTimeExtensions.FromUnixTime(c.DepartureTime): HH:mm}");
+
+            if (c.ArrivalTime > _lastArrival)
+            {
+                return;
+            }
+
+            if (_filter != null && !_filter.CanBeTaken(c))
+            {
+                return;
+            }
+
+            Log.Verbose(
+                $"Connection in integration departs at {DateTimeExtensions.FromUnixTime(c.DepartureTime):yyyy:MM:dd HH:mm}");
 
             /*What if we went by foot after taking C?*/
             var journeyT1 = WalkToTargetFrom(c);
@@ -269,7 +280,8 @@ namespace Itinero.IO.LC
             }
 
             _stationJourneys[c.DepartureStop].AddAllToFrontier(journeys.Frontier);
-            Log.Verbose($"Target station is reachable from {c.DepartureStop} at time {DateTimeExtensions.FromUnixTime(c.DepartureTime):HH:mm}");
+            Log.Verbose(
+                $"Target station is reachable from {c.DepartureStop} at time {DateTimeExtensions.FromUnixTime(c.DepartureTime):HH:mm}");
 
 
             /*We can arrive here quite optimally.
