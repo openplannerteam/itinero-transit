@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Itinero.IO.LC;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journeys;
@@ -30,24 +31,29 @@ namespace Itinero.Transit.Tests.Functional
             var db = IO.LC.LoadConnectionsTest.Default.Run((DateTime.Now.Date, new TimeSpan(1, 0, 0, 0)));
 
             // test enumerating a connections db.
-            Data.ConnectionsDbDepartureEnumeratorTest.Default.Run(db.connections);
 
-/*
+            Data.ConnectionsDbDepartureEnumeratorTest.Default.Run(db.connections);
             TestEAS(db);
-            TestClosestStops(db);
             TestClosestStopsAndRouting(db);
-            //*/
-      //      TestPCS(db);
+            TestPCS(db);
         }
 
 
         private static void TestPCS((ConnectionsDb connections, StopsDb stops) db)
         {
-            var journeys = ProfiledConnectionScanTest.Default.RunPerformance(
+            var journeys = ProfiledConnectionScanTest.Default.Run(
                 (db.connections, db.stops, BruggeUri,
                     GentUri,
-                    DateTime.Now.Date.AddHours(10)), 100
-            );
+                    DateTime.Now.Date.AddHours(10)));
+            
+            Log.Information($"Discovered {journeys.Count()} journeys");
+
+            foreach (var j in journeys)
+            {
+                Log.Information(j.ToString());
+            }
+            
+            
         }
 
         private static void TestClosestStopsAndRouting((ConnectionsDb connections, StopsDb stops) db)

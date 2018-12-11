@@ -13,7 +13,7 @@ namespace Itinero.Transit.Algorithms.CSA
     /// It will download only the linked connections it needs.
     /// It does _not_ use footpath interlinks (yet)
     /// </summary>
-    public class EarliestConnectionScan<T>
+    public class EarliestConnectionScan<T> : IConnectionFilter
         where T : IJourneyStats<T>
     {
         private readonly List<(uint localTileId, uint localId)> _userTargetLocation;
@@ -341,6 +341,36 @@ namespace Itinero.Transit.Algorithms.CSA
                 _s.ContainsKey(stop)
                     ? _s[stop]
                     : Journey<T>.InfiniteJourney;
+        }
+
+        public void CheckWindow(ulong depTime, ulong arrTime)
+        {
+            if (depTime < this._earliestDeparture)
+            {
+                throw new ArgumentException("This EAS can not be used as connection filter, the requesting algorithm needs connections before my scantime ");
+            }
+            
+            
+            if (arrTime > this._lastDeparture)
+            {
+                throw new ArgumentException("This EAS can not be used as connection filter, the requesting algorithm needs connections after my scantime ");
+            }
+        }
+
+        public bool CanBeTaken(IConnection c)
+        {
+            var depStation = c.DepartureStop;
+            if (!_s.ContainsKey(depStation))
+            {
+                return false;
+            }
+
+            // Is the moment we can realistically arrive at the station before this connection?
+            // If not, it is no use to take the train
+            return _s[depStation].Time <= c.DepartureTime;
+
+
+
         }
     }
 }

@@ -38,7 +38,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             // instantiate and run EAS.
             var pcs = new ProfiledConnectionScan<TransferStats>(
                 departure, arrival,
-                depTime, depTime.AddHours(8), p);
+                depTime, depTime.AddHours(2), p);
             var journeys = pcs.CalculateJourneys();
 
             // verify result.

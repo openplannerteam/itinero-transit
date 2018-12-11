@@ -33,6 +33,9 @@ namespace Itinero.IO.LC
 
         private readonly T _statsFactory;
 
+        // Indicates if connections can not be taken due to external reasons (e.g. earlier scan)
+        private readonly IConnectionFilter _filter;
+
         /// <summary>
         /// Rules how much penalty is given to go from one connection to another
         /// </summary>
@@ -98,8 +101,9 @@ namespace Itinero.IO.LC
             (uint, uint) departureStop,
             (uint, uint) arrivalStop,
             DateTime earliestDeparture, DateTime lastArrival,
-            Profile<T> profile) :
-            this(departureStop, arrivalStop, earliestDeparture.ToUnixTime(), lastArrival.ToUnixTime(), profile)
+            Profile<T> profile,
+            IConnectionFilter filter = null) :
+            this(departureStop, arrivalStop, earliestDeparture.ToUnixTime(), lastArrival.ToUnixTime(), profile, filter)
         {
         }
 
@@ -110,7 +114,8 @@ namespace Itinero.IO.LC
             (uint, uint) departureStop,
             (uint, uint) arrivalStop,
             UnixTime earliestDeparture, UnixTime lastArrival,
-            Profile<T> profile)
+            Profile<T> profile,
+            IConnectionFilter filter = null)
         {
             if (Equals(departureStop, arrivalStop))
             {
@@ -134,6 +139,10 @@ namespace Itinero.IO.LC
             _empty = new ParetoFrontier<T>(_comparator);
             _statsFactory = profile.StatsFactory;
             _transferPolicy = profile.WalksGenerator;
+            _filter = filter;
+            filter?.CheckWindow(_earliestDeparture, _lastArrival);
+            Log.Information($"Searching PCS from {_departureLocation} to {_targetLocation}," +
+                            $" time window is {DateTimeExtensions.FromUnixTime(_earliestDeparture):HH:mm} - {DateTimeExtensions.FromUnixTime(_lastArrival):HH:mm}");
         }
 
 
@@ -142,7 +151,8 @@ namespace Itinero.IO.LC
             var enumerator = _connectionsProvider.GetDepartureEnumerator();
 
             // Move the enumerator after the last arrival time
-            while (enumerator.DepartureTime < _lastArrival)
+            enumerator.MovePrevious();
+            while (enumerator.DepartureTime > _lastArrival)
             {
                 if (!enumerator.MovePrevious())
                 {
@@ -151,19 +161,24 @@ namespace Itinero.IO.LC
                 }
             }
 
-            enumerator.MovePrevious();
-
 
             while (enumerator.DepartureTime >= _earliestDeparture)
             {
                 IntegrateBatch(enumerator);
             }
 
+            Log.Information(
+                $"PCS Done. Last enumerator time: {DateTimeExtensions.FromUnixTime(enumerator.DepartureTime):yyyy:MM:dd HH:mm}");
 
             // We have scanned all connections in the given timeframe
             // Time to extract the wanted journeys
-            var journeys =  _stationJourneys[_departureLocation]?.Frontier;
-            var revJourneys=  new List<Journey<T>>();
+            if (!_stationJourneys.ContainsKey(_departureLocation))
+            {
+                return null;
+            }
+
+            var journeys = _stationJourneys[_departureLocation].Frontier;
+            var revJourneys = new List<Journey<T>>();
             foreach (var j in journeys)
             {
                 revJourneys.Add(j.Reversed());
@@ -184,7 +199,11 @@ namespace Itinero.IO.LC
             do
             {
                 IntegrateConnection(enumerator);
-                enumerator.MovePrevious();
+                if (!enumerator.MovePrevious())
+                {
+                    throw new Exception("Enumerator depleted");
+                }
+
                 if (enumerator.Id == tripId)
                 {
                     throw new Exception("Stuck in a loop: we have reached the first element of the database");
@@ -211,27 +230,35 @@ namespace Itinero.IO.LC
                 return;
             }
 
-            Log.Information($"Handling connection {ConnectionExtensions.ToString(c)}");
+            if (c.ArrivalTime > _lastArrival)
+            {
+                return;
+            }
+
+            if (_filter != null && !_filter.CanBeTaken(c))
+            {
+                return;
+            }
 
             /*What if we went by foot after taking C?*/
             var journeyT1 = WalkToTargetFrom(c);
 
-            Log.Verbose($"Walking to target gave {journeyT1}");
-
             /*What are the optimal journeys when remaining seated on this connection?*/
             var journeyT2 = ExtendTrip(c);
-
-            Log.Verbose($"Extended trip gave {journeyT2}");
 
             /*What if we transfer in this station?
              */
             var journeyT3 = TransferAfter(c);
-            Log.Verbose($"Transfering gave {journeyT3}");
-
 
             /* Lets pick out the best journeys that have C in them*/
-            var journeys = ParetoExtensions.PickBestJourneys(journeyT1, journeyT2, journeyT3);
-            Log.Verbose($"End result is {journeys}");
+            var journeys = PickBestJourneys(journeyT1, journeyT2, journeyT3);
+
+            if (journeys.Frontier.Count == 0)
+            {
+                // We can't take this connection to the destination in the first place
+                return;
+            }
+
             /*
              We have handled this connection and have a few journeys containing C
              This means we can update the various tables for the rest of the algo.
@@ -247,6 +274,8 @@ namespace Itinero.IO.LC
             if (!_stationJourneys.ContainsKey(c.DepartureStop))
             {
                 _stationJourneys[c.DepartureStop] = new ParetoFrontier<T>(_comparator);
+                Log.Verbose(
+                $"Target station is reachable from {c.DepartureStop} at time {DateTimeExtensions.FromUnixTime(c.DepartureTime):HH:mm}");
             }
 
             _stationJourneys[c.DepartureStop].AddAllToFrontier(journeys.Frontier);
@@ -335,6 +364,27 @@ namespace Itinero.IO.LC
         private void UpdateFootpaths(ParetoFrontier<T> journeys, (uint localTileId, uint localId) cDepartureStop)
         {
             // TODO incorporate intermodality
+        }
+
+
+        public ParetoFrontier<T> PickBestJourneys(Journey<T> j, ParetoFrontier<T> a, ParetoFrontier<T> b)
+        {
+            if (a.Frontier.Count == 0 && b.Frontier.Count == 0)
+            {
+                if (j == Journey<T>.InfiniteJourney)
+                {
+                    return _empty;
+                }
+
+                var front = new ParetoFrontier<T>(_comparator);
+                front.AddToFrontier(j);
+                return front;
+            }
+
+            var frontier = ParetoExtensions.Combine(a, b);
+            frontier.AddToFrontier(j);
+
+            return frontier;
         }
     }
 }

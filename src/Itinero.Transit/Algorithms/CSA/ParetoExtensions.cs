@@ -1,3 +1,4 @@
+using System.Linq;
 using Itinero.IO.LC;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
@@ -79,13 +80,6 @@ namespace Itinero.Transit.Algorithms.CSA
             return biggest;
         }
 
-        public static ParetoFrontier<T> PickBestJourneys<T>(Journey<T> j, ParetoFrontier<T> a, ParetoFrontier<T> b)
-            where T : IJourneyStats<T>
-        {
-            var frontier = Combine(a, b);
-            frontier.AddToFrontier(j);
 
-            return frontier;
-        }
     }
 }
