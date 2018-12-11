@@ -1,3 +1,5 @@
+using Itinero.Transit.Data.Attributes;
+
 namespace Itinero.Transit.Data
 {
     /// <summary>
@@ -11,15 +13,23 @@ namespace Itinero.Transit.Data
             this.Id = stop.Id;
             this.Longitude = stop.Longitude;
             this.Latitude = stop.Latitude;
+            if (this.Attributes != null)
+            {
+                this.Attributes = new AttributeCollection(this.Attributes);
+            }
         }
         
         internal Stop(string globalId, (uint tileId, uint localId) id,
-            double longitude, double latitude)
+            double longitude, double latitude, IAttributeCollection attributes)
         {
             this.GlobalId = globalId;
             this.Id = id;
             this.Longitude = longitude;
             this.Latitude = latitude;
+            if (attributes != null)
+            {
+                this.Attributes = new AttributeCollection(this.Attributes);
+            }
         }
         
         /// <summary>
@@ -41,10 +51,15 @@ namespace Itinero.Transit.Data
         /// Gets the latitude.
         /// </summary>
         public double Latitude { get; }
+        
+        /// <summary>
+        /// Gets the attributes.
+        /// </summary>
+        public IAttributeCollection Attributes { get; }
 
         public override string ToString()
         {
-            return $"{this.GlobalId} ({this.Id}-[{this.Longitude},{this.Latitude}])";
+            return $"{this.GlobalId} ({this.Id}-[{this.Longitude},{this.Latitude}]) {this.Attributes}";
         }
     }
 }

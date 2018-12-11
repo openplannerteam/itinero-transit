@@ -22,6 +22,7 @@ namespace Itinero.Transit.Data
         private readonly ArrayBase<uint> _stopIdPointersPerHash;
         private uint _stopIdLinkedListPointer = 0;
         private readonly ArrayBase<uint> _stopIdLinkedList;
+        
         private readonly AttributesIndex _attributes;
 
         /// <summary>
@@ -95,7 +96,6 @@ namespace Itinero.Transit.Data
             _stopIdLinkedList[_stopIdLinkedListPointer - 2] = localId;
             _stopIdLinkedList[_stopIdLinkedListPointer - 1] = _stopIdPointersPerHash[hash];
             _stopIdPointersPerHash[hash] = _stopIdLinkedListPointer - 3;
-            
 
             return (tileId, localId);
         }

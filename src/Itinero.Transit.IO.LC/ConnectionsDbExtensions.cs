@@ -19,14 +19,14 @@ namespace Itinero.Transit.IO.LC
         /// <param name="connectionsDb">The connections db.</param>
         /// <param name="profile">The profile.</param>
         /// <param name="stopsDb">The stops db.</param>
+        /// <param name="tripsDb">The trips db.</param>
         /// <param name="window">The window, a start time and duration.</param>
         public static void LoadConnections(this ConnectionsDb connectionsDb, 
-            CSA.Profile profile,
-            StopsDb stopsDb, (DateTime start, TimeSpan duration) window)
+            CSA.Profile profile, StopsDb stopsDb, TripsDb tripsDb, 
+                (DateTime start, TimeSpan duration) window)
         {
             var stopsDbReader = stopsDb.GetReader();
-
-            var trips = new Dictionary<string, uint>();
+            var tripsDbReader = tripsDb.GetReader();
 
             var connectionCount = 0;
             var stopCount = 0;
@@ -77,15 +77,19 @@ namespace Itinero.Transit.IO.LC
                     }
 
                     var tripUri = connection.Trip().ToString();
-                    if (!trips.TryGetValue(tripUri, out var tripId))
+                    var tripId = uint.MaxValue;
+                    if (!tripsDbReader.MoveTo(tripUri))
                     {
-                        tripId = (uint) trips.Count;
-                        trips[tripUri] = tripId;
+                        tripId = tripsDb.Add(tripUri);
                         tripsAdded++;
                         if (tripsAdded % 250 == 0)
                         {
                             Log.Information($"{tripsAdded} trips loaded in the DB so far");
                         }
+                    }
+                    else
+                    {
+                        tripId = tripsDbReader.Id;
                     }
 
                     var connectionId = connection.Id().ToString();

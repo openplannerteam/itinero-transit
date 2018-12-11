@@ -3,9 +3,9 @@ using Itinero.Transit.Data.Attributes;
 namespace Itinero.Transit.Data
 {
     /// <summary>
-    /// Abstract definition of a stop.
+    /// Abstract definition of a trip.
     /// </summary>
-    public interface IStop
+    public interface ITrip
     {
         /// <summary>
         /// Gets the global id.
@@ -15,17 +15,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// Gets the id.
         /// </summary>
-        (uint tileId, uint localId) Id { get; }
-        
-        /// <summary>
-        /// Gets the longitude.
-        /// </summary>
-        double Longitude { get; }
-        
-        /// <summary>
-        /// Gets the latitude.
-        /// </summary>
-        double Latitude { get; }
+        uint Id { get; }
         
         /// <summary>
         /// Gets the attributes.

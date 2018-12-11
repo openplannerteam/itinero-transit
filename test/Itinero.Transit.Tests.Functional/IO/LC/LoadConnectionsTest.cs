@@ -24,10 +24,11 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
 
             // create a stops db and connections db.
             var stopsDb = new StopsDb();
+            var tripsDb = new TripsDb();
             var connectionsDb = new ConnectionsDb();
 
             // load connections for the current day.
-            connectionsDb.LoadConnections(profile, stopsDb, (input.date, input.window));
+            connectionsDb.LoadConnections(profile, stopsDb, tripsDb, (input.date, input.window));
 
             return (connectionsDb, stopsDb);
         }
