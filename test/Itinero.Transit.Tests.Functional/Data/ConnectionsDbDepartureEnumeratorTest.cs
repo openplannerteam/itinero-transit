@@ -26,6 +26,13 @@ namespace Itinero.Transit.Tests.Functional.Data
             }
             Information($"Enumerated {ce} connections!");
 
+            while (departureEnumerator.MovePrevious())
+            {
+                tt -= departureEnumerator.TravelTime;
+                ce++;
+            }
+            Information($"Enumerated back, {tt}");
+
             return ce;
         }
     }

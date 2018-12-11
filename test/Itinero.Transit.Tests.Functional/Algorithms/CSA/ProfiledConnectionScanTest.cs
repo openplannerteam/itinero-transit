@@ -1,19 +1,25 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Itinero.IO.LC;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
 using Xunit;
 
+// ReSharper disable PossibleMultipleEnumeration
+
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
-    public class EarliestConnectionScanTest : FunctionalTest<Journey<TransferStats>, (ConnectionsDb connections, StopsDb
+    public class ProfiledConnectionScanTest : FunctionalTest<IEnumerable<Journey<TransferStats>>, (ConnectionsDb
+        connections, StopsDb
         stops,
         string departureStopId, string arrivalStopId, DateTime departureTime)>
     {
-        public static EarliestConnectionScanTest Default => new EarliestConnectionScanTest();
+        public static ProfiledConnectionScanTest Default => new ProfiledConnectionScanTest();
 
-        protected override Journey<TransferStats> Execute((ConnectionsDb connections, StopsDb stops,
+        protected override IEnumerable<Journey<TransferStats>> Execute((ConnectionsDb connections, StopsDb stops,
             string departureStopId, string arrivalStopId, DateTime departureTime) input)
         {
             var p = new Profile<TransferStats>(
@@ -30,15 +36,16 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var arrival = reader.Id;
 
             // instantiate and run EAS.
-            var eas = new EarliestConnectionScan<TransferStats>(
+            var pcs = new ProfiledConnectionScan<TransferStats>(
                 departure, arrival,
-                depTime, depTime.AddHours(24), p);
-            var journey = eas.CalculateJourney();
+                depTime, depTime.AddHours(8), p);
+            var journeys = pcs.CalculateJourneys();
 
             // verify result.
-            Assert.NotNull(journey);
+            Assert.NotNull(journeys);
+            True(journeys.Any());
 
-            return journey;
+            return journeys;
         }
     }
 }
