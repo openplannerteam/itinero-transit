@@ -842,15 +842,9 @@ namespace Itinero.Transit.Data
                         break;
                     }
 
-                    if (_window == uint.MaxValue)
-                    {
-                        // no window with data found.
-                        return false;
-                    }
-
                     // window changed.
                     _windowPosition = _windowSize - 1;
-                    _windowPointer = _db._departureWindowPointers[_window * 2 + _windowPosition];
+                    _windowPointer = _db._departureWindowPointers[_window * 2 + 0];
                 }
                 else
                 {
@@ -878,7 +872,7 @@ namespace Itinero.Transit.Data
 
                         // window changed.
                         _windowPosition = _windowSize - 1;
-                        _windowPointer = _db._departureWindowPointers[_window * 2 + _windowPosition];
+                        _windowPointer = _db._departureWindowPointers[_window * 2 + 0];
 
                         if (_windowPointer == uint.MaxValue)
                         {

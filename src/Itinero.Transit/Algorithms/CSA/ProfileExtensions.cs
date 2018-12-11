@@ -5,7 +5,7 @@ using Itinero.Transit.Journeys;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
-    public class ProfileExtensions
+    public static class ProfileExtensions
     {
         /// <summary>
         /// Calculates the profiles Journeys for the given coordinates.
@@ -23,17 +23,16 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public static IEnumerable<Journey<T>> CalculateJourneys<T>
-            (this Profile<T> profile, (uint, uint) depLocation, (uint, uint) arrivalLocaiton,
-            ulong startTime, ulong lastArrivalTime)
+        (this Profile<T> profile, (uint, uint) depLocation, (uint, uint) arrivalLocaiton,
+            ulong departureTime, ulong lastArrivalTime) where T : IJourneyStats<T>
         {
-            
-            
-            
-            
-            
-            
+            var eas = new EarliestConnectionScan<T>(
+                depLocation, arrivalLocaiton,
+                departureTime, lastArrivalTime,
+                profile
+            );
+            var earliestJourney = eas.CalculateJourney();
+            return null; // TODO
         }
-        
-        
     }
 }

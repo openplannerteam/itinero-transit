@@ -8,37 +8,29 @@ namespace Itinero.Transit.Tests.Data
     /// </summary>
     public class Connection : IConnection
     {
-        private readonly uint _id;
-        private readonly ulong _departureTime;
-        private readonly ulong _arrivalTime;
-        private readonly ushort _travelTime;
-        private readonly uint _tripId;
-        private readonly (uint localTileId, uint localId) _arrivalStop;
-        private readonly (uint localTileId, uint localId) _departureStop;
-
         public Connection(uint id, ulong departureTime, ulong arrivalTime, uint tripId, (uint localTileId, uint localId) arrivalStop, (uint localTileId, uint localId) departureStop)
         {
-            _id = id;
-            _departureTime = departureTime;
-            _arrivalTime = arrivalTime;
-            _travelTime = (ushort) (arrivalTime - departureTime);
-            _tripId = tripId;
-            _arrivalStop = arrivalStop;
-            _departureStop = departureStop;
+            Id = id;
+            DepartureTime = departureTime;
+            ArrivalTime = arrivalTime;
+            TravelTime = (ushort) (arrivalTime - departureTime);
+            TripId = tripId;
+            ArrivalStop = arrivalStop;
+            DepartureStop = departureStop;
         }
 
-        public uint Id => _id;
+        public uint Id { get; }
 
-        public ulong ArrivalTime => _arrivalTime;
+        public ulong ArrivalTime { get; }
 
-        public ulong DepartureTime => _departureTime;
+        public ulong DepartureTime { get; }
 
-        public ushort TravelTime => _travelTime;
+        public ushort TravelTime { get; }
 
-        public uint TripId => _tripId;
+        public uint TripId { get; }
 
-        public (uint localTileId, uint localId) DepartureStop => _departureStop;
+        public (uint localTileId, uint localId) DepartureStop { get; }
 
-        public (uint localTileId, uint localId) ArrivalStop => _arrivalStop;
+        public (uint localTileId, uint localId) ArrivalStop { get; }
     }
 }

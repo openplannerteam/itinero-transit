@@ -240,9 +240,6 @@ namespace Itinero.IO.LC
                 return;
             }
 
-            Log.Verbose(
-                $"Connection in integration departs at {DateTimeExtensions.FromUnixTime(c.DepartureTime):yyyy:MM:dd HH:mm}");
-
             /*What if we went by foot after taking C?*/
             var journeyT1 = WalkToTargetFrom(c);
 
@@ -277,11 +274,11 @@ namespace Itinero.IO.LC
             if (!_stationJourneys.ContainsKey(c.DepartureStop))
             {
                 _stationJourneys[c.DepartureStop] = new ParetoFrontier<T>(_comparator);
+                Log.Verbose(
+                $"Target station is reachable from {c.DepartureStop} at time {DateTimeExtensions.FromUnixTime(c.DepartureTime):HH:mm}");
             }
 
             _stationJourneys[c.DepartureStop].AddAllToFrontier(journeys.Frontier);
-            Log.Verbose(
-                $"Target station is reachable from {c.DepartureStop} at time {DateTimeExtensions.FromUnixTime(c.DepartureTime):HH:mm}");
 
 
             /*We can arrive here quite optimally.
