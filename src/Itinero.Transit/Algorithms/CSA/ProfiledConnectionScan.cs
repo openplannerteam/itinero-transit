@@ -167,9 +167,6 @@ namespace Itinero.IO.LC
                 IntegrateBatch(enumerator);
             }
 
-            Log.Information(
-                $"PCS Done. Last enumerator time: {DateTimeExtensions.FromUnixTime(enumerator.DepartureTime):yyyy:MM:dd HH:mm}");
-
             // We have scanned all connections in the given timeframe
             // Time to extract the wanted journeys
             if (!_stationJourneys.ContainsKey(_departureLocation))
@@ -274,8 +271,6 @@ namespace Itinero.IO.LC
             if (!_stationJourneys.ContainsKey(c.DepartureStop))
             {
                 _stationJourneys[c.DepartureStop] = new ParetoFrontier<T>(_comparator);
-                Log.Verbose(
-                $"Target station is reachable from {c.DepartureStop} at time {DateTimeExtensions.FromUnixTime(c.DepartureTime):HH:mm}");
             }
 
             _stationJourneys[c.DepartureStop].AddAllToFrontier(journeys.Frontier);

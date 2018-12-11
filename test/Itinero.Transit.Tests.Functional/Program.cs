@@ -10,6 +10,7 @@ using Itinero.Transit.Tests.Functional.Algorithms.Search;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
+using Xunit;
 
 namespace Itinero.Transit.Tests.Functional
 {
@@ -31,10 +32,11 @@ namespace Itinero.Transit.Tests.Functional
             var db = IO.LC.LoadConnectionsTest.Default.Run((DateTime.Now.Date, new TimeSpan(1, 0, 0, 0)));
 
             // test enumerating a connections db.
-
+/*
             Data.ConnectionsDbDepartureEnumeratorTest.Default.Run(db.connections);
             TestEAS(db);
             TestClosestStopsAndRouting(db);
+            //*/
             TestPCS(db);
         }
 
@@ -44,16 +46,25 @@ namespace Itinero.Transit.Tests.Functional
             var journeys = ProfiledConnectionScanTest.Default.Run(
                 (db.connections, db.stops, BruggeUri,
                     GentUri,
-                    DateTime.Now.Date.AddHours(10)));
-            
-            Log.Information($"Discovered {journeys.Count()} journeys");
-
-            foreach (var j in journeys)
-            {
-                Log.Information(j.ToString());
-            }
+                    DateTime.Now.Date.AddHours(10),
+                    DateTime.Now.Date.AddHours(12)));
+            Assert.True(journeys.Count() > 0);
             
             
+            journeys = ProfiledConnectionScanTest.Default.Run(
+                (db.connections, db.stops, BruggeUri,
+                    Poperinge,
+                    DateTime.Now.Date.AddHours(10),
+                    DateTime.Now.Date.AddHours(13)));
+            Assert.True(journeys.Count() > 0);
+            
+            
+            journeys = ProfiledConnectionScanTest.Default.Run(
+                (db.connections, db.stops, Poperinge,
+                    Vielsalm,
+                    DateTime.Now.Date.AddHours(10),
+                    DateTime.Now.Date.AddHours(20)));
+            Assert.True(journeys.Count() > 0);
         }
 
         private static void TestClosestStopsAndRouting((ConnectionsDb connections, StopsDb stops) db)
