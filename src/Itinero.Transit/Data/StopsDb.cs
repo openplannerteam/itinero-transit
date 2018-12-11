@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data.Tiles;
 using Reminiscence.Arrays;
 
@@ -13,18 +13,16 @@ namespace Itinero.Transit.Data
     /// </summary>
     public class StopsDb
     {
-        // needs to support:
-        // - lookup by global id.
-        // - lookup by location.
-
         private readonly TiledLocationIndex _stopLocations; // holds the stop location in a tiled way.
         private readonly int _stopIdHashSize = ushort.MaxValue;
-        private readonly ArrayBase<string> _stopIds; // holds the stop id's per stop.
+        private readonly ArrayBase<string> _stopIds; // holds the stop ids per stop.
+        private readonly ArrayBase<uint> _stopAttributeIds; // holds the stop attribute ids per stop.
 
         private const uint NoData = uint.MaxValue;
         private readonly ArrayBase<uint> _stopIdPointersPerHash;
         private uint _stopIdLinkedListPointer = 0;
         private readonly ArrayBase<uint> _stopIdLinkedList;
+        private readonly AttributesIndex _attributes;
 
         /// <summary>
         /// Creates a new stops database.
@@ -33,12 +31,14 @@ namespace Itinero.Transit.Data
         {
             _stopLocations = new TiledLocationIndex {Moved = this.Move};
             _stopIds = new MemoryArray<string>(0);
+            _stopAttributeIds = new MemoryArray<uint>(0);
             _stopIdPointersPerHash = new MemoryArray<uint>(_stopIdHashSize);
             for (var h = 0; h < _stopIdPointersPerHash.Length; h++)
             {
                 _stopIdPointersPerHash[h] = NoData;
             }
             _stopIdLinkedList = new MemoryArray<uint>(0);
+            _attributes = new AttributesIndex(AttributesIndexMode.ReverseStringIndexKeysOnly);
         }
 
         /// <summary>
@@ -52,10 +52,12 @@ namespace Itinero.Transit.Data
             while (_stopIds.Length <= to + count)
             {
                 _stopIds.Resize(_stopIds.Length + 1024);
+                _stopAttributeIds.Resize(_stopAttributeIds.Length + 1024);
             }
             for (var s = 0; s < count; s++)
             {
                 _stopIds[to + s] = _stopIds[from + s];
+                _stopAttributeIds[to + s] = _stopAttributeIds[from + s];
             }
         }
 
@@ -65,8 +67,9 @@ namespace Itinero.Transit.Data
         /// <param name="globalId">The global stop id.</param>
         /// <param name="longitude">The stop longitude.</param>
         /// <param name="latitude">The stop latitude.</param>
+        /// <param name="attributes">The stop attributes.</param>
         /// <returns>An internal id representing the stop in this transit db.</returns>
-        public (uint tileId, uint localId) Add(string globalId, double longitude, double latitude)
+        public (uint tileId, uint localId) Add(string globalId, double longitude, double latitude, IEnumerable<Attribute> attributes = null)
         {
             // store location.
             var (tileId, localId, dataPointer) = _stopLocations.Add(longitude, latitude);
@@ -75,8 +78,10 @@ namespace Itinero.Transit.Data
             while (_stopIds.Length <= dataPointer)
             {
                 _stopIds.Resize(_stopIds.Length + 1024);
+                _stopAttributeIds.Resize(_stopIds.Length + 1024);
             }
             _stopIds[dataPointer] = globalId;
+            _stopAttributeIds[dataPointer] = _attributes.Add(attributes);
 
             // add stop id to the index.
             _stopIdLinkedListPointer += 3;
@@ -90,6 +95,7 @@ namespace Itinero.Transit.Data
             _stopIdLinkedList[_stopIdLinkedListPointer - 2] = localId;
             _stopIdLinkedList[_stopIdLinkedListPointer - 1] = _stopIdPointersPerHash[hash];
             _stopIdPointersPerHash[hash] = _stopIdLinkedListPointer - 3;
+            
 
             return (tileId, localId);
         }
@@ -225,6 +231,11 @@ namespace Itinero.Transit.Data
             /// Gets the longitude.
             /// </summary>
             public double Longitude => _locationEnumerator.Longitude;
+
+            /// <summary>
+            /// Gets the attributes.
+            /// </summary>
+            public IAttributeCollection Attributes => _stopsDb._attributes.Get(_stopsDb._stopAttributeIds[_locationEnumerator.DataPointer]);
         }
     }
 }
