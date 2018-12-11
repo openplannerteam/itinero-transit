@@ -18,14 +18,14 @@ namespace Itinero.Transit.Tests.Functional.Data
             departureEnumerator.Reset();
             while (departureEnumerator.MoveNext())
             {
-//                    var departureDate = DateTimeExtensions.FromUnixTime(departureEnumerator.DepartureTime);
-//                    Log.Information($"Connection {departureEnumerator.GlobalId}: @{departureDate} " +
-//                                    $"({departureEnumerator.TravelTime}s [{departureEnumerator.DepartureStop} -> {departureEnumerator.ArrivalStop}])");
                 tt += departureEnumerator.TravelTime;
                 ce++;
             }
             Information($"Enumerated {ce} connections!");
 
+            // enumerate connections by departure time, but in reverse.
+            departureEnumerator = input.GetDepartureEnumerator();
+            departureEnumerator.Reset();
             while (departureEnumerator.MovePrevious())
             {
                 tt -= departureEnumerator.TravelTime;
