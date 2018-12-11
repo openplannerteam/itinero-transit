@@ -21,10 +21,6 @@ namespace Itinero.Transit.Tests.Functional.Data
             {
                 tt += departureEnumerator.TravelTime;
                 ce++;
-                if (ce > 1000)
-                {
-                    break;
-                }
             }
             Information($"Enumerated {ce} connections!");
 
@@ -36,7 +32,6 @@ namespace Itinero.Transit.Tests.Functional.Data
             {
                 tt -= departureEnumerator.TravelTime;
                 ce++;
-                Information($"{ConnectionExtensions.ToString(departureEnumerator)}");
             }
             Information($"Enumerated back, {tt}");
 

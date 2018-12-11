@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.IO.LC.CSA.ConnectionProviders;
 using Itinero.Transit.Logging;
+using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
 namespace Itinero.Transit.IO.LC
 {
@@ -46,8 +48,10 @@ namespace Itinero.Transit.IO.LC
                     (uint localTileId, uint localId) stop1InternalId;
                     if (!stopsDbReader.MoveTo(stop1Id))
                     {
-                        stop1InternalId = stopsDb.Add(stop1Id, stop1Location.Lon, stop1Location.Lat);
+                        stop1InternalId = stopsDb.Add(stop1Id, stop1Location.Lon, stop1Location.Lat, 
+                            new Attribute("name", stop1Location.Name));
                         stopCount++;
+                        Log.Information($"Added stop {stop1Location.Name}({stop1InternalId}).");
                     }
                     else
                     {
@@ -64,8 +68,10 @@ namespace Itinero.Transit.IO.LC
                     (uint localTileId, uint localId) stop2InternalId;
                     if (!stopsDbReader.MoveTo(stop2Id))
                     {
-                        stop2InternalId = stopsDb.Add(stop2Id, stop2Location.Lon, stop2Location.Lat);
+                        stop2InternalId = stopsDb.Add(stop2Id, stop2Location.Lon, stop2Location.Lat, 
+                            new Attribute("name", stop2Location.Name));
                         stopCount++;
+                        Log.Information($"Added stop {stop2Location.Name}({stop2InternalId}).");
                     }
                     else
                     {
@@ -80,7 +86,7 @@ namespace Itinero.Transit.IO.LC
                         tripsAdded++;
                         if (tripsAdded % 250 == 0)
                         {
-                        Log.Information($"{tripsAdded} trips loaded in the DB so far");
+                            Log.Information($"{tripsAdded} trips loaded in the DB so far");
                         }
                     }
 
