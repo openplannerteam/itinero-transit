@@ -22,6 +22,7 @@
 
 using System.Collections.Generic;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data.Tiles;
 using Xunit;
 // ReSharper disable UnusedVariable
@@ -100,23 +101,23 @@ namespace Itinero.Transit.Tests.Data
         }
 
         [Fact]
-        public void StopsDbEnumerator_ShouldMoveToGlobalId()
+        public void StopsDbEnumerator_ShouldAddAttributes()
         {
             var db = new StopsDb();
-            var id1 = db.Add("http://irail.be/stations/NMBS/008863354", 4.786863327026367, 51.26277419739382);
-            var id2 = db.Add("http://irail.be/stations/NMBS/008863008", 4.649276733398437, 51.345839804352885);
-            var id3 = db.Add("http://irail.be/stations/NMBS/008863009", 4.989852905273437, 51.22365776470275);
-            var id4 = db.Add("http://irail.be/stations/NMBS/008863010", 4.955863952636719, 51.3254629443313);
-            var id5 = db.Add("http://irail.be/stations/NMBS/008863011", 4.830207824707031, 51.37328062064337);
-            var id6 = db.Add("http://irail.be/stations/NMBS/008863012", 5.538825988769531, 51.177621156752494);
+            var id1 = db.Add("http://irail.be/stations/NMBS/008863354", 4.786863327026367, 51.26277419739382, new Attribute("name", "Jambes-Est"));
+            var id2 = db.Add("http://irail.be/stations/NMBS/008863008", 4.649276733398437, 51.345839804352885, new Attribute("name", "Namur"));
+            var id3 = db.Add("http://irail.be/stations/NMBS/008863009", 4.989852905273437, 51.22365776470275, new Attribute("name", "Genk"));
+            var id4 = db.Add("http://irail.be/stations/NMBS/008863010", 4.955863952636719, 51.3254629443313, new Attribute("name", "Antwerpen"));
+            var id5 = db.Add("http://irail.be/stations/NMBS/008863011", 4.830207824707031, 51.37328062064337, new Attribute("name", "Brussel-Zuid"));
+            var id6 = db.Add("http://irail.be/stations/NMBS/008863012", 5.538825988769531, 51.177621156752494, new Attribute("name", "Oostende"));
 
             var enumerator = db.GetReader();
             Assert.True(enumerator.MoveTo("http://irail.be/stations/NMBS/008863010"));
-            Assert.Equal(4.955863952636719, enumerator.Longitude, P);
-            Assert.Equal(51.32546294433130, enumerator.Latitude, P);
-            Assert.Equal(id4.tileId, enumerator.Id.tileId);
-            Assert.Equal(id4.localId, enumerator.Id.localId);
-            Assert.Equal("http://irail.be/stations/NMBS/008863010", enumerator.GlobalId);
+            Assert.Equal(new AttributeCollection(new Attribute("name", "Antwerpen")).ToString(), enumerator.Attributes.ToString());
+            Assert.True(enumerator.MoveTo("http://irail.be/stations/NMBS/008863012"));
+            Assert.Equal(new AttributeCollection(new Attribute("name", "Oostende")).ToString(), enumerator.Attributes.ToString());
+            Assert.True(enumerator.MoveTo("http://irail.be/stations/NMBS/008863354"));
+            Assert.Equal(new AttributeCollection(new Attribute("name", "Jambes-Est")).ToString(), enumerator.Attributes.ToString());
         }
     }
 }
