@@ -40,9 +40,11 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
             foreach (var j in journeys)
             {
                 Pr(j.ToString());
+                Assert.True(Equals(((uint) 0, (uint) 0), j.Root.Location));
+                Assert.True(Equals(((uint) 0, (uint) 3), j.Location));
             }
             
-            Assert.True(journeys.Count() == 2);
+            Assert.Equal(2, journeys.Count());
             
             
             

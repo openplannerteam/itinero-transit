@@ -162,7 +162,14 @@ namespace Itinero.IO.LC
 
             // We have scanned all connections in the given timeframe
             // Time to extract the wanted journeys
-            return _stationJourneys[_departureLocation]?.Frontier;
+            var journeys =  _stationJourneys[_departureLocation]?.Frontier;
+            var revJourneys=  new List<Journey<T>>();
+            foreach (var j in journeys)
+            {
+                revJourneys.Add(j.Reversed());
+            }
+
+            return revJourneys;
         }
 
 
