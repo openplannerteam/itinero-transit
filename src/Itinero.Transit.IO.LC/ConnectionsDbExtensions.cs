@@ -51,7 +51,6 @@ namespace Itinero.Transit.IO.LC
                         stop1InternalId = stopsDb.Add(stop1Id, stop1Location.Lon, stop1Location.Lat, 
                             new Attribute("name", stop1Location.Name));
                         stopCount++;
-                        Log.Information($"Added stop {stop1Location.Name}({stop1InternalId}).");
                     }
                     else
                     {
@@ -71,7 +70,6 @@ namespace Itinero.Transit.IO.LC
                         stop2InternalId = stopsDb.Add(stop2Id, stop2Location.Lon, stop2Location.Lat, 
                             new Attribute("name", stop2Location.Name));
                         stopCount++;
-                        Log.Information($"Added stop {stop2Location.Name}({stop2InternalId}).");
                     }
                     else
                     {
