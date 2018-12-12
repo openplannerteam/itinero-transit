@@ -102,14 +102,14 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
         }
 
 
-        public IEnumerable<IConnection> Connections()
+        public IEnumerable<LinkedConnection> Connections()
         {
             return new EnumeratorMerger(_sources, _startTime, _endTime);
         }
 
-        public IEnumerable<IConnection> ConnectionsReversed()
+        public IEnumerable<LinkedConnection> ConnectionsReversed()
         {
-            var cons = new List<IConnection>(Connections());
+            var cons = new List<LinkedConnection>(Connections());
             cons.Reverse();
             return cons;
         }
@@ -160,17 +160,17 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
     /// <summary>
     /// This enumerator takes multiple sources and takes the earliest departure of each
     /// </summary>
-    internal class EnumeratorMerger : IEnumerator<IConnection>, IEnumerable<IConnection>
+    internal class EnumeratorMerger : IEnumerator<LinkedConnection>, IEnumerable<LinkedConnection>
     {
-        public IConnection Current { get; private set; }
+        public LinkedConnection Current { get; private set; }
 
-        private readonly List<IEnumerator<IConnection>> _sources;
+        private readonly List<IEnumerator<LinkedConnection>> _sources;
 
         private readonly DateTime _startTime, _endTime;
 
         public EnumeratorMerger(IEnumerable<ITimeTable> sources, DateTime startTime, DateTime endTime)
         {
-            var sourcesList = new List<IEnumerator<IConnection>>();
+            var sourcesList = new List<IEnumerator<LinkedConnection>>();
             _startTime = startTime;
             _endTime = endTime;
 
@@ -203,7 +203,7 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
 
         public bool MoveNext()
         {
-            IEnumerator<IConnection> actualSource = null;
+            IEnumerator<LinkedConnection> actualSource = null;
             Current = null;
             for (var i = 0; i < _sources.Count; i++)
             {
@@ -254,7 +254,7 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
             }
         }
 
-        public IEnumerator<IConnection> GetEnumerator()
+        public IEnumerator<LinkedConnection> GetEnumerator()
         {
             return this;
         }

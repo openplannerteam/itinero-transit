@@ -70,7 +70,7 @@ namespace Itinero.IO.LC
         /// <returns>True if the journey was appended to the frontier</returns>
         public bool AddToFrontier(Journey<T> considered)
         {
-            if (considered == null || considered == Journey<T>.InfiniteJourney)
+            if (considered == null || ReferenceEquals(considered, Journey<T>.InfiniteJourney))
             {
                 return false;
             }

@@ -323,6 +323,20 @@ namespace Itinero.IO.LC
             var frontier = pareto.Frontier;
             for (var i = 0; i < frontier.Count; i++)
             {
+                if (!(frontier[i].Time >= c.ArrivalTime))
+                {
+                 /*  Log.Warning(
+                        $"This trip is nonlinear! TripId: {c.TripId}; the current connection {c.Id} arrives at {c.ArrivalTime} " +
+                        $"whereas the rest of the trip starts at {frontier[i].Time}");
+                        */
+                }
+
+                if (!(frontier[i].Location == c.ArrivalStop))
+                {
+                   /*Log.Warning($"This trip is loops! TripId: {c.TripId}; the current connection {c.Id} arrives at {c.ArrivalTime} " +
+                    $"whereas the rest of the trip starts at {frontier[i].Time}");*/
+                }
+
                 frontier[i] = frontier[i].ChainBackward(c);
             }
 

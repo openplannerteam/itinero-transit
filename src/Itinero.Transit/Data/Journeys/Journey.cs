@@ -182,7 +182,7 @@ namespace Itinero.Transit.Journeys
 
 
         /// <summary>
-        /// Chaining constructor
+        /// Chaining constructorChain
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
         public Journey<T> ChainSpecial(uint specialCode, UnixTime arrivalTime,
@@ -220,8 +220,6 @@ namespace Itinero.Transit.Journeys
         }
 
 
-        
-        
         /// <summary>
         /// Returns the trip id of the most recent connection which has a valid trip.
         /// </summary>
@@ -270,9 +268,15 @@ namespace Itinero.Transit.Journeys
                 return buildOn;
             }
 
-
-            buildOn = buildOn.Chain(PreviousLink.Connection, PreviousLink.Time, PreviousLink.Location,
-                PreviousLink.TripId);
+            if (SpecialConnection)
+            {
+                buildOn = buildOn.ChainSpecial(Connection, PreviousLink.Time, PreviousLink.Location);
+            }
+            else
+            {
+                buildOn = buildOn.Chain(Connection, PreviousLink.Time, PreviousLink.Location,
+                    TripId);
+            }
 
 
             return PreviousLink.Reversed(buildOn);
@@ -280,28 +284,38 @@ namespace Itinero.Transit.Journeys
 
         public override string ToString()
         {
+            return ToString(null);
+        }
+
+
+        public string ToString(StopsDb.StopsDbReader reader)
+        {
             var previous = "";
             if (PreviousLink != null && PreviousLink != this)
             {
-                previous = PreviousLink.ToString();
+                previous = PreviousLink.ToString(reader);
             }
 
-            return $"{previous}\n  {PartToString()}\n    {Stats} (Trip {TripId})";
+            return $"{previous}\n  {PartToString(reader)}\n    {Stats} (Trip {TripId})";
         }
 
-        public string PartToString()
+        private string PartToString(StopsDb.StopsDbReader reader)
         {
+            reader?.MoveTo(Location);
+            var location = Location.ToString();
+            reader?.Attributes?.TryGetValue("name", out location);
+
             if (SpecialConnection)
             {
                 switch (Connection)
                 {
                     case GENESIS:
-                        return $"Genesis at {Location}, time is {DateTimeExtensions.FromUnixTime(Time):HH:mm}";
+                        return $"Genesis at {location}, time is {DateTimeExtensions.FromUnixTime(Time):HH:mm}";
                     case WALK:
                         return
-                            $"Walk from {PreviousLink.Location} to {Location} in {Time - PreviousLink.Time} seconds";
+                            $"Walk to {location} in {Time - PreviousLink.Time} seconds";
                     case TRANSFER:
-                        return $"Transfer/Wait for {Time - PreviousLink.Time} seconds in {Location}";
+                        return $"Transfer/Wait for {Time - PreviousLink.Time} seconds in {location}";
                     case int.MaxValue:
                         return "Infinite journey";
                 }
@@ -309,7 +323,53 @@ namespace Itinero.Transit.Journeys
                 throw new ArgumentException($"Unknown Special Connection code {Connection}");
             }
 
-            return $"Connection {Connection} to {Location}, arriving at {DateTimeExtensions.FromUnixTime(Time):HH:mm}";
+            return $"Connection {Connection} to {location}, arriving at {DateTimeExtensions.FromUnixTime(Time):HH:mm}";
+        }
+
+
+        protected bool Equals(Journey<T> other)
+        {
+            if (ReferenceEquals(this, InfiniteJourney) || ReferenceEquals(other, InfiniteJourney))
+            {
+                return ReferenceEquals(this, other);
+            }
+
+            if (ReferenceEquals(PreviousLink, this))
+            {
+                return ReferenceEquals(this, other);
+            }
+
+            return SpecialConnection == other.SpecialConnection
+                   && Connection == other.Connection
+                   && Location.Equals(other.Location)
+                   && Time == other.Time
+                   && TripId == other.TripId
+                   && Equals(Stats, other.Stats)
+                   && Equals(PreviousLink, other.PreviousLink);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Journey<T>) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (Root != null ? Root.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (PreviousLink != null ? PreviousLink.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ SpecialConnection.GetHashCode();
+                hashCode = (hashCode * 397) ^ (int) Connection;
+                hashCode = (hashCode * 397) ^ Location.GetHashCode();
+                hashCode = (hashCode * 397) ^ Time.GetHashCode();
+                hashCode = (hashCode * 397) ^ (int) TripId;
+                hashCode = (hashCode * 397) ^ EqualityComparer<T>.Default.GetHashCode(Stats);
+                return hashCode;
+            }
         }
     }
 }

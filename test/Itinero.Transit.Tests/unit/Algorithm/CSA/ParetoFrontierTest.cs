@@ -21,15 +21,15 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
             Assert.True(frontier.AddToFrontier(j));
 
 
-            var direct = new Journey<TransferStats>((0, 0), 0, new TransferStats());
-            direct = direct.ChainForward(new Connection(2, 0, 40, 2, (0, 0), (0, 2)));
+            var direct = new Journey<TransferStats>((0, 0), 40, new TransferStats());
+            direct = direct.ChainBackward(new Connection(2, 0, 40, 2, (0, 0), (0, 2)));
             Assert.True(frontier.AddToFrontier(direct));
 
 
-            var trSlow = new Journey<TransferStats>((0, 0), 0, new TransferStats());
+            var trSlow = new Journey<TransferStats>((0, 0), 45, new TransferStats());
 
-            trSlow = trSlow.ChainForward(new Connection(0, 0, 10, 0, (0, 0), (0, 1)));
-            trSlow = trSlow.ChainForward(new Connection(1, 20, 45, 3, (0, 1), (0, 2)));
+            trSlow = trSlow.ChainBackward(new Connection(1, 20, 45, 3, (0, 1), (0, 2)));
+            trSlow = trSlow.ChainBackward(new Connection(0, 0, 10, 0, (0, 0), (0, 1)));
             Assert.False(frontier.AddToFrontier(trSlow));
         }
     }

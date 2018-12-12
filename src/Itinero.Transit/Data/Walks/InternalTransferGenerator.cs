@@ -27,7 +27,8 @@ namespace Itinero.Transit.Data.Walks
         /// <param name="locationNearHead"></param>
         /// <param name="tripId"></param>
         /// <returns></returns>
-        private Journey<T> CreateInternalTransfer<T>(Journey<T> buildOn, uint conn, ulong timeNearTransfer,
+        private Journey<T> CreateInternalTransfer<T>(Journey<T> buildOn, 
+            uint conn, ulong timeNearTransfer,
             ulong timeNearHead, (uint localTileId, uint localId) locationNearHead, uint tripId) where T : IJourneyStats<T>
         {
             ulong timeDiff;
@@ -44,6 +45,13 @@ namespace Itinero.Transit.Data.Walks
             if (timeDiff < _internalTransferTime)
             {
                 return null; // Too little time to transfer
+            }
+
+            if (buildOn.TripId == tripId)
+            {
+                // We don't really transfer
+                // The 'extend trip' parts of the algos should handle this
+                return null;
             }
 
             return buildOn.Transfer(conn, timeNearTransfer, timeNearHead, locationNearHead, tripId);

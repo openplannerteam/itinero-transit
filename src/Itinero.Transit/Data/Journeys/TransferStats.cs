@@ -92,8 +92,14 @@ namespace Itinero.Transit.Journeys
 
         public override string ToString()
         {
+            var seconds = TravelTime == uint.MaxValue ? 0 : TravelTime;
+            var hours = TravelTime / (60 * 60);
+            seconds = seconds % (60 * 60);
+            var minutes = seconds / 60;
+            seconds = seconds % 60;
+            
             return
-                $"Stats: {NumberOfTransfers} transfers, {TravelTime} total time), {WalkingDistance}m to walk";
+                $"Stats: {NumberOfTransfers} transfers, {hours}:{minutes}:{seconds} total time), {WalkingDistance}m to walk";
         }
 
         protected bool Equals(TransferStats other)
@@ -140,6 +146,9 @@ namespace Itinero.Transit.Journeys
         }
     }
 
+    /// <summary>
+    /// Compares two BACKWARDS journeys with each other
+    /// </summary>
     public class ProfileTransferCompare : ProfiledStatsComparator<TransferStats>
     {
         public override int ADominatesB(Journey<TransferStats> a, Journey<TransferStats> b)
@@ -183,8 +192,8 @@ namespace Itinero.Transit.Journeys
         private bool AIsBetterThenB(Journey<TransferStats> a, Journey<TransferStats> b)
         {
             return a.Stats.NumberOfTransfers < b.Stats.NumberOfTransfers
-                   || a.PreviousLink.Time > b.PreviousLink.Time
-                   || a.Time < b.Time;
+                   || a.Root.Time < b.Root.Time
+                   || a.Time > b.Time;
         }
     }
 

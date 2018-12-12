@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Itinero.IO.LC;
+using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
@@ -33,11 +34,13 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             True(reader.MoveTo(input.arrivalStopId));
             var arrival = reader.Id;
 
+            
+            
             // instantiate and run EAS.
-            var pcs = new ProfiledConnectionScan<TransferStats>(
-                departure, arrival,
-                input.departureTime, input.arrivalTime, p);
-            var journeys = pcs.CalculateJourneys();
+            var journeys = p.CalculateJourneys(
+                departure, arrival, input.departureTime.ToUnixTime(), input.arrivalTime.ToUnixTime()
+                );
+                
 
             // verify result.
             Assert.NotNull(journeys);

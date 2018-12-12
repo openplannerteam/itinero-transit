@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Itinero.Transit.IO.LC.CSA.Connections;
 
 namespace Itinero.Transit.IO.LC.CSA
 {
@@ -30,12 +31,12 @@ namespace Itinero.Transit.IO.LC.CSA
         /// Get all the connections, earliest departure first
         /// </summary>
         /// <returns></returns>
-        IEnumerable<IConnection> Connections();
+        IEnumerable<LinkedConnection> Connections();
         /// <summary>
         /// Get all the connections, latest departure time first
         /// </summary>
         /// <returns></returns>
-        IEnumerable<IConnection> ConnectionsReversed();
+        IEnumerable<LinkedConnection> ConnectionsReversed();
 
         string ToString(ILocationProvider locationDecoder);
         string ToString(ILocationProvider locationDecoder, List<Uri> stopsWhitelist);

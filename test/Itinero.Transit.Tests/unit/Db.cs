@@ -54,6 +54,7 @@ namespace Itinero.IO.LC.Tests
             return connDb;
         }
 
+        
 
         public static Transit.Data.IConnection GetConn(this ConnectionsDb db, uint id)
         {

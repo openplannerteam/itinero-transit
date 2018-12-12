@@ -4,6 +4,7 @@ using Itinero.IO.LC;
 using Itinero.Transit;
 using Itinero.Transit.IO.LC.CSA;
 using Itinero.Transit.IO.LC.CSA.ConnectionProviders;
+using Itinero.Transit.IO.LC.CSA.Connections;
 using Itinero.Transit.IO.LC.CSA.Utils;
 using Itinero.Transit.Tests;
 using Xunit;
@@ -35,8 +36,8 @@ namespace Itinero.IO.LC.Tests
 
 
             var tt = merged.GetTimeTable(moment);
-            IConnection prev = null;
-            var graph = new List<IConnection>(tt.Connections());
+            LinkedConnection prev = null;
+            var graph = new List<LinkedConnection>(tt.Connections());
             var seen = new HashSet<string>();
             foreach (var conn in graph)
             {
@@ -86,7 +87,7 @@ namespace Itinero.IO.LC.Tests
                 Assert.True(conn.DepartureTime() <= tt.EndTime());
             }
 
-            var graphR = new List<IConnection>(tt.ConnectionsReversed());
+            var graphR = new List<LinkedConnection>(tt.ConnectionsReversed());
 
             Assert.Equal(graph.Count(), graphR.Count());
 
@@ -116,8 +117,8 @@ namespace Itinero.IO.LC.Tests
             var tt = merged.GetTimeTable(moment);
 
 
-            var graph = new List<IConnection>(tt.Connections());
-            var graphR = new List<IConnection>(tt.ConnectionsReversed());
+            var graph = new List<LinkedConnection>(tt.Connections());
+            var graphR = new List<LinkedConnection>(tt.ConnectionsReversed());
 
             Assert.Equal(graph.Count(), graphR.Count);
 

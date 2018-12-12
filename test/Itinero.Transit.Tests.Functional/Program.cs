@@ -43,28 +43,40 @@ namespace Itinero.Transit.Tests.Functional
 
         private static void TestPCS((ConnectionsDb connections, StopsDb stops) db)
         {
+            /*
             var journeys = ProfiledConnectionScanTest.Default.Run(
                 (db.connections, db.stops, BruggeUri,
                     GentUri,
                     DateTime.Now.Date.AddHours(10),
                     DateTime.Now.Date.AddHours(12)));
-            Assert.True(journeys.Count() > 0);
-            
-            
+            Assert.True(journeys.Any());
+            PrintJourneys(journeys, db.stops);
             journeys = ProfiledConnectionScanTest.Default.Run(
                 (db.connections, db.stops, BruggeUri,
                     Poperinge,
                     DateTime.Now.Date.AddHours(10),
                     DateTime.Now.Date.AddHours(13)));
-            Assert.True(journeys.Count() > 0);
-            
-            
-            journeys = ProfiledConnectionScanTest.Default.Run(
-                (db.connections, db.stops, Poperinge,
-                    Vielsalm,
-                    DateTime.Now.Date.AddHours(10),
-                    DateTime.Now.Date.AddHours(20)));
-            Assert.True(journeys.Count() > 0);
+            Assert.True(journeys.Any());
+            PrintJourneys(journeys, db.stops);
+         */
+            var
+                journeys = ProfiledConnectionScanTest.Default.Run(
+                    (db.connections, db.stops, Poperinge,
+                        Vielsalm,
+                        DateTime.Now.Date.AddHours(10),
+                        DateTime.Now.Date.AddHours(20)));
+            Assert.True(journeys.Any());
+            PrintJourneys(journeys, db.stops);
+        }
+
+        private static void PrintJourneys<T>(IEnumerable<Journey<T>> journeys, StopsDb stops) where T : IJourneyStats<T>
+        {
+            foreach (var j in journeys)
+            {
+                //Log.Information(j.ToString(stops.GetReader()));
+                Log.Information($"{DateTimeExtensions.FromUnixTime(j.Root.Time):HH:mm} {j.Stats.ToString()}");
+            }
+            Log.Information($"Found {journeys.Count()} journeys");
         }
 
         private static void TestClosestStopsAndRouting((ConnectionsDb connections, StopsDb stops) db)

@@ -17,8 +17,8 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
 
         private DateTime _startTime, _endTime;
 
-        private List<IConnection> Graph { get; set; }
-        [NonSerializedAttribute] private List<IConnection> _reversedGraph;
+        private List<LinkedConnection> Graph { get; set; }
+        [NonSerializedAttribute] private List<LinkedConnection> _reversedGraph;
 
         public LinkedTimeTable(Uri uri) : base(uri)
         {
@@ -45,7 +45,7 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
             _endTime = _extractTime(Next);
 
 
-            Graph = new List<IConnection>();
+            Graph = new List<LinkedConnection>();
             var jsonGraph = json["@graph"];
             foreach (var conn in jsonGraph)
             {
@@ -138,16 +138,16 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
             return Prev;
         }
 
-        public IEnumerable<IConnection> Connections()
+        public IEnumerable<LinkedConnection> Connections()
         {
             return Graph;
         }
 
-        public IEnumerable<IConnection> ConnectionsReversed()
+        public IEnumerable<LinkedConnection> ConnectionsReversed()
         {
             if (_reversedGraph == null)
             {
-                _reversedGraph = new List<IConnection>(Graph);
+                _reversedGraph = new List<LinkedConnection>(Graph);
                 _reversedGraph.Reverse();
             }
 

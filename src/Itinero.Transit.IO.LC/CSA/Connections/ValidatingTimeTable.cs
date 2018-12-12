@@ -21,12 +21,12 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
         }
 
 
-        public IEnumerable<IConnection> Connections()
+        public IEnumerable<LinkedConnection> Connections()
         {
             return new ValidatingEnumerable(_backdrop.Connections(), _backdrop, _locations);
         }
 
-        public IEnumerable<IConnection> ConnectionsReversed()
+        public IEnumerable<LinkedConnection> ConnectionsReversed()
         {
             return new ValidatingEnumerable(_backdrop.ConnectionsReversed(), _backdrop, _locations);
         }
@@ -78,20 +78,20 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
         }
     }
 
-    internal class ValidatingEnumerable : IEnumerable<IConnection>
+    internal class ValidatingEnumerable : IEnumerable<LinkedConnection>
     {
-        private readonly IEnumerable<IConnection> _backdrop;
+        private readonly IEnumerable<LinkedConnection> _backdrop;
         private readonly ITimeTable _source;
         private readonly ILocationProvider _locations;
 
-        public ValidatingEnumerable(IEnumerable<IConnection> backdrop, ITimeTable source, ILocationProvider locations)
+        public ValidatingEnumerable(IEnumerable<LinkedConnection> backdrop, ITimeTable source, ILocationProvider locations)
         {
             _backdrop = backdrop;
             _source = source;
             _locations = locations;
         }
 
-        public IEnumerator<IConnection> GetEnumerator()
+        public IEnumerator<LinkedConnection> GetEnumerator()
         {
             return new ValidatingEnumerator(_source, _backdrop.GetEnumerator(), _locations);
         }
@@ -103,14 +103,14 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
     }
 
 
-    internal class ValidatingEnumerator : IEnumerator<IConnection>
+    internal class ValidatingEnumerator : IEnumerator<LinkedConnection>
     {
         private readonly ITimeTable _source;
-        private readonly IEnumerator<IConnection> _backdrop;
-        private readonly HashSet<IConnection> _alreadySeen = new HashSet<IConnection>();
+        private readonly IEnumerator<LinkedConnection> _backdrop;
+        private readonly HashSet<LinkedConnection> _alreadySeen = new HashSet<LinkedConnection>();
         private readonly ILocationProvider _location;
 
-        public ValidatingEnumerator(ITimeTable source, IEnumerator<IConnection> backdrop, ILocationProvider location)
+        public ValidatingEnumerator(ITimeTable source, IEnumerator<LinkedConnection> backdrop, ILocationProvider location)
         {
             _source = source;
             _backdrop = backdrop;
@@ -118,7 +118,7 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
         }
 
 
-        private bool IsValid(IConnection current)
+        private bool IsValid(LinkedConnection current)
         {
 
             if (_alreadySeen.Contains(current))
@@ -163,7 +163,7 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
             _backdrop.Reset();
         }
 
-        public IConnection Current { get; private set; }
+        public LinkedConnection Current { get; private set; }
 
         object IEnumerator.Current => Current;
 

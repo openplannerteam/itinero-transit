@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Itinero.IO.LC;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journeys;
 
@@ -31,8 +32,20 @@ namespace Itinero.Transit.Algorithms.CSA
                 departureTime, lastArrivalTime,
                 profile
             );
-            var earliestJourney = eas.CalculateJourney();
-            return null; // TODO
+            var earliestJourney = eas.CalculateJourney(
+                (d, d0) => lastArrivalTime
+                );
+
+            var pcs = new ProfiledConnectionScan<T>(
+                depLocation, arrivalLocaiton,
+                departureTime, lastArrivalTime,
+                profile,
+                eas
+            );
+            
+            
+            
+            return pcs.CalculateJourneys(); 
         }
     }
 }

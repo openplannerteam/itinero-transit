@@ -14,7 +14,7 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
      * Note that a connection does _never_ have intermediate stops.
      */
     [Serializable()]
-    internal class LinkedConnection : LinkedObject, IConnection
+    public class LinkedConnection : LinkedObject
     {
         private Uri _departureStop;
         private Uri _arrivalStop;
