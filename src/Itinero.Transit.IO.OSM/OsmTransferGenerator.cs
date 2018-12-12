@@ -122,7 +122,7 @@ namespace Itinero.Transit
             }
 
             var withWalk = buildOn.ChainSpecial(
-                Journey<T>.WALK, (uint) (buildOn.Time + route.TotalDistance), c.DepartureStop);
+                Journey<T>.WALK, (uint) (buildOn.Time + route.TotalDistance), c.DepartureStop, uint.MaxValue);
             return withWalk.ChainForward(c);
         }
 
@@ -150,7 +150,7 @@ namespace Itinero.Transit
 
 
             var withWalk = buildOn.ChainSpecial(
-                Journey<T>.WALK, (uint) (c.ArrivalTime + route.TotalTime), c.ArrivalStop);
+                Journey<T>.WALK, (uint) (c.ArrivalTime + route.TotalTime), c.ArrivalStop, uint.MaxValue);
             return withWalk.ChainBackward(c);
         }
     }

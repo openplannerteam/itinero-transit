@@ -81,7 +81,7 @@ namespace Itinero.Transit.Tests.Data
 
             j = j.ChainSpecial(Journey<TransferStats>.TRANSFER,
                 new DateTime(2018, 12, 04, 16, 30, 00).ToUnixTime(),
-                (0, 1));
+                (0, 1), uint.MaxValue);
 
             reader.MoveTo(c0);
             j = j.ChainBackward(reader);

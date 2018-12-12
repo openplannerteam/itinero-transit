@@ -186,10 +186,10 @@ namespace Itinero.Transit.Journeys
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
         public Journey<T> ChainSpecial(uint specialCode, UnixTime arrivalTime,
-            (uint localTileId, uint localId) location)
+            (uint localTileId, uint localId) location, uint tripId)
         {
             return new Journey<T>(
-                Root, this, true, specialCode, location, arrivalTime, uint.MaxValue, Stats);
+                Root, this, true, specialCode, location, arrivalTime, tripId, Stats);
         }
 
         /// <summary>
@@ -270,7 +270,7 @@ namespace Itinero.Transit.Journeys
 
             if (SpecialConnection)
             {
-                buildOn = buildOn.ChainSpecial(Connection, PreviousLink.Time, PreviousLink.Location);
+                buildOn = buildOn.ChainSpecial(Connection, PreviousLink.Time, PreviousLink.Location, PreviousLink.TripId);
             }
             else
             {
@@ -280,6 +280,40 @@ namespace Itinero.Transit.Journeys
 
 
             return PreviousLink.Reversed(buildOn);
+        }
+
+
+        public Journey<T> Pruned()
+        {
+            var restOfTheJourney = PreviousLink.PrunedWithoutLast();
+            return restOfTheJourney.Chain(Connection, Time, Location, TripId);
+        }
+
+        /// <summary>
+        /// Creates a new journey, where only important stops are retained. The intermediate stops are scrapped
+        /// </summary>
+        /// <returns></returns>
+        private Journey<T> PrunedWithoutLast()
+        {
+            if (SpecialConnection && Connection == GENESIS)
+            {
+                return this;
+            }
+
+            if (SpecialConnection)
+            {
+                var restOfTheJourney = PreviousLink.PrunedWithoutLast();
+                return restOfTheJourney.ChainSpecial(Connection, Time, Location, PreviousLink.TripId);
+            }
+
+         /*   if (PreviousLink.SpecialConnection)
+            {
+                var restOfTheJourney = PreviousLink.PrunedWithoutLast();
+                return restOfTheJourney.Chain(Connection, Time, Location, TripId);
+            }*/
+
+
+            return PreviousLink.PrunedWithoutLast();
         }
 
         public override string ToString()
@@ -313,9 +347,9 @@ namespace Itinero.Transit.Journeys
                         return $"Genesis at {location}, time is {DateTimeExtensions.FromUnixTime(Time):HH:mm}";
                     case WALK:
                         return
-                            $"Walk to {location} in {Time - PreviousLink.Time} seconds";
+                            $"Walk to {location} in {Time - PreviousLink.Time} till {DateTimeExtensions.FromUnixTime(Time):HH:mm} seconds";
                     case TRANSFER:
-                        return $"Transfer/Wait for {Time - PreviousLink.Time} seconds in {location}";
+                        return $"Transfer/Wait for {Time - PreviousLink.Time} seconds till {DateTimeExtensions.FromUnixTime(Time):HH:mm} in {location}";
                     case int.MaxValue:
                         return "Infinite journey";
                 }
