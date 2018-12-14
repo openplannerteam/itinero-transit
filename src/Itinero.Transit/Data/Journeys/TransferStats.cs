@@ -102,7 +102,7 @@ namespace Itinero.Transit.Journeys
                 $"Stats: {NumberOfTransfers} transfers, {hours}:{minutes}:{seconds} total time), {WalkingDistance}m to walk";
         }
 
-        protected bool Equals(TransferStats other)
+        private bool Equals(TransferStats other)
         {
             return NumberOfTransfers == other.NumberOfTransfers
                    && TravelTime == other.TravelTime
@@ -113,7 +113,7 @@ namespace Itinero.Transit.Journeys
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((TransferStats) obj);
         }
 

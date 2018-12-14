@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json.Linq;
 
 namespace Itinero.Transit.IO.LC.CSA.LocationProviders
@@ -22,10 +21,6 @@ namespace Itinero.Transit.IO.LC.CSA.LocationProviders
             new Dictionary<string, HashSet<Location>>();
 
         private float _minLat, _maxLat, _minLon, _maxLon;
-
-        private static readonly IEnumerable<Uri> Empty = new List<Uri>();
-
-        //[NonSerialized] private BoundingBox _bounds;
 
         public LocationsFragment(Uri uri) : base(uri)
         {

@@ -1,30 +1,27 @@
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using Itinero.IO.LC;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journeys;
-using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
     public static class ProfileExtensions
     {
-        /// <summary>
-        /// Calculates the profiles Journeys for the given coordinates.
-        ///
-        /// Starts with an EAS, then gives profiled journeys.
-        ///
-        /// Note that the profile scan might scan in a window far smaller then the last-arrivaltime
+        ///  <summary>
+        ///  Calculates the profiles Journeys for the given coordinates.
         /// 
-        /// </summary>
-        /// <param name="profile"></param>
-        /// <param name="depLocation"></param>
-        /// <param name="arrivalLocaiton"></param>
-        /// <param name="startTime"></param>
+        ///  Starts with an EAS, then gives profiled journeys.
+        /// 
+        ///  Note that the profile scan might scan in a window far smaller then the last-arrivaltime
+        ///  
+        ///  </summary>
+        ///  <param name="profile"></param>
+        ///  <param name="depLocation"></param>
+        ///  <param name="arrivalLocaiton"></param>
+        /// <param name="departureTime"></param>
         /// <param name="lastArrivalTime"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        ///  <typeparam name="T"></typeparam>
+        ///  <returns></returns>
         public static IEnumerable<Journey<T>> CalculateJourneys<T>
         (this Profile<T> profile, (uint, uint) depLocation, (uint, uint) arrivalLocaiton,
             ulong departureTime, ulong lastArrivalTime) where T : IJourneyStats<T>

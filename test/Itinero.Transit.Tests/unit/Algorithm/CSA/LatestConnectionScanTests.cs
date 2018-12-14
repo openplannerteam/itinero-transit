@@ -27,24 +27,24 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
                 TransferStats.ProfileTransferCompare
             );
 
-            var Las = new LatestConnectionScan<TransferStats>(
+            var las = new LatestConnectionScan<TransferStats>(
                 (0, 0), (0, 1),
                 new DateTime(2018, 12, 04, 16, 00, 00), new DateTime(2018, 12, 04, 18, 00, 00),
                 profile
             );
 
-            var j = Las.CalculateJourney();
+            var j = las.CalculateJourney();
 
             Assert.NotNull(j);
             Assert.Equal((uint) 0, j.Connection);
 
 
-            Las = new LatestConnectionScan<TransferStats>(
+            las = new LatestConnectionScan<TransferStats>(
                 (0, 0), (0, 2), db.GetConn(0).DepartureTime, db.GetConn(0).DepartureTime + 60 * 60 * 2,
                 profile
             );
 
-            j = Las.CalculateJourney();
+            j = las.CalculateJourney();
 
             Assert.NotNull(j);
             Assert.Equal((uint) 1, j.Connection);
@@ -70,10 +70,10 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
             var profile = new Profile<TransferStats>(
                 connectionsDb, stopsDb, new InternalTransferGenerator(), new TransferStats(),
                 TransferStats.ProfileTransferCompare);
-            var Las = new LatestConnectionScan<TransferStats>(
+            var las = new LatestConnectionScan<TransferStats>(
                 stop1, stop2, new DateTime(2018, 12, 04, 16, 00, 00), new DateTime(2018, 12, 04, 19, 00, 00),
                 profile);
-            var journey = Las.CalculateJourney();
+            var journey = las.CalculateJourney();
 
             Assert.NotNull(journey);
             Assert.Equal(2, journey.AllParts().Count());

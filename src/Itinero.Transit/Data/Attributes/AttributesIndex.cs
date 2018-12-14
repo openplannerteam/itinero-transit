@@ -17,13 +17,15 @@ namespace Itinero.Transit.Data.Attributes
         private readonly Index<string> _stringIndex;
         private readonly Index<int[]> _collectionIndex;
         private readonly ArrayBase<uint> _index;
-        private bool _isReadonly = false;
+        private bool _isReadonly;
         private readonly AttributesIndexMode _mode;
+        // ReSharper disable once InconsistentNaming
         private const uint NULL_ATTRIBUTES = 0;
+        // ReSharper disable once InconsistentNaming
         private const uint EMPTY_ATTRIBUTES = 1;
 
-        private System.Collections.Generic.IDictionary<string, int> _stringReverseIndex; // Holds all strings and their id.
-        private System.Collections.Generic.IDictionary<int[], uint> _collectionReverseIndex; // Holds all tag collections and their reverse index.
+        private IDictionary<string, int> _stringReverseIndex; // Holds all strings and their id.
+        private IDictionary<int[], uint> _collectionReverseIndex; // Holds all tag collections and their reverse index.
 
         /// <summary>
         /// Creates a new empty index.
@@ -47,11 +49,11 @@ namespace Itinero.Transit.Data.Attributes
             if ((_mode & AttributesIndexMode.ReverseStringIndex) == AttributesIndexMode.ReverseStringIndex ||
                 (_mode & AttributesIndexMode.ReverseStringIndexKeysOnly) == AttributesIndexMode.ReverseStringIndexKeysOnly)
             {
-                _stringReverseIndex = new System.Collections.Generic.Dictionary<string, int>();
+                _stringReverseIndex = new Dictionary<string, int>();
             }
             if ((_mode & AttributesIndexMode.ReverseCollectionIndex) == AttributesIndexMode.ReverseCollectionIndex)
             {
-                _collectionReverseIndex = new System.Collections.Generic.Dictionary<int[], uint>(new EqualityComparer());
+                _collectionReverseIndex = new Dictionary<int[], uint>(new EqualityComparer());
             }
         }
 
@@ -260,8 +262,8 @@ namespace Itinero.Transit.Data.Attributes
             var sortedSet = new SortedSet<long>();
             foreach (var tag in tags)
             {
-                sortedSet.Add((long) this.AddString(tag.Key, true) +
-                    (long) int.MaxValue * (long) this.AddString(tag.Value, false));
+                sortedSet.Add(AddString(tag.Key, true) +
+                    int.MaxValue * (long) AddString(tag.Value, false));
             }
 
             // sort keys.
@@ -276,7 +278,7 @@ namespace Itinero.Transit.Data.Attributes
             }
 
             // add sorted collection.
-            return this.AddCollection(sorted);
+            return AddCollection(sorted);
         }
 
         /// <summary>
@@ -396,7 +398,7 @@ namespace Itinero.Transit.Data.Attributes
             /// <summary>
             /// Returns the enumerator for this enumerable.
             /// </summary>
-            public System.Collections.Generic.IEnumerator<Attribute> GetEnumerator()
+            public IEnumerator<Attribute> GetEnumerator()
             {
                 return new InternalTagsEnumerator(_stringIndex, _tags);
             }
@@ -406,7 +408,7 @@ namespace Itinero.Transit.Data.Attributes
             /// </summary>
             IEnumerator IEnumerable.GetEnumerator()
             {
-                return this.GetEnumerator();
+                return GetEnumerator();
             }
 
             /// <summary>
@@ -431,7 +433,7 @@ namespace Itinero.Transit.Data.Attributes
         /// <summary>
         /// An internal implementation of an attribute enumerator.
         /// </summary>
-        private class InternalTagsEnumerator : System.Collections.Generic.IEnumerator<Attribute>
+        private class InternalTagsEnumerator : IEnumerator<Attribute>
         {
             private Index<string> _stringIndex; // Holds the string index.
             private int[] _tags; // Holds the tags.
@@ -463,7 +465,7 @@ namespace Itinero.Transit.Data.Attributes
             /// <summary>
             /// Returns the current tag.
             /// </summary>
-            object System.Collections.IEnumerator.Current => new Attribute()
+            object IEnumerator.Current => new Attribute()
             {
                 Key = _stringIndex.Get(_tags[_idx]),
                 Value = _stringIndex.Get(_tags[_idx + 1])
@@ -550,7 +552,7 @@ namespace Itinero.Transit.Data.Attributes
             long position = 1;
             var version = stream.ReadByte();
 
-            var type = 0;
+            int type;
             if (version < 2)
             { // unversioned version.
                 type = (byte) version;

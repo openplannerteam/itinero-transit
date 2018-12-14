@@ -13,7 +13,7 @@ namespace Itinero.Transit.IO.Json
         /// </summary>
         public static string Escape(string s)
         {
-            if (s == null || s.Length == 0)
+            if (string.IsNullOrEmpty(s))
             {
                 return "";
             }

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Itinero.Transit;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
-using Itinero.Transit.Logging;
 
 namespace Itinero.IO.LC
 {
@@ -378,7 +376,7 @@ namespace Itinero.IO.LC
         {
             if (a.Frontier.Count == 0 && b.Frontier.Count == 0)
             {
-                if (j == Journey<T>.InfiniteJourney)
+                if (ReferenceEquals(j, Journey<T>.InfiniteJourney))
                 {
                     return _empty;
                 }

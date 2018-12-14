@@ -1,4 +1,3 @@
-using System;
 using Itinero.Transit.Logging;
 using Xunit.Abstractions;
 
@@ -7,7 +6,6 @@ namespace Itinero.Transit.Tests
     public class SuperTest
     {
         private readonly ITestOutputHelper _output;
-        private DateTime? startTime;
 
         public SuperTest(ITestOutputHelper output)
         {
@@ -18,19 +16,6 @@ namespace Itinero.Transit.Tests
                     output.WriteLine($"[{level}] {origin}: {message}", parameters); 
                 };
 
-        }
-
-        protected void Tic()
-        {
-            startTime = DateTime.Now;
-        }
-
-        protected double Toc()
-        {
-            var endTime = DateTime.Now;
-            var result = (endTime - startTime)?.TotalMilliseconds;
-            startTime = null;
-            return (double) result;
         }
 
         protected void Pr(string s)

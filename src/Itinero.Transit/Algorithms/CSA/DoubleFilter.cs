@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Algorithms.CSA

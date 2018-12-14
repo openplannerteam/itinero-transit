@@ -10,8 +10,8 @@
         /// </summary>
         public Attribute(string key, string value)
         {
-            this.Key = key;
-            this.Value = value;
+            Key = key;
+            Value = value;
         }
 
         /// <summary>
@@ -30,7 +30,7 @@
         /// <returns></returns>
         public override string ToString()
         {
-            return this.Key + "=" + this.Value;
+            return Key + "=" + Value;
         }
     }
 }

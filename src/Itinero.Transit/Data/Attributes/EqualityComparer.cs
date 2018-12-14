@@ -5,7 +5,6 @@ namespace Itinero.Transit.Data.Attributes
     /// <summary>
     /// An implementation of the EqualityComparer that allows the use of delegates.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     internal sealed class EqualityComparer : IEqualityComparer<int[]>
     {
         /// <summary>
@@ -13,6 +12,16 @@ namespace Itinero.Transit.Data.Attributes
         /// </summary>
         public bool Equals(int[] x, int[] y)
         {
+            if (x == null && y == null)
+            {
+                return false;
+            }
+
+            if (x == null || y == null)
+            {
+                return false;
+            }
+            
             if (x.Length != y.Length) return false;
             for (var idx = 0; idx < x.Length; idx++)
             {

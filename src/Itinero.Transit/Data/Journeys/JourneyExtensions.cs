@@ -1,13 +1,14 @@
 using System;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Security.Cryptography.X509Certificates;
 using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Journeys
 {
+    // ReSharper disable once UnusedMember.Global
     public static class JourneyExtensions
     {
+        // ReSharper disable once UnusedMember.Global
         public static string ToGeoJson<T>(this Journey<T> journey, StopsDb stopsDb)
             where T : IJourneyStats<T>
         {
@@ -22,13 +23,10 @@ namespace Itinero.Transit.Journeys
         
         
         
-        
-        
-        
-        
         /// <summary>
         /// Writes the route as json.
         /// </summary>
+        [SuppressMessage("ReSharper", "RedundantArgumentDefaultValue")]
         public static void WriteGeoJson<T>(this Journey<T> journey, StopsDb stopsDb, TextWriter writer)
             where T : IJourneyStats<T>
         {

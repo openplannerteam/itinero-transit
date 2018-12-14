@@ -1,5 +1,3 @@
-using System;
-
 namespace Itinero.Transit.Data
 {
     /// <summary>

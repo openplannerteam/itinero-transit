@@ -1,4 +1,3 @@
-using System.Linq;
 using Itinero.IO.LC;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;

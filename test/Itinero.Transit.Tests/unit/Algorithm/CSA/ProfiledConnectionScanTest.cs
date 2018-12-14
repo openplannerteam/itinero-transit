@@ -7,6 +7,7 @@ using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
 using Xunit;
 using Xunit.Abstractions;
+// ReSharper disable PossibleMultipleEnumeration
 
 namespace Itinero.Transit.Tests.unit.Algorithm.CSA
 {
@@ -83,7 +84,7 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
                 new DateTime(2018, 12, 04, 18, 00, 00),
                 profile);
             var journeys = pcs.CalculateJourneys();
-            Assert.Equal(1, journeys.Count());
+            Assert.Single(journeys);
             foreach (var j in journeys)
             {
                 Assert.Equal(30*60, (int) j.Stats.TravelTime);

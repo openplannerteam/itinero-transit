@@ -2,10 +2,8 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net;
-using Itinero.IO.LC;
 using Itinero.IO.Osm;
 using Itinero.Osm.Vehicles;
-using Itinero.Transit;
 using Itinero.Transit.IO.LC.CSA;
 using Itinero.Transit.IO.LC.CSA.ConnectionProviders;
 using Itinero.Transit.IO.LC.CSA.Utils;
@@ -128,15 +126,15 @@ namespace Itinero.IO.LC.Tests
             var sncb = Belgium.Sncb(new LocalStorage("SNCB-Past"));
             try
             {
-                var tt = sncb.ConnectionsProvider.GetTimeTable(new DateTime(2018, 1, 1));
+                sncb.ConnectionsProvider.GetTimeTable(new DateTime(2018, 1, 1));
                 throw new Exception("Downloading this much in the past should have failed");
             }
-            catch(ArgumentException e)
+            catch(ArgumentException)
             {
                 // Indeed, should error
                 Assert.True(true);
             }
-            catch(IOException e)
+            catch(IOException)
             {
                 // Indeed, should error
                 Assert.True(true);

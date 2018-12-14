@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.IO.LC.CSA.ConnectionProviders;
 using Itinero.Transit.Logging;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
@@ -77,7 +75,7 @@ namespace Itinero.Transit.IO.LC
                     }
 
                     var tripUri = connection.Trip().ToString();
-                    var tripId = uint.MaxValue;
+                    uint tripId;
                     if (!tripsDbReader.MoveTo(tripUri))
                     {
                         tripId = tripsDb.Add(tripUri);

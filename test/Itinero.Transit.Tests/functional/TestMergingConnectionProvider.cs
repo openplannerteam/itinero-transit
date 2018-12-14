@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Itinero.IO.LC;
-using Itinero.Transit;
 using Itinero.Transit.IO.LC.CSA;
 using Itinero.Transit.IO.LC.CSA.ConnectionProviders;
 using Itinero.Transit.IO.LC.CSA.Connections;
@@ -45,7 +43,7 @@ namespace Itinero.IO.LC.Tests
                 Assert.True(prev == null || prev.DepartureTime() <= conn.DepartureTime());
                 prev = conn;
 
-                Assert.False(seen.Contains(conn.Id().ToString()));
+                Assert.DoesNotContain(conn.Id().ToString(), seen);
                 seen.Add(conn.Id().ToString());
             }
 
@@ -57,7 +55,7 @@ namespace Itinero.IO.LC.Tests
                 Assert.True(prev == null || prev.DepartureTime() <= conn.DepartureTime());
                 prev = conn;
 
-                Assert.False(seen.Contains(conn.Id().ToString()));
+                Assert.DoesNotContain(conn.Id().ToString(), seen);
                 seen.Add(conn.Id().ToString());
             }
 

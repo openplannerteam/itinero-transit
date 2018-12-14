@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Itinero.IO.LC;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
-using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
@@ -303,7 +301,7 @@ namespace Itinero.Transit.Algorithms.CSA
             var latestTime = Time.MinValue;
             foreach (var journey in journeys)
             {
-                if (journey == null || journey == Journey<T>.NegativeInfiniteJourney)
+                if (journey == null || ReferenceEquals(journey, Journey<T>.NegativeInfiniteJourney))
                 {
                     continue;
                 }

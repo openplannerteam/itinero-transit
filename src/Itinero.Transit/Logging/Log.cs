@@ -29,7 +29,7 @@ namespace Itinero.Transit.Logging
         /// <param name="message">The message.</param>
         public static void Warning(Exception ex, string message)
         {
-            Logger.Log(string.Empty, TraceEventType.Warning, message + ex.ToString());
+            Logger.Log(string.Empty, TraceEventType.Warning, message + ex);
         }
         
         /// <summary>

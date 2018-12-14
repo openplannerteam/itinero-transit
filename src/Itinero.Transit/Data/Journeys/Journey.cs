@@ -84,6 +84,7 @@ namespace Itinero.Transit.Journeys
         /// <summary>
         /// Indicates that this journey represents a choice
         /// </summary>
+        // ReSharper disable once InconsistentNaming
         public const uint JOINED_JOURNEYS = 4;
 
         /// <summary>

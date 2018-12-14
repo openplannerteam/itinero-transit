@@ -30,9 +30,9 @@ namespace Itinero.Transit.Tests.Data
         public void StopsDbEnumerator_ShouldMoveToGlobalId()
         {
             var db = new TripsDb();
-            var id1 = db.Add("http://irail.be/vehicle/IC725", 
+            db.Add("http://irail.be/vehicle/IC725", 
                 new Attribute("headsign", "IC725"), new Attribute("name", "Gent-Sint-Pieters - Antwerpen-Centraal"));
-            var id2 = db.Add("http://irail.be/vehicle/IC704", 
+            db.Add("http://irail.be/vehicle/IC704", 
                 new Attribute("headsign", "IC704"), new Attribute("name", "Antwerpen-Centraal - Poperinge"));
 
             var enumerator = db.GetReader();

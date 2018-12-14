@@ -1,8 +1,6 @@
 using System;
-using Itinero.IO.LC.Tests;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journeys;
-using OsmSharp.IO.PBF;
 using Xunit;
 using Xunit.Abstractions;
 
