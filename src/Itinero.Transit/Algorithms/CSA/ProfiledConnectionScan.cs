@@ -292,7 +292,8 @@ namespace Itinero.IO.LC
                 // We are at our target location
                 // No real need to walk
                 var arrivingJourney = new Journey<T>
-                    (_targetLocation, c.ArrivalTime, _statsFactory.EmptyStat());
+                    (_targetLocation, c.ArrivalTime, _statsFactory.EmptyStat(),
+                    Journey<T>.ProfiledScanJourney);
                 var journey = arrivingJourney.ChainBackward(c);
                 return journey;
             }

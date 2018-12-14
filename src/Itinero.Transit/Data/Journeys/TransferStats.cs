@@ -153,11 +153,6 @@ namespace Itinero.Transit.Journeys
     {
         public override int ADominatesB(Journey<TransferStats> a, Journey<TransferStats> b)
         {
-            if (a.Equals(b))
-            {
-                return 0;
-            }
-
             var aBetterThenB = AIsBetterThenB(a, b);
             var bBetterThenA = AIsBetterThenB(b, a);
 

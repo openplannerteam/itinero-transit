@@ -20,7 +20,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
                 input.connections, input.stops,
                 new InternalTransferGenerator(), new TransferStats(), TransferStats.ProfileTransferCompare);
 
-            var depTime = DateTime.Now.Date.AddMinutes(10 * 60 + 25);
+            var depTime =input.departureTime;
 
             // get departure and arrival stop ids.
             var reader = input.stops.GetReader();
@@ -30,6 +30,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var arrival = reader.Id;
 
             // instantiate and run EAS.
+            Information("Testing EAS in timeframe " +
+                        $"{depTime:yyyy-MM-dd HH:mm} " +
+                        $"till {depTime.AddHours(24):yyyy-MM-dd HH:mm}");
             var eas = new EarliestConnectionScan<TransferStats>(
                 departure, arrival,
                 depTime, depTime.AddHours(24), p);

@@ -87,7 +87,7 @@ namespace Itinero.Transit.Algorithms.CSA
             _userDepartureLocation = userDepartureLocation;
             foreach (var loc in userTargetLocation)
             {
-                _s.Add(loc, new Journey<T>(loc, lastDeparture, profile.StatsFactory));
+                _s.Add(loc, new Journey<T>(loc, lastDeparture, profile.StatsFactory, Journey<T>.LatestArrivalScanJourney));
             }
         }
 
@@ -173,7 +173,7 @@ namespace Itinero.Transit.Algorithms.CSA
             var lastDepartureTime = enumerator.DepartureTime;
             do
             {
-                var l = IntegrateConnection(enumerator);
+                IntegrateConnection(enumerator);
                 if (!enumerator.MovePrevious())
                 {
                     return false;
@@ -192,7 +192,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// 
         /// </summary>
         /// <param name="c">A DepartureEnumeration, which is used here as if it were a single connection object</param>
-        private ((uint localTileId, uint localId) improvedLocation, Time previousTime) IntegrateConnection(
+        private void IntegrateConnection(
             IConnection c)
         {
             // The connection describes a random connection somewhere
@@ -201,7 +201,7 @@ namespace Itinero.Transit.Algorithms.CSA
             if (!_s.ContainsKey(c.ArrivalStop))
             {
                 // we can not take this connection, it leads nowhere
-                return ((uint.MinValue, uint.MinValue), Time.MinValue);
+                return;
             }
 
             var journeyTillArrival = _s[c.ArrivalStop];
@@ -210,7 +210,7 @@ namespace Itinero.Transit.Algorithms.CSA
             if (c.ArrivalTime > journeyTillArrival.Time)
             {
                 // This connection arrives after the departure of the rest of the journey
-                return ((uint.MinValue, uint.MinValue), Time.MinValue);
+                return;
             }
 
 
@@ -231,9 +231,8 @@ namespace Itinero.Transit.Algorithms.CSA
                 // We chain the current connection after it
                 t1 = journeyTillArrival.ChainForward(c);
             }
-            
-            
-            
+
+
             // When resting in a trip
             Journey<T> t2;
             var trip = c.TripId;
@@ -258,11 +257,13 @@ namespace Itinero.Transit.Algorithms.CSA
             // Jej! We can take the train! 
             // Lets see if we can make an improvement in regards to the previous solution
             var newJourney = SelectLatest(journeyFromDeparture, t1, t2);
+            if (newJourney == null)
+            {
+                return;
+            }
+
+
             _s[c.DepartureStop] = newJourney;
-
-
-            var improved = newJourney != journeyFromDeparture;
-            return (improved ? c.ArrivalStop : (uint.MinValue, uint.MinValue), journeyFromDeparture.Time);
         }
 
         /// <summary>
@@ -281,6 +282,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 {
                     continue;
                 }
+
                 var departure = _s[targetLoc].Time;
 
                 if (departure > currentBestDeparture)
@@ -293,26 +295,26 @@ namespace Itinero.Transit.Algorithms.CSA
             return (currentBestDeparture, bestTarget);
         }
 
-        private Journey<T> SelectLatest(params Journey<T>[] journeys)
+        private static Journey<T> SelectLatest(params Journey<T>[] journeys)
         {
-            var earliest = journeys[0];
-            var earliestTime = earliest.Time;
+            Journey<T> latest = null;
+            var latestTime = Time.MinValue;
             foreach (var journey in journeys)
             {
-                if (journey == null)
+                if (journey == null || journey == Journey<T>.NegativeInfiniteJourney)
                 {
                     continue;
                 }
-                
-                var arrTime = journey.Time;
-                if (arrTime < earliestTime)
+
+                var depTime = journey.Time;
+                if (depTime > latestTime)
                 {
-                    earliest = journey;
-                    earliestTime = arrTime;
+                    latest = journey;
+                    latestTime = depTime;
                 }
             }
 
-            return earliest;
+            return latest;
         }
 
         public void CheckWindow(ulong earliestDepTime, ulong latestArrivalTime)
@@ -344,6 +346,7 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 return false;
             }
+
             // We should arrive before the last possible moment we can still get a journey out
             return c.ArrivalTime <= _s[depStation].Time;
         }

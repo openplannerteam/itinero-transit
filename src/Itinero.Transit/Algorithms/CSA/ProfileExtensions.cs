@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Itinero.IO.LC;
 using Itinero.Transit.Data;
@@ -33,29 +34,28 @@ namespace Itinero.Transit.Algorithms.CSA
                 departureTime, lastArrivalTime,
                 profile
             );
-            var earliestJourney = eas.CalculateJourney(
-                (d, d0) => lastArrivalTime
-            );
+            var earliestJourney = eas.CalculateJourney((d, d0) => lastArrivalTime);
 
-
+            Log.Information(earliestJourney.Pruned().ToString(profile.StopsDb.GetReader()));
             var las = new LatestConnectionScan<T>(
                 depLocation, arrivalLocaiton,
                 departureTime, lastArrivalTime,
                 profile
             );
-            var latestJourney = las.CalculateJourney(
-                (d, d0) => departureTime
-            );
-            Log.Information(latestJourney.ToString());
+            var latestJourney = las.CalculateJourney((d, d0) => departureTime);
+            Log.Information(latestJourney.Pruned().ToString(profile.StopsDb.GetReader()));
+
             var pcs = new ProfiledConnectionScan<T>(
                 depLocation, arrivalLocaiton,
                 departureTime, lastArrivalTime,
                 profile,
-                eas
+                new DoubleFilter(eas, las)
             );
 
+            var journeys = pcs.CalculateJourneys();
+            Log.Information($"Found {journeys.Count()} solutions");
 
-            return pcs.CalculateJourneys();
+            return journeys;
         }
     }
 }

@@ -86,7 +86,7 @@ namespace Itinero.Transit.Algorithms.CSA
             _userTargetLocation = userTargetLocation;
             foreach (var loc in userDepartureLocation)
             {
-                _s.Add(loc, new Journey<T>(loc, earliestDeparture, profile.StatsFactory));
+                _s.Add(loc, new Journey<T>(loc, earliestDeparture, profile.StatsFactory, Journey<T>.EarliestArrivalScanJourney));
             }
         }
 
@@ -309,7 +309,7 @@ namespace Itinero.Transit.Algorithms.CSA
             return (currentBestArrival, bestTarget);
         }
 
-        private Journey<T> SelectEarliest(params Journey<T>[] journeys)
+        private static Journey<T> SelectEarliest(params Journey<T>[] journeys)
         {
             var earliest = journeys[0];
             var earliestTime = earliest.Time;

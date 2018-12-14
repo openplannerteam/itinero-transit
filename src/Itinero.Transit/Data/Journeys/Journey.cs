@@ -95,8 +95,13 @@ namespace Itinero.Transit.Journeys
 
         /// <summary>
         /// The trip id of the connection
+        /// This is used as a freeform debugging tag in the Genesis Element
         /// </summary>
         public readonly uint TripId;
+
+        public const int EarliestArrivalScanJourney = 1;
+        public const int LatestArrivalScanJourney = 2;
+        public const int ProfiledScanJourney = 3;
 
 
         /// <summary>
@@ -150,7 +155,8 @@ namespace Itinero.Transit.Journeys
         /// Genesis constructor.
         /// This constructor creates a root journey
         /// </summary>
-        public Journey((uint localTileId, uint localId) location, UnixTime departureTime, T initialStats)
+        public Journey((uint localTileId, uint localId) location, UnixTime departureTime, T initialStats,
+            uint debuggingFreeformTag = 0)
         {
             Root = this;
             PreviousLink = null;
@@ -159,7 +165,7 @@ namespace Itinero.Transit.Journeys
             Location = location;
             Time = departureTime;
             Stats = initialStats;
-            TripId = uint.MaxValue;
+            TripId = debuggingFreeformTag;
         }
 
 
@@ -167,7 +173,7 @@ namespace Itinero.Transit.Journeys
         /// Chaining constructor
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
-        public Journey<T> Chain(uint connection, UnixTime arrivalTime, (uint localTileId, uint localId) location,
+        private Journey<T> Chain(uint connection, UnixTime arrivalTime, (uint localTileId, uint localId) location,
             uint tripId)
         {
             return new Journey<T>(
@@ -176,11 +182,28 @@ namespace Itinero.Transit.Journeys
 
         public Journey<T> ChainForward(IConnection c)
         {
+            if (SpecialConnection && Connection == GENESIS)
+            {
+                // We do something special here:
+                // We move the genesis to the departure time of the connection
+                // This is used by EAS to have a correcter departure time
+                var newGenesis = new Journey<T>(Location, c.DepartureTime, Stats.EmptyStat(), TripId);
+                return newGenesis.Chain(c.Id, c.ArrivalTime, c.ArrivalStop, c.TripId);
+            }
+
             return Chain(c.Id, c.ArrivalTime, c.ArrivalStop, c.TripId);
         }
 
         public Journey<T> ChainBackward(IConnection c)
         {
+            if (SpecialConnection && Connection == GENESIS)
+            {
+                // We do something special here:
+                // We move the genesis to the departure time of the connection
+                var newGenesis = new Journey<T>(Location, c.ArrivalTime, Stats.EmptyStat(), TripId);
+                return newGenesis.Chain(c.Id, c.DepartureTime, c.DepartureStop, c.TripId);
+            }
+
             return Chain(c.Id, c.DepartureTime, c.DepartureStop, c.TripId);
         }
 
@@ -261,10 +284,10 @@ namespace Itinero.Transit.Journeys
         /// <returns></returns>
         public Journey<T> Reversed()
         {
-            return Reversed(new Journey<T>(Location, Time, Stats.EmptyStat()));
+            return Reversed(new Journey<T>(Location, Time, Stats.EmptyStat(), GENESIS), TripId);
         }
 
-        private Journey<T> Reversed(Journey<T> buildOn)
+        private Journey<T> Reversed(Journey<T> buildOn, uint lastTripId)
         {
             if (SpecialConnection && Connection == GENESIS)
             {
@@ -284,7 +307,7 @@ namespace Itinero.Transit.Journeys
             }
 
 
-            return PreviousLink.Reversed(buildOn);
+            return PreviousLink.Reversed(buildOn, TripId);
         }
 
 
@@ -311,21 +334,18 @@ namespace Itinero.Transit.Journeys
                 return restOfTheJourney.ChainSpecial(Connection, Time, Location, PreviousLink.TripId);
             }
 
-            /*   if (PreviousLink.SpecialConnection)
-               {
-                   var restOfTheJourney = PreviousLink.PrunedWithoutLast();
-                   return restOfTheJourney.Chain(Connection, Time, Location, TripId);
-               }*/
-
-
             return PreviousLink.PrunedWithoutLast();
         }
 
         public override string ToString()
         {
-            return ToString(null);
+            return ToString((StopsDb.StopsDbReader) null);
         }
 
+        public string ToString(StopsDb db)
+        {
+            return ToString(db.GetReader());
+        }
 
         public string ToString(StopsDb.StopsDbReader reader)
         {
@@ -349,7 +369,29 @@ namespace Itinero.Transit.Journeys
                 switch (Connection)
                 {
                     case GENESIS:
-                        return $"Genesis at {location}, time is {DateTimeExtensions.FromUnixTime(Time):HH:mm}";
+                        string freeForm = ", debugging free form tag is ";
+                        switch (TripId)
+                        {
+                            case EarliestArrivalScanJourney:
+                                freeForm += "EAS";
+                                break;
+                            case LatestArrivalScanJourney:
+                                freeForm += "LAS";
+                                break;
+                            case ProfiledScanJourney:
+                                freeForm += "PCS";
+                                break;
+                            case uint.MaxValue:
+                                freeForm = "";
+                                break;
+                            default:
+                                freeForm += $"{TripId}";
+                                break;
+                        }
+
+
+                        return
+                            $"Genesis at {location}, time is {DateTimeExtensions.FromUnixTime(Time):HH:mm}{freeForm}";
                     case WALK:
                         return
                             $"Walk to {location} in {Time - PreviousLink.Time} till {DateTimeExtensions.FromUnixTime(Time):HH:mm} seconds";
@@ -363,7 +405,8 @@ namespace Itinero.Transit.Journeys
                 throw new ArgumentException($"Unknown Special Connection code {Connection}");
             }
 
-            return $"Connection {Connection} to {location}, arriving at {DateTimeExtensions.FromUnixTime(Time):yyyy-MM-dd HH:mm}";
+            return
+                $"Connection {Connection} to {location}, arriving at {DateTimeExtensions.FromUnixTime(Time):yyyy-MM-dd HH:mm}";
         }
 
 
@@ -379,6 +422,8 @@ namespace Itinero.Transit.Journeys
                 return ReferenceEquals(this, other);
             }
 
+            // DO NOT COMPARE ROOT FOR REFERENCE EQUALITY
+            // When chaining journeys, we might have rewritten the Genesis element, resulting in two distinct roots with the same contents
             return SpecialConnection == other.SpecialConnection
                    && Connection == other.Connection
                    && Location.Equals(other.Location)
@@ -400,9 +445,8 @@ namespace Itinero.Transit.Journeys
         {
             unchecked
             {
-                var hashCode = (Root != null ? Root.GetHashCode() : 0);
+                var hashCode = SpecialConnection.GetHashCode();
                 hashCode = (hashCode * 397) ^ (PreviousLink != null ? PreviousLink.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ SpecialConnection.GetHashCode();
                 hashCode = (hashCode * 397) ^ (int) Connection;
                 hashCode = (hashCode * 397) ^ Location.GetHashCode();
                 hashCode = (hashCode * 397) ^ Time.GetHashCode();
