@@ -40,7 +40,7 @@ namespace Itinero.Transit.Tests.Functional
             Assert.True(count > 0);
             Log.Information($"Found {count} connections arriving at location");
             TestLAS(db);
-            // TestEAS(db);
+            TestEAS(db);
             TestPCS(db);
         }
 
