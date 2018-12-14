@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography.X509Certificates;
 using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Journeys
@@ -15,6 +16,16 @@ namespace Itinero.Transit.Journeys
             return stringWriter.ToString();
         }
 
+
+
+
+        
+        
+        
+        
+        
+        
+        
         /// <summary>
         /// Writes the route as json.
         /// </summary>

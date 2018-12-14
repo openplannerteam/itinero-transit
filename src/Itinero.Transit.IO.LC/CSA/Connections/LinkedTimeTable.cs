@@ -97,7 +97,7 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
                     continue;
                 }
 
-                cons += $"  {conn.ToString()}\n";
+                cons += $"  {conn}\n";
             }
 
             cons = cons.Substring(0, cons.Length - 1);

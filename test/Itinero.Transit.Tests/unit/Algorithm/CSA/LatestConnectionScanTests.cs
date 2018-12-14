@@ -23,7 +23,7 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
             var stops = Db.GetDefaultStopsDb();
 
             var profile = new Profile<TransferStats>(
-                db, stops, new InternalTransferGenerator(), new TransferStats(),
+                db, stops, new InternalTransferGenerator(0), new TransferStats(),
                 TransferStats.ProfileTransferCompare
             );
 

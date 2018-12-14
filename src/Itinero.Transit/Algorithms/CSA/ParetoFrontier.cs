@@ -20,9 +20,9 @@ namespace Itinero.IO.LC
 
         public ParetoFrontier(StatsComparator<T> comparator)
         {
-            Comparator = comparator ?? throw new ArgumentNullException(nameof(comparator), "A Pareto Frontier can not operate without comparator");
+            Comparator = comparator ?? throw new ArgumentNullException(nameof(comparator),
+                             "A Pareto Frontier can not operate without comparator");
         }
-
 
 
         /// <summary>
@@ -70,8 +70,8 @@ namespace Itinero.IO.LC
             {
                 return false;
             }
-            
-            
+
+
             for (var i = Frontier.Count - 1; i >= 0; i--)
             {
                 var guard = Frontier[i];
@@ -94,11 +94,23 @@ namespace Itinero.IO.LC
                             return false;
                         }
 
-                        // As both might leave at different hours, we add the new journey as well... except if they are the same ofc
-                        break;
+                        // The new journey might take another subpath, e.g; travel via another station but arrive at the same time
+                        // We add it here, but... as the guard is just as optimal,
+                        // we know that no other journey can dominate it nor can this new journey dominate any other journey
+                        // So we add the journey immediately and return
+                        // Frontier.Add(considered);
+
+                        // Also: because we know both are equally good, we can merge them (the pareto profile is kept only for if we'd transfer)
+                        // And as a pareto frontier is only used in PCS, that should be fine
+                        Frontier[i] = new Journey<T>(guard, considered);
+
+                        return true;
                 }
             }
 
+            /* TODO as soon as we know that we can add the journey (e.g. by defeating or being just as good as another journey)
+              we only need to check the remaining frontier to remove now obsolete values
+            */
             //if (comparison == int.MaxValue)
             // Both are on the pareto front
             Frontier.Add(considered);
@@ -125,7 +137,7 @@ namespace Itinero.IO.LC
             {
                 result += "\n" + j;
             }
-            
+
             return result;
         }
     }

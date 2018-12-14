@@ -35,7 +35,7 @@ namespace Itinero.Transit.Algorithms.CSA
                     // We can not hop on this journey
                     continue;
                 }
-                
+
                 var extendedJourney = transferPolicy.CreateArrivingTransfer(journey, c);
                 if (extendedJourney != null)
                 {
@@ -51,6 +51,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             return newFrontier;
         }
+
 
 
         /// <summary>
@@ -79,7 +80,5 @@ namespace Itinero.Transit.Algorithms.CSA
 
             return biggest;
         }
-
-
     }
 }

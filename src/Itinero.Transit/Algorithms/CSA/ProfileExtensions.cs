@@ -36,26 +36,21 @@ namespace Itinero.Transit.Algorithms.CSA
             );
             var earliestJourney = eas.CalculateJourney((d, d0) => lastArrivalTime);
 
-            Log.Information(earliestJourney.Pruned().ToString(profile.StopsDb.GetReader()));
             var las = new LatestConnectionScan<T>(
                 depLocation, arrivalLocaiton,
                 departureTime, lastArrivalTime,
                 profile
             );
             var latestJourney = las.CalculateJourney((d, d0) => departureTime);
-            Log.Information(latestJourney.Pruned().ToString(profile.StopsDb.GetReader()));
 
             var pcs = new ProfiledConnectionScan<T>(
                 depLocation, arrivalLocaiton,
-                departureTime, lastArrivalTime,
+                earliestJourney.Root.Time, latestJourney.Time,
                 profile,
                 new DoubleFilter(eas, las)
             );
 
-            var journeys = pcs.CalculateJourneys();
-            Log.Information($"Found {journeys.Count()} solutions");
-
-            return journeys;
+            return pcs.CalculateJourneys();
         }
     }
 }

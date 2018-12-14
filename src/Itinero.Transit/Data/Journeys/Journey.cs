@@ -41,6 +41,12 @@ namespace Itinero.Transit.Journeys
         public readonly Journey<T> PreviousLink;
 
         /// <summary>
+        /// Sometimes, we encounter two subjourneys which are equally optimal.
+        /// Instead of duplicating them across the graph, we have this special journey part which gives an alternative version split
+        /// </summary>
+        public readonly Journey<T> AlternativePreviousLink;
+
+        /// <summary>
         /// Indicates that this journeyPart is not a simple PT-connection,
         /// but rather something as a walk, transfer, ...
         /// </summary>
@@ -74,6 +80,11 @@ namespace Itinero.Transit.Journeys
 
         // ReSharper disable once InconsistentNaming
         public const uint WALK = 3;
+        
+        /// <summary>
+        /// Indicates that this journey represents a choice
+        /// </summary>
+        public const uint JOINED_JOURNEYS = 4;
 
         /// <summary>
         /// Keep track of Location.
@@ -110,9 +121,14 @@ namespace Itinero.Transit.Journeys
         public readonly T Stats;
 
         /// <summary>
+        /// Hashcode is calculated at the start for quick comparisons
+        /// </summary>
+        private readonly int _hashCode;
+
+        /// <summary>
         /// Infinity constructor
         /// This is the constructor which creates a journey representing an infinite journey.
-        /// There is a singleton availabe: Journey.InfiniteJourney.
+        /// There is a singleton available: Journey.InfiniteJourney.
         /// This object is used when needing a dummy object to compare to, e.g. as journey to locations that can't be reached
         /// </summary>
         private Journey(UnixTime time = UnixTime.MaxValue)
@@ -121,9 +137,10 @@ namespace Itinero.Transit.Journeys
             PreviousLink = this;
             Connection = int.MaxValue;
             Location = (uint.MaxValue, uint.MaxValue);
-            Time = UnixTime.MaxValue;
+            Time = time;
             SpecialConnection = true;
             TripId = uint.MaxValue;
+            _hashCode = CalculateHashCode();
         }
 
         /// <summary>
@@ -149,6 +166,7 @@ namespace Itinero.Transit.Journeys
             Time = time;
             TripId = tripId;
             Stats = stats.Add(this);
+            _hashCode = CalculateHashCode();
         }
 
         /// <summary>
@@ -166,8 +184,24 @@ namespace Itinero.Transit.Journeys
             Time = departureTime;
             Stats = initialStats;
             TripId = debuggingFreeformTag;
+            _hashCode = CalculateHashCode();
         }
 
+
+        public Journey(Journey<T> optionA, Journey<T> optionB)
+        {
+            AlternativePreviousLink = optionB;
+            // Option A is seen as the 'true' predecessor'
+            Root = optionA.Root;
+            PreviousLink = optionA;
+            Connection = JOINED_JOURNEYS;
+            SpecialConnection = true;
+            Location = optionA.Location;
+            Time = optionA.Time;
+            Stats = optionA.Stats;
+            TripId = optionA.Root.TripId;
+            _hashCode = optionA._hashCode + optionB._hashCode;
+        }
 
         /// <summary>
         /// Chaining constructor
@@ -273,7 +307,7 @@ namespace Itinero.Transit.Journeys
             {
                 parts.Add(current);
                 current = current.PreviousLink;
-            } while (current != null && current != current.PreviousLink);
+            } while (current != null && !ReferenceEquals(current, current.PreviousLink));
 
             return parts;
         }
@@ -284,10 +318,10 @@ namespace Itinero.Transit.Journeys
         /// <returns></returns>
         public Journey<T> Reversed()
         {
-            return Reversed(new Journey<T>(Location, Time, Stats.EmptyStat(), GENESIS), TripId);
+            return Reversed(new Journey<T>(Location, Time, Stats.EmptyStat(), Root.TripId));
         }
 
-        private Journey<T> Reversed(Journey<T> buildOn, uint lastTripId)
+        private Journey<T> Reversed(Journey<T> buildOn)
         {
             if (SpecialConnection && Connection == GENESIS)
             {
@@ -307,7 +341,7 @@ namespace Itinero.Transit.Journeys
             }
 
 
-            return PreviousLink.Reversed(buildOn, TripId);
+            return PreviousLink.Reversed(buildOn);
         }
 
 
@@ -350,7 +384,7 @@ namespace Itinero.Transit.Journeys
         public string ToString(StopsDb.StopsDbReader reader)
         {
             var previous = "";
-            if (PreviousLink != null && PreviousLink != this)
+            if (PreviousLink != null && !ReferenceEquals(PreviousLink, this))
             {
                 previous = PreviousLink.ToString(reader);
             }
@@ -398,6 +432,9 @@ namespace Itinero.Transit.Journeys
                     case TRANSFER:
                         return
                             $"Transfer/Wait for {Time - PreviousLink.Time} seconds till {DateTimeExtensions.FromUnixTime(Time):HH:mm} in {location}";
+                    case JOINED_JOURNEYS:
+                        return $"Choose a journey: there is a equivalent journey available. Continuing print via one arbitrary option";
+                    
                     case int.MaxValue:
                         return "Infinite journey";
                 }
@@ -412,46 +449,32 @@ namespace Itinero.Transit.Journeys
 
         protected bool Equals(Journey<T> other)
         {
-            if (ReferenceEquals(this, InfiniteJourney) || ReferenceEquals(other, InfiniteJourney))
-            {
-                return ReferenceEquals(this, other);
-            }
-
-            if (ReferenceEquals(PreviousLink, this))
-            {
-                return ReferenceEquals(this, other);
-            }
-
-            // DO NOT COMPARE ROOT FOR REFERENCE EQUALITY
-            // When chaining journeys, we might have rewritten the Genesis element, resulting in two distinct roots with the same contents
-            return SpecialConnection == other.SpecialConnection
-                   && Connection == other.Connection
-                   && Location.Equals(other.Location)
-                   && Time == other.Time
-                   && TripId == other.TripId
-                   && Equals(Stats, other.Stats)
-                   && Equals(PreviousLink, other.PreviousLink);
+            return _hashCode == other._hashCode;
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((Journey<T>) obj);
         }
 
         public override int GetHashCode()
         {
+            return _hashCode;
+        }
+
+        private int CalculateHashCode()
+        {
             unchecked
             {
                 var hashCode = SpecialConnection.GetHashCode();
-                hashCode = (hashCode * 397) ^ (PreviousLink != null ? PreviousLink.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (PreviousLink?.GetHashCode() ?? 0);
                 hashCode = (hashCode * 397) ^ (int) Connection;
                 hashCode = (hashCode * 397) ^ Location.GetHashCode();
                 hashCode = (hashCode * 397) ^ Time.GetHashCode();
                 hashCode = (hashCode * 397) ^ (int) TripId;
-                hashCode = (hashCode * 397) ^ EqualityComparer<T>.Default.GetHashCode(Stats);
                 return hashCode;
             }
         }

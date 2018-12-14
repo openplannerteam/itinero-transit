@@ -26,7 +26,7 @@ namespace Itinero.IO.LC
     public class ProfiledConnectionScan<T> where T : IJourneyStats<T>
     {
         private readonly ConnectionsDb _connectionsProvider;
-        private readonly UnixTime _earliestDeparture, _lastArrival;
+        private readonly UnixTime _earliestDeparture, _lastDeparture;
         private readonly (uint, uint) _departureLocation, _targetLocation;
 
         private readonly ProfiledStatsComparator<T> _comparator;
@@ -115,7 +115,7 @@ namespace Itinero.IO.LC
         public ProfiledConnectionScan(
             (uint, uint) departureStop,
             (uint, uint) arrivalStop,
-            UnixTime earliestDeparture, UnixTime lastArrival,
+            UnixTime earliestDeparture, UnixTime lastDeparture,
             Profile<T> profile,
             IConnectionFilter filter = null,
             Journey<T> possibleJourney = null)
@@ -125,7 +125,7 @@ namespace Itinero.IO.LC
                 throw new ArgumentException("Target and destination are the same");
             }
 
-            if (earliestDeparture >= lastArrival)
+            if (earliestDeparture >= lastDeparture)
             {
                 throw new ArgumentException(
                     "Departure time falls after arrival time. Do you intend to travel backwards in time? If so, lend me that time machine!");
@@ -135,7 +135,7 @@ namespace Itinero.IO.LC
             _targetLocation = arrivalStop;
 
             _earliestDeparture = earliestDeparture;
-            _lastArrival = lastArrival;
+            _lastDeparture = lastDeparture;
 
             _connectionsProvider = profile.ConnectionsDb;
             _comparator = profile.ProfileComparator;
@@ -144,9 +144,7 @@ namespace Itinero.IO.LC
             _transferPolicy = profile.WalksGenerator;
             _possibleJourney = possibleJourney;
             _filter = filter;
-            filter?.CheckWindow(_earliestDeparture, _lastArrival);
-            Log.Information($"Searching PCS from {_departureLocation} to {_targetLocation}," +
-                            $" time window is {DateTimeExtensions.FromUnixTime(_earliestDeparture):HH:mm} - {DateTimeExtensions.FromUnixTime(_lastArrival):HH:mm}");
+            filter?.CheckWindow(_earliestDeparture, _lastDeparture);
         }
 
 
@@ -155,7 +153,7 @@ namespace Itinero.IO.LC
             var enumerator = _connectionsProvider.GetDepartureEnumerator();
 
             // Move the enumerator after the last arrival time
-            enumerator.MoveToPrevious(_lastArrival);
+            enumerator.MoveToPrevious(_lastDeparture);
             
             while (enumerator.DepartureTime >= _earliestDeparture)
             {
@@ -218,11 +216,6 @@ namespace Itinero.IO.LC
             }
 
             if (c.ArrivalStop == _departureLocation)
-            {
-                return;
-            }
-
-            if (c.ArrivalTime > _lastArrival)
             {
                 return;
             }

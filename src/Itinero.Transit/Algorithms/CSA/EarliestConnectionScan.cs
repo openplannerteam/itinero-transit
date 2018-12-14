@@ -86,7 +86,9 @@ namespace Itinero.Transit.Algorithms.CSA
             _userTargetLocation = userTargetLocation;
             foreach (var loc in userDepartureLocation)
             {
-                _s.Add(loc, new Journey<T>(loc, earliestDeparture, profile.StatsFactory, Journey<T>.EarliestArrivalScanJourney));
+                _s.Add(loc,
+                    new Journey<T>(loc, earliestDeparture, profile.StatsFactory,
+                        Journey<T>.EarliestArrivalScanJourney));
             }
         }
 
@@ -144,8 +146,8 @@ namespace Itinero.Transit.Algorithms.CSA
             // Wait! There is one more thing!
             // The user might need a profile to optimize PCS later on
             // We got an alternative end time, we still calculate a little
-            lastDeparture = depArrivalToTimeout(journey.Root.Time, journey.Time);
-            while (enumerator.DepartureTime < lastDeparture)
+            _filterEndTime = depArrivalToTimeout(journey.Root.Time, journey.Time);
+            while (enumerator.DepartureTime < _filterEndTime)
             {
                 IntegrateBatch(enumerator);
             }
@@ -163,7 +165,7 @@ namespace Itinero.Transit.Algorithms.CSA
             var lastDepartureTime = enumerator.DepartureTime;
             do
             {
-                var l = IntegrateConnection(enumerator);
+                IntegrateConnection(enumerator);
 
                 /*   if (l.improvedLocation != LocId.MaxValue)
                    {
@@ -203,7 +205,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// 
         /// </summary>
         /// <param name="c">A DepartureEnumeration, which is used here as if it were a single connection object</param>
-        private ((uint localTileId, uint localId) improvedLocation, Time previousTime) IntegrateConnection(
+        private void IntegrateConnection(
             IConnection c)
         {
             // The connection describes a random connection somewhere
@@ -213,16 +215,16 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 // The stop where this connection starts, is not yet reachable
                 // Abort
-                return ((uint.MaxValue, uint.MaxValue), Time.MaxValue);
+                return;
             }
-            
+
             var journeyTillDeparture = _s[c.DepartureStop];
 
 
             if (c.DepartureTime < journeyTillDeparture.Time)
             {
                 // This connection has already left before we can make it to the stop
-                return ((uint.MaxValue, uint.MaxValue), Time.MaxValue);
+                return;
             }
 
 
@@ -230,12 +232,28 @@ namespace Itinero.Transit.Algorithms.CSA
             Journey<T> t1;
 
             // When resting in a trip
-            Journey<T> t2;
+            Journey<T> t2 = null;
 
             // When walking
             // Walks are handled downwards
 
             var trip = c.TripId;
+
+
+            if (journeyTillDeparture.LastTripId() != null
+                && !Equals(journeyTillDeparture
+                    .LastTripId(), c.TripId))
+            {
+                // We have to transfer vehicles
+                t1 = _transferPolicy.CreateDepartureTransfer(journeyTillDeparture, c);
+            }
+            else
+            {
+                // This connection was a walk or something similar
+                // Or we didn't have to transfer
+                // We chain the current connection after it
+                t1 = journeyTillDeparture.ChainForward(c);
+            }
 
             if (_trips.ContainsKey(trip))
             {
@@ -248,28 +266,10 @@ namespace Itinero.Transit.Algorithms.CSA
                 // This is the first encounter of it.
                 // The departure station should be stable in time, so we can take that journey and board
 
-                t2 = _transferPolicy.CreateDepartureTransfer(journeyTillDeparture, c);
-                if (t2 != null)
+                if (t1 != null)
                 {
-                    _trips[trip] = t2;
+                    _trips[trip] = t1;
                 }
-            }
-
-
-            if (journeyTillDeparture.LastTripId() != null
-                && !Equals(journeyTillDeparture
-                    .LastTripId(), c.TripId))
-            {
-                // We have to transfer vehicles
-                t1 = journeyTillDeparture.Transfer(
-                    c.Id, c.DepartureTime, c.ArrivalTime, c.ArrivalStop, c.TripId);
-            }
-            else
-            {
-                // This connection was a walk or something similar
-                // Or we didn't have to transfer
-                // We chain the current connection after it
-                t1 = journeyTillDeparture.ChainForward(c);
             }
 
             var journeyTillArrival = GetJourneyTo(c.ArrivalStop);
@@ -278,11 +278,8 @@ namespace Itinero.Transit.Algorithms.CSA
             // Jej! We can take the train! 
             // Lets see if we can make an improvement in regards to the previous solution
             var newJourney = SelectEarliest(journeyTillArrival, t1, t2);
+
             _s[c.ArrivalStop] = newJourney;
-
-
-            var improved = newJourney != journeyTillArrival;
-            return (improved ? c.ArrivalStop : (uint.MaxValue, uint.MaxValue), journeyTillArrival.Time);
         }
 
         /// <summary>
@@ -341,17 +338,17 @@ namespace Itinero.Transit.Algorithms.CSA
 
         public void CheckWindow(ulong earliestDepTime, ulong latestArrivalTime)
         {
-            if (earliestDepTime > _earliestDeparture)
+            if (!(earliestDepTime >= _earliestDeparture))
             {
                 throw new ArgumentException(
-                    "This EAS can not be used as connection filter, the requesting algorithm needs connections before my scantime ");
+                    "This EAS can not be used as connection filter, the requesting algorithm requests connections before my scantime ");
             }
 
 
-            if (latestArrivalTime < _filterEndTime)
+            if (!(latestArrivalTime <= _filterEndTime))
             {
                 throw new ArgumentException(
-                    "This EAS can not be used as connection filter, the requesting algorithm needs connections after my scantime ");
+                    "This EAS can not be used as connection filter, the requesting algorithm requests connections after my scantime ");
             }
 
             if (_s.Count == 1)

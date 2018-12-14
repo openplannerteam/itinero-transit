@@ -87,7 +87,8 @@ namespace Itinero.Transit.Algorithms.CSA
             _userDepartureLocation = userDepartureLocation;
             foreach (var loc in userTargetLocation)
             {
-                _s.Add(loc, new Journey<T>(loc, lastDeparture, profile.StatsFactory, Journey<T>.LatestArrivalScanJourney));
+                _s.Add(loc,
+                    new Journey<T>(loc, lastDeparture, profile.StatsFactory, Journey<T>.LatestArrivalScanJourney));
             }
         }
 
@@ -221,20 +222,19 @@ namespace Itinero.Transit.Algorithms.CSA
                 && !Equals(journeyTillArrival.LastTripId(), c.TripId))
             {
                 // We have to transfer vehicles
-                t1 = journeyTillArrival.Transfer(
-                    c.Id, c.ArrivalTime, c.DepartureTime, c.DepartureStop, c.TripId);
+                t1 = _transferPolicy.CreateArrivingTransfer(journeyTillArrival, c);
             }
             else
             {
                 // This connection was a walk or something similar
                 // Or we didn't have to transfer
                 // We chain the current connection after it
-                t1 = journeyTillArrival.ChainForward(c);
+                t1 = journeyTillArrival.ChainBackward(c);
             }
 
 
             // When resting in a trip
-            Journey<T> t2;
+            Journey<T> t2 = null;
             var trip = c.TripId;
             if (_trips.ContainsKey(trip))
             {
@@ -246,9 +246,11 @@ namespace Itinero.Transit.Algorithms.CSA
                 // We now know for sure know that we can board this connection, and thus this trip
                 // This is the first encounter of it.
                 // The departure station should be stable in time, so we can take that journey and board
-
-
-                t2 = _trips[trip] = t1;
+                if (t1 != null)
+                {
+                    // simply reuse the earlier transfer
+                    t2 = _trips[trip] = t1;
+                }
             }
 
             var journeyFromDeparture = GetJourneyFrom(c.DepartureStop);
@@ -319,17 +321,18 @@ namespace Itinero.Transit.Algorithms.CSA
 
         public void CheckWindow(ulong earliestDepTime, ulong latestArrivalTime)
         {
-            if (earliestDepTime > _filterStartTime)
+            if (!(earliestDepTime >= _filterStartTime))
             {
                 throw new ArgumentException(
-                    "This EAS can not be used as connection filter, the requesting algorithm needs connections before my scantime ");
+                    "This LAS can not be used as connection filter, the requesting algorithm requests connections before my scan time ");
             }
 
 
-            if (latestArrivalTime < _lastDeparture)
+            if (!(latestArrivalTime <= _lastDeparture))
             {
                 throw new ArgumentException(
-                    "This EAS can not be used as connection filter, the requesting algorithm needs connections after my scantime ");
+                    "This LAS can not be used as connection filter, the requesting algorithm needs connections after my scan time." +
+                    $"LAS last scanned connections at {_lastDeparture}, but connections at {latestArrivalTime} are requested ");
             }
 
             if (_s.Count == 1)

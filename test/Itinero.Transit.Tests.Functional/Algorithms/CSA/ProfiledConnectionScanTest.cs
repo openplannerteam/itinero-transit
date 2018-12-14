@@ -41,10 +41,22 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
                 departure, arrival, input.departureTime.ToUnixTime(), input.arrivalTime.ToUnixTime()
                 );
                 
-
+            
             // verify result.
             Assert.NotNull(journeys);
             True(journeys.Any());
+
+        //   foreach (var j in journeys)
+        //   {
+        //       Information(j.Pruned().ToString(input.stops));
+        //   }
+        //   
+        //   foreach (var j in journeys)
+        //   {
+        //       Information($"{j.Stats}, departure at {DateTimeExtensions.FromUnixTime(j.StartTime()):HH:mm}");
+        //   }
+        //   Information($"Found {journeys.Count()} solutions");
+
 
             return journeys;
         }

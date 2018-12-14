@@ -30,9 +30,6 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var arrival = reader.Id;
 
             // instantiate and run EAS.
-            Information("Testing EAS in timeframe " +
-                        $"{depTime:yyyy-MM-dd HH:mm} " +
-                        $"till {depTime.AddHours(24):yyyy-MM-dd HH:mm}");
             var eas = new EarliestConnectionScan<TransferStats>(
                 departure, arrival,
                 depTime, depTime.AddHours(24), p);
