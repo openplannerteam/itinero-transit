@@ -20,11 +20,7 @@ namespace Itinero.IO.LC
 
         public ParetoFrontier(StatsComparator<T> comparator)
         {
-            if (comparator == null)
-            {
-                throw new ArgumentNullException("A Pareto Frontier can not operate without comparator");
-            }
-            Comparator = comparator;
+            Comparator = comparator ?? throw new ArgumentNullException(nameof(comparator), "A Pareto Frontier can not operate without comparator");
         }
 
 

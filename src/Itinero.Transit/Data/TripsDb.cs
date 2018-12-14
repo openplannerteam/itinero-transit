@@ -60,14 +60,15 @@ namespace Itinero.Transit.Data
             _tripAttributeIds[tripId] = _attributes.Add(attributes);
 
             // add stop id to the index.
-            _tripIdLinkedListPointer += 1;
+            _tripIdLinkedListPointer += 2;
             while (_tripIdLinkedList.Length <= _tripIdLinkedListPointer)
             {
                 _tripIdLinkedList.Resize(_tripIdLinkedList.Length + 1024);
             }
             var hash = Hash(globalId);
+            _tripIdLinkedList[_tripIdLinkedListPointer - 2] = tripId;
             _tripIdLinkedList[_tripIdLinkedListPointer - 1] = _tripIdPointersPerHash[hash];
-            _tripIdPointersPerHash[hash] = _tripIdLinkedListPointer - 1;
+            _tripIdPointersPerHash[hash] = _tripIdLinkedListPointer - 2;
 
             return tripId;
         }
@@ -145,7 +146,7 @@ namespace Itinero.Transit.Data
                         }
                     }
 
-                    pointer = _tripsDb._tripIdLinkedList[pointer + 2];
+                    pointer = _tripsDb._tripIdLinkedList[pointer + 1];
                 }
 
                 return false;
