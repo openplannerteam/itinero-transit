@@ -32,7 +32,8 @@ namespace Itinero.Transit.Tests.Functional.Performance
         public PerformanceInfoConsumer(string name, int memUseLoggingInterval, int iterations = 1)
         {
             _name = name;
-            _memoryUsageTimer = new System.Threading.Timer(LogMemoryUsage, null, memUseLoggingInterval, memUseLoggingInterval);
+            _memoryUsageTimer =
+                new System.Threading.Timer(LogMemoryUsage, null, memUseLoggingInterval, memUseLoggingInterval);
             _iterations = iterations;
         }
 
@@ -107,7 +108,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
         /// </summary>
         public void Report(string message, long i, long max)
         {
-            var currentPercentage = (int)System.Math.Round((i / (double)max) * 10, 0);
+            var currentPercentage = (int) System.Math.Round((i / (double) max) * 10, 0);
             if (_previousPercentage == currentPercentage) return;
             Log.Information(_name + ":" + message, currentPercentage * 10);
             _previousPercentage = currentPercentage;
@@ -119,7 +120,8 @@ namespace Itinero.Transit.Tests.Functional.Performance
         public void Stop(string message)
         {
             if (_memoryUsageTimer != null)
-            { // only dispose and stop when there IS a timer.
+            {
+                // only dispose and stop when there IS a timer.
                 _memoryUsageTimer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
                 _memoryUsageTimer.Dispose();
             }
@@ -127,7 +129,8 @@ namespace Itinero.Transit.Tests.Functional.Performance
             if (!_ticks.HasValue) return;
             lock (_memoryUsageLog)
             {
-                var seconds = new TimeSpan(DateTime.Now.Ticks - _ticks.Value - _memoryUsageLoggingDuration).TotalMilliseconds / 1000.0;
+                var seconds = new TimeSpan(DateTime.Now.Ticks - _ticks.Value - _memoryUsageLoggingDuration)
+                                  .TotalMilliseconds / 1000.0;
                 var secondsPerIteration = seconds / _iterations;
 
                 GC.Collect();
@@ -136,41 +139,25 @@ namespace Itinero.Transit.Tests.Functional.Performance
 
                 if (!string.IsNullOrWhiteSpace(message))
                 {
-                    message = ":" + message;
+                    message = ": "+message;
                 }
 
+                var memUsage = $"Memory: {memoryDiff}";
+                if (_memoryUsageLog.Count > 0)
+                {
+                    // there was memory usage logging.
+                    var max = _memoryUsageLog.Max();
+                    memUsage = " mem usage: {max}";
+                }
+
+                var iterationMessage = "";
                 if (_iterations > 1)
                 {
-                    if (_memoryUsageLog.Count > 0)
-                    {
-                        // there was memory usage logging.
-                        var max = _memoryUsageLog.Max();
-                        Log.Information(string.Format("Spent {0}s({1}s/r):" + _name + message,
-                            seconds.ToString("F3"), secondsPerIteration.ToString("F3"), memoryDiff, max));
-                    }
-                    else
-                    {
-                        // no memory usage logged.
-                        Log.Information(string.Format("Spent {0}s:({1}s/r)" + _name + message,
-                            seconds.ToString("F3"), secondsPerIteration.ToString("F3"), memoryDiff));
-                    }
+                    iterationMessage = $"(* {_iterations} = {seconds:F3}s total) ";
                 }
-                else
-                {
-                    if (_memoryUsageLog.Count > 0)
-                    {
-                        // there was memory usage logging.
-                        var max = _memoryUsageLog.Max();
-                        Log.Information(string.Format("Spent {0}s:" + _name + message,
-                            seconds.ToString("F3"), memoryDiff, max));
-                    }
-                    else
-                    {
-                        // no memory usage logged.
-                        Log.Information(string.Format("Spent {0}s:" + _name + message,
-                            seconds.ToString("F3"), memoryDiff));
-                    }
-                }
+                
+                
+                Log.Information($"{_name}: Spent {secondsPerIteration:F3}s {iterationMessage}{memUsage} {message}");
             }
         }
     }

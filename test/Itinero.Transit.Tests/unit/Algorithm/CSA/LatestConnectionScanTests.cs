@@ -6,14 +6,18 @@ using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Itinero.Transit.Tests.unit.Algorithm.CSA
 {
-    public class EarliestConnectionScanTests
+    public class LatestConnectionScanTests : SuperTest
     {
-        
+        public LatestConnectionScanTests(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
-        public void SimpleEasTest()
+        public void SimpleLasTest()
         {
             var db = Db.GetDefaultTestDb();
             var stops = Db.GetDefaultStopsDb();
@@ -23,30 +27,31 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
                 TransferStats.ProfileTransferCompare
             );
 
-            var eas = new EarliestConnectionScan<TransferStats>(
-                (0, 0), (0, 1), db.GetConn(0).DepartureTime, db.GetConn(0).DepartureTime + 60 * 60 * 6,
+            var Las = new LatestConnectionScan<TransferStats>(
+                (0, 0), (0, 1),
+                new DateTime(2018, 12, 04, 16, 00, 00), new DateTime(2018, 12, 04, 18, 00, 00),
                 profile
             );
 
-            var j = eas.CalculateJourney();
+            var j = Las.CalculateJourney();
 
             Assert.NotNull(j);
             Assert.Equal((uint) 0, j.Connection);
 
 
-            eas = new EarliestConnectionScan<TransferStats>(
-                (0,0),(0, 2), db.GetConn(0).DepartureTime, db.GetConn(0).DepartureTime + 60 * 60 * 2,
+            Las = new LatestConnectionScan<TransferStats>(
+                (0, 0), (0, 2), db.GetConn(0).DepartureTime, db.GetConn(0).DepartureTime + 60 * 60 * 2,
                 profile
             );
 
-            j = eas.CalculateJourney();
+            j = Las.CalculateJourney();
 
             Assert.NotNull(j);
             Assert.Equal((uint) 1, j.Connection);
         }
-        
+
         [Fact]
-        public void EarliestConnectionScan_ShouldFindOneConnectionJourney()
+        public void LatestConnectionScan_ShouldFindOneConnectionJourney()
         {
             // build a one-connection db.
             var stopsDb = new StopsDb();
@@ -61,14 +66,14 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
             connectionsDb.Add(stop1, stop2, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 0);
 
-            
+
             var profile = new Profile<TransferStats>(
                 connectionsDb, stopsDb, new InternalTransferGenerator(), new TransferStats(),
                 TransferStats.ProfileTransferCompare);
-            var eas = new EarliestConnectionScan<TransferStats>(
+            var Las = new LatestConnectionScan<TransferStats>(
                 stop1, stop2, new DateTime(2018, 12, 04, 16, 00, 00), new DateTime(2018, 12, 04, 19, 00, 00),
                 profile);
-            var journey = eas.CalculateJourney();
+            var journey = Las.CalculateJourney();
 
             Assert.NotNull(journey);
             Assert.Equal(2, journey.AllParts().Count());

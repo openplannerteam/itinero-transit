@@ -36,6 +36,8 @@ namespace Itinero.IO.LC
         // Indicates if connections can not be taken due to external reasons (e.g. earlier scan)
         private readonly IConnectionFilter _filter;
 
+        private readonly Journey<T> _possibleJourney;
+
         /// <summary>
         /// Rules how much penalty is given to go from one connection to another
         /// </summary>
@@ -115,7 +117,8 @@ namespace Itinero.IO.LC
             (uint, uint) arrivalStop,
             UnixTime earliestDeparture, UnixTime lastArrival,
             Profile<T> profile,
-            IConnectionFilter filter = null)
+            IConnectionFilter filter = null,
+            Journey<T> possibleJourney = null)
         {
             if (Equals(departureStop, arrivalStop))
             {
@@ -139,6 +142,7 @@ namespace Itinero.IO.LC
             _empty = new ParetoFrontier<T>(_comparator);
             _statsFactory = profile.StatsFactory;
             _transferPolicy = profile.WalksGenerator;
+            _possibleJourney = possibleJourney;
             _filter = filter;
             filter?.CheckWindow(_earliestDeparture, _lastArrival);
             Log.Information($"Searching PCS from {_departureLocation} to {_targetLocation}," +
@@ -151,17 +155,8 @@ namespace Itinero.IO.LC
             var enumerator = _connectionsProvider.GetDepartureEnumerator();
 
             // Move the enumerator after the last arrival time
-            enumerator.MovePrevious();
-            while (enumerator.DepartureTime > _lastArrival)
-            {
-                if (!enumerator.MovePrevious())
-                {
-                    throw new Exception(
-                        "Could not calculate PCS: departure time not found. Either to little connections are loaded in the database, or the query is to far in the future or in the past");
-                }
-            }
-
-
+            enumerator.MoveToPrevious(_lastArrival);
+            
             while (enumerator.DepartureTime >= _earliestDeparture)
             {
                 IntegrateBatch(enumerator);
@@ -325,19 +320,28 @@ namespace Itinero.IO.LC
             {
                 if (!(frontier[i].Time >= c.ArrivalTime))
                 {
-                 /*  Log.Warning(
-                        $"This trip is nonlinear! TripId: {c.TripId}; the current connection {c.Id} arrives at {c.ArrivalTime} " +
-                        $"whereas the rest of the trip starts at {frontier[i].Time}");
-                        */
+                    /*  Log.Warning(
+                           $"This trip is nonlinear! TripId: {c.TripId}; the current connection {c.Id} arrives at {c.ArrivalTime} " +
+                           $"whereas the rest of the trip starts at {frontier[i].Time}");
+                           */
                 }
 
                 if (!(frontier[i].Location == c.ArrivalStop))
                 {
-                   /*Log.Warning($"This trip is loops! TripId: {c.TripId}; the current connection {c.Id} arrives at {c.ArrivalTime} " +
-                    $"whereas the rest of the trip starts at {frontier[i].Time}");*/
+                    /*Log.Warning($"This trip is loops! TripId: {c.TripId}; the current connection {c.Id} arrives at {c.ArrivalTime} " +
+                     $"whereas the rest of the trip starts at {frontier[i].Time}");*/
                 }
 
-                frontier[i] = frontier[i].ChainBackward(c);
+                var newFrontier = frontier[i].ChainBackward(c);
+                if (FilterJourney(newFrontier))
+                {
+                    frontier[i] = newFrontier;
+                }
+                else
+                {
+                    frontier.RemoveAt(i);
+                    i--;
+                }
             }
 
             return pareto;
@@ -394,6 +398,44 @@ namespace Itinero.IO.LC
             frontier.AddToFrontier(j);
 
             return frontier;
+        }
+
+        /// <summary>
+        /// Sometimes, we know that a journey will never be taken.
+        ///
+        /// For example, if one journey is already known to work,
+        /// we know that it has no use to keep track of a journey which performs worse, as it'll be pruned later on anyway
+        ///
+        /// This helps in limiting the growth of the trees
+        ///
+        /// Returns false if no need to add the journey
+        /// </summary>
+        /// <returns></returns>
+        public bool FilterJourney(Journey<T> j)
+        {
+            //*
+            if (_possibleJourney != null)
+            {
+                var duel = _comparator.ADominatesB(_possibleJourney, j);
+                if (duel < 0)
+                {
+                    return false;
+                }
+            }
+               /*/
+            
+
+            if (_stationJourneys.ContainsKey(_departureLocation))
+            {
+                var frontier = _stationJourneys[_departureLocation];
+                if (_comparator.ADominatesB(frontier.Frontier[0], j) < 0)
+                {
+                    return false;
+                }
+            }
+
+//*/
+            return true;
         }
     }
 }

@@ -26,6 +26,9 @@ namespace Itinero.Transit.Journeys
     {
         public static readonly Journey<T> InfiniteJourney = new Journey<T>();
 
+        public static readonly Journey<T> NegativeInfiniteJourney
+            = new Journey<T>(UnixTime.MinValue);
+
         /// <summary>
         /// The first link of the journey. Can be useful when in need of the real departure time
         /// </summary>
@@ -107,7 +110,7 @@ namespace Itinero.Transit.Journeys
         /// There is a singleton availabe: Journey.InfiniteJourney.
         /// This object is used when needing a dummy object to compare to, e.g. as journey to locations that can't be reached
         /// </summary>
-        private Journey()
+        private Journey(UnixTime time = UnixTime.MaxValue)
         {
             Root = this;
             PreviousLink = this;
@@ -158,6 +161,7 @@ namespace Itinero.Transit.Journeys
             Stats = initialStats;
             TripId = uint.MaxValue;
         }
+
 
         /// <summary>
         /// Chaining constructor
@@ -270,7 +274,8 @@ namespace Itinero.Transit.Journeys
 
             if (SpecialConnection)
             {
-                buildOn = buildOn.ChainSpecial(Connection, PreviousLink.Time, PreviousLink.Location, PreviousLink.TripId);
+                buildOn = buildOn.ChainSpecial(Connection, PreviousLink.Time, PreviousLink.Location,
+                    PreviousLink.TripId);
             }
             else
             {
@@ -306,11 +311,11 @@ namespace Itinero.Transit.Journeys
                 return restOfTheJourney.ChainSpecial(Connection, Time, Location, PreviousLink.TripId);
             }
 
-         /*   if (PreviousLink.SpecialConnection)
-            {
-                var restOfTheJourney = PreviousLink.PrunedWithoutLast();
-                return restOfTheJourney.Chain(Connection, Time, Location, TripId);
-            }*/
+            /*   if (PreviousLink.SpecialConnection)
+               {
+                   var restOfTheJourney = PreviousLink.PrunedWithoutLast();
+                   return restOfTheJourney.Chain(Connection, Time, Location, TripId);
+               }*/
 
 
             return PreviousLink.PrunedWithoutLast();
@@ -349,7 +354,8 @@ namespace Itinero.Transit.Journeys
                         return
                             $"Walk to {location} in {Time - PreviousLink.Time} till {DateTimeExtensions.FromUnixTime(Time):HH:mm} seconds";
                     case TRANSFER:
-                        return $"Transfer/Wait for {Time - PreviousLink.Time} seconds till {DateTimeExtensions.FromUnixTime(Time):HH:mm} in {location}";
+                        return
+                            $"Transfer/Wait for {Time - PreviousLink.Time} seconds till {DateTimeExtensions.FromUnixTime(Time):HH:mm} in {location}";
                     case int.MaxValue:
                         return "Infinite journey";
                 }
@@ -357,7 +363,7 @@ namespace Itinero.Transit.Journeys
                 throw new ArgumentException($"Unknown Special Connection code {Connection}");
             }
 
-            return $"Connection {Connection} to {location}, arriving at {DateTimeExtensions.FromUnixTime(Time):HH:mm}";
+            return $"Connection {Connection} to {location}, arriving at {DateTimeExtensions.FromUnixTime(Time):yyyy-MM-dd HH:mm}";
         }
 
 

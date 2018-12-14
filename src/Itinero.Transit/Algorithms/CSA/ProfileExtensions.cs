@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Itinero.IO.LC;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journeys;
+using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
@@ -34,18 +35,27 @@ namespace Itinero.Transit.Algorithms.CSA
             );
             var earliestJourney = eas.CalculateJourney(
                 (d, d0) => lastArrivalTime
-                );
+            );
 
+
+            var las = new LatestConnectionScan<T>(
+                depLocation, arrivalLocaiton,
+                departureTime, lastArrivalTime,
+                profile
+            );
+            var latestJourney = las.CalculateJourney(
+                (d, d0) => departureTime
+            );
+            Log.Information(latestJourney.ToString());
             var pcs = new ProfiledConnectionScan<T>(
                 depLocation, arrivalLocaiton,
                 departureTime, lastArrivalTime,
                 profile,
                 eas
             );
-            
-            
-            
-            return pcs.CalculateJourneys(); 
+
+
+            return pcs.CalculateJourneys();
         }
     }
 }

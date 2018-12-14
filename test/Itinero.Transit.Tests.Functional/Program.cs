@@ -7,6 +7,7 @@ using Itinero.Transit.Data;
 using Itinero.Transit.Journeys;
 using Itinero.Transit.Tests.Functional.Algorithms.CSA;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
+using Itinero.Transit.Tests.Functional.Data;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
@@ -33,11 +34,13 @@ namespace Itinero.Transit.Tests.Functional
             // test loading a connections db
             var db = IO.LC.LoadConnectionsTest.Default.Run((DateTime.Now.Date, new TimeSpan(1, 0, 0, 0)));
 
-            // test enumerating a connections db.
             Data.ConnectionsDbDepartureEnumeratorTest.Default.Run(db.connections);
-            TestEAS(db);
             TestClosestStopsAndRouting(db);
-            //*/
+            var count = CountArrivingConnections.Default.Run((db.connections, (89825448, 0)));
+            Assert.True(count > 0);
+            Log.Information($"Found {count} connections arriving at location");
+            TestLAS(db);
+            // TestEAS(db);
             TestPCS(db);
         }
 
@@ -50,20 +53,24 @@ namespace Itinero.Transit.Tests.Functional
                     DateTime.Now.Date.AddHours(10),
                     DateTime.Now.Date.AddHours(12)));
             Assert.True(journeys.Any());
-            PrintJourneys(journeys, db.stops);
+            //   PrintJourneys(journeys, db.stops);
             journeys = ProfiledConnectionScanTest.Default.Run(
                 (db.connections, db.stops, BruggeUri,
                     Poperinge,
                     DateTime.Now.Date.AddHours(10),
                     DateTime.Now.Date.AddHours(13)));
             Assert.True(journeys.Any());
-            PrintJourneys(journeys, db.stops);
-            journeys = ProfiledConnectionScanTest.Default.Run(
+            //   PrintJourneys(journeys, db.stops);
+            journeys = ProfiledConnectionScanTest.Default.RunPerformance(
                 (db.connections, db.stops, Poperinge,
                     Vielsalm,
                     DateTime.Now.Date.AddHours(10),
-                    DateTime.Now.Date.AddHours(20)));
+                    DateTime.Now.Date.AddHours(20)),
+                10);
             Assert.True(journeys.Any());
+            
+            
+            
             PrintJourneys(journeys, db.stops);
         }
 
@@ -86,9 +93,9 @@ namespace Itinero.Transit.Tests.Functional
                 50.41119778957908, 1000), 100);
             var stop3 = StopSearchTest.Default.RunPerformance((db.stops, 3.329758644104004,
                 50.99052927907061, 1000), 100);
-            EarliestConnectionScanTest.Default.Run((db.connections, db.stops, stop1.GlobalId,
+            EarliestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, stop1.GlobalId,
                 stop2.GlobalId,
-                DateTime.Now.Date.AddHours(10)));
+                DateTime.Now.Date.AddHours(10)), 100);
         }
 
         private static void TestEAS((ConnectionsDb connections, StopsDb stops) db)
@@ -106,6 +113,30 @@ namespace Itinero.Transit.Tests.Functional
             json = journey.ToGeoJson(db.stops);
             journey = EarliestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, BruggeUri, Vielsalm,
                 DateTime.Now.Date.AddHours(10)), 100);
+            json = journey.ToGeoJson(db.stops);
+        }
+
+
+        private static void TestLAS((ConnectionsDb connections, StopsDb stops) db)
+        {
+            // run basic EAS test.
+            var journey = LatestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, BruggeUri,
+                GentUri,
+                DateTime.Now.Date.AddHours(10)), 100);
+            var json = journey.ToGeoJson(db.stops);
+            journey = LatestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, GentUri, BrusselZuid,
+                DateTime.Now.Date.AddHours(10)), 100);
+            Log.Information(journey.ToString(db.stops.GetReader()));
+            json = journey.ToGeoJson(db.stops);
+            journey = LatestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, BruggeUri, Poperinge,
+                DateTime.Now.Date.AddHours(10)), 100);
+            Log.Information(journey.ToString(db.stops.GetReader()));
+
+            json = journey.ToGeoJson(db.stops);
+            journey = LatestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, BruggeUri, Vielsalm,
+                DateTime.Now.Date.AddHours(10)), 100);
+            Log.Information(journey.ToString(db.stops.GetReader()));
+
             json = journey.ToGeoJson(db.stops);
         }
 

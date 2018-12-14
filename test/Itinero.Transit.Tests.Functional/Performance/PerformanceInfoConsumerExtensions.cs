@@ -110,7 +110,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
         /// </summary>
         public static TResult TestPerf<T, TResult>(this Func<T, PerformanceTestResult<TResult>> func, string name, T a, int count)
         {
-            var info = new PerformanceInfoConsumer(name);
+            var info = new PerformanceInfoConsumer(name, count);
             info.Start();
             var res = func(a);
             count--;
