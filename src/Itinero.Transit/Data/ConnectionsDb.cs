@@ -682,9 +682,14 @@ namespace Itinero.Transit.Data
             /// <summary>
             /// Moves to the next connection.
             /// </summary>
-            /// <returns></returns>
-            public bool MoveNext()
+            /// <param name="dateTime">The date time to move to, gives the first connection after the given date time.</param>
+            /// <returns>True if there is data.</returns>
+            public bool MoveNext(DateTime? dateTime = null)
             {
+                if (dateTime != null)
+                { // move to the given date.
+                    _date = (uint)DateTimeExtensions.ExtractDate(dateTime.Value.ToUnixTime());
+                }
                 if (_date == uint.MaxValue)
                 {
                     if (_db._earliestDate == uint.MaxValue) return false;
@@ -694,8 +699,8 @@ namespace Itinero.Transit.Data
 
                 while (true)
                 {
-                    if (!MoveNextIgnoreDate())
-                    { 
+                    if (!MoveNextIgnoreDate(dateTime))
+                    {
                         // move to next date. 
                         _date = (uint)DateTimeExtensions.AddDay(_date);
                         if (_date > _db._latestDate)
@@ -713,6 +718,8 @@ namespace Itinero.Transit.Data
                             return true;
                         }
                     }
+                    
+                    dateTime = null; // no use trying this again.
                 }
             }
 
@@ -720,8 +727,16 @@ namespace Itinero.Transit.Data
             /// Moves this enumerator to the next connection ignoring the data component.
             /// </summary>
             /// <returns></returns>
-            private bool MoveNextIgnoreDate()
+            private bool MoveNextIgnoreDate(DateTime? dateTime = null)
             {
+                if (dateTime != null)
+                { // move directly to the actual window.
+                    _window = (uint) Math.Floor(dateTime.Value.TimeOfDay.TotalSeconds /
+                                                _db._windowSizeInSeconds);
+                    _windowSize = _db._departureWindowPointers[_window * 2 + 1];
+                    _windowPosition = 0;
+                }
+
                 if (_window == uint.MaxValue)
                 {
                     // no data, find first window with data.
@@ -782,6 +797,17 @@ namespace Itinero.Transit.Data
 
                 // move the reader to the correct location.
                 _reader.MoveTo(_db._departurePointers[_windowPointer + _windowPosition]);
+                if (dateTime != null)
+                { // keep move next until we reach a departure time after the given date time.
+                    var unixTime = dateTime.Value.ToUnixTime();
+                    while (unixTime > _reader.DepartureTime)
+                    { // move next.
+                        if (!this.MoveNextIgnoreDate())
+                        { // connection after this departure time doesn't exist.
+                            return false;
+                        }
+                    }
+                }
 
                 return true;
             }
@@ -789,7 +815,7 @@ namespace Itinero.Transit.Data
             /// <summary>
             /// Moves to the previous connection.
             /// </summary>
-            /// <returns></returns>
+            /// <returns>True if there is data.</returns>
             public bool MovePrevious()
             {
                 if (_date == uint.MaxValue)
