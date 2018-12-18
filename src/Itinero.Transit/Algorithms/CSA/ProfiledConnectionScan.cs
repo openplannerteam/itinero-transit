@@ -151,7 +151,7 @@ namespace Itinero.IO.LC
             var enumerator = _connectionsProvider.GetDepartureEnumerator();
 
             // Move the enumerator after the last arrival time
-            enumerator.MoveToPrevious(_lastArrival);
+            enumerator.MovePrevious(_lastArrival);
 
             while (enumerator.DepartureTime >= _earliestDeparture)
             {
