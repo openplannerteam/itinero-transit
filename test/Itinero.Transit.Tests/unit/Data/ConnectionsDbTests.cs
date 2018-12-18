@@ -325,5 +325,44 @@ namespace Itinero.Transit.Tests.Data
             
             Assert.False(enumerator.MoveNext());
         }
+        
+        [Fact]
+        public void ConnectionsDbEnumerator_ShouldMovePreviousToDateTimeAndEnumerateFromThere()
+        {
+            var db = new ConnectionsDb(60);
+            db.Add((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545", new DateTime(2018, 11, 14, 2, 3, 9), 1024, 10245);
+            db.Add((100, 0), (100, 1), "http://irail.be/connections/8892056/20181216/IC544", new DateTime(2018, 11, 13, 4, 3, 9), 54, 10245);
+            db.Add((100, 0), (100, 1), "http://irail.be/connections/8821311/20181216/IC1822", new DateTime(2018, 11, 14, 2, 3, 10), 102, 10245);
+            db.Add((100, 0), (100, 1), "http://irail.be/connections/8813045/20181216/IC3744", new DateTime(2018, 11, 15, 5, 3, 9), 4500, 10245);
+            db.Add((100, 0), (100, 1), "http://irail.be/connections/8812005/20181216/S11793", new DateTime(2018, 11, 14, 10, 3, 35), 3600, 10245);
+
+            var enumerator = db.GetDepartureEnumerator();
+            Assert.NotNull(enumerator);
+            Assert.True(enumerator.MovePrevious(new DateTime(2018, 11, 16)));
+            Assert.Equal("http://irail.be/connections/8813045/20181216/IC3744", enumerator.GlobalId);
+            Assert.True(enumerator.MovePrevious());
+            Assert.Equal("http://irail.be/connections/8812005/20181216/S11793", enumerator.GlobalId);
+            Assert.True(enumerator.MovePrevious());
+            Assert.Equal("http://irail.be/connections/8821311/20181216/IC1822", enumerator.GlobalId);
+            Assert.True(enumerator.MovePrevious());
+            Assert.Equal("http://irail.be/connections/8813003/20181216/IC1545", enumerator.GlobalId);
+            Assert.True(enumerator.MovePrevious());
+            Assert.Equal("http://irail.be/connections/8892056/20181216/IC544", enumerator.GlobalId);
+            Assert.False(enumerator.MovePrevious());
+            
+            Assert.True(enumerator.MovePrevious(new DateTime(2018, 11, 14, 11, 0, 0)));
+            Assert.Equal("http://irail.be/connections/8812005/20181216/S11793", enumerator.GlobalId);
+            Assert.True(enumerator.MovePrevious());
+            Assert.Equal("http://irail.be/connections/8821311/20181216/IC1822", enumerator.GlobalId);
+            Assert.True(enumerator.MovePrevious());
+            Assert.Equal("http://irail.be/connections/8813003/20181216/IC1545", enumerator.GlobalId);
+            Assert.True(enumerator.MovePrevious());
+            Assert.Equal("http://irail.be/connections/8892056/20181216/IC544", enumerator.GlobalId);
+            Assert.False(enumerator.MovePrevious());
+            
+            Assert.True(enumerator.MovePrevious(new DateTime(2018, 11, 14, 0, 0, 0)));
+            Assert.Equal("http://irail.be/connections/8892056/20181216/IC544", enumerator.GlobalId);
+            Assert.False(enumerator.MovePrevious());
+        }
     }
 }
