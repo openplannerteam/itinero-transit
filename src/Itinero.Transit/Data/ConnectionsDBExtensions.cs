@@ -20,6 +20,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// Moves the enumerator backwards in time until the specified time is reached
         /// </summary>
+        /// <param name="enumerator"></param>
         /// <param name="time"></param>
         public static void MoveToPrevious(this ConnectionsDb.DepartureEnumerator enumerator, ulong time)
         {

@@ -38,6 +38,8 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             // verify result.
             Assert.NotNull(journey);
 
+            Information(journey.ToString(input.stops));
+            
             return journey;
         }
     }

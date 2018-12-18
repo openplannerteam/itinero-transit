@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Itinero.Transit.Data;
 
 // ReSharper disable BuiltInTypeReferenceStyle
@@ -80,7 +79,7 @@ namespace Itinero.Transit.Journeys
 
         // ReSharper disable once InconsistentNaming
         public const uint WALK = 3;
-        
+
         /// <summary>
         /// Indicates that this journey represents a choice
         /// </summary>
@@ -191,6 +190,16 @@ namespace Itinero.Transit.Journeys
 
         public Journey(Journey<T> optionA, Journey<T> optionB)
         {
+            if (optionA == null)
+            {
+                throw new ArgumentNullException("optionA");
+            }
+
+            if (optionB == null)
+            {
+                throw new ArgumentNullException("optionB");
+            }
+
             AlternativePreviousLink = optionB;
             // Option A is seen as the 'true' predecessor'
             Root = optionA.Root;
@@ -208,7 +217,7 @@ namespace Itinero.Transit.Journeys
         /// Chaining constructor
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
-        private Journey<T> Chain(uint connection, UnixTime arrivalTime, (uint localTileId, uint localId) location,
+        internal Journey<T> Chain(uint connection, UnixTime arrivalTime, (uint localTileId, uint localId) location,
             uint tripId)
         {
             return new Journey<T>(
@@ -290,86 +299,27 @@ namespace Itinero.Transit.Journeys
             return SpecialConnection ? PreviousLink?.LastTripId() : TripId;
         }
 
-        public UnixTime StartTime()
+        /// <summary>
+        /// Departure time of this journey part
+        /// </summary>
+        /// <returns></returns>
+        public UnixTime DepartureTime()
         {
             if (SpecialConnection && Connection == GENESIS)
             {
-                return Time;
+                
             }
-
+            
             return PreviousLink.Time;
         }
 
-        public List<Journey<T>> AllParts()
-        {
-            var parts = new List<Journey<T>>();
-            var current = this;
-            do
-            {
-                parts.Add(current);
-                current = current.PreviousLink;
-            } while (current != null && !ReferenceEquals(current, current.PreviousLink));
-
-            return parts;
-        }
-
         /// <summary>
-        /// Creates a new journey which, is the equivalent to the current journey, but in reverse order
+        /// Arrival time of this journey part
         /// </summary>
         /// <returns></returns>
-        public Journey<T> Reversed()
+        public UnixTime ArrivalTime()
         {
-            return Reversed(new Journey<T>(Location, Time, Stats.EmptyStat(), Root.TripId));
-        }
-
-        private Journey<T> Reversed(Journey<T> buildOn)
-        {
-            if (SpecialConnection && Connection == GENESIS)
-            {
-                // We have arrived at the end of the journey, all information should be added already
-                return buildOn;
-            }
-
-            if (SpecialConnection)
-            {
-                buildOn = buildOn.ChainSpecial(Connection, PreviousLink.Time, PreviousLink.Location,
-                    PreviousLink.TripId);
-            }
-            else
-            {
-                buildOn = buildOn.Chain(Connection, PreviousLink.Time, PreviousLink.Location,
-                    TripId);
-            }
-
-
-            return PreviousLink.Reversed(buildOn);
-        }
-
-
-        public Journey<T> Pruned()
-        {
-            var restOfTheJourney = PreviousLink.PrunedWithoutLast();
-            return restOfTheJourney.Chain(Connection, Time, Location, TripId);
-        }
-
-        /// <summary>
-        /// Creates a new journey, where only important stops are retained. The intermediate stops are scrapped
-        /// </summary>
-        /// <returns></returns>
-        private Journey<T> PrunedWithoutLast()
-        {
-            if (SpecialConnection && Connection == GENESIS)
-            {
-                return this;
-            }
-
-            if (SpecialConnection)
-            {
-                var restOfTheJourney = PreviousLink.PrunedWithoutLast();
-                return restOfTheJourney.ChainSpecial(Connection, Time, Location, PreviousLink.TripId);
-            }
-
-            return PreviousLink.PrunedWithoutLast();
+            return Time;
         }
 
         public override string ToString()
@@ -434,8 +384,9 @@ namespace Itinero.Transit.Journeys
                         return
                             $"Transfer/Wait for {Time - PreviousLink.Time} seconds till {DateTimeExtensions.FromUnixTime(Time):HH:mm} in {location}";
                     case JOINED_JOURNEYS:
-                        return $"Choose a journey: there is a equivalent journey available. Continuing print via one arbitrary option";
-                    
+                        return
+                            $"Choose a journey: there is a equivalent journey available. Continuing print via one arbitrary option";
+
                     case int.MaxValue:
                         return "Infinite journey";
                 }

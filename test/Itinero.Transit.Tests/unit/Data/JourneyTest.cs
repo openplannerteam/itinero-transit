@@ -49,7 +49,7 @@ namespace Itinero.Transit.Tests.Data
             Assert.Equal((uint) 23 * 60, j.Stats.TravelTime);
             Assert.Equal((uint) 1, j.Stats.NumberOfTransfers);
 
-            Assert.Equal(reader.DepartureTime, j.StartTime());
+            Assert.Equal(reader.DepartureTime, j.DepartureTime());
         }
 
 
@@ -85,7 +85,7 @@ namespace Itinero.Transit.Tests.Data
             j = j.ChainBackward(reader);
 
 
-            var r = j.Reversed();
+            var r = j.Reversed()[0];
             Pr(" ---- Original ----");
             Pr(j.ToString());
             Pr(" ---- Reversed ----");

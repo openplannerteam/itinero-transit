@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Tests.Functional.Algorithms.CSA;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
@@ -9,7 +8,6 @@ using Itinero.Transit.Tests.Functional.Data;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
-using Xunit;
 
 // ReSharper disable PossibleMultipleEnumeration
 
@@ -22,101 +20,121 @@ namespace Itinero.Transit.Tests.Functional
         private const string Poperinge = "http://irail.be/stations/NMBS/008896735";
         private const string Vielsalm = "http://irail.be/stations/NMBS/008845146";
         private const string BrusselZuid = "http://irail.be/stations/NMBS/008814001";
+        private const string Kortrijk = "http://irail.be/stations/NMBS/008896008";
 
-        public static void Main()
+
+        private static int _nrOfRuns = 1;
+
+        public static void Main(string[] args)
         {
+            if (args.Length > 0)
+            {
+                _nrOfRuns = int.Parse(args[0]);
+            }
+
             EnableLogging();
             Log.Information("Starting the Functional Tests...");
             Log.Information("If you get a deserialization-exception: clear the cache");
 
+            var date = DateTime.Now.Date; // LOCAL TIMES! //
             // test loading a connections db
-            var db = IO.LC.LoadConnectionsTest.Default.Run((DateTime.Now.Date, new TimeSpan(1, 0, 0, 0)));
+            var db = IO.LC.LoadConnectionsTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
+            //         ConnectionsDbDepartureEnumeratorTest.Default.Run(db.connections);
+            //         TestClosestStopsAndRouting(date, db);
+            //         TestLas(date, db);
+            //         TestPcs(date, db);
+            //         TestEas(date, db);
 
-            ConnectionsDbDepartureEnumeratorTest.Default.Run(db.connections);
-            TestClosestStopsAndRouting(db);
-            TestLas(db);
-            TestEas(db);
-            TestPcs(db);
+            CompareEasPcs(date, db);
         }
 
-
-        private static void TestPcs((ConnectionsDb connections, StopsDb stops) db)
+        private static void CompareEasPcs(DateTime date, (ConnectionsDb connections, StopsDb stops) db)
         {
-            var journeys = ProfiledConnectionScanTest.Default.RunPerformance(
-                (db.connections, db.stops, BruggeUri,
-                    GentUri,
-                    DateTime.Now.Date.AddHours(10),
-                    DateTime.Now.Date.AddHours(12)), 100);
-            Assert.True(journeys.Any());
-            //   PrintJourneys(journeys, db.stops);
-            journeys = ProfiledConnectionScanTest.Default.RunPerformance(
-                (db.connections, db.stops, BruggeUri,
-                    Poperinge,
-                    DateTime.Now.Date.AddHours(10),
-                    DateTime.Now.Date.AddHours(13)), 100);
-            Assert.True(journeys.Any());
-            //   PrintJourneys(journeys, db.stops);
-            journeys = ProfiledConnectionScanTest.Default.RunPerformance(
+            EasPcsComparison.Default.Run(
                 (db.connections, db.stops, Poperinge,
                     Vielsalm,
-                    DateTime.Now.Date.AddHours(10),
-                    DateTime.Now.Date.AddHours(20)),
-                100);
-            Assert.True(journeys.Any());
+                    date.Date.AddHours(6),
+                    date.Date.AddHours(20))
+            );
         }
 
-        private static void TestClosestStopsAndRouting((ConnectionsDb connections, StopsDb stops) db)
+        private static void TestPcs(DateTime date, (ConnectionsDb connections, StopsDb stops) db)
+        {
+            ProfiledConnectionScanTest.Default.RunPerformance(
+                (db.connections, db.stops, BruggeUri,
+                    GentUri,
+                    date.Date.AddHours(10),
+                    date.Date.AddHours(12)), _nrOfRuns);
+            ProfiledConnectionScanTest.Default.RunPerformance(
+                (db.connections, db.stops, BruggeUri,
+                    Poperinge,
+                    date.Date.AddHours(10),
+                    date.Date.AddHours(13)), _nrOfRuns);
+            ProfiledConnectionScanTest.Default.RunPerformance(
+                (db.connections, db.stops, BruggeUri,
+                    Kortrijk,
+                    date.Date.AddHours(6),
+                    date.Date.AddHours(20)),
+                _nrOfRuns);
+            ProfiledConnectionScanTest.Default.RunPerformance(
+                (db.connections, db.stops, Poperinge,
+                    Vielsalm,
+                    date.Date.AddHours(6),
+                    date.Date.AddHours(20)),
+                _nrOfRuns);
+        }
+
+        private static void TestClosestStopsAndRouting(DateTime date, (ConnectionsDb connections, StopsDb stops) db)
         {
             var stop1 = StopSearchTest.Default.RunPerformance((db.stops, 4.336209297180176,
-                50.83567623496864, 1000), 100);
+                50.83567623496864, 1000), _nrOfRuns);
             var stop2 = StopSearchTest.Default.RunPerformance((db.stops, 4.436824321746825,
-                50.41119778957908, 1000), 100);
+                50.41119778957908, 1000), _nrOfRuns);
             StopSearchTest.Default.RunPerformance((db.stops, 3.329758644104004,
-                50.99052927907061, 1000), 100);
+                50.99052927907061, 1000), _nrOfRuns);
             EarliestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, stop1.GlobalId,
                 stop2.GlobalId,
-                DateTime.Now.Date.AddHours(10)), 100);
+                date.Date.AddHours(10)), _nrOfRuns);
         }
 
-        private static void TestEas((ConnectionsDb connections, StopsDb stops) db)
+        private static void TestEas(DateTime date, (ConnectionsDb connections, StopsDb stops) db)
         {
             EarliestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, BruggeUri,
                 GentUri,
-                DateTime.Now.Date.AddHours(10)), 100);
-
+                date.Date.AddHours(10)), _nrOfRuns);
             EarliestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, GentUri, BrusselZuid,
-                DateTime.Now.Date.AddHours(10)), 100);
+                date.Date.AddHours(10)), _nrOfRuns);
 
             EarliestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, BruggeUri, Poperinge,
-                DateTime.Now.Date.AddHours(10)), 100);
+                date.Date.AddHours(10)), _nrOfRuns);
 
             EarliestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, BruggeUri, Vielsalm,
-                DateTime.Now.Date.AddHours(10)), 100);
+                date.Date.AddHours(10)), _nrOfRuns);
             EarliestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, Poperinge,
                 Vielsalm,
-                DateTime.Now.Date.AddHours(10)), 100);
+                date.Date.AddHours(10)), _nrOfRuns);
         }
 
 
-        private static void TestLas((ConnectionsDb connections, StopsDb stops) db)
+        private static void TestLas(DateTime date, (ConnectionsDb connections, StopsDb stops) db)
         {
-            // run basic EAS test.
             LatestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, BruggeUri,
                 GentUri,
-                DateTime.Now.Date.AddHours(10)), 100);
+                date.Date.AddHours(10)), _nrOfRuns);
             LatestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, GentUri, BrusselZuid,
-                DateTime.Now.Date.AddHours(10)), 100);
+                date.Date.AddHours(10)), _nrOfRuns);
             LatestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, BruggeUri, Poperinge,
-                DateTime.Now.Date.AddHours(10)), 100);
+                date.Date.AddHours(10)), _nrOfRuns);
 
             LatestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, BruggeUri, Vielsalm,
-                DateTime.Now.Date.AddHours(10)), 100);
+                date.Date.AddHours(10)), _nrOfRuns);
+            LatestConnectionScanTest.Default.RunPerformance((db.connections, db.stops, Poperinge, Vielsalm,
+                date.Date.AddHours(10)), _nrOfRuns);
         }
 
 
         private static void EnableLogging()
         {
-            // initialize serilog.
             var date = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             var logFile = Path.Combine("logs", $"log-{date}.txt");
             Log.Logger = new LoggerConfiguration()

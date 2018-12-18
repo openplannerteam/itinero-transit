@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
+using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
@@ -11,7 +12,6 @@ namespace Itinero.Transit.Algorithms.CSA
 
     /// <summary>
     /// Calculates the fastest journey from A to B starting at a given time; using CSA (forward A*).
-    /// It will download only the linked connections it needs.
     /// It does _not_ use footpath interlinks (yet)
     /// </summary>
     public class EarliestConnectionScan<T> : IConnectionFilter
@@ -74,8 +74,10 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
-        public EarliestConnectionScan(IEnumerable<(uint localTileId, uint localId)> userDepartureLocation,
-            List<(uint localTileId, uint localId)> userTargetLocation, Time earliestDeparture, Time lastDeparture,
+        public EarliestConnectionScan(
+            IEnumerable<(uint localTileId, uint localId)> userDepartureLocation,
+            List<(uint localTileId, uint localId)> userTargetLocation,
+            Time earliestDeparture, Time lastDeparture,
             Profile<T> profile)
         {
             _earliestDeparture = earliestDeparture;
@@ -117,7 +119,10 @@ namespace Itinero.Transit.Algorithms.CSA
             var lastDeparture = _lastDeparture;
             while (enumerator.DepartureTime <= lastDeparture)
             {
-                IntegrateBatch(enumerator);
+                if (!IntegrateBatch(enumerator))
+                {
+                    break;
+                }
 
                 // we have reached a new batch of departure times
                 // Let's first check if we can reach an end destination already
@@ -128,7 +133,7 @@ namespace Itinero.Transit.Algorithms.CSA
             // If we en up here, normally we should have found a route.
 
             var route = GetBestTime();
-            if (route.bestLocation == null)
+            if (route.bestTime == Time.MaxValue)
             {
                 // Sadly, we didn't find a route within the required time
                 return null;
@@ -149,7 +154,10 @@ namespace Itinero.Transit.Algorithms.CSA
             _filterEndTime = depArrivalToTimeout(journey.Root.Time, journey.Time);
             while (enumerator.DepartureTime < _filterEndTime)
             {
-                IntegrateBatch(enumerator);
+                if (!IntegrateBatch(enumerator))
+                {
+                    break;
+                }
             }
 
             return journey;
@@ -160,40 +168,20 @@ namespace Itinero.Transit.Algorithms.CSA
         /// Once all those connections are handled, the walks from the improved locations are batched
         /// </summary>
         /// <param name="enumerator"></param>
-        private void IntegrateBatch(ConnectionsDb.DepartureEnumerator enumerator)
+        private bool IntegrateBatch(ConnectionsDb.DepartureEnumerator enumerator)
         {
             var lastDepartureTime = enumerator.DepartureTime;
             do
             {
                 IntegrateConnection(enumerator);
 
-                /*   if (l.improvedLocation != LocId.MaxValue)
-                   {
-                       // The location has improved - we add it to the _knownDepartures
-                       
-                       // First, remove it from the previous departure time set
-                       if (!_knownDepartures.ContainsKey(l.previousTime))
-                       {
-                           _knownDepartures[l.previousTime].Remove(l.improvedLocation);
-                       }
-   
-                       if (!_knownDepartures.ContainsKey(enumerator.ArrivalTime))
-                       {
-                           _knownDepartures[enumerator.ArrivalTime] = new HashSet<ulong>();
-                       }
-   
-                       // We add it to the correct bucket
-                       _knownDepartures[enumerator.ArrivalTime].Add(l.improvedLocation);
-                   }
-                   */
                 if (!enumerator.MoveNext())
                 {
-                    throw new Exception(
-                        "Could not calculate Earliest Connection: enumerator depleted, the query is probably to far in the future or the database isn't loaded sufficiently");
+                    return false;
                 }
             } while (lastDepartureTime == enumerator.DepartureTime);
 
-            // The timeblock 
+            return true;
         }
 
 
@@ -213,15 +201,15 @@ namespace Itinero.Transit.Algorithms.CSA
 
             if (!_s.ContainsKey(c.DepartureStop))
             {
-                // The stop where this connection starts, is not yet reachable
-                // Abort
+                // we can not take this connection, the stop where this connection starts, is not yet reachable
                 return;
             }
 
             var journeyTillDeparture = _s[c.DepartureStop];
 
 
-            if (c.DepartureTime < journeyTillDeparture.Time)
+            var trip = c.TripId;
+            if (c.DepartureTime < journeyTillDeparture.Time && !_trips.ContainsKey(trip))
             {
                 // This connection has already left before we can make it to the stop
                 return;
@@ -230,19 +218,8 @@ namespace Itinero.Transit.Algorithms.CSA
 
             // When transferring
             Journey<T> t1;
-
-            // When resting in a trip
-            Journey<T> t2 = null;
-
-            // When walking
-            // Walks are handled downwards
-
-            var trip = c.TripId;
-
-
-            if (journeyTillDeparture.LastTripId() != null
-                && !Equals(journeyTillDeparture
-                    .LastTripId(), c.TripId))
+            var lastTripId = journeyTillDeparture.LastTripId();
+            if (Equals(lastTripId, trip))
             {
                 // We have to transfer vehicles
                 t1 = _transferPolicy.CreateDepartureTransfer(journeyTillDeparture, c);
@@ -255,6 +232,9 @@ namespace Itinero.Transit.Algorithms.CSA
                 t1 = journeyTillDeparture.ChainForward(c);
             }
 
+
+            // When resting in a trip
+            Journey<T> t2 = null;
             if (_trips.ContainsKey(trip))
             {
                 // We could be on this trip already, lets extend the journey
@@ -265,7 +245,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 // We now for sure know that we can board this connection, and thus this trip
                 // This is the first encounter of it.
                 // The departure station should be stable in time, so we can take that journey and board
-
+                // simply reuse the earlier transfer
                 if (t1 != null)
                 {
                     _trips[trip] = t1;
@@ -278,6 +258,11 @@ namespace Itinero.Transit.Algorithms.CSA
             // Jej! We can take the train! 
             // Lets see if we can make an improvement in regards to the previous solution
             var newJourney = SelectEarliest(journeyTillArrival, t1, t2);
+            if (newJourney == null)
+            {
+                return;
+            }
+
 
             _s[c.ArrivalStop] = newJourney;
         }
@@ -294,7 +279,12 @@ namespace Itinero.Transit.Algorithms.CSA
             (uint localTileId, uint localId)? bestTarget = null;
             foreach (var targetLoc in _userTargetLocation)
             {
-                var arrival = GetJourneyTo(targetLoc).Time;
+                if (!_s.ContainsKey(targetLoc))
+                {
+                    continue;
+                }
+
+                var arrival = _s[targetLoc].Time;
 
                 if (arrival < currentBestArrival)
                 {
@@ -308,8 +298,8 @@ namespace Itinero.Transit.Algorithms.CSA
 
         private static Journey<T> SelectEarliest(params Journey<T>[] journeys)
         {
-            var earliest = journeys[0];
-            var earliestTime = earliest.Time;
+            Journey<T> earliest = null;
+            var earliestTime = Time.MaxValue;
             foreach (var journey in journeys)
             {
                 if (journey == null)
@@ -326,14 +316,6 @@ namespace Itinero.Transit.Algorithms.CSA
             }
 
             return earliest;
-        }
-
-        private Journey<T> GetJourneyTo((uint localTileId, uint localId) stop)
-        {
-            return
-                _s.ContainsKey(stop)
-                    ? _s[stop]
-                    : Journey<T>.InfiniteJourney;
         }
 
         public void CheckWindow(ulong earliestDepTime, ulong latestArrivalTime)
@@ -360,6 +342,7 @@ namespace Itinero.Transit.Algorithms.CSA
         public bool CanBeTaken(IConnection c)
         {
             var depStation = c.DepartureStop;
+            // _s describes the earliest journey we can possible arrive at c.DepStation
             if (!_s.ContainsKey(depStation))
             {
                 return false;
@@ -368,6 +351,14 @@ namespace Itinero.Transit.Algorithms.CSA
             // Is the moment we can realistically arrive at the station before this connection?
             // If not, it is no use to take the train
             return _s[depStation].Time <= c.DepartureTime;
+        }
+
+        private Journey<T>
+            GetJourneyTo((uint localTileId, uint localId) stop)
+        {
+            return _s.ContainsKey(stop)
+                ? _s[stop]
+                : Journey<T>.InfiniteJourney;
         }
     }
 }

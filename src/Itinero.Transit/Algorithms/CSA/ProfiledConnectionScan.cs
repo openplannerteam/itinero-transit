@@ -24,7 +24,7 @@ namespace Itinero.IO.LC
     public class ProfiledConnectionScan<T> where T : IJourneyStats<T>
     {
         private readonly ConnectionsDb _connectionsProvider;
-        private readonly UnixTime _earliestDeparture, _lastDeparture;
+        private readonly UnixTime _earliestDeparture, _lastArrival;
         private readonly (uint, uint) _departureLocation, _targetLocation;
 
         private readonly ProfiledStatsComparator<T> _comparator;
@@ -133,7 +133,7 @@ namespace Itinero.IO.LC
             _targetLocation = arrivalStop;
 
             _earliestDeparture = earliestDeparture;
-            _lastDeparture = lastDeparture;
+            _lastArrival = lastDeparture;
 
             _connectionsProvider = profile.ConnectionsDb;
             _comparator = profile.ProfileComparator;
@@ -142,7 +142,7 @@ namespace Itinero.IO.LC
             _transferPolicy = profile.WalksGenerator;
             _possibleJourney = possibleJourney;
             _filter = filter;
-            filter?.CheckWindow(_earliestDeparture, _lastDeparture);
+            filter?.CheckWindow(_earliestDeparture, _lastArrival);
         }
 
 
@@ -151,8 +151,8 @@ namespace Itinero.IO.LC
             var enumerator = _connectionsProvider.GetDepartureEnumerator();
 
             // Move the enumerator after the last arrival time
-            enumerator.MoveToPrevious(_lastDeparture);
-            
+            enumerator.MoveToPrevious(_lastArrival);
+
             while (enumerator.DepartureTime >= _earliestDeparture)
             {
                 IntegrateBatch(enumerator);
@@ -169,7 +169,7 @@ namespace Itinero.IO.LC
             var revJourneys = new List<Journey<T>>();
             foreach (var j in journeys)
             {
-                revJourneys.Add(j.Reversed());
+                j.Reversed(revJourneys);
             }
 
             return revJourneys;
@@ -214,6 +214,11 @@ namespace Itinero.IO.LC
             }
 
             if (c.ArrivalStop == _departureLocation)
+            {
+                return;
+            }
+
+            if (c.ArrivalTime > _lastArrival)
             {
                 return;
             }
@@ -283,7 +288,7 @@ namespace Itinero.IO.LC
                 // We are at our target location
                 // No real need to walk
                 var arrivingJourney = new Journey<T>
-                    (_targetLocation, c.ArrivalTime, _statsFactory.EmptyStat(),
+                (_targetLocation, c.ArrivalTime, _statsFactory.EmptyStat(),
                     Journey<T>.ProfiledScanJourney);
                 var journey = arrivingJourney.ChainBackward(c);
                 return journey;
@@ -414,17 +419,18 @@ namespace Itinero.IO.LC
                     return false;
                 }
             }
-               /*/
-            
 
-            if (_stationJourneys.ContainsKey(_departureLocation))
-            {
-                var frontier = _stationJourneys[_departureLocation];
-                if (_comparator.ADominatesB(frontier.Frontier[0], j) < 0)
-                {
-                    return false;
-                }
-            }
+            /*/
+         
+
+         if (_stationJourneys.ContainsKey(_departureLocation))
+         {
+             var frontier = _stationJourneys[_departureLocation];
+             if (_comparator.ADominatesB(frontier.Frontier[0], j) < 0)
+             {
+                 return false;
+             }
+         }
 
 //*/
             return true;

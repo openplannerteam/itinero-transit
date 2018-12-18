@@ -84,6 +84,7 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
             var depDel = json.GetInt("http://semweb.mmlab.be/ns/linkedconnections#departureDelay", 0);
             // Departure time already includes delay
             _departureTime = json.GetDate("http://semweb.mmlab.be/ns/linkedconnections#departureTime");
+            
 
             var arrDel = json.GetInt("http://semweb.mmlab.be/ns/linkedconnections#arrivalDelay", 0);
             // Arrival time already includes delay

@@ -419,7 +419,7 @@ namespace Itinero.Transit.Data
             var windowPointer = _departureWindowPointers[window * 2 + 0];
             var windowSize = _departureWindowPointers[window * 2 + 1];
 
-            QuickSort.Sort((i) => GetConnectionDeparture(_departurePointers[i]),
+            QuickSort.Sort(i => GetConnectionDeparture(_departurePointers[i]),
                 (i1, i2) =>
                 {
                     var temp = _departurePointers[i1];
@@ -496,7 +496,7 @@ namespace Itinero.Transit.Data
             var windowPointer = _arrivalWindowPointers[window * 2 + 0];
             var windowSize = _arrivalWindowPointers[window * 2 + 1];
 
-            QuickSort.Sort((i) => GetConnectionArrival(_arrivalPointers[i]),
+            QuickSort.Sort(i => GetConnectionArrival(_arrivalPointers[i]),
                 (i1, i2) =>
                 {
                     var temp = _arrivalPointers[i1];
@@ -665,7 +665,7 @@ namespace Itinero.Transit.Data
             /// </summary>
             public void Reset()
             {
-                this.ResetIgnoreDate();
+                ResetIgnoreDate();
                 _date = uint.MaxValue;
             }
 
@@ -694,7 +694,7 @@ namespace Itinero.Transit.Data
 
                 while (true)
                 {
-                    if (!this.MoveNextIgnoreDate())
+                    if (!MoveNextIgnoreDate())
                     { 
                         // move to next date. 
                         _date = (uint)DateTimeExtensions.AddDay(_date);
@@ -704,7 +704,7 @@ namespace Itinero.Transit.Data
                         }
                         
                         // reset enumerator.
-                        this.ResetIgnoreDate();
+                        ResetIgnoreDate();
                     }
                     else
                     {
@@ -801,7 +801,7 @@ namespace Itinero.Transit.Data
 
                 while (true)
                 {
-                    if (!this.MovePreviousIgnoreDate())
+                    if (!MovePreviousIgnoreDate())
                     { 
                         // move to next date. 
                         _date = (uint)DateTimeExtensions.RemoveDay(_date);
@@ -811,7 +811,7 @@ namespace Itinero.Transit.Data
                         }
                         
                         // reset enumerator.
-                        this.ResetIgnoreDate();
+                        ResetIgnoreDate();
                     }
                     else
                     {
@@ -878,7 +878,7 @@ namespace Itinero.Transit.Data
                         {
                             //Console.WriteLine($"{_date}:{_window}-{_windowPosition}: Invalid pointer here, there is supposed to be one here.");
                             _windowPosition = 0;
-                            return this.MovePreviousIgnoreDate();
+                            return MovePreviousIgnoreDate();
                         }
                     }
                     else
@@ -977,7 +977,7 @@ namespace Itinero.Transit.Data
             /// </summary>
             public void Reset()
             {
-                this.ResetIgnoreDate();
+                ResetIgnoreDate();
                 _date = _db._earliestDate;
             }
 
@@ -1001,7 +1001,7 @@ namespace Itinero.Transit.Data
 
                 while (true)
                 {
-                    if (!this.MoveNextIgnoreDate())
+                    if (!MoveNextIgnoreDate())
                     { 
                         // move to next date. 
                         _date = (uint)DateTimeExtensions.AddDay(_date);
@@ -1011,7 +1011,7 @@ namespace Itinero.Transit.Data
                         }
                         
                         // reset enumerator.
-                        this.ResetIgnoreDate();
+                        ResetIgnoreDate();
                     }
                     else
                     {

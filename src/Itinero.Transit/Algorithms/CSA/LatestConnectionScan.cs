@@ -73,9 +73,11 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
-        public LatestConnectionScan(List<(uint localTileId, uint localId)> userDepartureLocation,
-            IEnumerable<(uint localTileId, uint localId)> userTargetLocation, Time earliestDeparture,
-            Time lastDeparture,
+        // ReSharper disable once MemberCanBePrivate.Global
+        public LatestConnectionScan(
+            List<(uint localTileId, uint localId)> userDepartureLocation,
+            IEnumerable<(uint localTileId, uint localId)> userTargetLocation,
+            Time earliestDeparture, Time lastDeparture,
             Profile<T> profile)
         {
             _earliestDeparture = earliestDeparture;
@@ -86,7 +88,8 @@ namespace Itinero.Transit.Algorithms.CSA
             foreach (var loc in userTargetLocation)
             {
                 _s.Add(loc,
-                    new Journey<T>(loc, lastDeparture, profile.StatsFactory, Journey<T>.LatestArrivalScanJourney));
+                    new Journey<T>(loc, lastDeparture, profile.StatsFactory,
+                        Journey<T>.LatestArrivalScanJourney));
             }
         }
 
@@ -110,9 +113,7 @@ namespace Itinero.Transit.Algorithms.CSA
         public Journey<T> CalculateJourney(Func<Time, Time, Time> depArrivalToTimeout = null)
         {
             var enumerator = _connectionsProvider.GetDepartureEnumerator();
-
             enumerator.MoveToPrevious(_lastDeparture);
-
 
             var earliestAllowedDeparture = _earliestDeparture;
             while (enumerator.DepartureTime >= earliestAllowedDeparture)
@@ -139,8 +140,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
 
             // We grab the journey we need
-            var journey = _s[route.bestLocation.Value].Reversed();
-
+            var journey = _s[route.bestLocation.Value].Reversed()[0];
 
             if (depArrivalToTimeout == null)
             {
@@ -173,6 +173,7 @@ namespace Itinero.Transit.Algorithms.CSA
             do
             {
                 IntegrateConnection(enumerator);
+
                 if (!enumerator.MovePrevious())
                 {
                     return false;
@@ -215,7 +216,6 @@ namespace Itinero.Transit.Algorithms.CSA
 
             // When transferring
             Journey<T> t1;
-            // Walks are handled downwards
             if (journeyTillArrival.LastTripId() != null
                 && !Equals(journeyTillArrival.LastTripId(), c.TripId))
             {
@@ -247,7 +247,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 if (t1 != null)
                 {
                     // simply reuse the earlier transfer
-                    t2 = _trips[trip] = t1;
+                    _trips[trip] = t1;
                 }
             }
 
@@ -355,7 +355,9 @@ namespace Itinero.Transit.Algorithms.CSA
         private Journey<T>
             GetJourneyFrom((uint, uint) location)
         {
-            return _s.ContainsKey(location) ? _s[location] : Journey<T>.NegativeInfiniteJourney;
+            return _s.ContainsKey(location)
+                ? _s[location]
+                : Journey<T>.NegativeInfiniteJourney;
         }
     }
 }
