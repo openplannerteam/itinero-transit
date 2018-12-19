@@ -139,7 +139,7 @@ namespace Itinero.IO.LC
             _comparator = profile.ProfileComparator;
             _empty = new ParetoFrontier<T>(_comparator);
             _statsFactory = profile.StatsFactory;
-            _transferPolicy = profile.WalksGenerator;
+            _transferPolicy = profile.InternalTransferGenerator;
             _possibleJourney = possibleJourney;
             _filter = filter;
             filter?.CheckWindow(_earliestDeparture, _lastArrival);

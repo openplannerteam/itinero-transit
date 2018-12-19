@@ -19,7 +19,10 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
             var stops = Db.GetDefaultStopsDb();
 
             var profile = new Profile<TransferStats>(
-                db, stops, new InternalTransferGenerator(), new TransferStats(),
+                db, stops, 
+                new InternalTransferGenerator(),
+                new BirdsEyeInterwalkTransferGenerator(stops), 
+                new TransferStats(),
                 TransferStats.ProfileTransferCompare
             );
 
@@ -63,7 +66,10 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
 
             
             var profile = new Profile<TransferStats>(
-                connectionsDb, stopsDb, new InternalTransferGenerator(), new TransferStats(),
+                connectionsDb, stopsDb, 
+                new InternalTransferGenerator(),
+                new BirdsEyeInterwalkTransferGenerator(stopsDb), 
+                new TransferStats(),
                 TransferStats.ProfileTransferCompare);
             var eas = new EarliestConnectionScan<TransferStats>(
                 stop1, stop2, new DateTime(2018, 12, 04, 16, 00, 00), new DateTime(2018, 12, 04, 19, 00, 00),

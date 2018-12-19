@@ -83,7 +83,7 @@ namespace Itinero.Transit.Algorithms.CSA
             _earliestDeparture = earliestDeparture;
             _lastDeparture = lastDeparture;
             _connectionsProvider = profile.ConnectionsDb;
-            _transferPolicy = profile.WalksGenerator;
+            _transferPolicy = profile.InternalTransferGenerator;
             _userDepartureLocation = userDepartureLocation;
             foreach (var loc in userTargetLocation)
             {
@@ -224,7 +224,9 @@ namespace Itinero.Transit.Algorithms.CSA
                 }
                 else
                 {
-                    journeyFromDeparture = _transferPolicy.CreateArrivingTransfer(journeyFromArrival, c);
+                    journeyFromDeparture = _transferPolicy
+                        .CreateArrivingTransfer(journeyFromArrival, c.ArrivalTime, c.ArrivalStop)
+                        ?.ChainBackward(c);
                 }
 
                 if (journeyFromDeparture != null)

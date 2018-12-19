@@ -17,7 +17,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         {
             var p = new Profile<TransferStats>(
                 input.connections, input.stops,
-                new InternalTransferGenerator(), new TransferStats(), TransferStats.ProfileTransferCompare);
+                new InternalTransferGenerator(), 
+                new BirdsEyeInterwalkTransferGenerator(input.stops), 
+                new TransferStats(), TransferStats.ProfileTransferCompare);
 
             var depTime =input.departureTime;
 

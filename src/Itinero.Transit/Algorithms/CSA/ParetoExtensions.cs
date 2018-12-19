@@ -35,7 +35,18 @@ namespace Itinero.Transit.Algorithms.CSA
                     continue;
                 }
 
-                var extendedJourney = transferPolicy.CreateArrivingTransfer(journey, c);
+                Journey<T> extendedJourney;
+                if (journey.LastTripId() == c.TripId)
+                {
+                    extendedJourney = journey.ChainBackward(c);
+                }
+                else
+                {
+                    extendedJourney = transferPolicy
+                        .CreateArrivingTransfer(journey, c.ArrivalTime, c.ArrivalStop)
+                        ?.ChainBackward(c);
+                }
+
                 if (extendedJourney != null)
                 {
                     // Transferring fails if there is too little time to make the transfer, or
@@ -50,7 +61,6 @@ namespace Itinero.Transit.Algorithms.CSA
 
             return newFrontier;
         }
-
 
 
         /// <summary>

@@ -268,26 +268,25 @@ namespace Itinero.Transit.Journeys
         /// a 'Transfer' link is included.
         /// Transfer links _should not_ be used to calculate the number of transfers, the differences in trip-ids should be used for this! 
         /// </summary>
-        public Journey<T> Transfer(uint connection, UnixTime departureTime, UnixTime arrivalTime,
-            (uint localTileId, uint localId) arrivalLocation,
-            uint tripId)
+        public Journey<T> Transfer(UnixTime departureTime)
         {
-            if (Time == departureTime)
-            {
-                // No transfer needed: seamless link
-                return Chain(connection, arrivalTime, arrivalLocation, tripId);
-            }
-
-            // We have to create the transfer. Lets create that
-            var transfer = new Journey<T>(
+            // Creating the transfer
+            return new Journey<T>(
                 // ReSharper disable once ArrangeThisQualifier
                 Root, this, true, TRANSFER, this.Location, departureTime, uint.MaxValue, Stats);
-            return transfer.Chain(connection, arrivalTime, arrivalLocation, tripId);
         }
 
         public Journey<T> TransferForward(IConnection c)
         {
-            return Transfer(c.Id, c.DepartureTime, c.ArrivalTime, c.ArrivalStop, c.TripId);
+            
+            if (Time == c.DepartureTime)
+            {
+                // No transfer needed: seamless link
+                return Chain(c.Id, c.ArrivalTime, c.ArrivalStop, c.TripId);
+            }
+            
+            return Transfer(c.DepartureTime)
+                .Chain(c.Id, c.ArrivalTime, c.ArrivalStop, c.TripId);
         }
 
 

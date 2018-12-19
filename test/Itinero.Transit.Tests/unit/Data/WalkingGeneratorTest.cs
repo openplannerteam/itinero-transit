@@ -21,7 +21,9 @@ namespace Itinero.Transit.Tests.Data
 
             var root = new Journey<TransferStats>((0, 1), c0.DepartureTime, new TransferStats());
             var j = root.ChainForward(c0);
-            var transfered = transferGen.CreateDepartureTransfer(j, c1);
+            var transfered = transferGen
+                .CreateDepartureTransfer(j, c1.DepartureTime, c1.DepartureStop)
+                .ChainForward(c1);
 
             Assert.NotNull(transfered);
             Assert.True(transfered.PreviousLink.SpecialConnection);
@@ -33,7 +35,9 @@ namespace Itinero.Transit.Tests.Data
             // We need more time with luggage
             var transferWithLuggage = new InternalTransferGenerator(240);
 
-            transfered = transferWithLuggage.CreateDepartureTransfer(j, c1);
+            transfered = transferWithLuggage
+                .CreateDepartureTransfer(j, c1.DepartureTime, c1.DepartureStop)
+                ?.ChainForward(c1);
             Assert.Null(transfered); // we didn't make the transfer!
         }
     }

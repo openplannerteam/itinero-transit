@@ -21,14 +21,14 @@ namespace Itinero.Transit.Data.Walks
         /// This might return null if the transfer time is too short.
         /// This might involve querying for footpaths
         /// </summary>
-        Journey<T> CreateDepartureTransfer<T>(Journey<T> buildOn, IConnection c) where T : IJourneyStats<T>;
+        Journey<T> CreateDepartureTransfer<T>(Journey<T> buildOn, ulong timeWhenLeaving, (uint, uint) otherLocation) where T : IJourneyStats<T>;
 
 
         /// <summary>
         /// Reverse add connection. Chains the transfer and connection to the given journey.
         /// However, this is the method to use for journeys which are built backwards in time 
         /// </summary>
-        Journey<T> CreateArrivingTransfer<T>(Journey<T> buildOn,IConnection c) where T : IJourneyStats<T>;
+        Journey<T> CreateArrivingTransfer<T>(Journey<T> buildOn, ulong timeWhenDeparting, (uint, uint) otherLocation) where T : IJourneyStats<T>;
 
     }
 }
