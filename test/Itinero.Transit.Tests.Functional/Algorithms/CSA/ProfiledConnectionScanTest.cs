@@ -39,11 +39,6 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             Assert.NotNull(journeys);
             True(journeys.Any());
 
-            foreach (var j in journeys)
-            {
-                Information(j.Pruned().ToString(input.stops));    
-            }
-            
             Information($"Found {journeys.Count()} profiles");
             
             return true;

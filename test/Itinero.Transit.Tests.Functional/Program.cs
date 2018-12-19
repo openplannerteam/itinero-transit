@@ -104,8 +104,8 @@ namespace Itinero.Transit.Tests.Functional
                     date.Date.AddHours(20)),
                 (db.connections, db.stops, Poperinge,
                     Vielsalm,
-                    date.Date.AddHours(6),
-                    date.Date.AddHours(20))
+                    date.Date.AddHours(10),
+                    date.Date.AddHours(18))
             };
 
 
