@@ -151,5 +151,10 @@ namespace Itinero.Transit
             return buildOn.ChainSpecial(
                 Journey<T>.WALK, (uint) (timeWhenArriving + route.TotalTime), otherLocation, uint.MaxValue);
         }
+
+        public float Range()
+        {
+            return SearchDistance;
+        }
     }
 }

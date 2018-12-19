@@ -79,5 +79,10 @@ namespace Itinero.Transit.Data.Walks
 
             return CreateInternalTransfer(buildOn, timeWhenArriving);
         }
+
+        public float Range()
+        {
+            return 0.0f;
+        }
     }
 }

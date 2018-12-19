@@ -22,7 +22,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var p = new Profile<TransferStats>(
                 input.connections, input.stops,
                 new InternalTransferGenerator(), 
-                new BirdsEyeInterwalkTransferGenerator(input.stops), 
+                new BirdsEyeInterWalkTransferGenerator(input.stops.GetReader()), 
                 new TransferStats(), TransferStats.ProfileTransferCompare);
 
 

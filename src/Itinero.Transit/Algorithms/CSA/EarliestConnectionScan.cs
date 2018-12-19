@@ -19,6 +19,8 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly List<(uint localTileId, uint localId)> _userTargetLocation;
 
         private readonly ConnectionsDb _connectionsProvider;
+        private readonly StopsDb _stopsDb;
+        private readonly StopsDb.StopsDbReader _stopsReader;
 
         private readonly Time _earliestDeparture, _lastDeparture;
 
@@ -27,7 +29,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         private Time _filterEndTime = Time.MinValue;
 
-        private readonly IOtherModeGenerator _transferPolicy;
+        private readonly IOtherModeGenerator _transferPolicy, _walkPolicy;
 
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as early as possible
@@ -82,7 +84,10 @@ namespace Itinero.Transit.Algorithms.CSA
             _earliestDeparture = earliestDeparture;
             _lastDeparture = lastDeparture;
             _connectionsProvider = profile.ConnectionsDb;
+            _stopsDb = profile.StopsDb;
+            _stopsReader = _stopsDb.GetReader();
             _transferPolicy = profile.InternalTransferGenerator;
+            _walkPolicy = profile.WalksGenerator;
 
             _userTargetLocation = userTargetLocation;
             foreach (var loc in userDepartureLocation)
@@ -186,7 +191,10 @@ namespace Itinero.Transit.Algorithms.CSA
 
 
             // Add footpath transfers to improved stations
-
+            foreach (var location in improvedLocations)
+            {
+                WalkAwayFrom(location);
+            }
 
             return true;
         }
@@ -267,6 +275,45 @@ namespace Itinero.Transit.Algorithms.CSA
             return true;
         }
 
+
+        private void WalkAwayFrom((uint, uint) location)
+        {
+            if (_walkPolicy == null || _walkPolicy.Range() <= 0f)
+            {
+                return;
+            }
+            
+             _stopsReader.MoveTo(location);
+            var reachableLocations =
+                _stopsDb.LocationsInRange(_stopsReader, _walkPolicy.Range());
+
+            var journey = _s[location];
+            
+            foreach (var reachableLocation in reachableLocations)
+            {
+                var id = reachableLocation.Id;
+                if (id == location)
+                {
+                    continue;
+                }
+                var walkingJourney = _walkPolicy.CreateDepartureTransfer(journey, ulong.MaxValue, id);
+                if (walkingJourney == null)
+                {
+                    continue;
+                }
+
+                if (!_s.ContainsKey(id))
+                {
+                    _s[id] = walkingJourney;
+                }
+                else if(_s[id].Time > walkingJourney.Time)
+                {
+                    _s[id] = walkingJourney;
+                }
+            }
+        }
+        
+        
         /// <summary>
         /// Iterates all the target locations.
         /// Returns the earliest time that one of them can be reached, along with the chosen location.

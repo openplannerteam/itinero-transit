@@ -24,7 +24,7 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
 
             var profile = new Profile<TransferStats>(
                 db, stops, new InternalTransferGenerator(0),
-                new BirdsEyeInterwalkTransferGenerator(stops), 
+                new BirdsEyeInterWalkTransferGenerator(stops.GetReader()), 
                 new TransferStats(),
                 TransferStats.ProfileTransferCompare
             );
@@ -72,7 +72,7 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
             var profile = new Profile<TransferStats>(
                 connectionsDb, stopsDb, 
                 new InternalTransferGenerator(),
-                new BirdsEyeInterwalkTransferGenerator(stopsDb), 
+                new BirdsEyeInterWalkTransferGenerator(stopsDb.GetReader()), 
                 new TransferStats(),
                 TransferStats.ProfileTransferCompare);
             var las = new LatestConnectionScan<TransferStats>(

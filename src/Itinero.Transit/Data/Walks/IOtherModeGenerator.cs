@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using Itinero.Transit.Journeys;
 
 namespace Itinero.Transit.Data.Walks
@@ -29,6 +30,9 @@ namespace Itinero.Transit.Data.Walks
         /// However, this is the method to use for journeys which are built backwards in time 
         /// </summary>
         Journey<T> CreateArrivingTransfer<T>(Journey<T> buildOn, ulong timeWhenDeparting, (uint, uint) otherLocation) where T : IJourneyStats<T>;
+
+        float Range();
+
 
     }
 }

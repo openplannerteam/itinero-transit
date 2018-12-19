@@ -24,7 +24,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var profile = new Profile<TransferStats>(
                 input.connections, input.stops, 
                 new InternalTransferGenerator(1),
-                new BirdsEyeInterwalkTransferGenerator(input.stops), 
+                new BirdsEyeInterWalkTransferGenerator(input.stops.GetReader()), 
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
             // get departure and arrival stop ids.
