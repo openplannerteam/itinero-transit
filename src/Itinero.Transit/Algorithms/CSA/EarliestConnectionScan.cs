@@ -114,7 +114,7 @@ namespace Itinero.Transit.Algorithms.CSA
         public Journey<T> CalculateJourney(Func<Time, Time, Time> depArrivalToTimeout = null)
         {
             var enumerator = _connectionsProvider.GetDepartureEnumerator();
-            enumerator.MoveToNext(_earliestDeparture);
+            enumerator.MoveNext(_earliestDeparture);
 
             var lastDeparture = _lastDeparture;
             while (enumerator.DepartureTime <= lastDeparture)
