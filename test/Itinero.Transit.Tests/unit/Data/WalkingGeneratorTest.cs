@@ -1,5 +1,4 @@
 using Itinero.IO.LC.Tests;
-using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
 using Xunit;
@@ -15,8 +14,10 @@ namespace Itinero.Transit.Tests.Data
 
             // ReSharper disable once RedundantArgumentDefaultValue
             var transferGen = new InternalTransferGenerator(180);
-            var c0 = connDb.LoadConnection(0);
-            var c1 = connDb.LoadConnection(1);
+            var c0 = connDb.GetReader();
+            c0.MoveTo(0);
+            var c1 = connDb.GetReader();
+            c1.MoveTo(1);
 
             var root = new Journey<TransferStats>((0, 1), c0.DepartureTime, new TransferStats());
             var j = root.ChainForward(c0);

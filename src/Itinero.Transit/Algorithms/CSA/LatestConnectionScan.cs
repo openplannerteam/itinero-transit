@@ -279,28 +279,6 @@ namespace Itinero.Transit.Algorithms.CSA
             return (currentBestDeparture, bestTarget);
         }
 
-        private static Journey<T> SelectLatest(params Journey<T>[] journeys)
-        {
-            Journey<T> latest = null;
-            var latestTime = Time.MinValue;
-            foreach (var journey in journeys)
-            {
-                if (journey == null || ReferenceEquals(journey, Journey<T>.NegativeInfiniteJourney))
-                {
-                    continue;
-                }
-
-                var depTime = journey.Time;
-                if (depTime > latestTime)
-                {
-                    latest = journey;
-                    latestTime = depTime;
-                }
-            }
-
-            return latest;
-        }
-
         public void CheckWindow(ulong earliestDepTime, ulong latestArrivalTime)
         {
             if (!(earliestDepTime >= _filterStartTime))

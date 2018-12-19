@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
-using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
@@ -278,28 +277,6 @@ namespace Itinero.Transit.Algorithms.CSA
             }
 
             return (currentBestArrival, bestTarget);
-        }
-
-        private static Journey<T> SelectEarliest(params Journey<T>[] journeys)
-        {
-            Journey<T> earliest = null;
-            var earliestTime = Time.MaxValue;
-            foreach (var journey in journeys)
-            {
-                if (journey == null)
-                {
-                    continue;
-                }
-
-                var arrTime = journey.Time;
-                if (arrTime < earliestTime)
-                {
-                    earliest = journey;
-                    earliestTime = arrTime;
-                }
-            }
-
-            return earliest;
         }
 
         public void CheckWindow(ulong earliestDepTime, ulong latestArrivalTime)

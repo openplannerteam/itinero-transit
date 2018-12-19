@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Tests.Functional.Algorithms.CSA;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
@@ -9,15 +8,16 @@ using Itinero.Transit.Tests.Functional.Data;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
+// ReSharper disable UnusedMember.Local
 
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace Itinero.Transit.Tests.Functional
 {
-    public class Program
+    public static class Program
     {
-        private const string GentUri = "http://irail.be/stations/NMBS/008892007";
-        private const string BruggeUri = "http://irail.be/stations/NMBS/008891009";
+        private const string Gent = "http://irail.be/stations/NMBS/008892007";
+        private const string Brugge = "http://irail.be/stations/NMBS/008891009";
         private const string Poperinge = "http://irail.be/stations/NMBS/008896735";
         private const string Vielsalm = "http://irail.be/stations/NMBS/008845146";
         private const string BrusselZuid = "http://irail.be/stations/NMBS/008814001";
@@ -41,20 +41,20 @@ namespace Itinero.Transit.Tests.Functional
             // test loading a connections db
             var db = IO.LC.LoadConnectionsTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
             ConnectionsDbDepartureEnumeratorTest.Default.Run(db.connections);
-            TestClosestStopsAndRouting(date, db);
+            TestClosestStopsAndRouting(db);
 
 
             var inputs = new List<(ConnectionsDb, StopsDb, string, string, DateTime, DateTime)>
             {
-                (db.connections, db.stops, BruggeUri,
-                    GentUri,
+                (db.connections, db.stops, Brugge,
+                    Gent,
                     date.Date.AddHours(10),
                     date.Date.AddHours(12)),
-                (db.connections, db.stops, BruggeUri,
+                (db.connections, db.stops, Brugge,
                     Poperinge,
                     date.Date.AddHours(10),
                     date.Date.AddHours(13)),
-                (db.connections, db.stops, BruggeUri,
+                (db.connections, db.stops, Brugge,
                     Kortrijk,
                     date.Date.AddHours(6),
                     date.Date.AddHours(20)),
@@ -117,11 +117,11 @@ namespace Itinero.Transit.Tests.Functional
             }
         }
 
-        private static void TestClosestStopsAndRouting(DateTime date, (ConnectionsDb connections, StopsDb stops) db)
+        private static void TestClosestStopsAndRouting((ConnectionsDb connections, StopsDb stops) db)
         {
-            var stop1 = StopSearchTest.Default.RunPerformance((db.stops, 4.336209297180176,
+            StopSearchTest.Default.RunPerformance((db.stops, 4.336209297180176,
                 50.83567623496864, 1000), _nrOfRuns);
-            var stop2 = StopSearchTest.Default.RunPerformance((db.stops, 4.436824321746825,
+            StopSearchTest.Default.RunPerformance((db.stops, 4.436824321746825,
                 50.41119778957908, 1000), _nrOfRuns);
             StopSearchTest.Default.RunPerformance((db.stops, 3.329758644104004,
                 50.99052927907061, 1000), _nrOfRuns);

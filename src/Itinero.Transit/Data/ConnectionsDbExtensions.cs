@@ -24,7 +24,7 @@ namespace Itinero.Transit.Data
         /// <param name="time">The time to move to.</param>
         public static void MovePrevious(this ConnectionsDb.DepartureEnumerator enumerator, ulong time)
         {
-            if (!enumerator.MovePrevious(DateTimeExtensions.FromUnixTime(time)))
+            if (!enumerator.MovePrevious(time.FromUnixTime()))
             {
                 throw new Exception(
                     "EnumeratorException: departure time not found. Either too little connections are loaded in the database, or the query is to far in the future or in the past");
@@ -38,7 +38,7 @@ namespace Itinero.Transit.Data
         /// <param name="time">The time to move to.</param>
         public static void MoveNext(this ConnectionsDb.DepartureEnumerator enumerator, ulong time)
         {
-            if (!enumerator.MoveNext(DateTimeExtensions.FromUnixTime(time)))
+            if (!enumerator.MoveNext(time.FromUnixTime()))
             {
                 throw new Exception(
                     "EnumeratorException: departure time not found. Either too little connections are loaded in the database, or the query is to far in the future or in the past");
