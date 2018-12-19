@@ -8,6 +8,7 @@ using Itinero.Transit.Tests.Functional.Data;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
+
 // ReSharper disable UnusedMember.Local
 
 // ReSharper disable PossibleMultipleEnumeration
@@ -26,11 +27,54 @@ namespace Itinero.Transit.Tests.Functional
 
         private static int _nrOfRuns = 1;
 
+        private static readonly List<DefaultFunctionalTest> _allTests =
+            new List<DefaultFunctionalTest>
+            {
+                EarliestConnectionScanTest.Default,
+                LatestConnectionScanTest.Default,
+                ProfiledConnectionScanTest.Default,
+                EasPcsComparison.Default,
+                EasLasComparison.Default
+            };
+
+
+        private static readonly Dictionary<string, DefaultFunctionalTest> _allTestsNamed =
+            new Dictionary<string, DefaultFunctionalTest>
+            {
+                {"eas", EarliestConnectionScanTest.Default},
+                {"las", LatestConnectionScanTest.Default},
+                {"pcs", ProfiledConnectionScanTest.Default},
+                {"easpcs", EasPcsComparison.Default},
+                {"easlas", EasLasComparison.Default}
+            };
+
+
         public static void Main(string[] args)
         {
+            var tests = _allTests;
             if (args.Length > 0)
             {
                 _nrOfRuns = int.Parse(args[0]);
+            }
+
+            if (args.Length > 1)
+            {
+                tests = new List<DefaultFunctionalTest>();
+                for (int i = 1; i < args.Length; i++)
+                {
+                    var testName = args[i];
+                    if (!_allTestsNamed.ContainsKey(testName))
+                    {    
+                        var keys = "";
+                        foreach (var k in _allTestsNamed.Keys)
+                        {
+                            keys += k + ", ";
+                        }
+                        throw new ArgumentException($"No test named {testName} found. Try one (or more) of the following as argument: {keys}");
+                    }
+
+                    tests.Add(_allTestsNamed[testName]);
+                }
             }
 
             EnableLogging();
@@ -65,18 +109,9 @@ namespace Itinero.Transit.Tests.Functional
             };
 
 
-            var tests = new List<DefaultFunctionalTest>
-            {
-             //   EarliestConnectionScanTest.Default,
-             //   LatestConnectionScanTest.Default,
-             //   ProfiledConnectionScanTest.Default,
-             //   EasPcsComparison.Default,
-                EasLasComparison.Default
-            };
-
             var failed = 0;
             var results = new Dictionary<string, int>();
-            
+
 
             foreach (var t in tests)
             {
