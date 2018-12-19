@@ -307,7 +307,7 @@ namespace Itinero.Transit.Journeys
         {
             if (SpecialConnection && Connection == GENESIS)
             {
-                
+                return Time;
             }
             
             return PreviousLink.Time;

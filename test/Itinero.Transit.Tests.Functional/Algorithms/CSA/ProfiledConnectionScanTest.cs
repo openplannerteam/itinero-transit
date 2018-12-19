@@ -11,14 +11,12 @@ using Xunit;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
-    public class ProfiledConnectionScanTest : FunctionalTest<IEnumerable<Journey<TransferStats>>, (ConnectionsDb
-        connections, StopsDb
-        stops,
-        string departureStopId, string arrivalStopId, DateTime departureTime, DateTime arrivalTime)>
+    public class ProfiledConnectionScanTest : 
+        DefaultFunctionalTest
     {
         public static ProfiledConnectionScanTest Default => new ProfiledConnectionScanTest();
 
-        protected override IEnumerable<Journey<TransferStats>> Execute((ConnectionsDb connections, StopsDb stops,
+        protected override bool Execute((ConnectionsDb connections, StopsDb stops,
             string departureStopId, string arrivalStopId, DateTime departureTime, DateTime arrivalTime) input)
         {
             var p = new Profile<TransferStats>(
@@ -48,7 +46,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             
             Information($"Found {journeys.Count()} profiles");
             
-            return journeys;
+            return true;
         }
     }
 }

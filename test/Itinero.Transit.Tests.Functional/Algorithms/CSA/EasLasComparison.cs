@@ -13,9 +13,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
     /// When running PCS (without pruning), the earliest route should equal the one calculated by EAS.
     /// If not  something is wrong
     /// </summary>
-    public class EasPcsComparison : DefaultFunctionalTest
+    public class EasLasComparison : DefaultFunctionalTest
     {
-        public static EasPcsComparison Default = new EasPcsComparison();
+        public static EasLasComparison Default = new EasLasComparison();
 
         protected override bool Execute(
             (ConnectionsDb connections, StopsDb stops, string departureStopId, string arrivalStopId, DateTime
@@ -35,18 +35,19 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
                 departure, arrival, input.departureTime, input.arrivalTime, profile);
 
             var easJ = eas.CalculateJourney();
-            var pcs = new ProfiledConnectionScan<TransferStats>(
-                departure, arrival, input.departureTime, input.arrivalTime, profile);
 
-            var pcsJs = pcs.CalculateJourneys();
-            var pcsJ = pcsJs.Last();
+            var las = new LatestConnectionScan<TransferStats>(
+                departure, arrival, input.departureTime.ToUnixTime(),
+                easJ.ArrivalTime(), profile);
 
-            Information(easJ.ToString(input.stops));
-            Information(pcsJ.ToString(input.stops));
+            var lasJ = las.CalculateJourney();
 
-            // PCS could find a route which arrives at the same time, but departs later
-            Assert.True(easJ.Root.DepartureTime() <= pcsJ.Root.DepartureTime());
-            Assert.Equal(easJ.ArrivalTime(), pcsJ.ArrivalTime());
+            Information(easJ.Pruned().ToString(input.stops));
+            Information(lasJ.Pruned().ToString(input.stops));
+
+            // Eas is bound by the first departing train, while las is not
+            Assert.True(easJ.Root.DepartureTime() <= lasJ.Root.DepartureTime());
+            Assert.True(easJ.ArrivalTime() >= lasJ.ArrivalTime());
 
             return true;
         }

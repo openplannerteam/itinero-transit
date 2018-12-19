@@ -198,72 +198,56 @@ namespace Itinero.Transit.Algorithms.CSA
             // The connection describes a random connection somewhere
             // Lets check if we can take it
 
-            if (!_s.ContainsKey(c.ArrivalStop))
-            {
-                // we can not take this connection, it leads nowhere
-                return;
-            }
-
-            var journeyTillArrival = _s[c.ArrivalStop];
+            var journeyFromArrival = GetJourneyFrom(c.ArrivalStop);
 
 
-            if (c.ArrivalTime > journeyTillArrival.Time)
-            {
-                // This connection arrives after the departure of the rest of the journey
-                return;
-            }
-
-
-            // When transferring
-            Journey<T> t1;
-            if (journeyTillArrival.LastTripId() != null
-                && !Equals(journeyTillArrival.LastTripId(), c.TripId))
-            {
-                // We have to transfer vehicles
-                t1 = _transferPolicy.CreateArrivingTransfer(journeyTillArrival, c);
-            }
-            else
-            {
-                // This connection was a walk or something similar
-                // Or we didn't have to transfer
-                // We chain the current connection after it
-                t1 = journeyTillArrival.ChainBackward(c);
-            }
-
-
-            // When resting in a trip
-            Journey<T> t2 = null;
             var trip = c.TripId;
+            if (c.ArrivalTime > journeyFromArrival.Time && !_trips.ContainsKey(trip))
+            {
+                // This connection has already left before we can make it to the stop
+                return;
+            }
+
+
+            Journey<T> journeyFromDeparture;
+            // Extend trip journey
             if (_trips.ContainsKey(trip))
             {
-                // We could be on this trip already, lets extend the journey
-                t2 = _trips[trip] = _trips[trip].ChainBackward(c);
+                _trips[trip] = _trips[trip].ChainBackward(c);
+                journeyFromDeparture = _trips[trip];
             }
             else
             {
-                // We now know for sure know that we can board this connection, and thus this trip
-                // This is the first encounter of it.
-                // The departure station should be stable in time, so we can take that journey and board
-                if (t1 != null)
+                if (journeyFromArrival.SpecialConnection && journeyFromArrival.Connection == Journey<T>.GENESIS)
                 {
-                    // simply reuse the earlier transfer
-                    _trips[trip] = t1;
+                    journeyFromDeparture = journeyFromArrival.ChainBackward(c);
+                }
+                else
+                {
+                    journeyFromDeparture = _transferPolicy.CreateArrivingTransfer(journeyFromArrival, c);
+                }
+
+                if (journeyFromDeparture != null)
+                {
+                    _trips[trip] = journeyFromDeparture;
                 }
             }
 
-            var journeyFromDeparture = GetJourneyFrom(c.DepartureStop);
-
-
-            // Jej! We can take the train! 
-            // Lets see if we can make an improvement in regards to the previous solution
-            var newJourney = SelectLatest(journeyFromDeparture, t1, t2);
-            if (newJourney == null)
+            if (journeyFromDeparture != null)
             {
-                return;
+                if (!_s.ContainsKey(c.DepartureStop))
+                {
+                    _s[c.DepartureStop] = journeyFromDeparture;
+                }
+                else
+                {
+                    var oldJourney = _s[c.DepartureStop];
+                    if (journeyFromDeparture.Time < oldJourney.Time)
+                    {
+                        _s[c.DepartureStop] = journeyFromDeparture;
+                    }
+                }
             }
-
-
-            _s[c.DepartureStop] = newJourney;
         }
 
         /// <summary>

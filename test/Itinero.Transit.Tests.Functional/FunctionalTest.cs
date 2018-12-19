@@ -6,6 +6,7 @@ using Xunit;
 
 namespace Itinero.Transit.Tests.Functional
 {
+    
     /// <summary>
     /// Abstract definition of a functional test.
     /// </summary>

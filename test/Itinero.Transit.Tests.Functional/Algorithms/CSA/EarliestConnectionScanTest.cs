@@ -7,14 +7,13 @@ using Xunit;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
-    public class EarliestConnectionScanTest : FunctionalTest<Journey<TransferStats>, (ConnectionsDb connections, StopsDb
-        stops,
-        string departureStopId, string arrivalStopId, DateTime departureTime)>
+    public class EarliestConnectionScanTest : DefaultFunctionalTest
     {
         public static EarliestConnectionScanTest Default => new EarliestConnectionScanTest();
 
-        protected override Journey<TransferStats> Execute((ConnectionsDb connections, StopsDb stops,
-            string departureStopId, string arrivalStopId, DateTime departureTime) input)
+        protected override bool Execute(
+            (ConnectionsDb connections, StopsDb stops, string departureStopId, string arrivalStopId, DateTime departureTime,
+                DateTime arrivalTime) input)
         {
             var p = new Profile<TransferStats>(
                 input.connections, input.stops,
@@ -35,12 +34,19 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
                 depTime, depTime.AddHours(24), p);
             var journey = eas.CalculateJourney();
 
+            if (journey == null)
+            {
+                Information($"Could not find a route from {input.departureStopId} to {input.arrivalStopId}");
+            }
+            
             // verify result.
             Assert.NotNull(journey);
 
-            Information(journey.ToString(input.stops));
+            Information(journey.Pruned().ToString(input.stops));
             
-            return journey;
+            return true;
         }
+
+      
     }
 }
