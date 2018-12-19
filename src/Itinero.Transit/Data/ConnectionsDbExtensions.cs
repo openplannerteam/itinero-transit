@@ -24,20 +24,11 @@ namespace Itinero.Transit.Data
         /// <param name="time">The time to move to.</param>
         public static void MovePrevious(this ConnectionsDb.DepartureEnumerator enumerator, ulong time)
         {
-            do
+            if (!enumerator.MovePrevious(time.FromUnixTime()))
             {
-                if (!enumerator.MovePrevious())
-                {
-                    throw new ArgumentOutOfRangeException(
-                        "EnumeratorException: departure time not found. Either to little connections are loaded in the database, or the query is to far in the future or in the past");
-                }
-            } while (enumerator.DepartureTime > time);
-
-            //  if (!enumerator.MovePrevious(time.FromUnixTime()))
-            //  {
-            //      throw new Exception(
-            //          "EnumeratorException: departure time not found. Either too little connections are loaded in the database, or the query is to far in the future or in the past");
-            //  }
+                throw new Exception(
+                    "EnumeratorException: departure time not found. Either too little connections are loaded in the database, or the query is to far in the future or in the past");
+            }
         }
 
         /// <summary>
@@ -47,20 +38,11 @@ namespace Itinero.Transit.Data
         /// <param name="time">The time to move to.</param>
         public static void MoveNext(this ConnectionsDb.DepartureEnumerator enumerator, ulong time)
         {
-            while (enumerator.DepartureTime < time)
+            if (!enumerator.MoveNext(time.FromUnixTime()))
             {
-                if (!enumerator.MoveNext())
-                {
-                    throw new ArgumentOutOfRangeException(
-                        "EnumeratorException: departure time not found. Either to little connections are loaded in the database, or the query is to far in the future or in the past");
-                }
+                throw new Exception(
+                    "EnumeratorException: departure time not found. Either too little connections are loaded in the database, or the query is to far in the future or in the past");
             }
-
-            // if (!enumerator.MoveNext(time.FromUnixTime()))
-            // {
-            //     throw new Exception(
-            //         "EnumeratorException: departure time not found. Either too little connections are loaded in the database, or the query is to far in the future or in the past");
-            // }
         }
     }
 }
