@@ -37,7 +37,6 @@ namespace Itinero.Transit.Tests.Functional
                 EasLasComparison.Default
             };
 
-
         private static readonly Dictionary<string, DefaultFunctionalTest> _allTestsNamed =
             new Dictionary<string, DefaultFunctionalTest>
             {
@@ -47,7 +46,6 @@ namespace Itinero.Transit.Tests.Functional
                 {"easpcs", EasPcsComparison.Default},
                 {"easlas", EasLasComparison.Default}
             };
-
 
         public static void Main(string[] args)
         {
@@ -119,8 +117,8 @@ namespace Itinero.Transit.Tests.Functional
                 results[name] = 0;
                 foreach (var i in inputs)
                 {
-                    try
-                    {
+//                    try
+//                    {
                         if (!t.RunPerformance(i, _nrOfRuns))
                         {
                             Log.Information($"{name} failed");
@@ -130,13 +128,13 @@ namespace Itinero.Transit.Tests.Functional
                         {
                             results[name]++;
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        failed++;
-                        Log.Error(e.Message);
-                        Log.Error(e.StackTrace);
-                    }
+//                    }
+//                    catch (Exception e)
+//                    {
+//                        failed++;
+//                        Log.Error(e.Message);
+//                        Log.Error(e.StackTrace);
+//                    }
                 }
             }
 

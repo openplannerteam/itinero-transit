@@ -735,6 +735,7 @@ namespace Itinero.Transit.Data
                                                 _db._windowSizeInSeconds);
                     _windowSize = _db._departureWindowPointers[_window * 2 + 1];
                     _windowPosition = 0;
+                    _windowPointer = _db._departureWindowPointers[_window * 2 + 0];
                 }
 
                 if (_window == uint.MaxValue)
