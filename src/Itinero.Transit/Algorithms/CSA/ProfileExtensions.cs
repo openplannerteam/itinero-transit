@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Itinero.IO.LC;
 using Itinero.Transit.Data;
@@ -8,6 +9,19 @@ namespace Itinero.Transit.Algorithms.CSA
 {
     public static class ProfileExtensions
     {
+
+        public static IEnumerable<Journey<T>> CalculateJourneys<T>
+        (this Profile<T> profile,string from, string to,
+            DateTime departure, DateTime arrival) where T : IJourneyStats<T>
+        {
+            var reader = profile.StopsDb.GetReader();
+            reader.MoveTo(from);
+            var fromId = reader.Id;
+            reader.MoveTo(to);
+            var toId = reader.Id;
+            return profile.CalculateJourneys(
+                fromId, toId, departure.ToUnixTime(), arrival.ToUnixTime());
+        }
         ///  <summary>
         ///  Calculates the profiles Journeys for the given coordinates.
         /// 
@@ -39,20 +53,11 @@ namespace Itinero.Transit.Algorithms.CSA
                 return null;
             }
 
-            Log.Information(earliestJourney.Pruned().ToString(profile.StopsDb));
-/*
-            var las = new LatestConnectionScan<T>(
-                depLocation, arrivalLocaiton,
-                departureTime, lastArrivalTime,
-                profile
-            );*/
-            //  var latestJourney = las.CalculateJourney((d, d0) => departureTime);
-
             var pcs = new ProfiledConnectionScan<T>(
                 depLocation, arrivalLocation,
                 departureTime, lastArrivalTime,
                 profile,
-                eas //  new DoubleFilter(eas, las)
+                eas
             );
 
             return pcs.CalculateJourneys();

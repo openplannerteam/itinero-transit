@@ -30,9 +30,15 @@ namespace Itinero.Transit.Data
         public static IEnumerable<IStop> LocationsInRange(
             this StopsDb stopsDb, IStop stop, float maxDistance)
         {
-            var l = new List<(uint, uint)>();
             var lat = (float) stop.Latitude;
             var lon = (float) stop.Longitude;
+            return stopsDb.LocationsInRange(lat, lon, maxDistance);
+        }
+
+        public static IEnumerable<IStop> LocationsInRange(
+            this StopsDb stopsDb, float lat, float lon, float maxDistance)
+        {
+            var l = new List<(uint, uint)>();
             var box = (
                 DistanceEstimate.MoveEast(lat, lon, -maxDistance), // minLon
                 DistanceEstimate.MoveNorth(lat, lon, +maxDistance), // MinLat
