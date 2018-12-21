@@ -2,7 +2,7 @@
 
     <PropertyGroup>
     <title>Itinero.Transit.IO.LC</title>
-    <VersionPrefix>0.6.0-alpha</VersionPrefix>
+    <VersionPrefix>0.6.17-alpha</VersionPrefix>
     <AssemblyName>Itinero.Transit.IO.LC</AssemblyName>
     <Description>A library to load Connections into the TransitDB</Description>
     <Summary>This package provides the practical footwork for Itinero.Transit as it loads the Connections from a Linked Connections SErver.</Summary>
@@ -26,7 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="CacheCow.Client" Version="2.4.3" />
+        <PackageReference Include="CacheCow.Client" Version="3.0.0-alpha" />
         <PackageReference Include="CacheCow.Client.FileStore" Version="2.4.3" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
         <PackageReference Include="openplannerteam.Json-LD.net" Version="0.1.0" />

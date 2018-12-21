@@ -184,7 +184,6 @@ namespace Itinero.IO.LC
         private void IntegrateBatch(ConnectionsDb.DepartureEnumerator enumerator)
         {
             var depTime = enumerator.DepartureTime;
-            var tripId = enumerator.Id;
             do
             {
                 IntegrateConnection(enumerator);
@@ -192,13 +191,6 @@ namespace Itinero.IO.LC
                 {
                     throw new Exception("Enumerator depleted");
                 }
-
-                if (enumerator.Id == tripId)
-                {
-                    throw new Exception("Stuck in a loop: we have reached the first element of the database");
-                }
-
-                tripId = enumerator.Id;
             } while (depTime == enumerator.DepartureTime);
         }
 

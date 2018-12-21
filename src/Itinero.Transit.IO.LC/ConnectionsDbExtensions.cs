@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.IO.LC.CSA;
@@ -21,7 +19,7 @@ namespace Itinero.Transit.IO.LC
         /// </summary>
         /// <returns></returns>
         private static (uint tileId, uint localId)
-            AddStop(CSA.Profile profile, Uri stopUri, StopsDb stopsDb, StopsDb.StopsDbReader stopsDbReader)
+            AddStop(ILocationProvider profile, Uri stopUri, StopsDb stopsDb, StopsDb.StopsDbReader stopsDbReader)
         {
             var stop1Uri = stopUri;
             var stop1Location = profile.GetCoordinateFor(stop1Uri);
@@ -31,21 +29,20 @@ namespace Itinero.Transit.IO.LC
             }
 
             var stop1Id = stop1Uri.ToString();
-            (uint localTileId, uint localId) stop1InternalId;
-            if (!stopsDbReader.MoveTo(stop1Id))
-            {
-                return stopsDb.Add(stop1Id, stop1Location.Lon, stop1Location.Lat,
-                    new Attribute("name", stop1Location.Name));
-            }
 
-            return stopsDbReader.Id;
+            if (stopsDbReader.MoveTo(stop1Id))
+            {
+                return stopsDbReader.Id;
+            }
+            return stopsDb.Add(stop1Id, stop1Location.Lon, stop1Location.Lat,
+                new Attribute("name", stop1Location.Name));
+
         }
 
         private static uint AddTrip(LinkedConnection connection, TripsDb tripsDb, TripsDb.TripsDbReader tripsDbReader)
         {
-            var tripUriS = connection.Trip().ToString();
-            uint tripId;
-            if (tripsDbReader.MoveTo(tripUriS))
+            var tripUri = connection.Trip().ToString();
+            if (tripsDbReader.MoveTo(tripUri))
             {
                 return tripsDbReader.Id;
             }
@@ -55,7 +52,7 @@ namespace Itinero.Transit.IO.LC
                 new Attribute("trip", connection.Trip().ToString()),
                 new Attribute("route", connection.Route().ToString())
             );
-            return tripsDb.Add(tripUriS, attributes);
+            return tripsDb.Add(tripUri, attributes);
         }
 
 
@@ -66,7 +63,7 @@ namespace Itinero.Transit.IO.LC
             var stop1Id = AddStop(profile, connection.DepartureLocation(), stopsDb, stopsDbReader);
             var stop2Id = AddStop(profile, connection.ArrivalLocation(), stopsDb, stopsDbReader);
 
-            if (stop1Id.localId == uint.MaxValue && stop1Id.tileId == uint.MaxValue && 
+            if (stop1Id.localId == uint.MaxValue && stop1Id.tileId == uint.MaxValue &&
                 stop2Id.localId == uint.MaxValue && stop2Id.tileId == uint.MaxValue)
             {
                 return;
@@ -75,11 +72,13 @@ namespace Itinero.Transit.IO.LC
             var tripId = AddTrip(connection, tripsDb, tripsDbReader);
 
 
-            var connectionId = connection.Id().ToString();
-            connectionsDb.Add(stop1Id, stop2Id, connectionId,
+            var connectionUri = connection.Id().ToString();
+            connectionsDb.Add(stop1Id, stop2Id, connectionUri,
                 connection.DepartureTime(),
-                (ushort) (connection.ArrivalTime() - connection.DepartureTime()).TotalSeconds, tripId);
+                (ushort) (connection.ArrivalTime() - connection.DepartureTime()).TotalSeconds, 
+                tripId);
         }
+        
 
         /// <summary>
         /// Loads connections into the connections db and the given stops db from the given profile.
@@ -90,7 +89,7 @@ namespace Itinero.Transit.IO.LC
         /// <param name="tripsDb">The trips db.</param>
         /// <param name="window">The window, a start time and duration.</param>
         public static void LoadConnections(this ConnectionsDb connectionsDb,
-            CSA.Profile profile, StopsDb stopsDb, TripsDb tripsDb,
+            Profile profile, StopsDb stopsDb, TripsDb tripsDb,
             (DateTime start, TimeSpan duration) window)
         {
             var stopsDbReader = stopsDb.GetReader();
@@ -101,12 +100,21 @@ namespace Itinero.Transit.IO.LC
 
             var tripsAdded = 0;
 
+            foreach (var l in profile.GetAllLocations())
+            {
+                stopsDb.Add(l.Uri.ToString(), l.Lon, l.Lat,new Attribute("name", l.Name));
+            }
+            
             do
             {
                 foreach (var connection in timeTable.Connections())
                 {
                     AddConnection(connection, profile, stopsDb, stopsDbReader, connectionsDb, tripsDb, tripsDbReader);
                     connectionCount++;
+                    if (connectionCount % 1000 == 0)
+                    {
+                        Log.Information($"Loaded {connectionCount} connections");
+                    }
                 }
 
                 if (timeTable.NextTableTime() > window.start + window.duration)
@@ -120,5 +128,9 @@ namespace Itinero.Transit.IO.LC
 
             Log.Information($"Added {connectionCount} connections.");
         }
+
+        
+
+        
     }
 }
