@@ -9,10 +9,9 @@ namespace Itinero.Transit.Algorithms.CSA
 {
     public static class ProfileExtensions
     {
-
         public static IEnumerable<Journey<T>> CalculateJourneys<T>
-        (this Profile<T> profile,string from, string to,
-            DateTime departure, DateTime arrival) where T : IJourneyStats<T>
+        (this Profile<T> profile, string from, string to,
+            DateTime? departure = null, DateTime? arrival = null) where T : IJourneyStats<T>
         {
             var reader = profile.StopsDb.GetReader();
             reader.MoveTo(from);
@@ -20,8 +19,11 @@ namespace Itinero.Transit.Algorithms.CSA
             reader.MoveTo(to);
             var toId = reader.Id;
             return profile.CalculateJourneys(
-                fromId, toId, departure.ToUnixTime(), arrival.ToUnixTime());
+                fromId, toId, 
+                departure?.ToUnixTime() ?? 0, 
+                arrival?.ToUnixTime() ?? 0);
         }
+
         ///  <summary>
         ///  Calculates the profiles Journeys for the given coordinates.
         /// 
@@ -39,25 +41,63 @@ namespace Itinero.Transit.Algorithms.CSA
         ///  <returns></returns>
         public static IEnumerable<Journey<T>> CalculateJourneys<T>
         (this Profile<T> profile, (uint, uint) depLocation, (uint, uint) arrivalLocation,
-            ulong departureTime, ulong lastArrivalTime) where T : IJourneyStats<T>
+            ulong departureTime = 0, ulong lastArrivalTime = 0) where T : IJourneyStats<T>
         {
+            if (departureTime == 0 && lastArrivalTime == 0)
+            {
+                throw new ArgumentException("At least one of departure or arrival time should be given");
+            }
+
+
+            IConnectionFilter filter = null;
+            if (departureTime == 0)
+            {
+                var las = new LatestConnectionScan<T>(depLocation, arrivalLocation,
+                    lastArrivalTime - 24 * 60 * 60, lastArrivalTime,
+                    profile);
+                var lasJourney = las.CalculateJourney(
+                    (journeyArr, journeyDep) =>
+                    {
+                        var diff = journeyArr - journeyDep;
+                        return journeyArr - diff;
+                    });
+                var lasTime = lasJourney.ArrivalTime() - lasJourney.Root.DepartureTime();
+                departureTime = lasJourney.Root.DepartureTime() - lasTime;
+                lastArrivalTime = lasJourney.ArrivalTime();
+                filter = las;
+            }
+
+
             var eas = new EarliestConnectionScan<T>(
                 depLocation, arrivalLocation,
                 departureTime, lastArrivalTime,
                 profile
             );
             var earliestJourney = eas.CalculateJourney((d, d0) => lastArrivalTime);
+
+
             if (earliestJourney == null)
             {
                 Log.Information("Could not determine a route");
                 return null;
             }
 
+            departureTime = earliestJourney.Root.DepartureTime();
+
+            if (filter == null)
+            {
+                filter = eas;
+            }
+            else
+            {
+                filter = new DoubleFilter(eas, filter);
+            }
+
             var pcs = new ProfiledConnectionScan<T>(
                 depLocation, arrivalLocation,
                 departureTime, lastArrivalTime,
                 profile,
-                eas
+                filter
             );
 
             return pcs.CalculateJourneys();
