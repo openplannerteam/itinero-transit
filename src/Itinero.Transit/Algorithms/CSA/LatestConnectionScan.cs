@@ -80,6 +80,10 @@ namespace Itinero.Transit.Algorithms.CSA
             Time earliestDeparture, Time lastDeparture,
             Profile<T> profile)
         {
+            if (lastDeparture <= earliestDeparture)
+            {
+                throw new ArgumentException("Departure time falls after arrival time");
+            }
             _earliestDeparture = earliestDeparture;
             _lastDeparture = lastDeparture;
             _connectionsProvider = profile.ConnectionsDb;

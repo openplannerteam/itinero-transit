@@ -19,8 +19,8 @@ namespace Itinero.Transit.Algorithms.CSA
             reader.MoveTo(to);
             var toId = reader.Id;
             return profile.CalculateJourneys(
-                fromId, toId, 
-                departure?.ToUnixTime() ?? 0, 
+                fromId, toId,
+                departure?.ToUnixTime() ?? 0,
                 arrival?.ToUnixTime() ?? 0);
         }
 
@@ -67,15 +67,23 @@ namespace Itinero.Transit.Algorithms.CSA
                 filter = las;
             }
 
+            bool lastArrivalTimeSet = lastArrivalTime != 0;
+            if (!lastArrivalTimeSet)
+            {
+                lastArrivalTime = departureTime + 24 * 60 * 60;
+            }
+
 
             var eas = new EarliestConnectionScan<T>(
                 depLocation, arrivalLocation,
                 departureTime, lastArrivalTime,
                 profile
             );
-            var earliestJourney = eas.CalculateJourney((d, d0) => lastArrivalTime);
-
-
+            var earliestJourney = eas.CalculateJourney(
+                (journeyDep, journeyArr) => 
+                    lastArrivalTimeSet ? lastArrivalTime :
+                    journeyArr + (journeyArr - journeyDep));
+            
             if (earliestJourney == null)
             {
                 Log.Information("Could not determine a route");
@@ -83,7 +91,11 @@ namespace Itinero.Transit.Algorithms.CSA
             }
 
             departureTime = earliestJourney.Root.DepartureTime();
-
+            if (!lastArrivalTimeSet)
+            {
+                lastArrivalTime = earliestJourney.ArrivalTime() +
+                                  (earliestJourney.ArrivalTime() - earliestJourney.Root.DepartureTime());
+            }
             if (filter == null)
             {
                 filter = eas;

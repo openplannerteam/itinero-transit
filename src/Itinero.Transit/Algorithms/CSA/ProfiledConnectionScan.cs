@@ -172,6 +172,7 @@ namespace Itinero.IO.LC
                 j.Reversed(revJourneys);
             }
 
+            revJourneys.Reverse();
             return revJourneys;
         }
 

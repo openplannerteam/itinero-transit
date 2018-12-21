@@ -22,9 +22,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
                 departureTime, DateTime arrivalTime) input)
         {
             var profile = new Profile<TransferStats>(
-                input.connections, input.stops, 
+                input.connections, input.stops,
                 new InternalTransferGenerator(1),
-                new BirdsEyeInterWalkTransferGenerator(input.stops.GetReader()), 
+                new BirdsEyeInterWalkTransferGenerator(input.stops.GetReader()),
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
             // get departure and arrival stop ids.
@@ -49,7 +49,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 
             // PCS could find a route which arrives at the same time, but departs later
             Assert.True(easJ.Root.DepartureTime() <= pcsJ.Root.DepartureTime());
-            Assert.Equal(easJ.ArrivalTime(), pcsJ.ArrivalTime());
+            Assert.True(easJ.ArrivalTime() <= pcsJ.ArrivalTime());
 
             return true;
         }
