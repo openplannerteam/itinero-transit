@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.IO.LC.CSA;
@@ -92,6 +93,7 @@ namespace Itinero.Transit.IO.LC
             Profile profile, StopsDb stopsDb, TripsDb tripsDb,
             (DateTime start, TimeSpan duration) window)
         {
+            Log.Information("Building the database... Hang on");
             var stopsDbReader = stopsDb.GetReader();
             var tripsDbReader = tripsDb.GetReader();
 
@@ -100,9 +102,17 @@ namespace Itinero.Transit.IO.LC
 
             var tripsAdded = 0;
 
-            foreach (var l in profile.GetAllLocations())
+            var locations = profile.GetAllLocations();
+            var i = 0;
+            var length = locations.Count();
+            foreach (var l in locations)
             {
                 stopsDb.Add(l.Uri.ToString(), l.Lon, l.Lat,new Attribute("name", l.Name));
+                i++;
+                if (i % 100 == 0)
+                {
+                    Log.Verbose($"Added location {i}/{length}");
+                }
             }
             
             do
@@ -113,7 +123,9 @@ namespace Itinero.Transit.IO.LC
                     connectionCount++;
                     if (connectionCount % 1000 == 0)
                     {
-                        Log.Information($"Loaded {connectionCount} connections");
+                        var timeHandled = (connection.DepartureTime() - window.start);
+                        var factor = 100 * window.duration.TotalSeconds / timeHandled.TotalSeconds;
+                        Log.Information($"Loaded {connectionCount} connections (around {factor}%)");
                     }
                 }
 
