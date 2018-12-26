@@ -19,7 +19,10 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
             var stops = Db.GetDefaultStopsDb();
 
             var profile = new Profile<TransferStats>(
-                db, stops, new InternalTransferGenerator(), new TransferStats(),
+                db, stops, 
+                new InternalTransferGenerator(),
+                new BirdsEyeInterWalkTransferGenerator(stops.GetReader()), 
+                new TransferStats(),
                 TransferStats.ProfileTransferCompare
             );
 
@@ -46,6 +49,48 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
         }
         
         [Fact]
+        public void EarliestConnectionScan_WithWalk()
+        {
+            // build a one-connection db.
+            var stopsDb = new StopsDb();
+            var stop0 = stopsDb.Add("https://example.com/stops/0", 50, 50.0);
+            var stop1 = stopsDb.Add("https://example.com/stops/1", 0, 0.0);
+            var stop2 = stopsDb.Add("https://example.com/stops/2", 0.001, 0.001); // very walkable distance
+            var stop3 = stopsDb.Add("https://example.com/stops/3", 60.1, 60.1);
+
+            var connectionsDb = new ConnectionsDb();
+            connectionsDb.Add(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 10, 00, 00), 10 * 60, 0);
+
+            
+            connectionsDb.Add(stop2, stop3, "https://example.com/connections/1",
+                new DateTime(2018, 12, 04, 10, 30, 00), 10 * 60, 1);
+
+            // Prevent depletion of the DB
+            connectionsDb.Add(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 2);
+
+            
+            var profile = new Profile<TransferStats>(
+                connectionsDb, stopsDb, 
+                new InternalTransferGenerator(),
+                new BirdsEyeInterWalkTransferGenerator(stopsDb.GetReader()), 
+                new TransferStats(),
+                TransferStats.ProfileTransferCompare);
+            var eas = new EarliestConnectionScan<TransferStats>(
+                stop0, stop3, new DateTime(2018, 12, 04, 10, 00, 00), new DateTime(2018, 12, 04, 11, 00, 00),
+                profile);
+            var journey = eas.CalculateJourney();
+
+            Assert.NotNull(journey);
+            Assert.Equal(Journey<TransferStats>.WALK, journey.PreviousLink.PreviousLink.Connection);
+            Assert.True(journey.PreviousLink.PreviousLink.SpecialConnection);
+        }
+        
+        
+        
+        
+        [Fact]
         public void EarliestConnectionScan_ShouldFindOneConnectionJourney()
         {
             // build a one-connection db.
@@ -63,7 +108,10 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
 
             
             var profile = new Profile<TransferStats>(
-                connectionsDb, stopsDb, new InternalTransferGenerator(), new TransferStats(),
+                connectionsDb, stopsDb, 
+                new InternalTransferGenerator(),
+                null, 
+                new TransferStats(),
                 TransferStats.ProfileTransferCompare);
             var eas = new EarliestConnectionScan<TransferStats>(
                 stop1, stop2, new DateTime(2018, 12, 04, 16, 00, 00), new DateTime(2018, 12, 04, 19, 00, 00),

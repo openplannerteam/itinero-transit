@@ -21,7 +21,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         {
             var p = new Profile<TransferStats>(
                 input.connections, input.stops,
-                new InternalTransferGenerator(), new TransferStats(), TransferStats.ProfileTransferCompare);
+                new InternalTransferGenerator(), 
+                new BirdsEyeInterWalkTransferGenerator(input.stops.GetReader()), 
+                new TransferStats(), TransferStats.ProfileTransferCompare);
 
 
             // get departure and arrival stop ids.
@@ -39,11 +41,6 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             Assert.NotNull(journeys);
             True(journeys.Any());
 
-            foreach (var j in journeys)
-            {
-                Information(j.Pruned().ToString(input.stops));    
-            }
-            
             Information($"Found {journeys.Count()} profiles");
             
             return true;

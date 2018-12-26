@@ -11,10 +11,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Itinero.Transit" Version="0.5.3-alpha" />
-      <PackageReference Include="Itinero.Transit.IO.LC" Version="0.5.3-alpha" />
-      <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
-      <PackageReference Include="Serilog.Sinks.File" Version="4.0.0" />
+      <PackageReference Include="Itinero.Transit" Version="0.6.17-alpha" />
+      <PackageReference Include="Itinero.Transit.IO.LC" Version="0.6.15-alpha" />
+      <PackageReference Include="Serilog.Sinks.Console" Version="3.1.2-dev-00779" />
+      <PackageReference Include="Serilog.Sinks.File" Version="4.0.1-dev-00801" />
       <PackageReference Include="xunit" Version="2.4.1" />
     </ItemGroup>
 

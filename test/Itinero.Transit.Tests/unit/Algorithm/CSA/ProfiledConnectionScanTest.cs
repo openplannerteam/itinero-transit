@@ -23,7 +23,9 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
             var db = Db.GetDefaultTestDb();
 
             var profile = new Profile<TransferStats>(
-                db, Db.GetDefaultStopsDb(), new InternalTransferGenerator(60),
+                db, Db.GetDefaultStopsDb(), 
+                new InternalTransferGenerator(60),
+                new BirdsEyeInterWalkTransferGenerator(Db.GetDefaultStopsDb().GetReader()), 
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
             Pr("Starting PCS from (0,0) to (0,3)");
@@ -76,7 +78,9 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
                 40 * 60, 3);
 
             var profile = new Profile<TransferStats>(
-                connDb, Db.GetDefaultStopsDb(), new InternalTransferGenerator(60),
+                connDb, Db.GetDefaultStopsDb(), 
+                new InternalTransferGenerator(60),
+                new BirdsEyeInterWalkTransferGenerator(Db.GetDefaultStopsDb().GetReader()), 
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
             var pcs = new ProfiledConnectionScan<TransferStats>(

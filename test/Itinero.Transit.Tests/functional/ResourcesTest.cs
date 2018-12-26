@@ -51,7 +51,7 @@ namespace Itinero.IO.LC.Tests
         public void FixCache()
         {
             if (Directory.Exists(TestPath + "/SNCB/timetables") &&
-                Directory.EnumerateFiles(TestPath + "/SNCB/timetables").Count() > 100)
+                Directory.EnumerateFiles(TestPath + "/SNCB/timetables").Count() > 300)
             {
                 return;
             }
@@ -78,48 +78,6 @@ namespace Itinero.IO.LC.Tests
             }
         }
 
-        /// <summary>
-        ///  This test downloads belgium.osm.pbf and builds the router database (if it doesn't exist yet)
-        /// </summary>
-        [Fact]
-        public void FixRouterDb()
-        {
-            if (File.Exists("belgium.routerdb"))
-            {
-                Log("Found the routerdb already.");
-                return;
-            }
-
-
-            Log("Downloading routerdb...");
-            var itineroDownloadsBe = new Uri("http://files.itinero.tech/data/OSM/planet/europe/belgium-latest.osm.pbf");
-
-            var fileReq = (HttpWebRequest) WebRequest.Create(itineroDownloadsBe);
-            var fileResp = (HttpWebResponse) fileReq.GetResponse();
-            using (var httpStream = fileResp.GetResponseStream())
-            {
-                using (var fileStream = File.Create("belgium.osm.pbf"))
-                {
-                    // ReSharper disable once PossibleNullReferenceException
-                    httpStream.CopyTo(fileStream);
-                    fileStream.Close();
-                }
-            }
-
-            using (var stream = File.OpenRead("belgium.osm.pbf"))
-            {
-                var routerDb = new RouterDb();
-                Log("Stream successfully opened...");
-                routerDb.LoadOsmData(stream, Vehicle.Pedestrian);
-                Log("Serializing...");
-                using (var outStream = new FileInfo("belgium.routerdb").Open(FileMode.Create))
-                {
-                    routerDb.Serialize(outStream);
-                    Log("DONE!");
-                }
-            }
-        }
-
         [Fact]
         public void DownloadPast()
         {
@@ -129,12 +87,12 @@ namespace Itinero.IO.LC.Tests
                 sncb.ConnectionsProvider.GetTimeTable(new DateTime(2018, 1, 1));
                 throw new Exception("Downloading this much in the past should have failed");
             }
-            catch(ArgumentException)
+            catch (ArgumentException)
             {
                 // Indeed, should error
                 Assert.True(true);
             }
-            catch(IOException)
+            catch (IOException)
             {
                 // Indeed, should error
                 Assert.True(true);

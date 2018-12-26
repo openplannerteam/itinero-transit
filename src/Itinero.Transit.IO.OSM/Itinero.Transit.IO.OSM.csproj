@@ -9,8 +9,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Itinero" Version="1.4.0-pre89" />
-        <PackageReference Include="Itinero.IO.Osm" Version="1.4.0-pre87" />
+        <PackageReference Include="Itinero" Version="1.4.0-pre91" />
+        <PackageReference Include="Itinero.IO.Osm" Version="1.4.0-pre91" />
     </ItemGroup>
 
 </Project>
