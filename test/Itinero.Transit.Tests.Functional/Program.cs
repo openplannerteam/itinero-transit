@@ -88,16 +88,16 @@ namespace Itinero.Transit.Tests.Functional
             var db = IO.LC.LoadConnectionsTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
 
             TripHeadsignTest.Default.Run((db.connections, db.trips));
-            
-            
-            // ConnectionsDbDepartureEnumeratorTest.Default.Run(db.connections);
-            // TestClosestStopsAndRouting(db);
-            // AlgorithmTests(db, date, tests);
 
+
+            ConnectionsDbDepartureEnumeratorTest.Default.Run(db.connections);
+            TestClosestStopsAndRouting(db);
+            AlgorithmTests(db, date, tests);
         }
 
         private static void AlgorithmTests((ConnectionsDb connections, StopsDb stops, TripsDb trips) db, DateTime date,
-            List<DefaultFunctionalTest> tests){
+            IReadOnlyCollection<DefaultFunctionalTest> tests)
+        {
             var inputs = new List<(ConnectionsDb, StopsDb, string, string, DateTime, DateTime)>
             {
                 (db.connections, db.stops, Brugge,
@@ -118,7 +118,7 @@ namespace Itinero.Transit.Tests.Functional
                     date.Date.AddHours(18))
             };
 
-            
+
             var failed = 0;
             var results = new Dictionary<string, int>();
 
