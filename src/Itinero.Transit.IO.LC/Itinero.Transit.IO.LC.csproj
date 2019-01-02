@@ -2,7 +2,7 @@
 
     <PropertyGroup>
     <title>Itinero.Transit.IO.LC</title>
-    <VersionPrefix>0.6.20-alpha</VersionPrefix>
+    <VersionPrefix>0.6.21-alpha</VersionPrefix>
     <AssemblyName>Itinero.Transit.IO.LC</AssemblyName>
     <Description>A library to load Connections into the TransitDB</Description>
     <Summary>This package provides the practical footwork for Itinero.Transit as it loads the Connections from a Linked Connections SErver.</Summary>
