@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <title>Itinero.Transit</title>
-    <VersionPrefix>0.6.21-alpha</VersionPrefix>
     <AssemblyName>Itinero.Transit</AssemblyName>
     <Description>A library implementing Connection Scan Algorithm for routing of Public Transport networks</Description>
     <Summary>This package provides an implementation for intermodal routing via Public Transport networks. It allows station-to-station, earliest arrival routing within one operator.</Summary>
