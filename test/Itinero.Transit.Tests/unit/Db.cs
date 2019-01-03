@@ -12,10 +12,6 @@ namespace Itinero.IO.LC.Tests
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 20, 00),
                 10 * 60, 0);
-
-
-
-            
             
             connDb.Add(((uint) 0, (uint) 1), ((uint) 0, (uint) 2),
                 "https://example.com/connections/1",
@@ -32,11 +28,6 @@ namespace Itinero.IO.LC.Tests
                 "https://example.com/connections/2",
                 new DateTime(2018, 12, 04, 16, 35, 00),
                 40 * 60, 0);
-
-
-            
-            
-            
             
             // We add a very early and late connection in order to be able to run the algos and not run out of connections
             connDb.Add(((uint) 0, (uint) 10), ((uint) 0, (uint) 11),

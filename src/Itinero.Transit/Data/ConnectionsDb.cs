@@ -736,6 +736,25 @@ namespace Itinero.Transit.Data
                     _windowSize = _db._departureWindowPointers[_window * 2 + 1];
                     _windowPosition = 0;
                     _windowPointer = _db._departureWindowPointers[_window * 2 + 0];
+                    if (_windowSize > 0)
+                    {
+                        _reader.MoveTo(
+                            _db._departurePointers[
+                                _windowPointer +
+                                _windowPosition]); // keep moving next until we reach a departure time after the given date time.
+                        var unixTime = dateTime.Value.ToUnixTime();
+                        while (unixTime > _reader.DepartureTime)
+                        {
+                            // move next.
+                            if (!this.MoveNextIgnoreDate())
+                            {
+                                // connection after this departure time doesn't exist.
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    }
                 }
 
                 if (_window == uint.MaxValue)
