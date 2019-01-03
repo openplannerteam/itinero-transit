@@ -14,9 +14,11 @@
     <PackageProjectUrl>https://github.com/openplannerteam/Itinero-Transit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/openplannerteam/Itinero-Transit</RepositoryUrl>
     <PackageLicenseUrl>https://github.com/openplannerteam/itinero-transit/blob/master/LICENSE</PackageLicenseUrl>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+        <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+        <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+        <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+        <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+        <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <TargetFramework>netstandard2.0</TargetFramework>
     </PropertyGroup>
@@ -31,6 +33,12 @@
         <PackageReference Include="CacheCow.Common" Version="2.4.3" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
         <PackageReference Include="openplannerteam.Json-LD.net" Version="0.1.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="..\..\SharedAssemblyVersion.cs">
+        <Link>Properties/SharedAssemblyVersion.cs</Link>
+      </Compile>
     </ItemGroup>
 
 </Project>

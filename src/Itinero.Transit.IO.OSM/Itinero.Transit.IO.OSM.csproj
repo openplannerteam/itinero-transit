@@ -1,7 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
+        <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+        <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+        <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+        <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+        <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
     </PropertyGroup>
 
     <ItemGroup>
@@ -11,6 +16,12 @@
     <ItemGroup>
         <PackageReference Include="Itinero" Version="1.4.0-pre91" />
         <PackageReference Include="Itinero.IO.Osm" Version="1.4.0-pre91" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="..\..\SharedAssemblyVersion.cs">
+        <Link>Properties/SharedAssemblyVersion.cs</Link>
+      </Compile>
     </ItemGroup>
 
 </Project>

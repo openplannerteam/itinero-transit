@@ -15,6 +15,7 @@ ProjectSection(SolutionItems) = preProject
 	LICENSE = LICENSE
 	Overview.md = Overview.md
 	README.md = README.md
+	SharedAssemblyVersion.cs = SharedAssemblyVersion.cs
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Itinero.Transit.IO.LC", "src\Itinero.Transit.IO.LC\Itinero.Transit.IO.LC.csproj", "{782E9E90-8577-4CC5-86C7-26ABBF42BA76}"
