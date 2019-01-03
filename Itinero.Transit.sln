@@ -12,10 +12,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Itinero.Transit.Tests.Funct
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{9414215C-205F-4FFF-A013-1FCE4517CABC}"
 ProjectSection(SolutionItems) = preProject
-	Connection Scan Algorithm.pdf = Connection Scan Algorithm.pdf
 	LICENSE = LICENSE
 	Overview.md = Overview.md
 	README.md = README.md
+	SharedAssemblyVersion.cs = SharedAssemblyVersion.cs
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Itinero.Transit.IO.LC", "src\Itinero.Transit.IO.LC\Itinero.Transit.IO.LC.csproj", "{782E9E90-8577-4CC5-86C7-26ABBF42BA76}"

@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <title>Itinero.Transit</title>
-    <VersionPrefix>0.5.3-alpha</VersionPrefix>
     <AssemblyName>Itinero.Transit</AssemblyName>
     <Description>A library implementing Connection Scan Algorithm for routing of Public Transport networks</Description>
     <Summary>This package provides an implementation for intermodal routing via Public Transport networks. It allows station-to-station, earliest arrival routing within one operator.</Summary>
@@ -16,6 +15,8 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
@@ -28,5 +29,11 @@
   <ItemGroup>
     <None Remove="Itinero.Transit.csproj.DotSettings" />
     <PackageReference Include="Reminiscence" Version="1.3.0-pre01" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\SharedAssemblyVersion.cs">
+      <Link>Properties/SharedAssemblyVersion.cs</Link>
+    </Compile>
   </ItemGroup>
 </Project>

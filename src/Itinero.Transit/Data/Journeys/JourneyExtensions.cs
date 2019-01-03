@@ -70,7 +70,7 @@ namespace Itinero.Transit.Journeys
             {
                 buildOn = buildOn.ChainSpecial(
                     j.Connection, j.PreviousLink.Time, j.PreviousLink.Location,
-                    j.PreviousLink.TripId);
+                    j.TripId);
             }
             else
             {

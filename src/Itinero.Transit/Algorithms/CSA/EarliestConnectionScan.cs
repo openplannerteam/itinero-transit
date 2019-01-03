@@ -19,6 +19,8 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly List<(uint localTileId, uint localId)> _userTargetLocation;
 
         private readonly ConnectionsDb _connectionsProvider;
+        private readonly StopsDb _stopsDb;
+        private readonly StopsDb.StopsDbReader _stopsReader;
 
         private readonly Time _earliestDeparture, _lastDeparture;
 
@@ -27,7 +29,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         private Time _filterEndTime = Time.MinValue;
 
-        private readonly IOtherModeGenerator _transferPolicy;
+        private readonly IOtherModeGenerator _transferPolicy, _walkPolicy;
 
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as early as possible
@@ -79,10 +81,18 @@ namespace Itinero.Transit.Algorithms.CSA
             Time earliestDeparture, Time lastDeparture,
             Profile<T> profile)
         {
+            if (lastDeparture <= earliestDeparture)
+            {
+                throw new ArgumentException("Departure time falls after arrival time");
+            }
+            
             _earliestDeparture = earliestDeparture;
             _lastDeparture = lastDeparture;
             _connectionsProvider = profile.ConnectionsDb;
-            _transferPolicy = profile.WalksGenerator;
+            _stopsDb = profile.StopsDb;
+            _stopsReader = _stopsDb.GetReader();
+            _transferPolicy = profile.InternalTransferGenerator;
+            _walkPolicy = profile.WalksGenerator;
 
             _userTargetLocation = userTargetLocation;
             foreach (var loc in userDepartureLocation)
@@ -169,16 +179,27 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <param name="enumerator"></param>
         private bool IntegrateBatch(ConnectionsDb.DepartureEnumerator enumerator)
         {
+            var improvedLocations = new HashSet<(uint, uint)>();
             var lastDepartureTime = enumerator.DepartureTime;
             do
             {
-                IntegrateConnection(enumerator);
+                if (IntegrateConnection(enumerator))
+                {
+                    improvedLocations.Add(enumerator.ArrivalStop);
+                }
 
                 if (!enumerator.MoveNext())
                 {
                     return false;
                 }
             } while (lastDepartureTime == enumerator.DepartureTime);
+
+
+            // Add footpath transfers to improved stations
+            foreach (var location in improvedLocations)
+            {
+                WalkAwayFrom(location);
+            }
 
             return true;
         }
@@ -189,10 +210,12 @@ namespace Itinero.Transit.Algorithms.CSA
         ///
         /// Returns connection.ArrivalLocation iff this an improvement has been made to reach this location.
         /// If not, MaxValue is returned
+        ///
+        /// Returns true if an improvement to c.ArrivalLocation has been made
         /// 
         /// </summary>
         /// <param name="c">A DepartureEnumeration, which is used here as if it were a single connection object</param>
-        private void IntegrateConnection(
+        private bool IntegrateConnection(
             IConnection c)
         {
             // The connection describes a random connection somewhere
@@ -205,7 +228,7 @@ namespace Itinero.Transit.Algorithms.CSA
             if (c.DepartureTime < journeyTillDeparture.Time && !_trips.ContainsKey(trip))
             {
                 // This connection has already left before we can make it to the stop
-                return;
+                return false;
             }
 
 
@@ -224,7 +247,10 @@ namespace Itinero.Transit.Algorithms.CSA
                 }
                 else
                 {
-                    journeyToArrival = _transferPolicy.CreateDepartureTransfer(journeyTillDeparture, c);
+                    journeyToArrival =
+                        _transferPolicy
+                            .CreateDepartureTransfer(journeyTillDeparture, c.DepartureTime, c.DepartureStop)
+                            ?.ChainForward(c);
                 }
 
                 if (journeyToArrival != null)
@@ -233,23 +259,66 @@ namespace Itinero.Transit.Algorithms.CSA
                 }
             }
 
-            if (journeyToArrival != null)
+            if (journeyToArrival == null)
             {
-                if (!_s.ContainsKey(c.ArrivalStop))
+                return false;
+            }
+
+            if (!_s.ContainsKey(c.ArrivalStop))
+            {
+                _s[c.ArrivalStop] = journeyToArrival;
+                return true;
+            }
+
+            var oldJourney = _s[c.ArrivalStop];
+            if (journeyToArrival.Time >= oldJourney.Time)
+            {
+                return false;
+            }
+
+            _s[c.ArrivalStop] = journeyToArrival;
+            return true;
+        }
+
+
+        private void WalkAwayFrom((uint, uint) location)
+        {
+            if (_walkPolicy == null || _walkPolicy.Range() <= 0f)
+            {
+                return;
+            }
+            
+             _stopsReader.MoveTo(location);
+            var reachableLocations =
+                _stopsDb.LocationsInRange(_stopsReader, _walkPolicy.Range());
+
+            var journey = _s[location];
+            
+            foreach (var reachableLocation in reachableLocations)
+            {
+                var id = reachableLocation.Id;
+                if (id == location)
                 {
-                    _s[c.ArrivalStop] = journeyToArrival;
+                    continue;
                 }
-                else
+                var walkingJourney = _walkPolicy.CreateDepartureTransfer(journey, ulong.MaxValue, id);
+                if (walkingJourney == null)
                 {
-                    var oldJourney = _s[c.ArrivalStop];
-                    if (journeyToArrival.Time < oldJourney.Time)
-                    {
-                        _s[c.ArrivalStop] = journeyToArrival;
-                    }
+                    continue;
+                }
+
+                if (!_s.ContainsKey(id))
+                {
+                    _s[id] = walkingJourney;
+                }
+                else if(_s[id].Time > walkingJourney.Time)
+                {
+                    _s[id] = walkingJourney;
                 }
             }
         }
-
+        
+        
         /// <summary>
         /// Iterates all the target locations.
         /// Returns the earliest time that one of them can be reached, along with the chosen location.

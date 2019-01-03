@@ -139,7 +139,7 @@ namespace Itinero.IO.LC
             _comparator = profile.ProfileComparator;
             _empty = new ParetoFrontier<T>(_comparator);
             _statsFactory = profile.StatsFactory;
-            _transferPolicy = profile.WalksGenerator;
+            _transferPolicy = profile.InternalTransferGenerator;
             _possibleJourney = possibleJourney;
             _filter = filter;
             filter?.CheckWindow(_earliestDeparture, _lastArrival);
@@ -172,6 +172,7 @@ namespace Itinero.IO.LC
                 j.Reversed(revJourneys);
             }
 
+            revJourneys.Reverse();
             return revJourneys;
         }
 
@@ -183,7 +184,6 @@ namespace Itinero.IO.LC
         private void IntegrateBatch(ConnectionsDb.DepartureEnumerator enumerator)
         {
             var depTime = enumerator.DepartureTime;
-            var tripId = enumerator.Id;
             do
             {
                 IntegrateConnection(enumerator);
@@ -191,13 +191,6 @@ namespace Itinero.IO.LC
                 {
                     throw new Exception("Enumerator depleted");
                 }
-
-                if (enumerator.Id == tripId)
-                {
-                    throw new Exception("Stuck in a loop: we have reached the first element of the database");
-                }
-
-                tripId = enumerator.Id;
             } while (depTime == enumerator.DepartureTime);
         }
 

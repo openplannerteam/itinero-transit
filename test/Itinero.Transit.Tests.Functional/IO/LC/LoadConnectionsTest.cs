@@ -9,7 +9,7 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
     /// <summary>
     /// Tests the load connections extension method.
     /// </summary>
-    public class LoadConnectionsTest : FunctionalTest<(ConnectionsDb connections, StopsDb stops),
+    public class LoadConnectionsTest : FunctionalTest<(ConnectionsDb connections, StopsDb stops, TripsDb trips),
         (DateTime date, TimeSpan window)>
     {
         /// <summary>
@@ -17,7 +17,7 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
         /// </summary>
         public static LoadConnectionsTest Default => new LoadConnectionsTest();
         
-        protected override (ConnectionsDb connections, StopsDb stops) Execute((DateTime date, TimeSpan window) input)
+        protected override (ConnectionsDb connections, StopsDb stops, TripsDb trips) Execute((DateTime date, TimeSpan window) input)
         {
             // setup profile.
             var profile = Belgium.Sncb(new LocalStorage("cache"));
@@ -30,7 +30,7 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
             // load connections for the current day.
             connectionsDb.LoadConnections(profile, stopsDb, tripsDb, (input.date, input.window));
 
-            return (connectionsDb, stopsDb);
+            return (connectionsDb, stopsDb, tripsDb);
         }
     }
 }

@@ -10,17 +10,20 @@ namespace Itinero.Transit.Data
     {
         public readonly ConnectionsDb ConnectionsDb;
         public readonly StopsDb StopsDb;
+        public readonly IOtherModeGenerator InternalTransferGenerator;
         public readonly IOtherModeGenerator WalksGenerator;
         public readonly T StatsFactory;
         public readonly ProfiledStatsComparator<T> ProfileComparator;
 
 
         public Profile(ConnectionsDb connectionsDb, StopsDb stopsDb,
-            IOtherModeGenerator walksGenerator, T statsFactory,
-            ProfiledStatsComparator<T> profileComparator)
+            IOtherModeGenerator internalTransferGenerator, 
+            IOtherModeGenerator walksGenerator,
+            T statsFactory,ProfiledStatsComparator<T> profileComparator)
         {
             ConnectionsDb = connectionsDb;
             StopsDb = stopsDb;
+            InternalTransferGenerator = internalTransferGenerator;
             WalksGenerator = walksGenerator;
             StatsFactory = statsFactory;
             ProfileComparator = profileComparator;
