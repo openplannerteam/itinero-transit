@@ -2,7 +2,6 @@
 
     <PropertyGroup>
     <title>Itinero.Transit.IO.LC</title>
-    <VersionPrefix>0.6.17-alpha</VersionPrefix>
     <AssemblyName>Itinero.Transit.IO.LC</AssemblyName>
     <Description>A library to load Connections into the TransitDB</Description>
     <Summary>This package provides the practical footwork for Itinero.Transit as it loads the Connections from a Linked Connections SErver.</Summary>
@@ -14,9 +13,11 @@
     <PackageProjectUrl>https://github.com/openplannerteam/Itinero-Transit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/openplannerteam/Itinero-Transit</RepositoryUrl>
     <PackageLicenseUrl>https://github.com/openplannerteam/itinero-transit/blob/master/LICENSE</PackageLicenseUrl>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+        <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+        <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+        <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+        <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+        <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <TargetFramework>netstandard2.0</TargetFramework>
     </PropertyGroup>
@@ -31,6 +32,12 @@
         <PackageReference Include="CacheCow.Common" Version="2.4.3" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
         <PackageReference Include="openplannerteam.Json-LD.net" Version="0.1.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="..\..\SharedAssemblyVersion.cs">
+        <Link>Properties/SharedAssemblyVersion.cs</Link>
+      </Compile>
     </ItemGroup>
 
 </Project>

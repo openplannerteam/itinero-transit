@@ -124,8 +124,8 @@ namespace Itinero.Transit.IO.LC
                     if (connectionCount % 1000 == 0)
                     {
                         var timeHandled = (connection.DepartureTime() - window.start);
-                        var factor = 100 * window.duration.TotalSeconds / timeHandled.TotalSeconds;
-                        Log.Information($"Loaded {connectionCount} connections (around {factor}%)");
+                        var factor = 100 * timeHandled.TotalSeconds / window.duration.TotalSeconds;
+                        Log.Information($"Loaded {connectionCount} connections (around {(int) factor}%)");
                     }
                 }
 

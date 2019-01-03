@@ -26,6 +26,10 @@ namespace Itinero.Transit.Data.Tiles
         /// <param name="zoom"></param>
         public TiledLocationIndex(int zoom = 14)
         {
+            if (zoom > 19)
+            {
+                throw new ArgumentException("Use at most 19 as zoom level");
+            }
             _zoom = zoom;
             
             _tileIndex = new MemoryArray<byte>(0);

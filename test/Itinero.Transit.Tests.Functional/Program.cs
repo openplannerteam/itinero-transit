@@ -62,13 +62,15 @@ namespace Itinero.Transit.Tests.Functional
                 {
                     var testName = args[i];
                     if (!AllTestsNamed.ContainsKey(testName))
-                    {    
+                    {
                         var keys = "";
                         foreach (var k in AllTestsNamed.Keys)
                         {
                             keys += k + ", ";
                         }
-                        throw new ArgumentException($"No test named {testName} found. Try one (or more) of the following as argument: {keys}");
+
+                        throw new ArgumentException(
+                            $"No test named {testName} found. Try one (or more) of the following as argument: {keys}");
                     }
 
                     tests.Add(AllTestsNamed[testName]);
@@ -82,11 +84,18 @@ namespace Itinero.Transit.Tests.Functional
             var date = DateTime.Now.Date; // LOCAL TIMES! //
             // test loading a connections db
             var db = IO.LC.LoadConnectionsTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
-            ConnectionsDbDepartureEnumeratorTest.Default.Run(db.connections);
-            TestClosestStopsAndRouting(db);
 
             TripHeadsignTest.Default.Run((db.connections, db.trips));
 
+
+            ConnectionsDbDepartureEnumeratorTest.Default.Run(db.connections);
+            TestClosestStopsAndRouting(db);
+            AlgorithmTests(db, date, tests);
+        }
+
+        private static void AlgorithmTests((ConnectionsDb connections, StopsDb stops, TripsDb trips) db, DateTime date,
+            IReadOnlyCollection<DefaultFunctionalTest> tests)
+        {
             var inputs = new List<(ConnectionsDb, StopsDb, string, string, DateTime, DateTime)>
             {
                 (db.connections, db.stops, Brugge,
