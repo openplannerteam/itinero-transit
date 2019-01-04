@@ -138,10 +138,14 @@ namespace Itinero.Transit.IO.LC
                 timeTable = profile.GetTimeTable(currentTimeTableUri);
                 foreach (var connection in timeTable.Connections())
                 {
+                    if (connection.DepartureTime() < window.start)
+                    {
+                        continue;
+                    }
                     AddConnection(connection, profile, stopsDb, stopsDbReader, connectionsDb, tripsDb, tripsDbReader);
                     onEach?.Invoke(connection);
                     connectionCount++;
-                    if (connectionCount % 1000 == 0)
+                    if (connectionCount == 1 || connectionCount % 1000 == 0)
                     {
                         var timeHandled = (connection.DepartureTime() - window.start);
                         var factor = 100 * timeHandled.TotalSeconds / window.duration.TotalSeconds;

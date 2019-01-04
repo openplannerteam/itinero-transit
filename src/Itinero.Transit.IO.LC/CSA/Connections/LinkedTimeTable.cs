@@ -32,7 +32,6 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
 
         protected sealed override void FromJson(JObject json)
         {
-            
             if(!json.IsType("http://www.w3.org/ns/hydra/core#PartialCollectionView") && 
                !json.IsType("http://www.w3.org/ns/hydra/core#PagedCollection"))
             {
