@@ -139,7 +139,7 @@ namespace Itinero.Transit.IO.LC
                 foreach (var connection in timeTable.Connections())
                 {
                     AddConnection(connection, profile, stopsDb, stopsDbReader, connectionsDb, tripsDb, tripsDbReader);
-                    onEach?.Invoke(connectiocd ../n);
+                    onEach?.Invoke(connection);
                     connectionCount++;
                     if (connectionCount % 1000 == 0)
                     {
