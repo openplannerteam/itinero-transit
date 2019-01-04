@@ -12,12 +12,12 @@
     <PackageIconUrl>https://avatars0.githubusercontent.com/u/30265183</PackageIconUrl>
     <PackageProjectUrl>https://github.com/openplannerteam/Itinero-Transit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/openplannerteam/Itinero-Transit</RepositoryUrl>
-    <PackageLicenseUrl>https://github.com/openplannerteam/itinero-transit/blob/master/LICENSE</PackageLicenseUrl>
-        <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
-        <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-        <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-        <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-        <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <PackageLicense>https://github.com/openplannerteam/itinero-transit/blob/master/LICENSE</PackageLicense>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <TargetFramework>netstandard2.0</TargetFramework>
     </PropertyGroup>
@@ -31,7 +31,7 @@
         <PackageReference Include="CacheCow.Client.FileStore" Version="2.4.3" />
         <PackageReference Include="CacheCow.Common" Version="2.4.3" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
-        <PackageReference Include="openplannerteam.Json-LD.net" Version="0.1.0" />
+        <PackageReference Include="openplannerteam.Json-LD.net" Version="0.1.1" />
     </ItemGroup>
 
     <ItemGroup>

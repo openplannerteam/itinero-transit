@@ -120,6 +120,7 @@ namespace Itinero.Transit.IO.LC
         public static void LoadConnections(this ConnectionsDb connectionsDb,
             Profile profile, StopsDb stopsDb, TripsDb tripsDb,
             (DateTime start, TimeSpan duration) window,
+            Action<LinkedConnection> onEach = null,
             Action<int, DateTime, double> connectionsLoadedPing = null)
         {
             Log.Information("Building the database... Hang on");
@@ -138,6 +139,7 @@ namespace Itinero.Transit.IO.LC
                 foreach (var connection in timeTable.Connections())
                 {
                     AddConnection(connection, profile, stopsDb, stopsDbReader, connectionsDb, tripsDb, tripsDbReader);
+                    onEach?.Invoke(connectiocd ../n);
                     connectionCount++;
                     if (connectionCount % 1000 == 0)
                     {
