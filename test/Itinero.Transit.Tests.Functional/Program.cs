@@ -85,41 +85,38 @@ namespace Itinero.Transit.Tests.Functional
             // test loading a connections db
             var db = IO.LC.LoadConnectionsTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
 
-            TripHeadsignTest.Default.Run((db.connections, db.trips));
+            TripHeadsignTest.Default.Run(db);
 
-
-            ConnectionsDbDepartureEnumeratorTest.Default.Run(db.connections);
+            ConnectionsDbDepartureEnumeratorTest.Default.Run(db);
             TestClosestStopsAndRouting(db);
             AlgorithmTests(db, date, tests);
         }
 
-        private static void AlgorithmTests((ConnectionsDb connections, StopsDb stops, TripsDb trips) db, DateTime date,
+        private static void AlgorithmTests(TransitDb db, DateTime date,
             IReadOnlyCollection<DefaultFunctionalTest> tests)
         {
-            var inputs = new List<(ConnectionsDb, StopsDb, string, string, DateTime, DateTime)>
+            var inputs = new List<(TransitDb, string, string, DateTime, DateTime)>
             {
-                (db.connections, db.stops, Brugge,
+                (db, Brugge,
                     Gent,
                     date.Date.AddHours(10),
                     date.Date.AddHours(12)),
-                (db.connections, db.stops, Brugge,
+                (db, Brugge,
                     Poperinge,
                     date.Date.AddHours(10),
                     date.Date.AddHours(13)),
-                (db.connections, db.stops, Brugge,
+                (db, Brugge,
                     Kortrijk,
                     date.Date.AddHours(6),
                     date.Date.AddHours(20)),
-                (db.connections, db.stops, Poperinge,
+                (db, Poperinge,
                     Vielsalm,
                     date.Date.AddHours(10),
                     date.Date.AddHours(18))
             };
-
-
+            
             var failed = 0;
             var results = new Dictionary<string, int>();
-
 
             foreach (var t in tests)
             {
@@ -160,13 +157,13 @@ namespace Itinero.Transit.Tests.Functional
             }
         }
 
-        private static void TestClosestStopsAndRouting((ConnectionsDb connections, StopsDb stops, TripsDb trips) db)
+        private static void TestClosestStopsAndRouting(TransitDb db)
         {
-            StopSearchTest.Default.RunPerformance((db.stops, 4.336209297180176,
+            StopSearchTest.Default.RunPerformance((db, 4.336209297180176,
                 50.83567623496864, 1000), _nrOfRuns);
-            StopSearchTest.Default.RunPerformance((db.stops, 4.436824321746825,
+            StopSearchTest.Default.RunPerformance((db, 4.436824321746825,
                 50.41119778957908, 1000), _nrOfRuns);
-            StopSearchTest.Default.RunPerformance((db.stops, 3.329758644104004,
+            StopSearchTest.Default.RunPerformance((db, 3.329758644104004,
                 50.99052927907061, 1000), _nrOfRuns);
         }
 
@@ -197,27 +194,27 @@ namespace Itinero.Transit.Tests.Functional
 
                 if (level == Logging.TraceEventType.Verbose.ToString().ToLower())
                 {
-                    Log.Debug(string.Format("[{0}] {1} - {2}", o, level, message));
+                    Log.Debug($"[{o}] {level} - {message}");
                 }
                 else if (level == Logging.TraceEventType.Information.ToString().ToLower())
                 {
-                    Log.Information(string.Format("[{0}] {1} - {2}", o, level, message));
+                    Log.Information($"[{o}] {level} - {message}");
                 }
                 else if (level == Logging.TraceEventType.Warning.ToString().ToLower())
                 {
-                    Log.Warning(string.Format("[{0}] {1} - {2}", o, level, message));
+                    Log.Warning($"[{o}] {level} - {message}");
                 }
                 else if (level == Logging.TraceEventType.Critical.ToString().ToLower())
                 {
-                    Log.Fatal(string.Format("[{0}] {1} - {2}", o, level, message));
+                    Log.Fatal($"[{o}] {level} - {message}");
                 }
                 else if (level == Logging.TraceEventType.Error.ToString().ToLower())
                 {
-                    Log.Error(string.Format("[{0}] {1} - {2}", o, level, message));
+                    Log.Error($"[{o}] {level} - {message}");
                 }
                 else
                 {
-                    Log.Debug(string.Format("[{0}] {1} - {2}", o, level, message));
+                    Log.Debug($"[{o}] {level} - {message}");
                 }
             };
         }

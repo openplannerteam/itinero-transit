@@ -8,25 +8,23 @@ namespace Itinero.Transit.Data
     /// </summary>
     public class Profile<T> where T : IJourneyStats<T>
     {
-        public readonly ConnectionsDb ConnectionsDb;
-        public readonly StopsDb StopsDb;
-        public readonly IOtherModeGenerator InternalTransferGenerator;
-        public readonly IOtherModeGenerator WalksGenerator;
-        public readonly T StatsFactory;
-        public readonly ProfiledStatsComparator<T> ProfileComparator;
-
-
-        public Profile(ConnectionsDb connectionsDb, StopsDb stopsDb,
+        public Profile(TransitDb.TransitDbSnapShot transitDbSnapShot,
             IOtherModeGenerator internalTransferGenerator, 
             IOtherModeGenerator walksGenerator,
             T statsFactory,ProfiledStatsComparator<T> profileComparator)
         {
-            ConnectionsDb = connectionsDb;
-            StopsDb = stopsDb;
+            this.TransitDbSnapShot = transitDbSnapShot;
             InternalTransferGenerator = internalTransferGenerator;
             WalksGenerator = walksGenerator;
             StatsFactory = statsFactory;
             ProfileComparator = profileComparator;
         }
+        
+        public TransitDb.TransitDbSnapShot TransitDbSnapShot { get; }
+        public IOtherModeGenerator InternalTransferGenerator { get; }
+        public IOtherModeGenerator WalksGenerator { get; }
+        public T StatsFactory { get; }
+        public ProfiledStatsComparator<T> ProfileComparator { get; }
+
     }
 }

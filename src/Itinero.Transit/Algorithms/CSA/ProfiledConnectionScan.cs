@@ -135,7 +135,7 @@ namespace Itinero.IO.LC
             _earliestDeparture = earliestDeparture;
             _lastArrival = lastDeparture;
 
-            _connectionsProvider = profile.ConnectionsDb;
+            _connectionsProvider = profile.TransitDbSnapShot.ConnectionsDb;
             _comparator = profile.ProfileComparator;
             _empty = new ParetoFrontier<T>(_comparator);
             _statsFactory = profile.StatsFactory;

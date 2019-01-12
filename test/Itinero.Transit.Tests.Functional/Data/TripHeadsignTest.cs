@@ -3,15 +3,17 @@ using Xunit;
 
 namespace Itinero.Transit.Tests.Functional.Data
 {
-    public class TripHeadsignTest : FunctionalTest<uint, (ConnectionsDb c, TripsDb t)>
+    public class TripHeadsignTest : FunctionalTest<uint, TransitDb>
     {
         public static TripHeadsignTest Default = new TripHeadsignTest();
         
-        protected override uint Execute((ConnectionsDb c, TripsDb t) input)
+        protected override uint Execute(TransitDb input)
         {
+            var latest = input.Latest;
+            
             Information("Testing headsign attribute");
-            var trip = input.t.GetReader();
-            var cons = input.c.GetDepartureEnumerator();
+            var trip = latest.TripsDb.GetReader();
+            var cons = latest.ConnectionsDb.GetDepartureEnumerator();
             uint failed = 0;
             uint found = 0;
             while (cons.MoveNext())

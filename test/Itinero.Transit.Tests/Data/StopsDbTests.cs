@@ -104,12 +104,12 @@ namespace Itinero.Transit.Tests.Data
         public void StopsDbEnumerator_ShouldAddAttributes()
         {
             var db = new StopsDb();
-            var id1 = db.Add("http://irail.be/stations/NMBS/008863354", 4.786863327026367, 51.26277419739382, new Attribute("name", "Jambes-Est"));
-            var id2 = db.Add("http://irail.be/stations/NMBS/008863008", 4.649276733398437, 51.345839804352885, new Attribute("name", "Namur"));
-            var id3 = db.Add("http://irail.be/stations/NMBS/008863009", 4.989852905273437, 51.22365776470275, new Attribute("name", "Genk"));
-            var id4 = db.Add("http://irail.be/stations/NMBS/008863010", 4.955863952636719, 51.3254629443313, new Attribute("name", "Antwerpen"));
-            var id5 = db.Add("http://irail.be/stations/NMBS/008863011", 4.830207824707031, 51.37328062064337, new Attribute("name", "Brussel-Zuid"));
-            var id6 = db.Add("http://irail.be/stations/NMBS/008863012", 5.538825988769531, 51.177621156752494, new Attribute("name", "Oostende"));
+            var id1 = db.Add("http://irail.be/stations/NMBS/008863354", 4.786863327026367, 51.26277419739382, new[] { new Attribute("name", "Jambes-Est")});
+            var id2 = db.Add("http://irail.be/stations/NMBS/008863008", 4.649276733398437, 51.345839804352885, new[] { new Attribute("name", "Namur")});
+            var id3 = db.Add("http://irail.be/stations/NMBS/008863009", 4.989852905273437, 51.22365776470275, new[] { new Attribute("name", "Genk")});
+            var id4 = db.Add("http://irail.be/stations/NMBS/008863010", 4.955863952636719, 51.3254629443313, new[] { new Attribute("name", "Antwerpen")});
+            var id5 = db.Add("http://irail.be/stations/NMBS/008863011", 4.830207824707031, 51.37328062064337, new[] { new Attribute("name", "Brussel-Zuid")});
+            var id6 = db.Add("http://irail.be/stations/NMBS/008863012", 5.538825988769531, 51.177621156752494, new[] { new Attribute("name", "Oostende")});
 
             var enumerator = db.GetReader();
             Assert.True(enumerator.MoveTo("http://irail.be/stations/NMBS/008863010"));

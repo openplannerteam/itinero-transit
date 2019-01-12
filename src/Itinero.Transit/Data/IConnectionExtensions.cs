@@ -3,7 +3,7 @@ namespace Itinero.Transit.Data
     /// <summary>
     /// Contains extension methods related to connections.
     /// </summary>
-    public static class ConnectionExtensions
+    public static class IConnectionExtensions
     {
         /// <summary>
         /// Returns a string that represents the current object.

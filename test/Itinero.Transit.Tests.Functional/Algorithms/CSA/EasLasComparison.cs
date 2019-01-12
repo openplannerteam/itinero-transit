@@ -18,17 +18,18 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         public static EasLasComparison Default = new EasLasComparison();
 
         protected override bool Execute(
-            (ConnectionsDb connections, StopsDb stops, string departureStopId, string arrivalStopId, DateTime
+            (TransitDb transitDb, string departureStopId, string arrivalStopId, DateTime
                 departureTime, DateTime arrivalTime) input)
         {
+            var latest = input.transitDb.Latest;
             var profile = new Profile<TransferStats>(
-                input.connections, input.stops, 
+                latest,
                 new InternalTransferGenerator(1),
-                new BirdsEyeInterWalkTransferGenerator(input.stops.GetReader()), 
+                new BirdsEyeInterWalkTransferGenerator(latest.StopsDb.GetReader()), 
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
             // get departure and arrival stop ids.
-            var reader = input.stops.GetReader();
+            var reader = latest.StopsDb.GetReader();
             True(reader.MoveTo(input.departureStopId));
             var departure = reader.Id;
             True(reader.MoveTo(input.arrivalStopId));
@@ -45,8 +46,8 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 
             var lasJ = las.CalculateJourney();
 
-            Information(easJ.Pruned().ToString(input.stops));
-            Information(lasJ.Pruned().ToString(input.stops));
+            Information(easJ.Pruned().ToString(latest.StopsDb));
+            Information(lasJ.Pruned().ToString(latest.StopsDb));
 
             // Eas is bound by the first departing train, while las is not
             Assert.True(easJ.Root.DepartureTime() <= lasJ.Root.DepartureTime());

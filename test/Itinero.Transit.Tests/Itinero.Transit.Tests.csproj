@@ -15,4 +15,7 @@
     <ProjectReference Include="..\..\src\Itinero.Transit.IO.OSM\Itinero.Transit.IO.OSM.csproj" />
     <ProjectReference Include="..\..\src\Itinero.Transit\Itinero.Transit.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="unit" />
+  </ItemGroup>
 </Project>

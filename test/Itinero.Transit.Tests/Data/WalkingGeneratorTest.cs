@@ -10,7 +10,7 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void TestSimpleGenerator()
         {
-            var connDb = Db.GetDefaultTestDb();
+            var connDb = Db.GetDefaultTestDb().Latest.ConnectionsDb;
 
             // ReSharper disable once RedundantArgumentDefaultValue
             var transferGen = new InternalTransferGenerator(180);
@@ -30,7 +30,6 @@ namespace Itinero.Transit.Tests.Data
             Assert.False(transfered.SpecialConnection);
             Assert.Equal(root, transfered.Root);
             Assert.Equal((uint) 1, transfered.Stats.NumberOfTransfers);
-
 
             // We need more time with luggage
             var transferWithLuggage = new InternalTransferGenerator(240);

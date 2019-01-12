@@ -11,9 +11,9 @@ namespace Itinero.Transit.Tests.Data
         {
             var db = new TripsDb();
             var id1 = db.Add("http://irail.be/vehicle/IC725", 
-                new Attribute("headsign", "IC725"), new Attribute("name", "Gent-Sint-Pieters - Antwerpen-Centraal"));
+                new [] { new Attribute("headsign", "IC725"), new Attribute("name", "Gent-Sint-Pieters - Antwerpen-Centraal")});
             var id2 = db.Add("http://irail.be/vehicle/IC704", 
-                new Attribute("headsign", "IC704"), new Attribute("name", "Antwerpen-Centraal - Poperinge"));
+                new [] { new Attribute("headsign", "IC704"), new Attribute("name", "Antwerpen-Centraal - Poperinge")});
 
             var enumerator = db.GetReader();
             Assert.True(enumerator.MoveTo(id1));
@@ -31,9 +31,9 @@ namespace Itinero.Transit.Tests.Data
         {
             var db = new TripsDb();
             db.Add("http://irail.be/vehicle/IC725", 
-                new Attribute("headsign", "IC725"), new Attribute("name", "Gent-Sint-Pieters - Antwerpen-Centraal"));
+                new [] { new Attribute("headsign", "IC725"), new Attribute("name", "Gent-Sint-Pieters - Antwerpen-Centraal")});
             db.Add("http://irail.be/vehicle/IC704", 
-                new Attribute("headsign", "IC704"), new Attribute("name", "Antwerpen-Centraal - Poperinge"));
+                    new [] { new Attribute("headsign", "IC704"), new Attribute("name", "Antwerpen-Centraal - Poperinge")});
 
             var enumerator = db.GetReader();
             Assert.True(enumerator.MoveTo("http://irail.be/vehicle/IC725"));

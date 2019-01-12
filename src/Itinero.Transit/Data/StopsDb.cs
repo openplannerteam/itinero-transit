@@ -28,7 +28,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// Creates a new stops database.
         /// </summary>
-        public StopsDb()
+        internal StopsDb()
         {
             _stopLocations = new TiledLocationIndex {Moved = this.Move};
             _stopIds = new MemoryArray<string>(0);
@@ -40,6 +40,19 @@ namespace Itinero.Transit.Data
             }
             _stopIdLinkedList = new MemoryArray<uint>(0);
             _attributes = new AttributesIndex(AttributesIndexMode.ReverseStringIndexKeysOnly);
+        }
+
+        private StopsDb(TiledLocationIndex stopLocations, ArrayBase<string> stopIds, ArrayBase<uint> stopAttributeIds,
+            ArrayBase<uint> stopIdPointsPerHash, ArrayBase<uint> stopIdLinkedList, AttributesIndex attributes,
+                uint stopIdLinkedListPointer)
+        {
+            _stopIdLinkedListPointer = stopIdLinkedListPointer;
+            _stopLocations = stopLocations;
+            _stopIds = stopIds;
+            _stopAttributeIds = stopAttributeIds;
+            _stopIdPointersPerHash = stopIdPointsPerHash;
+            _stopIdLinkedList = stopIdLinkedList;
+            _attributes = attributes;
         }
 
         /// <summary>
@@ -70,7 +83,7 @@ namespace Itinero.Transit.Data
         /// <param name="latitude">The stop latitude.</param>
         /// <param name="attributes">The stop attributes.</param>
         /// <returns>An internal id representing the stop in this transit db.</returns>
-        public (uint tileId, uint localId) Add(string globalId, double longitude, double latitude, IEnumerable<Attribute> attributes = null)
+        internal (uint tileId, uint localId) Add(string globalId, double longitude, double latitude, IEnumerable<Attribute> attributes = null)
         {
             // store location.
             var (tileId, localId, dataPointer) = _stopLocations.Add(longitude, latitude);
@@ -117,6 +130,31 @@ namespace Itinero.Transit.Data
 
                 return  (uint) (hash % _stopIdHashSize);
             }
+        }
+
+        /// <summary>
+        /// Returns a deep in-memory copy.
+        /// </summary>
+        /// <returns></returns>
+        public StopsDb Clone()
+        {
+            // it is up to the user to make sure not to clone when writing. 
+            
+            var stopLocations = _stopLocations.Clone();
+            
+            var stopIds = new MemoryArray<string>(_stopIds.Length);
+            stopIds.CopyFrom(_stopIds, _stopIds.Length);
+            var stopAttributesIds = new MemoryArray<uint>(_stopAttributeIds.Length);
+            stopAttributesIds.CopyFrom(_stopAttributeIds, _stopAttributeIds.Length);
+            var stopIdPointersPerHash = new MemoryArray<uint>(_stopIdPointersPerHash.Length);
+            stopIdPointersPerHash.CopyFrom(_stopIdPointersPerHash, _stopIdPointersPerHash.Length);
+            var stopIdLinkedList = new MemoryArray<uint>(_stopIdLinkedList.Length);
+            stopIdLinkedList.CopyFrom(_stopIdLinkedList, _stopIdLinkedList.Length);
+            
+            // don't clone the attributes, it's supposed to be add-only anyway.
+            // it's up to the user not to write to it from multiple threads.
+            return new StopsDb(stopLocations, stopIds, stopAttributesIds, stopIdPointersPerHash, stopIdLinkedList, _attributes,
+                _stopIdLinkedListPointer);
         }
 
         /// <summary>

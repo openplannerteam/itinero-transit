@@ -18,17 +18,17 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         public static EasPcsComparison Default = new EasPcsComparison();
 
         protected override bool Execute(
-            (ConnectionsDb connections, StopsDb stops, string departureStopId, string arrivalStopId, DateTime
+            (TransitDb transitDb, string departureStopId, string arrivalStopId, DateTime
                 departureTime, DateTime arrivalTime) input)
         {
-            var profile = new Profile<TransferStats>(
-                input.connections, input.stops,
+            var latest = input.transitDb.Latest;
+            var profile = new Profile<TransferStats>(latest,
                 new InternalTransferGenerator(1),
-                new BirdsEyeInterWalkTransferGenerator(input.stops.GetReader()),
+                new BirdsEyeInterWalkTransferGenerator(latest.StopsDb.GetReader()),
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
             // get departure and arrival stop ids.
-            var reader = input.stops.GetReader();
+            var reader = latest.StopsDb.GetReader();
             True(reader.MoveTo(input.departureStopId));
             var departure = reader.Id;
             True(reader.MoveTo(input.arrivalStopId));
@@ -44,8 +44,8 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var pcsJs = pcs.CalculateJourneys();
             var pcsJ = pcsJs.Last();
 
-            Information(easJ.ToString(input.stops));
-            Information(pcsJ.ToString(input.stops));
+            Information(easJ.ToString(latest.StopsDb));
+            Information(pcsJ.ToString(latest.StopsDb));
 
             // PCS could find a route which arrives at the same time, but departs later
             Assert.True(easJ.Root.DepartureTime() <= pcsJ.Root.DepartureTime());
