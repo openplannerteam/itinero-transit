@@ -19,8 +19,7 @@ namespace Itinero.Transit.IO.LC
         /// Adds the given stop to the DB. Returns the internal ID
         /// </summary>
         /// <returns></returns>
-        private static (uint tileId, uint localId)
-            AddStop(ILocationProvider profile, Uri stopUri, StopsDb stopsDb, StopsDb.StopsDbReader stopsDbReader)
+        private static (uint tileId, uint localId) AddStop(ILocationProvider profile, Uri stopUri, ConnectionsDb connectionsDb)
         {
             var stop1Uri = stopUri;
             var stop1Location = profile.GetCoordinateFor(stop1Uri);
@@ -81,32 +80,32 @@ namespace Itinero.Transit.IO.LC
         }
 
 
-        /// <summary>
-        /// Loads connections into the connections db and the given stops db from the given profile.
-        /// </summary>
-        /// <param name="profile">The profile.</param>
-        /// <param name="stopsDb">The stops db.</param>
-        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-        public static void LoadLocations(this StopsDb stopsDb,
-            Profile profile, Action<int, int> locationsLoadedPing = null)
-        {
-            var locations = profile.GetAllLocations();
-            var i = 0;
-            var length = locations.Count();
-            foreach (var l in locations)
-            {
-                stopsDb.Add(l.Uri.ToString(), l.Lon, l.Lat, new Attribute("name", l.Name));
-                i++;
-                // ReSharper disable once InvertIf
-                if (i % 100 == 0)
-                {
-                    Log.Verbose($"Added location {i}/{length}");
-                    locationsLoadedPing?.Invoke(i, length);
-                }
-            }
-
-            locationsLoadedPing?.Invoke(i, length);
-        }
+//        /// <summary>
+//        /// Loads connections into the connections db and the given stops db from the given profile.
+//        /// </summary>
+//        /// <param name="profile">The profile.</param>
+//        /// <param name="stopsDb">The stops db.</param>
+//        [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+//        public static void LoadLocations(this StopsDb stopsDb,
+//            Profile profile, Action<int, int> locationsLoadedPing = null)
+//        {
+//            var locations = profile.GetAllLocations();
+//            var i = 0;
+//            var length = locations.Count();
+//            foreach (var l in locations)
+//            {
+//                stopsDb.Add(l.Uri.ToString(), l.Lon, l.Lat, new Attribute("name", l.Name));
+//                i++;
+//                // ReSharper disable once InvertIf
+//                if (i % 100 == 0)
+//                {
+//                    Log.Verbose($"Added location {i}/{length}");
+//                    locationsLoadedPing?.Invoke(i, length);
+//                }
+//            }
+//
+//            locationsLoadedPing?.Invoke(i, length);
+//        }
 
         /// <summary>
         /// Loads connections into the connections db and the given stops db from the given profile.
