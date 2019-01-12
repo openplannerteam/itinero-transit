@@ -1,9 +1,9 @@
 using System;
 using Itinero.Transit.Data;
 
-namespace Itinero.IO.LC.Tests
+namespace Itinero.Transit.Tests
 {
-    public static class Db
+    internal static class Db
     {
         public static TransitDb GetDefaultTestDb()
         {

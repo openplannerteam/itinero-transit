@@ -3,14 +3,10 @@ using Itinero.Transit.Tests;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Itinero.IO.LC.Tests
+namespace Itinero.Transit.Tests.IO.LC
 {
-    public class StorageTest : SuperTest
+    public class StorageTest
     {
-        public StorageTest(ITestOutputHelper output) : base(output)
-        {
-        }
-
         [Fact]
         public void TestStorage()
         {
@@ -26,6 +22,5 @@ namespace Itinero.IO.LC.Tests
             var foundi = storage.Retrieve<int>("2");
             Assert.Equal(42, foundi);
         }
-
     }
 }

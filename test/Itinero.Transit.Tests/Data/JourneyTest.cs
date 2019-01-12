@@ -6,13 +6,8 @@ using Xunit.Abstractions;
 
 namespace Itinero.Transit.Tests.Data
 {
-    public class JourneyTest : SuperTest
+    public class JourneyTest
     {
-        public JourneyTest(ITestOutputHelper output) : base(output)
-        {
-        }
-
-
         [Fact]
         public void TestSimpleJourney()
         {
@@ -52,7 +47,6 @@ namespace Itinero.Transit.Tests.Data
             Assert.Equal(reader.DepartureTime, j.DepartureTime());
         }
 
-
         [Fact]
         public void TestReverseJourney()
         {
@@ -86,10 +80,10 @@ namespace Itinero.Transit.Tests.Data
 
 
             var r = j.Reversed()[0];
-            Pr(" ---- Original ----");
-            Pr(j.ToString());
-            Pr(" ---- Reversed ----");
-            Pr(r.ToString());
+            //Pr(" ---- Original ----");
+            //Pr(j.ToString());
+            //Pr(" ---- Reversed ----");
+            //Pr(r.ToString());
             Assert.Equal(j.Root.Time, r.Time);
             Assert.Equal(r.Root.Time, j.Time);
             Assert.Equal(j.Root.Location, r.Location);

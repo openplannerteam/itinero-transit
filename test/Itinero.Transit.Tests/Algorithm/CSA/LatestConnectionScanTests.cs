@@ -1,7 +1,5 @@
 using System;
 using System.Linq;
-using System.Net;
-using Itinero.IO.LC.Tests;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
@@ -9,14 +7,10 @@ using Itinero.Transit.Journeys;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Itinero.Transit.Tests.unit.Algorithm.CSA
+namespace Itinero.Transit.Tests.Algorithm.CSA
 {
-    public class LatestConnectionScanTests : SuperTest
+    public class LatestConnectionScanTests
     {
-        public LatestConnectionScanTests(ITestOutputHelper output) : base(output)
-        {
-        }
-
         [Fact]
         public void SimpleLasTest()
         {

@@ -2,13 +2,9 @@ using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Tests.Data
 {
-    
-    /// <summary>
-    /// Dummy implementation of ICOnnection
-    /// </summary>
-    public class Connection : IConnection
+    internal class ConnectionMock : IConnection
     {
-        public Connection(uint id, ulong departureTime, ulong arrivalTime, uint tripId, (uint localTileId, uint localId) arrivalStop, (uint localTileId, uint localId) departureStop)
+        public ConnectionMock(uint id, ulong departureTime, ulong arrivalTime, uint tripId, (uint localTileId, uint localId) arrivalStop, (uint localTileId, uint localId) departureStop)
         {
             Id = id;
             DepartureTime = departureTime;

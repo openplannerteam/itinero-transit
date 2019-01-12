@@ -1,4 +1,3 @@
-using Itinero.IO.LC.Tests;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
 using Xunit;

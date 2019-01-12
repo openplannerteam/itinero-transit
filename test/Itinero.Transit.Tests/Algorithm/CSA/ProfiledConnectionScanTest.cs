@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Itinero.IO.LC;
-using Itinero.IO.LC.Tests;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
@@ -9,14 +8,10 @@ using Xunit;
 using Xunit.Abstractions;
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace Itinero.Transit.Tests.unit.Algorithm.CSA
+namespace Itinero.Transit.Tests.Algorithm.CSA
 {
-    public class ProfiledConnectionScanTest : SuperTest
+    public class ProfiledConnectionScanTest
     {
-        public ProfiledConnectionScanTest(ITestOutputHelper output) : base(output)
-        {
-        }
-
         [Fact]
         public void TestPcsSimple()
         {
@@ -28,7 +23,7 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
                 new BirdsEyeInterWalkTransferGenerator(db.StopsDb.GetReader()), 
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
-            Pr("Starting PCS from (0,0) to (0,3)");
+            //Pr("Starting PCS from (0,0) to (0,3)");
 
             var pcs = new ProfiledConnectionScan<TransferStats>(
                 (0, 0), (0, 3),
@@ -39,10 +34,10 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
             var journeys = pcs.CalculateJourneys();
 
 
-            Pr("---------------- DONE ----------------");
+            //Pr("---------------- DONE ----------------");
             foreach (var j in journeys)
             {
-                Pr(j.ToString());
+                //Pr(j.ToString());
                 Assert.True(Equals(((uint) 0, (uint) 0), j.Root.Location));
                 Assert.True(Equals(((uint) 0, (uint) 3), j.Location));
             }
