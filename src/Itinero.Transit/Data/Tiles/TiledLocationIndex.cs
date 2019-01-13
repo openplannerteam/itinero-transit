@@ -364,12 +364,13 @@ namespace Itinero.Transit.Data.Tiles
 
         internal static TiledLocationIndex ReadFrom(Stream stream)
         {
+            var buffer = new byte[4];
+            
             var version = stream.ReadByte();
-            if (version != 1) throw new InvalidDataException("Cannot read tile location index, invalid version #.");
+            if (version != 1) throw new InvalidDataException($"Cannot read {nameof(TiledLocationIndex)}, invalid version #.");
 
             var zoom = stream.ReadByte();
             
-            var buffer = new byte[4];
             stream.Read(buffer, 0, 4);
             var tileIndexPointer = BitConverter.ToUInt32(buffer, 0);
             var tileIndex = stream.CopyFromWithSize<byte>();

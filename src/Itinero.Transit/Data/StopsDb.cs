@@ -1,8 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data.Tiles;
+using Reminiscence;
 using Reminiscence.Arrays;
+using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
@@ -130,6 +134,57 @@ namespace Itinero.Transit.Data
 
                 return  (uint) (hash % _stopIdHashSize);
             }
+        }
+
+        internal long WriteTo(Stream stream)
+        {
+            var length = 0L;
+            
+            // write version #.
+            stream.WriteByte(1);
+            length++;
+                
+            // write location index.
+            length += _stopLocations.WriteTo(stream);
+            
+            // write data.
+            length += _stopIds.CopyToWithSize(stream);
+            length += _stopAttributeIds.CopyToWithSize(stream);
+            length += _stopIdPointersPerHash.CopyToWithSize(stream);
+            var bytes = BitConverter.GetBytes(_stopIdLinkedListPointer);
+            length += bytes.Length;
+            stream.Write(bytes, 0, 4);
+            length += _stopIdLinkedList.CopyToWithSize(stream);
+            
+            // write attributes.
+            length += _attributes.Serialize(stream);
+
+            return length;
+        }
+
+        internal static StopsDb ReadFrom(Stream stream)
+        {
+            var buffer = new byte[4];
+            
+            var version = stream.ReadByte();
+            if (version != 1) throw new InvalidDataException($"Cannot read {nameof(StopsDb)}, invalid version #.");
+            
+            // read location index.
+            var stopLocations = TiledLocationIndex.ReadFrom(stream);
+            
+            // read data.
+            var stopIds = stream.CopyFromWithSize<string>();
+            var stopAttributeIds = stream.CopyFromWithSize<uint>();
+            var stopIdPointsPerHash = stream.CopyFromWithSize<uint>();
+            stream.Read(buffer, 0, 4);
+            var stopIdLinkedListPointer = BitConverter.ToUInt32(buffer, 0);
+            var stopIdLinkedList = stream.CopyFromWithSize<uint>();
+            
+            // read attributes.
+            var attributes = AttributesIndex.Deserialize(stream);
+            
+            return new StopsDb(stopLocations, stopIds, stopAttributeIds, stopIdPointsPerHash, stopIdLinkedList,
+                attributes, stopIdLinkedListPointer);
         }
 
         /// <summary>
