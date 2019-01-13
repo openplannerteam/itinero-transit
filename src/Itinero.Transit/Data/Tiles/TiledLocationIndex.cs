@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using System.Runtime.CompilerServices;
+using Reminiscence;
 using Reminiscence.Arrays;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
@@ -333,6 +335,50 @@ namespace Itinero.Transit.Data.Tiles
             locations.CopyFrom(_locations, _locations.Length);
 
             return new TiledLocationIndex(tileIndex, locations, _zoom, _tileIndexPointer, _tileDataPointer);
+        }
+
+        internal long WriteTo(Stream stream)
+        {
+            var length = 0L;
+            
+            // write version #.
+            stream.WriteByte(1);
+            length++;
+            
+            // write zoom.
+            stream.WriteByte((byte)_zoom);
+            length++;
+            
+            // write tile index.
+            stream.Write(BitConverter.GetBytes(_tileIndexPointer), 0, 4);
+            length += 4;
+            length += _tileIndex.CopyToWithSize(stream);
+            
+            // write tile data.
+            stream.Write(BitConverter.GetBytes(_tileDataPointer), 0, 4);
+            length += 4;
+            length += _locations.CopyToWithSize(stream);
+
+            return length;
+        }
+
+        internal static TiledLocationIndex ReadFrom(Stream stream)
+        {
+            var version = stream.ReadByte();
+            if (version != 1) throw new InvalidDataException("Cannot read tile location index, invalid version #.");
+
+            var zoom = stream.ReadByte();
+            
+            var buffer = new byte[4];
+            stream.Read(buffer, 0, 4);
+            var tileIndexPointer = BitConverter.ToUInt32(buffer, 0);
+            var tileIndex = stream.CopyFromWithSize<byte>();
+
+            stream.Read(buffer, 0, 4);
+            var tileDataPointer = BitConverter.ToUInt32(buffer, 0);
+            var locations = stream.CopyFromWithSize<byte>();
+            
+            return new TiledLocationIndex(tileIndex, locations, zoom, tileIndexPointer, tileDataPointer);
         }
 
         /// <summary>
