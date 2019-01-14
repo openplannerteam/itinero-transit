@@ -1,6 +1,8 @@
 using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Algorithms.Sorting;
+using Reminiscence;
 using Reminiscence.Arrays;
 
 // ReSharper disable RedundantAssignment
@@ -123,7 +125,8 @@ namespace Itinero.Transit.Data
         private ConnectionsDb(int windowSizeInSeconds, ArrayBase<byte> data, uint nextInternalId, ArrayBase<string> globalIds,
             ArrayBase<uint> tripIds, ArrayBase<uint> globalIdPointersPerHash, ArrayBase<uint> globalIdLinkedList,
             ArrayBase<uint> departureWindowPointers, ArrayBase<uint> departurePointers, uint departurePointer,
-            ArrayBase<uint> arrivalWindowPointers, ArrayBase<uint> arrivalPointers,  uint arrivalPointer)
+            ArrayBase<uint> arrivalWindowPointers, ArrayBase<uint> arrivalPointers,  uint arrivalPointer,
+            uint earliestDate, uint latestDate)
         {
             _windowSizeInSeconds = windowSizeInSeconds;
             _data = data;
@@ -140,6 +143,9 @@ namespace Itinero.Transit.Data
             _arrivalWindowPointers = arrivalWindowPointers;
             _arrivalPointers = arrivalPointers;
             _arrivalPointer = arrivalPointer;
+
+            _earliestDate = earliestDate;
+            _latestDate = latestDate;
         }
 
         /// <summary>
@@ -555,7 +561,94 @@ namespace Itinero.Transit.Data
             
             return new ConnectionsDb((int)_windowSizeInSeconds, data, _nextInternalId, globalIds, tripIds, globalIdPointersPerHash, globalIdLinkedList,
                 departureWindowPointers, departurePointers, _departurePointer,
-                arrivalWindowPointers, arrivalPointers, _arrivalPointer);
+                arrivalWindowPointers, arrivalPointers, _arrivalPointer,
+                _earliestDate, _latestDate);
+        }
+
+        internal long WriteTo(Stream stream)
+        {
+            var length = 0L;
+            
+            // write version #.
+            stream.WriteByte(1);
+            length++;
+            
+            length += _data.CopyToWithSize(stream);
+            length += _globalIds.CopyToWithSize(stream);
+            length += _tripIds.CopyToWithSize(stream);
+            length += _globalIdPointersPerHash.CopyToWithSize(stream);
+            length += _globalIdLinkedList.CopyToWithSize(stream);
+
+            length += _departureWindowPointers.CopyToWithSize(stream);
+            length += _departurePointers.CopyToWithSize(stream);
+            var bytes = BitConverter.GetBytes(_departurePointer);
+            stream.Write(bytes, 0, 4);
+            length += 4;
+
+            length += _arrivalWindowPointers.CopyToWithSize(stream);
+            length +=  _arrivalPointers.CopyToWithSize(stream);
+            bytes = BitConverter.GetBytes(_arrivalPointer);
+            stream.Write(bytes, 0, 4);
+            length += 4;
+
+            bytes = BitConverter.GetBytes(_windowSizeInSeconds);
+            stream.Write(bytes, 0, 8);
+            length += 8;
+
+            bytes = BitConverter.GetBytes(_nextInternalId);
+            stream.Write(bytes, 0, 4);
+            length += 4;
+
+            bytes = BitConverter.GetBytes(_earliestDate);
+            stream.Write(bytes, 0, 4);
+            length += 4;
+
+            bytes = BitConverter.GetBytes(_latestDate);
+            stream.Write(bytes, 0, 4);
+            length += 4;
+
+            return length;
+        }
+
+        internal static ConnectionsDb ReadFrom(Stream stream)
+        {
+            var buffer = new byte[8];
+            
+            var version = stream.ReadByte();
+            if (version != 1) throw new InvalidDataException($"Cannot read {nameof(ConnectionsDb)}, invalid version #.");
+            
+            var data = MemoryArray<byte>.CopyFromWithSize(stream);
+            var globalIds = MemoryArray<string>.CopyFromWithSize(stream);
+            var tripIds = MemoryArray<uint>.CopyFromWithSize(stream);
+            var globalIdPointersPerHash = MemoryArray<uint>.CopyFromWithSize(stream);
+            var globalIdLinkedList = MemoryArray<uint>.CopyFromWithSize(stream);
+            
+            var departureWindowPointers = MemoryArray<uint>.CopyFromWithSize(stream);
+            var departurePointers = MemoryArray<uint>.CopyFromWithSize(stream);
+            stream.Read(buffer, 0, 4);
+            var departurePointer = BitConverter.ToUInt32(buffer, 0);
+            
+            var arrivalWindowPointers = MemoryArray<uint>.CopyFromWithSize(stream);
+            var arrivalPointers = MemoryArray<uint>.CopyFromWithSize(stream);
+            stream.Read(buffer, 0, 4);
+            var arrivalPointer = BitConverter.ToUInt32(buffer, 0);
+
+            stream.Read(buffer, 0, 8);
+            var windowSizeInSeconds = BitConverter.ToInt64(buffer, 0);
+
+            stream.Read(buffer, 0, 4);
+            var nextInternalId = BitConverter.ToUInt32(buffer, 0);
+
+            stream.Read(buffer, 0, 4);
+            var earliestDate = BitConverter.ToUInt32(buffer, 0);
+
+            stream.Read(buffer, 0, 4);
+            var latestDate = BitConverter.ToUInt32(buffer, 0);
+            
+            return new ConnectionsDb((int)windowSizeInSeconds, data, nextInternalId, globalIds, tripIds, globalIdPointersPerHash, globalIdLinkedList,
+                departureWindowPointers, departurePointers, departurePointer,
+                arrivalWindowPointers, arrivalPointers, arrivalPointer,
+                earliestDate, latestDate);
         }
 
         /// <summary>
