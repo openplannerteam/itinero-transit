@@ -1,3 +1,4 @@
+using System.IO;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data;
 using Xunit;
@@ -7,7 +8,7 @@ namespace Itinero.Transit.Tests.Data
     public class TripsDbTests
     {
         [Fact]
-        public void StopsDbEnumerator_ShouldMoveToId()
+        public void TripsDbEnumerator_ShouldMoveToId()
         {
             var db = new TripsDb();
             var id1 = db.Add("http://irail.be/vehicle/IC725", 
@@ -27,7 +28,7 @@ namespace Itinero.Transit.Tests.Data
         }
         
         [Fact]
-        public void StopsDbEnumerator_ShouldMoveToGlobalId()
+        public void TripsDbEnumerator_ShouldMoveToGlobalId()
         {
             var db = new TripsDb();
             db.Add("http://irail.be/vehicle/IC725", 
@@ -44,6 +45,35 @@ namespace Itinero.Transit.Tests.Data
             Assert.Equal("http://irail.be/vehicle/IC704", enumerator.GlobalId);
             Assert.Equal(new AttributeCollection(new Attribute("headsign", "IC704"), new Attribute("name", "Antwerpen-Centraal - Poperinge")), 
                 enumerator.Attributes);
+        }
+        
+        [Fact]
+        public void TripsDb_WriteToReadFromShouldBeCopy()
+        {
+            var db = new TripsDb();
+            db.Add("http://irail.be/vehicle/IC725", 
+                new [] { new Attribute("headsign", "IC725"), new Attribute("name", "Gent-Sint-Pieters - Antwerpen-Centraal")});
+            db.Add("http://irail.be/vehicle/IC704", 
+                new [] { new Attribute("headsign", "IC704"), new Attribute("name", "Antwerpen-Centraal - Poperinge")});
+            
+            using (var stream = new MemoryStream())
+            {
+                var size = db.WriteTo(stream);
+
+                stream.Seek(0, SeekOrigin.Begin);
+
+                db = TripsDb.ReadFrom(stream);
+            
+                var enumerator = db.GetReader();
+                Assert.True(enumerator.MoveTo("http://irail.be/vehicle/IC725"));
+                Assert.Equal("http://irail.be/vehicle/IC725", enumerator.GlobalId);
+                Assert.Equal(new AttributeCollection(new Attribute("headsign", "IC725"), new Attribute("name", "Gent-Sint-Pieters - Antwerpen-Centraal")), 
+                    enumerator.Attributes);
+                Assert.True(enumerator.MoveTo("http://irail.be/vehicle/IC704"));
+                Assert.Equal("http://irail.be/vehicle/IC704", enumerator.GlobalId);
+                Assert.Equal(new AttributeCollection(new Attribute("headsign", "IC704"), new Attribute("name", "Antwerpen-Centraal - Poperinge")), 
+                    enumerator.Attributes);
+            }
         }
     }
 }

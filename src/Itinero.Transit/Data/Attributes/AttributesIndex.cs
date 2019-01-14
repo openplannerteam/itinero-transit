@@ -548,9 +548,11 @@ namespace Itinero.Transit.Data.Attributes
         public static AttributesIndex Deserialize(System.IO.Stream stream, bool copy = false,
             AttributesIndexMode defaultIndexMode = AttributesIndexMode.ReverseStringIndexKeysOnly)
         {
+            var position = stream.Position;
+            
             // read version byte.
-            long position = 1;
             var version = stream.ReadByte();
+            position++;
 
             int type;
             if (version < 2)

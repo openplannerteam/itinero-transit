@@ -161,7 +161,7 @@ namespace Itinero.Transit.Tests.Data.Tiles
         }
 
         [Fact]
-        public void TiledLocationIndex_WriteToWriteFromShouldBeCopy()
+        public void TiledLocationIndex_WriteToReadFromShouldBeCopy()
         {
             var index = new TiledLocationIndex(14);
             var location1 = index.Add(4.78686332702636700, 51.26277419739382);

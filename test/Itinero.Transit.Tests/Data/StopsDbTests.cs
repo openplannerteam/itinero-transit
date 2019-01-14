@@ -100,7 +100,7 @@ namespace Itinero.Transit.Tests.Data
         }
 
         [Fact]
-        public void TiledLocationIndex_WriteToWriteFromShouldBeCopy()
+        public void TiledLocationIndex_WriteToReadFromShouldBeCopy()
         {
             var db = new StopsDb();
             var id1 = db.Add("http://irail.be/stations/NMBS/008863354", 4.786863327026367, 51.26277419739382, new[] { new Attribute("name", "Jambes-Est")});
@@ -116,7 +116,7 @@ namespace Itinero.Transit.Tests.Data
 
                 stream.Seek(0, SeekOrigin.Begin);
 
-                var copy = StopsDb.ReadFrom(stream);
+                db = StopsDb.ReadFrom(stream);
 
                 var enumerator = db.GetReader();
                 Assert.True(enumerator.MoveTo("http://irail.be/stations/NMBS/008863010"));
