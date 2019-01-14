@@ -173,12 +173,12 @@ namespace Itinero.Transit.Data
             var stopLocations = TiledLocationIndex.ReadFrom(stream);
             
             // read data.
-            var stopIds = stream.CopyFromWithSize<string>();
-            var stopAttributeIds = stream.CopyFromWithSize<uint>();
-            var stopIdPointsPerHash = stream.CopyFromWithSize<uint>();
+            var stopIds = MemoryArray<string>.CopyFromWithSize(stream);
+            var stopAttributeIds = MemoryArray<uint>.CopyFromWithSize(stream);
+            var stopIdPointsPerHash = MemoryArray<uint>.CopyFromWithSize(stream);
             stream.Read(buffer, 0, 4);
             var stopIdLinkedListPointer = BitConverter.ToUInt32(buffer, 0);
-            var stopIdLinkedList = stream.CopyFromWithSize<uint>();
+            var stopIdLinkedList = MemoryArray<uint>.CopyFromWithSize(stream);
             
             // read attributes.
             var attributes = AttributesIndex.Deserialize(stream);

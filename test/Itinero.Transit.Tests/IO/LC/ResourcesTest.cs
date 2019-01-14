@@ -2,8 +2,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Net;
-using Itinero.IO.Osm;
-using Itinero.Osm.Vehicles;
 using Itinero.Transit.IO.LC.CSA;
 using Itinero.Transit.IO.LC.CSA.ConnectionProviders;
 using Itinero.Transit.IO.LC.CSA.Utils;

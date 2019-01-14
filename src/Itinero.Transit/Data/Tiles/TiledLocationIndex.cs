@@ -373,11 +373,11 @@ namespace Itinero.Transit.Data.Tiles
             
             stream.Read(buffer, 0, 4);
             var tileIndexPointer = BitConverter.ToUInt32(buffer, 0);
-            var tileIndex = stream.CopyFromWithSize<byte>();
+            var tileIndex = MemoryArray<byte>.CopyFromWithSize(stream);
 
             stream.Read(buffer, 0, 4);
             var tileDataPointer = BitConverter.ToUInt32(buffer, 0);
-            var locations = stream.CopyFromWithSize<byte>();
+            var locations = MemoryArray<byte>.CopyFromWithSize(stream);
             
             return new TiledLocationIndex(tileIndex, locations, zoom, tileIndexPointer, tileDataPointer);
         }

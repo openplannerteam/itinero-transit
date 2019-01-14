@@ -28,12 +28,17 @@
 
   <ItemGroup>
     <None Remove="Itinero.Transit.csproj.DotSettings" />
-    <PackageReference Include="Reminiscence" Version="1.3.0-pre03" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Include="..\..\SharedAssemblyVersion.cs">
       <Link>Properties/SharedAssemblyVersion.cs</Link>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Reminiscence, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>../../../../itinero/reminiscence/src/Reminiscence/bin/Debug/netstandard2.0/Reminiscence.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
