@@ -9,13 +9,13 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
     /// <summary>
     /// Tests the load connections extension method.
     /// </summary>
-    public class LoadConnectionsTest : FunctionalTest<TransitDb,
+    public class LoadTransitDbTest : FunctionalTest<TransitDb,
         (DateTime date, TimeSpan window)>
     {
         /// <summary>
         /// Gets the default location connections test.
         /// </summary>
-        public static LoadConnectionsTest Default => new LoadConnectionsTest();
+        public static LoadTransitDbTest Default => new LoadTransitDbTest();
         
         protected override TransitDb Execute((DateTime date, TimeSpan window) input)
         {

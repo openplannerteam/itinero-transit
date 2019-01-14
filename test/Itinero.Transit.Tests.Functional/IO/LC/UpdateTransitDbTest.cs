@@ -9,13 +9,13 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
     /// <summary>
     /// Tests the updating connections.
     /// </summary>
-    public class UpdateConnectionsTest : FunctionalTest<TransitDb,
+    public class UpdateTransitDbTest : FunctionalTest<TransitDb,
         (TransitDb transitDb, DateTime date, TimeSpan window)>
     {
         /// <summary>
         /// Gets the default update connections test.
         /// </summary>
-        public static UpdateConnectionsTest Default => new UpdateConnectionsTest();
+        public static UpdateTransitDbTest Default => new UpdateTransitDbTest();
         
         protected override TransitDb Execute((TransitDb transitDb, DateTime date, TimeSpan window) input)
         {

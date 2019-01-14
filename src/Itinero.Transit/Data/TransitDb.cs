@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
 namespace Itinero.Transit.Data
@@ -21,6 +22,15 @@ namespace Itinero.Transit.Data
             _stopsDb = new StopsDb();
             _connectionsDb = new ConnectionsDb();
             _tripsDb = new TripsDb();
+
+            _latestSnapshot = new TransitDbSnapShot(_stopsDb, _tripsDb, _connectionsDb);
+        }
+        
+        private TransitDb(StopsDb stopsDb, TripsDb tripsDb, ConnectionsDb connectionsDb)
+        {
+            _stopsDb = stopsDb;
+            _connectionsDb = connectionsDb;
+            _tripsDb = tripsDb;
 
             _latestSnapshot = new TransitDbSnapShot(_stopsDb, _tripsDb, _connectionsDb);
         }
@@ -53,35 +63,67 @@ namespace Itinero.Transit.Data
         public TransitDbSnapShot Latest => _latestSnapshot;
 
         /// <summary>
+        /// Reads a transit db an all its data from the given stream.
+        /// </summary>
+        /// <param name="stream">The stream.</param>
+        /// <returns>The transit db.</returns>
+        public static TransitDb ReadFrom(Stream stream)
+        {
+            var version = stream.ReadByte();
+            if (version != 1) throw new InvalidDataException($"Cannot read {nameof(TransitDb)}, invalid version #.");
+
+            var stopsDb = StopsDb.ReadFrom(stream);
+            var tripsDb = TripsDb.ReadFrom(stream);
+            var connectionsDb = ConnectionsDb.ReadFrom(stream);
+
+            return new TransitDb(stopsDb, tripsDb, connectionsDb);
+        }
+
+        /// <summary>
         /// A transit db snapshot, represents a consistent state of the transit db.
         /// </summary>
         public class TransitDbSnapShot
         {
-            private readonly StopsDb _stopsDb;
-            private readonly ConnectionsDb _connectionsDb;
-            private readonly TripsDb _tripsDb;
-
             internal TransitDbSnapShot(StopsDb stopsDb, TripsDb tripsDb, ConnectionsDb connectionsDb)
             {
-                _stopsDb = stopsDb;
-                _tripsDb = tripsDb;
-                _connectionsDb = connectionsDb;
+                StopsDb = stopsDb;
+                TripsDb = tripsDb;
+                ConnectionsDb = connectionsDb;
             }
 
             /// <summary>
             /// Gets the stops db.
             /// </summary>
-            public StopsDb StopsDb => _stopsDb;
+            public StopsDb StopsDb { get; }
 
             /// <summary>
             /// Gets the trips db.
             /// </summary>
-            public TripsDb TripsDb => _tripsDb;
+            public TripsDb TripsDb { get; }
 
             /// <summary>
             /// Gets the connections db.
             /// </summary>
-            public ConnectionsDb ConnectionsDb => _connectionsDb; 
+            public ConnectionsDb ConnectionsDb { get; }
+
+            /// <summary>
+            /// Copies this transit db to the given stream.
+            /// </summary>
+            /// <param name="stream">The stream.</param>
+            /// <returns>The length of the data written.</returns>
+            public long WriteTo(Stream stream)
+            {
+                var length = 1L;
+                
+                byte version = 1;
+                stream.WriteByte(version);
+
+                length += this.StopsDb.WriteTo(stream);
+                length += this.TripsDb.WriteTo(stream);
+                length += this.ConnectionsDb.WriteTo(stream);
+
+                return length;
+            }
         }
 
         /// <summary>
