@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Itinero.Transit.Logging;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
 namespace Itinero.Transit.Data
@@ -161,7 +162,7 @@ namespace Itinero.Transit.Data
                 {
                     return stopsDbReader.Id;
                 }
-
+                
                 return _stopsDb.Add(globalId, longitude, latitude,
                     attributes);
             }

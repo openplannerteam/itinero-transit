@@ -156,7 +156,7 @@ namespace Itinero.Transit.Data
             var nextId = BitConverter.ToUInt32(buffer, 0);
             
             // read attributes.
-            var attributes = AttributesIndex.Deserialize(stream);
+            var attributes = AttributesIndex.Deserialize(stream, true);
             
             return new TripsDb(tripIds, tripAttributeIds, tripIdPointersPerHash, tripIdLinkedList, attributes, tripIdLinkedListPointer, nextId, tripIdHashSize);
         }

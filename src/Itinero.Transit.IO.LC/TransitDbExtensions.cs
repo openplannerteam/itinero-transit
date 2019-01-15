@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Itinero.Transit.Data;
@@ -15,6 +16,8 @@ namespace Itinero.Transit.IO.LC
     /// </summary>
     public static class TransitDbExtensions
     {
+        private static Dictionary<string, (uint tileId, uint localId)> _temp = new Dictionary<string, (uint tileId, uint localId)>();
+        
         private static (uint tileId, uint localId) AddStop(ILocationProvider profile, Uri stopUri, TransitDb.TransitDbWriter writer)
         {
             var stop1Uri = stopUri;
@@ -48,7 +51,7 @@ namespace Itinero.Transit.IO.LC
                 return;
             }
 
-            var tripId = AddTrip(connection, writer);
+              var tripId = AddTrip(connection, writer);
 
             var connectionUri = connection.Id().ToString();
 

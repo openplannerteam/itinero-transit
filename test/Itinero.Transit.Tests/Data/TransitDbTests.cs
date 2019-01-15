@@ -114,5 +114,39 @@ namespace Itinero.Transit.Tests.Data
                 Assert.False(departureEnumerator.MovePrevious());
             }
         }
+        
+        [Fact]
+        public void TransitDb_ShouldStoreIdenticalGlobalIdsWithIdenticalId()
+        {
+            var db = new TransitDb();
+
+            var writer = db.GetWriter();
+
+            var globalIds = new []
+            {
+                "http://irail.be/stations/NMBS/008863008",
+                "http://irail.be/stations/NMBS/008863010",
+                "http://irail.be/stations/NMBS/008863012",
+                "http://irail.be/stations/NMBS/008863014",
+                "http://irail.be/stations/NMBS/008863015",
+                "http://irail.be/stations/NMBS/008863016",
+                "http://irail.be/stations/NMBS/008863017",
+                "http://irail.be/stations/NMBS/008863018",
+                "http://irail.be/stations/NMBS/008863019",
+                "http://irail.be/stations/NMBS/008863020",
+                "http://irail.be/stations/NMBS/008863021"
+            };
+
+            foreach (var globalId in globalIds)
+            {
+                var id = writer.AddOrUpdateStop(globalId, 4.786863327026367, 51.26277419739382);
+            
+                Assert.Equal(id, writer.AddOrUpdateStop(globalId, 4.786863327026367, 51.26277419739382));
+                Assert.Equal(id, writer.AddOrUpdateStop(globalId, 4.786863327026367, 51.26277419739382));
+                Assert.Equal(id, writer.AddOrUpdateStop(globalId, 4.786863327026367, 51.26277419739382));
+                Assert.Equal(id, writer.AddOrUpdateStop(globalId, 4.786863327026367, 51.26277419739382));
+                Assert.Equal(id, writer.AddOrUpdateStop(globalId, 4.786863327026367, 51.26277419739382));
+            }
+        }
     }
 }

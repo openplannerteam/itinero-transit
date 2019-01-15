@@ -52,6 +52,7 @@ namespace Itinero.Transit.Data
         {
             _stopIdLinkedListPointer = stopIdLinkedListPointer;
             _stopLocations = stopLocations;
+            _stopLocations.Moved = this.Move;
             _stopIds = stopIds;
             _stopAttributeIds = stopAttributeIds;
             _stopIdPointersPerHash = stopIdPointsPerHash;
@@ -181,7 +182,7 @@ namespace Itinero.Transit.Data
             var stopIdLinkedList = MemoryArray<uint>.CopyFromWithSize(stream);
             
             // read attributes.
-            var attributes = AttributesIndex.Deserialize(stream);
+            var attributes = AttributesIndex.Deserialize(stream, true);
             
             return new StopsDb(stopLocations, stopIds, stopAttributeIds, stopIdPointsPerHash, stopIdLinkedList,
                 attributes, stopIdLinkedListPointer);
