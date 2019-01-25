@@ -13,7 +13,7 @@ namespace Itinero.Transit.IO.LC.CSA.ConnectionProviders
     ///  whom offers the public transport data in LinkedConnections-format.
     ///  The ontology can be found here
     ///  </summary>
-    internal class LinkedConnectionProvider : IConnectionsProvider
+    internal class ConnectionProvider
     {
         private readonly JsonLdProcessor _processor;
 
@@ -23,7 +23,7 @@ namespace Itinero.Transit.IO.LC.CSA.ConnectionProviders
         /// Creates a new Connections-provider, based on a 'hydra-search' field.
         /// The 'hydra-search' should already be expanded JSON-LD
         /// </summary>
-        public LinkedConnectionProvider(JToken hydraSearch, Downloader loader = null)
+        public ConnectionProvider(JToken hydraSearch, Downloader loader = null)
         {
             _searchTemplate = hydraSearch.GetLDValue("http://www.w3.org/ns/hydra/core#template");
 
@@ -36,18 +36,23 @@ namespace Itinero.Transit.IO.LC.CSA.ConnectionProviders
             _processor = new JsonLdProcessor(loader, baseUri);
         }
 
-        public LinkedConnectionProvider(Uri baseUri, string searchUri, Downloader loader = null)
+        public ConnectionProvider(Uri baseUri, string searchUri, Downloader loader = null)
         {
             _searchTemplate = searchUri;
             loader = loader ?? new Downloader();
             _processor = new JsonLdProcessor(loader, baseUri);
         }
 
-        public ITimeTable GetTimeTable(Uri id)
+        public TimeTable GetTimeTable(Uri id)
         {
-            var tt = new LinkedTimeTable(id);
+            var tt = new TimeTable(id);
             tt.Download(_processor);
             return tt;
+        }
+
+        public TimeTable GetTimeTable(DateTime time)
+        {
+            return GetTimeTable(TimeTableIdFor(time));
         }
 
         public Uri TimeTableIdFor(DateTime time)

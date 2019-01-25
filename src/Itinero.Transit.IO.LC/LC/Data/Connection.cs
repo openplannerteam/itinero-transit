@@ -14,7 +14,7 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
      * Note that a connection does _never_ have intermediate stops.
      */
     [Serializable()]
-    public class LinkedConnection : LinkedObject
+    public class Connection : LinkedObject
     {
         private Uri _departureStop;
         private Uri _arrivalStop;
@@ -41,11 +41,11 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
 
 
         // ReSharper disable once UnusedMember.Global
-        public LinkedConnection(Uri uri) : base(uri)
+        public Connection(Uri uri) : base(uri)
         {
         }
 
-        public LinkedConnection(Uri id, Uri departureStop, Uri arrivalStop, DateTime departureTime,
+        public Connection(Uri id, Uri departureStop, Uri arrivalStop, DateTime departureTime,
             DateTime arrivalTime) : base(id)
         {
             _departureTime = departureTime;
@@ -54,7 +54,7 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
             _departureStop = departureStop;
         }
 
-        public LinkedConnection(JObject json) : base(json.GetId())
+        public Connection(JObject json) : base(json.GetId())
         {
             FromJson(json);
         }
@@ -66,10 +66,11 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
         }
 
 
-        public string ToString(ILocationProvider locationDecoder)
+        public string ToString(LocationProvider locationDecoder)
         {
             return
-                $"Linked Connection {locationDecoder.GetNameOf(_departureStop)} {_departureTime:HH:mm} --> {locationDecoder.GetNameOf(_arrivalStop)} {_arrivalTime:HH:mm}" +
+                $"Linked Connection {locationDecoder?.GetNameOf(_departureStop) ?? _departureStop.ToString()} {_departureTime:HH:mm}" +
+                $" --> {locationDecoder?.GetNameOf(_arrivalStop) ?? _arrivalStop.ToString()} {_arrivalTime:HH:mm}" +
                 $"  {Uri}";
         }
 
@@ -106,23 +107,7 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
                 _arrivalTime = _arrivalTime.AddSeconds(depDel);
             }
 
-            if (_arrivalStop.Equals(_departureStop))
-            {
-                throw new ArgumentException($"This connection ends where it starts, namely at {_arrivalStop}\n{Id()}");
-            }
-
-            if (_arrivalTime < _departureTime)
-            {
-                // We allow arrivalTime to equal Departure time, sometimes buses have less then a minute to travel
-                // If there is still to much time difference, the train was probably cancelled, so we throw it out.
-                throw new ArgumentException(
-                    $"WTF? Time travellers! {_departureTime} incl {depDel} --> {_arrivalTime} incl {arrDel}\n{json}");
-            }
-
-            if (_departureStop == null || _arrivalStop == null)
-            {
-                throw new NullReferenceException("_departureStop or _arrivalStop is null in the JSON");
-            }
+          
         }
 
 
@@ -166,40 +151,10 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
             return _departureTime;
         }
 
-//        public Route AsRoute(ILocationProvider locationProv)
-//        {
-//            var depLoc = locationProv.GetCoordinateFor(_departureStop);
-//            var arrLoc = locationProv.GetCoordinateFor(_arrivalStop);
-//
-//            return new Route
-//            {
-//                Shape = new[]
-//                {
-//                    new Coordinate(depLoc.Lat, depLoc.Lon),
-//                    new Coordinate(arrLoc.Lat, arrLoc.Lon)
-//                },
-//                ShapeMeta = new[]
-//                {
-//                    new Route.Meta
-//                    {
-//                        Profile = Mode(),
-//                        Shape = 0,
-//                        Time = 0f,
-//                    },
-//                    new Route.Meta
-//                    {
-//                        Profile = Mode(),
-//                        Shape = 1,
-//                        Time = (float) (ArrivalTime() - DepartureTime()).TotalSeconds,
-//                    },
-//                }
-//            };
-//        }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(this, obj)) return true;
-            if (obj is LinkedConnection lc)
+            if (obj is Connection lc)
             {
                 return Equals(lc);
             }
@@ -207,7 +162,7 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
             return false;
         }
 
-        private bool Equals(LinkedConnection other)
+        private bool Equals(Connection other)
         {
             return Equals(_departureStop, other._departureStop)
                    && Equals(_arrivalStop, other._arrivalStop)

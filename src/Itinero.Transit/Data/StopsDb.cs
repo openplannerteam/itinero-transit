@@ -70,7 +70,7 @@ namespace Itinero.Transit.Data
         /// <param name="latitude">The stop latitude.</param>
         /// <param name="attributes">The stop attributes.</param>
         /// <returns>An internal id representing the stop in this transit db.</returns>
-        public (uint tileId, uint localId) Add(string globalId, double longitude, double latitude, IEnumerable<Attribute> attributes = null)
+        public (uint tileId, uint localId)  Add(string globalId, double longitude, double latitude, IEnumerable<Attribute> attributes = null)
         {
             // store location.
             var (tileId, localId, dataPointer) = _stopLocations.Add(longitude, latitude);

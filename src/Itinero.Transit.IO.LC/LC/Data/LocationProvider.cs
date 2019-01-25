@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 
 namespace Itinero.Transit.IO.LC.CSA.LocationProviders
@@ -11,7 +12,7 @@ namespace Itinero.Transit.IO.LC.CSA.LocationProviders
     /// This class is meant to handle providers which offer their station data as a single big dump (such as the SNCB)
     /// </summary>
     [Serializable]
-    internal class LocationsFragment : LinkedObject, ILocationProvider
+    public class LocationProvider : LinkedObject
     {
         public readonly List<Location> Locations = new List<Location>();
 
@@ -22,7 +23,7 @@ namespace Itinero.Transit.IO.LC.CSA.LocationProviders
 
         private float _minLat, _maxLat, _minLon, _maxLon;
 
-        public LocationsFragment(Uri uri) : base(uri)
+        public LocationProvider(Uri uri) : base(uri)
         {
         }
 
@@ -32,7 +33,7 @@ namespace Itinero.Transit.IO.LC.CSA.LocationProviders
         /// </summary>
         /// <param name="uri"></param>
         /// <param name="locations"></param>
-        public LocationsFragment(Uri uri, IEnumerable<Location> locations)
+        public LocationProvider(Uri uri, IEnumerable<Location> locations)
             : base(uri)
         {
             Locations = new List<Location>(locations);
@@ -73,6 +74,11 @@ namespace Itinero.Transit.IO.LC.CSA.LocationProviders
                 _maxLon = Math.Max(l.Lon, _maxLon);
             }
         }
+        
+        public string GetNameOf(Uri uri)
+        {
+            return $"{GetCoordinateFor(uri).Name} ({uri.Segments.Last()})";
+        }
 
         public override string ToString()
         {
@@ -89,7 +95,7 @@ namespace Itinero.Transit.IO.LC.CSA.LocationProviders
         {
             return _locationMapping.ContainsKey(locationId.ToString());
         }
-        
+
         public bool TryGetCoordinateFor(Uri locationId, out Location location)
         {
             return _locationMapping.TryGetValue(locationId.ToString(), out location);
@@ -101,17 +107,6 @@ namespace Itinero.Transit.IO.LC.CSA.LocationProviders
             {
                 return value;
             }
-
-            //TODO: figure out what this fails.
-//            var examples = "";
-//            var keys = new List<string>(_locationMapping.Keys).GetRange(0, 10);
-//            foreach (var key in keys)
-//            {
-//                examples += $"  {key}\n";
-//            }
-//
-//            throw new KeyNotFoundException(
-//                $"The location {locationId} was not found in this dictionary.\nSome keys in this dictionary are:\n{examples}");
 
             return null;
         }
@@ -127,35 +122,6 @@ namespace Itinero.Transit.IO.LC.CSA.LocationProviders
             return Locations;
         }
 
-//        public IEnumerable<Uri> GetLocationsCloseTo(float lat, float lon, int radiusInMeters)
-//        {
-//            if (radiusInMeters < 1)
-//            {
-//                return Empty;
-//            }
-//
-//            if (!BBox().Overlaps(new BoundingBox(lat, lon, radiusInMeters)))
-//            {
-//                return Enumerable.Empty<Uri>();
-//            }
-//
-//            var closeEnough = new List<Uri>();
-//
-//            foreach (var l in Locations)
-//            {
-//                var d = Coordinate.DistanceEstimateInMeter(lat, lon, l.Lat, l.Lon);
-//                if (d < radiusInMeters)
-//                {
-//                    closeEnough.Add(l.Uri);
-//                }
-//            }
-//
-//            return closeEnough;
-//        }
-//
-//        public BoundingBox BBox()
-//        {
-//            return _bounds ?? (_bounds = new BoundingBox(_minLat, _maxLat, _minLon, _maxLon));
-//        }
+   
     }
 }

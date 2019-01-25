@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Itinero.Transit.IO.LC.CSA.LocationProviders;
 using Itinero.Transit.Logging;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
@@ -10,22 +11,20 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
     /// Represents one entire page of connections, based on a LinkedConnections JSON-LD
     /// </summary>
     [Serializable]
-    internal class LinkedTimeTable : LinkedObject, ITimeTable
+    internal class TimeTable : LinkedObject
     {
         private Uri Next { get; set; }
         private Uri Prev { get; set; }
 
         private DateTime _startTime, _endTime;
 
-        private List<LinkedConnection> Graph { get; set; }
-        [NonSerializedAttribute] private List<LinkedConnection> _reversedGraph;
+        private List<Connection> Graph { get; set; }
 
-        public LinkedTimeTable(Uri uri) : base(uri)
+        public TimeTable(Uri uri) : base(uri)
         {
         }
 
-
-        public LinkedTimeTable(JObject json) : base(new Uri(json["@id"].ToString()))
+        public TimeTable(JObject json) : base(new Uri(json["@id"].ToString()))
         {
             FromJson(json);
         }
@@ -45,13 +44,13 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
             _endTime = _extractTime(Next);
 
 
-            Graph = new List<LinkedConnection>();
+            Graph = new List<Connection>();
             var jsonGraph = json["@graph"];
             foreach (var conn in jsonGraph)
             {
                 try
                 {
-                    Graph.Add(new LinkedConnection((JObject) conn));
+                    Graph.Add(new Connection((JObject) conn));
                 }
                 catch (ArgumentException e)
                 {
@@ -79,12 +78,12 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
             return ToString(null);
         }
 
-        public string ToString(ILocationProvider locationDecoder)
+        public string ToString(LocationProvider locationDecoder)
         {
             return ToString(locationDecoder, null);
         }
 
-        public string ToString(ILocationProvider locationDecoder, List<Uri> whitelist)
+        public string ToString(LocationProvider locationDecoder, List<Uri> whitelist)
         {
             var omitted = 0;
             var cons = "  ";
@@ -138,20 +137,10 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
             return Prev;
         }
 
-        public IEnumerable<LinkedConnection> Connections()
+        public List<Connection> Connections()
         {
             return Graph;
         }
 
-        public IEnumerable<LinkedConnection> ConnectionsReversed()
-        {
-            if (_reversedGraph == null)
-            {
-                _reversedGraph = new List<LinkedConnection>(Graph);
-                _reversedGraph.Reverse();
-            }
-
-            return _reversedGraph;
-        }
     }
 }

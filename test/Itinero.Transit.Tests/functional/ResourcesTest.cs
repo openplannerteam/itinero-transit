@@ -30,24 +30,6 @@ namespace Itinero.IO.LC.Tests
         }
 
         [Fact]
-        public void TestSearchTimeTable()
-        {
-            var storage = new LocalStorage(TestPath + "/SNCB/timetables");
-            Assert.True(storage.KnownKeys().Count > 200);
-
-            var prov = Belgium.Sncb(new LocalStorage(TestPath));
-            var tt0 =
-                ((LocallyCachedConnectionsProvider) (prov.ConnectionsProvider)).TimeTableContaining(TestMoment(10, 01));
-            Assert.NotNull(tt0);
-            var tt =
-                ((LocallyCachedConnectionsProvider) (prov.ConnectionsProvider)).TimeTableContaining(TestMoment(10, 00));
-            Assert.NotNull(tt);
-            Assert.Equal("https://graph.irail.be/sncb/connections?departureTime=2018-12-12T10:00:00.000Z",
-                tt.Id().ToString());
-        }
-
-
-        [Fact]
         public void FixCache()
         {
             if (Directory.Exists(TestPath + "/SNCB/timetables") &&
@@ -58,12 +40,9 @@ namespace Itinero.IO.LC.Tests
 
             try
             {
-                var st = new LocalStorage(TestPath);
-                var sncb = Belgium.Sncb(st);
-                sncb.DownloadDay(TestDay);
+                var sncb = Belgium.Sncb();
 
-                var deLijn = Belgium.DeLijn(st);
-                deLijn.DownloadDay(TestDay);
+                var deLijn = Belgium.DeLijn();
             }
             catch (Exception e)
             {
@@ -71,32 +50,9 @@ namespace Itinero.IO.LC.Tests
                 Log(e.InnerException?.Message);
                 Log(e.InnerException?.InnerException?.Message);
 
-                // NUKE THE CACHE!
-                //    Directory.Delete(TestPath, recursive: true);
-
                 throw;
             }
         }
 
-        [Fact]
-        public void DownloadPast()
-        {
-            var sncb = Belgium.Sncb(new LocalStorage("SNCB-Past"));
-            try
-            {
-                sncb.ConnectionsProvider.GetTimeTable(new DateTime(2018, 1, 1));
-                throw new Exception("Downloading this much in the past should have failed");
-            }
-            catch (ArgumentException)
-            {
-                // Indeed, should error
-                Assert.True(true);
-            }
-            catch (IOException)
-            {
-                // Indeed, should error
-                Assert.True(true);
-            }
-        }
     }
 }

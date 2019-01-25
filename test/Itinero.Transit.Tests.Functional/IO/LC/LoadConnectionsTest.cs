@@ -16,11 +16,12 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
         /// Gets the default location connections test.
         /// </summary>
         public static LoadConnectionsTest Default => new LoadConnectionsTest();
-        
-        protected override (ConnectionsDb connections, StopsDb stops, TripsDb trips) Execute((DateTime date, TimeSpan window) input)
+
+        protected override (ConnectionsDb connections, StopsDb stops, TripsDb trips) Execute(
+            (DateTime date, TimeSpan window) input)
         {
             // setup profile.
-            var profile = Belgium.Sncb(new LocalStorage("cache"));
+            var profile = Belgium.Sncb();
 
             // create a stops db and connections db.
             var stopsDb = new StopsDb();
@@ -28,7 +29,8 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
             var connectionsDb = new ConnectionsDb();
 
             // load connections for the current day.
-            connectionsDb.LoadConnections(profile, stopsDb, tripsDb, (input.date, input.window));
+            profile.AddDataTo(stopsDb, connectionsDb, tripsDb, input.date, input.date + input.window,
+                Console.WriteLine);
 
             return (connectionsDb, stopsDb, tripsDb);
         }
