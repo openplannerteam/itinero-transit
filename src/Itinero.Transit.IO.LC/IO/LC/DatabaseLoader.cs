@@ -13,7 +13,8 @@ namespace Itinero.Transit.IO.LC
     public static class ProfileExtensions
     {
         /// <summary>
-        /// Dumps all the information between the dates into the databases.
+        /// Adds all connection data between the given dates into the databases.
+        /// Locations are only added as needed
         /// </summary>
         /// <param name="profile"></param>
         /// <param name="transitDb"></param>
@@ -34,14 +35,33 @@ namespace Itinero.Transit.IO.LC
             dbs.AddAllConnections(profile, start, end);
             writer.Close();
         }
+
+        /// <summary>
+        /// Adds all location data into the database
+        /// </summary>
+        /// <param name="profile"></param>
+        /// <param name="transitDb"></param>
+        /// <param name="onError"></param>
+        /// <param name="onLocationHandled"></param>
+        public static void AddAllLocationsTo(this Profile profile,
+            TransitDb transitDb,
+            Action<string> onError,
+            LoggingOptions onLocationHandled = null
+        )
+        {
+            var writer = transitDb.GetWriter();
+            var dbs = new DatabaseLoader(writer, onLocationHandled, null, onError);
+            dbs.AddAllLocations(profile);
+            writer.Close();
+        }
     }
 
     public class LoggingOptions
     {
-        internal readonly Action<(int currentCount, int batchTarget, int nrOfBatches)>
+        private readonly Action<(int currentCount, int batchTarget, int nrOfBatches)>
             OnAdded;
 
-        internal readonly int TriggerEvery;
+        private readonly int TriggerEvery;
 
         public LoggingOptions(Action<(int currentCount, int batchTarget, int nrOfBatches)> onAdded,
             int triggerEvery = 100)
