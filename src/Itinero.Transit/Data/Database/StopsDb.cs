@@ -1,8 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data.Tiles;
+using Reminiscence;
 using Reminiscence.Arrays;
+using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
@@ -28,7 +32,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// Creates a new stops database.
         /// </summary>
-        public StopsDb()
+        internal StopsDb()
         {
             _stopLocations = new TiledLocationIndex {Moved = this.Move};
             _stopIds = new MemoryArray<string>(0);
@@ -40,6 +44,20 @@ namespace Itinero.Transit.Data
             }
             _stopIdLinkedList = new MemoryArray<uint>(0);
             _attributes = new AttributesIndex(AttributesIndexMode.ReverseStringIndexKeysOnly);
+        }
+
+        private StopsDb(TiledLocationIndex stopLocations, ArrayBase<string> stopIds, ArrayBase<uint> stopAttributeIds,
+            ArrayBase<uint> stopIdPointsPerHash, ArrayBase<uint> stopIdLinkedList, AttributesIndex attributes,
+                uint stopIdLinkedListPointer)
+        {
+            _stopIdLinkedListPointer = stopIdLinkedListPointer;
+            _stopLocations = stopLocations;
+            _stopLocations.Moved = this.Move;
+            _stopIds = stopIds;
+            _stopAttributeIds = stopAttributeIds;
+            _stopIdPointersPerHash = stopIdPointsPerHash;
+            _stopIdLinkedList = stopIdLinkedList;
+            _attributes = attributes;
         }
 
         /// <summary>
@@ -70,7 +88,7 @@ namespace Itinero.Transit.Data
         /// <param name="latitude">The stop latitude.</param>
         /// <param name="attributes">The stop attributes.</param>
         /// <returns>An internal id representing the stop in this transit db.</returns>
-        public (uint tileId, uint localId)  Add(string globalId, double longitude, double latitude, IEnumerable<Attribute> attributes = null)
+        internal (uint tileId, uint localId) Add(string globalId, double longitude, double latitude, IEnumerable<Attribute> attributes = null)
         {
             // store location.
             var (tileId, localId, dataPointer) = _stopLocations.Add(longitude, latitude);
@@ -117,6 +135,82 @@ namespace Itinero.Transit.Data
 
                 return  (uint) (hash % _stopIdHashSize);
             }
+        }
+
+        internal long WriteTo(Stream stream)
+        {
+            var length = 0L;
+            
+            // write version #.
+            stream.WriteByte(1);
+            length++;
+                
+            // write location index.
+            length += _stopLocations.WriteTo(stream);
+            
+            // write data.
+            length += _stopIds.CopyToWithSize(stream);
+            length += _stopAttributeIds.CopyToWithSize(stream);
+            length += _stopIdPointersPerHash.CopyToWithSize(stream);
+            var bytes = BitConverter.GetBytes(_stopIdLinkedListPointer);
+            length += bytes.Length;
+            stream.Write(bytes, 0, 4);
+            length += _stopIdLinkedList.CopyToWithSize(stream);
+            
+            // write attributes.
+            length += _attributes.Serialize(stream);
+
+            return length;
+        }
+
+        internal static StopsDb ReadFrom(Stream stream)
+        {
+            var buffer = new byte[4];
+            
+            var version = stream.ReadByte();
+            if (version != 1) throw new InvalidDataException($"Cannot read {nameof(StopsDb)}, invalid version #.");
+            
+            // read location index.
+            var stopLocations = TiledLocationIndex.ReadFrom(stream);
+            
+            // read data.
+            var stopIds = MemoryArray<string>.CopyFromWithSize(stream);
+            var stopAttributeIds = MemoryArray<uint>.CopyFromWithSize(stream);
+            var stopIdPointsPerHash = MemoryArray<uint>.CopyFromWithSize(stream);
+            stream.Read(buffer, 0, 4);
+            var stopIdLinkedListPointer = BitConverter.ToUInt32(buffer, 0);
+            var stopIdLinkedList = MemoryArray<uint>.CopyFromWithSize(stream);
+            
+            // read attributes.
+            var attributes = AttributesIndex.Deserialize(stream, true);
+            
+            return new StopsDb(stopLocations, stopIds, stopAttributeIds, stopIdPointsPerHash, stopIdLinkedList,
+                attributes, stopIdLinkedListPointer);
+        }
+
+        /// <summary>
+        /// Returns a deep in-memory copy.
+        /// </summary>
+        /// <returns></returns>
+        public StopsDb Clone()
+        {
+            // it is up to the user to make sure not to clone when writing. 
+            
+            var stopLocations = _stopLocations.Clone();
+            
+            var stopIds = new MemoryArray<string>(_stopIds.Length);
+            stopIds.CopyFrom(_stopIds, _stopIds.Length);
+            var stopAttributesIds = new MemoryArray<uint>(_stopAttributeIds.Length);
+            stopAttributesIds.CopyFrom(_stopAttributeIds, _stopAttributeIds.Length);
+            var stopIdPointersPerHash = new MemoryArray<uint>(_stopIdPointersPerHash.Length);
+            stopIdPointersPerHash.CopyFrom(_stopIdPointersPerHash, _stopIdPointersPerHash.Length);
+            var stopIdLinkedList = new MemoryArray<uint>(_stopIdLinkedList.Length);
+            stopIdLinkedList.CopyFrom(_stopIdLinkedList, _stopIdLinkedList.Length);
+            
+            // don't clone the attributes, it's supposed to be add-only anyway.
+            // it's up to the user not to write to it from multiple threads.
+            return new StopsDb(stopLocations, stopIds, stopAttributesIds, stopIdPointersPerHash, stopIdLinkedList, _attributes,
+                _stopIdLinkedListPointer);
         }
 
         /// <summary>

@@ -1,35 +1,29 @@
 using System;
 using System.Linq;
 using Itinero.IO.LC;
-using Itinero.IO.LC.Tests;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
 using Xunit;
-using Xunit.Abstractions;
 
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace Itinero.Transit.Tests.unit.Algorithm.CSA
+namespace Itinero.Transit.Tests.Algorithm.CSA
 {
-    public class ProfiledConnectionScanTest : SuperTest
+    public class ProfiledConnectionScanTest
     {
-        public ProfiledConnectionScanTest(ITestOutputHelper output) : base(output)
-        {
-        }
-
         [Fact]
         public void TestPcsSimple()
         {
-            var db = Db.GetDefaultTestDb();
-            var dbs = new Databases(
-                db, Db.GetDefaultStopsDb(),
+            var db = Db.GetDefaultTestDb().Latest;
+
+            var profile = new Profile<TransferStats>(
+                db,
                 new InternalTransferGenerator(60),
-                new BirdsEyeInterWalkTransferGenerator(Db.GetDefaultStopsDb().GetReader()));
-            var profile = new Profile<TransferStats>(dbs,
+                new BirdsEyeInterWalkTransferGenerator(db.StopsDb.GetReader()),
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
-            Pr("Starting PCS from (0,0) to (0,3)");
+            //Pr("Starting PCS from (0,0) to (0,3)");
 
             var pcs = new ProfiledConnectionScan<TransferStats>(
                 (0, 0), (0, 3),
@@ -40,10 +34,10 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
             var journeys = pcs.CalculateJourneys();
 
 
-            Pr("---------------- DONE ----------------");
+            //Pr("---------------- DONE ----------------");
             foreach (var j in journeys)
             {
-                Pr(j.ToString());
+                //Pr(j.ToString());
                 Assert.True(Equals(((uint) 0, (uint) 0), j.Root.Location));
                 Assert.True(Equals(((uint) 0, (uint) 3), j.Location));
             }
@@ -58,30 +52,39 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
         [Fact]
         public static void TestFiltering()
         {
-            var connDb = new ConnectionsDb();
-            connDb.Add((0, 0), (0, 1),
+            var transitDb = new TransitDb();
+            var writer = transitDb.GetWriter();
+
+            writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
+            writer.AddOrUpdateStop("https://example.com/stops/0", 0.1, 0.1);
+
+            writer.AddOrUpdateConnection((0, 0), (0, 1),
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 00, 00),
                 30 * 60, 0);
 
 
-            connDb.Add((0, 0), (0, 1),
+            writer.AddOrUpdateConnection((0, 0), (0, 1),
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 00, 00),
                 40 * 60, 1);
 
-            connDb.Add((1, 1), (2, 2), "https//example.com/connections/2",
+            writer.AddOrUpdateConnection((1, 1), (2, 2), "https//example.com/connections/2",
                 new DateTime(2018, 12, 04, 20, 00, 00),
                 40 * 60, 2);
 
-            connDb.Add((1, 1), (2, 2), "https//example.com/connections/4",
+            writer.AddOrUpdateConnection((1, 1), (2, 2), "https//example.com/connections/4",
                 new DateTime(2018, 12, 04, 2, 00, 00),
                 40 * 60, 3);
-            var dbs = new Databases(
-                connDb, Db.GetDefaultStopsDb(),
+
+            writer.Close();
+
+            var latest = transitDb.Latest;
+
+            var profile = new Profile<TransferStats>(
+                latest,
                 new InternalTransferGenerator(60),
-                new BirdsEyeInterWalkTransferGenerator(Db.GetDefaultStopsDb().GetReader()));
-            var profile = new Profile<TransferStats>(dbs,
+                new BirdsEyeInterWalkTransferGenerator(latest.StopsDb.GetReader()),
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
             var pcs = new ProfiledConnectionScan<TransferStats>(

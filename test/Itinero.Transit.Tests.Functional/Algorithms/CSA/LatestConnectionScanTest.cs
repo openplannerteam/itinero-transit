@@ -13,20 +13,17 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         public static LatestConnectionScanTest Default => new LatestConnectionScanTest();
 
         protected override bool Execute(
-            (ConnectionsDb connections, StopsDb stops, string departureStopId, string arrivalStopId, DateTime
-                departureTime,
-                DateTime arrivalTime) input)
+            (TransitDb transitDb, string departureStopId, string arrivalStopId, DateTime
+                departureTime, DateTime arrivalTime) input)
         {
-            var dbs = new Databases(
-                input.connections, input.stops,
-                new InternalTransferGenerator(),
-                new BirdsEyeInterWalkTransferGenerator(input.stops.GetReader()));
-            var p = new Profile<TransferStats>(dbs,
+            var latest = input.transitDb.Latest;
+            var p = new Profile<TransferStats>(latest,
+                new InternalTransferGenerator(), 
+                new BirdsEyeInterWalkTransferGenerator(latest.StopsDb.GetReader()), 
                 new TransferStats(), TransferStats.ProfileTransferCompare);
 
-
             // get departure and arrival stop ids.
-            var reader = input.stops.GetReader();
+            var reader = latest.StopsDb.GetReader();
             True(reader.MoveTo(input.departureStopId));
             var departure = reader.Id;
             True(reader.MoveTo(input.arrivalStopId));

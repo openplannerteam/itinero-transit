@@ -6,13 +6,8 @@ using Xunit.Abstractions;
 
 namespace Itinero.Transit.Tests.utils
 {
-    public class DateTrackerTest : SuperTest
+    public class DateTrackerTest
     {
-        public DateTrackerTest(ITestOutputHelper output) : base(output)
-        {
-        }
-
-
         [Fact]
         public void TestTimeAggregation()
         {
@@ -25,13 +20,11 @@ namespace Itinero.Transit.Tests.utils
             dt.AddTimeWindow(d, d.AddMinutes(30));
             Assert.Single(dt.TimeWindows());
             Assert.Equal((d, d.AddMinutes(30)), dt.TimeWindows()[0]);
-            
-            
+
 
             dt.AddTimeWindow(d.AddMinutes(15), d.AddMinutes(45));
 
-            
-            
+
             Assert.Single(dt.TimeWindows());
             Assert.Equal((d, d.AddMinutes(45)), dt.TimeWindows()[0]);
             dt.AddTimeWindow(d.AddMinutes(-15), d.AddMinutes(45));
@@ -41,14 +34,13 @@ namespace Itinero.Transit.Tests.utils
 
             dt.AddTimeWindow(d.AddMinutes(-60), d.AddMinutes(-30));
             Assert.Equal(2, dt.TimeWindows().Count);
-            
-            
+
+
             dt.AddTimeWindow(d.AddMinutes(-30), d.AddMinutes(0));
             Assert.Single(dt.TimeWindows());
             Assert.Equal((d.AddMinutes(-60), d.AddMinutes(45)), dt.TimeWindows()[0]);
-
         }
-        
+
         [Fact]
         public void TestGaps()
         {
@@ -61,13 +53,12 @@ namespace Itinero.Transit.Tests.utils
             Assert.Equal(2, gaps.Count);
             Assert.Equal((d.AddMinutes(-15), d), gaps[0]);
             Assert.Equal((d.AddMinutes(30), d.AddMinutes(45)), gaps[1]);
-            
+
             dt.AddTimeWindow(d.AddMinutes(15), d.AddMinutes(45));
 
             gaps = dt.Gaps(d.AddMinutes(-15), d.AddMinutes(45));
             Assert.Single(gaps);
             Assert.Equal((d.AddMinutes(-15), d), gaps[0]);
-            
         }
     }
 }

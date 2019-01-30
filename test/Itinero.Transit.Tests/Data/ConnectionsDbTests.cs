@@ -1,26 +1,5 @@
-// The MIT License (MIT)
-
-// Copyright (c) 2018 Anyways B.V.B.A.
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-
 using System;
+using System.IO;
 using Itinero.Transit.Data;
 using Xunit;
 
@@ -363,6 +342,100 @@ namespace Itinero.Transit.Tests.Data
             Assert.True(enumerator.MovePrevious(new DateTime(2018, 11, 14, 0, 0, 0)));
             Assert.Equal("http://irail.be/connections/8892056/20181216/IC544", enumerator.GlobalId);
             Assert.False(enumerator.MovePrevious());
+        }
+
+        [Fact]
+        public void ConnectionsDb_CloneShouldBeCopy()
+        {
+            var db = new ConnectionsDb(60);
+            db.Add((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+                new DateTime(2018, 11, 14, 2, 3, 9), 1024, 10245);
+            db.Add((100, 0), (100, 1), "http://irail.be/connections/8892056/20181216/IC544",
+                new DateTime(2018, 11, 13, 4, 3, 9), 54, 10245);
+            db.Add((100, 0), (100, 1), "http://irail.be/connections/8821311/20181216/IC1822",
+                new DateTime(2018, 11, 14, 2, 3, 10), 102, 10245);
+            db.Add((100, 0), (100, 1), "http://irail.be/connections/8813045/20181216/IC3744",
+                new DateTime(2018, 11, 15, 5, 3, 9), 4500, 10245);
+            db.Add((100, 0), (100, 1), "http://irail.be/connections/8812005/20181216/S11793",
+                new DateTime(2018, 11, 14, 10, 3, 35), 3600, 10245);
+
+            db = db.Clone();
+
+            var enumerator = db.GetDepartureEnumerator();
+            Assert.NotNull(enumerator);
+            Assert.True(enumerator.MovePrevious(new DateTime(2018, 11, 16)));
+            Assert.Equal("http://irail.be/connections/8813045/20181216/IC3744", enumerator.GlobalId);
+            Assert.True(enumerator.MovePrevious());
+            Assert.Equal("http://irail.be/connections/8812005/20181216/S11793", enumerator.GlobalId);
+            Assert.True(enumerator.MovePrevious());
+            Assert.Equal("http://irail.be/connections/8821311/20181216/IC1822", enumerator.GlobalId);
+            Assert.True(enumerator.MovePrevious());
+            Assert.Equal("http://irail.be/connections/8813003/20181216/IC1545", enumerator.GlobalId);
+            Assert.True(enumerator.MovePrevious());
+            Assert.Equal("http://irail.be/connections/8892056/20181216/IC544", enumerator.GlobalId);
+            Assert.False(enumerator.MovePrevious());
+
+            Assert.True(enumerator.MovePrevious(new DateTime(2018, 11, 14, 11, 0, 0)));
+            Assert.Equal("http://irail.be/connections/8812005/20181216/S11793", enumerator.GlobalId);
+            Assert.True(enumerator.MovePrevious());
+            Assert.Equal("http://irail.be/connections/8821311/20181216/IC1822", enumerator.GlobalId);
+            Assert.True(enumerator.MovePrevious());
+            Assert.Equal("http://irail.be/connections/8813003/20181216/IC1545", enumerator.GlobalId);
+            Assert.True(enumerator.MovePrevious());
+            Assert.Equal("http://irail.be/connections/8892056/20181216/IC544", enumerator.GlobalId);
+            Assert.False(enumerator.MovePrevious());
+
+            Assert.True(enumerator.MovePrevious(new DateTime(2018, 11, 14, 0, 0, 0)));
+            Assert.Equal("http://irail.be/connections/8892056/20181216/IC544", enumerator.GlobalId);
+            Assert.False(enumerator.MovePrevious());
+        }
+
+        [Fact]
+        public void ConnectionsDb_WriteToReadFromShouldBeCopy()
+        {
+            var db = new ConnectionsDb(60);
+            db.Add((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545", new DateTime(2018, 11, 14, 2, 3, 9), 1024, 10245);
+            db.Add((100, 0), (100, 1), "http://irail.be/connections/8892056/20181216/IC544", new DateTime(2018, 11, 13, 4, 3, 9), 54, 10245);
+            db.Add((100, 0), (100, 1), "http://irail.be/connections/8821311/20181216/IC1822", new DateTime(2018, 11, 14, 2, 3, 10), 102, 10245);
+            db.Add((100, 0), (100, 1), "http://irail.be/connections/8813045/20181216/IC3744", new DateTime(2018, 11, 15, 5, 3, 9), 4500, 10245);
+            db.Add((100, 0), (100, 1), "http://irail.be/connections/8812005/20181216/S11793", new DateTime(2018, 11, 14, 10, 3, 35), 3600, 10245);
+
+            using (var stream = new MemoryStream())
+            {
+                var size = db.WriteTo(stream);
+
+                stream.Seek(0, SeekOrigin.Begin);
+
+                db = ConnectionsDb.ReadFrom(stream);
+                
+                var enumerator = db.GetDepartureEnumerator();
+                Assert.NotNull(enumerator);
+                Assert.True(enumerator.MovePrevious(new DateTime(2018, 11, 16)));
+                Assert.Equal("http://irail.be/connections/8813045/20181216/IC3744", enumerator.GlobalId);
+                Assert.True(enumerator.MovePrevious());
+                Assert.Equal("http://irail.be/connections/8812005/20181216/S11793", enumerator.GlobalId);
+                Assert.True(enumerator.MovePrevious());
+                Assert.Equal("http://irail.be/connections/8821311/20181216/IC1822", enumerator.GlobalId);
+                Assert.True(enumerator.MovePrevious());
+                Assert.Equal("http://irail.be/connections/8813003/20181216/IC1545", enumerator.GlobalId);
+                Assert.True(enumerator.MovePrevious());
+                Assert.Equal("http://irail.be/connections/8892056/20181216/IC544", enumerator.GlobalId);
+                Assert.False(enumerator.MovePrevious());
+            
+                Assert.True(enumerator.MovePrevious(new DateTime(2018, 11, 14, 11, 0, 0)));
+                Assert.Equal("http://irail.be/connections/8812005/20181216/S11793", enumerator.GlobalId);
+                Assert.True(enumerator.MovePrevious());
+                Assert.Equal("http://irail.be/connections/8821311/20181216/IC1822", enumerator.GlobalId);
+                Assert.True(enumerator.MovePrevious());
+                Assert.Equal("http://irail.be/connections/8813003/20181216/IC1545", enumerator.GlobalId);
+                Assert.True(enumerator.MovePrevious());
+                Assert.Equal("http://irail.be/connections/8892056/20181216/IC544", enumerator.GlobalId);
+                Assert.False(enumerator.MovePrevious());
+            
+                Assert.True(enumerator.MovePrevious(new DateTime(2018, 11, 14, 0, 0, 0)));
+                Assert.Equal("http://irail.be/connections/8892056/20181216/IC544", enumerator.GlobalId);
+                Assert.False(enumerator.MovePrevious());
+            }
         }
     }
 }

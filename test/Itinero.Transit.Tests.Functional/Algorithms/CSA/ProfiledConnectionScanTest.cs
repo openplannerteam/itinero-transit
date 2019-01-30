@@ -16,24 +16,23 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
     {
         public static ProfiledConnectionScanTest Default => new ProfiledConnectionScanTest();
 
-        protected override bool Execute((ConnectionsDb connections, StopsDb stops,
-            string departureStopId, string arrivalStopId, DateTime departureTime, DateTime arrivalTime) input)
+        protected override bool Execute(
+            (TransitDb transitDb, string departureStopId, string arrivalStopId, DateTime
+                departureTime, DateTime arrivalTime) input)
         {
-            var dbs = new Databases(
-                input.connections, input.stops,
+            var latest = input.transitDb.Latest;
+            var p = new Profile<TransferStats>(latest,
                 new InternalTransferGenerator(),
-                new BirdsEyeInterWalkTransferGenerator(input.stops.GetReader()));
-            var p = new Profile<TransferStats>(dbs,
+                new BirdsEyeInterWalkTransferGenerator(latest.StopsDb.GetReader()),
                 new TransferStats(), TransferStats.ProfileTransferCompare);
 
 
             // get departure and arrival stop ids.
-            var reader = input.stops.GetReader();
+            var reader = latest.StopsDb.GetReader();
             True(reader.MoveTo(input.departureStopId));
             var departure = reader.Id;
             True(reader.MoveTo(input.arrivalStopId));
             var arrival = reader.Id;
-
 
             var journeys = p.CalculateJourneys(
                 departure, arrival, input.departureTime.ToUnixTime(), input.arrivalTime.ToUnixTime()

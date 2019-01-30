@@ -4,19 +4,28 @@ using Itinero.Transit.Journeys;
 
 namespace Itinero.Transit.Data
 {
-    public class Profile<T> 
+    public class Profile<T>
         where T : IJourneyStats<T>
     {
         public readonly T StatsFactory;
         public readonly ProfiledStatsComparator<T> ProfileComparator;
 
-        public readonly Databases Databases;
+        public TransitDb.TransitDbSnapShot TransitDbSnapShot { get; }
+        public readonly IOtherModeGenerator InternalTransferGenerator;
+        public readonly IOtherModeGenerator WalksGenerator;
 
-        public Profile(Databases databases, T statsFactory, ProfiledStatsComparator<T> profileComparator)
+        public Profile(TransitDb.TransitDbSnapShot transitDbSnapShot, 
+            IOtherModeGenerator internalTransferGenerator,
+            IOtherModeGenerator walksGenerator,
+            T statsFactory,
+            ProfiledStatsComparator<T> profileComparator
+            )
         {
-            Databases = databases;
+            TransitDbSnapShot = transitDbSnapShot;
             StatsFactory = statsFactory;
             ProfileComparator = profileComparator;
+            InternalTransferGenerator = internalTransferGenerator;
+            WalksGenerator = walksGenerator;
         }
     }
 
@@ -29,33 +38,25 @@ namespace Itinero.Transit.Data
     /// - What time windows are loaded into the database
     /// - A callback to load more data, if necessary
     /// </summary>
-    public class Databases{
+    public class Databases
+    {
         public readonly ConnectionsDb ConnectionsDb;
         public readonly StopsDb StopsDb;
-        public readonly IOtherModeGenerator InternalTransferGenerator;
-        public readonly IOtherModeGenerator WalksGenerator;
-
+        public readonly TripsDb TripsDb;
 
         private readonly Action<DateTime, DateTime> _loadTimeWindow;
         private readonly DateTracker _loadedTimeWindows = new DateTracker();
 
         /// <summary>
-        /// Create a profile with the given databases, statistics and a callback to load more data when needed
+        /// Create a database set with the given databases and a callback to load more data when needed
         /// </summary>
-        /// <param name="connectionsDb"></param>
-        /// <param name="stopsDb"></param>
-        /// <param name="internalTransferGenerator"></param>
-        /// <param name="walksGenerator"></param>
         /// <param name="loadTimeWindow">This function will be loaded whenever more data is needed</param>
-        public Databases(ConnectionsDb connectionsDb, StopsDb stopsDb,
-            IOtherModeGenerator internalTransferGenerator,
-            IOtherModeGenerator walksGenerator,
-            Action<DateTime, DateTime> loadTimeWindow = null)
+        public Databases(ConnectionsDb connectionsDb, StopsDb stopsDb, TripsDb tripsDb,
+            Action<DateTime, DateTime> loadTimeWindow)
         {
             ConnectionsDb = connectionsDb;
             StopsDb = stopsDb;
-            InternalTransferGenerator = internalTransferGenerator;
-            WalksGenerator = walksGenerator;
+            TripsDb = tripsDb;
             _loadTimeWindow = loadTimeWindow;
         }
 

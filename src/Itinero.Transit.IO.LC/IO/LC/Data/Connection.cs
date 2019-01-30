@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using Itinero.Transit.IO.LC.CSA.LocationProviders;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
@@ -74,6 +75,11 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
                 $"  {Uri}";
         }
 
+        private static DateTime GetDateFixed(JToken json, string uriKey)
+        {
+           var value = json.GetLDValue(uriKey);
+           return DateTime.Parse(value);
+        }
 
         protected sealed override void FromJson(JObject json)
         {
@@ -84,12 +90,11 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
 
             var depDel = json.GetInt("http://semweb.mmlab.be/ns/linkedconnections#departureDelay", 0);
             // Departure time already includes delay
-            _departureTime = json.GetDate("http://semweb.mmlab.be/ns/linkedconnections#departureTime");
-            
+            _departureTime = GetDateFixed(json,  "http://semweb.mmlab.be/ns/linkedconnections#departureTime");
 
             var arrDel = json.GetInt("http://semweb.mmlab.be/ns/linkedconnections#arrivalDelay", 0);
             // Arrival time already includes delay
-            _arrivalTime = json.GetDate("http://semweb.mmlab.be/ns/linkedconnections#arrivalTime");
+            _arrivalTime = GetDateFixed(json, "http://semweb.mmlab.be/ns/linkedconnections#arrivalTime");
 
             Direction = json.GetLDValue("http://vocab.gtfs.org/terms#headsign");
             GtfsTrip = json.GetId("http://vocab.gtfs.org/terms#trip");

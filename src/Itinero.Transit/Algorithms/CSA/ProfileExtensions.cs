@@ -13,7 +13,7 @@ namespace Itinero.Transit.Algorithms.CSA
         (this Profile<T> profile, string from, string to,
             DateTime? departure = null, DateTime? arrival = null) where T : IJourneyStats<T>
         {
-            var reader = profile.Databases.StopsDb.GetReader();
+            var reader = profile.TransitDbSnapShot.StopsDb.GetReader();
             reader.MoveTo(from);
             var fromId = reader.Id;
             reader.MoveTo(to);

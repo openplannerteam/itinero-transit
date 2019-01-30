@@ -1,30 +1,22 @@
 using System;
 using System.Linq;
-using Itinero.IO.LC.Tests;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
 using Xunit;
-using Xunit.Abstractions;
 
-namespace Itinero.Transit.Tests.unit.Algorithm.CSA
+namespace Itinero.Transit.Tests.Algorithm.CSA
 {
-    public class LatestConnectionScanTests : SuperTest
+    public class LatestConnectionScanTests
     {
-        public LatestConnectionScanTests(ITestOutputHelper output) : base(output)
-        {
-        }
-
         [Fact]
         public void SimpleLasTest()
         {
-            var db = Db.GetDefaultTestDb();
-            var stops = Db.GetDefaultStopsDb();
-            var dbs = new Databases(
-                db, stops, new InternalTransferGenerator(0),
-                new BirdsEyeInterWalkTransferGenerator(stops.GetReader()));
-            var profile = new Profile<TransferStats>(dbs,
+            var db = Db.GetDefaultTestDb().Latest;
+            var profile = new Profile<TransferStats>(
+                db, new InternalTransferGenerator(0),
+                new BirdsEyeInterWalkTransferGenerator(db.StopsDb.GetReader()), 
                 new TransferStats(),
                 TransferStats.ProfileTransferCompare
             );
@@ -39,7 +31,6 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
 
             Assert.NotNull(j);
             Assert.Equal((uint) 0, j.Connection);
-
 
             las = new LatestConnectionScan<TransferStats>(
                 (0, 0), (0, 2), db.GetConn(0).DepartureTime, db.GetConn(0).DepartureTime + 60 * 60 * 2,
@@ -56,24 +47,25 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
         public void LatestConnectionScan_ShouldFindOneConnectionJourney()
         {
             // build a one-connection db.
-            var stopsDb = new StopsDb();
-            var stop1 = stopsDb.Add("https://example.com/stops/0", 0, 0.0);
-            var stop2 = stopsDb.Add("https://example.com/stops/0", 0.1, 0.1);
+            var transitDb = new TransitDb();
+            var writer = transitDb.GetWriter();
+            
+            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
+            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/0", 0.1, 0.1);
 
-            var connectionsDb = new ConnectionsDb();
-            connectionsDb.Add(stop1, stop2, "https://example.com/connections/0",
+            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 20, 00), 10 * 60, 0);
 
             // Prevent depletion of the DB
-            connectionsDb.Add(stop1, stop2, "https://example.com/connections/0",
+            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 0);
+            writer.Close();
+            var latest = transitDb.Latest;
 
-            var dbs = new Databases(
-
-                connectionsDb, stopsDb,
+            var profile = new Profile<TransferStats>(
+                latest, 
                 new InternalTransferGenerator(),
-                new BirdsEyeInterWalkTransferGenerator(stopsDb.GetReader()));
-            var profile = new Profile<TransferStats>(dbs,
+                new BirdsEyeInterWalkTransferGenerator(latest.StopsDb.GetReader()), 
                 new TransferStats(),
                 TransferStats.ProfileTransferCompare);
             var las = new LatestConnectionScan<TransferStats>(

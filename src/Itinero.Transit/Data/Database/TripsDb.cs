@@ -1,7 +1,11 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Data.Attributes;
+using Reminiscence;
 using Reminiscence.Arrays;
+using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
@@ -27,7 +31,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// Creates a new trips database.
         /// </summary>
-        public TripsDb()
+        internal TripsDb()
         {
             _tripIds = new MemoryArray<string>(0);
             _tripAttributeIds = new MemoryArray<uint>(0);
@@ -40,13 +44,26 @@ namespace Itinero.Transit.Data
             _attributes = new AttributesIndex();
         }
 
+        private TripsDb(ArrayBase<string> tripIds, ArrayBase<uint> tripAttributeIds, ArrayBase<uint> tripIdPointersPerHash,
+            ArrayBase<uint> tripIdLinkedList, AttributesIndex attributes, uint tripIdLinkedListPointer, uint nextId, int tripIdHashSize)
+        {
+            _tripIdHashSize = tripIdHashSize;
+            _tripIds = tripIds;
+            _tripAttributeIds = tripAttributeIds;
+            _tripIdPointersPerHash = tripIdPointersPerHash;
+            _tripIdLinkedList = tripIdLinkedList;
+            _attributes = attributes;
+            _tripIdLinkedListPointer = tripIdLinkedListPointer;
+            _nextId = nextId;
+        }
+
         /// <summary>
         /// Adds a new trip.
         /// </summary>
         /// <param name="globalId">The global id.</param>
         /// <param name="attributes">The attributes.</param>
         /// <returns>The trip id.</returns>
-        public uint Add(string globalId, IEnumerable<Attribute> attributes = null)
+        internal uint Add(string globalId, IEnumerable<Attribute> attributes = null)
         {
             var tripId = _nextId;
             _nextId++;
@@ -85,6 +102,85 @@ namespace Itinero.Transit.Data
 
                 return  (uint) (hash % _tripIdHashSize);
             }
+        }
+        
+        internal long WriteTo(Stream stream)
+        {
+            var length = 0L;
+            
+            // write version #.
+            stream.WriteByte(1);
+            length++;
+            
+            // write data.
+            length += _tripIds.CopyToWithSize(stream);
+            length += _tripAttributeIds.CopyToWithSize(stream);
+            length += _tripIdPointersPerHash.CopyToWithSize(stream);
+            length += _tripIdLinkedList.CopyToWithSize(stream);
+            
+            // write pointers.
+            var bytes = BitConverter.GetBytes(_tripIdHashSize);
+            length += bytes.Length;
+            stream.Write(bytes, 0, bytes.Length);
+            bytes = BitConverter.GetBytes(_tripIdLinkedListPointer);
+            length += bytes.Length;
+            stream.Write(bytes, 0, bytes.Length);
+            bytes = BitConverter.GetBytes(_nextId);
+            length += bytes.Length;
+            stream.Write(bytes, 0, bytes.Length);
+            
+            // write attributes.
+            length += _attributes.Serialize(stream);
+
+            return length;
+        }
+
+        internal static TripsDb ReadFrom(Stream stream)
+        {
+            var buffer = new byte[4];
+            
+            var version = stream.ReadByte();
+            if (version != 1) throw new InvalidDataException($"Cannot read {nameof(TripsDb)}, invalid version #.");
+            
+            // read data.
+            var tripIds = MemoryArray<string>.CopyFromWithSize(stream);
+            var tripAttributeIds = MemoryArray<uint>.CopyFromWithSize(stream);
+            var tripIdPointersPerHash = MemoryArray<uint>.CopyFromWithSize(stream);
+            var tripIdLinkedList = MemoryArray<uint>.CopyFromWithSize(stream);
+            
+            stream.Read(buffer, 0, 4);
+            var tripIdHashSize = BitConverter.ToInt32(buffer, 0);
+            stream.Read(buffer, 0, 4);
+            var tripIdLinkedListPointer = BitConverter.ToUInt32(buffer, 0);
+            stream.Read(buffer, 0, 4);
+            var nextId = BitConverter.ToUInt32(buffer, 0);
+            
+            // read attributes.
+            var attributes = AttributesIndex.Deserialize(stream, true);
+            
+            return new TripsDb(tripIds, tripAttributeIds, tripIdPointersPerHash, tripIdLinkedList, attributes, tripIdLinkedListPointer, nextId, tripIdHashSize);
+        }
+
+        /// <summary>
+        /// Returns a deep in-memory copy.
+        /// </summary>
+        /// <returns></returns>
+        public TripsDb Clone()
+        {
+            // it is up to the user to make sure not to clone when writing. 
+            var tripIds = new MemoryArray<string>(_tripIds.Length);
+            tripIds.CopyFrom(_tripIds, _tripIds.Length);
+            var tripAttributeIds = new MemoryArray<uint>(_tripAttributeIds.Length);
+            tripAttributeIds.CopyFrom(_tripAttributeIds, _tripAttributeIds.Length);
+            var tripIdPointersPerHash = new MemoryArray<uint>(_tripIdPointersPerHash.Length);
+            tripIdPointersPerHash.CopyFrom(_tripIdPointersPerHash, _tripIdPointersPerHash.Length);
+            var tripIdLinkedList = new MemoryArray<uint>(_tripIdLinkedList.Length);
+            tripIdLinkedList.CopyFrom(_tripIdLinkedList, _tripIdLinkedList.Length);
+            
+            // don't clone the attributes, it's supposed to be add-only anyway.
+            // it's up to the user not to write to it from multiple threads.
+            return new TripsDb(tripIds, tripAttributeIds, tripIdPointersPerHash, tripIdLinkedList, _attributes,
+                _tripIdLinkedListPointer, _nextId, _tripIdHashSize);
         }
 
         /// <summary>

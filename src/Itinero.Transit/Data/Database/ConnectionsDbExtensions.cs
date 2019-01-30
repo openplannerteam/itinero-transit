@@ -2,7 +2,7 @@ using System;
 
 namespace Itinero.Transit.Data
 {
-    public static class ConnectionsDbExtensions
+    internal static class ConnectionsDbExtensions
     {
         /// <summary>
         /// Gets a reader() which is loaded on the connection.
@@ -15,7 +15,6 @@ namespace Itinero.Transit.Data
             reader.MoveTo(id);
             return reader;
         }
-
 
         /// <summary>
         /// Moves the enumerator backwards in time until the specified time is reached

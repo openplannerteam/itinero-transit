@@ -3,7 +3,7 @@ namespace Itinero.Transit.Data
     /// <summary>
     /// Contains extension methods related to connections.
     /// </summary>
-    public static class ConnectionExtensions
+    public static class IConnectionExtensions
     {
         /// <summary>
         /// Returns a string that represents the current object.
@@ -12,8 +12,8 @@ namespace Itinero.Transit.Data
         /// <returns>A string that represents the current object.</returns>
         public static string ToString(this IConnection c)
         {
-            return $"Connection {c.Id} from {c.DepartureStop} ({DateTimeExtensions.FromUnixTime(c.DepartureTime):HH:mm})" +
-                   $" to {c.ArrivalStop} ({DateTimeExtensions.FromUnixTime(c.ArrivalTime):HH:mm})";
+            return $"Connection {c.Id} from {c.DepartureStop} ({c.DepartureTime.FromUnixTime():HH:mm})" +
+                   $" to {c.ArrivalStop} ({c.ArrivalTime.FromUnixTime():HH:mm})";
         }
     }
 }

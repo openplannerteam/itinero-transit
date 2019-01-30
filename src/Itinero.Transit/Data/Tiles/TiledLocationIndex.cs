@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using System.Runtime.CompilerServices;
+using Reminiscence;
 using Reminiscence.Arrays;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
@@ -36,6 +38,16 @@ namespace Itinero.Transit.Data.Tiles
             _locations = new MemoryArray<byte>(0);
         }
 
+        private TiledLocationIndex(ArrayBase<byte> tileIndex, ArrayBase<byte> locations, int zoom, 
+            uint tileIndexPointer, uint tileDataPointer)
+        {
+            _tileIndex = tileIndex;
+            _locations = locations;
+            _zoom = zoom;
+            _tileIndexPointer = tileIndexPointer;
+            _tileDataPointer = tileDataPointer;
+        }
+
         /// <summary>
         /// Adds a new latitude longitude pair.
         /// </summary>
@@ -51,21 +63,24 @@ namespace Itinero.Transit.Data.Tiles
             // try to find the tile.
             var (tileDataPointer, tileIndexPointer, capacity) = FindTile(tileId);
             if (tileDataPointer == TileNotLoaded)
-            { // create the tile if it doesn't exist yet.
+            {
+                // create the tile if it doesn't exist yet.
                 (tileDataPointer, tileIndexPointer, capacity) = AddTile(tileId);
             }
 
             // find or create a place to store the location.
             uint nextEmpty;
             if (capacity == 0 ||
-                GetEncodedLocation((uint)(tileDataPointer + capacity - 1), tile).hasData)
-            { // tile is maximum capacity.
+                GetEncodedLocation((uint) (tileDataPointer + capacity - 1), tile).hasData)
+            {
+                // tile is maximum capacity.
                 (tileDataPointer, capacity) = IncreaseCapacityForTile(tileIndexPointer, tileDataPointer);
-                nextEmpty = (uint)(tileDataPointer + (capacity / 2));
+                nextEmpty = (uint) (tileDataPointer + (capacity / 2));
             }
             else
-            { // find the last empty slot.
-                nextEmpty = (uint)(tileDataPointer + capacity - 1);
+            {
+                // find the last empty slot.
+                nextEmpty = (uint) (tileDataPointer + capacity - 1);
                 if (nextEmpty > _tileDataPointer)
                 {
                     for (var p = nextEmpty - 1; p >= tileDataPointer; p--)
@@ -80,9 +95,9 @@ namespace Itinero.Transit.Data.Tiles
                     }
                 }
             }
-            
+
             var localId = (nextEmpty - tileDataPointer);
-            
+
             // set the vertex data.
             SetEncodedLocation(nextEmpty, tile, longitude, latitude);
 
@@ -305,6 +320,66 @@ namespace Itinero.Transit.Data.Tiles
             {
                 _locations[tileDataPointer + b] = localCoordinatesBits[b];
             }
+        }
+
+        /// <summary>
+        /// Returns a deep in-memory-copy.
+        /// </summary>
+        /// <returns></returns>
+        public TiledLocationIndex Clone()
+        {
+            // it is up to the user to make sure not to clone when writing. 
+            var tileIndex = new MemoryArray<byte>(_tileIndex.Length);
+            tileIndex.CopyFrom(_tileIndex, _tileIndex.Length);
+            var locations = new MemoryArray<byte>(_locations.Length);
+            locations.CopyFrom(_locations, _locations.Length);
+
+            return new TiledLocationIndex(tileIndex, locations, _zoom, _tileIndexPointer, _tileDataPointer);
+        }
+
+        internal long WriteTo(Stream stream)
+        {
+            var length = 0L;
+            
+            // write version #.
+            stream.WriteByte(1);
+            length++;
+            
+            // write zoom.
+            stream.WriteByte((byte)_zoom);
+            length++;
+            
+            // write tile index.
+            stream.Write(BitConverter.GetBytes(_tileIndexPointer), 0, 4);
+            length += 4;
+            length += _tileIndex.CopyToWithSize(stream);
+            
+            // write tile data.
+            stream.Write(BitConverter.GetBytes(_tileDataPointer), 0, 4);
+            length += 4;
+            length += _locations.CopyToWithSize(stream);
+
+            return length;
+        }
+
+        internal static TiledLocationIndex ReadFrom(Stream stream)
+        {
+            var buffer = new byte[4];
+            
+            var version = stream.ReadByte();
+            if (version != 1) throw new InvalidDataException($"Cannot read {nameof(TiledLocationIndex)}, invalid version #.");
+
+            var zoom = stream.ReadByte();
+            
+            stream.Read(buffer, 0, 4);
+            var tileIndexPointer = BitConverter.ToUInt32(buffer, 0);
+            var tileIndex = MemoryArray<byte>.CopyFromWithSize(stream);
+
+            stream.Read(buffer, 0, 4);
+            var tileDataPointer = BitConverter.ToUInt32(buffer, 0);
+            var locations = MemoryArray<byte>.CopyFromWithSize(stream);
+            
+            return new TiledLocationIndex(tileIndex, locations, zoom, tileIndexPointer, tileDataPointer);
         }
 
         /// <summary>

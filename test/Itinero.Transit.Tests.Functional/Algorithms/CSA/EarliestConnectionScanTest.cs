@@ -12,21 +12,21 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         public static EarliestConnectionScanTest Default => new EarliestConnectionScanTest();
 
         protected override bool Execute(
-            (ConnectionsDb connections, StopsDb stops, string departureStopId, string arrivalStopId, DateTime
-                departureTime,
+            (TransitDb transitDb, string departureStopId, string arrivalStopId, DateTime departureTime,
                 DateTime arrivalTime) input)
         {
-            var dbs = new Databases(
-                input.connections, input.stops,
-                new InternalTransferGenerator(),
-                new BirdsEyeInterWalkTransferGenerator(input.stops.GetReader())
-            );
+            var latest = input.transitDb.Latest;
             var p = new Profile<TransferStats>(
-                dbs, new TransferStats(), TransferStats.ProfileTransferCompare);
+                latest,
+                new InternalTransferGenerator(),
+                new BirdsEyeInterWalkTransferGenerator(latest.StopsDb.GetReader()),
+                new TransferStats(), TransferStats.ProfileTransferCompare
+                );
+
             var depTime = input.departureTime;
 
             // get departure and arrival stop ids.
-            var reader = input.stops.GetReader();
+            var reader = latest.StopsDb.GetReader();
             True(reader.MoveTo(input.departureStopId));
             var departure = reader.Id;
             True(reader.MoveTo(input.arrivalStopId));
@@ -46,7 +46,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             // verify result.
             Assert.NotNull(journey);
 
-            Information(journey.Pruned().ToString(input.stops));
+            Information(journey.Pruned().ToString(latest.StopsDb));
 
             return true;
         }
