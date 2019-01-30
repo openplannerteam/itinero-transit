@@ -12,16 +12,18 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         public static EarliestConnectionScanTest Default => new EarliestConnectionScanTest();
 
         protected override bool Execute(
-            (ConnectionsDb connections, StopsDb stops, string departureStopId, string arrivalStopId, DateTime departureTime,
+            (ConnectionsDb connections, StopsDb stops, string departureStopId, string arrivalStopId, DateTime
+                departureTime,
                 DateTime arrivalTime) input)
         {
-            var p = new Profile<TransferStats>(
+            var dbs = new Databases(
                 input.connections, input.stops,
-                new InternalTransferGenerator(), 
-                new BirdsEyeInterWalkTransferGenerator(input.stops.GetReader()), 
-                new TransferStats(), TransferStats.ProfileTransferCompare);
-
-            var depTime =input.departureTime;
+                new InternalTransferGenerator(),
+                new BirdsEyeInterWalkTransferGenerator(input.stops.GetReader())
+            );
+            var p = new Profile<TransferStats>(
+                dbs, new TransferStats(), TransferStats.ProfileTransferCompare);
+            var depTime = input.departureTime;
 
             // get departure and arrival stop ids.
             var reader = input.stops.GetReader();
@@ -40,15 +42,13 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             {
                 Information($"Could not find a route from {input.departureStopId} to {input.arrivalStopId}");
             }
-            
+
             // verify result.
             Assert.NotNull(journey);
 
             Information(journey.Pruned().ToString(input.stops));
-            
+
             return true;
         }
-
-      
     }
 }

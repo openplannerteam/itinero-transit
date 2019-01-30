@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
-    public class ProfiledConnectionScanTest : 
+    public class ProfiledConnectionScanTest :
         DefaultFunctionalTest
     {
         public static ProfiledConnectionScanTest Default => new ProfiledConnectionScanTest();
@@ -19,10 +19,11 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         protected override bool Execute((ConnectionsDb connections, StopsDb stops,
             string departureStopId, string arrivalStopId, DateTime departureTime, DateTime arrivalTime) input)
         {
-            var p = new Profile<TransferStats>(
+            var dbs = new Databases(
                 input.connections, input.stops,
-                new InternalTransferGenerator(), 
-                new BirdsEyeInterWalkTransferGenerator(input.stops.GetReader()), 
+                new InternalTransferGenerator(),
+                new BirdsEyeInterWalkTransferGenerator(input.stops.GetReader()));
+            var p = new Profile<TransferStats>(dbs,
                 new TransferStats(), TransferStats.ProfileTransferCompare);
 
 
@@ -42,7 +43,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             True(journeys.Any());
 
             Information($"Found {journeys.Count()} profiles");
-            
+
             return true;
         }
     }

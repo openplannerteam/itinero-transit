@@ -21,10 +21,10 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
         {
             var db = Db.GetDefaultTestDb();
             var stops = Db.GetDefaultStopsDb();
-
-            var profile = new Profile<TransferStats>(
+            var dbs = new Databases(
                 db, stops, new InternalTransferGenerator(0),
-                new BirdsEyeInterWalkTransferGenerator(stops.GetReader()), 
+                new BirdsEyeInterWalkTransferGenerator(stops.GetReader()));
+            var profile = new Profile<TransferStats>(dbs,
                 new TransferStats(),
                 TransferStats.ProfileTransferCompare
             );
@@ -68,11 +68,12 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
             connectionsDb.Add(stop1, stop2, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 0);
 
+            var dbs = new Databases(
 
-            var profile = new Profile<TransferStats>(
-                connectionsDb, stopsDb, 
+                connectionsDb, stopsDb,
                 new InternalTransferGenerator(),
-                new BirdsEyeInterWalkTransferGenerator(stopsDb.GetReader()), 
+                new BirdsEyeInterWalkTransferGenerator(stopsDb.GetReader()));
+            var profile = new Profile<TransferStats>(dbs,
                 new TransferStats(),
                 TransferStats.ProfileTransferCompare);
             var las = new LatestConnectionScan<TransferStats>(

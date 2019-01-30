@@ -7,6 +7,7 @@ using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
 using Xunit;
 using Xunit.Abstractions;
+
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace Itinero.Transit.Tests.unit.Algorithm.CSA
@@ -21,11 +22,11 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
         public void TestPcsSimple()
         {
             var db = Db.GetDefaultTestDb();
-
-            var profile = new Profile<TransferStats>(
-                db, Db.GetDefaultStopsDb(), 
+            var dbs = new Databases(
+                db, Db.GetDefaultStopsDb(),
                 new InternalTransferGenerator(60),
-                new BirdsEyeInterWalkTransferGenerator(Db.GetDefaultStopsDb().GetReader()), 
+                new BirdsEyeInterWalkTransferGenerator(Db.GetDefaultStopsDb().GetReader()));
+            var profile = new Profile<TransferStats>(dbs,
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
             Pr("Starting PCS from (0,0) to (0,3)");
@@ -72,15 +73,15 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
             connDb.Add((1, 1), (2, 2), "https//example.com/connections/2",
                 new DateTime(2018, 12, 04, 20, 00, 00),
                 40 * 60, 2);
-            
+
             connDb.Add((1, 1), (2, 2), "https//example.com/connections/4",
                 new DateTime(2018, 12, 04, 2, 00, 00),
                 40 * 60, 3);
-
-            var profile = new Profile<TransferStats>(
-                connDb, Db.GetDefaultStopsDb(), 
+            var dbs = new Databases(
+                connDb, Db.GetDefaultStopsDb(),
                 new InternalTransferGenerator(60),
-                new BirdsEyeInterWalkTransferGenerator(Db.GetDefaultStopsDb().GetReader()), 
+                new BirdsEyeInterWalkTransferGenerator(Db.GetDefaultStopsDb().GetReader()));
+            var profile = new Profile<TransferStats>(dbs,
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
             var pcs = new ProfiledConnectionScan<TransferStats>(
@@ -91,7 +92,7 @@ namespace Itinero.Transit.Tests.unit.Algorithm.CSA
             Assert.Single(journeys);
             foreach (var j in journeys)
             {
-                Assert.Equal(30*60, (int) j.Stats.TravelTime);
+                Assert.Equal(30 * 60, (int) j.Stats.TravelTime);
             }
         }
     }

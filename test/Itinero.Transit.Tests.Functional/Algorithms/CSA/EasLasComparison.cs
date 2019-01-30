@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using Itinero.IO.LC;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
@@ -21,10 +19,11 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             (ConnectionsDb connections, StopsDb stops, string departureStopId, string arrivalStopId, DateTime
                 departureTime, DateTime arrivalTime) input)
         {
-            var profile = new Profile<TransferStats>(
-                input.connections, input.stops, 
+            var dbs = new Databases(
+                input.connections, input.stops,
                 new InternalTransferGenerator(1),
-                new BirdsEyeInterWalkTransferGenerator(input.stops.GetReader()), 
+                new BirdsEyeInterWalkTransferGenerator(input.stops.GetReader()));
+            var profile = new Profile<TransferStats>(dbs,
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
             // get departure and arrival stop ids.

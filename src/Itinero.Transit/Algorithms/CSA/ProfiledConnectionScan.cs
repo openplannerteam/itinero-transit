@@ -135,11 +135,11 @@ namespace Itinero.IO.LC
             _earliestDeparture = earliestDeparture;
             _lastArrival = lastDeparture;
 
-            _connectionsProvider = profile.ConnectionsDb;
+            _connectionsProvider = profile.Databases.ConnectionsDb;
             _comparator = profile.ProfileComparator;
             _empty = new ParetoFrontier<T>(_comparator);
             _statsFactory = profile.StatsFactory;
-            _transferPolicy = profile.InternalTransferGenerator;
+            _transferPolicy = profile.Databases.InternalTransferGenerator;
             _possibleJourney = possibleJourney;
             _filter = filter;
             filter?.CheckWindow(_earliestDeparture, _lastArrival);

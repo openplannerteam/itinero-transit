@@ -88,11 +88,11 @@ namespace Itinero.Transit.Algorithms.CSA
             
             _earliestDeparture = earliestDeparture;
             _lastDeparture = lastDeparture;
-            _connectionsProvider = profile.ConnectionsDb;
-            _stopsDb = profile.StopsDb;
+            _connectionsProvider = profile.Databases.ConnectionsDb;
+            _stopsDb = profile.Databases.StopsDb;
             _stopsReader = _stopsDb.GetReader();
-            _transferPolicy = profile.InternalTransferGenerator;
-            _walkPolicy = profile.WalksGenerator;
+            _transferPolicy = profile.Databases.InternalTransferGenerator;
+            _walkPolicy = profile.Databases.WalksGenerator;
 
             _userTargetLocation = userTargetLocation;
             foreach (var loc in userDepartureLocation)
