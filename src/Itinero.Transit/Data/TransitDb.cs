@@ -70,6 +70,8 @@ namespace Itinero.Transit.Data
         }
 
 
+        public List<(DateTime start, DateTime end)> LoadedTimeWindows => _loadedTimeWindows.TimeWindows();
+
         /// <summary>
         /// Gets a writer.
         /// A writer can add or update entries in the database.
