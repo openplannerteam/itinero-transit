@@ -58,23 +58,23 @@ namespace Itinero.Transit.IO.LC
 
     public class LoggingOptions
     {
-        private readonly Action<(int currentCount, int batchTarget, int nrOfBatches)>
-            OnAdded;
+        private readonly Action<(int currentCount, int batchTarget, int batchNummer, int nrOfBatches)>
+            _onAdded;
 
-        private readonly int TriggerEvery;
+        private readonly int _triggerEvery;
 
-        public LoggingOptions(Action<(int currentCount, int batchTarget, int nrOfBatches)> onAdded,
+        public LoggingOptions(Action<(int currentCount, int batchTarget, int batchNummer, int nrOfBatches)> onAdded,
             int triggerEvery = 100)
         {
-            OnAdded = onAdded;
-            TriggerEvery = triggerEvery;
+            _onAdded = onAdded;
+            _triggerEvery = triggerEvery;
         }
 
-        internal void Ping(int currentCount, int batchTarget, int batchNr)
+        internal void Ping(int currentCount, int batchTarget, int batchNr, int batchCount)
         {
-            if (currentCount % TriggerEvery == 0)
+            if (currentCount % _triggerEvery == 0)
             {
-                OnAdded.Invoke((currentCount, batchTarget, batchNr));
+                _onAdded.Invoke((currentCount, batchTarget, batchNr, batchCount));
             }
         }
     }
@@ -111,7 +111,7 @@ namespace Itinero.Transit.IO.LC
                 {
                     AddLocation(location);
                     count++;
-                    _locationsLogger?.Ping(count, batchCount, profile.LocationProvider.Count);
+                    _locationsLogger?.Ping(count, locationsFragment.Locations.Count, batchCount, profile.LocationProvider.Count);
                 }
             }
         }
@@ -122,13 +122,13 @@ namespace Itinero.Transit.IO.LC
             {
                 var cons = p.ConnectionsProvider[i];
                 var loc = p.LocationProvider[i];
-                AddTimeTableWindow(cons, loc, startDate, endDate);
+                AddTimeTableWindow(cons, loc, startDate, endDate, i, p.ConnectionsProvider.Count);
             }
         }
 
 
         private void AddTimeTableWindow(ConnectionProvider cons, LocationProvider locations,
-            DateTime startDate, DateTime endDate, int batchNr = 1)
+            DateTime startDate, DateTime endDate, int batchNr, int totalBatches)
         {
             var currentTimeTableUri = cons.TimeTableIdFor(startDate);
 
@@ -143,7 +143,7 @@ namespace Itinero.Transit.IO.LC
 
                 var estimatedCount = (float) (timeTable.EndTime().Ticks - startDate.Ticks) /
                                      (endDate.Ticks - startDate.Ticks);
-                _connectionsLogger?.Ping(count, (int) (count / estimatedCount), batchNr);
+                _connectionsLogger?.Ping(count, (int) (count / estimatedCount), batchNr, totalBatches);
 
                 currentTimeTableUri = timeTable.NextTable();
             } while (timeTable.EndTime() < endDate);
