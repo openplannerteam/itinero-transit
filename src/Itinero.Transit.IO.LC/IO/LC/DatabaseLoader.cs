@@ -24,15 +24,17 @@ namespace Itinero.Transit.IO.LC
         /// <param name="end"></param>
         /// <param name="onLocationHandled">Callback when a location is added</param>
         /// <param name="onTimeTableHandled">Callback when a timetable has been handled</param>
-        public static void AddDataTo(this Profile profile, 
+        public static void AddDataTo(this Profile profile,
             TransitDb transitDb,
             DateTime start, DateTime end, Action<string> onError,
             LoggingOptions onLocationHandled = null,
             LoggingOptions onTimeTableHandled = null)
         {
-            var dbs = new DatabaseLoader(transitDb, onLocationHandled, onTimeTableHandled, onError);
+            var writer = transitDb.GetWriter();
+            var dbs = new DatabaseLoader(writer, onLocationHandled, onTimeTableHandled, onError);
             dbs.AddAllLocations(profile);
             dbs.AddAllConnections(profile, start, end);
+            writer.Close();
         }
     }
 
@@ -62,17 +64,17 @@ namespace Itinero.Transit.IO.LC
     /// <summary>
     /// Small helper class to bundle all the databases together
     /// </summary>
-    public class DatabaseLoader
+    internal class DatabaseLoader
     {
         private readonly LoggingOptions _locationsLogger, _connectionsLogger;
         private readonly Action<string> _onError;
 
-        private readonly TransitDb.TransitDbWriter writer;
+        private readonly TransitDb.TransitDbWriter _writer;
 
-        public DatabaseLoader(TransitDb transitDb, LoggingOptions locationsLogger,
+        public DatabaseLoader(TransitDb.TransitDbWriter writer, LoggingOptions locationsLogger,
             LoggingOptions connectionsLogger, Action<string> onError)
         {
-            writer = transitDb.GetWriter();
+            _writer = writer;
 
             _locationsLogger = locationsLogger;
             _connectionsLogger = connectionsLogger;
@@ -169,7 +171,7 @@ namespace Itinero.Transit.IO.LC
             var globalId = location.Id();
             var stop1Id = globalId.ToString();
 
-            return writer.AddOrUpdateStop(stop1Id, location.Lon, location.Lat,
+            return _writer.AddOrUpdateStop(stop1Id, location.Lon, location.Lat,
                 new Attribute("name", location.Name));
         }
 
@@ -204,7 +206,7 @@ namespace Itinero.Transit.IO.LC
 
             var connectionUri = connection.Id().ToString();
 
-            writer.AddOrUpdateConnection(stop1Id, stop2Id, connectionUri,
+            _writer.AddOrUpdateConnection(stop1Id, stop2Id, connectionUri,
                 connection.DepartureTime(),
                 (ushort) (connection.ArrivalTime() - connection.DepartureTime()).TotalSeconds,
                 tripId);
@@ -227,7 +229,7 @@ namespace Itinero.Transit.IO.LC
                 new Attribute("trip", connection.Trip().ToString()),
                 new Attribute("route", connection.Route().ToString())
             );
-            return writer.AddOrUpdateTrip(tripUri, attributes);
+            return _writer.AddOrUpdateTrip(tripUri, attributes);
         }
     }
 }

@@ -16,9 +16,10 @@ namespace Itinero.Transit.Tests.Functional.Data
             var cons = latest.ConnectionsDb.GetDepartureEnumerator();
             uint failed = 0;
             uint found = 0;
+            uint total = 0;
             while (cons.MoveNext())
             {
-
+                total++;
                 trip.MoveTo(cons.TripId);
                 trip.Attributes.TryGetValue("headsign", out var hs);
                 if (hs == null)
@@ -30,7 +31,7 @@ namespace Itinero.Transit.Tests.Functional.Data
                     found++;
                 }
             }
-            Information($"Did not find {failed} headsigns");
+            Information($"Headsign test: failed: {failed}, found {found}, total {total}");
             Assert.True(failed == 0);
             Assert.True(found > 0);
             return failed;
