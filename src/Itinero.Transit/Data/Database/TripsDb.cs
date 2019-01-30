@@ -22,11 +22,11 @@ namespace Itinero.Transit.Data
         private readonly int _tripIdHashSize = ushort.MaxValue;
         private const uint NoData = uint.MaxValue;
         private readonly ArrayBase<uint> _tripIdPointersPerHash;
-        private uint _tripIdLinkedListPointer = 0;
+        private uint _tripIdLinkedListPointer;
         private readonly ArrayBase<uint> _tripIdLinkedList;
         
         private readonly AttributesIndex _attributes;
-        private uint _nextId = 0;
+        private uint _nextId;
         
         /// <summary>
         /// Creates a new trips database.
@@ -232,9 +232,9 @@ namespace Itinero.Transit.Data
                 {
                     var tripId = _tripsDb._tripIdLinkedList[pointer + 0];
 
-                    if (this.MoveTo(tripId))
+                    if (MoveTo(tripId))
                     {
-                        var potentialMatch = this.GlobalId;
+                        var potentialMatch = GlobalId;
                         if (potentialMatch == globalId)
                         {
                             _tripId = tripId;

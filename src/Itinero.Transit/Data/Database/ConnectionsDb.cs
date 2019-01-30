@@ -892,7 +892,7 @@ namespace Itinero.Transit.Data
                         while (unixTime > _reader.DepartureTime)
                         {
                             // move next.
-                            if (!this.MoveNextIgnoreDate())
+                            if (!MoveNextIgnoreDate())
                             {
                                 // connection after this departure time doesn't exist.
                                 return false;
@@ -968,7 +968,7 @@ namespace Itinero.Transit.Data
                     var unixTime = dateTime.Value.ToUnixTime();
                     while (unixTime > _reader.DepartureTime)
                     { // move next.
-                        if (!this.MoveNextIgnoreDate())
+                        if (!MoveNextIgnoreDate())
                         { // connection after this departure time doesn't exist.
                             return false;
                         }
@@ -1104,7 +1104,7 @@ namespace Itinero.Transit.Data
                     var unixTime = dateTime.Value.ToUnixTime();
                     while (unixTime < _reader.DepartureTime)
                     { // move next.
-                        if (!this.MovePreviousIgnoreDate())
+                        if (!MovePreviousIgnoreDate())
                         { // connection after this departure time doesn't exist.
                             return false;
                         }

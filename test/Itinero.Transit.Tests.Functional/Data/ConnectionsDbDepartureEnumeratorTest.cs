@@ -1,4 +1,3 @@
-using System;
 using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Tests.Functional.Data

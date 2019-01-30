@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Itinero.Transit.Logging;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
 namespace Itinero.Transit.Data
@@ -119,9 +118,9 @@ namespace Itinero.Transit.Data
                 byte version = 1;
                 stream.WriteByte(version);
 
-                length += this.StopsDb.WriteTo(stream);
-                length += this.TripsDb.WriteTo(stream);
-                length += this.ConnectionsDb.WriteTo(stream);
+                length += StopsDb.WriteTo(stream);
+                length += TripsDb.WriteTo(stream);
+                length += ConnectionsDb.WriteTo(stream);
 
                 return length;
             }

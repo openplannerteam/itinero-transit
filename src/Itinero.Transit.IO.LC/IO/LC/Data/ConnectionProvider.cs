@@ -7,7 +7,6 @@ using Newtonsoft.Json.Linq;
 
 namespace Itinero.Transit.IO.LC.CSA.ConnectionProviders
 {
-    /// <inheritdoc />
     ///  <summary>
     ///  A LinkedConnectionProvider-object corresponds with one data source,
     ///  whom offers the public transport data in LinkedConnections-format.

@@ -9,22 +9,22 @@ namespace Itinero.Transit.Data.Tiles
     {
         public Tile(uint x, uint y, int zoom)
         {
-            this.X = x;
-            this.Y = y;
-            this.Zoom = zoom;
+            X = x;
+            Y = y;
+            Zoom = zoom;
 
-            this.CalculateBounds();
+            CalculateBounds();
         }
         
         private void CalculateBounds()
         {
-            var n = Math.PI - ((2.0 * Math.PI * this.Y) / Math.Pow(2.0, this.Zoom));
-            this.Left = ((this.X / Math.Pow(2.0, this.Zoom) * 360.0) - 180.0);
-            this.Top = (180.0 / Math.PI * Math.Atan(Math.Sinh(n)));
+            var n = Math.PI - ((2.0 * Math.PI * Y) / Math.Pow(2.0, Zoom));
+            Left = ((X / Math.Pow(2.0, Zoom) * 360.0) - 180.0);
+            Top = (180.0 / Math.PI * Math.Atan(Math.Sinh(n)));
 
-            n = Math.PI - ((2.0 * Math.PI * (this.Y + 1)) / Math.Pow(2.0, this.Zoom));
-            this.Right = ((this.X + 1) / Math.Pow(2.0, this.Zoom) * 360.0) - 180.0;
-            this.Bottom = (180.0 / Math.PI * Math.Atan(Math.Sinh(n)));
+            n = Math.PI - ((2.0 * Math.PI * (Y + 1)) / Math.Pow(2.0, Zoom));
+            Right = ((X + 1) / Math.Pow(2.0, Zoom) * 360.0) - 180.0;
+            Bottom = (180.0 / Math.PI * Math.Atan(Math.Sinh(n)));
         }
         
         /// <summary>
@@ -68,10 +68,10 @@ namespace Itinero.Transit.Data.Tiles
         /// <param name="localId">The local tile id.</param>
         public void UpdateToLocalId(ulong localId)
         {
-            var xMax = (ulong) (1 << (int) this.Zoom);
+            var xMax = (ulong) (1 << Zoom);
 
-            this.X = (uint) (localId % xMax);
-            this.Y = (uint) (localId / xMax);
+            X = (uint) (localId % xMax);
+            Y = (uint) (localId / xMax);
         }
 
         /// <summary>
@@ -82,9 +82,9 @@ namespace Itinero.Transit.Data.Tiles
         {
             get
             {
-                var xMax = (1 << (int) this.Zoom);
+                var xMax = (1 << Zoom);
 
-                return (uint)(this.Y * xMax + this.X);
+                return (uint)(Y * xMax + X);
             }
         }
 
@@ -123,10 +123,10 @@ namespace Itinero.Transit.Data.Tiles
         /// <returns>A local coordinate pair.</returns>
         public (int x, int y) ToLocalCoordinates(double longitude, double latitude, int resolution)
         {
-            var latStep = (this.Top - this.Bottom) / resolution;
-            var lonStep = (this.Right - this.Left) / resolution;
-            var top = this.Top;
-            var left = this.Left;
+            var latStep = (Top - Bottom) / resolution;
+            var lonStep = (Right - Left) / resolution;
+            var top = Top;
+            var left = Left;
             
             return ((int) ((longitude - left) / lonStep), (int) ((top - latitude) / latStep));
         }
@@ -140,10 +140,10 @@ namespace Itinero.Transit.Data.Tiles
         /// <returns>A global coordinate pair.</returns>
         public (double longitude, double latitude) FromLocalCoordinates(int x, int y, int resolution)
         {
-            var latStep = (this.Top - this.Bottom) / resolution;
-            var lonStep = (this.Right - this.Left) / resolution;
-            var top = this.Top;
-            var left = this.Left;
+            var latStep = (Top - Bottom) / resolution;
+            var lonStep = (Right - Left) / resolution;
+            var top = Top;
+            var left = Left;
 
             return (left + (lonStep * x), top - (y * latStep));
         }
@@ -159,7 +159,7 @@ namespace Itinero.Transit.Data.Tiles
         {
             var n = (int) Math.Floor(Math.Pow(2, zoom)); // replace by bitshifting?
 
-            var rad = (latitude / 180d) * System.Math.PI;
+            var rad = (latitude / 180d) * Math.PI;
 
             var x = (uint) ((longitude + 180.0f) / 360.0f * n);
             var y = (uint) (
@@ -171,7 +171,7 @@ namespace Itinero.Transit.Data.Tiles
 
         public override string ToString()
         {
-            return $"{this.X},{this.Y}@{this.Zoom}";
+            return $"{X},{Y}@{Zoom}";
         }
     }
 }

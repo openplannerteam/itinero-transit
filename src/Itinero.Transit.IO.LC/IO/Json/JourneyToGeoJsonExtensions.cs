@@ -1,13 +1,16 @@
 using System;
+using System.Globalization;
 using System.IO;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journeys;
+
+// ReSharper disable UnusedMember.Global
 
 namespace Itinero.Transit.IO.Json
 {
     public static class JourneyToGeoJsonExtensions
     {
-        private static string ToGeoJson<T>(this Journey<T> journey, StopsDb stopsDb)
+        public static string ToGeoJson<T>(this Journey<T> journey, StopsDb stopsDb)
             where T : IJourneyStats<T>
         {
             var stringWriter = new StringWriter();
@@ -19,6 +22,7 @@ namespace Itinero.Transit.IO.Json
         /// <summary>
         /// Writes the route as json.
         /// </summary>
+        // ReSharper disable once MemberCanBePrivate.Global
         public static void WriteGeoJson<T>(this Journey<T> journey, StopsDb stopsDb, TextWriter writer)
             where T : IJourneyStats<T>
         {
@@ -32,10 +36,10 @@ namespace Itinero.Transit.IO.Json
                 throw new ArgumentNullException(nameof(writer));
             }
 
-            var jsonWriter = new IO.Json.JsonWriter(writer);
+            var jsonWriter = new JsonWriter(writer);
             jsonWriter.WriteOpen();
-            jsonWriter.WriteProperty("type", "FeatureCollection", true, false);
-            jsonWriter.WritePropertyName("features", false);
+            jsonWriter.WriteProperty("type", "FeatureCollection", true);
+            jsonWriter.WritePropertyName("features");
             jsonWriter.WriteArrayOpen();
 
             var reader = stopsDb.GetReader();
@@ -45,18 +49,18 @@ namespace Itinero.Transit.IO.Json
                 if (reader.MoveTo(journey.Location))
                 {
                     jsonWriter.WriteOpen();
-                    jsonWriter.WriteProperty("type", "Feature", true, false);
-                    jsonWriter.WriteProperty("name", "Stop", true, false);
-                    jsonWriter.WritePropertyName("geometry", false);
+                    jsonWriter.WriteProperty("type", "Feature", true);
+                    jsonWriter.WriteProperty("name", "Stop", true);
+                    jsonWriter.WritePropertyName("geometry");
 
                     jsonWriter.WriteOpen();
-                    jsonWriter.WriteProperty("type", "Point", true, false);
-                    jsonWriter.WritePropertyName("coordinates", false);
+                    jsonWriter.WriteProperty("type", "Point", true);
+                    jsonWriter.WritePropertyName("coordinates");
                     jsonWriter.WriteArrayOpen();
                     jsonWriter.WriteArrayValue(
-                        reader.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                        reader.Longitude.ToString(CultureInfo.InvariantCulture));
                     jsonWriter.WriteArrayValue(
-                        reader.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                        reader.Latitude.ToString(CultureInfo.InvariantCulture));
 
                     jsonWriter.WriteArrayClose();
                     jsonWriter.WriteClose();
@@ -80,13 +84,13 @@ namespace Itinero.Transit.IO.Json
             }
 
             jsonWriter.WriteOpen();
-            jsonWriter.WriteProperty("type", "Feature", true, false);
-            jsonWriter.WriteProperty("name", "ShapeMeta", true, false);
-            jsonWriter.WritePropertyName("geometry", false);
+            jsonWriter.WriteProperty("type", "Feature", true);
+            jsonWriter.WriteProperty("name", "ShapeMeta", true);
+            jsonWriter.WritePropertyName("geometry");
 
             jsonWriter.WriteOpen();
-            jsonWriter.WriteProperty("type", "LineString", true, false);
-            jsonWriter.WritePropertyName("coordinates", false);
+            jsonWriter.WriteProperty("type", "LineString", true);
+            jsonWriter.WritePropertyName("coordinates");
             jsonWriter.WriteArrayOpen();
 
             journey = originalJourney;
@@ -96,9 +100,9 @@ namespace Itinero.Transit.IO.Json
                 {
                     jsonWriter.WriteArrayOpen();
                     jsonWriter.WriteArrayValue(
-                        reader.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                        reader.Longitude.ToString(CultureInfo.InvariantCulture));
                     jsonWriter.WriteArrayValue(
-                        reader.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                        reader.Latitude.ToString(CultureInfo.InvariantCulture));
 
                     jsonWriter.WriteArrayClose();
                 }

@@ -5,7 +5,6 @@ using Newtonsoft.Json.Linq;
 
 namespace Itinero.Transit.IO.LC.CSA.LocationProviders
 {
-    /// <inheritdoc cref="ILocationProvider" />
     /// <summary>
     /// This class is (on of) the actual classes that searches station locations.
     /// It's a very naive implementation - a brute force (but simple) approach.

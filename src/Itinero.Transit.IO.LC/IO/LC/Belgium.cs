@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Itinero.Transit.IO.LC.CSA.ConnectionProviders;
-using Itinero.Transit.IO.LC.CSA.LocationProviders;
 using Itinero.Transit.IO.LC.CSA.Utils;
 
 // ReSharper disable MemberCanBePrivate.Global

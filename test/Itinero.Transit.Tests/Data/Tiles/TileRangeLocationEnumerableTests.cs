@@ -24,6 +24,8 @@ using System.Linq;
 using Itinero.Transit.Data.Tiles;
 using Xunit;
 
+// ReSharper disable UnusedVariable
+
 namespace Itinero.Transit.Tests.Data.Tiles
 {
     public class TileRangeLocationEnumerableTests
@@ -31,7 +33,7 @@ namespace Itinero.Transit.Tests.Data.Tiles
         [Fact]
         public void TileRangeLocationEnumerable_ShouldEnumerateOneInTileRange()
         {
-            var index = new TiledLocationIndex(14);
+            var index = new TiledLocationIndex();
             var location = index.Add(4.786863327026367, 51.26277419739382);
             var tile = Tile.WorldToTile(4.786863327026367, 51.26277419739382, 14);
 
@@ -47,7 +49,7 @@ namespace Itinero.Transit.Tests.Data.Tiles
         [Fact]
         public void TileRangeLocationEnumerable_ShouldEnumerateNoneOutsideTileRange()
         {
-            var index = new TiledLocationIndex(14);
+            var index = new TiledLocationIndex();
             var location = index.Add(4.786863327026367, 51.26277419739382);
             var tile = Tile.WorldToTile( 51.26277419739382, 4.786863327026367, 14);
 
@@ -61,7 +63,7 @@ namespace Itinero.Transit.Tests.Data.Tiles
         [Fact]
         public void TileRangeLocationEnumerable_ShouldEnumerateAllInsideTileRange()
         {
-            var index = new TiledLocationIndex(14);
+            var index = new TiledLocationIndex();
             var id1 = index.Add(4.786863327026367, 51.26277419739382);
             var id2 = index.Add(4.649276733398437, 51.345839804352885);
             var id3 = index.Add(4.989852905273437, 51.22365776470275);

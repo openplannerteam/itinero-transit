@@ -50,7 +50,10 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// Create a database set with the given databases and a callback to load more data when needed
         /// </summary>
-        /// <param name="loadTimeWindow">This function will be loaded whenever more data is needed</param>
+        /// <param name="tripsDb"></param>
+        /// <param name="connectionsDb"></param>
+        /// <param name="stopsDb"></param>
+        /// <param name="loadTimeWindow">This function will be invoked whenever more data is needed</param>
         public Databases(ConnectionsDb connectionsDb, StopsDb stopsDb, TripsDb tripsDb,
             Action<DateTime, DateTime> loadTimeWindow)
         {

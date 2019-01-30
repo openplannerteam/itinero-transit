@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using Itinero.Transit.Data;
 using Xunit;
+// ReSharper disable RedundantArgumentDefaultValue
+// ReSharper disable UnusedVariable
 
 namespace Itinero.Transit.Tests.Data
 {

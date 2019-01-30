@@ -30,15 +30,15 @@ namespace Itinero.Transit.Logging
         /// </summary>
         public void Log(TraceEventType type, string message, params object[] args)
         {
-            if (Logger.LogAction == null)
+            if (LogAction == null)
             {
-                Logger.LogAction = (o, level, localmessage, parameters) =>
+                LogAction = (o, level, localmessage, parameters) =>
                 {
                     System.Diagnostics.Debug.WriteLine($"[{o}] {level} - {localmessage}");
                 };
             }
 
-            Logger.LogAction(_name, type.ToString().ToLower(), string.Format(message, args), null);
+            LogAction(_name, type.ToString().ToLower(), string.Format(message, args), null);
         }
 
         /// <summary>
@@ -46,16 +46,16 @@ namespace Itinero.Transit.Logging
         /// </summary>
         public static void Log(string name, TraceEventType type, string message, params object[] args)
         {
-            if (Logger.LogAction == null)
+            if (LogAction == null)
             {
-                Logger.LogAction = (o, level, localmessage, parameters) =>
+                LogAction = (o, level, localmessage, parameters) =>
                 {
                     System.Diagnostics.Debug.WriteLine($"[{o}] {level} - {localmessage}");
                 };
             }
 
             var toLog = args == null || args.Length == 0 ? message : string.Format(message, args);
-            Logger.LogAction(name, type.ToString().ToLower(), toLog, null);
+            LogAction(name, type.ToString().ToLower(), toLog, null);
         }
 
         /// <summary>

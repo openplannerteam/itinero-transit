@@ -151,8 +151,8 @@ namespace Itinero.Transit.IO.Json
         /// </summary>
         public void WriteProperty(string name, string value, bool useQuotes = false, bool escape = false)
         {
-            this.WritePropertyName(name, escape);
-            this.WritePropertyValue(value, useQuotes, escape);
+            WritePropertyName(name, escape);
+            WritePropertyValue(value, useQuotes, escape);
         }
 
         /// <summary>

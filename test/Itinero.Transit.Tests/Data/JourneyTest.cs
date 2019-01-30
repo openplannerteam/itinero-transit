@@ -2,7 +2,6 @@ using System;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journeys;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Itinero.Transit.Tests.Data
 {

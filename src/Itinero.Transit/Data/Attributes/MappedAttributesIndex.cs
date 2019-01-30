@@ -64,7 +64,7 @@ namespace Itinero.Transit.Data.Attributes
     }
 
         private Dictionary<uint, int> _reverseIndex;
-        private int _pointer = 0;
+        private int _pointer;
 
         /// <summary>
         /// Gets or sets attributes for the given id.
@@ -73,7 +73,7 @@ namespace Itinero.Transit.Data.Attributes
         {
             get
             {
-                var p = this.Search(id, out _);
+                var p = Search(id, out _);
                 if (p == _NO_DATA)
                 {
                     return null;
@@ -82,10 +82,10 @@ namespace Itinero.Transit.Data.Attributes
             }
             set
             {
-                var p = this.Search(id, out var idx);
+                var p = Search(id, out var idx);
                 if (p == _NO_DATA)
                 {
-                    this.Add(id, _attributes.Add(value));
+                    Add(id, _attributes.Add(value));
                     return;
                 }
                 _data[idx + 1] = _attributes.Add(value);
@@ -110,7 +110,7 @@ namespace Itinero.Transit.Data.Attributes
         /// <returns></returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
 
         /// <summary>
@@ -163,9 +163,9 @@ namespace Itinero.Transit.Data.Attributes
         /// </summary>
         public long Serialize(Stream stream)
         {
-            if (!this.IsOptimized)
+            if (!IsOptimized)
             {
-                this.Optimize();
+                Optimize();
             }
 
             long size = 1;
@@ -194,7 +194,7 @@ namespace Itinero.Transit.Data.Attributes
         {
             if (_reverseIndex == null)
             {
-                this.MakeWriteable();
+                MakeWriteable();
             }
 
             // remove the two from the index and keep their pointers.

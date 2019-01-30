@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using Itinero.Transit.IO.LC.CSA.LocationProviders;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;

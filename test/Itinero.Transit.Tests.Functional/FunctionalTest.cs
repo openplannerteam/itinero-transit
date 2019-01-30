@@ -46,7 +46,7 @@ namespace Itinero.Transit.Tests.Functional
         public virtual TOut Run(TIn input)
         {
             return TrackPerformance ? 
-                RunPerformance(input, 1) : 
+                RunPerformance(input) : 
                 Execute(input);
         }
 
@@ -59,8 +59,8 @@ namespace Itinero.Transit.Tests.Functional
         public virtual TOut RunPerformance(TIn input, int count = 1)
         {
             Func<TIn, PerformanceTestResult<TOut>>
-                executeFunc = (i) => new PerformanceTestResult<TOut>(this.Execute(i));
-            return executeFunc.TestPerf<TIn, TOut>(this.Name, input, count);
+                executeFunc = (i) => new PerformanceTestResult<TOut>(Execute(i));
+            return executeFunc.TestPerf(Name, input, count);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Itinero.Transit.Tests.Functional
         /// <param name="message">The log message.</param>
         protected void Information(string message)
         {
-            if (!this.Log) return;
+            if (!Log) return;
             Serilog.Log.Information(message);
         }
     }

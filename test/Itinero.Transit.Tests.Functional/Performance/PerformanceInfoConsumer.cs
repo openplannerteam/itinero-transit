@@ -14,7 +14,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
         private readonly string _name; // Holds the name of this consumer.
         private readonly System.Threading.Timer _memoryUsageTimer; // Holds the memory usage timer.
         private readonly List<double> _memoryUsageLog = new List<double>(); // Holds the memory usage log.
-        private long _memoryUsageLoggingDuration = 0; // Holds the time spent on logging memory usage.
+        private long _memoryUsageLoggingDuration; // Holds the time spent on logging memory usage.
         private readonly int _iterations = 1;
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
             {
                 GC.Collect();
                 var p = Process.GetCurrentProcess();
-                _memoryUsageLog.Add(System.Math.Round((p.PrivateMemorySize64 - _memory.Value) / 1024.0 / 1024.0, 4));
+                _memoryUsageLog.Add(Math.Round((p.PrivateMemorySize64 - _memory.Value) / 1024.0 / 1024.0, 4));
 
                 _memoryUsageLoggingDuration = _memoryUsageLoggingDuration + (DateTime.Now.Ticks - ticksBefore);
             }
@@ -101,14 +101,14 @@ namespace Itinero.Transit.Tests.Functional.Performance
             Log.Information(_name + ":" + message, args);
         }
 
-        private int _previousPercentage = 0;
+        private int _previousPercentage;
 
         /// <summary>
         /// Reports a message about progress.
         /// </summary>
         public void Report(string message, long i, long max)
         {
-            var currentPercentage = (int) System.Math.Round((i / (double) max) * 10, 0);
+            var currentPercentage = (int) Math.Round((i / (double) max) * 10, 0);
             if (_previousPercentage == currentPercentage) return;
             Log.Information(_name + ":" + message, currentPercentage * 10);
             _previousPercentage = currentPercentage;
@@ -135,7 +135,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
 
                 GC.Collect();
                 var p = Process.GetCurrentProcess();
-                var memoryDiff = System.Math.Round((p.PrivateMemorySize64 - _memory.Value) / 1024.0 / 1024.0, 4);
+                var memoryDiff = Math.Round((p.PrivateMemorySize64 - _memory.Value) / 1024.0 / 1024.0, 4);
 
                 if (!string.IsNullOrWhiteSpace(message))
                 {
@@ -147,7 +147,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
                 {
                     // there was memory usage logging.
                     var max = _memoryUsageLog.Max();
-                    memUsage = " mem usage: {max}";
+                    memUsage = $" mem usage: {max}";
                 }
 
                 var iterationMessage = "";

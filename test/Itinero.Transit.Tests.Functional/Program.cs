@@ -86,7 +86,7 @@ namespace Itinero.Transit.Tests.Functional
 
             var date = DateTime.Now.Date; // LOCAL TIMES! //
             // test loading a connections db
-            var db = IO.LC.LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
+            var db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
             
             // test read/writing a transit db from/to a stream.
             using (var stream = WriteTransitDbTest.Default.Run(db))

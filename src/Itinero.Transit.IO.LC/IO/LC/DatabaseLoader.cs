@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.IO.LC.CSA;
@@ -17,11 +16,10 @@ namespace Itinero.Transit.IO.LC
         /// Dumps all the information between the dates into the databases.
         /// </summary>
         /// <param name="profile"></param>
-        /// <param name="stops"></param>
-        /// <param name="connections"></param>
-        /// <param name="trips"></param>
+        /// <param name="transitDb"></param>
         /// <param name="start"></param>
         /// <param name="end"></param>
+        /// <param name="onError"></param>
         /// <param name="onLocationHandled">Callback when a location is added</param>
         /// <param name="onTimeTableHandled">Callback when a timetable has been handled</param>
         public static void AddDataTo(this Profile profile,
@@ -163,8 +161,6 @@ namespace Itinero.Transit.IO.LC
         /// Adds the location metadata to the StopsDB
         /// </summary>
         /// <param name="location"></param>
-        /// <param name="stopsDb"></param>
-        /// <param name="reader"></param>
         /// <returns></returns>
         private (uint, uint) AddLocation(Location location)
         {
@@ -217,8 +213,6 @@ namespace Itinero.Transit.IO.LC
         /// Adds the TRIP metadata to the trip db
         /// </summary>
         /// <param name="connection"></param>
-        /// <param name="tripsDb"></param>
-        /// <param name="tripsDbReader"></param>
         /// <returns></returns>
         private uint AddTrip(Connection connection)
         {

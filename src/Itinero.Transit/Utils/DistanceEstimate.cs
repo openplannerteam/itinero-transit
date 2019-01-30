@@ -14,15 +14,15 @@ namespace Itinero.Transit.Data.Walks
         public static float DistanceEstimateInMeter(float latitude1, float longitude1, float latitude2,
             float longitude2)
         {
-            var lat1Rad = (latitude1 / 180d) * System.Math.PI;
-            var lon1Rad = (longitude1 / 180d) * System.Math.PI;
-            var lat2Rad = (latitude2 / 180d) * System.Math.PI;
-            var lon2Rad = (longitude2 / 180d) * System.Math.PI;
+            var lat1Rad = (latitude1 / 180d) * Math.PI;
+            var lon1Rad = (longitude1 / 180d) * Math.PI;
+            var lat2Rad = (latitude2 / 180d) * Math.PI;
+            var lon2Rad = (longitude2 / 180d) * Math.PI;
 
-            var x = (lon2Rad - lon1Rad) * System.Math.Cos((lat1Rad + lat2Rad) / 2.0);
+            var x = (lon2Rad - lon1Rad) * Math.Cos((lat1Rad + lat2Rad) / 2.0);
             var y = lat2Rad - lat1Rad;
 
-            var m = System.Math.Sqrt(x * x + y * y) * RadiusOfEarth;
+            var m = Math.Sqrt(x * x + y * y) * RadiusOfEarth;
 
             return (float) m;
         }

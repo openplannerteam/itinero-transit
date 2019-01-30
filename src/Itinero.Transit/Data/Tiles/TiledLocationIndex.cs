@@ -19,8 +19,8 @@ namespace Itinero.Transit.Data.Tiles
         private readonly ArrayBase<byte> _tileIndex;
         private readonly ArrayBase<byte> _locations; // holds stop locations, encode relative to the tile they are in.
         private const uint TileNotLoaded = uint.MaxValue;
-        private uint _tileIndexPointer = 0;
-        private uint _tileDataPointer = 0;
+        private uint _tileIndexPointer;
+        private uint _tileDataPointer;
         
         /// <summary>
         /// Creates a new location index.
@@ -255,7 +255,7 @@ namespace Itinero.Transit.Data.Tiles
             }
             
             // notify any listeners of copied blocks.
-            this.Moved?.Invoke(tileDataPointer, newTileDataPointer, (uint)oldCapacity);
+            Moved?.Invoke(tileDataPointer, newTileDataPointer, (uint)oldCapacity);
 
             return (newTileDataPointer, oldCapacity * 2);
         }
@@ -405,12 +405,12 @@ namespace Itinero.Transit.Data.Tiles
                 _currentTileIndexPointer = uint.MaxValue;
                 _currentTileDataPointer = uint.MaxValue;
                 _currentTileCapacity = uint.MaxValue;
-                this.LocalId = uint.MaxValue;
+                LocalId = uint.MaxValue;
                 _currentTile = null;
-                this.DataPointer = uint.MaxValue;
-                this.Latitude = double.MaxValue;
-                this.Longitude = double.MaxValue;
-                this.TileId = uint.MaxValue;
+                DataPointer = uint.MaxValue;
+                Latitude = double.MaxValue;
+                Longitude = double.MaxValue;
+                TileId = uint.MaxValue;
             }
 
             private uint _currentTileIndexPointer;
@@ -426,7 +426,7 @@ namespace Itinero.Transit.Data.Tiles
                 _currentTileIndexPointer = uint.MaxValue;
                 _currentTileDataPointer = uint.MaxValue;
                 _currentTileCapacity = uint.MaxValue;
-                this.LocalId = uint.MaxValue;
+                LocalId = uint.MaxValue;
             }
 
             /// <summary>
@@ -453,11 +453,11 @@ namespace Itinero.Transit.Data.Tiles
                 _currentTileCapacity = (uint)capacity;
                 _currentTileDataPointer = tileDataPointer;
                 _currentTileIndexPointer = tileIndexPointer;
-                this.Latitude = latitude;
-                this.Longitude = longitude;
-                this.LocalId = localId;
-                this.TileId = localTileId;
-                this.DataPointer = _currentTileDataPointer + localId;
+                Latitude = latitude;
+                Longitude = longitude;
+                LocalId = localId;
+                TileId = localTileId;
+                DataPointer = _currentTileDataPointer + localId;
 
                 return true;
             }
@@ -489,12 +489,12 @@ namespace Itinero.Transit.Data.Tiles
                     }
 
                     _currentTile = Tile.FromLocalId(localTileId, _index._zoom);
-                    this.TileId = localTileId;
-                    this.LocalId = 0;
+                    TileId = localTileId;
+                    LocalId = 0;
                 }
                 else
                 { // there is a current tile.
-                    if (this.LocalId == _currentTileCapacity - 1)
+                    if (LocalId == _currentTileCapacity - 1)
                     { // this was the last location in this tile, move to the next tile.
                         var localTileId = uint.MaxValue;
                         do
@@ -506,25 +506,25 @@ namespace Itinero.Transit.Data.Tiles
                         } while (_currentTileCapacity <= 0);
 
                         _currentTile = Tile.FromLocalId(localTileId, _index._zoom);
-                        this.TileId = localTileId;
-                        this.LocalId = 0;
+                        TileId = localTileId;
+                        LocalId = 0;
                     }
                     else
                     {
                         // move to the next location.
-                        this.LocalId++;
+                        LocalId++;
                     }
                 }
 
-                var (longitude, latitude, hasData) = _index.GetEncodedLocation(_currentTileDataPointer + this.LocalId, _currentTile);
+                var (longitude, latitude, hasData) = _index.GetEncodedLocation(_currentTileDataPointer + LocalId, _currentTile);
                 if (!hasData)
                 {
-                    return this.MoveNext();
+                    return MoveNext();
                 }
 
-                this.Longitude = longitude;
-                this.Latitude = latitude;
-                this.DataPointer = _currentTileDataPointer;
+                Longitude = longitude;
+                Latitude = latitude;
+                DataPointer = _currentTileDataPointer;
 
                 return true;
             }

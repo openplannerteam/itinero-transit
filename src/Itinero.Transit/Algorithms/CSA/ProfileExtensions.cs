@@ -79,9 +79,10 @@ namespace Itinero.Transit.Algorithms.CSA
                 departureTime, lastArrivalTime,
                 profile
             );
+            var time = lastArrivalTime;
             var earliestJourney = eas.CalculateJourney(
                 (journeyDep, journeyArr) => 
-                    lastArrivalTimeSet ? lastArrivalTime :
+                    lastArrivalTimeSet ? time :
                     journeyArr + (journeyArr - journeyDep));
             
             if (earliestJourney == null)

@@ -1,4 +1,5 @@
 using System;
+using Xunit.Sdk;
 
 namespace Itinero.Transit.Tests.Functional.Performance
 {
@@ -80,7 +81,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
         /// </summary>
         public static T TestPerf<T>(this Func<PerformanceTestResult<T>> func, string name, int count)
         {
-            var info = new PerformanceInfoConsumer(name + " x " + count.ToString(), 10000);
+            var info = new PerformanceInfoConsumer(name + " x " + count, 10000);
             info.Start();
             PerformanceTestResult<T> res = null;
             while (count > 0)
@@ -89,6 +90,10 @@ namespace Itinero.Transit.Tests.Functional.Performance
                 count--;
             }
 
+            if (res == null)
+            {
+                throw new NullException("Performance test is null");
+            }
             info.Stop(res.Message);
             return res.Result;
         }
@@ -136,7 +141,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
         /// <param name="result"></param>
         public PerformanceTestResult(T result)
         {
-            this.Result = result;
+            Result = result;
         }
 
         /// <summary>

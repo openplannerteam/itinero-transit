@@ -1,8 +1,6 @@
 using System;
-using System.Linq;
 using Itinero.Transit.Data.Walks;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Itinero.Transit.Tests.utils
 {

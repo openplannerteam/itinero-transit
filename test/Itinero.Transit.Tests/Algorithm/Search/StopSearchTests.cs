@@ -2,6 +2,7 @@ using System.Linq;
 using Itinero.Transit.Algorithms.Search;
 using Itinero.Transit.Data;
 using Xunit;
+// ReSharper disable UnusedVariable
 
 namespace Itinero.Transit.Tests.Algorithm.Search
 {

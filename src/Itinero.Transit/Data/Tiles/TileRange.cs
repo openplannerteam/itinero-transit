@@ -11,13 +11,13 @@ namespace Itinero.Transit.Data.Tiles
             var topLeft = Tile.WorldToTile(box.minLon, box.maxLat, zoom);
             var bottomRight = Tile.WorldToTile(box.maxLon, box.minLat, zoom);
 
-            this.Left = topLeft.X;
-            this.Top = topLeft.Y;
-            this.Right = bottomRight.X;
-            this.Bottom = bottomRight.Y;
-            this.Zoom = zoom;
+            Left = topLeft.X;
+            Top = topLeft.Y;
+            Right = bottomRight.X;
+            Bottom = bottomRight.Y;
+            Zoom = zoom;
 
-            if (this.Top > this.Bottom)
+            if (Top > Bottom)
             {
                 throw new ArgumentException("Invalid tile range, top is lower than bottom.");
             }

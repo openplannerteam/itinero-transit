@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Algorithms.Search;
-using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data.Walks;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
@@ -25,7 +23,6 @@ namespace Itinero.Transit.Data
         public static IEnumerable<IStop> LocationsInRange(
             this StopsDb stopsDb, float lat, float lon, float maxDistance)
         {
-            var l = new List<(uint, uint)>();
             var box = (
                 DistanceEstimate.MoveEast(lat, lon, -maxDistance), // minLon
                 DistanceEstimate.MoveNorth(lat, lon, +maxDistance), // MinLat

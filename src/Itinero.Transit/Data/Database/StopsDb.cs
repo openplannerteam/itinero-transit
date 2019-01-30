@@ -24,7 +24,7 @@ namespace Itinero.Transit.Data
 
         private const uint NoData = uint.MaxValue;
         private readonly ArrayBase<uint> _stopIdPointersPerHash;
-        private uint _stopIdLinkedListPointer = 0;
+        private uint _stopIdLinkedListPointer;
         private readonly ArrayBase<uint> _stopIdLinkedList;
         
         private readonly AttributesIndex _attributes;
@@ -34,7 +34,7 @@ namespace Itinero.Transit.Data
         /// </summary>
         internal StopsDb()
         {
-            _stopLocations = new TiledLocationIndex {Moved = this.Move};
+            _stopLocations = new TiledLocationIndex {Moved = Move};
             _stopIds = new MemoryArray<string>(0);
             _stopAttributeIds = new MemoryArray<uint>(0);
             _stopIdPointersPerHash = new MemoryArray<uint>(_stopIdHashSize);
@@ -52,7 +52,7 @@ namespace Itinero.Transit.Data
         {
             _stopIdLinkedListPointer = stopIdLinkedListPointer;
             _stopLocations = stopLocations;
-            _stopLocations.Moved = this.Move;
+            _stopLocations.Moved = Move;
             _stopIds = stopIds;
             _stopAttributeIds = stopAttributeIds;
             _stopIdPointersPerHash = stopIdPointsPerHash;
@@ -281,9 +281,9 @@ namespace Itinero.Transit.Data
                     var localTileId = _stopsDb._stopIdLinkedList[pointer + 0];
                     var localId = _stopsDb._stopIdLinkedList[pointer + 1];
 
-                    if (this.MoveTo(localTileId, localId))
+                    if (MoveTo(localTileId, localId))
                     {
-                        var potentialMatch = this.GlobalId;
+                        var potentialMatch = GlobalId;
                         if (potentialMatch == globalId)
                         {
                             return true;
