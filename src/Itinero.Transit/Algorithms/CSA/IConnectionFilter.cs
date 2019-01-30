@@ -10,7 +10,7 @@ namespace Itinero.Transit.Algorithms.CSA
     /// The filter will indicate that the trip can not be taken and throw it out
     /// 
     /// </summary>
-    public interface IConnectionFilter
+    internal interface IConnectionFilter
     {
 
         /// <summary>

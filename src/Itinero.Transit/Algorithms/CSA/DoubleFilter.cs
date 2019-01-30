@@ -2,7 +2,7 @@ using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
-    public class DoubleFilter : IConnectionFilter
+    internal class DoubleFilter : IConnectionFilter
     {
         private readonly IConnectionFilter[] _filters;
 

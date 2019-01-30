@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Itinero.Transit.Data.Walks;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
 namespace Itinero.Transit.Data
 {
     /// <summary>
-    /// A transit db - contains connections, trips and stops.
+    /// A transit db contains all connections, trips and stops.
     /// </summary>
     public class TransitDb
     {
@@ -14,18 +15,19 @@ namespace Itinero.Transit.Data
         private readonly ConnectionsDb _connectionsDb;
         private readonly TripsDb _tripsDb;
 
-        /// <summary>
-        /// Creates a new transit db.
-        /// </summary>
-        public TransitDb()
+        private readonly Action<TransitDbWriter, DateTime, DateTime> _updateTimeFrame;
+        private readonly DateTracker _loadedTimeWindows = new DateTracker();
+
+        public TransitDb(Action<TransitDbWriter, DateTime, DateTime> updateTimeFrame = null)
         {
+            _updateTimeFrame = updateTimeFrame;
             _stopsDb = new StopsDb();
             _connectionsDb = new ConnectionsDb();
             _tripsDb = new TripsDb();
 
             _latestSnapshot = new TransitDbSnapShot(_stopsDb, _tripsDb, _connectionsDb);
         }
-        
+
         private TransitDb(StopsDb stopsDb, TripsDb tripsDb, ConnectionsDb connectionsDb)
         {
             _stopsDb = stopsDb;
@@ -40,7 +42,38 @@ namespace Itinero.Transit.Data
         private TransitDbSnapShot _latestSnapshot;
 
         /// <summary>
-        /// Gets the writer.
+        /// Loads more data into the transitDB, as specified by the callbackfunction.
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="refresh">If true, overwrites. If false, only the gaps will be filled</param>
+        public void UpdateTimeFrame(DateTime start, DateTime end, bool refresh=false)
+        {
+            var gaps = new List<(DateTime star, DateTime end)>();
+            if (refresh)
+            {
+                gaps.Add((start, end));
+            }
+            else
+            {
+                gaps = _loadedTimeWindows.Gaps(start, end);
+            }
+
+            var writer = GetWriter();
+            foreach (var (wstart, wend) in gaps)
+            {
+                _updateTimeFrame.Invoke(writer, wstart, wend);
+                _loadedTimeWindows.AddTimeWindow(wstart, wend);
+            }
+
+            writer.Close();
+        }
+
+
+        /// <summary>
+        /// Gets a writer.
+        /// A writer can add or update entries in the database.
+        /// Once all updates are done, the writer should be closed to apply the changes.
         /// </summary>
         /// <returns>A writer.</returns>
         /// <exception cref="InvalidOperationException">Throws if there is already a writer active.</exception>
@@ -114,7 +147,7 @@ namespace Itinero.Transit.Data
             public long WriteTo(Stream stream)
             {
                 var length = 1L;
-                
+
                 byte version = 1;
                 stream.WriteByte(version);
 
@@ -139,7 +172,7 @@ namespace Itinero.Transit.Data
             internal TransitDbWriter(TransitDb parent)
             {
                 _parent = parent;
-                
+
                 _stopsDb = parent._stopsDb.Clone();
                 _tripsDb = parent._tripsDb.Clone();
                 _connectionsDb = parent._connectionsDb.Clone();
@@ -161,7 +194,7 @@ namespace Itinero.Transit.Data
                 {
                     return stopsDbReader.Id;
                 }
-                
+
                 return _stopsDb.Add(globalId, longitude, latitude,
                     attributes);
             }
@@ -194,7 +227,8 @@ namespace Itinero.Transit.Data
             /// <param name="travelTime">The travel time in seconds.</param>
             /// <returns></returns>
             public uint AddOrUpdateConnection((uint localTileId, uint localId) stop1,
-                (uint localTileId, uint localId) stop2, string globalId, DateTime departureTime, ushort travelTime, uint tripId)
+                (uint localTileId, uint localId) stop2, string globalId, DateTime departureTime, ushort travelTime,
+                uint tripId)
             {
                 return _connectionsDb.Add(stop1, stop2, globalId, departureTime, travelTime, tripId);
             }

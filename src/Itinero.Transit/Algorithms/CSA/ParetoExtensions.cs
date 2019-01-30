@@ -5,7 +5,7 @@ using Itinero.Transit.Journeys;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
-    public static class ParetoExtensions
+    internal static class ParetoExtensions
     {
         ///  <summary>
         ///  Creates a new pareto-frontier, based on the given frontier.

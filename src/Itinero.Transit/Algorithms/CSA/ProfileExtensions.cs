@@ -48,10 +48,10 @@ namespace Itinero.Transit.Algorithms.CSA
                 throw new ArgumentException("At least one of departure or arrival time should be given");
             }
 
-
             IConnectionFilter filter = null;
             if (departureTime == 0)
             {
+                profile = profile.LoadWindow((lastArrivalTime - 24 * 60 * 60).FromUnixTime(), lastArrivalTime.FromUnixTime());
                 var las = new LatestConnectionScan<T>(depLocation, arrivalLocation,
                     lastArrivalTime - 24 * 60 * 60, lastArrivalTime,
                     profile);
@@ -73,7 +73,8 @@ namespace Itinero.Transit.Algorithms.CSA
                 lastArrivalTime = departureTime + 24 * 60 * 60;
             }
 
-
+            // Make sure that enough entries are laoded
+            profile = profile.LoadWindow(departureTime.FromUnixTime(), lastArrivalTime.FromUnixTime());
             var eas = new EarliestConnectionScan<T>(
                 depLocation, arrivalLocation,
                 departureTime, lastArrivalTime,

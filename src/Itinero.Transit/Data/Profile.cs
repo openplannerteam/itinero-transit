@@ -10,79 +10,48 @@ namespace Itinero.Transit.Data
         public readonly T StatsFactory;
         public readonly ProfiledStatsComparator<T> ProfileComparator;
 
+        private readonly TransitDb TransitDb;
         public TransitDb.TransitDbSnapShot TransitDbSnapShot { get; }
         public readonly IOtherModeGenerator InternalTransferGenerator;
         public readonly IOtherModeGenerator WalksGenerator;
 
-        public Profile(TransitDb.TransitDbSnapShot transitDbSnapShot, 
+        public Profile(TransitDb.TransitDbSnapShot snapShot,
             IOtherModeGenerator internalTransferGenerator,
             IOtherModeGenerator walksGenerator,
             T statsFactory,
             ProfiledStatsComparator<T> profileComparator
-            )
+        )
         {
-            TransitDbSnapShot = transitDbSnapShot;
+            TransitDbSnapShot = snapShot;
             StatsFactory = statsFactory;
             ProfileComparator = profileComparator;
             InternalTransferGenerator = internalTransferGenerator;
             WalksGenerator = walksGenerator;
         }
-    }
 
-
-    /// <summary>
-    /// The profile bundles all useful data and classes that are used by the algorithms.
-    /// It contains
-    /// - The databases
-    /// - The statistic generators and comparators
-    /// - What time windows are loaded into the database
-    /// - A callback to load more data, if necessary
-    /// </summary>
-    public class Databases
-    {
-        public readonly ConnectionsDb ConnectionsDb;
-        public readonly StopsDb StopsDb;
-        public readonly TripsDb TripsDb;
-
-        private readonly Action<DateTime, DateTime> _loadTimeWindow;
-        private readonly DateTracker _loadedTimeWindows = new DateTracker();
-
-        /// <summary>
-        /// Create a database set with the given databases and a callback to load more data when needed
-        /// </summary>
-        /// <param name="tripsDb"></param>
-        /// <param name="connectionsDb"></param>
-        /// <param name="stopsDb"></param>
-        /// <param name="loadTimeWindow">This function will be invoked whenever more data is needed</param>
-        public Databases(ConnectionsDb connectionsDb, StopsDb stopsDb, TripsDb tripsDb,
-            Action<DateTime, DateTime> loadTimeWindow)
+        public Profile(TransitDb transitDb,
+            IOtherModeGenerator internalTransferGenerator,
+            IOtherModeGenerator walksGenerator,
+            T statsFactory,
+            ProfiledStatsComparator<T> profileComparator
+        ) : this(transitDb.Latest,
+            internalTransferGenerator, walksGenerator, statsFactory, profileComparator
+        )
         {
-            ConnectionsDb = connectionsDb;
-            StopsDb = stopsDb;
-            TripsDb = tripsDb;
-            _loadTimeWindow = loadTimeWindow;
+            TransitDb = transitDb;
         }
 
-
-        /// <summary>
-        /// Imports the necessary connections.
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <param name="refresh">If 'true', then connections in the database will be overwritten</param>
-        public void LoadTimeWindow(DateTime start, DateTime end, bool refresh = false)
+        public Profile<T> LoadWindow(DateTime start, DateTime end)
         {
-            if (refresh)
+            if (TransitDb == null)
             {
-                throw new NotImplementedException();
+                // Initialization is only for testing. We assume the data is already there
+                // If not - let it crash and burn
+                return this;
             }
-
-            var gaps = _loadedTimeWindows.Gaps(start, end);
-            foreach (var (gapStart, gapEnd) in gaps)
-            {
-                _loadedTimeWindows.AddTimeWindow(gapStart, gapEnd);
-                _loadTimeWindow.Invoke(gapStart, gapEnd);
-            }
+            TransitDb.UpdateTimeFrame(start, end);
+            return new Profile<T>(TransitDb, InternalTransferGenerator, WalksGenerator, StatsFactory,
+                ProfileComparator);
         }
     }
 }
