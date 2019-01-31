@@ -115,8 +115,16 @@ namespace Itinero.Transit.Data.Walks
         {
             var result = new List<(DateTime start, DateTime end)>();
 
+
+            if (!_allWindows.Any())
+            {
+                // No time windows loaded at all
+                result.Add((start, end));
+                return result;
+            }
+
             // Select the smallest index so that 'start' is smaller then allWindows[index].start
-            var index = _allWindows.Count-1;
+            var index = _allWindows.Count - 1;
             for (var i = 0; i < _allWindows.Count; i++)
             {
                 if (_allWindows[i].start >= start)

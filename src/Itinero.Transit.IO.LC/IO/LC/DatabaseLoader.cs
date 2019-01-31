@@ -34,7 +34,7 @@ namespace Itinero.Transit.IO.LC
         public void AddAllLocations(Profile profile)
         {
             var count = 0;
-            var batchCount = 0;
+            var batchCount = 1;
             foreach (var locationsFragment in profile.LocationProvider)
             {
                 batchCount++;
@@ -44,6 +44,8 @@ namespace Itinero.Transit.IO.LC
                     count++;
                     _locationsLogger?.Ping(count, locationsFragment.Locations.Count, batchCount, profile.LocationProvider.Count);
                 }
+                _locationsLogger?.Ping(count, locationsFragment.Locations.Count, batchCount, profile.LocationProvider.Count);
+
             }
         }
 
@@ -87,12 +89,12 @@ namespace Itinero.Transit.IO.LC
         {
             tt.Validate(locations, (connection, uri) =>
                 {
-                    _onError.Invoke($"A connection uses a unknown location {uri}\nThe connection is {connection}");
+                    _onError($"A connection uses a unknown location {uri}\nThe connection is {connection}");
                     return false;
                 },
                 connection =>
                 {
-                    _onError.Invoke($"A connection is mentioned multiple times: {connection.Uri}");
+                    _onError($"A connection is mentioned multiple times: {connection.Uri}");
                     return false;
                 },
                 (connection, errorMsg) =>
