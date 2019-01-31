@@ -14,9 +14,9 @@ namespace Itinero.Transit.Algorithms.CSA
             DateTime? departure = null, DateTime? arrival = null) where T : IJourneyStats<T>
         {
             var reader = profile.TransitDbSnapShot.StopsDb.GetReader();
-            reader.MoveTo(from);
+            if (!reader.MoveTo(from)) throw new ArgumentException($"Departure location {from} was not found");
             var fromId = reader.Id;
-            reader.MoveTo(to);
+            if (!reader.MoveTo(to)) throw new ArgumentException($"Arrival location {to} was not found");
             var toId = reader.Id;
             return profile.CalculateJourneys(
                 fromId, toId,
@@ -48,10 +48,16 @@ namespace Itinero.Transit.Algorithms.CSA
                 throw new ArgumentException("At least one of departure or arrival time should be given");
             }
 
+            if (depLocation == arrivalLocation)
+            {
+                throw new ArgumentException("Departure and arrival location are the same");
+            }
+
             IConnectionFilter filter = null;
             if (departureTime == 0)
             {
-                profile = profile.LoadWindow((lastArrivalTime - 24 * 60 * 60).FromUnixTime(), lastArrivalTime.FromUnixTime());
+                profile = profile.LoadWindow((lastArrivalTime - 24 * 60 * 60).FromUnixTime(),
+                    lastArrivalTime.FromUnixTime());
                 var las = new LatestConnectionScan<T>(depLocation, arrivalLocation,
                     lastArrivalTime - 24 * 60 * 60, lastArrivalTime,
                     profile);
@@ -82,10 +88,9 @@ namespace Itinero.Transit.Algorithms.CSA
             );
             var time = lastArrivalTime;
             var earliestJourney = eas.CalculateJourney(
-                (journeyDep, journeyArr) => 
-                    lastArrivalTimeSet ? time :
-                    journeyArr + (journeyArr - journeyDep));
-            
+                (journeyDep, journeyArr) =>
+                    lastArrivalTimeSet ? time : journeyArr + (journeyArr - journeyDep));
+
             if (earliestJourney == null)
             {
                 Log.Information("Could not determine a route");
@@ -98,6 +103,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 lastArrivalTime = earliestJourney.ArrivalTime() +
                                   (earliestJourney.ArrivalTime() - earliestJourney.Root.DepartureTime());
             }
+
             if (filter == null)
             {
                 filter = eas;
