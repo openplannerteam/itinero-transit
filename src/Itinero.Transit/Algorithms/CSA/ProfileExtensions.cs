@@ -73,7 +73,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 filter = las;
             }
 
-            bool lastArrivalTimeSet = lastArrivalTime != 0;
+            var lastArrivalTimeSet = lastArrivalTime != 0;
             if (!lastArrivalTimeSet)
             {
                 lastArrivalTime = departureTime + 24 * 60 * 60;
