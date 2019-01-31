@@ -10,7 +10,7 @@ namespace Itinero.Transit.Data
     /// <summary>
     /// Contains extension methods for the stops db.
     /// </summary>
-    internal static class StopsDbExtensions
+    public static class StopsDbExtensions
     {
         public static IEnumerable<IStop> LocationsInRange(
             this StopsDb stopsDb, IStop stop, float maxDistance)

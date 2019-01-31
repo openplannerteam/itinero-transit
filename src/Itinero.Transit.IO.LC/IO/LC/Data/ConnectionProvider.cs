@@ -12,7 +12,7 @@ namespace Itinero.Transit.IO.LC.CSA.ConnectionProviders
     ///  whom offers the public transport data in LinkedConnections-format.
     ///  The ontology can be found here
     ///  </summary>
-    internal class ConnectionProvider
+    public class ConnectionProvider
     {
         private readonly JsonLdProcessor _processor;
 

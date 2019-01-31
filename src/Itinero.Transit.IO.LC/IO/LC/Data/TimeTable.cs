@@ -11,7 +11,7 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
     /// Represents one entire page of connections, based on a LinkedConnections JSON-LD
     /// </summary>
     [Serializable]
-    internal class TimeTable : LinkedObject
+    public class TimeTable : LinkedObject
     {
         private Uri Next { get; set; }
         private Uri Prev { get; set; }

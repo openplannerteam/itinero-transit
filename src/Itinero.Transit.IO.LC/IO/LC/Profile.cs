@@ -14,18 +14,8 @@ namespace Itinero.Transit.IO.LC.CSA
     /// </summary>
     public class Profile
     {
-        internal readonly List<ConnectionProvider> ConnectionsProvider;
-        internal readonly List<LocationProvider> LocationProvider;
-
-        /// <summary>
-        /// Indicates the radius within which stops are searched during the
-        /// profile scan algorithms.
-        ///
-        /// Every stop that is reachable along the way is used to search stops close by 
-        /// </summary>
-        internal int IntermodalStopSearchRadius = 250;
-
-        internal int EndpointSearchRadius = 500;
+        public readonly List<ConnectionProvider> ConnectionsProvider;
+        public readonly List<LocationProvider> LocationProvider;
 
         internal Profile(ConnectionProvider[] connectionsProvider,
             LocationProvider[] locationProvider)
