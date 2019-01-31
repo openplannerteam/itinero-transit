@@ -25,9 +25,11 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
             var transitDb = new TransitDb();
 
             // load connections for the current day.
-            profile.AddDataTo(transitDb, input.date, input.date + input.window,
+            var w = transitDb.GetWriter();
+            profile.AddAllLocationsTo(w, Console.Error.WriteLine);
+            profile.AddAllConnectionsTo(w, input.date, input.date + input.window,
                 Console.WriteLine);
-
+            w.Close();
             return transitDb;
         }
     }
