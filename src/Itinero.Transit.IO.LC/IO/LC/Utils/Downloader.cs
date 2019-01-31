@@ -1,18 +1,15 @@
-﻿ using System;
+﻿using System;
 using System.IO;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using CacheCow.Client;
-using CacheCow.Client.FileCacheStore;
-using CacheCow.Common;
-using CacheCow.Client.Headers;
 using Itinero.Transit.Logging;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
+
 namespace Itinero.Transit.IO.LC.CSA.Utils
 {
     /// <summary>
@@ -27,24 +24,12 @@ namespace Itinero.Transit.IO.LC.CSA.Utils
         // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public string AlwaysReturn = null;
 
-        public int DownloadCounter;
-        public int CacheHits;
-        public double TimeDownloading;
 
         private readonly HttpClient _client;
 
-        public Downloader(bool caching = false)
+        public Downloader()
         {
-            if (caching)
-            {
-                var store = new FileStoreBugFixer("cache");
-                _client = store.CreateClient();
-            }
-            else
-            {
-                _client = new HttpClient();
-            }
-
+            _client = new HttpClient();
             _client.DefaultRequestHeaders.Add("user-agent",
                 "Itinero-Transit-dev/0.0.2 (anyways.eu; pieter@anyways.eu)");
             _client.DefaultRequestHeaders.Add("accept", "application/ld+json");
@@ -77,7 +62,6 @@ namespace Itinero.Transit.IO.LC.CSA.Utils
                 uri = new Uri(u.Substring(0, u.Length - uri.Fragment.Length));
             }
 
-            DownloadCounter++;
             var start = DateTime.Now;
 
             Log.Information($"Downloading {uri}...");
@@ -95,17 +79,11 @@ namespace Itinero.Transit.IO.LC.CSA.Utils
 
                 var end = DateTime.Now;
 
-                var cacheHit = response.Headers.GetCacheCowHeader() != null &&
-                               response.Headers.GetCacheCowHeader().ToString().Contains("did-not-exist=false");
-                if (cacheHit)
-                {
-                    CacheHits++;
-                }
+               
 
                 var timeNeeded = (end - start).TotalMilliseconds / 1000;
                 Log.Information(
-                    $"Downloading {uri} completed in {timeNeeded}s, got {data.Length} bytes; hit cache: {cacheHit}");
-                TimeDownloading += timeNeeded;
+                    $"Downloading {uri} completed in {timeNeeded}s, got {data.Length} bytes");
                 return data;
             }
             catch (Exception e)
@@ -115,41 +93,5 @@ namespace Itinero.Transit.IO.LC.CSA.Utils
             }
         }
 
-        // ReSharper disable once UnusedMember.Global
-        public void ResetCounters()
-        {
-            TimeDownloading = 0;
-            DownloadCounter = 0;
-            CacheHits = 0;
-        }
-    }
-
-
-    internal class FileStoreBugFixer : FileStore
-    {
-        public FileStoreBugFixer(string cacheRoot) : base(cacheRoot)
-        {
-        }
-
-        public new Task AddOrUpdateAsync(CacheKey key, HttpResponseMessage response)
-        {
-            /*
-             * TODO Fix this when upstream fixes the issue
-             * So, as it turns out, there is some bug in HttpResponseMessage.
-             * Deserializing does not work well and crashes on the 'Server' header.
-             *
-             * Not so useful thus....
-             *
-             * As a workaround, I throw away the server-header. We don't need it anyway
-             *
-             * See issues:
-             * https://github.com/aliostad/CacheCow/issues/213
-             * https://github.com/dotnet/corefx/issues/31918
-             * https://github.com/aspnet/AspNetWebStack/issues/193#issuecomment-418529386
-             */
-
-            response.Headers.Remove("Server");
-            return base.AddOrUpdateAsync(key, response);
-        }
     }
 }

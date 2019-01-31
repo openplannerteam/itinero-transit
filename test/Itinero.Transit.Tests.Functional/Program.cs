@@ -82,8 +82,9 @@ namespace Itinero.Transit.Tests.Functional
             
             
             Log.Information("Starting the Functional Tests...");
-            Log.Information("If you get a deserialization-exception: clear the cache");
 
+            new MultipleLoadTest().Run(0);
+            
             var date = DateTime.Now.Date; // LOCAL TIMES! //
             // test loading a connections db
             var db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
