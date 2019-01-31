@@ -18,6 +18,10 @@ namespace Itinero.Transit.Data
         private readonly Action<TransitDbWriter, DateTime, DateTime> _updateTimeFrame;
         private readonly DateTracker _loadedTimeWindows = new DateTracker();
 
+        /// <summary>
+        /// Construct a TransitDb, optionally with a callback to load something in the database
+        /// </summary>
+        /// <param name="updateTimeFrame">This function should add data via the writer. The writer will be closed when the callback finishes</param>
         public TransitDb(Action<TransitDbWriter, DateTime, DateTime> updateTimeFrame = null)
         {
             _updateTimeFrame = updateTimeFrame;
