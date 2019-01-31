@@ -73,7 +73,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 lastArrivalTime = departureTime + 24 * 60 * 60;
             }
 
-            // Make sure that enough entries are laoded
+            // Make sure that enough entries are loaded
             profile = profile.LoadWindow(departureTime.FromUnixTime(), lastArrivalTime.FromUnixTime());
             var eas = new EarliestConnectionScan<T>(
                 depLocation, arrivalLocation,

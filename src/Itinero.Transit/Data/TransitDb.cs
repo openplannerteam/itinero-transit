@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Itinero.Transit.Data.Walks;
+using Itinero.Transit.Logging;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
 namespace Itinero.Transit.Data
@@ -51,7 +53,7 @@ namespace Itinero.Transit.Data
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <param name="refresh">If true, overwrites. If false, only the gaps will be filled</param>
-        public void UpdateTimeFrame(DateTime start, DateTime end, bool refresh=false)
+        public void UpdateTimeFrame(DateTime start, DateTime end, bool refresh = false)
         {
             var gaps = new List<(DateTime star, DateTime end)>();
             if (refresh)
@@ -63,11 +65,17 @@ namespace Itinero.Transit.Data
                 gaps = _loadedTimeWindows.Gaps(start, end);
             }
 
-            var writer = GetWriter();
-            foreach (var (wstart, wend) in gaps)
+            if (!gaps.Any())
             {
-                _updateTimeFrame.Invoke(writer, wstart, wend);
-                _loadedTimeWindows.AddTimeWindow(wstart, wend);
+                // No work to do
+                return;
+            }
+
+            var writer = GetWriter();
+            foreach (var (wStart, wEnd) in gaps)
+            {
+                _updateTimeFrame.Invoke(writer, wStart, wEnd);
+                _loadedTimeWindows.AddTimeWindow(wStart, wEnd);
             }
 
             writer.Close();

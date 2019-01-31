@@ -92,7 +92,7 @@ namespace Itinero.Transit.IO.LC
                 },
                 connection =>
                 {
-                    _onError.Invoke("A connection is mentioned multiple times");
+                    _onError.Invoke($"A connection is mentioned multiple times: {connection.Uri}");
                     return false;
                 },
                 (connection, errorMsg) =>

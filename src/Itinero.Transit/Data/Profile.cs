@@ -41,7 +41,7 @@ namespace Itinero.Transit.Data
             TransitDb = transitDb;
         }
 
-        public Profile<T> LoadWindow(DateTime start, DateTime end)
+        public Profile<T> LoadWindow(DateTime start, DateTime end, bool refresh=false)
         {
             if (TransitDb == null)
             {
@@ -49,7 +49,7 @@ namespace Itinero.Transit.Data
                 // If not - let it crash and burn
                 return this;
             }
-            TransitDb.UpdateTimeFrame(start, end);
+            TransitDb.UpdateTimeFrame(start, end, refresh);
             return new Profile<T>(TransitDb, InternalTransferGenerator, WalksGenerator, StatsFactory,
                 ProfileComparator);
         }

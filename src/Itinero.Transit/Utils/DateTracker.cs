@@ -59,7 +59,7 @@ namespace Itinero.Transit.Data.Walks
             }
 
 
-            if (end > currentStart)
+            if (end >= currentStart)
             {
                 // This new window overlaps with the window currently at position 'insertionIndex'
                 // We reuse this index
@@ -116,7 +116,7 @@ namespace Itinero.Transit.Data.Walks
 
             // Select the smallest index so that 'start' is smaller then allWindows[index].start
             var index = _allWindows.Count;
-            for (int i = 0; i < _allWindows.Count; i++)
+            for (var i = 0; i < _allWindows.Count; i++)
             {
                 if (_allWindows[i].start >= start)
                 {
@@ -133,7 +133,7 @@ namespace Itinero.Transit.Data.Walks
                 start = _allWindows[index - 1].end;
             }
 
-            for (int i = index; i < _allWindows.Count; i++)
+            for (var i = index; i < _allWindows.Count; i++)
             {
                 if (_allWindows[i].start > end)
                 {
