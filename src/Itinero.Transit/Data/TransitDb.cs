@@ -55,7 +55,7 @@ namespace Itinero.Transit.Data
         /// <param name="refresh">If true, overwrites. If false, only the gaps will be filled</param>
         public void UpdateTimeFrame(DateTime start, DateTime end, bool refresh = false)
         {
-            var gaps = new List<(DateTime star, DateTime end)>();
+            var gaps = new List<(DateTime , DateTime)>();
             if (refresh)
             {
                 gaps.Add((start, end));
@@ -74,6 +74,7 @@ namespace Itinero.Transit.Data
             var writer = GetWriter();
             foreach (var (wStart, wEnd) in gaps)
             {
+                
                 _updateTimeFrame.Invoke(writer, wStart, wEnd);
                 _loadedTimeWindows.AddTimeWindow(wStart, wEnd);
             }

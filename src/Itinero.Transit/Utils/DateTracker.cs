@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Itinero.Transit.Data.Walks
 {
@@ -115,7 +116,7 @@ namespace Itinero.Transit.Data.Walks
             var result = new List<(DateTime start, DateTime end)>();
 
             // Select the smallest index so that 'start' is smaller then allWindows[index].start
-            var index = _allWindows.Count;
+            var index = _allWindows.Count-1;
             for (var i = 0; i < _allWindows.Count; i++)
             {
                 if (_allWindows[i].start >= start)
@@ -124,7 +125,14 @@ namespace Itinero.Transit.Data.Walks
                     break;
                 }
             }
-            
+
+            if (_allWindows[index].start <= start && _allWindows[index].end >= end)
+            {
+                // The window is completely covered
+                // No gaps to find here!
+                return result;
+            }
+
             // Did we start in another window?
             if (index > 0 && _allWindows[index - 1].end > start)
             {
@@ -140,8 +148,8 @@ namespace Itinero.Transit.Data.Walks
                     result.Add((start, end));
                     return result;
                 }
-                
-                
+
+
                 result.Add((start, _allWindows[i].start));
                 start = _allWindows[i].end;
                 if (start >= end)
@@ -150,10 +158,10 @@ namespace Itinero.Transit.Data.Walks
                     return result;
                 }
             }
-            
+
             // At last: add the last fragment
             result.Add((start, end));
-            
+
 
             return result;
         }

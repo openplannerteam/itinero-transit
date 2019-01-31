@@ -39,6 +39,7 @@ namespace Itinero.Transit.Tests.utils
             Assert.Equal((d.AddMinutes(-60), d.AddMinutes(45)), dt.TimeWindows()[0]);
         }
 
+
         [Fact]
         public void TestGaps()
         {
@@ -57,6 +58,19 @@ namespace Itinero.Transit.Tests.utils
             gaps = dt.Gaps(d.AddMinutes(-15), d.AddMinutes(45));
             Assert.Single(gaps);
             Assert.Equal((d.AddMinutes(-15), d), gaps[0]);
+        }
+
+
+        [Fact]
+        public void TestGaps2()
+        {
+            var dt = new DateTracker();
+            var d = DateTime.Today;
+
+            dt.AddTimeWindow(d, d.AddDays(2));
+
+            var gaps = dt.Gaps(d.AddHours(10), d.AddHours(34));
+            Assert.Empty(gaps);
         }
     }
 }
