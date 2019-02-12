@@ -83,7 +83,7 @@ namespace Itinero.Transit.Tests.Functional
             
             Log.Information("Starting the Functional Tests...");
 
-            new MultipleLoadTest().Run(0);
+         // TODO RE-ENABLE   new MultipleLoadTest().Run(0);
             
             var date = DateTime.Now.Date; // LOCAL TIMES! //
             // test loading a connections db
