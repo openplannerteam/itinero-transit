@@ -9,6 +9,105 @@ namespace Itinero.Transit.Algorithms.CSA
 {
     public static class ProfileExtensions
     {
+
+
+        /// <summary>
+        /// Calculates all journeys which depart at 'from' at the given departure time.
+        ///
+        /// Performs an Earliest Arrival Scan till as long as 'lastArrival' is not passed.
+        /// </summary>
+        /// <param name="profile"></param>
+        /// <param name="from"></param>
+        /// <param name="departure"></param>
+        /// <param name="lastArrival"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> Isochrone<T>
+            (this Profile<T> profile, string from, DateTime departure, DateTime lastArrival)
+            where T : IJourneyStats<T>
+        {
+
+            profile = profile.LoadWindow(departure, lastArrival);
+            
+            var reader = profile.TransitDbSnapShot.StopsDb.GetReader();
+            if (!reader.MoveTo(from)) throw new ArgumentException($"Departure location {from} was not found");
+            var fromId = reader.Id;
+
+            
+            /*
+             * We construct an Earliest Connection Scan.
+             * A bit peculiar: there is _no_ arrival station specified.
+             * This will cause EAS to scan all connections until 'lastArrival' has been reached;
+             * to conclude that 'no journey to any of the specified arrival stations was found'.
+             *
+             * EAS.calculateJourneys will thus be null - but meanwhile every reachable station will be marked.
+             * And it is exactly that which we need!
+             */
+            var eas = new EarliestConnectionScan<T>(
+                new List<(uint localTileId, uint localId)>{fromId},
+                new List<(uint localTileId, uint localId)>{}, 
+                departure.ToUnixTime(), lastArrival.ToUnixTime(),
+                profile
+            );
+            eas.CalculateJourney();
+
+            return eas.GetAllJourneys();
+        }
+        
+        /// <summary>
+        /// Calculates all journeys which arrive at 'to' at last at the given arrival time.
+        ///
+        /// Performs a Latest Arrival Scan till as long as 'lastArrival' is not passed.
+        /// </summary>
+        /// <param name="profile"></param>
+        /// <param name="from"></param>
+        /// <param name="departure"></param>
+        /// <param name="lastArrival"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> IsochroneLatestArrival<T>
+            (this Profile<T> profile, string to, DateTime departure, DateTime lastArrival)
+            where T : IJourneyStats<T>
+        {
+
+            profile = profile.LoadWindow(departure, lastArrival);
+            
+            var reader = profile.TransitDbSnapShot.StopsDb.GetReader();
+            if (!reader.MoveTo(to)) throw new ArgumentException($"Departure location {to} was not found");
+            var toId = reader.Id;
+
+            
+            /*
+             * Same principle as the other IsochroneFunction
+             */
+            var las = new LatestConnectionScan<T>(
+                new List<(uint localTileId, uint localId)>{},
+                new List<(uint localTileId, uint localId)>{toId}, 
+                departure.ToUnixTime(), lastArrival.ToUnixTime(),
+                profile
+            );
+            las.CalculateJourney();
+
+            return las.GetAllJourneys();
+        }
+        
+        /// <summary>
+        ///
+        /// Calculates the profiles Journeys for the given coordinates.
+        /// 
+        ///  Starts with an EAS, then gives profiled journeys.
+        /// 
+        ///  Note that the profile scan might scan in a window far smaller then the last-arrivaltime
+        /// 
+        /// </summary>
+        /// <param name="profile"></param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="departure"></param>
+        /// <param name="arrival"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public static IEnumerable<Journey<T>> CalculateJourneys<T>
         (this Profile<T> profile, string from, string to,
             DateTime? departure = null, DateTime? arrival = null) where T : IJourneyStats<T>

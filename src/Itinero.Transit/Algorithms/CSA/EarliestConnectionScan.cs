@@ -391,5 +391,12 @@ namespace Itinero.Transit.Algorithms.CSA
                 ? _s[stop]
                 : Journey<T>.InfiniteJourney;
         }
+
+        public IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> GetAllJourneys()
+        {
+            return _s;
+        }
+        
+        
     }
 }

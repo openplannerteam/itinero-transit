@@ -83,7 +83,7 @@ namespace Itinero.Transit.Tests.Functional
             
             Log.Information("Starting the Functional Tests...");
 
-         // TODO RE-ENABLE   new MultipleLoadTest().Run(0);
+        //    new MultipleLoadTest().Run(0);
             
             var date = DateTime.Now.Date; // LOCAL TIMES! //
             // test loading a connections db
@@ -101,6 +101,7 @@ namespace Itinero.Transit.Tests.Functional
 
             ConnectionsDbDepartureEnumeratorTest.Default.Run(db);
             TestClosestStopsAndRouting(db);
+            new IsochroneTest().Run((db, Brugge, Gent, date.Date.AddHours(12), date.Date.AddHours(14)));
             AlgorithmTests(db, date, tests);
         }
 

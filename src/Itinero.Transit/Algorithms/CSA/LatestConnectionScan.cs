@@ -30,10 +30,11 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly IOtherModeGenerator _transferPolicy;
 
         /// <summary>
-        /// This dictionary keeps, for each stop, the journey that arrives as early as possible
+        /// This dictionary keeps, for each stop, the journey that arrives as late as possible
         /// </summary>
         private readonly Dictionary<(uint localTileId, uint localId), Journey<T>> _s =
             new Dictionary<(uint localTileId, uint localId), Journey<T>>();
+
 
         /// <summary>
         /// Keeps track of where we are on each trip, thus if we wouldn't leave a bus once we're on it
@@ -84,6 +85,7 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 throw new ArgumentException("Departure time falls after arrival time");
             }
+
             _earliestDeparture = earliestDeparture;
             _lastDeparture = lastDeparture;
             _connectionsProvider = profile.TransitDbSnapShot.ConnectionsDb;
@@ -248,7 +250,8 @@ namespace Itinero.Transit.Algorithms.CSA
                 else
                 {
                     var oldJourney = _s[c.DepartureStop];
-                    if (journeyFromDeparture.Time < oldJourney.Time)
+                    
+                    if (journeyFromDeparture.Time > oldJourney.Time)
                     {
                         _s[c.DepartureStop] = journeyFromDeparture;
                     }
@@ -326,6 +329,11 @@ namespace Itinero.Transit.Algorithms.CSA
             return _s.ContainsKey(location)
                 ? _s[location]
                 : Journey<T>.NegativeInfiniteJourney;
+        }
+
+        public IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> GetAllJourneys()
+        {
+            return _s;
         }
     }
 }
