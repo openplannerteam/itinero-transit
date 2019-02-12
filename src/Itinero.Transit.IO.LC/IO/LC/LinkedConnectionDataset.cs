@@ -12,19 +12,19 @@ namespace Itinero.Transit.IO.LC.CSA
     /// Which PT-operators does he want to take? Which doesn't he?
     /// How fast does he walk? All these are stored here
     /// </summary>
-    public class Profile
+    public class LinkedConnectionDataset
     {
         public readonly List<ConnectionProvider> ConnectionsProvider;
         public readonly List<LocationProvider> LocationProvider;
 
-        internal Profile(ConnectionProvider[] connectionsProvider,
+        public LinkedConnectionDataset(ConnectionProvider[] connectionsProvider,
             LocationProvider[] locationProvider)
         {
             ConnectionsProvider = new List<ConnectionProvider>(connectionsProvider);
             LocationProvider = new List<LocationProvider>(locationProvider);
         }
 
-        internal Profile(List<Profile> sources)
+        public LinkedConnectionDataset(List<LinkedConnectionDataset> sources)
         {
             ConnectionsProvider = new List<ConnectionProvider>();
             LocationProvider = new List<LocationProvider>();
@@ -41,7 +41,7 @@ namespace Itinero.Transit.IO.LC.CSA
         ///  Creates a default profile, based on the locationsfragment-URL and conenctions-location fragment 
         /// </summary>
         /// <returns></returns>
-        internal Profile(Uri connectionsLink,
+        public LinkedConnectionDataset(Uri connectionsLink,
             Uri locationsUri,
             Downloader loader = null
         )

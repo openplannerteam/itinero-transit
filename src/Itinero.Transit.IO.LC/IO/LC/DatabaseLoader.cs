@@ -31,25 +31,25 @@ namespace Itinero.Transit.IO.LC
         }
 
 
-        public void AddAllLocations(Profile profile)
+        public void AddAllLocations(LinkedConnectionDataset linkedConnectionDataset)
         {
             var count = 0;
             var batchCount = 1;
-            foreach (var locationsFragment in profile.LocationProvider)
+            foreach (var locationsFragment in linkedConnectionDataset.LocationProvider)
             {
                 batchCount++;
                 foreach (var location in locationsFragment.Locations)
                 {
                     AddLocation(location);
                     count++;
-                    _locationsLogger?.Ping(count, locationsFragment.Locations.Count, batchCount, profile.LocationProvider.Count);
+                    _locationsLogger?.Ping(count, locationsFragment.Locations.Count, batchCount, linkedConnectionDataset.LocationProvider.Count);
                 }
-                _locationsLogger?.Ping(count, locationsFragment.Locations.Count, batchCount, profile.LocationProvider.Count);
+                _locationsLogger?.Ping(count, locationsFragment.Locations.Count, batchCount, linkedConnectionDataset.LocationProvider.Count);
 
             }
         }
 
-        public void AddAllConnections(Profile p, DateTime startDate, DateTime endDate)
+        public void AddAllConnections(LinkedConnectionDataset p, DateTime startDate, DateTime endDate)
         {
             for (int i = 0; i < p.ConnectionsProvider.Count; i++)
             {
