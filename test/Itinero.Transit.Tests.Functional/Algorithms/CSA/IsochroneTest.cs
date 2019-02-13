@@ -35,7 +35,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var timeNeeded = found[checkId].Time.FromUnixTime() - input.departureTime;
             Console.WriteLine($"Found route in the forward isochrone line between Bruges and Ghent: \n{found[checkId].ToString(reader)}");
             Assert.True(timeNeeded < TimeSpan.FromMinutes(45));
-            
+
+
+            found = null;
             found = profile.IsochroneLatestArrival(input.stopId, input.departureTime, input.arrivalTime);
 
             Assert.True(found.Count() > 100);

@@ -9,12 +9,14 @@ namespace Itinero.Transit.Algorithms.CSA
 {
     public static class ProfileExtensions
     {
-
-
         /// <summary>
         /// Calculates all journeys which depart at 'from' at the given departure time.
         ///
         /// Performs an Earliest Arrival Scan till as long as 'lastArrival' is not passed.
+        ///
+        /// Note that, if a journey contains choices (e.g. multiple transfer opportunities but same performance overall),
+        /// the Journey will contain a 'Choice'-element
+        /// 
         /// </summary>
         /// <param name="profile"></param>
         /// <param name="from"></param>
@@ -26,14 +28,13 @@ namespace Itinero.Transit.Algorithms.CSA
             (this Profile<T> profile, string from, DateTime departure, DateTime lastArrival)
             where T : IJourneyStats<T>
         {
-
             profile = profile.LoadWindow(departure, lastArrival);
-            
+
             var reader = profile.TransitDbSnapShot.StopsDb.GetReader();
             if (!reader.MoveTo(from)) throw new ArgumentException($"Departure location {from} was not found");
             var fromId = reader.Id;
 
-            
+
             /*
              * We construct an Earliest Connection Scan.
              * A bit peculiar: there is _no_ arrival station specified.
@@ -44,20 +45,23 @@ namespace Itinero.Transit.Algorithms.CSA
              * And it is exactly that which we need!
              */
             var eas = new EarliestConnectionScan<T>(
-                new List<(uint localTileId, uint localId)>{fromId},
-                new List<(uint localTileId, uint localId)>{}, 
+                new List<(uint localTileId, uint localId)> {fromId},
+                new List<(uint localTileId, uint localId)> { },
                 departure.ToUnixTime(), lastArrival.ToUnixTime(),
                 profile
             );
             eas.CalculateJourney();
+            
+            
 
             return eas.GetAllJourneys();
         }
-        
+
         /// <summary>
         /// Calculates all journeys which arrive at 'to' at last at the given arrival time.
         ///
         /// Performs a Latest Arrival Scan till as long as 'lastArrival' is not passed.
+        ///
         /// </summary>
         /// <param name="profile"></param>
         /// <param name="from"></param>
@@ -65,32 +69,42 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <param name="lastArrival"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> IsochroneLatestArrival<T>
+        public static Dictionary<(uint localTileId, uint localId), Journey<T>> IsochroneLatestArrival<T>
             (this Profile<T> profile, string to, DateTime departure, DateTime lastArrival)
             where T : IJourneyStats<T>
         {
-
             profile = profile.LoadWindow(departure, lastArrival);
-            
+
             var reader = profile.TransitDbSnapShot.StopsDb.GetReader();
             if (!reader.MoveTo(to)) throw new ArgumentException($"Departure location {to} was not found");
             var toId = reader.Id;
 
-            
+
             /*
              * Same principle as the other IsochroneFunction
              */
             var las = new LatestConnectionScan<T>(
-                new List<(uint localTileId, uint localId)>{},
-                new List<(uint localTileId, uint localId)>{toId}, 
+                new List<(uint localTileId, uint localId)> { },
+                new List<(uint localTileId, uint localId)> {toId},
                 departure.ToUnixTime(), lastArrival.ToUnixTime(),
                 profile
             );
             las.CalculateJourney();
 
-            return las.GetAllJourneys();
+            var allJourneys = las.GetAllJourneys();
+
+
+            var reversedJourneys = new Dictionary<(uint localTileId, uint localId), Journey<T>>();
+            foreach (var pair in allJourneys)
+            {
+                // Due to the nature of LAS, there can be no choices in the journeys; reversal will only return one value
+                var prototype = pair.Value.Reversed()[0];
+                reversedJourneys.Add(pair.Key, prototype);
+            }
+
+            return reversedJourneys;
         }
-        
+
         /// <summary>
         ///
         /// Calculates the profiles Journeys for the given coordinates.
