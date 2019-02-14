@@ -26,9 +26,9 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
 
             // load connections for the current day.
             var w = transitDb.GetWriter();
-            profile.AddAllLocationsTo(w, Console.Error.WriteLine);
+            profile.AddAllLocationsTo(w, Serilog.Log.Warning);
             profile.AddAllConnectionsTo(w, input.date, input.date + input.window,
-                Console.WriteLine);
+                Serilog.Log.Warning);
             w.Close();
             return transitDb;
         }

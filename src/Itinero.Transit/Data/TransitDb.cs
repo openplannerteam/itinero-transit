@@ -13,10 +13,6 @@ namespace Itinero.Transit.Data
     /// </summary>
     public class TransitDb
     {
-        private readonly StopsDb _stopsDb;
-        private readonly ConnectionsDb _connectionsDb;
-        private readonly TripsDb _tripsDb;
-
         private readonly Action<TransitDbWriter, DateTime, DateTime> _updateTimeFrame;
         private readonly DateTracker _loadedTimeWindows = new DateTracker();
 
@@ -27,20 +23,16 @@ namespace Itinero.Transit.Data
         public TransitDb(Action<TransitDbWriter, DateTime, DateTime> updateTimeFrame = null)
         {
             _updateTimeFrame = updateTimeFrame;
-            _stopsDb = new StopsDb();
-            _connectionsDb = new ConnectionsDb();
-            _tripsDb = new TripsDb();
+            var stopsDb = new StopsDb();
+            var connectionsDb = new ConnectionsDb();
+            var tripsDb = new TripsDb();
 
-            _latestSnapshot = new TransitDbSnapShot(_stopsDb, _tripsDb, _connectionsDb);
+            _latestSnapshot = new TransitDbSnapShot(stopsDb, tripsDb, connectionsDb);
         }
 
         private TransitDb(StopsDb stopsDb, TripsDb tripsDb, ConnectionsDb connectionsDb)
         {
-            _stopsDb = stopsDb;
-            _connectionsDb = connectionsDb;
-            _tripsDb = tripsDb;
-
-            _latestSnapshot = new TransitDbSnapShot(_stopsDb, _tripsDb, _connectionsDb);
+            _latestSnapshot = new TransitDbSnapShot(stopsDb, tripsDb, connectionsDb);
         }
 
         private readonly object _writerLock = new object();
@@ -188,9 +180,9 @@ namespace Itinero.Transit.Data
             {
                 _parent = parent;
 
-                _stopsDb = parent._stopsDb.Clone();
-                _tripsDb = parent._tripsDb.Clone();
-                _connectionsDb = parent._connectionsDb.Clone();
+                _stopsDb = parent._latestSnapshot.StopsDb.Clone();
+                _tripsDb = parent._latestSnapshot.TripsDb.Clone();
+                _connectionsDb = parent._latestSnapshot.ConnectionsDb.Clone();
             }
 
             /// <summary>
