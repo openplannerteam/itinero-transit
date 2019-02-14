@@ -15,23 +15,24 @@ namespace Itinero.Transit.Tests.Functional.Data
 
             void UpdateTimeFrame(TransitDb.TransitDbWriter w, DateTime start, DateTime end)
             {
-                sncb.AddAllConnectionsTo(w, start, end, Console.Error.WriteLine);
+                sncb.AddAllConnectionsTo(w, start, end, Serilog.Log.Warning);
             }
 
             var db = new TransitDb(UpdateTimeFrame);
 
             var writer = db.GetWriter();
-            sncb.AddAllLocationsTo(writer, Console.Error.WriteLine, null);
+            sncb.AddAllLocationsTo(writer, Serilog.Log.Warning, null);
             writer.Close();
 
+            var hours = 24;
 
-            db.UpdateTimeFrame(DateTime.Today, DateTime.Today.AddHours(24));
+            db.UpdateTimeFrame(DateTime.Today, DateTime.Today.AddHours(hours));
             Test(db);
 
-            db.UpdateTimeFrame(DateTime.Today.AddHours(24), DateTime.Today.AddHours(48));
+            db.UpdateTimeFrame(DateTime.Today.AddDays(1), DateTime.Today.AddDays(1).AddHours(hours));
             Test(db);
 
-            db.UpdateTimeFrame(DateTime.Today.AddHours(-24), DateTime.Today.AddHours(0));
+            db.UpdateTimeFrame(DateTime.Today.AddHours(-hours), DateTime.Today.AddHours(0));
             Test(db);
 
             return 1;
@@ -49,7 +50,10 @@ namespace Itinero.Transit.Tests.Functional.Data
             while (enumerator.DepartureTime < endTime)
             {
                 count++;
-                enumerator.MoveNext();
+                if (!enumerator.MoveNext())
+                {
+                    break;
+                }
             }
 
             Assert.True(count > 0);

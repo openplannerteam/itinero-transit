@@ -141,6 +141,13 @@ namespace Itinero.Transit.Data.Walks
                 return result;
             }
 
+            if (index == _allWindows.Count - 1 && _allWindows[index].end <= start)
+            {
+                // The window falls completely at the end
+                result.Add((start, end));
+                return result;
+            }
+
             // Did we start in another window?
             if (index > 0 && _allWindows[index - 1].end > start)
             {

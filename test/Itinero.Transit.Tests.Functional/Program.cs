@@ -87,6 +87,7 @@ namespace Itinero.Transit.Tests.Functional
             EnableLogging();
 
             Log.Information("Starting the Functional Tests...");
+            new MultipleLoadTest().Run(0);
             var date = DateTime.Now.Date; // LOCAL TIMES! //
 
 //*
@@ -219,29 +220,34 @@ namespace Itinero.Transit.Tests.Functional
                     return;
                 }
 
+                if (!string.IsNullOrEmpty(o))
+                {
+                    message = $"[{o}] {message}";
+                }
+
                 if (level == Logging.TraceEventType.Verbose.ToString().ToLower())
                 {
-                    Log.Debug($"[{o}] {level} - {message}");
+                    Log.Debug(message);
                 }
                 else if (level == Logging.TraceEventType.Information.ToString().ToLower())
                 {
-                    Log.Information($"[{o}] {level} - {message}");
+                    Log.Information(message);
                 }
                 else if (level == Logging.TraceEventType.Warning.ToString().ToLower())
                 {
-                    Log.Warning($"[{o}] {level} - {message}");
+                    Log.Warning(message);
                 }
                 else if (level == Logging.TraceEventType.Critical.ToString().ToLower())
                 {
-                    Log.Fatal($"[{o}] {level} - {message}");
+                    Log.Fatal(message);
                 }
                 else if (level == Logging.TraceEventType.Error.ToString().ToLower())
                 {
-                    Log.Error($"[{o}] {level} - {message}");
+                    Log.Error(message);
                 }
                 else
                 {
-                    Log.Debug($"[{o}] {level} - {message}");
+                    Log.Debug(message);
                 }
             };
         }

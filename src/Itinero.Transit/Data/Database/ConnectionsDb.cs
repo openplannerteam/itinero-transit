@@ -47,7 +47,7 @@ namespace Itinero.Transit.Data
         private readonly ArrayBase<byte> _data; // the connection data.
 
         // this stores the connections global id index.
-        private readonly int _globalIdHashSize = ushort.MaxValue;
+        private const int GlobalIdHashSize = ushort.MaxValue;
         private readonly ArrayBase<uint> _globalIdPointersPerHash;
         // ReSharper disable once RedundantDefaultMemberInitializer
         private uint _globalIdLinkedListPointer = 0;
@@ -97,7 +97,7 @@ namespace Itinero.Transit.Data
             _nextInternalId = 0;
 
             // initialize the ids reverse index.
-            _globalIdPointersPerHash = new MemoryArray<uint>(_globalIdHashSize);
+            _globalIdPointersPerHash = new MemoryArray<uint>(GlobalIdHashSize);
             for (var h = 0; h < _globalIdPointersPerHash.Length; h++)
             {
                 _globalIdPointersPerHash[h] = NoData;
@@ -374,7 +374,7 @@ namespace Itinero.Transit.Data
                     hash = hash * 31 + c;
                 }
 
-                return (uint) (hash % _globalIdHashSize);
+                return (uint) (hash % GlobalIdHashSize);
             }
         }
 
@@ -557,7 +557,7 @@ namespace Itinero.Transit.Data
             var arrivalWindowPointers = new MemoryArray<uint>(_arrivalWindowPointers.Length);
             arrivalWindowPointers.CopyFrom(_arrivalWindowPointers, _arrivalWindowPointers.Length);
             var arrivalPointers = new MemoryArray<uint>(_arrivalPointers.Length);
-            arrivalPointers.CopyFrom(arrivalPointers, arrivalPointers.Length);
+            arrivalPointers.CopyFrom(_arrivalPointers, _arrivalPointers.Length);
             
             return new ConnectionsDb((int)_windowSizeInSeconds, data, _nextInternalId, globalIds, tripIds, globalIdPointersPerHash, globalIdLinkedList,
                 departureWindowPointers, departurePointers, _departurePointer,
