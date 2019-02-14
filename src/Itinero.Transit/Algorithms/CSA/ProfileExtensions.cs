@@ -7,6 +7,11 @@ using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
+    
+    /// <summary>
+    /// This class is the main entry point to request routes as library user.
+    /// It exposes all the core algorithms in a consistent and easy to use way.
+    /// </summary>
     public static class ProfileExtensions
     {
         /// <summary>

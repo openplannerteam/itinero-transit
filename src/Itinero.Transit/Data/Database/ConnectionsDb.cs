@@ -374,7 +374,7 @@ namespace Itinero.Transit.Data
                     hash = hash * 31 + c;
                 }
 
-                return (uint) (hash % GlobalIdHashSize);
+                return hash % GlobalIdHashSize;
             }
         }
 

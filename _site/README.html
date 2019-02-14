@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>itinero-transit </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="itinero-transit ">
+    <meta name="generator" content="docfx 2.40.10.0">
+    
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet" href="styles/docfx.vendor.css">
+    <link rel="stylesheet" href="styles/docfx.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <meta property="docfx:navrel" content="toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="index.html">
+                <img id="logo" class="svg" src="logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="itinero-transit">itinero-transit</h1>
+
+<p><a href="https://build.anyways.eu/viewType.html?buildTypeId=anyways_Openplannerteam_ItineroTransit"><img src="https://build.anyways.eu/app/rest/builds/buildType:(id:anyways_Openplannerteam_ItineroTransit)/statusIcon" alt="Build status"></a></p>
+<p>This is a C# implementation of a client consuming <a href="https://linkedconnections.org/">Linked Connections(LC)</a> to plan transit routes. This is going to replace the currently unfinished <a href="https://github.com/itinero/transit">transit module</a> in <a href="http://www.itinero.tech/">tinero</a>.</p>
+<h2 id="transitdb">TransitDb</h2>
+<p>We have a slightly different approach than the other LC clients. We don't use LCs directly but we use an intermediate data structure between the route planning algorithms (CSA) and the source of the connections, being linked connections.</p>
+<p>The TransitDb is:</p>
+<ul>
+<li>A cache for connections</li>
+<li>A highly optimized data structure.</li>
+<li>A data structure that can be serialized to disk and accessed via memory-mapping.</li>
+<li>A data structure that can be updated while routeplanning is happening.</li>
+</ul>
+<p>It contains stops, connections and trips. The stops can be retrieved, updated or deleted by their IDs and queried by their geographical location. The connections can be enumerated either by their departure or arrival time and can be retrieved, updated or deleted by their ID.</p>
+<p>A high-level overview of how these things tie together:</p>
+<p><img src="docs/images/transit-db-lc-io-diagram.png" alt="transit-db-diagram"></p>
+<p>A transit db can request new data from its connection source and a connection source can notify the transit db if it there is new data available.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/README.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="styles/docfx.js"></script>
+    <script type="text/javascript" src="styles/main.js"></script>
+  </body>
+</html>

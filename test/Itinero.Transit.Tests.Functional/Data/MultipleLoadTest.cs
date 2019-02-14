@@ -2,7 +2,6 @@ using System;
 using Itinero.Transit.Data;
 using Itinero.Transit.IO.LC;
 using Itinero.Transit.IO.LC.CSA;
-using Itinero.Transit.IO.LC.CSA.Utils;
 using Xunit;
 
 namespace Itinero.Transit.Tests.Functional.Data

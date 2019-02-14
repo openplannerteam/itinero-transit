@@ -1,0 +1,1229 @@
+{
+  "homepages": [],
+  "source_base_path": "/home/pietervdvn/git/Itinero-Transit",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "log_codes": [
+        "InvalidFileLink"
+      ],
+      "type": "Conceptual",
+      "source_relative_path": "README.md",
+      "output": {
+        ".html": {
+          "relative_path": "README.html",
+          "hash": "if/CXAN0aM9uVazazElkDg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Algorithms.CSA.ProfileExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Algorithms.CSA.ProfileExtensions.html",
+          "hash": "lFg9My9DT7yE7LYxFb9+wA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Algorithms.CSA.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Algorithms.CSA.html",
+          "hash": "Rd2cakeZX4Vd5jOTOcOj2A=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Algorithms.Search.StopSearch.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Algorithms.Search.StopSearch.html",
+          "hash": "IFuzUwLevoyVhBLVNEr1Ww=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Algorithms.Search.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Algorithms.Search.html",
+          "hash": "WvkCRtnsF3sAdapZk4EIKA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.Attributes.Attribute.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.Attributes.Attribute.html",
+          "hash": "xqalxrXEzMF9sKiHBZgaLQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.Attributes.AttributeCollection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.Attributes.AttributeCollection.html",
+          "hash": "hyTMB/eJMl2DxOMRNl7LYA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.Attributes.AttributesIndex.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.Attributes.AttributesIndex.html",
+          "hash": "uXYzVZOtZp8cdlRbKOPQGQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.Attributes.AttributesIndexExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.Attributes.AttributesIndexExtensions.html",
+          "hash": "zZnbwJgsEC6MbK0ib9Imfg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.Attributes.AttributesIndexMode.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.Attributes.AttributesIndexMode.html",
+          "hash": "/zsDypgWX9pEGcK+DRLdAA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.Attributes.IAttributeCollection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.Attributes.IAttributeCollection.html",
+          "hash": "IX6ssLAgrELcWYK0QSEdCA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.Attributes.IReadonlyAttributeCollection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.Attributes.IReadonlyAttributeCollection.html",
+          "hash": "megfrk0CEOGvufLSwK9arw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.Attributes.MappedAttributesIndex.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.Attributes.MappedAttributesIndex.html",
+          "hash": "SqWNhnmR1C6hSTFXN9qzKg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.Attributes.MappedAttributesIndexProfile.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.Attributes.MappedAttributesIndexProfile.html",
+          "hash": "I4cWYsgJjOt13xGq6e92sQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.Attributes.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.Attributes.html",
+          "hash": "81fuUbG4GhvF5lieZIxvnA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.ConnectionsDb.ArrivalEnumerator.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.ConnectionsDb.ArrivalEnumerator.html",
+          "hash": "jYQvlQ2Nw9oiHXi7x3CPZw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.ConnectionsDb.ConnectionsDbReader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.ConnectionsDb.ConnectionsDbReader.html",
+          "hash": "1K/hyo3zP+XZTw+lPBzpqw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.ConnectionsDb.DepartureEnumerator.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.ConnectionsDb.DepartureEnumerator.html",
+          "hash": "SxpRBlVao5yyLnQOTcMYUg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.ConnectionsDb.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.ConnectionsDb.html",
+          "hash": "WcQ4+M7UD8MITa+kCsoDjQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.IConnection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.IConnection.html",
+          "hash": "5yPs4clgxTdD5KoYwNfjhQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.IStop.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.IStop.html",
+          "hash": "8NJjqPOKX2m60haJmnF6zQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.ITrip.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.ITrip.html",
+          "hash": "PpEBpztVWARPUSxC4CDK7Q=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.Profile-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.Profile-1.html",
+          "hash": "TejPO6zKxk7i+7CCKCQVwg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.Stop.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.Stop.html",
+          "hash": "o/dx6e77uYk66+2nHLemvQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.StopsDb.StopsDbReader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.StopsDb.StopsDbReader.html",
+          "hash": "GO49HvJd1wE7vM1OwanyAQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.StopsDb.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.StopsDb.html",
+          "hash": "z0p5LgGaIVvJkAeD1T96iw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.StopsDbExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.StopsDbExtensions.html",
+          "hash": "nRATIpf+jO18+W3iqDNv/A=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.TransitDb.TransitDbSnapShot.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.TransitDb.TransitDbSnapShot.html",
+          "hash": "A9LqOxBOqHfZypR4Z7hl6Q=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.TransitDb.TransitDbWriter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.TransitDb.TransitDbWriter.html",
+          "hash": "9eGXLbBFlA0N9X1CU1ThLA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.TransitDb.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.TransitDb.html",
+          "hash": "x8FBW9flJWsZWldCyC8GVA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.TransitDbExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.TransitDbExtensions.html",
+          "hash": "s289TjkrMMD89l83bBBNlw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.TripsDb.TripsDbReader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.TripsDb.TripsDbReader.html",
+          "hash": "TnO3ysN3Bh16ohxgxwkLLg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.TripsDb.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.TripsDb.html",
+          "hash": "zs9JDPrZzRIzHTAOG/jx7A=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.TripsDbExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.TripsDbExtensions.html",
+          "hash": "6/0pEjJFpa8BLRpBhQiIrQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.html",
+          "hash": "3tWynyoGQexLQrE447r2jA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.Walks.DateTracker.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.Walks.DateTracker.html",
+          "hash": "ktJtpkaE/xrCgz/2ORgoeg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.Walks.DistanceEstimate.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.Walks.DistanceEstimate.html",
+          "hash": "PRN61XZ5Z8Ggy5OJq7G8Qw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.Walks.IOtherModeGenerator.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.Walks.IOtherModeGenerator.html",
+          "hash": "5iG/4Oo54sVBrQRNXawQYA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.Walks.InternalTransferGenerator.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.Walks.InternalTransferGenerator.html",
+          "hash": "tmQBJswVEcm3iplfOo7zJA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.Walks.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.Walks.html",
+          "hash": "GT9eyg9WjTuZcHUkaAWVQw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Data.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Data.html",
+          "hash": "WJrATiA5E7Pf+GIHZCprhQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.DateTimeExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.DateTimeExtensions.html",
+          "hash": "9UfJi4Zrm4CNwE6MglfOew=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.Json.JourneyToGeoJsonExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.Json.JourneyToGeoJsonExtensions.html",
+          "hash": "3i0rXvfn9Ni1T4DXNRruJw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.Json.JsonTools.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.Json.JsonTools.html",
+          "hash": "4mzg9L2jUWM/XaJoLAacPA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.Json.JsonWriter.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.Json.JsonWriter.html",
+          "hash": "l8ANsMU/oORYLQard17t8w=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.Json.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.Json.html",
+          "hash": "VwIchztwSLXcZX4zam3APQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.LC.CSA.Belgium.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.LC.CSA.Belgium.html",
+          "hash": "rIZtB4p2DC7psWJYJ1HOgA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.LC.CSA.ConnectionProviders.ConnectionProvider.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.LC.CSA.ConnectionProviders.ConnectionProvider.html",
+          "hash": "oM75QCJ5hoDzHC68c0m9qg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.LC.CSA.ConnectionProviders.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.LC.CSA.ConnectionProviders.html",
+          "hash": "Gg06zK+iakqqvl2Abpe7cQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.LC.CSA.Connections.Connection.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.LC.CSA.Connections.Connection.html",
+          "hash": "tG24CITo4sHZEyPz+lV+zA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.LC.CSA.Connections.TimeTable.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.LC.CSA.Connections.TimeTable.html",
+          "hash": "kvEG7cw+anKVEsOiz/wf/w=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.LC.CSA.Connections.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.LC.CSA.Connections.html",
+          "hash": "RSNxtYrFdWvYypePA5OH+Q=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.html",
+          "hash": "WOua653YXupCUq4fzoDl5w=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.LC.CSA.LinkedObject.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.LC.CSA.LinkedObject.html",
+          "hash": "fbRAEAwj86pAO7J8p4INzA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.LC.CSA.LocationProviders.Location.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.LC.CSA.LocationProviders.Location.html",
+          "hash": "1u4TGwb3m62bkvurEM7M7g=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.LC.CSA.LocationProviders.LocationProvider.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.LC.CSA.LocationProviders.LocationProvider.html",
+          "hash": "+lZlkQmhg3nRR/khQ1xbLA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.LC.CSA.LocationProviders.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.LC.CSA.LocationProviders.html",
+          "hash": "86N44m4JXkBobMewsVidzQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.LC.CSA.Utils.Downloader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.LC.CSA.Utils.Downloader.html",
+          "hash": "LnGD/yF5oQc82VTVMZQL+Q=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.LC.CSA.Utils.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.LC.CSA.Utils.html",
+          "hash": "pwP1pposnwuCU3yWPd2P1g=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.LC.CSA.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.LC.CSA.html",
+          "hash": "oaoY/6Zzr/CxNCtz6G95Xg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.LC.LoggingOptions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.LC.LoggingOptions.html",
+          "hash": "Qy7yS0ZU41zx5cXsl2DIJQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.LC.ProfileExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.LC.ProfileExtensions.html",
+          "hash": "6w7xCNcFxZlif6uDH9XdqQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.IO.LC.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.IO.LC.html",
+          "hash": "Fd/bYECv8rZfV3TJapXRaQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Journeys.ChainedComparator-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Journeys.ChainedComparator-1.html",
+          "hash": "OmTY3pGRHaYpf/NK/2GN2g=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Journeys.IJourneyStats-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Journeys.IJourneyStats-1.html",
+          "hash": "9VzC/BAwIVwKOcZaMnanBw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Journeys.Journey-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Journeys.Journey-1.html",
+          "hash": "pi2M96bubzMqpXI8hYOC9A=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Journeys.JourneyExtensions.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Journeys.JourneyExtensions.html",
+          "hash": "Cd50i/dXSpENJY/IwFEuug=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Journeys.MinimizeTransfers.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Journeys.MinimizeTransfers.html",
+          "hash": "MOotB2tUHYPcQRJtWKqXJQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Journeys.MinimizeTravelTimes.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Journeys.MinimizeTravelTimes.html",
+          "hash": "j6F4YHpxO1y5wcmVz7RtfQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Journeys.ParetoCompare.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Journeys.ParetoCompare.html",
+          "hash": "eoCRuF8NwFAjgycMo3PXnQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Journeys.ProfileCompare.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Journeys.ProfileCompare.html",
+          "hash": "PDadtwnbR38UxWYN1BEheA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Journeys.ProfileTransferCompare.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Journeys.ProfileTransferCompare.html",
+          "hash": "nkS/cdctv2LBFnw2vS8mHA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Journeys.ProfiledStatsComparator-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Journeys.ProfiledStatsComparator-1.html",
+          "hash": "kg7I7tfFDGd6D3088o3c6g=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Journeys.StatsComparator-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Journeys.StatsComparator-1.html",
+          "hash": "2hdvavc5IRpj4t9ca0HFBA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Journeys.TransferStats.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Journeys.TransferStats.html",
+          "hash": "Y6bmGplJCZirjiNZjqt56Q=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Journeys.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Journeys.html",
+          "hash": "cyA/pucwezQQNaVYlV9trQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Logging.Log.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Logging.Log.html",
+          "hash": "r6gggg8rA7olo98zv9lRCw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Logging.Logger.LogActionFunction.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Logging.Logger.LogActionFunction.html",
+          "hash": "h+f5J4DSYXdWpqlOdd13IQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Logging.Logger.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Logging.Logger.html",
+          "hash": "ClDKcj7woZoY/D7k1MXW2Q=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Logging.TraceEventType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Logging.TraceEventType.html",
+          "hash": "OGd06TjkN9pUn5JpmSsNNw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.Logging.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.Logging.html",
+          "hash": "9AWnboRpluHA2Yk6kk550g=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.OsmTransferGenerator.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.OsmTransferGenerator.html",
+          "hash": "hiYKEn6ActgGbqDRJqhkCg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Itinero.Transit.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Itinero.Transit.html",
+          "hash": "CISBgTbCmMZ3Tz9Lxe4RJQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/index.html",
+          "hash": "LRwnL5Iry5KyPT3hxa/ygQ=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html",
+          "hash": "lne/7zcJgCRcwtbTZ8wmiA=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/Overview.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/Overview.html",
+          "hash": "UxQyne5lmrt/HKk6fG/eeg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/index.html",
+          "hash": "qvurwuIDgk07/cqfdBLghA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/intro.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/intro.html",
+          "hash": "Vs8rssPBgALH8nzG2AOonw=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/test.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/test.html",
+          "hash": "77ImAsl7ghXFUqAEpyO36A=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/test1.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/test1.html",
+          "hash": "lBZ/XDd92mg3ygVULNoXPA=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "articles/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "articles/toc.html",
+          "hash": "BLoKKfLzkQNMYPL4nAEVmw=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/index.html",
+          "hash": "Kt5bjw0Vgukbd5LGbxtB5g=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "docs/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "docs/toc.html",
+          "hash": "g/4eALzXf4F1Q0hO+TrZfg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/transit-db-lc-io-diagram.eap",
+      "output": {
+        "resource": {
+          "relative_path": "images/transit-db-lc-io-diagram.eap"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "images/transit-db-lc-io-diagram.png",
+      "output": {
+        "resource": {
+          "relative_path": "images/transit-db-lc-io-diagram.png"
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "log_codes": [
+        "InvalidFileLink"
+      ],
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html",
+          "hash": "9/WwW/fQAWtKEizF9NvkJg=="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html",
+          "hash": "yoixhgaAheZK0lbLI/JPZg=="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    }
+  ],
+  "incremental_info": [
+    {
+      "status": {
+        "can_incremental": true,
+        "incrementalPhase": "build",
+        "total_file_count": 0,
+        "skipped_file_count": 0
+      },
+      "processors": {
+        "TocDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        },
+        "ResourceDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": true,
+          "incrementalPhase": "build",
+          "total_file_count": 82,
+          "skipped_file_count": 82
+        },
+        "ConceptualDocumentProcessor": {
+          "can_incremental": true,
+          "incrementalPhase": "build",
+          "total_file_count": 9,
+          "skipped_file_count": 9
+        }
+      }
+    },
+    {
+      "status": {
+        "can_incremental": true,
+        "details": "Can support incremental post processing.",
+        "incrementalPhase": "postProcessing",
+        "total_file_count": 0,
+        "skipped_file_count": 0
+      },
+      "processors": {}
+    }
+  ],
+  "version_info": {},
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

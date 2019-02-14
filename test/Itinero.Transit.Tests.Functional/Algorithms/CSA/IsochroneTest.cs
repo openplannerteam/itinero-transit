@@ -37,7 +37,6 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             Assert.True(timeNeeded < TimeSpan.FromMinutes(45));
 
 
-            found = null;
             found = profile.IsochroneLatestArrival(input.stopId, input.departureTime, input.arrivalTime);
 
             Assert.True(found.Count() > 100);

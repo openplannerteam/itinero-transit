@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Itinero.Transit.Data.Walks;
-using Itinero.Transit.Logging;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
 namespace Itinero.Transit.Data

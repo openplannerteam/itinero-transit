@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Itinero.Transit.Data.Walks;
 using Xunit;
 
@@ -83,7 +82,7 @@ namespace Itinero.Transit.Tests.utils
             dt.AddTimeWindow(d, d.AddDays(2));
 
             var gaps = dt.Gaps(d.AddDays(3), d.AddDays(4));
-            Assert.Equal(1, gaps.Count());
+            Assert.Single(gaps);
             Assert.Equal((d.AddDays(3), d.AddDays(4)), gaps[0]);
         }
     }
