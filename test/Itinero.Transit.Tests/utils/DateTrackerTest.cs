@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Itinero.Transit.Data.Walks;
 using Xunit;
 
@@ -71,6 +72,19 @@ namespace Itinero.Transit.Tests.utils
 
             var gaps = dt.Gaps(d.AddHours(10), d.AddHours(34));
             Assert.Empty(gaps);
+        }
+        
+        [Fact]
+        public void TestGaps3()
+        {
+            var dt = new DateTracker();
+            var d = DateTime.Today.Date;
+
+            dt.AddTimeWindow(d, d.AddDays(2));
+
+            var gaps = dt.Gaps(d.AddDays(3), d.AddDays(4));
+            Assert.Equal(1, gaps.Count());
+            Assert.Equal((d.AddDays(3), d.AddDays(4)), gaps[0]);
         }
     }
 }
