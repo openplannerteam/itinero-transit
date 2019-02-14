@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using Itinero.Transit.Data;
 
 // ReSharper disable BuiltInTypeReferenceStyle
@@ -278,13 +279,12 @@ namespace Itinero.Transit.Journeys
 
         public Journey<T> TransferForward(IConnection c)
         {
-            
             if (Time == c.DepartureTime)
             {
                 // No transfer needed: seamless link
                 return Chain(c.Id, c.ArrivalTime, c.ArrivalStop, c.TripId);
             }
-            
+
             return Transfer(c.DepartureTime)
                 .Chain(c.Id, c.ArrivalTime, c.ArrivalStop, c.TripId);
         }
@@ -308,7 +308,7 @@ namespace Itinero.Transit.Journeys
             {
                 return Time;
             }
-            
+
             return PreviousLink.Time;
         }
 
@@ -331,12 +331,17 @@ namespace Itinero.Transit.Journeys
             return ToString(db.GetReader());
         }
 
-        public string ToString(StopsDb.StopsDbReader reader)
+        public string ToString(StopsDb.StopsDbReader reader, int maxDepth = 50)
         {
+            if (maxDepth == 0)
+            {
+                return "... More connections omitted, journey maxDepth has been reached ...";
+            }
+            
             var previous = "";
             if (PreviousLink != null && !ReferenceEquals(PreviousLink, this))
             {
-                previous = PreviousLink.ToString(reader);
+                previous = PreviousLink.ToString(reader, maxDepth - 1);
             }
 
             return $"{previous}\n  {PartToString(reader)}\n    {Stats} (Trip {TripId})";
@@ -348,53 +353,51 @@ namespace Itinero.Transit.Journeys
             var location = Location.ToString();
             reader?.Attributes?.TryGetValue("name", out location);
 
-            if (SpecialConnection)
+            if (!SpecialConnection)
+                return
+                    $"Connection {Connection} to {location}, arriving at {DateTimeExtensions.FromUnixTime(Time):yyyy-MM-dd HH:mm}";
+
+            switch (Connection)
             {
-                switch (Connection)
-                {
-                    case GENESIS:
-                        string freeForm = ", debugging free form tag is ";
-                        switch (TripId)
-                        {
-                            case EarliestArrivalScanJourney:
-                                freeForm += "EAS";
-                                break;
-                            case LatestArrivalScanJourney:
-                                freeForm += "LAS";
-                                break;
-                            case ProfiledScanJourney:
-                                freeForm += "PCS";
-                                break;
-                            case uint.MaxValue:
-                                freeForm = "";
-                                break;
-                            default:
-                                freeForm += $"{TripId}";
-                                break;
-                        }
+                case GENESIS:
+                    var freeForm = ", debugging free form tag is ";
+                    switch (TripId)
+                    {
+                        case EarliestArrivalScanJourney:
+                            freeForm += "EAS";
+                            break;
+                        case LatestArrivalScanJourney:
+                            freeForm += "LAS";
+                            break;
+                        case ProfiledScanJourney:
+                            freeForm += "PCS";
+                            break;
+                        case uint.MaxValue:
+                            freeForm = "";
+                            break;
+                        default:
+                            freeForm += $"{TripId}";
+                            break;
+                    }
 
 
-                        return
-                            $"Genesis at {location}, time is {DateTimeExtensions.FromUnixTime(Time):HH:mm}{freeForm}";
-                    case WALK:
-                        return
-                            $"Walk to {location} in {Time - PreviousLink.Time} till {DateTimeExtensions.FromUnixTime(Time):HH:mm} seconds";
-                    case TRANSFER:
-                        return
-                            $"Transfer/Wait for {Time - PreviousLink.Time} seconds till {DateTimeExtensions.FromUnixTime(Time):HH:mm} in {location}";
-                    case JOINED_JOURNEYS:
-                        return
-                            $"Choose a journey: there is a equivalent journey available. Continuing print via one arbitrary option";
+                    return
+                        $"Genesis at {location}, time is {Time.FromUnixTime():HH:mm}{freeForm}";
+                case WALK:
+                    return
+                        $"Walk to {location} in {Time - PreviousLink.Time} till {Time.FromUnixTime():HH:mm} seconds";
+                case TRANSFER:
+                    return
+                        $"Transfer/Wait for {Time - PreviousLink.Time} seconds till {Time.FromUnixTime():HH:mm} in {location}";
+                case JOINED_JOURNEYS:
+                    return
+                        $"Choose a journey: there is a equivalent journey available. Continuing print via one arbitrary option";
 
-                    case int.MaxValue:
-                        return "Infinite journey";
-                }
-
-                throw new ArgumentException($"Unknown Special Connection code {Connection}");
+                case int.MaxValue:
+                    return "Infinite journey";
+                default:
+                    throw new ArgumentException($"Unknown Special Connection code {Connection}");
             }
-
-            return
-                $"Connection {Connection} to {location}, arriving at {DateTimeExtensions.FromUnixTime(Time):yyyy-MM-dd HH:mm}";
         }
 
 

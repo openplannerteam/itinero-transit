@@ -8,18 +8,19 @@ using Xunit;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
-    public class IsochroneTest : FunctionalTest<bool, (TransitDb transitDb, string stopId, string checkIsIncluded, DateTime departureTime,
-        DateTime
-        arrivalTime)>
+    public class IsochroneTest : DefaultFunctionalTest
     {
+        
+        
+        
         protected override bool Execute(
-            (TransitDb transitDb, string stopId, string checkIsIncluded, DateTime departureTime, DateTime
-                arrivalTime)
+            (TransitDb transitDb,
+                string departureStopId, string arrivalStopId, DateTime departureTime, DateTime arrivalTime)
                 input)
         {
 
             var reader = input.transitDb.Latest.StopsDb.GetReader();
-            reader.MoveTo(input.checkIsIncluded);
+            reader.MoveTo(input.arrivalStopId);
             var checkId = reader.Id;
             
             var latest = input.transitDb.Latest;
@@ -28,23 +29,21 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
                 null,
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
-            var found = profile.Isochrone(input.stopId, input.departureTime, input.arrivalTime);
+            var found = profile.Isochrone(input.departureStopId, input.departureTime, input.arrivalTime);
 
             Assert.True(found.Count() > 100);
             Assert.Contains(checkId, found);
             var timeNeeded = found[checkId].Time.FromUnixTime() - input.departureTime;
             Console.WriteLine($"Found route in the forward isochrone line between Bruges and Ghent: \n{found[checkId].ToString(reader)}");
-            Assert.True(timeNeeded < TimeSpan.FromMinutes(45));
 
 
             found = null;
-            found = profile.IsochroneLatestArrival(input.stopId, input.departureTime, input.arrivalTime);
+            found = profile.IsochroneLatestArrival(input.arrivalStopId, input.departureTime, input.arrivalTime);
 
             Assert.True(found.Count() > 100);
             Assert.Contains(checkId, found);
             Console.WriteLine($"Found route in the backward isochrone line between Bruges and Ghent: \n{found[checkId].ToString(reader)}");
             timeNeeded = found[checkId].Time.FromUnixTime() - input.arrivalTime;
-            Assert.True(timeNeeded < TimeSpan.FromMinutes(45));
             
             
             

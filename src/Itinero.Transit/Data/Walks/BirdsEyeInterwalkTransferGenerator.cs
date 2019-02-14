@@ -5,8 +5,8 @@ namespace Itinero.Transit.Data.Walks
 {
     /// <summary>
     /// Generates walks between transport stops, solely based on the distance between them.
+    /// The time needed depends on the given parameter
     ///
-    /// Will generate 
     /// </summary>
     public class BirdsEyeInterWalkTransferGenerator : IOtherModeGenerator
     {

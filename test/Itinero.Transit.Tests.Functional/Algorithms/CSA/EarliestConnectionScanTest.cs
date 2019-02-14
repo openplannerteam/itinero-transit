@@ -46,7 +46,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             // verify result.
             Assert.NotNull(journey);
 
-            Information(journey.Pruned().ToString(latest.StopsDb));
+            Information(journey.ToString(latest.StopsDb));
 
             return true;
         }

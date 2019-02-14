@@ -26,6 +26,11 @@ namespace Itinero.Transit.Tests.Functional
         private const string Kortrijk = "http://irail.be/stations/NMBS/008896008";
 
 
+        private const string Howest = "https://data.delijn.be/stops/502132";
+        private const string ZandStraat = "https://data.delijn.be/stops/500562";
+        private const string AzSintJan = "https://data.delijn.be/stops/502083";
+
+
         private static int _nrOfRuns = 1;
 
         private static readonly List<DefaultFunctionalTest> AllTests =
@@ -41,11 +46,12 @@ namespace Itinero.Transit.Tests.Functional
         private static readonly Dictionary<string, DefaultFunctionalTest> AllTestsNamed =
             new Dictionary<string, DefaultFunctionalTest>
             {
-                {"eas", EarliestConnectionScanTest.Default},
-                {"las", LatestConnectionScanTest.Default},
-                {"pcs", ProfiledConnectionScanTest.Default},
-                {"easpcs", EasPcsComparison.Default},
-                {"easlas", EasLasComparison.Default}
+                {"eas", new EarliestConnectionScanTest()},
+                {"las", new LatestConnectionScanTest()},
+                {"pcs", new ProfiledConnectionScanTest()},
+                {"easpcs", new EasPcsComparison()},
+                {"easlas", new EasLasComparison()},
+                {"isochrone", new IsochroneTest()}
             };
 
         public static void Main(string[] args)
@@ -79,21 +85,21 @@ namespace Itinero.Transit.Tests.Functional
             }
 
             EnableLogging();
-            
-            
-            Log.Information("Starting the Functional Tests...");
 
-        //    new MultipleLoadTest().Run(0);
-            
+            Log.Information("Starting the Functional Tests...");
             var date = DateTime.Now.Date; // LOCAL TIMES! //
+
+//*
+            // TODO FIX THIS   new MultipleLoadTest().Run(0);
+
             // test loading a connections db
             var db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
-            
+
             // test read/writing a transit db from/to a stream.
             using (var stream = WriteTransitDbTest.Default.Run(db))
             {
                 stream.Seek(0, SeekOrigin.Begin);
-                
+
                 db = ReadTransitDbTest.Default.Run(stream);
             }
 
@@ -101,8 +107,15 @@ namespace Itinero.Transit.Tests.Functional
 
             ConnectionsDbDepartureEnumeratorTest.Default.Run(db);
             TestClosestStopsAndRouting(db);
-            new IsochroneTest().Run((db, Brugge, Gent, date.Date.AddHours(12), date.Date.AddHours(14)));
+
+
             AlgorithmTests(db, date, tests);
+
+/*/
+
+            var db = LoadTransitDbTest.SncbDeLijn.Run((DateTime.Now.Date.AddHours(10), TimeSpan.FromHours(2)));
+            AlgorithmTests(db, date, tests);
+            //*/
         }
 
         private static void AlgorithmTests(TransitDb db, DateTime date,
@@ -127,7 +140,7 @@ namespace Itinero.Transit.Tests.Functional
                     date.Date.AddHours(10),
                     date.Date.AddHours(18))
             };
-            
+
             var failed = 0;
             var results = new Dictionary<string, int>();
 
@@ -139,15 +152,16 @@ namespace Itinero.Transit.Tests.Functional
                 {
 //                    try
 //                    {
-                        if (!t.RunPerformance(i, _nrOfRuns))
-                        {
-                            Log.Information($"{name} failed");
-                            failed++;
-                        }
-                        else
-                        {
-                            results[name]++;
-                        }
+                    if (!t.RunPerformance(i, _nrOfRuns))
+                    {
+                        Log.Information($"{name} failed");
+                        failed++;
+                    }
+                    else
+                    {
+                        results[name]++;
+                    }
+
 //                    }
 //                    catch (Exception e)
 //                    {

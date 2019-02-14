@@ -91,7 +91,7 @@ namespace Itinero.Transit.Journeys
 
             if (j.SpecialConnection)
             {
-                var restOfTheJourney = j.PreviousLink.PrunedWithoutLast();
+                var restOfTheJourney = j.PreviousLink.Pruned();
                 return restOfTheJourney.ChainSpecial(
                     j.Connection, j.Time, j.Location, j.PreviousLink.TripId);
             }

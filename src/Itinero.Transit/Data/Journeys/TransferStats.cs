@@ -47,7 +47,7 @@ namespace Itinero.Transit.Journeys
 
         public readonly TimeSpan TravelTime;
 
-        public readonly float WalkingDistance;
+        public readonly float WalkingTime;
 
 
         private TransferStats(uint numberOfTransfers,
@@ -56,7 +56,7 @@ namespace Itinero.Transit.Journeys
         {
             NumberOfTransfers = numberOfTransfers;
             TravelTime = travelTime;
-            WalkingDistance = walkingDistance;
+            WalkingTime = walkingDistance;
         }
 
         public TransferStats() : this(0, 0, 0)
@@ -85,9 +85,16 @@ namespace Itinero.Transit.Journeys
                 travelTime = journey.PreviousLink.Time - journey.Time;
             }
 
+
+            ulong walkingTime = 0;
+            if (journey.SpecialConnection && journey.Connection == Journey<TransferStats>.WALK)
+            {
+                walkingTime = travelTime;
+            }
+            
             return new TransferStats((uint) (NumberOfTransfers + (transferred ? 1 : 0)),
                 (uint) (TravelTime + travelTime),
-                WalkingDistance + 0);
+                WalkingTime + walkingTime);
         }
 
         public override string ToString()
@@ -99,14 +106,14 @@ namespace Itinero.Transit.Journeys
             seconds = seconds % 60;
             
             return
-                $"Stats: {NumberOfTransfers} transfers, {hours}:{minutes}:{seconds} total time), {WalkingDistance}m to walk";
+                $"Stats: {NumberOfTransfers} transfers, {hours}:{minutes}:{seconds} total time), {WalkingTime} seconds to walk";
         }
 
         private bool Equals(TransferStats other)
         {
             return NumberOfTransfers == other.NumberOfTransfers
                    && TravelTime == other.TravelTime
-                   && WalkingDistance.Equals(other.WalkingDistance);
+                   && WalkingTime.Equals(other.WalkingTime);
         }
 
         public override bool Equals(object obj)
@@ -123,7 +130,7 @@ namespace Itinero.Transit.Journeys
             {
                 var hashCode = (int) NumberOfTransfers;
                 hashCode = (hashCode * 397) ^ (int) TravelTime;
-                hashCode = (hashCode * 397) ^ WalkingDistance.GetHashCode();
+                hashCode = (hashCode * 397) ^ WalkingTime.GetHashCode();
                 return hashCode;
             }
         }

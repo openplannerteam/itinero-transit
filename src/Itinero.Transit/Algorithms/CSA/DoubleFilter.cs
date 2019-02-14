@@ -2,6 +2,10 @@ using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
+    /// <inheritdoc />
+    /// <summary>
+    /// Takes one or more filters and combines them.
+    /// </summary>
     internal class DoubleFilter : IConnectionFilter
     {
         private readonly IConnectionFilter[] _filters;
