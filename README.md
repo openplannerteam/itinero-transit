@@ -4,6 +4,11 @@
 
 This is a C# implementation of a client consuming [Linked Connections(LC)](https://linkedconnections.org/) to plan transit routes. This is going to replace the currently unfinished [transit module](https://github.com/itinero/transit) in [tinero](http://www.itinero.tech/).
 
+# Documentation
+
+All the documentation can be found [here](index.md).
+
+
 ## TransitDb
 
 We have a slightly different approach than the other LC clients. We don't use LCs directly but we use an intermediate data structure between the route planning algorithms (CSA) and the source of the connections, being linked connections.

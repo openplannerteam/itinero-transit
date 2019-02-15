@@ -69,13 +69,131 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="core-concepts">Core concepts</h1>
 
-<p>Connection scan algorithm
-- Representing journeys
-- Scanning connections
-- Making transfers</p>
-<p>Linked Connections</p>
-<p>The Transit DB
-- caching policy</p>
+<p>Itinero-Transit calculates journeys over public transport networks.</p>
+<p>This document defines a few core concepts and informally describes how the library calculates journeys.</p>
+<h2 id="a-connection">A connection</h2>
+<p>A <em>connection</em> is the smallest element in a public transport network. A connection represents a PT-vehicle which travels from one station to the next, <em>without intermediate stops</em>.
+In most circumstances, the vehicle will continue to a next stop without the passengers having to leave. A chain of such connections is called a <em>trip</em>. Knowing the trip of which a connection is part, is important to known how many transfers are needed to make a journey.</p>
+<p>A connection is characterized by five data points:</p>
+<ul>
+<li>The departure stop</li>
+<li>The arrival stop</li>
+<li>The time of departure</li>
+<li>The time of arrival</li>
+<li>A trip identifier</li>
+</ul>
+<p>In practice, some other data points are saved needed as well (e.g. vehicle type, operator, headsign, ...). They are however unimportant for the core concepts.</p>
+<h2 id="a-journey">A journey</h2>
+<p>A <em>journey</em> is a list of connections and transfers, representing how a traveller might get from its departure to its arrival.</p>
+<p>A journey consist of multiple parts. A part can describe either</p>
+<ul>
+<li>A connection that is taken</li>
+<li>A transfer in a single stop - thus getting of one vehicle and getting on another without walking</li>
+<li>A walk, from one stop to another</li>
+<li>The start of the journey</li>
+</ul>
+<p>Each part thus contains</p>
+<ul>
+<li>A value indicating if the journeypart is a connection, a transfer, a walk or the beginning</li>
+<li>The location of the traveller after executing this journey part</li>
+<li>The time it is after executing this part</li>
+<li>A pointer to the previous part (if any)</li>
+</ul>
+<p>Thus, if one has a journey part which ends in some location, one can construct the entire journey needed to get there by following the pointers pointing to the <code>previous</code> part, not unlike Hans and Gretel in the forest.</p>
+<h2 id="linked-connections-as-data-source">Linked Connections as data source</h2>
+<p>This library uses <a href="https://linkedconnections.org/">Linked Connections</a> as datasource. Linked Connections are a way to format public transport data feeds in a semantically coherent way. The data is organized as pages of around 200 individual connections of a certain timespan (e.g. a quarter of an hour), sorted by departure time.</p>
+<h2 id="transitdb">TransitDB</h2>
+<p>Once the connections are loaded, they are stored into the <code>TransitDB</code>. This is an in-memory database of connections, trips and stops.</p>
+<p>By having the TransitDB, the library can either cache connections for solving multiple queries or can dynamically reload the needed data needed when a query comes in.</p>
+<h2 id="connection-scan-algorithm">Connection scan algorithm</h2>
+<p>The <em>connection scan algorithm (CSA)</em> is the core algorithm of this library.</p>
+<h3 id="an-example-execution-of-csa">An example execution of CSA</h3>
+<p>The essence of the connection scan algorithm can best be shown by running an extremely simple example.</p>
+<p>The input for this example is a small timetable. This timetable is <em>sorted by departure time</em>.</p>
+<pre><code>   Departure time, departure stop --&gt; arrival time, arrival stop
+   10:00, A --&gt; 10:25, C
+   10:05, X --&gt; 10:55, Y
+   10:10, A --&gt; 10:50, B
+   10:15, B --&gt; 10:30, X
+   10:30, C --&gt; 10:40, B 
+   10:35, C --&gt; 10:45, Y
+   10:45, Y --&gt; 11:00, Z
+   
+</code></pre>
+<p>This timetable can be reused for every query.</p>
+<p>If a traveller, departing in <code>A</code> at <code>10:00</code> wanted to know the earliest time he could possible arrive at <code>B</code>, he can calculate this by performing the following steps:</p>
+<ol>
+<li><p>Create a table with all possible stops. This table contains the earliest time that he can arrive at that stop. As no earliest arrival time is known yet, the traveller puts question marks everywhere. We will call this table the <em>earliest arrival table</em>.</p>
+<pre><code> A: ?
+ B: ?
+ C: ?
+ X: ?
+ Y: ?
+</code></pre>
+</li>
+<li><p>The traveller wants to depart in <code>A</code> at <code>10:00</code>. This is marked in the table:</p>
+<pre><code> A: 10:00 (changed)
+ B: ?
+ C: ?
+ X: ?
+ Y: ?
+</code></pre>
+</li>
+<li><p>Now, the traveller takes the timetable and has a look at all the connections, in order.
+The first connection is <code>10:00, A --&gt; 10:25, C</code>. As the <em>earliest arrival table</em> indicates that he can be in <code>A</code> at <code>10:00</code>, the traveller <em>could</em> take this connection and <em>could</em> arrie in <code>C</code> at <code>10:25</code>. This is marked in the table:</p>
+<pre><code> A: 10:00
+ B: ?
+ C: 10:25 (changed)
+ X: ?
+ Y: ?   
+</code></pre>
+</li>
+<li><p>The traveller takes a look at the next connection: <code>10:05, X --&gt; 10:55, Y</code>. The <em>earliest arrival table</em> has no value yet for <code>X</code>, indicating that the traveller could not be in <code>X</code> at <code>10:05</code>. The connection is ignored.</p>
+</li>
+<li><p>The next connection is scanned: <code>10:10, A --&gt; 10:50, B</code>. The traveller could take this connection, as -according to the <em>earliest arrival table</em>- he could be in <code>A</code> in time. And this connection takes him to his destination! The travellers quickly notes this in the table:</p>
+<pre><code> A: 10:00
+ B: 10:50 (changed)
+ C: 10:25
+ X: ?
+ Y: ?
+</code></pre>
+</li>
+<li><p>As next connection, <code>10:15, B --&gt; 10:30, X</code> comes up - which can not be taken and is ignored.</p>
+</li>
+<li><p>The traveller eagerly scans the next connection: <code>10:30, C --&gt; 10:40, B</code>.
+The <em>earliest arrival table</em> indicates that the traveller can already be in <code>C</code> at <code>10:25</code>, so catching this connection can't be a problem. It takes us to <code>B</code>. The traveller already could reach <code>B</code>, but this connection will take him there ten minutes sooner, so the table is changed:</p>
+<pre><code> A: 10:00
+ B: 10:40 (changed)
+ C: 10:25
+ X: ?
+ Y: ?
+</code></pre>
+</li>
+<li><p>The traveller dutifully keeps scanning connections. <code>10:35, C --&gt; 10:45, Y</code> could be taken and brings him to a new stop:</p>
+<pre><code> A: 10:00
+ B: 10:40
+ C: 10:25
+ X: ?
+ Y: 10:45 (changed)
+</code></pre>
+</li>
+<li><p>The next connection is looked at: <code>10:45, Y --&gt; 11:00, Z</code>. The traveller realizes that he wants to go to <code>B</code> and, according to the <em>earliest arrival table</em>, he could get there by <code>10:40</code> already. This connection departs after he already could have arrived, so there is no point in scanning this connection. As the time table is organized by departure time, all subsequent connections will be later as well. In other words, the traveller is done.</p>
+</li>
+<li><p>The traveller can now easily lookup in his table the earliest time he could arrive in <code>B</code>: namely at <code>10:40</code>. As sideproduct, he also knows at what times he could arrive in the other stations, if departing at <code>10:00</code> in <code>A</code>.</p>
+</li>
+</ol>
+<h3 id="further-complications">Further complications</h3>
+<p>The above example neatly illustrates the core principle of CSA.
+Of course, there is much more work to do: the traveller above knows at what time he'll arrive, but he forgot to keep track which trains he should have taken and how many transfer he has to make. Did he take the direct train or did he transfer in C?</p>
+<p>And although knowing when a traveller could arrive as soon as possible is useful, most travellers want to minimize either travel time or number of needed transfers. It is thus useful to offer all these best (in one sense) journeys to the user of the library and to let the user pick.</p>
+<p>The technicalities of these algorithms can be found <a href="CSA.html">here</a>. It is not necessary to known those to effectivally use the library.</p>
+<ul>
+<li>A tree of journeys</li>
+<li>Scanning connections: EAS</li>
+<li>Pareto fronts</li>
+<li>Scanning connections: PCS</li>
+<li>Making transfers</li>
+</ul>
 </article>
           </div>
           
