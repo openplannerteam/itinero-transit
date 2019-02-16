@@ -16,7 +16,7 @@ namespace Itinero.Transit.Algorithms.CSA
     public class EarliestConnectionScan<T> : IConnectionFilter
         where T : IJourneyStats<T>
     {
-        private readonly List<(uint localTileId, uint localId)> _userTargetLocation;
+        private readonly List<(uint localTileId, uint localId, Time travelTime)> _userTargetLocations;
 
         private readonly ConnectionsDb _connectionsProvider;
         private readonly StopsDb _stopsDb;
@@ -72,12 +72,12 @@ namespace Itinero.Transit.Algorithms.CSA
             earliestDeparture, lastDeparture,
             profile)
         {
+            
         }
 
-
         public EarliestConnectionScan(
-            IEnumerable<(uint localTileId, uint localId)> userDepartureLocation,
-            List<(uint localTileId, uint localId)> userTargetLocation,
+            IEnumerable<(uint localTileId, uint localId)> userDepartureLocations,
+            List<(uint localTileId, uint localId)> userTargetLocations,
             Time earliestDeparture, Time lastDeparture,
             Profile<T> profile)
         {
@@ -95,8 +95,41 @@ namespace Itinero.Transit.Algorithms.CSA
             _transferPolicy = profile.InternalTransferGenerator;
             _walkPolicy = profile.WalksGenerator;
 
-            _userTargetLocation = userTargetLocation;
-            foreach (var loc in userDepartureLocation)
+            _userTargetLocations = new List<(uint localTileId, uint localId, Time travelTime)>();
+            foreach (var targetLocation in userTargetLocations)
+            {
+                _userTargetLocations.Add((targetLocation.localTileId, targetLocation.localId, 0));
+            }
+            foreach (var loc in userDepartureLocations)
+            {
+                _s.Add(loc,
+                    new Journey<T>(loc, earliestDeparture, profile.StatsFactory,
+                        Journey<T>.EarliestArrivalScanJourney));
+            }
+        }
+
+        public EarliestConnectionScan(
+            IEnumerable<(uint localTileId, uint localId)> userDepartureLocations,
+            List<(uint localTileId, uint localId, ulong travelTime)> userTargetLocations,
+            Time earliestDeparture, Time lastDeparture,
+            Profile<T> profile)
+        {
+            if (lastDeparture <= earliestDeparture)
+            {
+                throw new ArgumentException("Departure time falls after arrival time");
+            }
+            
+            _earliestDeparture = earliestDeparture;
+            _lastDeparture = lastDeparture;
+            _connectionsProvider = profile.TransitDbSnapShot.ConnectionsDb;
+            _stopsDb = profile.TransitDbSnapShot.StopsDb;
+        
+            _stopsReader = _stopsDb.GetReader();
+            _transferPolicy = profile.InternalTransferGenerator;
+            _walkPolicy = profile.WalksGenerator;
+
+            _userTargetLocations = userTargetLocations;
+            foreach (var loc in userDepartureLocations)
             {
                 _s.Add(loc,
                     new Journey<T>(loc, earliestDeparture, profile.StatsFactory,
@@ -148,7 +181,6 @@ namespace Itinero.Transit.Algorithms.CSA
                 // Sadly, we didn't find a route within the required time
                 return null;
             }
-
 
             // We grab the journey we need
             var journey = _s[route.bestLocation.Value];
@@ -330,14 +362,15 @@ namespace Itinero.Transit.Algorithms.CSA
         {
             var currentBestArrival = Time.MaxValue;
             (uint localTileId, uint localId)? bestTarget = null;
-            foreach (var targetLoc in _userTargetLocation)
+            foreach (var targetLocAndTime in _userTargetLocations)
             {
+                (uint localTileId, uint localId) targetLoc = (targetLocAndTime.localTileId, targetLocAndTime.localId);
                 if (!_s.ContainsKey(targetLoc))
                 {
                     continue;
                 }
 
-                var arrival = _s[targetLoc].Time;
+                var arrival = _s[targetLoc].Time + targetLocAndTime.travelTime;
 
                 if (arrival < currentBestArrival)
                 {
