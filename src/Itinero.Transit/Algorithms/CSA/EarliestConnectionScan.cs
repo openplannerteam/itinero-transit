@@ -109,7 +109,7 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
         public EarliestConnectionScan(
-            IEnumerable<(uint localTileId, uint localId)> userDepartureLocations,
+            IEnumerable<(uint localTileId, uint localId, ulong travelTime)> userDepartureLocations,
             List<(uint localTileId, uint localId, ulong travelTime)> userTargetLocations,
             Time earliestDeparture, Time lastDeparture,
             Profile<T> profile)
@@ -129,10 +129,11 @@ namespace Itinero.Transit.Algorithms.CSA
             _walkPolicy = profile.WalksGenerator;
 
             _userTargetLocations = userTargetLocations;
-            foreach (var loc in userDepartureLocations)
+            foreach (var locAndTravelTime in userDepartureLocations)
             {
+                var loc = (locAndTravelTime.localTileId, locAndTravelTime.localId);
                 _s.Add(loc,
-                    new Journey<T>(loc, earliestDeparture, profile.StatsFactory,
+                    new Journey<T>(loc, earliestDeparture + locAndTravelTime.travelTime, profile.StatsFactory,
                         Journey<T>.EarliestArrivalScanJourney));
             }
         }

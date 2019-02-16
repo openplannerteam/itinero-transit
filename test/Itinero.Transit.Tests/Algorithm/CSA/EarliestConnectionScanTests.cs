@@ -140,8 +140,48 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
             writer.Close();
 
-            var sources = new List<(uint tileId, uint localId)> {(stop1.tileId, stop1.localId)};
+            var sources = new List<(uint tileId, uint localId, ulong travelTime)> {(stop1.tileId, stop1.localId, 0)};
             var targets = new List<(uint tileId, uint localId, ulong travelTime)> {(stop2.tileId, stop2.localId, 100)};
+
+            var latest = transitDb.Latest;
+            var profile = new Profile<TransferStats>(
+                latest,
+                new InternalTransferGenerator(),
+                null,
+                new TransferStats(),
+                TransferStats.ProfileTransferCompare);
+            var eas = new EarliestConnectionScan<TransferStats>(
+                sources, targets, 
+                new DateTime(2018, 12, 04, 16, 00, 00).ToUnixTime(), 
+                new DateTime(2018, 12, 04, 19, 00, 00).ToUnixTime(),
+                profile);
+            var journey = eas.CalculateJourney();
+
+            Assert.NotNull(journey);
+            Assert.Equal(2, journey.AllParts().Count());
+        }
+
+        [Fact]
+        public void EarliestConnectionScan_ShouldFindOneConnectionJourneyWithDepartureTravelTime()
+        {
+            // build a one-connection db.
+            var transitDb = new TransitDb();
+            var writer = transitDb.GetWriter();
+
+            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
+            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
+
+            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 16, 20, 00), 10 * 60, 0);
+
+            // Prevent depletion of the DB
+            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
+                new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 0);
+
+            writer.Close();
+
+            var sources = new List<(uint tileId, uint localId, ulong travelTime)> {(stop1.tileId, stop1.localId, 1000)};
+            var targets = new List<(uint tileId, uint localId, ulong travelTime)> {(stop2.tileId, stop2.localId, 0)};
 
             var latest = transitDb.Latest;
             var profile = new Profile<TransferStats>(
