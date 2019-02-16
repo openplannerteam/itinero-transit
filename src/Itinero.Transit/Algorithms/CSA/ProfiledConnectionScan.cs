@@ -21,7 +21,7 @@ namespace Itinero.IO.LC
     /// 
     /// 
     /// </summary>
-    internal class ProfiledConnectionScan<T> where T : IJourneyStats<T>
+    public class ProfiledConnectionScan<T> where T : IJourneyStats<T>
     {
         private readonly ConnectionsDb _connectionsProvider;
         private readonly UnixTime _earliestDeparture, _lastArrival;

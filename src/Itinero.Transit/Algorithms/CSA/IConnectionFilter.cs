@@ -10,9 +10,8 @@ namespace Itinero.Transit.Algorithms.CSA
     /// The filter will indicate that the trip can not be taken and throw it out
     /// 
     /// </summary>
-    internal interface IConnectionFilter
+    public interface IConnectionFilter
     {
-
         /// <summary>
         /// Is it useful to check this connection in PCS?
         /// </summary>

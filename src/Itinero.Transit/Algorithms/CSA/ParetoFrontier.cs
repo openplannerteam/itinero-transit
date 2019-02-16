@@ -4,7 +4,7 @@ using Itinero.Transit.Journeys;
 
 namespace Itinero.IO.LC
 {
-    internal class ParetoFrontier<T>
+    public class ParetoFrontier<T>
         where T : IJourneyStats<T>
 
     {

@@ -13,7 +13,7 @@ namespace Itinero.Transit.Algorithms.CSA
     /// Calculates the fastest journey from A to B starting at a given time; using CSA (forward A*).
     /// It does _not_ use footpath interlinks (yet)
     /// </summary>
-    internal class EarliestConnectionScan<T> : IConnectionFilter
+    public class EarliestConnectionScan<T> : IConnectionFilter
         where T : IJourneyStats<T>
     {
         private readonly List<(uint localTileId, uint localId)> _userTargetLocation;
