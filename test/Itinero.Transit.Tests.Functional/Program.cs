@@ -46,17 +46,13 @@ namespace Itinero.Transit.Tests.Functional
                 {"las", LatestConnectionScanTest.Default},
                 {"pcs", ProfiledConnectionScanTest.Default},
                 {"easpcs", EasPcsComparison.Default},
-                {"easlas", EasLasComparison.Default}
+                {"easlas", EasLasComparison.Default},
+                
             };
 
         public static void Main(string[] args)
         {
-            args = new[]
-            {
-                "1",
-                "eas"
-            };
-            
+
             var tests = AllTests;
             if (args.Length > 0)
             {
@@ -86,16 +82,16 @@ namespace Itinero.Transit.Tests.Functional
             }
 
             EnableLogging();
-            
-            
+
+
             Log.Information("Starting the Functional Tests...");
 
             //new MultipleLoadTest().Run(0);
-            
+
             var date = DateTime.Now.Date; // LOCAL TIMES! //
             // test loading a connections db
             var db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
-            
+
 //            // test read/writing a transit db from/to a stream.
 //            using (var stream = WriteTransitDbTest.Default.Run(db))
 //            {
@@ -104,11 +100,11 @@ namespace Itinero.Transit.Tests.Functional
 //                db = ReadTransitDbTest.Default.Run(stream);
 //            }
 //
-//            TripHeadsignTest.Default.Run(db);
-//
-//            ConnectionsDbDepartureEnumeratorTest.Default.Run(db);
-//            TestClosestStopsAndRouting(db);
-//            new IsochroneTest().Run((db, Brugge, Gent, date.Date.AddHours(12), date.Date.AddHours(14)));
+            TripHeadsignTest.Default.Run(db);
+
+            ConnectionsDbDepartureEnumeratorTest.Default.Run(db);
+            TestClosestStopsAndRouting(db);
+            new IsochroneTest().Run((db, Brugge, Gent, date.Date.AddHours(12), date.Date.AddHours(14)));
             AlgorithmTests(db, date, tests);
         }
 
@@ -134,7 +130,7 @@ namespace Itinero.Transit.Tests.Functional
                     date.Date.AddHours(10),
                     date.Date.AddHours(18))
             };
-            
+
             var failed = 0;
             var results = new Dictionary<string, int>();
 
@@ -146,15 +142,15 @@ namespace Itinero.Transit.Tests.Functional
                 {
 //                    try
 //                    {
-                        if (!t.RunPerformance(i, _nrOfRuns))
-                        {
-                            Log.Information($"{name} failed");
-                            failed++;
-                        }
-                        else
-                        {
-                            results[name]++;
-                        }
+                    if (!t.RunPerformance(i, _nrOfRuns))
+                    {
+                        Log.Information($"{name} failed");
+                        failed++;
+                    }
+                    else
+                    {
+                        results[name]++;
+                    }
 
 //                    }
 //                    catch (Exception e)
