@@ -16,8 +16,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var tdb = Db.GetDefaultTestDb();
             var db = tdb.Latest;
             
-            var profile = new Profile<TransferStats>(
-                db, new InternalTransferGenerator(0),
+            var profile = new Profile<TransferStats>(new InternalTransferGenerator(0),
                 new CrowsFlightTransferGenerator(tdb),
                 new TransferStats(),
                 TransferStats.ProfileTransferCompare
@@ -64,9 +63,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             writer.Close();
             var latest = transitDb.Latest;
 
-            var profile = new Profile<TransferStats>(
-                latest,
-                new InternalTransferGenerator(),
+            var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(transitDb),
                 new TransferStats(),
                 TransferStats.ProfileTransferCompare);

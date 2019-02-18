@@ -16,11 +16,10 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         {
             var tdb = Db.GetDefaultTestDb();
 
-            var profile = new Profile<TransferStats>(tdb,
-                new InternalTransferGenerator(),
-                new CrowsFlightTransferGenerator(tdb),
+            var profile = new Profile<TransferStats>((IOtherModeGenerator) new InternalTransferGenerator(),
+                (IOtherModeGenerator) new CrowsFlightTransferGenerator(tdb),
                 TransferStats.Factory,
-                TransferStats.ProfileTransferCompare
+                (ProfiledStatsComparator<TransferStats>) TransferStats.ProfileTransferCompare
             );
 
             var db = tdb.Latest;
@@ -72,9 +71,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
             var latest = transitDb.Latest;
 
-            var profile = new Profile<TransferStats>(
-                latest,
-                new InternalTransferGenerator(),
+            var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(transitDb),
                 new TransferStats(),
                 TransferStats.ProfileTransferCompare);
@@ -108,9 +105,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             writer.Close();
 
             var latest = transitDb.Latest;
-            var profile = new Profile<TransferStats>(
-                latest,
-                new InternalTransferGenerator(),
+            var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
                 null,
                 new TransferStats(),
                 TransferStats.ProfileTransferCompare);
@@ -146,9 +141,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var targets = new List<(uint tileId, uint localId, ulong travelTime)> {(stop2.tileId, stop2.localId, 100)};
 
             var latest = transitDb.Latest;
-            var profile = new Profile<TransferStats>(
-                latest,
-                new InternalTransferGenerator(),
+            var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
                 null,
                 new TransferStats(),
                 TransferStats.ProfileTransferCompare);
@@ -187,9 +180,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var targets = new List<(uint tileId, uint localId, ulong travelTime)> {(stop2.tileId, stop2.localId, 0)};
 
             var latest = transitDb.Latest;
-            var profile = new Profile<TransferStats>(
-                latest,
-                new InternalTransferGenerator(),
+            var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
                 null,
                 new TransferStats(),
                 TransferStats.ProfileTransferCompare);

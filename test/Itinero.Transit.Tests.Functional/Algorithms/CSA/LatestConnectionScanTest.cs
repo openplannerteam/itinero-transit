@@ -17,8 +17,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
                 departureTime, DateTime arrivalTime) input)
         {
             var latest = input.transitDb.Latest;
-            var p = new Profile<TransferStats>(latest,
-                new InternalTransferGenerator(), 
+            var p = new Profile<TransferStats>(new InternalTransferGenerator(), 
                 new CrowsFlightTransferGenerator(input.transitDb), 
                 new TransferStats(), TransferStats.ProfileTransferCompare);
 

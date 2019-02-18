@@ -12,8 +12,7 @@ namespace Itinero.Transit.Data
         public readonly IOtherModeGenerator InternalTransferGenerator;
         public readonly IOtherModeGenerator WalksGenerator;
 
-        public Profile(TransitDb.TransitDbSnapShot snapShot,
-            IOtherModeGenerator internalTransferGenerator,
+        public Profile(IOtherModeGenerator internalTransferGenerator,
             IOtherModeGenerator walksGenerator,
             T statsFactory,
             ProfiledStatsComparator<T> profileComparator
@@ -23,17 +22,6 @@ namespace Itinero.Transit.Data
             ProfileComparator = profileComparator;
             InternalTransferGenerator = internalTransferGenerator;
             WalksGenerator = walksGenerator;
-        }
-
-        public Profile(TransitDb transitDb,
-            IOtherModeGenerator internalTransferGenerator,
-            IOtherModeGenerator walksGenerator,
-            T statsFactory,
-            ProfiledStatsComparator<T> profileComparator
-        ) : this(transitDb.Latest,
-            internalTransferGenerator, walksGenerator, statsFactory, profileComparator
-        )
-        {
         }
     }
 }

@@ -21,8 +21,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         {
             var tbd = input.transitDb;
             var latest = tbd.Latest;
-            var p = new Profile<TransferStats>(latest,
-                new InternalTransferGenerator(),
+            var p = new Profile<TransferStats>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(tbd),
                 new TransferStats(), TransferStats.ProfileTransferCompare);
 

@@ -23,8 +23,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var checkId = reader.Id;
             
             var latest = input.transitDb.Latest;
-            var profile = new Profile<TransferStats>(latest,
-                new InternalTransferGenerator(1),
+            var profile = new Profile<TransferStats>(new InternalTransferGenerator(1),
                 null,
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
