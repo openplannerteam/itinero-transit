@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title> </title>
+    <title>Connection Scan Algorithm: practical expansions </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content=" ">
+    <meta name="title" content="Connection Scan Algorithm: practical expansions ">
     <meta name="generator" content="docfx 2.40.10.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
@@ -67,8 +67,144 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
+<h1 id="connection-scan-algorithm-practical-expansions">Connection Scan Algorithm: practical expansions</h1>
 
-<p>CSA</p>
+<p>The core principle of every connection scan is to have a look at every connection, ordered by departure time.</p>
+<p>There are a few variations that each give useful results for some usecases:</p>
+<ul>
+<li>Earliest Arrival Scan (EAS)</li>
+<li>Latest Arrival Scan (LAS)</li>
+<li>Profile Connection Scan (PCS)</li>
+</ul>
+<p>We will give a small overview of these algorithms here. A reader interested in all the details, is refered to <a href="CSA.pdf">the paper</a>.</p>
+<h2 id="a-tree-of-journeys">A tree of journeys</h2>
+<p>When running the algorithm as in the <a href="index.html#an-example-execution-of-csa">example</a>, the traveller only kept track of when he could arrive in at certain stop.</p>
+<p>Of course, it is way more useful to also know how he could end up at that location and keep track of the way travelled.
+For this, we reuse the datastructure of <a href="index.html#a-journey">journeys consisting of multiple parts</a>. Recall that, when having a journey part, we could reconstruct the journey by following the pointers to the <code>previous</code>-journey part. However, there is nothing stopping us from having multiple parts pointing to a common previous journey.</p>
+<h3 id="building-the-journey-tree">Building the journey tree</h3>
+<p>For example, take the following timetable:</p>
+<pre><code>    A, 10:00 --&gt; B, 10:30 
+    B, 10:35 --&gt; Y, 11:00
+    B, 10:40 --&gt; X, 11:10
+    
+</code></pre>
+<p>If the traveller, departing at <code>A</code> wanted to calculate all the earliest arrival times to <code>X</code> and <code>Y</code>, he would start again with building an empty table:</p>
+<pre><code>    A: ?
+    B: ?
+    X: ?
+    Y: ?
+    
+</code></pre>
+<p>Again, he would mark his departure stop and time - this time however as a journey part representing the start of his journey (a <em>genesis</em> journey part):</p>
+<pre><code>    A: (Journey part nr 0: Genesis in A at 10:00)
+    B: ?
+    X: ?
+    Y: ?
+    
+</code></pre>
+<p>When scanning the first connection, he deducts he can get to B. Instead of only keeping track of the arrival time, the connection taken and <em>a pointer to</em> the previous link is kept in a journey part:</p>
+<pre><code>    A: (Journey part nr 0: Genesis in A at 10:00)
+    B: (Journey part nr 1: Take connection A,10:00 --&gt; B, 10:30; previous journey part is 0)
+    X: ?
+    Y: ?    
+</code></pre>
+<p>The same is done for the next connection:</p>
+<pre><code>    A: (Journey part nr 0: Genesis in A at 10:00)
+    B: (Journey part nr 1: Take connection A, 10:00 --&gt; B, 10:30; previous journey is 0)
+    X: ?
+    Y: (Journey part nr 2: Take connection B, 10:35 --&gt; Y, 11:00; previous journey is 1)
+</code></pre>
+<p>And analogously the last connection:</p>
+<pre><code>    A: (Journey part nr 0: Genesis in A at 10:00)
+    B: (Journey part nr 1: Take connection A, 10:00 --&gt; B, 10:30; previous journey is 0)
+    X: (Journey part nr 3: Take connection B, 10:40 --&gt; X, 11:10; previous journey is 1) 
+    Y: (Journey part nr 2: Take connection B, 10:35 --&gt; Y, 11:00; previous journey is 1) 
+</code></pre>
+<h3 id="reconstructing-a-journey">Reconstructing a journey</h3>
+<p>If the traveller wants to know how he could end up at <code>Y</code>, he can simply follow the breadcrumbs. He start by the journey part in Y and noting the connection:</p>
+<pre><code>    Take connection B, 10:35 --&gt; Y, 11:00
+</code></pre>
+<p>Then, he follows the pointer to connection nr 1, and writes the contained connection:</p>
+<pre><code>    Take connection A, 10:00 --&gt; B, 10:30
+    
+</code></pre>
+<p>He follows the next pointer and takes the connection:</p>
+<pre><code>    Take connection A, 10:00 --&gt; B, 10:30
+    
+</code></pre>
+<p>The last pointer is a genesis:</p>
+<pre><code>    Start in A at 10:00
+    
+</code></pre>
+<p>When reading these instructions from bottom to top, he knows what trains to take to get to <code>Y</code>!</p>
+<h3 id="tree-structure">Tree structure</h3>
+<p>Note that the journey parts to end up in both <code>X</code> and <code>Y</code> point to the <em>same</em> common ancestor, namely connection part nr 1. In other words, all those journeys together form a tree, with the Genesis as root and every destination as leaf:</p>
+<pre><code>          Genesis in A
+               |
+               |
+            B,10:30
+            /     \
+           /       \
+          /         \
+      X, 11:10      Y, 11:00
+</code></pre>
+<h2 id="earliest-arrival-scan">Earliest Arrival Scan</h2>
+<p><em>Earliest arrival scan</em> (EAS) is the simplest form of connection scan algorithm and is exactly performed exactly as <a href="index.html#connection-scan-algorithm">in the example on core conecpts</a> with the single addition of <a href="#a-tree-of-journeys">journeys as tree</a> as above.</p>
+<p>EAS is thus characterized by:</p>
+<ul>
+<li>Needing a clear, known <em><em>departure</em> time and location</em>.</li>
+<li>Keeping track of an <em>earliest arrival table</em> which keeps track of the earliest arrival from his departure</li>
+<li>Enumerating all the connections by departure time from earliest to latest connection.</li>
+</ul>
+<p>EAS is used in the following use cases:</p>
+<ul>
+<li>If the traveller wants to know at what earliest time he could arrive in a given location</li>
+<li>If the traveller wants to know at what earliest time he could arrive in one of a given set of locations</li>
+<li>If the traveller wants to known what locations he could reach by a given time (thus calculating an isochroneline)</li>
+</ul>
+<h2 id="latest-arrival-scan">Latest Arrival Scan</h2>
+<p><em>Latest arrival scan</em> (LAS) is the inverted sibling of connection scan. It works just like EAS, but the connections are scanned backwards.
+Where EAS focuses on departure location, LAS focuses on <em>arrival location</em>.</p>
+<p>LAS is thus characterized by:</p>
+<ul>
+<li>Needing a clear, known <em><em>arrival</em> time and location</em></li>
+<li>Keeping track of a <em>latest departure table</em> with journeys which'll bring the traveller (just in time) to his destination</li>
+<li>Enumerating all the connections by departure time, from <em>latest</em> to earliest connection.</li>
+</ul>
+<p>LAS is used in the following use cases:</p>
+<ul>
+<li>If the traveller wants to know at what <em>latest</em> time he could depart at his location to arrive in a given location</li>
+<li>If the traveller wants to know at what latest time he could depart in one of a given set of locations</li>
+<li>If the traveller wants to known what locations he could depart at a given time to end up in the arrival location (thus calculating an isochroneline)</li>
+</ul>
+<p>As sidenote, journeys are constructed just in the same way as with EAS - with the difference that the pointer to the rest of the journey now indicates the <em>next</em> step to make (instead of the previous step). In other words, the journeys will now appear in order instead of reversed. The library however conveniently reverses journeys for the end user so that you do not have to think about this.</p>
+<h2 id="profile-connection-scan">Profile connection scan</h2>
+<p>The <em>Profile Connection Scan</em> functions in a backwards fashion, just as the <a href="#latest-arrival-scan"><em>latest connection scan</em></a>. The major difference is that the central table does keep track of one profile for <em>each</em> location, instead of a single journey for each location.</p>
+<h3 id="profile">Profile</h3>
+<p>A <em>profile</em> has the following properties:</p>
+<ul>
+<li>The profile is a <a href="index.html#pareto-frontiers">pareto front</a> of journeys</li>
+<li>The metric for the pareto front includes the user-chosen metrics, e.g. the total travel time, total number of transfers, ...</li>
+<li>The pareto front includes a sense of <em>covering in time</em>, so that a journey <code>j</code> is only suboptimal with respect to another journey <code>k</code> if <code>j</code> performs worse on the metric <em>and</em> departs earlier then <code>k</code> but arrives later then <code>k</code>.</li>
+</ul>
+<p>In other words, if the pareto set describing all possible trips from <code>A</code> to <code>B</code> would contain only the following single journey:</p>
+<pre><code>    {
+        journey: A: 10:00 -&gt; B: 11:00, transfers: 0
+    }
+</code></pre>
+<p>Then, the journey <code>journey: A: 09:50 -&gt; B: 10:50, transfers: 2</code> <em>would</em> become part of the profile when it is discovered by the connection scan algorithm.
+Although it is worse then the already existing trip (same time but more transfers), it is included: the other journey does not cover it completely.
+The profile thus becomes:</p>
+<pre><code>    {
+        journey: A: 10:00 -&gt; B: 11:00, transfers: 0
+        journey: A: 09:50 -&gt; B: 10:50, transfers: 2
+    }
+</code></pre>
+<h3 id="section"></h3>
+<ul>
+<li>Scanning connections: PCS</li>
+<li>Making transfers</li>
+</ul>
 </article>
           </div>
           

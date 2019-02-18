@@ -147,9 +147,13 @@ And although knowing when a traveller could arrive as soon as possible is useful
 
 The technicalities of these algorithms can be found [here](CSA.md). It is not necessary to known those to effectivally use the library.
 
-- A tree of journeys
-- Scanning connections: EAS
-- Pareto fronts
-- Scanning connections: PCS
-- Making transfers
- 
+Pareto Frontiers
+----------------
+
+When calculating all journeys (say: every possible journey from `A` to `B`, departing between `10:00` and `12:00`), multiple journeys will be found with different properties. For example, one journey might take only 30 minutes - but needs a transfer halfway whereas the direct train needs 40 minutes. It is difficult for -as library- to make the choice of metric for the end user.
+
+The library copes with this by tracking _both_ metrics by default. If a profile search is needed, _all_ journeys which perform _good_ are kept. In other words, a set of journeys is returned so that each journey in the set performs better on some metric then all the other journeys in the set. Such a set is called a *paretor frontier*.
+
+An example of such a frontier is `{journey with 0 transfers in 1:00, journey with 1 transfers in 0:50, journey with 2 transfers in 0:40}`. The first is superior in the number of transfers, the last is the shortest in travel time. The middle one outperforms the zero-transfer one in time and outperforms the fastest one in number of transfers and might be a good tradeoff for some travellers too. A journey with 2 transfers taking 45 minutes has no place in the pareto frontier, as it is outperformed by the last journey: it takes 5 minutes more and just as much transfers, so it is clearly non-optimal.
+
+For more information on Pareto Frontiers, refer to [Wikipedia](https://en.wikipedia.org/wiki/Pareto_efficiency#Pareto_frontier)

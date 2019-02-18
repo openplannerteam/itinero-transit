@@ -1,8 +1,6 @@
  itinero-transit documentation landing page
 ============================================
 
-[![Build status](https://build.anyways.eu/app/rest/builds/buildType:(id:anyways_Openplannerteam_ItineroTransit)/statusIcon)](https://build.anyways.eu/viewType.html?buildTypeId=anyways_Openplannerteam_ItineroTransit)
-
 Welcome to the documentation of the itinero transit module.
 
 Itinero-transit is a C# library which solves routing queries over one or more public transport networks - with or without intermodal transfers.

@@ -126,6 +126,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static List&lt;Journey&lt;T&gt;&gt; AllParts&lt;T&gt;(this Journey&lt;T&gt; j)
+
     where T : IJourneyStats&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -189,6 +190,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Journey&lt;T&gt; Pruned&lt;T&gt;(this Journey&lt;T&gt; j)
+
     where T : IJourneyStats&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -252,6 +254,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static List&lt;Journey&lt;T&gt;&gt; Reversed&lt;T&gt;(this Journey&lt;T&gt; j)
+
     where T : IJourneyStats&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -317,6 +320,7 @@ The resulting, new journeys will not contain alternative choices and will be add
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Reversed&lt;T&gt;(this Journey&lt;T&gt; j, List&lt;Journey&lt;T&gt;&gt; addTo)
+
     where T : IJourneyStats&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

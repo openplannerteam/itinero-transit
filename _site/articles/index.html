@@ -187,13 +187,11 @@ The <em>earliest arrival table</em> indicates that the traveller can already be 
 Of course, there is much more work to do: the traveller above knows at what time he'll arrive, but he forgot to keep track which trains he should have taken and how many transfer he has to make. Did he take the direct train or did he transfer in C?</p>
 <p>And although knowing when a traveller could arrive as soon as possible is useful, most travellers want to minimize either travel time or number of needed transfers. It is thus useful to offer all these best (in one sense) journeys to the user of the library and to let the user pick.</p>
 <p>The technicalities of these algorithms can be found <a href="CSA.html">here</a>. It is not necessary to known those to effectivally use the library.</p>
-<ul>
-<li>A tree of journeys</li>
-<li>Scanning connections: EAS</li>
-<li>Pareto fronts</li>
-<li>Scanning connections: PCS</li>
-<li>Making transfers</li>
-</ul>
+<h2 id="pareto-frontiers">Pareto Frontiers</h2>
+<p>When calculating all journeys (say: every possible journey from <code>A</code> to <code>B</code>, departing between <code>10:00</code> and <code>12:00</code>), multiple journeys will be found with different properties. For example, one journey might take only 30 minutes - but needs a transfer halfway whereas the direct train needs 40 minutes. It is difficult for -as library- to make the choice of metric for the end user.</p>
+<p>The library copes with this by tracking <em>both</em> metrics by default. If a profile search is needed, <em>all</em> journeys which perform <em>good</em> are kept. In other words, a set of journeys is returned so that each journey in the set performs better on some metric then all the other journeys in the set. Such a set is called a <em>paretor frontier</em>.</p>
+<p>An example of such a frontier is <code>{journey with 0 transfers in 1:00, journey with 1 transfers in 0:50, journey with 2 transfers in 0:40}</code>. The first is superior in the number of transfers, the last is the shortest in travel time. The middle one outperforms the zero-transfer one in time and outperforms the fastest one in number of transfers and might be a good tradeoff for some travellers too. A journey with 2 transfers taking 45 minutes has no place in the pareto frontier, as it is outperformed by the last journey: it takes 5 minutes more and just as much transfers, so it is clearly non-optimal.</p>
+<p>For more information on Pareto Frontiers, refer to <a href="https://en.wikipedia.org/wiki/Pareto_efficiency#Pareto_frontier">Wikipedia</a></p>
 </article>
           </div>
           
