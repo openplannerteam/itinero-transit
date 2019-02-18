@@ -7,7 +7,7 @@ namespace Itinero.Transit.Tests
     {
         public static TransitDb GetDefaultTestDb()
         {
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(null);
             var writer = transitDb.GetWriter();
             
             writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);

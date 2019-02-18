@@ -22,7 +22,7 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
             var profile = Belgium.Sncb();
 
             // create a stops db and connections db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(null);
 
             // load connections for the current day.
             var w = transitDb.GetWriter();

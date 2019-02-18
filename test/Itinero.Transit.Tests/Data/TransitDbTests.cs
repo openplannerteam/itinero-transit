@@ -12,7 +12,7 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void TransitDb_WriteToReadFromShouldBeCopy()
         {
-            var db = new TransitDb();
+            var db = new TransitDb(null);
 
             var writer = db.GetWriter();
 
@@ -118,7 +118,7 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void TransitDb_ShouldStoreIdenticalGlobalIdsWithIdenticalId()
         {
-            var db = new TransitDb();
+            var db = new TransitDb(null);
 
             var writer = db.GetWriter();
 

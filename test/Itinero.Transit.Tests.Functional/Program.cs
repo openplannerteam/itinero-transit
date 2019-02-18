@@ -150,8 +150,6 @@ namespace Itinero.Transit.Tests.Functional
                             results[name]++;
                         }
 
-                    TransitDbQueryExtensions.CalculateJourneys(db, );
-
 //                    }
 //                    catch (Exception e)
 //                    {

@@ -53,7 +53,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         [Fact]
         public static void TestFiltering()
         {
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(null);
             var writer = transitDb.GetWriter();
 
             writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);

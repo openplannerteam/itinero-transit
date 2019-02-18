@@ -19,7 +19,7 @@ namespace Itinero.Transit.Data
         /// Construct a TransitDb, optionally with a callback to load something in the database
         /// </summary>
         /// <param name="updateTimeFrame">This function should add data via the writer. The writer will be closed when the callback finishes</param>
-        public TransitDb(Action<TransitDbWriter, DateTime, DateTime> updateTimeFrame = null)
+        public TransitDb(Action<TransitDbWriter, DateTime, DateTime> updateTimeFrame )
         {
             _updateTimeFrame = updateTimeFrame;
             var stopsDb = new StopsDb();
@@ -46,6 +46,13 @@ namespace Itinero.Transit.Data
         /// <param name="refresh">If true, overwrites. If false, only the gaps will be filled</param>
         public void UpdateTimeFrame(DateTime start, DateTime end, bool refresh = false)
         {
+
+            if (_updateTimeFrame == null)
+            {
+                // Seems like we are running tests... SKIP!
+                return;
+            }
+            
             var gaps = new List<(DateTime , DateTime)>();
             if (refresh)
             {

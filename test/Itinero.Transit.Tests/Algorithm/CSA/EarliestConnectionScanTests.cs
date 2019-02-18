@@ -50,7 +50,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         public void EarliestConnectionScan_WithWalk()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(null);
             var writer = transitDb.GetWriter();
 
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
@@ -91,7 +91,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         public void EarliestConnectionScan_ShouldFindOneConnectionJourney()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(null);
             var writer = transitDb.GetWriter();
 
             var stop1 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);

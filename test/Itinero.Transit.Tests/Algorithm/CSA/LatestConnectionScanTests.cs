@@ -49,7 +49,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         public void LatestConnectionScan_ShouldFindOneConnectionJourney()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(null);
             var writer = transitDb.GetWriter();
 
             var stop1 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
