@@ -51,6 +51,12 @@ namespace Itinero.Transit.Tests.Functional
 
         public static void Main(string[] args)
         {
+            args = new[]
+            {
+                "1",
+                "eas"
+            };
+            
             var tests = AllTests;
             if (args.Length > 0)
             {
@@ -84,25 +90,25 @@ namespace Itinero.Transit.Tests.Functional
             
             Log.Information("Starting the Functional Tests...");
 
-            new MultipleLoadTest().Run(0);
+            //new MultipleLoadTest().Run(0);
             
             var date = DateTime.Now.Date; // LOCAL TIMES! //
             // test loading a connections db
             var db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
             
-            // test read/writing a transit db from/to a stream.
-            using (var stream = WriteTransitDbTest.Default.Run(db))
-            {
-                stream.Seek(0, SeekOrigin.Begin);
-                
-                db = ReadTransitDbTest.Default.Run(stream);
-            }
-
-            TripHeadsignTest.Default.Run(db);
-
-            ConnectionsDbDepartureEnumeratorTest.Default.Run(db);
-            TestClosestStopsAndRouting(db);
-            new IsochroneTest().Run((db, Brugge, Gent, date.Date.AddHours(12), date.Date.AddHours(14)));
+//            // test read/writing a transit db from/to a stream.
+//            using (var stream = WriteTransitDbTest.Default.Run(db))
+//            {
+//                stream.Seek(0, SeekOrigin.Begin);
+//                
+//                db = ReadTransitDbTest.Default.Run(stream);
+//            }
+//
+//            TripHeadsignTest.Default.Run(db);
+//
+//            ConnectionsDbDepartureEnumeratorTest.Default.Run(db);
+//            TestClosestStopsAndRouting(db);
+//            new IsochroneTest().Run((db, Brugge, Gent, date.Date.AddHours(12), date.Date.AddHours(14)));
             AlgorithmTests(db, date, tests);
         }
 
