@@ -5,11 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Namespace Itinero.Transit.Data.Walks
-   </title>
+    <title>Setting up a provider </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Namespace Itinero.Transit.Data.Walks
-   ">
+    <meta name="title" content="Setting up a provider ">
     <meta name="generator" content="docfx 2.40.10.0">
     
     <link rel="shortcut icon" href="../favicon.ico">
@@ -68,35 +66,58 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="Itinero.Transit.Data.Walks">
-  
-  <h1 id="Itinero_Transit_Data_Walks" data-uid="Itinero.Transit.Data.Walks" class="text-break">Namespace Itinero.Transit.Data.Walks
-  </h1>
-  <div class="markdown level0 summary"></div>
-  <div class="markdown level0 conceptual"></div>
-  <div class="markdown level0 remarks"></div>
-    <h3 id="classes">Classes
-  </h3>
-      <h4><a class="xref" href="Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.html">CrowsFlightTransferGenerator</a></h4>
-      <section><p>Generates walks between transport stops, solely based on the distance between them.</p>
-<p>Will generate</p>
-</section>
-      <h4><a class="xref" href="Itinero.Transit.Data.Walks.DateTracker.html">DateTracker</a></h4>
-      <section><p>Basically a list of time windows.
-If two time windows overlap, they get merged into one window</p>
-</section>
-      <h4><a class="xref" href="Itinero.Transit.Data.Walks.DistanceEstimate.html">DistanceEstimate</a></h4>
-      <section></section>
-      <h4><a class="xref" href="Itinero.Transit.Data.Walks.InternalTransferGenerator.html">InternalTransferGenerator</a></h4>
-      <section><p>Generates internal (thus within the station) transfers if there is enough time to make the transfer.
-Returns null if two different locations are given</p>
-</section>
-    <h3 id="interfaces">Interfaces
-  </h3>
-      <h4><a class="xref" href="Itinero.Transit.Data.Walks.IOtherModeGenerator.html">IOtherModeGenerator</a></h4>
-      <section><p>The transfergenerator takes a journey and a next connection.
-Using those, it extends the journey if this is possible.</p>
-</section>
+            <article class="content wrap" id="_content" data-uid="">
+
+<p>Once the <a href="index.html">core concepts</a> are clear, using the library in your project should be quite easy.</p>
+<p>Performing route planning queries (at the bare minimum) consists of the following parts:</p>
+<ol>
+<li>Setting up a provider</li>
+<li>Setting up a profile</li>
+<li>Asking a query</li>
+</ol>
+<h2 id="setting-up-a-provider">Setting up a provider</h2>
+<p>As noted, the library needs a server which offers all the information as <a href="linkedconnections.org">Linked Connections</a>.
+A linked Connections dataset has two entry points:</p>
+<ul>
+<li>A web resource which contains all stops</li>
+<li>Multiple web resources which contain the connections in a timewindow (with a link to a next and previous timetable)</li>
+</ul>
+<p>Search for these links (or ask for them) on your public transport provider website.</p>
+<p>Once you have obtained these links, make a new dataset with:</p>
+<pre><code>    using Itinero.Transit.IO.LC;
+    
+    ...
+    
+    Uri locations = &lt;...&gt;
+    Uri connections = &lt;...&gt;
+    var dataset = new LinkedConnectionDataset(locations, connections);
+    var transitDB = dataset.AsTransitDb();
+</code></pre>
+<p>If needed, data can already be downloaded now for a certain time period. For example, if the code should run on a server, it can be useful to prefetch the data for the coming days. If it is not certain when the traveller will travel (if he'll travel at all), the next line should be skipped:</p>
+<pre><code>    transitDB.UpdateTimeFrame(startDate, endDate)        
+</code></pre>
+<p>If you'd like to force an update on the data already in the transit db, use the refresh flag:</p>
+<pre><code>    transitDB.UpdateTimeFrame(startDate, endDate, refresh:true)        
+</code></pre>
+<p>Note that <em>needed data will be downloaded automatically upon request</em>. In other words, if a traveller want to travel at a time span that is not yet loaded, it'll be loaded dynamically.</p>
+<h2 id="setting-up-a-profile">Setting up a profile</h2>
+<p>The <em>profile</em> contains personal preferences of the traveller, such as:</p>
+<ul>
+<li>Which public transport providers are available</li>
+<li>The walking time between stops</li>
+<li>How much time is needed to get from one vehicle to another</li>
+<li>Which metrics are used to compare journeys</li>
+</ul>
+<p>A profile is constructed with:</p>
+<pre><code>    var p = new Profile
+            &lt;TransferStats&gt;
+                (
+                State.TransitDb,
+                new InternalTransferGenerator(internalTransferTime),
+                null,
+                TransferStats.Factory,
+                TransferStats.ProfileTransferCompare);
+</code></pre>
 </article>
           </div>
           
@@ -104,6 +125,9 @@ Using those, it extends the journey if this is possible.</p>
             <div class="sideaffix">
               <div class="contribution">
                 <ul class="nav">
+                  <li>
+                    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/articles/UsingTheLibrary.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">

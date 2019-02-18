@@ -75,6 +75,8 @@
 <li>Earliest Arrival Scan (EAS)</li>
 <li>Latest Arrival Scan (LAS)</li>
 <li>Profile Connection Scan (PCS)</li>
+<li>Extension with trips</li>
+<li>Extension with walks</li>
 </ul>
 <p>We will give a small overview of these algorithms here. A reader interested in all the details, is refered to <a href="CSA.pdf">the paper</a>.</p>
 <h2 id="a-tree-of-journeys">A tree of journeys</h2>
@@ -197,14 +199,44 @@ Although it is worse then the already existing trip (same time but more transfer
 The profile thus becomes:</p>
 <pre><code>    {
         journey: A: 10:00 -&gt; B: 11:00, transfers: 0
-        journey: A: 09:50 -&gt; B: 10:50, transfers: 2
+        journey: A: 09:50 -&gt; B: 10:50, transfers: 1
     }
 </code></pre>
-<h3 id="section"></h3>
-<ul>
-<li>Scanning connections: PCS</li>
-<li>Making transfers</li>
-</ul>
+<h3 id="connection-scanning">Connection scanning</h3>
+<p>With the profile in place, we can have a look at the actual connection scan algorithm. Again, every connection is scanned, reverse sorted by departure time.</p>
+<p>Again, there is a table keeping track of all profiles:</p>
+<pre><code>    A: {journey: A: 10:00 -&gt; B: 11:00, transfers: 0
+       ; journey: A: 09:50 -&gt; B: 10:50, transfers: 1}
+    B: {journey: arrival at B at 12:00}
+    X: ?
+    Y: ?
+    
+</code></pre>
+<p>When a connection <code>X, 09:00 --&gt; A, 09:40</code> is scanned, the profile at the arrival location is taken, here <code>B</code>: <code>{journey: A: 10:00 -&gt; B: 11:00, transfers: 0; journey: A: 09:50 -&gt; B: 10:50, transfers: 2}</code>. New journeys are constructed based on the connection and the journey, giving a candidate set for <code>X</code>:</p>
+<pre><code>    {
+        journey: X: 09:00 -&gt; B: 11:00, transfers: 1
+        journey: X: 09:00 -&gt; B: 10:50, transfers: 1
+    }
+</code></pre>
+<p>Now, something peculiar happens: this turns out to be the direct train for the second journey. In other words, the number of transfers becomes the same for both now - and the slightly worse journey departing in <code>A</code> becomes the optimal one here - thus, one of the journeys can be removed as being non-optimal, giving the new profile for X:</p>
+<pre><code>    A: {journey: A: 10:00 -&gt; B: 11:00, transfers: 0
+       ; journey: A: 09:50 -&gt; B: 10:50, transfers: 1}
+    B: {journey: arrival at B at 12:00}
+    X: {journey: X: 09:00 -&gt; B: 10:50, transfers: 1}
+    Y: ?
+</code></pre>
+<p>This gives an idea of how the algorithm more or less works. The explanation above is however not enough for a correct functioning, see 'trips' below.</p>
+<h3 id="characteristics">Characteristics</h3>
+<p>In summary, PCS is used when the traveller wants <em>a range of options</em>.</p>
+<p>Just as in LAS, a clear destination should be given, together with a timewindow in which the travel can be made. The traveller will end with a table with all the possible journey from each possible destination station.</p>
+<h2 id="handling-trips">Handling trips</h2>
+<p>As small sidenote, a journey does <em>not</em> satisfy an important property: if a journey from <code>A</code> to <code>C</code>, goes via <code>B</code> and is the <em>optimal</em> journey from <code>A</code> to <code>B</code> with respect to some metric - this does <em>not</em> mean that its subjourneys from <code>A</code> to <code>B</code> or from <code>B</code> to <code>C</code> are the optimal ones!</p>
+<p>The simplest situation where this arises if if busses <code>x</code> and <code>y</code> depart at location <code>A</code> at the same time. Due to some circumstances, <code>x</code> arrives one minute earlier at <code>B</code> then <code>y</code>; so the optimal route from <code>A</code> to <code>B</code> would be to take <code>x</code>. However, if only bus <code>y</code> continues to <code>C</code>; bus <code>y</code> becomes the optimal choice.</p>
+<p>To deal with this, an extra table <em>trips</em> is introduced, which keeps track of all the trips on which a traveller could be. For more details, please see the <a href="CSA.pdf">paper</a></p>
+<h2 id="making-walking-transfers-and-intermodality">Making walking transfers and intermodality</h2>
+<p>Another extension of CSA is <em>walking</em> from one PT-stop to another; In some datasets, a <em>station</em> is not explicitely modeled but rather a group of stops which happen to be close to each other. In this case, the traveller needs to walk from one stop or another.</p>
+<p>Conceptually, one can think of a <em>walk</em> as another journey part. Whenever a real vehicle arrives at some stop, a (virtual) 'walk connection' departs to each closeby stop and can be saved in the datastructures.</p>
+<p>For more information, we again refer to the <a href="CSA.pdf">paper</a></p>
 </article>
           </div>
           

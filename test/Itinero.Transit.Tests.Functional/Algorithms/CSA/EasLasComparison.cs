@@ -23,7 +23,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var profile = new Profile<TransferStats>(
                 latest,
                 new InternalTransferGenerator(1),
-                new BirdsEyeInterWalkTransferGenerator(latest.StopsDb.GetReader()),
+                new CrowsFlightTransferGenerator(latest.StopsDb.GetReader()),
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
             // get departure and arrival stop ids.

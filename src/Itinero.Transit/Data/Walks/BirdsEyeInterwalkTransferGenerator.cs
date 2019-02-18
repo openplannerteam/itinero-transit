@@ -8,7 +8,7 @@ namespace Itinero.Transit.Data.Walks
     ///
     /// Will generate 
     /// </summary>
-    public class BirdsEyeInterWalkTransferGenerator : IOtherModeGenerator
+    public class CrowsFlightTransferGenerator : IOtherModeGenerator
     {
         private readonly StopsDb.StopsDbReader _reader;
         private readonly int _maxDistance;
@@ -29,7 +29,7 @@ namespace Itinero.Transit.Data.Walks
         /// <param name="reader"></param>
         /// <param name="maxDistance"></param>
         ///  <param name="speed">In meter per second. According to Wikipedia, about 1.4m/s is preferred average</param>
-        public BirdsEyeInterWalkTransferGenerator(
+        public CrowsFlightTransferGenerator(
             StopsDb.StopsDbReader reader, int maxDistance = 500, float speed = 1.4f)
         {
             _reader = reader;

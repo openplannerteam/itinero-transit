@@ -2316,70 +2316,70 @@ references:
   commentId: N:Itinero.Transit.Data.Walks
   fullName: Itinero.Transit.Data.Walks
   nameWithType: Itinero.Transit.Data.Walks
-- uid: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator
-  name: BirdsEyeInterWalkTransferGenerator
-  href: api/Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.html
-  commentId: T:Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator
-  fullName: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator
-  nameWithType: BirdsEyeInterWalkTransferGenerator
-- uid: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.#ctor(Itinero.Transit.Data.StopsDb.StopsDbReader,System.Int32,System.Single)
-  name: BirdsEyeInterWalkTransferGenerator(StopsDb.StopsDbReader, Int32, Single)
-  href: api/Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.html#Itinero_Transit_Data_Walks_BirdsEyeInterWalkTransferGenerator__ctor_Itinero_Transit_Data_StopsDb_StopsDbReader_System_Int32_System_Single_
-  commentId: M:Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.#ctor(Itinero.Transit.Data.StopsDb.StopsDbReader,System.Int32,System.Single)
-  fullName: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.BirdsEyeInterWalkTransferGenerator(Itinero.Transit.Data.StopsDb.StopsDbReader, System.Int32, System.Single)
-  nameWithType: BirdsEyeInterWalkTransferGenerator.BirdsEyeInterWalkTransferGenerator(StopsDb.StopsDbReader, Int32, Single)
-- uid: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.#ctor*
-  name: BirdsEyeInterWalkTransferGenerator
-  href: api/Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.html#Itinero_Transit_Data_Walks_BirdsEyeInterWalkTransferGenerator__ctor_
-  commentId: Overload:Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.#ctor
+- uid: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator
+  name: CrowsFlightTransferGenerator
+  href: api/Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.html
+  commentId: T:Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator
+  fullName: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator
+  nameWithType: CrowsFlightTransferGenerator
+- uid: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.#ctor(Itinero.Transit.Data.StopsDb.StopsDbReader,System.Int32,System.Single)
+  name: CrowsFlightTransferGenerator(StopsDb.StopsDbReader, Int32, Single)
+  href: api/Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.html#Itinero_Transit_Data_Walks_CrowsFlightTransferGenerator__ctor_Itinero_Transit_Data_StopsDb_StopsDbReader_System_Int32_System_Single_
+  commentId: M:Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.#ctor(Itinero.Transit.Data.StopsDb.StopsDbReader,System.Int32,System.Single)
+  fullName: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.CrowsFlightTransferGenerator(Itinero.Transit.Data.StopsDb.StopsDbReader, System.Int32, System.Single)
+  nameWithType: CrowsFlightTransferGenerator.CrowsFlightTransferGenerator(StopsDb.StopsDbReader, Int32, Single)
+- uid: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.#ctor*
+  name: CrowsFlightTransferGenerator
+  href: api/Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.html#Itinero_Transit_Data_Walks_CrowsFlightTransferGenerator__ctor_
+  commentId: Overload:Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.#ctor
   isSpec: "True"
-  fullName: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.BirdsEyeInterWalkTransferGenerator
-  nameWithType: BirdsEyeInterWalkTransferGenerator.BirdsEyeInterWalkTransferGenerator
-- uid: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.CreateArrivingTransfer*
+  fullName: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.CrowsFlightTransferGenerator
+  nameWithType: CrowsFlightTransferGenerator.CrowsFlightTransferGenerator
+- uid: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.CreateArrivingTransfer*
   name: CreateArrivingTransfer
-  href: api/Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.html#Itinero_Transit_Data_Walks_BirdsEyeInterWalkTransferGenerator_CreateArrivingTransfer_
-  commentId: Overload:Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.CreateArrivingTransfer
+  href: api/Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.html#Itinero_Transit_Data_Walks_CrowsFlightTransferGenerator_CreateArrivingTransfer_
+  commentId: Overload:Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.CreateArrivingTransfer
   isSpec: "True"
-  fullName: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.CreateArrivingTransfer
-  nameWithType: BirdsEyeInterWalkTransferGenerator.CreateArrivingTransfer
-- uid: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.CreateArrivingTransfer``1(Itinero.Transit.Journeys.Journey{``0},System.UInt64,System.ValueTuple{System.UInt32,System.UInt32})
+  fullName: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.CreateArrivingTransfer
+  nameWithType: CrowsFlightTransferGenerator.CreateArrivingTransfer
+- uid: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.CreateArrivingTransfer``1(Itinero.Transit.Journeys.Journey{``0},System.UInt64,System.ValueTuple{System.UInt32,System.UInt32})
   name: CreateArrivingTransfer<T>(Journey<T>, UInt64, (UInt32, UInt32))
-  href: api/Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.html#Itinero_Transit_Data_Walks_BirdsEyeInterWalkTransferGenerator_CreateArrivingTransfer__1_Itinero_Transit_Journeys_Journey___0__System_UInt64_System_ValueTuple_System_UInt32_System_UInt32__
-  commentId: M:Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.CreateArrivingTransfer``1(Itinero.Transit.Journeys.Journey{``0},System.UInt64,System.ValueTuple{System.UInt32,System.UInt32})
+  href: api/Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.html#Itinero_Transit_Data_Walks_CrowsFlightTransferGenerator_CreateArrivingTransfer__1_Itinero_Transit_Journeys_Journey___0__System_UInt64_System_ValueTuple_System_UInt32_System_UInt32__
+  commentId: M:Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.CreateArrivingTransfer``1(Itinero.Transit.Journeys.Journey{``0},System.UInt64,System.ValueTuple{System.UInt32,System.UInt32})
   name.vb: CreateArrivingTransfer(Of T)(Journey(Of T), UInt64, (UInt32, UInt32))
-  fullName: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.CreateArrivingTransfer<T>(Itinero.Transit.Journeys.Journey<T>, System.UInt64, System.ValueTuple<System.UInt32, System.UInt32>)
-  fullName.vb: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.CreateArrivingTransfer(Of T)(Itinero.Transit.Journeys.Journey(Of T), System.UInt64, System.ValueTuple(Of System.UInt32, System.UInt32))
-  nameWithType: BirdsEyeInterWalkTransferGenerator.CreateArrivingTransfer<T>(Journey<T>, UInt64, (UInt32, UInt32))
-  nameWithType.vb: BirdsEyeInterWalkTransferGenerator.CreateArrivingTransfer(Of T)(Journey(Of T), UInt64, (UInt32, UInt32))
-- uid: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.CreateDepartureTransfer*
+  fullName: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.CreateArrivingTransfer<T>(Itinero.Transit.Journeys.Journey<T>, System.UInt64, System.ValueTuple<System.UInt32, System.UInt32>)
+  fullName.vb: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.CreateArrivingTransfer(Of T)(Itinero.Transit.Journeys.Journey(Of T), System.UInt64, System.ValueTuple(Of System.UInt32, System.UInt32))
+  nameWithType: CrowsFlightTransferGenerator.CreateArrivingTransfer<T>(Journey<T>, UInt64, (UInt32, UInt32))
+  nameWithType.vb: CrowsFlightTransferGenerator.CreateArrivingTransfer(Of T)(Journey(Of T), UInt64, (UInt32, UInt32))
+- uid: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.CreateDepartureTransfer*
   name: CreateDepartureTransfer
-  href: api/Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.html#Itinero_Transit_Data_Walks_BirdsEyeInterWalkTransferGenerator_CreateDepartureTransfer_
-  commentId: Overload:Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.CreateDepartureTransfer
+  href: api/Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.html#Itinero_Transit_Data_Walks_CrowsFlightTransferGenerator_CreateDepartureTransfer_
+  commentId: Overload:Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.CreateDepartureTransfer
   isSpec: "True"
-  fullName: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.CreateDepartureTransfer
-  nameWithType: BirdsEyeInterWalkTransferGenerator.CreateDepartureTransfer
-- uid: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.CreateDepartureTransfer``1(Itinero.Transit.Journeys.Journey{``0},System.UInt64,System.ValueTuple{System.UInt32,System.UInt32})
+  fullName: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.CreateDepartureTransfer
+  nameWithType: CrowsFlightTransferGenerator.CreateDepartureTransfer
+- uid: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.CreateDepartureTransfer``1(Itinero.Transit.Journeys.Journey{``0},System.UInt64,System.ValueTuple{System.UInt32,System.UInt32})
   name: CreateDepartureTransfer<T>(Journey<T>, UInt64, (UInt32, UInt32))
-  href: api/Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.html#Itinero_Transit_Data_Walks_BirdsEyeInterWalkTransferGenerator_CreateDepartureTransfer__1_Itinero_Transit_Journeys_Journey___0__System_UInt64_System_ValueTuple_System_UInt32_System_UInt32__
-  commentId: M:Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.CreateDepartureTransfer``1(Itinero.Transit.Journeys.Journey{``0},System.UInt64,System.ValueTuple{System.UInt32,System.UInt32})
+  href: api/Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.html#Itinero_Transit_Data_Walks_CrowsFlightTransferGenerator_CreateDepartureTransfer__1_Itinero_Transit_Journeys_Journey___0__System_UInt64_System_ValueTuple_System_UInt32_System_UInt32__
+  commentId: M:Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.CreateDepartureTransfer``1(Itinero.Transit.Journeys.Journey{``0},System.UInt64,System.ValueTuple{System.UInt32,System.UInt32})
   name.vb: CreateDepartureTransfer(Of T)(Journey(Of T), UInt64, (UInt32, UInt32))
-  fullName: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.CreateDepartureTransfer<T>(Itinero.Transit.Journeys.Journey<T>, System.UInt64, System.ValueTuple<System.UInt32, System.UInt32>)
-  fullName.vb: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.CreateDepartureTransfer(Of T)(Itinero.Transit.Journeys.Journey(Of T), System.UInt64, System.ValueTuple(Of System.UInt32, System.UInt32))
-  nameWithType: BirdsEyeInterWalkTransferGenerator.CreateDepartureTransfer<T>(Journey<T>, UInt64, (UInt32, UInt32))
-  nameWithType.vb: BirdsEyeInterWalkTransferGenerator.CreateDepartureTransfer(Of T)(Journey(Of T), UInt64, (UInt32, UInt32))
-- uid: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.Range
+  fullName: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.CreateDepartureTransfer<T>(Itinero.Transit.Journeys.Journey<T>, System.UInt64, System.ValueTuple<System.UInt32, System.UInt32>)
+  fullName.vb: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.CreateDepartureTransfer(Of T)(Itinero.Transit.Journeys.Journey(Of T), System.UInt64, System.ValueTuple(Of System.UInt32, System.UInt32))
+  nameWithType: CrowsFlightTransferGenerator.CreateDepartureTransfer<T>(Journey<T>, UInt64, (UInt32, UInt32))
+  nameWithType.vb: CrowsFlightTransferGenerator.CreateDepartureTransfer(Of T)(Journey(Of T), UInt64, (UInt32, UInt32))
+- uid: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.Range
   name: Range()
-  href: api/Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.html#Itinero_Transit_Data_Walks_BirdsEyeInterWalkTransferGenerator_Range
-  commentId: M:Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.Range
-  fullName: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.Range()
-  nameWithType: BirdsEyeInterWalkTransferGenerator.Range()
-- uid: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.Range*
+  href: api/Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.html#Itinero_Transit_Data_Walks_CrowsFlightTransferGenerator_Range
+  commentId: M:Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.Range
+  fullName: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.Range()
+  nameWithType: CrowsFlightTransferGenerator.Range()
+- uid: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.Range*
   name: Range
-  href: api/Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.html#Itinero_Transit_Data_Walks_BirdsEyeInterWalkTransferGenerator_Range_
-  commentId: Overload:Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.Range
+  href: api/Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.html#Itinero_Transit_Data_Walks_CrowsFlightTransferGenerator_Range_
+  commentId: Overload:Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.Range
   isSpec: "True"
-  fullName: Itinero.Transit.Data.Walks.BirdsEyeInterWalkTransferGenerator.Range
-  nameWithType: BirdsEyeInterWalkTransferGenerator.Range
+  fullName: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.Range
+  nameWithType: CrowsFlightTransferGenerator.Range
 - uid: Itinero.Transit.Data.Walks.DateTracker
   name: DateTracker
   href: api/Itinero.Transit.Data.Walks.DateTracker.html
@@ -3420,6 +3420,51 @@ references:
   isSpec: "True"
   fullName: Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.LinkedConnectionDataset
   nameWithType: LinkedConnectionDataset.LinkedConnectionDataset
+- uid: Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AddAllConnectionsTo(Itinero.Transit.Data.TransitDb.TransitDbWriter,DateTime,DateTime,Action{System.String},Itinero.Transit.IO.LC.LoggingOptions)
+  name: AddAllConnectionsTo(TransitDb.TransitDbWriter, DateTime, DateTime, Action<String>, LoggingOptions)
+  href: api/Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.html#Itinero_Transit_IO_LC_CSA_LinkedConnectionDataset_AddAllConnectionsTo_Itinero_Transit_Data_TransitDb_TransitDbWriter_DateTime_DateTime_Action_System_String__Itinero_Transit_IO_LC_LoggingOptions_
+  commentId: M:Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AddAllConnectionsTo(Itinero.Transit.Data.TransitDb.TransitDbWriter,DateTime,DateTime,Action{System.String},Itinero.Transit.IO.LC.LoggingOptions)
+  name.vb: AddAllConnectionsTo(TransitDb.TransitDbWriter, DateTime, DateTime, Action(Of String), LoggingOptions)
+  fullName: Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AddAllConnectionsTo(Itinero.Transit.Data.TransitDb.TransitDbWriter, DateTime, DateTime, Action<System.String>, Itinero.Transit.IO.LC.LoggingOptions)
+  fullName.vb: Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AddAllConnectionsTo(Itinero.Transit.Data.TransitDb.TransitDbWriter, DateTime, DateTime, Action(Of System.String), Itinero.Transit.IO.LC.LoggingOptions)
+  nameWithType: LinkedConnectionDataset.AddAllConnectionsTo(TransitDb.TransitDbWriter, DateTime, DateTime, Action<String>, LoggingOptions)
+  nameWithType.vb: LinkedConnectionDataset.AddAllConnectionsTo(TransitDb.TransitDbWriter, DateTime, DateTime, Action(Of String), LoggingOptions)
+- uid: Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AddAllConnectionsTo*
+  name: AddAllConnectionsTo
+  href: api/Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.html#Itinero_Transit_IO_LC_CSA_LinkedConnectionDataset_AddAllConnectionsTo_
+  commentId: Overload:Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AddAllConnectionsTo
+  isSpec: "True"
+  fullName: Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AddAllConnectionsTo
+  nameWithType: LinkedConnectionDataset.AddAllConnectionsTo
+- uid: Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AddAllLocationsTo(Itinero.Transit.Data.TransitDb.TransitDbWriter,Action{System.String},Itinero.Transit.IO.LC.LoggingOptions)
+  name: AddAllLocationsTo(TransitDb.TransitDbWriter, Action<String>, LoggingOptions)
+  href: api/Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.html#Itinero_Transit_IO_LC_CSA_LinkedConnectionDataset_AddAllLocationsTo_Itinero_Transit_Data_TransitDb_TransitDbWriter_Action_System_String__Itinero_Transit_IO_LC_LoggingOptions_
+  commentId: M:Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AddAllLocationsTo(Itinero.Transit.Data.TransitDb.TransitDbWriter,Action{System.String},Itinero.Transit.IO.LC.LoggingOptions)
+  name.vb: AddAllLocationsTo(TransitDb.TransitDbWriter, Action(Of String), LoggingOptions)
+  fullName: Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AddAllLocationsTo(Itinero.Transit.Data.TransitDb.TransitDbWriter, Action<System.String>, Itinero.Transit.IO.LC.LoggingOptions)
+  fullName.vb: Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AddAllLocationsTo(Itinero.Transit.Data.TransitDb.TransitDbWriter, Action(Of System.String), Itinero.Transit.IO.LC.LoggingOptions)
+  nameWithType: LinkedConnectionDataset.AddAllLocationsTo(TransitDb.TransitDbWriter, Action<String>, LoggingOptions)
+  nameWithType.vb: LinkedConnectionDataset.AddAllLocationsTo(TransitDb.TransitDbWriter, Action(Of String), LoggingOptions)
+- uid: Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AddAllLocationsTo*
+  name: AddAllLocationsTo
+  href: api/Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.html#Itinero_Transit_IO_LC_CSA_LinkedConnectionDataset_AddAllLocationsTo_
+  commentId: Overload:Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AddAllLocationsTo
+  isSpec: "True"
+  fullName: Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AddAllLocationsTo
+  nameWithType: LinkedConnectionDataset.AddAllLocationsTo
+- uid: Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AsTransitDb
+  name: AsTransitDb()
+  href: api/Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.html#Itinero_Transit_IO_LC_CSA_LinkedConnectionDataset_AsTransitDb
+  commentId: M:Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AsTransitDb
+  fullName: Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AsTransitDb()
+  nameWithType: LinkedConnectionDataset.AsTransitDb()
+- uid: Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AsTransitDb*
+  name: AsTransitDb
+  href: api/Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.html#Itinero_Transit_IO_LC_CSA_LinkedConnectionDataset_AsTransitDb_
+  commentId: Overload:Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AsTransitDb
+  isSpec: "True"
+  fullName: Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.AsTransitDb
+  nameWithType: LinkedConnectionDataset.AsTransitDb
 - uid: Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.ConnectionsProvider
   name: ConnectionsProvider
   href: api/Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset.html#Itinero_Transit_IO_LC_CSA_LinkedConnectionDataset_ConnectionsProvider
@@ -3817,44 +3862,6 @@ references:
   isSpec: "True"
   fullName: Itinero.Transit.IO.LC.LoggingOptions.LoggingOptions
   nameWithType: LoggingOptions.LoggingOptions
-- uid: Itinero.Transit.IO.LC.ProfileExtensions
-  name: ProfileExtensions
-  href: api/Itinero.Transit.IO.LC.ProfileExtensions.html
-  commentId: T:Itinero.Transit.IO.LC.ProfileExtensions
-  fullName: Itinero.Transit.IO.LC.ProfileExtensions
-  nameWithType: ProfileExtensions
-- uid: Itinero.Transit.IO.LC.ProfileExtensions.AddAllConnectionsTo(Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset,Itinero.Transit.Data.TransitDb.TransitDbWriter,DateTime,DateTime,Action{System.String},Itinero.Transit.IO.LC.LoggingOptions)
-  name: AddAllConnectionsTo(LinkedConnectionDataset, TransitDb.TransitDbWriter, DateTime, DateTime, Action<String>, LoggingOptions)
-  href: api/Itinero.Transit.IO.LC.ProfileExtensions.html#Itinero_Transit_IO_LC_ProfileExtensions_AddAllConnectionsTo_Itinero_Transit_IO_LC_CSA_LinkedConnectionDataset_Itinero_Transit_Data_TransitDb_TransitDbWriter_DateTime_DateTime_Action_System_String__Itinero_Transit_IO_LC_LoggingOptions_
-  commentId: M:Itinero.Transit.IO.LC.ProfileExtensions.AddAllConnectionsTo(Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset,Itinero.Transit.Data.TransitDb.TransitDbWriter,DateTime,DateTime,Action{System.String},Itinero.Transit.IO.LC.LoggingOptions)
-  name.vb: AddAllConnectionsTo(LinkedConnectionDataset, TransitDb.TransitDbWriter, DateTime, DateTime, Action(Of String), LoggingOptions)
-  fullName: Itinero.Transit.IO.LC.ProfileExtensions.AddAllConnectionsTo(Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset, Itinero.Transit.Data.TransitDb.TransitDbWriter, DateTime, DateTime, Action<System.String>, Itinero.Transit.IO.LC.LoggingOptions)
-  fullName.vb: Itinero.Transit.IO.LC.ProfileExtensions.AddAllConnectionsTo(Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset, Itinero.Transit.Data.TransitDb.TransitDbWriter, DateTime, DateTime, Action(Of System.String), Itinero.Transit.IO.LC.LoggingOptions)
-  nameWithType: ProfileExtensions.AddAllConnectionsTo(LinkedConnectionDataset, TransitDb.TransitDbWriter, DateTime, DateTime, Action<String>, LoggingOptions)
-  nameWithType.vb: ProfileExtensions.AddAllConnectionsTo(LinkedConnectionDataset, TransitDb.TransitDbWriter, DateTime, DateTime, Action(Of String), LoggingOptions)
-- uid: Itinero.Transit.IO.LC.ProfileExtensions.AddAllConnectionsTo*
-  name: AddAllConnectionsTo
-  href: api/Itinero.Transit.IO.LC.ProfileExtensions.html#Itinero_Transit_IO_LC_ProfileExtensions_AddAllConnectionsTo_
-  commentId: Overload:Itinero.Transit.IO.LC.ProfileExtensions.AddAllConnectionsTo
-  isSpec: "True"
-  fullName: Itinero.Transit.IO.LC.ProfileExtensions.AddAllConnectionsTo
-  nameWithType: ProfileExtensions.AddAllConnectionsTo
-- uid: Itinero.Transit.IO.LC.ProfileExtensions.AddAllLocationsTo(Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset,Itinero.Transit.Data.TransitDb.TransitDbWriter,Action{System.String},Itinero.Transit.IO.LC.LoggingOptions)
-  name: AddAllLocationsTo(LinkedConnectionDataset, TransitDb.TransitDbWriter, Action<String>, LoggingOptions)
-  href: api/Itinero.Transit.IO.LC.ProfileExtensions.html#Itinero_Transit_IO_LC_ProfileExtensions_AddAllLocationsTo_Itinero_Transit_IO_LC_CSA_LinkedConnectionDataset_Itinero_Transit_Data_TransitDb_TransitDbWriter_Action_System_String__Itinero_Transit_IO_LC_LoggingOptions_
-  commentId: M:Itinero.Transit.IO.LC.ProfileExtensions.AddAllLocationsTo(Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset,Itinero.Transit.Data.TransitDb.TransitDbWriter,Action{System.String},Itinero.Transit.IO.LC.LoggingOptions)
-  name.vb: AddAllLocationsTo(LinkedConnectionDataset, TransitDb.TransitDbWriter, Action(Of String), LoggingOptions)
-  fullName: Itinero.Transit.IO.LC.ProfileExtensions.AddAllLocationsTo(Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset, Itinero.Transit.Data.TransitDb.TransitDbWriter, Action<System.String>, Itinero.Transit.IO.LC.LoggingOptions)
-  fullName.vb: Itinero.Transit.IO.LC.ProfileExtensions.AddAllLocationsTo(Itinero.Transit.IO.LC.CSA.LinkedConnectionDataset, Itinero.Transit.Data.TransitDb.TransitDbWriter, Action(Of System.String), Itinero.Transit.IO.LC.LoggingOptions)
-  nameWithType: ProfileExtensions.AddAllLocationsTo(LinkedConnectionDataset, TransitDb.TransitDbWriter, Action<String>, LoggingOptions)
-  nameWithType.vb: ProfileExtensions.AddAllLocationsTo(LinkedConnectionDataset, TransitDb.TransitDbWriter, Action(Of String), LoggingOptions)
-- uid: Itinero.Transit.IO.LC.ProfileExtensions.AddAllLocationsTo*
-  name: AddAllLocationsTo
-  href: api/Itinero.Transit.IO.LC.ProfileExtensions.html#Itinero_Transit_IO_LC_ProfileExtensions_AddAllLocationsTo_
-  commentId: Overload:Itinero.Transit.IO.LC.ProfileExtensions.AddAllLocationsTo
-  isSpec: "True"
-  fullName: Itinero.Transit.IO.LC.ProfileExtensions.AddAllLocationsTo
-  nameWithType: ProfileExtensions.AddAllLocationsTo
 - uid: Itinero.Transit.Journeys
   name: Itinero.Transit.Journeys
   href: api/Itinero.Transit.Journeys.html

@@ -131,7 +131,6 @@ It exposes all the core algorithms in a consistent and easy to use way.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static IEnumerable&lt;Journey&lt;T&gt;&gt; CalculateJourneys&lt;T&gt;(this Profile&lt;T&gt; profile, string from, string to, DateTime? departure = default(DateTime? ), DateTime? arrival = default(DateTime? ))
-
     where T : IJourneyStats&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -233,7 +232,6 @@ It exposes all the core algorithms in a consistent and easy to use way.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static IEnumerable&lt;Journey&lt;T&gt;&gt; CalculateJourneys&lt;T&gt;(this Profile&lt;T&gt; profile, (uint, uint)depLocation, (uint, uint)arrivalLocation, ulong departureTime = 0UL, ulong lastArrivalTime = 0UL)
-
     where T : IJourneyStats&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -321,7 +319,6 @@ the Journey will contain a 'Choice'-element</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static IReadOnlyDictionary&lt;(uint localTileId, uint localId), Journey&lt;T&gt;&gt; Isochrone&lt;T&gt;(this Profile&lt;T&gt; profile, string from, DateTime departure, DateTime lastArrival)
-
     where T : IJourneyStats&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -402,7 +399,6 @@ the Journey will contain a 'Choice'-element</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Dictionary&lt;(uint localTileId, uint localId), Journey&lt;T&gt;&gt; IsochroneLatestArrival&lt;T&gt;(this Profile&lt;T&gt; profile, string to, DateTime departure, DateTime lastArrival)
-
     where T : IJourneyStats&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

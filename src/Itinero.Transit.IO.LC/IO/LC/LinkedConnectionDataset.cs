@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Itinero.Transit.Data;
 using Itinero.Transit.IO.LC.CSA.ConnectionProviders;
 using Itinero.Transit.IO.LC.CSA.LocationProviders;
 using Itinero.Transit.IO.LC.CSA.Utils;
+using Itinero.Transit.Logging;
 using JsonLD.Core;
 
 namespace Itinero.Transit.IO.LC.CSA
@@ -63,5 +65,79 @@ namespace Itinero.Transit.IO.LC.CSA
             loc.Download(proc);
             LocationProvider = new List<LocationProvider> {loc};
         }
+
+
+        /// <summary>
+        /// Adds all connection data between the given dates into the databases.
+        /// Locations are only added as needed
+        /// </summary>
+        /// <param name="linkedConnectionDataset"></param>
+        /// <param name="transitDb"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="onError"></param>
+        /// <param name="onTimeTableHandled">Callback when a timetable has been handled</param>
+        public void AddAllConnectionsTo(TransitDb.TransitDbWriter writer,
+            DateTime start, DateTime end, Action<string> onError,
+            LoggingOptions onTimeTableHandled = null)
+        {
+            var dbs = new DatabaseLoader(writer, null, onTimeTableHandled, onError);
+            dbs.AddAllConnections(this, start, end);
+        }
+
+        /// <summary>
+        /// Adds all location data into the database
+        /// </summary>
+        /// <param name="linkedConnectionDataset"></param>
+        /// <param name="transitDb"></param>
+        /// <param name="onError"></param>
+        /// <param name="onLocationHandled"></param>
+        public void AddAllLocationsTo(
+            TransitDb.TransitDbWriter writer,
+            Action<string> onError,
+            LoggingOptions onLocationHandled = null
+        )
+        {
+            var dbs = new DatabaseLoader(writer, onLocationHandled, null, onError);
+            dbs.AddAllLocations(this);
+        }
+        
+        
+        
+        private static void OnLocationLoaded((int, int, int, int) status)
+        {
+            var (currentCount, batchTarget, batchCount, nrOfBatches) = status;
+            Log.Information(
+                $"Importing locations: Running batch {batchCount}/{nrOfBatches}: Importing location {currentCount}/{batchTarget}");
+        }
+
+
+        private static void OnConnectionLoaded((int, int, int, int) status)
+        {
+            var (currentCount, batchTarget, batchCount, nrOfBatches) = status;
+            Log.Information(
+                $"Importing connections: Running batch {batchCount}/{nrOfBatches}: Importing timetable {currentCount} (out of an estimated {batchTarget})");
+        }
+        
+       private void UpdateTimeFrame(TransitDb.TransitDbWriter w, DateTime start, DateTime end)
+        {
+            Log.Information($"Loading time window {start}->{end}");
+            AddAllConnectionsTo(w, start, end, Log.Warning, new LoggingOptions(OnConnectionLoaded, 1));
+        }
+
+        /// <summary>
+        /// Initialized a new transitDB which will automatically load data from this linked connection dataset whenever needed.
+        /// Some progress information will be written to 'Log.Information'.
+        ///
+        /// If you need more control, use 'new TransitDB(someCustomUpdateFunction)' 
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public TransitDb AsTransitDb()
+        {
+            return new TransitDb(UpdateTimeFrame);
+        }
+        
+        
     }
 }

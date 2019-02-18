@@ -8,6 +8,8 @@
 - Earliest Arrival Scan (EAS)
 - Latest Arrival Scan (LAS)
 - Profile Connection Scan (PCS)
+- Extension with trips
+- Extension with walks
 
 We will give a small overview of these algorithms here. A reader interested in all the details, is refered to [the paper](CSA.pdf).
 
@@ -208,14 +210,15 @@ Handling trips
 
 As small sidenote, a journey does _not_ satisfy an important property: if a journey from `A` to `C`, goes via `B` and is the *optimal* journey from `A` to `B` with respect to some metric - this does *not* mean that its subjourneys from `A` to `B` or from `B` to `C` are the optimal ones!
 
-This can be illustrated by the following situation: there could be a direct bus from `A` to `B`, and a direct bus from `B` to `C`. However, these direct busses could just miss each other with a few minutes, causing the journey from `A` to `C` being better by e.g. making some weird transfer halfway between `A` and `B` - thus causing non-optimality for that part.
+The simplest situation where this arises if if busses `x` and `y` depart at location `A` at the same time. Due to some circumstances, `x` arrives one minute earlier at `B` then `y`; so the optimal route from `A` to `B` would be to take `x`. However, if only bus `y` continues to `C`; bus `y` becomes the optimal choice.
 
-Another case breaking the algorithm above, is when two busses run in parallell. Consider both starting at `A` at the same time. One bus `X` is slightly faster then `Y` and arrives there a minute earlier, but then has to make a detour, so arrives fives minutes after `Y` in `C`. This clearly indicates one suboptimal part in the optimal trip.
-
-Also note that this breaks the earlier explained EAS! EAS would first take bus `X`, get of in `A` and then take bus `Y`. However, when transfer time is taken into account, bus `Y` would _not_ be taken, but even completely missed.
-
-For this, another table is introduced in all algorithms. This table keeps track on what _trip_ the traveller could possible be. For details on how to work with this table, we refer the reader to [the paper](CSA.pdf)
+To deal with this, an extra table _trips_ is introduced, which keeps track of all the trips on which a traveller could be. For more details, please see the [paper](CSA.pdf)
 
 Making walking transfers and intermodality
 ------------------------------------------
 
+Another extension of CSA is _walking_ from one PT-stop to another; In some datasets, a _station_ is not explicitely modeled but rather a group of stops which happen to be close to each other. In this case, the traveller needs to walk from one stop or another.
+
+Conceptually, one can think of a _walk_ as another journey part. Whenever a real vehicle arrives at some stop, a (virtual) 'walk connection' departs to each closeby stop and can be saved in the datastructures.
+
+For more information, we again refer to the [paper](CSA.pdf)  

@@ -13,5 +13,5 @@ This library is created as part of the [Open-Plannerteam](https://openplanner.te
 The documentation is split in broad parts:
 
 - [Concepts](articles/index.md) explains the ideas behind the algorithms and the important entities in the code. Reading this part gives an high-level insight in what the library exactly does and is capable of.
-- [Using the library](docs/index.html) shows the nuts and bolts of using the library in your project.
+- [Using the library](articles/UsingTheLibrary.html) shows the nuts and bolts of using the library in your project and serves as quickstart guide.
 - The [Library reference](api/index.md) exposes all the classes and methods - the reference manual to deep dive into the library.

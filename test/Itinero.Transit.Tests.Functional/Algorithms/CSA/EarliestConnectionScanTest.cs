@@ -19,7 +19,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var p = new Profile<TransferStats>(
                 latest,
                 new InternalTransferGenerator(),
-                new BirdsEyeInterWalkTransferGenerator(latest.StopsDb.GetReader()),
+                new CrowsFlightTransferGenerator(latest.StopsDb.GetReader()),
                 new TransferStats(), TransferStats.ProfileTransferCompare
                 );
 
