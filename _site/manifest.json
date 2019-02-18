@@ -20,11 +20,11 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Itinero.Transit.Algorithms.CSA.ProfileExtensions.yml",
+      "source_relative_path": "api/Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.yml",
       "output": {
         ".html": {
-          "relative_path": "api/Itinero.Transit.Algorithms.CSA.ProfileExtensions.html",
-          "hash": "lFg9My9DT7yE7LYxFb9+wA=="
+          "relative_path": "api/Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.html",
+          "hash": "hlnqAVTeeHZUW1mOtEOETg=="
         }
       },
       "is_incremental": true,
@@ -36,7 +36,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Itinero.Transit.Algorithms.CSA.html",
-          "hash": "Rd2cakeZX4Vd5jOTOcOj2A=="
+          "hash": "wuVxobHDVK80I25sH+Nx+g=="
         }
       },
       "is_incremental": true,
@@ -276,7 +276,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Itinero.Transit.Data.Profile-1.html",
-          "hash": "TejPO6zKxk7i+7CCKCQVwg=="
+          "hash": "/LoFoPyT3XZ8D1coGzUXZQ=="
         }
       },
       "is_incremental": true,
@@ -300,7 +300,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Itinero.Transit.Data.StopsDb.StopsDbReader.html",
-          "hash": "GO49HvJd1wE7vM1OwanyAQ=="
+          "hash": "OIgfs/kJuB/mcytW8iHriA=="
         }
       },
       "is_incremental": true,
@@ -324,7 +324,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Itinero.Transit.Data.StopsDbExtensions.html",
-          "hash": "nRATIpf+jO18+W3iqDNv/A=="
+          "hash": "OO8bHH4cqrwiY9FSdDiRAA=="
         }
       },
       "is_incremental": true,
@@ -360,7 +360,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Itinero.Transit.Data.TransitDb.html",
-          "hash": "x8FBW9flJWsZWldCyC8GVA=="
+          "hash": "PEK138urxnMHk2WK0sh2sg=="
         }
       },
       "is_incremental": true,
@@ -420,7 +420,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.html",
-          "hash": "00pl/S//pFUWpZp2cEBdIg=="
+          "hash": "e1Kj0cpeOqMZX7ovJQ32Hg=="
         }
       },
       "is_incremental": true,
@@ -564,7 +564,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Itinero.Transit.IO.LC.CSA.Belgium.html",
-          "hash": "rIZtB4p2DC7psWJYJ1HOgA=="
+          "hash": "GG5caa+JusqYdWfJK+JUNA=="
         }
       },
       "is_incremental": true,
@@ -1008,7 +1008,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "2Qslhs/xRtPF30mFXV6Xcw=="
+          "hash": "8XbTdLc5f1ikcSbdTrh0qQ=="
         }
       },
       "is_incremental": false,
@@ -1058,7 +1058,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/UsingTheLibrary.html",
-          "hash": "k3pCHddgI3UNmy28D7OPDA=="
+          "hash": "eWwergtMM/QNSLkARGmOEw=="
         }
       },
       "is_incremental": true,
@@ -1159,6 +1159,13 @@
         "skipped_file_count": 0
       },
       "processors": {
+        "ResourceDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        },
         "TocDocumentProcessor": {
           "can_incremental": false,
           "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
@@ -1177,13 +1184,6 @@
           "incrementalPhase": "build",
           "total_file_count": 8,
           "skipped_file_count": 8
-        },
-        "ResourceDocumentProcessor": {
-          "can_incremental": false,
-          "details": "Processor ResourceDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
-          "incrementalPhase": "build",
-          "total_file_count": 0,
-          "skipped_file_count": 0
         }
       }
     },

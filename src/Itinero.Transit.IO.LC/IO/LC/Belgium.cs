@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Itinero.Transit.Data.Walks;
 using Itinero.Transit.IO.LC.CSA.Utils;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -18,6 +19,7 @@ namespace Itinero.Transit.IO.LC.CSA
                 new Uri("https://irail.be/stations"),
                 loader
             );
+            
         }
 
 

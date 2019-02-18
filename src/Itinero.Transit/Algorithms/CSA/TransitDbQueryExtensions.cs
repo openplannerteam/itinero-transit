@@ -7,38 +7,75 @@ using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
-    
     /// <summary>
     /// This class is the main entry point to request routes as library user.
     /// It exposes all the core algorithms in a consistent and easy to use way.
     /// </summary>
-    public static class ProfileExtensions
+    public static class TransitDbQueryExtensions
     {
-        /// <summary>
-        /// Calculates all journeys which depart at 'from' at the given departure time.
-        ///
-        /// Performs an Earliest Arrival Scan till as long as 'lastArrival' is not passed.
-        ///
-        /// Note that, if a journey contains choices (e.g. multiple transfer opportunities but same performance overall),
-        /// the Journey will contain a 'Choice'-element
+        public static (uint, uint) FindStop(this TransitDb tdb, string locationId, string errMsg = null)
+        {
+            return tdb.Latest.StopsDb.GetReader().FindStop(locationId, errMsg);
+        }
+
+
+        ///  <summary>
+        ///  Calculates the earliest arriving journey which depart at 'from' at the given departure time and arrives at 'to'.
         /// 
+        ///  Performs an Earliest Arrival Scan
+        ///
         /// </summary>
+        /// <param name="tdb">The transit DB containing the PT-data</param>
         /// <param name="profile"></param>
-        /// <param name="from"></param>
-        /// <param name="departure"></param>
-        /// <param name="lastArrival"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> Isochrone<T>
-            (this Profile<T> profile, string from, DateTime departure, DateTime lastArrival)
+        ///  <param name="from"></param>
+        ///  <param name="departure"></param>
+        ///  <param name="lastArrival"></param>
+        ///  <typeparam name="T"></typeparam>
+        ///  <returns></returns>
+        public static Journey<T> EarliestArrival<T>
+        (this TransitDb tdb,
+            Profile<T> profile,
+            string from, string to,
+            DateTime departure, DateTime lastArrival)
             where T : IJourneyStats<T>
         {
-            profile = profile.LoadWindow(departure, lastArrival);
+            tdb.UpdateTimeFrame(departure, lastArrival);
 
-            var reader = profile.TransitDbSnapShot.StopsDb.GetReader();
-            if (!reader.MoveTo(from)) throw new ArgumentException($"Departure location {from} was not found");
-            var fromId = reader.Id;
+            var reader = tdb.Latest.StopsDb.GetReader();
+            var fromId = reader.FindStop(from, $"Departure location {from} was not found");
+            var toId = reader.FindStop(to, $"Departure location {to} was not found");
 
+            if (fromId.Equals(toId))
+            {
+                throw new ArgumentException($"The departure and arrival arguments are the same ({from})");
+            }
+
+            var eas = new EarliestConnectionScan<T>(tdb,
+                new List<(uint localTileId, uint localId)> {fromId},
+                new List<(uint localTileId, uint localId)> {toId},
+                departure.ToUnixTime(), lastArrival.ToUnixTime(),
+                profile
+            );
+            return eas.CalculateJourney();
+        }
+
+        ///  <summary>
+        ///  Calculates all journeys which depart at 'from' at the given departure time.
+        /// 
+        ///  Performs an Earliest Arrival Scan till as long as 'lastArrival' is not passed.
+        /// 
+        ///  the Journey will contain a 'Choice'-element
+        ///  
+        ///  </summary>
+        public static IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> Isochrone<T>
+        (this TransitDb tdb,
+            Profile<T> profile,
+            string from, DateTime departure, DateTime lastArrival)
+            where T : IJourneyStats<T>
+        {
+            tdb.UpdateTimeFrame(departure, lastArrival);
+
+            var fromId = tdb.FindStop(from, $"Departure location {from} was not found");
 
             /*
              * We construct an Earliest Connection Scan.
@@ -49,15 +86,13 @@ namespace Itinero.Transit.Algorithms.CSA
              * EAS.calculateJourneys will thus be null - but meanwhile every reachable station will be marked.
              * And it is exactly that which we need!
              */
-            var eas = new EarliestConnectionScan<T>(
+            var eas = new EarliestConnectionScan<T>(tdb,
                 new List<(uint localTileId, uint localId)> {fromId},
-                new List<(uint localTileId, uint localId)> { },
+                new List<(uint localTileId, uint localId)>(), // EMPTY LIST!
                 departure.ToUnixTime(), lastArrival.ToUnixTime(),
                 profile
             );
             eas.CalculateJourney();
-            
-            
 
             return eas.GetAllJourneys();
         }
@@ -68,19 +103,48 @@ namespace Itinero.Transit.Algorithms.CSA
         /// Performs a Latest Arrival Scan till as long as 'lastArrival' is not passed.
         ///
         /// </summary>
-        /// <param name="profile"></param>
-        /// <param name="from"></param>
-        /// <param name="departure"></param>
-        /// <param name="lastArrival"></param>
-        /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static Dictionary<(uint localTileId, uint localId), Journey<T>> IsochroneLatestArrival<T>
-            (this Profile<T> profile, string to, DateTime departure, DateTime lastArrival)
+        public static Journey<T> LatestDeparture<T>
+        (this TransitDb tdb,
+            Profile<T> profile, string from, string to, DateTime departure, DateTime lastArrival)
             where T : IJourneyStats<T>
         {
-            profile = profile.LoadWindow(departure, lastArrival);
+            tdb.UpdateTimeFrame(departure, lastArrival);
 
-            var reader = profile.TransitDbSnapShot.StopsDb.GetReader();
+            var reader = tdb.Latest.StopsDb.GetReader();
+            var fromId = reader.FindStop(from);
+            var toId = reader.FindStop(to);
+
+            if (fromId.Equals(toId))
+            {
+                throw new ArgumentException($"The departure and arrival arguments are the same ({from})");
+            }
+
+            var las = new LatestConnectionScan<T>(
+                tdb,
+                new List<(uint localTileId, uint localId)> {fromId},
+                new List<(uint localTileId, uint localId)> {toId},
+                departure.ToUnixTime(), lastArrival.ToUnixTime(),
+                profile
+            );
+            return las.CalculateJourney();
+        }
+
+        /// <summary>
+        /// Calculates all journeys which arrive at 'to' at last at the given arrival time.
+        ///
+        /// Performs a Latest Arrival Scan till as long as 'lastArrival' is not passed.
+        ///
+        /// </summary>
+        /// <returns></returns>
+        public static Dictionary<(uint localTileId, uint localId), Journey<T>> IsochroneLatestArrival<T>
+        (this TransitDb tdb,
+            Profile<T> profile, string to, DateTime departure, DateTime lastArrival)
+            where T : IJourneyStats<T>
+        {
+            tdb.UpdateTimeFrame(departure, lastArrival);
+
+            var reader = tdb.Latest.StopsDb.GetReader();
             if (!reader.MoveTo(to)) throw new ArgumentException($"Departure location {to} was not found");
             var toId = reader.Id;
 
@@ -89,7 +153,8 @@ namespace Itinero.Transit.Algorithms.CSA
              * Same principle as the other IsochroneFunction
              */
             var las = new LatestConnectionScan<T>(
-                new List<(uint localTileId, uint localId)> { },
+                tdb,
+                new List<(uint localTileId, uint localId)>(), // EMPTY LIST!
                 new List<(uint localTileId, uint localId)> {toId},
                 departure.ToUnixTime(), lastArrival.ToUnixTime(),
                 profile
@@ -116,27 +181,20 @@ namespace Itinero.Transit.Algorithms.CSA
         /// 
         ///  Starts with an EAS, then gives profiled journeys.
         /// 
-        ///  Note that the profile scan might scan in a window far smaller then the last-arrivaltime
+        ///  Note that the profile scan might scan in a window far smaller then the last-arrival time
         /// 
         /// </summary>
-        /// <param name="profile"></param>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="departure"></param>
-        /// <param name="arrival"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
         public static IEnumerable<Journey<T>> CalculateJourneys<T>
-        (this Profile<T> profile, string from, string to,
+        (this TransitDb tdb,
+            Profile<T> profile, string from, string to,
             DateTime? departure = null, DateTime? arrival = null) where T : IJourneyStats<T>
         {
-            var reader = profile.TransitDbSnapShot.StopsDb.GetReader();
+            var reader = tdb.Latest.StopsDb.GetReader();
             if (!reader.MoveTo(from)) throw new ArgumentException($"Departure location {from} was not found");
             var fromId = reader.Id;
             if (!reader.MoveTo(to)) throw new ArgumentException($"Arrival location {to} was not found");
             var toId = reader.Id;
-            return profile.CalculateJourneys(
+            return tdb.CalculateJourneys(profile,
                 fromId, toId,
                 departure?.ToUnixTime() ?? 0,
                 arrival?.ToUnixTime() ?? 0);
@@ -150,15 +208,9 @@ namespace Itinero.Transit.Algorithms.CSA
         ///  Note that the profile scan might scan in a window far smaller then the last-arrivaltime
         ///  
         ///  </summary>
-        ///  <param name="profile"></param>
-        ///  <param name="depLocation"></param>
-        ///  <param name="arrivalLocation"></param>
-        /// <param name="departureTime"></param>
-        /// <param name="lastArrivalTime"></param>
-        ///  <typeparam name="T"></typeparam>
-        ///  <returns></returns>
         public static IEnumerable<Journey<T>> CalculateJourneys<T>
-        (this Profile<T> profile, (uint, uint) depLocation, (uint, uint) arrivalLocation,
+        (this TransitDb tdb,
+            Profile<T> profile, (uint, uint) depLocation, (uint, uint) arrivalLocation,
             ulong departureTime = 0, ulong lastArrivalTime = 0) where T : IJourneyStats<T>
         {
             if (departureTime == 0 && lastArrivalTime == 0)
@@ -174,9 +226,9 @@ namespace Itinero.Transit.Algorithms.CSA
             IConnectionFilter filter = null;
             if (departureTime == 0)
             {
-                profile = profile.LoadWindow((lastArrivalTime - 24 * 60 * 60).FromUnixTime(),
+                tdb.UpdateTimeFrame((lastArrivalTime - 24 * 60 * 60).FromUnixTime(),
                     lastArrivalTime.FromUnixTime());
-                var las = new LatestConnectionScan<T>(depLocation, arrivalLocation,
+                var las = new LatestConnectionScan<T>(tdb, depLocation, arrivalLocation,
                     lastArrivalTime - 24 * 60 * 60, lastArrivalTime,
                     profile);
                 var lasJourney = las.CalculateJourney(
@@ -198,8 +250,8 @@ namespace Itinero.Transit.Algorithms.CSA
             }
 
             // Make sure that enough entries are loaded
-            profile = profile.LoadWindow(departureTime.FromUnixTime(), lastArrivalTime.FromUnixTime());
-            var eas = new EarliestConnectionScan<T>(
+            tdb.UpdateTimeFrame(departureTime.FromUnixTime(), lastArrivalTime.FromUnixTime());
+            var eas = new EarliestConnectionScan<T>(tdb,
                 depLocation, arrivalLocation,
                 departureTime, lastArrivalTime,
                 profile
@@ -232,6 +284,7 @@ namespace Itinero.Transit.Algorithms.CSA
             }
 
             var pcs = new ProfiledConnectionScan<T>(
+                tdb,
                 depLocation, arrivalLocation,
                 departureTime, lastArrivalTime,
                 profile,

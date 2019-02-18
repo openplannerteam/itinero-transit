@@ -1,4 +1,3 @@
-using System;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
 
@@ -10,8 +9,6 @@ namespace Itinero.Transit.Data
         public readonly T StatsFactory;
         public readonly ProfiledStatsComparator<T> ProfileComparator;
 
-        private readonly TransitDb _transitDb;
-        public TransitDb.TransitDbSnapShot TransitDbSnapShot { get; }
         public readonly IOtherModeGenerator InternalTransferGenerator;
         public readonly IOtherModeGenerator WalksGenerator;
 
@@ -22,7 +19,6 @@ namespace Itinero.Transit.Data
             ProfiledStatsComparator<T> profileComparator
         )
         {
-            TransitDbSnapShot = snapShot;
             StatsFactory = statsFactory;
             ProfileComparator = profileComparator;
             InternalTransferGenerator = internalTransferGenerator;
@@ -38,20 +34,6 @@ namespace Itinero.Transit.Data
             internalTransferGenerator, walksGenerator, statsFactory, profileComparator
         )
         {
-            _transitDb = transitDb;
-        }
-
-        public Profile<T> LoadWindow(DateTime start, DateTime end, bool refresh=false)
-        {
-            if (_transitDb == null)
-            {
-                // Initialization is only for testing. We assume the data is already there
-                // If not - let it crash and burn
-                return this;
-            }
-            _transitDb.UpdateTimeFrame(start, end, refresh);
-            return new Profile<T>(_transitDb, InternalTransferGenerator, WalksGenerator, StatsFactory,
-                ProfileComparator);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Tests.Functional.Algorithms.CSA;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
@@ -148,6 +149,9 @@ namespace Itinero.Transit.Tests.Functional
                         {
                             results[name]++;
                         }
+
+                    TransitDbQueryExtensions.CalculateJourneys(db, );
+
 //                    }
 //                    catch (Exception e)
 //                    {

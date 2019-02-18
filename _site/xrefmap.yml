@@ -13,69 +13,114 @@ references:
   commentId: N:Itinero.Transit.Algorithms.CSA
   fullName: Itinero.Transit.Algorithms.CSA
   nameWithType: Itinero.Transit.Algorithms.CSA
-- uid: Itinero.Transit.Algorithms.CSA.ProfileExtensions
-  name: ProfileExtensions
-  href: api/Itinero.Transit.Algorithms.CSA.ProfileExtensions.html
-  commentId: T:Itinero.Transit.Algorithms.CSA.ProfileExtensions
-  fullName: Itinero.Transit.Algorithms.CSA.ProfileExtensions
-  nameWithType: ProfileExtensions
-- uid: Itinero.Transit.Algorithms.CSA.ProfileExtensions.CalculateJourneys*
+- uid: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions
+  name: TransitDbQueryExtensions
+  href: api/Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.html
+  commentId: T:Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions
+  fullName: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions
+  nameWithType: TransitDbQueryExtensions
+- uid: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.CalculateJourneys*
   name: CalculateJourneys
-  href: api/Itinero.Transit.Algorithms.CSA.ProfileExtensions.html#Itinero_Transit_Algorithms_CSA_ProfileExtensions_CalculateJourneys_
-  commentId: Overload:Itinero.Transit.Algorithms.CSA.ProfileExtensions.CalculateJourneys
+  href: api/Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.html#Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_CalculateJourneys_
+  commentId: Overload:Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.CalculateJourneys
   isSpec: "True"
-  fullName: Itinero.Transit.Algorithms.CSA.ProfileExtensions.CalculateJourneys
-  nameWithType: ProfileExtensions.CalculateJourneys
-- uid: Itinero.Transit.Algorithms.CSA.ProfileExtensions.CalculateJourneys``1(Itinero.Transit.Data.Profile{``0},System.String,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime})
-  name: CalculateJourneys<T>(Profile<T>, String, String, Nullable<DateTime>, Nullable<DateTime>)
-  href: api/Itinero.Transit.Algorithms.CSA.ProfileExtensions.html#Itinero_Transit_Algorithms_CSA_ProfileExtensions_CalculateJourneys__1_Itinero_Transit_Data_Profile___0__System_String_System_String_System_Nullable_System_DateTime__System_Nullable_System_DateTime__
-  commentId: M:Itinero.Transit.Algorithms.CSA.ProfileExtensions.CalculateJourneys``1(Itinero.Transit.Data.Profile{``0},System.String,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime})
-  name.vb: CalculateJourneys(Of T)(Profile(Of T), String, String, Nullable(Of DateTime), Nullable(Of DateTime))
-  fullName: Itinero.Transit.Algorithms.CSA.ProfileExtensions.CalculateJourneys<T>(Itinero.Transit.Data.Profile<T>, System.String, System.String, System.Nullable<System.DateTime>, System.Nullable<System.DateTime>)
-  fullName.vb: Itinero.Transit.Algorithms.CSA.ProfileExtensions.CalculateJourneys(Of T)(Itinero.Transit.Data.Profile(Of T), System.String, System.String, System.Nullable(Of System.DateTime), System.Nullable(Of System.DateTime))
-  nameWithType: ProfileExtensions.CalculateJourneys<T>(Profile<T>, String, String, Nullable<DateTime>, Nullable<DateTime>)
-  nameWithType.vb: ProfileExtensions.CalculateJourneys(Of T)(Profile(Of T), String, String, Nullable(Of DateTime), Nullable(Of DateTime))
-- uid: Itinero.Transit.Algorithms.CSA.ProfileExtensions.CalculateJourneys``1(Itinero.Transit.Data.Profile{``0},System.ValueTuple{System.UInt32,System.UInt32},System.ValueTuple{System.UInt32,System.UInt32},System.UInt64,System.UInt64)
-  name: CalculateJourneys<T>(Profile<T>, (UInt32, UInt32), (UInt32, UInt32), UInt64, UInt64)
-  href: api/Itinero.Transit.Algorithms.CSA.ProfileExtensions.html#Itinero_Transit_Algorithms_CSA_ProfileExtensions_CalculateJourneys__1_Itinero_Transit_Data_Profile___0__System_ValueTuple_System_UInt32_System_UInt32__System_ValueTuple_System_UInt32_System_UInt32__System_UInt64_System_UInt64_
-  commentId: M:Itinero.Transit.Algorithms.CSA.ProfileExtensions.CalculateJourneys``1(Itinero.Transit.Data.Profile{``0},System.ValueTuple{System.UInt32,System.UInt32},System.ValueTuple{System.UInt32,System.UInt32},System.UInt64,System.UInt64)
-  name.vb: CalculateJourneys(Of T)(Profile(Of T), (UInt32, UInt32), (UInt32, UInt32), UInt64, UInt64)
-  fullName: Itinero.Transit.Algorithms.CSA.ProfileExtensions.CalculateJourneys<T>(Itinero.Transit.Data.Profile<T>, System.ValueTuple<System.UInt32, System.UInt32>, System.ValueTuple<System.UInt32, System.UInt32>, System.UInt64, System.UInt64)
-  fullName.vb: Itinero.Transit.Algorithms.CSA.ProfileExtensions.CalculateJourneys(Of T)(Itinero.Transit.Data.Profile(Of T), System.ValueTuple(Of System.UInt32, System.UInt32), System.ValueTuple(Of System.UInt32, System.UInt32), System.UInt64, System.UInt64)
-  nameWithType: ProfileExtensions.CalculateJourneys<T>(Profile<T>, (UInt32, UInt32), (UInt32, UInt32), UInt64, UInt64)
-  nameWithType.vb: ProfileExtensions.CalculateJourneys(Of T)(Profile(Of T), (UInt32, UInt32), (UInt32, UInt32), UInt64, UInt64)
-- uid: Itinero.Transit.Algorithms.CSA.ProfileExtensions.Isochrone*
+  fullName: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.CalculateJourneys
+  nameWithType: TransitDbQueryExtensions.CalculateJourneys
+- uid: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.CalculateJourneys``1(Itinero.Transit.Data.TransitDb,Itinero.Transit.Data.Profile{``0},System.String,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime})
+  name: CalculateJourneys<T>(TransitDb, Profile<T>, String, String, Nullable<DateTime>, Nullable<DateTime>)
+  href: api/Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.html#Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_CalculateJourneys__1_Itinero_Transit_Data_TransitDb_Itinero_Transit_Data_Profile___0__System_String_System_String_System_Nullable_System_DateTime__System_Nullable_System_DateTime__
+  commentId: M:Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.CalculateJourneys``1(Itinero.Transit.Data.TransitDb,Itinero.Transit.Data.Profile{``0},System.String,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime})
+  name.vb: CalculateJourneys(Of T)(TransitDb, Profile(Of T), String, String, Nullable(Of DateTime), Nullable(Of DateTime))
+  fullName: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.CalculateJourneys<T>(Itinero.Transit.Data.TransitDb, Itinero.Transit.Data.Profile<T>, System.String, System.String, System.Nullable<System.DateTime>, System.Nullable<System.DateTime>)
+  fullName.vb: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.CalculateJourneys(Of T)(Itinero.Transit.Data.TransitDb, Itinero.Transit.Data.Profile(Of T), System.String, System.String, System.Nullable(Of System.DateTime), System.Nullable(Of System.DateTime))
+  nameWithType: TransitDbQueryExtensions.CalculateJourneys<T>(TransitDb, Profile<T>, String, String, Nullable<DateTime>, Nullable<DateTime>)
+  nameWithType.vb: TransitDbQueryExtensions.CalculateJourneys(Of T)(TransitDb, Profile(Of T), String, String, Nullable(Of DateTime), Nullable(Of DateTime))
+- uid: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.CalculateJourneys``1(Itinero.Transit.Data.TransitDb,Itinero.Transit.Data.Profile{``0},System.ValueTuple{System.UInt32,System.UInt32},System.ValueTuple{System.UInt32,System.UInt32},System.UInt64,System.UInt64)
+  name: CalculateJourneys<T>(TransitDb, Profile<T>, (UInt32, UInt32), (UInt32, UInt32), UInt64, UInt64)
+  href: api/Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.html#Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_CalculateJourneys__1_Itinero_Transit_Data_TransitDb_Itinero_Transit_Data_Profile___0__System_ValueTuple_System_UInt32_System_UInt32__System_ValueTuple_System_UInt32_System_UInt32__System_UInt64_System_UInt64_
+  commentId: M:Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.CalculateJourneys``1(Itinero.Transit.Data.TransitDb,Itinero.Transit.Data.Profile{``0},System.ValueTuple{System.UInt32,System.UInt32},System.ValueTuple{System.UInt32,System.UInt32},System.UInt64,System.UInt64)
+  name.vb: CalculateJourneys(Of T)(TransitDb, Profile(Of T), (UInt32, UInt32), (UInt32, UInt32), UInt64, UInt64)
+  fullName: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.CalculateJourneys<T>(Itinero.Transit.Data.TransitDb, Itinero.Transit.Data.Profile<T>, System.ValueTuple<System.UInt32, System.UInt32>, System.ValueTuple<System.UInt32, System.UInt32>, System.UInt64, System.UInt64)
+  fullName.vb: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.CalculateJourneys(Of T)(Itinero.Transit.Data.TransitDb, Itinero.Transit.Data.Profile(Of T), System.ValueTuple(Of System.UInt32, System.UInt32), System.ValueTuple(Of System.UInt32, System.UInt32), System.UInt64, System.UInt64)
+  nameWithType: TransitDbQueryExtensions.CalculateJourneys<T>(TransitDb, Profile<T>, (UInt32, UInt32), (UInt32, UInt32), UInt64, UInt64)
+  nameWithType.vb: TransitDbQueryExtensions.CalculateJourneys(Of T)(TransitDb, Profile(Of T), (UInt32, UInt32), (UInt32, UInt32), UInt64, UInt64)
+- uid: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.EarliestArrival*
+  name: EarliestArrival
+  href: api/Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.html#Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_EarliestArrival_
+  commentId: Overload:Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.EarliestArrival
+  isSpec: "True"
+  fullName: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.EarliestArrival
+  nameWithType: TransitDbQueryExtensions.EarliestArrival
+- uid: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.EarliestArrival``1(Itinero.Transit.Data.TransitDb,Itinero.Transit.Data.Profile{``0},System.String,System.String,System.DateTime,System.DateTime)
+  name: EarliestArrival<T>(TransitDb, Profile<T>, String, String, DateTime, DateTime)
+  href: api/Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.html#Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_EarliestArrival__1_Itinero_Transit_Data_TransitDb_Itinero_Transit_Data_Profile___0__System_String_System_String_System_DateTime_System_DateTime_
+  commentId: M:Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.EarliestArrival``1(Itinero.Transit.Data.TransitDb,Itinero.Transit.Data.Profile{``0},System.String,System.String,System.DateTime,System.DateTime)
+  name.vb: EarliestArrival(Of T)(TransitDb, Profile(Of T), String, String, DateTime, DateTime)
+  fullName: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.EarliestArrival<T>(Itinero.Transit.Data.TransitDb, Itinero.Transit.Data.Profile<T>, System.String, System.String, System.DateTime, System.DateTime)
+  fullName.vb: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.EarliestArrival(Of T)(Itinero.Transit.Data.TransitDb, Itinero.Transit.Data.Profile(Of T), System.String, System.String, System.DateTime, System.DateTime)
+  nameWithType: TransitDbQueryExtensions.EarliestArrival<T>(TransitDb, Profile<T>, String, String, DateTime, DateTime)
+  nameWithType.vb: TransitDbQueryExtensions.EarliestArrival(Of T)(TransitDb, Profile(Of T), String, String, DateTime, DateTime)
+- uid: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.FindStop(Itinero.Transit.Data.TransitDb,System.String,System.String)
+  name: FindStop(TransitDb, String, String)
+  href: api/Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.html#Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_FindStop_Itinero_Transit_Data_TransitDb_System_String_System_String_
+  commentId: M:Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.FindStop(Itinero.Transit.Data.TransitDb,System.String,System.String)
+  fullName: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.FindStop(Itinero.Transit.Data.TransitDb, System.String, System.String)
+  nameWithType: TransitDbQueryExtensions.FindStop(TransitDb, String, String)
+- uid: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.FindStop*
+  name: FindStop
+  href: api/Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.html#Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_FindStop_
+  commentId: Overload:Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.FindStop
+  isSpec: "True"
+  fullName: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.FindStop
+  nameWithType: TransitDbQueryExtensions.FindStop
+- uid: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.Isochrone*
   name: Isochrone
-  href: api/Itinero.Transit.Algorithms.CSA.ProfileExtensions.html#Itinero_Transit_Algorithms_CSA_ProfileExtensions_Isochrone_
-  commentId: Overload:Itinero.Transit.Algorithms.CSA.ProfileExtensions.Isochrone
+  href: api/Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.html#Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_Isochrone_
+  commentId: Overload:Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.Isochrone
   isSpec: "True"
-  fullName: Itinero.Transit.Algorithms.CSA.ProfileExtensions.Isochrone
-  nameWithType: ProfileExtensions.Isochrone
-- uid: Itinero.Transit.Algorithms.CSA.ProfileExtensions.Isochrone``1(Itinero.Transit.Data.Profile{``0},System.String,System.DateTime,System.DateTime)
-  name: Isochrone<T>(Profile<T>, String, DateTime, DateTime)
-  href: api/Itinero.Transit.Algorithms.CSA.ProfileExtensions.html#Itinero_Transit_Algorithms_CSA_ProfileExtensions_Isochrone__1_Itinero_Transit_Data_Profile___0__System_String_System_DateTime_System_DateTime_
-  commentId: M:Itinero.Transit.Algorithms.CSA.ProfileExtensions.Isochrone``1(Itinero.Transit.Data.Profile{``0},System.String,System.DateTime,System.DateTime)
-  name.vb: Isochrone(Of T)(Profile(Of T), String, DateTime, DateTime)
-  fullName: Itinero.Transit.Algorithms.CSA.ProfileExtensions.Isochrone<T>(Itinero.Transit.Data.Profile<T>, System.String, System.DateTime, System.DateTime)
-  fullName.vb: Itinero.Transit.Algorithms.CSA.ProfileExtensions.Isochrone(Of T)(Itinero.Transit.Data.Profile(Of T), System.String, System.DateTime, System.DateTime)
-  nameWithType: ProfileExtensions.Isochrone<T>(Profile<T>, String, DateTime, DateTime)
-  nameWithType.vb: ProfileExtensions.Isochrone(Of T)(Profile(Of T), String, DateTime, DateTime)
-- uid: Itinero.Transit.Algorithms.CSA.ProfileExtensions.IsochroneLatestArrival*
+  fullName: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.Isochrone
+  nameWithType: TransitDbQueryExtensions.Isochrone
+- uid: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.Isochrone``1(Itinero.Transit.Data.TransitDb,Itinero.Transit.Data.Profile{``0},System.String,System.DateTime,System.DateTime)
+  name: Isochrone<T>(TransitDb, Profile<T>, String, DateTime, DateTime)
+  href: api/Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.html#Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_Isochrone__1_Itinero_Transit_Data_TransitDb_Itinero_Transit_Data_Profile___0__System_String_System_DateTime_System_DateTime_
+  commentId: M:Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.Isochrone``1(Itinero.Transit.Data.TransitDb,Itinero.Transit.Data.Profile{``0},System.String,System.DateTime,System.DateTime)
+  name.vb: Isochrone(Of T)(TransitDb, Profile(Of T), String, DateTime, DateTime)
+  fullName: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.Isochrone<T>(Itinero.Transit.Data.TransitDb, Itinero.Transit.Data.Profile<T>, System.String, System.DateTime, System.DateTime)
+  fullName.vb: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.Isochrone(Of T)(Itinero.Transit.Data.TransitDb, Itinero.Transit.Data.Profile(Of T), System.String, System.DateTime, System.DateTime)
+  nameWithType: TransitDbQueryExtensions.Isochrone<T>(TransitDb, Profile<T>, String, DateTime, DateTime)
+  nameWithType.vb: TransitDbQueryExtensions.Isochrone(Of T)(TransitDb, Profile(Of T), String, DateTime, DateTime)
+- uid: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.IsochroneLatestArrival*
   name: IsochroneLatestArrival
-  href: api/Itinero.Transit.Algorithms.CSA.ProfileExtensions.html#Itinero_Transit_Algorithms_CSA_ProfileExtensions_IsochroneLatestArrival_
-  commentId: Overload:Itinero.Transit.Algorithms.CSA.ProfileExtensions.IsochroneLatestArrival
+  href: api/Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.html#Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_IsochroneLatestArrival_
+  commentId: Overload:Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.IsochroneLatestArrival
   isSpec: "True"
-  fullName: Itinero.Transit.Algorithms.CSA.ProfileExtensions.IsochroneLatestArrival
-  nameWithType: ProfileExtensions.IsochroneLatestArrival
-- uid: Itinero.Transit.Algorithms.CSA.ProfileExtensions.IsochroneLatestArrival``1(Itinero.Transit.Data.Profile{``0},System.String,System.DateTime,System.DateTime)
-  name: IsochroneLatestArrival<T>(Profile<T>, String, DateTime, DateTime)
-  href: api/Itinero.Transit.Algorithms.CSA.ProfileExtensions.html#Itinero_Transit_Algorithms_CSA_ProfileExtensions_IsochroneLatestArrival__1_Itinero_Transit_Data_Profile___0__System_String_System_DateTime_System_DateTime_
-  commentId: M:Itinero.Transit.Algorithms.CSA.ProfileExtensions.IsochroneLatestArrival``1(Itinero.Transit.Data.Profile{``0},System.String,System.DateTime,System.DateTime)
-  name.vb: IsochroneLatestArrival(Of T)(Profile(Of T), String, DateTime, DateTime)
-  fullName: Itinero.Transit.Algorithms.CSA.ProfileExtensions.IsochroneLatestArrival<T>(Itinero.Transit.Data.Profile<T>, System.String, System.DateTime, System.DateTime)
-  fullName.vb: Itinero.Transit.Algorithms.CSA.ProfileExtensions.IsochroneLatestArrival(Of T)(Itinero.Transit.Data.Profile(Of T), System.String, System.DateTime, System.DateTime)
-  nameWithType: ProfileExtensions.IsochroneLatestArrival<T>(Profile<T>, String, DateTime, DateTime)
-  nameWithType.vb: ProfileExtensions.IsochroneLatestArrival(Of T)(Profile(Of T), String, DateTime, DateTime)
+  fullName: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.IsochroneLatestArrival
+  nameWithType: TransitDbQueryExtensions.IsochroneLatestArrival
+- uid: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.IsochroneLatestArrival``1(Itinero.Transit.Data.TransitDb,Itinero.Transit.Data.Profile{``0},System.String,System.DateTime,System.DateTime)
+  name: IsochroneLatestArrival<T>(TransitDb, Profile<T>, String, DateTime, DateTime)
+  href: api/Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.html#Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_IsochroneLatestArrival__1_Itinero_Transit_Data_TransitDb_Itinero_Transit_Data_Profile___0__System_String_System_DateTime_System_DateTime_
+  commentId: M:Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.IsochroneLatestArrival``1(Itinero.Transit.Data.TransitDb,Itinero.Transit.Data.Profile{``0},System.String,System.DateTime,System.DateTime)
+  name.vb: IsochroneLatestArrival(Of T)(TransitDb, Profile(Of T), String, DateTime, DateTime)
+  fullName: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.IsochroneLatestArrival<T>(Itinero.Transit.Data.TransitDb, Itinero.Transit.Data.Profile<T>, System.String, System.DateTime, System.DateTime)
+  fullName.vb: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.IsochroneLatestArrival(Of T)(Itinero.Transit.Data.TransitDb, Itinero.Transit.Data.Profile(Of T), System.String, System.DateTime, System.DateTime)
+  nameWithType: TransitDbQueryExtensions.IsochroneLatestArrival<T>(TransitDb, Profile<T>, String, DateTime, DateTime)
+  nameWithType.vb: TransitDbQueryExtensions.IsochroneLatestArrival(Of T)(TransitDb, Profile(Of T), String, DateTime, DateTime)
+- uid: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.LatestDeparture*
+  name: LatestDeparture
+  href: api/Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.html#Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_LatestDeparture_
+  commentId: Overload:Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.LatestDeparture
+  isSpec: "True"
+  fullName: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.LatestDeparture
+  nameWithType: TransitDbQueryExtensions.LatestDeparture
+- uid: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.LatestDeparture``1(Itinero.Transit.Data.TransitDb,Itinero.Transit.Data.Profile{``0},System.String,System.String,System.DateTime,System.DateTime)
+  name: LatestDeparture<T>(TransitDb, Profile<T>, String, String, DateTime, DateTime)
+  href: api/Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.html#Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_LatestDeparture__1_Itinero_Transit_Data_TransitDb_Itinero_Transit_Data_Profile___0__System_String_System_String_System_DateTime_System_DateTime_
+  commentId: M:Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.LatestDeparture``1(Itinero.Transit.Data.TransitDb,Itinero.Transit.Data.Profile{``0},System.String,System.String,System.DateTime,System.DateTime)
+  name.vb: LatestDeparture(Of T)(TransitDb, Profile(Of T), String, String, DateTime, DateTime)
+  fullName: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.LatestDeparture<T>(Itinero.Transit.Data.TransitDb, Itinero.Transit.Data.Profile<T>, System.String, System.String, System.DateTime, System.DateTime)
+  fullName.vb: Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.LatestDeparture(Of T)(Itinero.Transit.Data.TransitDb, Itinero.Transit.Data.Profile(Of T), System.String, System.String, System.DateTime, System.DateTime)
+  nameWithType: TransitDbQueryExtensions.LatestDeparture<T>(TransitDb, Profile<T>, String, String, DateTime, DateTime)
+  nameWithType.vb: TransitDbQueryExtensions.LatestDeparture(Of T)(TransitDb, Profile(Of T), String, String, DateTime, DateTime)
 - uid: Itinero.Transit.Algorithms.Search
   name: Itinero.Transit.Algorithms.Search
   href: api/Itinero.Transit.Algorithms.Search.html
@@ -1604,23 +1649,6 @@ references:
   fullName.vb: Itinero.Transit.Data.Profile(Of T).InternalTransferGenerator
   nameWithType: Profile<T>.InternalTransferGenerator
   nameWithType.vb: Profile(Of T).InternalTransferGenerator
-- uid: Itinero.Transit.Data.Profile`1.LoadWindow(System.DateTime,System.DateTime,System.Boolean)
-  name: LoadWindow(DateTime, DateTime, Boolean)
-  href: api/Itinero.Transit.Data.Profile-1.html#Itinero_Transit_Data_Profile_1_LoadWindow_System_DateTime_System_DateTime_System_Boolean_
-  commentId: M:Itinero.Transit.Data.Profile`1.LoadWindow(System.DateTime,System.DateTime,System.Boolean)
-  fullName: Itinero.Transit.Data.Profile<T>.LoadWindow(System.DateTime, System.DateTime, System.Boolean)
-  fullName.vb: Itinero.Transit.Data.Profile(Of T).LoadWindow(System.DateTime, System.DateTime, System.Boolean)
-  nameWithType: Profile<T>.LoadWindow(DateTime, DateTime, Boolean)
-  nameWithType.vb: Profile(Of T).LoadWindow(DateTime, DateTime, Boolean)
-- uid: Itinero.Transit.Data.Profile`1.LoadWindow*
-  name: LoadWindow
-  href: api/Itinero.Transit.Data.Profile-1.html#Itinero_Transit_Data_Profile_1_LoadWindow_
-  commentId: Overload:Itinero.Transit.Data.Profile`1.LoadWindow
-  isSpec: "True"
-  fullName: Itinero.Transit.Data.Profile<T>.LoadWindow
-  fullName.vb: Itinero.Transit.Data.Profile(Of T).LoadWindow
-  nameWithType: Profile<T>.LoadWindow
-  nameWithType.vb: Profile(Of T).LoadWindow
 - uid: Itinero.Transit.Data.Profile`1.ProfileComparator
   name: ProfileComparator
   href: api/Itinero.Transit.Data.Profile-1.html#Itinero_Transit_Data_Profile_1_ProfileComparator
@@ -1637,23 +1665,6 @@ references:
   fullName.vb: Itinero.Transit.Data.Profile(Of T).StatsFactory
   nameWithType: Profile<T>.StatsFactory
   nameWithType.vb: Profile(Of T).StatsFactory
-- uid: Itinero.Transit.Data.Profile`1.TransitDbSnapShot
-  name: TransitDbSnapShot
-  href: api/Itinero.Transit.Data.Profile-1.html#Itinero_Transit_Data_Profile_1_TransitDbSnapShot
-  commentId: P:Itinero.Transit.Data.Profile`1.TransitDbSnapShot
-  fullName: Itinero.Transit.Data.Profile<T>.TransitDbSnapShot
-  fullName.vb: Itinero.Transit.Data.Profile(Of T).TransitDbSnapShot
-  nameWithType: Profile<T>.TransitDbSnapShot
-  nameWithType.vb: Profile(Of T).TransitDbSnapShot
-- uid: Itinero.Transit.Data.Profile`1.TransitDbSnapShot*
-  name: TransitDbSnapShot
-  href: api/Itinero.Transit.Data.Profile-1.html#Itinero_Transit_Data_Profile_1_TransitDbSnapShot_
-  commentId: Overload:Itinero.Transit.Data.Profile`1.TransitDbSnapShot
-  isSpec: "True"
-  fullName: Itinero.Transit.Data.Profile<T>.TransitDbSnapShot
-  fullName.vb: Itinero.Transit.Data.Profile(Of T).TransitDbSnapShot
-  nameWithType: Profile<T>.TransitDbSnapShot
-  nameWithType.vb: Profile(Of T).TransitDbSnapShot
 - uid: Itinero.Transit.Data.Profile`1.WalksGenerator
   name: WalksGenerator
   href: api/Itinero.Transit.Data.Profile-1.html#Itinero_Transit_Data_Profile_1_WalksGenerator
@@ -1923,6 +1934,19 @@ references:
   isSpec: "True"
   fullName: Itinero.Transit.Data.StopsDbExtensions.CalculateDistanceBetween
   nameWithType: StopsDbExtensions.CalculateDistanceBetween
+- uid: Itinero.Transit.Data.StopsDbExtensions.FindStop(Itinero.Transit.Data.StopsDb.StopsDbReader,System.String,System.String)
+  name: FindStop(StopsDb.StopsDbReader, String, String)
+  href: api/Itinero.Transit.Data.StopsDbExtensions.html#Itinero_Transit_Data_StopsDbExtensions_FindStop_Itinero_Transit_Data_StopsDb_StopsDbReader_System_String_System_String_
+  commentId: M:Itinero.Transit.Data.StopsDbExtensions.FindStop(Itinero.Transit.Data.StopsDb.StopsDbReader,System.String,System.String)
+  fullName: Itinero.Transit.Data.StopsDbExtensions.FindStop(Itinero.Transit.Data.StopsDb.StopsDbReader, System.String, System.String)
+  nameWithType: StopsDbExtensions.FindStop(StopsDb.StopsDbReader, String, String)
+- uid: Itinero.Transit.Data.StopsDbExtensions.FindStop*
+  name: FindStop
+  href: api/Itinero.Transit.Data.StopsDbExtensions.html#Itinero_Transit_Data_StopsDbExtensions_FindStop_
+  commentId: Overload:Itinero.Transit.Data.StopsDbExtensions.FindStop
+  isSpec: "True"
+  fullName: Itinero.Transit.Data.StopsDbExtensions.FindStop
+  nameWithType: StopsDbExtensions.FindStop
 - uid: Itinero.Transit.Data.StopsDbExtensions.LocationsInRange(Itinero.Transit.Data.StopsDb,Itinero.Transit.Data.IStop,System.Single)
   name: LocationsInRange(StopsDb, IStop, Single)
   href: api/Itinero.Transit.Data.StopsDbExtensions.html#Itinero_Transit_Data_StopsDbExtensions_LocationsInRange_Itinero_Transit_Data_StopsDb_Itinero_Transit_Data_IStop_System_Single_
@@ -2322,12 +2346,12 @@ references:
   commentId: T:Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator
   fullName: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator
   nameWithType: CrowsFlightTransferGenerator
-- uid: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.#ctor(Itinero.Transit.Data.StopsDb.StopsDbReader,System.Int32,System.Single)
-  name: CrowsFlightTransferGenerator(StopsDb.StopsDbReader, Int32, Single)
-  href: api/Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.html#Itinero_Transit_Data_Walks_CrowsFlightTransferGenerator__ctor_Itinero_Transit_Data_StopsDb_StopsDbReader_System_Int32_System_Single_
-  commentId: M:Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.#ctor(Itinero.Transit.Data.StopsDb.StopsDbReader,System.Int32,System.Single)
-  fullName: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.CrowsFlightTransferGenerator(Itinero.Transit.Data.StopsDb.StopsDbReader, System.Int32, System.Single)
-  nameWithType: CrowsFlightTransferGenerator.CrowsFlightTransferGenerator(StopsDb.StopsDbReader, Int32, Single)
+- uid: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.#ctor(Itinero.Transit.Data.TransitDb,System.Int32,System.Single)
+  name: CrowsFlightTransferGenerator(TransitDb, Int32, Single)
+  href: api/Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.html#Itinero_Transit_Data_Walks_CrowsFlightTransferGenerator__ctor_Itinero_Transit_Data_TransitDb_System_Int32_System_Single_
+  commentId: M:Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.#ctor(Itinero.Transit.Data.TransitDb,System.Int32,System.Single)
+  fullName: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.CrowsFlightTransferGenerator(Itinero.Transit.Data.TransitDb, System.Int32, System.Single)
+  nameWithType: CrowsFlightTransferGenerator.CrowsFlightTransferGenerator(TransitDb, Int32, Single)
 - uid: Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.#ctor*
   name: CrowsFlightTransferGenerator
   href: api/Itinero.Transit.Data.Walks.CrowsFlightTransferGenerator.html#Itinero_Transit_Data_Walks_CrowsFlightTransferGenerator__ctor_
@@ -4104,876 +4128,4 @@ references:
   nameWithType: Journey<T>.EarliestArrivalScanJourney
   nameWithType.vb: Journey(Of T).EarliestArrivalScanJourney
 - uid: Itinero.Transit.Journeys.Journey`1.Equals(Itinero.Transit.Journeys.Journey{`0})
-  name: Equals(Journey<T>)
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_Equals_Itinero_Transit_Journeys_Journey__0__
-  commentId: M:Itinero.Transit.Journeys.Journey`1.Equals(Itinero.Transit.Journeys.Journey{`0})
-  name.vb: Equals(Journey(Of T))
-  fullName: Itinero.Transit.Journeys.Journey<T>.Equals(Itinero.Transit.Journeys.Journey<T>)
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).Equals(Itinero.Transit.Journeys.Journey(Of T))
-  nameWithType: Journey<T>.Equals(Journey<T>)
-  nameWithType.vb: Journey(Of T).Equals(Journey(Of T))
-- uid: Itinero.Transit.Journeys.Journey`1.Equals(System.Object)
-  name: Equals(Object)
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_Equals_System_Object_
-  commentId: M:Itinero.Transit.Journeys.Journey`1.Equals(System.Object)
-  fullName: Itinero.Transit.Journeys.Journey<T>.Equals(System.Object)
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).Equals(System.Object)
-  nameWithType: Journey<T>.Equals(Object)
-  nameWithType.vb: Journey(Of T).Equals(Object)
-- uid: Itinero.Transit.Journeys.Journey`1.Equals*
-  name: Equals
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_Equals_
-  commentId: Overload:Itinero.Transit.Journeys.Journey`1.Equals
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.Journey<T>.Equals
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).Equals
-  nameWithType: Journey<T>.Equals
-  nameWithType.vb: Journey(Of T).Equals
-- uid: Itinero.Transit.Journeys.Journey`1.GENESIS
-  name: GENESIS
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_GENESIS
-  commentId: F:Itinero.Transit.Journeys.Journey`1.GENESIS
-  fullName: Itinero.Transit.Journeys.Journey<T>.GENESIS
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).GENESIS
-  nameWithType: Journey<T>.GENESIS
-  nameWithType.vb: Journey(Of T).GENESIS
-- uid: Itinero.Transit.Journeys.Journey`1.GetHashCode
-  name: GetHashCode()
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_GetHashCode
-  commentId: M:Itinero.Transit.Journeys.Journey`1.GetHashCode
-  fullName: Itinero.Transit.Journeys.Journey<T>.GetHashCode()
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).GetHashCode()
-  nameWithType: Journey<T>.GetHashCode()
-  nameWithType.vb: Journey(Of T).GetHashCode()
-- uid: Itinero.Transit.Journeys.Journey`1.GetHashCode*
-  name: GetHashCode
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_GetHashCode_
-  commentId: Overload:Itinero.Transit.Journeys.Journey`1.GetHashCode
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.Journey<T>.GetHashCode
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).GetHashCode
-  nameWithType: Journey<T>.GetHashCode
-  nameWithType.vb: Journey(Of T).GetHashCode
-- uid: Itinero.Transit.Journeys.Journey`1.InfiniteJourney
-  name: InfiniteJourney
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_InfiniteJourney
-  commentId: F:Itinero.Transit.Journeys.Journey`1.InfiniteJourney
-  fullName: Itinero.Transit.Journeys.Journey<T>.InfiniteJourney
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).InfiniteJourney
-  nameWithType: Journey<T>.InfiniteJourney
-  nameWithType.vb: Journey(Of T).InfiniteJourney
-- uid: Itinero.Transit.Journeys.Journey`1.JOINED_JOURNEYS
-  name: JOINED_JOURNEYS
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_JOINED_JOURNEYS
-  commentId: F:Itinero.Transit.Journeys.Journey`1.JOINED_JOURNEYS
-  fullName: Itinero.Transit.Journeys.Journey<T>.JOINED_JOURNEYS
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).JOINED_JOURNEYS
-  nameWithType: Journey<T>.JOINED_JOURNEYS
-  nameWithType.vb: Journey(Of T).JOINED_JOURNEYS
-- uid: Itinero.Transit.Journeys.Journey`1.LastTripId
-  name: LastTripId()
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_LastTripId
-  commentId: M:Itinero.Transit.Journeys.Journey`1.LastTripId
-  fullName: Itinero.Transit.Journeys.Journey<T>.LastTripId()
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).LastTripId()
-  nameWithType: Journey<T>.LastTripId()
-  nameWithType.vb: Journey(Of T).LastTripId()
-- uid: Itinero.Transit.Journeys.Journey`1.LastTripId*
-  name: LastTripId
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_LastTripId_
-  commentId: Overload:Itinero.Transit.Journeys.Journey`1.LastTripId
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.Journey<T>.LastTripId
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).LastTripId
-  nameWithType: Journey<T>.LastTripId
-  nameWithType.vb: Journey(Of T).LastTripId
-- uid: Itinero.Transit.Journeys.Journey`1.LatestArrivalScanJourney
-  name: LatestArrivalScanJourney
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_LatestArrivalScanJourney
-  commentId: F:Itinero.Transit.Journeys.Journey`1.LatestArrivalScanJourney
-  fullName: Itinero.Transit.Journeys.Journey<T>.LatestArrivalScanJourney
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).LatestArrivalScanJourney
-  nameWithType: Journey<T>.LatestArrivalScanJourney
-  nameWithType.vb: Journey(Of T).LatestArrivalScanJourney
-- uid: Itinero.Transit.Journeys.Journey`1.Location
-  name: Location
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_Location
-  commentId: F:Itinero.Transit.Journeys.Journey`1.Location
-  fullName: Itinero.Transit.Journeys.Journey<T>.Location
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).Location
-  nameWithType: Journey<T>.Location
-  nameWithType.vb: Journey(Of T).Location
-- uid: Itinero.Transit.Journeys.Journey`1.NegativeInfiniteJourney
-  name: NegativeInfiniteJourney
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_NegativeInfiniteJourney
-  commentId: F:Itinero.Transit.Journeys.Journey`1.NegativeInfiniteJourney
-  fullName: Itinero.Transit.Journeys.Journey<T>.NegativeInfiniteJourney
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).NegativeInfiniteJourney
-  nameWithType: Journey<T>.NegativeInfiniteJourney
-  nameWithType.vb: Journey(Of T).NegativeInfiniteJourney
-- uid: Itinero.Transit.Journeys.Journey`1.PreviousLink
-  name: PreviousLink
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_PreviousLink
-  commentId: F:Itinero.Transit.Journeys.Journey`1.PreviousLink
-  fullName: Itinero.Transit.Journeys.Journey<T>.PreviousLink
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).PreviousLink
-  nameWithType: Journey<T>.PreviousLink
-  nameWithType.vb: Journey(Of T).PreviousLink
-- uid: Itinero.Transit.Journeys.Journey`1.ProfiledScanJourney
-  name: ProfiledScanJourney
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_ProfiledScanJourney
-  commentId: F:Itinero.Transit.Journeys.Journey`1.ProfiledScanJourney
-  fullName: Itinero.Transit.Journeys.Journey<T>.ProfiledScanJourney
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).ProfiledScanJourney
-  nameWithType: Journey<T>.ProfiledScanJourney
-  nameWithType.vb: Journey(Of T).ProfiledScanJourney
-- uid: Itinero.Transit.Journeys.Journey`1.Root
-  name: Root
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_Root
-  commentId: F:Itinero.Transit.Journeys.Journey`1.Root
-  fullName: Itinero.Transit.Journeys.Journey<T>.Root
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).Root
-  nameWithType: Journey<T>.Root
-  nameWithType.vb: Journey(Of T).Root
-- uid: Itinero.Transit.Journeys.Journey`1.SpecialConnection
-  name: SpecialConnection
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_SpecialConnection
-  commentId: F:Itinero.Transit.Journeys.Journey`1.SpecialConnection
-  fullName: Itinero.Transit.Journeys.Journey<T>.SpecialConnection
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).SpecialConnection
-  nameWithType: Journey<T>.SpecialConnection
-  nameWithType.vb: Journey(Of T).SpecialConnection
-- uid: Itinero.Transit.Journeys.Journey`1.Stats
-  name: Stats
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_Stats
-  commentId: F:Itinero.Transit.Journeys.Journey`1.Stats
-  fullName: Itinero.Transit.Journeys.Journey<T>.Stats
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).Stats
-  nameWithType: Journey<T>.Stats
-  nameWithType.vb: Journey(Of T).Stats
-- uid: Itinero.Transit.Journeys.Journey`1.Time
-  name: Time
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_Time
-  commentId: F:Itinero.Transit.Journeys.Journey`1.Time
-  fullName: Itinero.Transit.Journeys.Journey<T>.Time
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).Time
-  nameWithType: Journey<T>.Time
-  nameWithType.vb: Journey(Of T).Time
-- uid: Itinero.Transit.Journeys.Journey`1.ToString
-  name: ToString()
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_ToString
-  commentId: M:Itinero.Transit.Journeys.Journey`1.ToString
-  fullName: Itinero.Transit.Journeys.Journey<T>.ToString()
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).ToString()
-  nameWithType: Journey<T>.ToString()
-  nameWithType.vb: Journey(Of T).ToString()
-- uid: Itinero.Transit.Journeys.Journey`1.ToString(Itinero.Transit.Data.StopsDb)
-  name: ToString(StopsDb)
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_ToString_Itinero_Transit_Data_StopsDb_
-  commentId: M:Itinero.Transit.Journeys.Journey`1.ToString(Itinero.Transit.Data.StopsDb)
-  fullName: Itinero.Transit.Journeys.Journey<T>.ToString(Itinero.Transit.Data.StopsDb)
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).ToString(Itinero.Transit.Data.StopsDb)
-  nameWithType: Journey<T>.ToString(StopsDb)
-  nameWithType.vb: Journey(Of T).ToString(StopsDb)
-- uid: Itinero.Transit.Journeys.Journey`1.ToString(Itinero.Transit.Data.StopsDb.StopsDbReader)
-  name: ToString(StopsDb.StopsDbReader)
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_ToString_Itinero_Transit_Data_StopsDb_StopsDbReader_
-  commentId: M:Itinero.Transit.Journeys.Journey`1.ToString(Itinero.Transit.Data.StopsDb.StopsDbReader)
-  fullName: Itinero.Transit.Journeys.Journey<T>.ToString(Itinero.Transit.Data.StopsDb.StopsDbReader)
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).ToString(Itinero.Transit.Data.StopsDb.StopsDbReader)
-  nameWithType: Journey<T>.ToString(StopsDb.StopsDbReader)
-  nameWithType.vb: Journey(Of T).ToString(StopsDb.StopsDbReader)
-- uid: Itinero.Transit.Journeys.Journey`1.ToString*
-  name: ToString
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_ToString_
-  commentId: Overload:Itinero.Transit.Journeys.Journey`1.ToString
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.Journey<T>.ToString
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).ToString
-  nameWithType: Journey<T>.ToString
-  nameWithType.vb: Journey(Of T).ToString
-- uid: Itinero.Transit.Journeys.Journey`1.TRANSFER
-  name: TRANSFER
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_TRANSFER
-  commentId: F:Itinero.Transit.Journeys.Journey`1.TRANSFER
-  fullName: Itinero.Transit.Journeys.Journey<T>.TRANSFER
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).TRANSFER
-  nameWithType: Journey<T>.TRANSFER
-  nameWithType.vb: Journey(Of T).TRANSFER
-- uid: Itinero.Transit.Journeys.Journey`1.Transfer(System.UInt64)
-  name: Transfer(UInt64)
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_Transfer_System_UInt64_
-  commentId: M:Itinero.Transit.Journeys.Journey`1.Transfer(System.UInt64)
-  fullName: Itinero.Transit.Journeys.Journey<T>.Transfer(System.UInt64)
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).Transfer(System.UInt64)
-  nameWithType: Journey<T>.Transfer(UInt64)
-  nameWithType.vb: Journey(Of T).Transfer(UInt64)
-- uid: Itinero.Transit.Journeys.Journey`1.Transfer*
-  name: Transfer
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_Transfer_
-  commentId: Overload:Itinero.Transit.Journeys.Journey`1.Transfer
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.Journey<T>.Transfer
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).Transfer
-  nameWithType: Journey<T>.Transfer
-  nameWithType.vb: Journey(Of T).Transfer
-- uid: Itinero.Transit.Journeys.Journey`1.TransferForward(Itinero.Transit.Data.IConnection)
-  name: TransferForward(IConnection)
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_TransferForward_Itinero_Transit_Data_IConnection_
-  commentId: M:Itinero.Transit.Journeys.Journey`1.TransferForward(Itinero.Transit.Data.IConnection)
-  fullName: Itinero.Transit.Journeys.Journey<T>.TransferForward(Itinero.Transit.Data.IConnection)
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).TransferForward(Itinero.Transit.Data.IConnection)
-  nameWithType: Journey<T>.TransferForward(IConnection)
-  nameWithType.vb: Journey(Of T).TransferForward(IConnection)
-- uid: Itinero.Transit.Journeys.Journey`1.TransferForward*
-  name: TransferForward
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_TransferForward_
-  commentId: Overload:Itinero.Transit.Journeys.Journey`1.TransferForward
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.Journey<T>.TransferForward
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).TransferForward
-  nameWithType: Journey<T>.TransferForward
-  nameWithType.vb: Journey(Of T).TransferForward
-- uid: Itinero.Transit.Journeys.Journey`1.TripId
-  name: TripId
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_TripId
-  commentId: F:Itinero.Transit.Journeys.Journey`1.TripId
-  fullName: Itinero.Transit.Journeys.Journey<T>.TripId
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).TripId
-  nameWithType: Journey<T>.TripId
-  nameWithType.vb: Journey(Of T).TripId
-- uid: Itinero.Transit.Journeys.Journey`1.WALK
-  name: WALK
-  href: api/Itinero.Transit.Journeys.Journey-1.html#Itinero_Transit_Journeys_Journey_1_WALK
-  commentId: F:Itinero.Transit.Journeys.Journey`1.WALK
-  fullName: Itinero.Transit.Journeys.Journey<T>.WALK
-  fullName.vb: Itinero.Transit.Journeys.Journey(Of T).WALK
-  nameWithType: Journey<T>.WALK
-  nameWithType.vb: Journey(Of T).WALK
-- uid: Itinero.Transit.Journeys.JourneyExtensions
-  name: JourneyExtensions
-  href: api/Itinero.Transit.Journeys.JourneyExtensions.html
-  commentId: T:Itinero.Transit.Journeys.JourneyExtensions
-  fullName: Itinero.Transit.Journeys.JourneyExtensions
-  nameWithType: JourneyExtensions
-- uid: Itinero.Transit.Journeys.JourneyExtensions.AllParts*
-  name: AllParts
-  href: api/Itinero.Transit.Journeys.JourneyExtensions.html#Itinero_Transit_Journeys_JourneyExtensions_AllParts_
-  commentId: Overload:Itinero.Transit.Journeys.JourneyExtensions.AllParts
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.JourneyExtensions.AllParts
-  nameWithType: JourneyExtensions.AllParts
-- uid: Itinero.Transit.Journeys.JourneyExtensions.AllParts``1(Itinero.Transit.Journeys.Journey{``0})
-  name: AllParts<T>(Journey<T>)
-  href: api/Itinero.Transit.Journeys.JourneyExtensions.html#Itinero_Transit_Journeys_JourneyExtensions_AllParts__1_Itinero_Transit_Journeys_Journey___0__
-  commentId: M:Itinero.Transit.Journeys.JourneyExtensions.AllParts``1(Itinero.Transit.Journeys.Journey{``0})
-  name.vb: AllParts(Of T)(Journey(Of T))
-  fullName: Itinero.Transit.Journeys.JourneyExtensions.AllParts<T>(Itinero.Transit.Journeys.Journey<T>)
-  fullName.vb: Itinero.Transit.Journeys.JourneyExtensions.AllParts(Of T)(Itinero.Transit.Journeys.Journey(Of T))
-  nameWithType: JourneyExtensions.AllParts<T>(Journey<T>)
-  nameWithType.vb: JourneyExtensions.AllParts(Of T)(Journey(Of T))
-- uid: Itinero.Transit.Journeys.JourneyExtensions.Pruned*
-  name: Pruned
-  href: api/Itinero.Transit.Journeys.JourneyExtensions.html#Itinero_Transit_Journeys_JourneyExtensions_Pruned_
-  commentId: Overload:Itinero.Transit.Journeys.JourneyExtensions.Pruned
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.JourneyExtensions.Pruned
-  nameWithType: JourneyExtensions.Pruned
-- uid: Itinero.Transit.Journeys.JourneyExtensions.Pruned``1(Itinero.Transit.Journeys.Journey{``0})
-  name: Pruned<T>(Journey<T>)
-  href: api/Itinero.Transit.Journeys.JourneyExtensions.html#Itinero_Transit_Journeys_JourneyExtensions_Pruned__1_Itinero_Transit_Journeys_Journey___0__
-  commentId: M:Itinero.Transit.Journeys.JourneyExtensions.Pruned``1(Itinero.Transit.Journeys.Journey{``0})
-  name.vb: Pruned(Of T)(Journey(Of T))
-  fullName: Itinero.Transit.Journeys.JourneyExtensions.Pruned<T>(Itinero.Transit.Journeys.Journey<T>)
-  fullName.vb: Itinero.Transit.Journeys.JourneyExtensions.Pruned(Of T)(Itinero.Transit.Journeys.Journey(Of T))
-  nameWithType: JourneyExtensions.Pruned<T>(Journey<T>)
-  nameWithType.vb: JourneyExtensions.Pruned(Of T)(Journey(Of T))
-- uid: Itinero.Transit.Journeys.JourneyExtensions.Reversed*
-  name: Reversed
-  href: api/Itinero.Transit.Journeys.JourneyExtensions.html#Itinero_Transit_Journeys_JourneyExtensions_Reversed_
-  commentId: Overload:Itinero.Transit.Journeys.JourneyExtensions.Reversed
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.JourneyExtensions.Reversed
-  nameWithType: JourneyExtensions.Reversed
-- uid: Itinero.Transit.Journeys.JourneyExtensions.Reversed``1(Itinero.Transit.Journeys.Journey{``0})
-  name: Reversed<T>(Journey<T>)
-  href: api/Itinero.Transit.Journeys.JourneyExtensions.html#Itinero_Transit_Journeys_JourneyExtensions_Reversed__1_Itinero_Transit_Journeys_Journey___0__
-  commentId: M:Itinero.Transit.Journeys.JourneyExtensions.Reversed``1(Itinero.Transit.Journeys.Journey{``0})
-  name.vb: Reversed(Of T)(Journey(Of T))
-  fullName: Itinero.Transit.Journeys.JourneyExtensions.Reversed<T>(Itinero.Transit.Journeys.Journey<T>)
-  fullName.vb: Itinero.Transit.Journeys.JourneyExtensions.Reversed(Of T)(Itinero.Transit.Journeys.Journey(Of T))
-  nameWithType: JourneyExtensions.Reversed<T>(Journey<T>)
-  nameWithType.vb: JourneyExtensions.Reversed(Of T)(Journey(Of T))
-- uid: Itinero.Transit.Journeys.JourneyExtensions.Reversed``1(Itinero.Transit.Journeys.Journey{``0},System.Collections.Generic.List{Itinero.Transit.Journeys.Journey{``0}})
-  name: Reversed<T>(Journey<T>, List<Journey<T>>)
-  href: api/Itinero.Transit.Journeys.JourneyExtensions.html#Itinero_Transit_Journeys_JourneyExtensions_Reversed__1_Itinero_Transit_Journeys_Journey___0__System_Collections_Generic_List_Itinero_Transit_Journeys_Journey___0___
-  commentId: M:Itinero.Transit.Journeys.JourneyExtensions.Reversed``1(Itinero.Transit.Journeys.Journey{``0},System.Collections.Generic.List{Itinero.Transit.Journeys.Journey{``0}})
-  name.vb: Reversed(Of T)(Journey(Of T), List(Of Journey(Of T)))
-  fullName: Itinero.Transit.Journeys.JourneyExtensions.Reversed<T>(Itinero.Transit.Journeys.Journey<T>, System.Collections.Generic.List<Itinero.Transit.Journeys.Journey<T>>)
-  fullName.vb: Itinero.Transit.Journeys.JourneyExtensions.Reversed(Of T)(Itinero.Transit.Journeys.Journey(Of T), System.Collections.Generic.List(Of Itinero.Transit.Journeys.Journey(Of T)))
-  nameWithType: JourneyExtensions.Reversed<T>(Journey<T>, List<Journey<T>>)
-  nameWithType.vb: JourneyExtensions.Reversed(Of T)(Journey(Of T), List(Of Journey(Of T)))
-- uid: Itinero.Transit.Journeys.MinimizeTransfers
-  name: MinimizeTransfers
-  href: api/Itinero.Transit.Journeys.MinimizeTransfers.html
-  commentId: T:Itinero.Transit.Journeys.MinimizeTransfers
-  fullName: Itinero.Transit.Journeys.MinimizeTransfers
-  nameWithType: MinimizeTransfers
-- uid: Itinero.Transit.Journeys.MinimizeTransfers.ADominatesB(Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats},Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats})
-  name: ADominatesB(Journey<TransferStats>, Journey<TransferStats>)
-  href: api/Itinero.Transit.Journeys.MinimizeTransfers.html#Itinero_Transit_Journeys_MinimizeTransfers_ADominatesB_Itinero_Transit_Journeys_Journey_Itinero_Transit_Journeys_TransferStats__Itinero_Transit_Journeys_Journey_Itinero_Transit_Journeys_TransferStats__
-  commentId: M:Itinero.Transit.Journeys.MinimizeTransfers.ADominatesB(Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats},Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats})
-  name.vb: ADominatesB(Journey(Of TransferStats), Journey(Of TransferStats))
-  fullName: Itinero.Transit.Journeys.MinimizeTransfers.ADominatesB(Itinero.Transit.Journeys.Journey<Itinero.Transit.Journeys.TransferStats>, Itinero.Transit.Journeys.Journey<Itinero.Transit.Journeys.TransferStats>)
-  fullName.vb: Itinero.Transit.Journeys.MinimizeTransfers.ADominatesB(Itinero.Transit.Journeys.Journey(Of Itinero.Transit.Journeys.TransferStats), Itinero.Transit.Journeys.Journey(Of Itinero.Transit.Journeys.TransferStats))
-  nameWithType: MinimizeTransfers.ADominatesB(Journey<TransferStats>, Journey<TransferStats>)
-  nameWithType.vb: MinimizeTransfers.ADominatesB(Journey(Of TransferStats), Journey(Of TransferStats))
-- uid: Itinero.Transit.Journeys.MinimizeTransfers.ADominatesB*
-  name: ADominatesB
-  href: api/Itinero.Transit.Journeys.MinimizeTransfers.html#Itinero_Transit_Journeys_MinimizeTransfers_ADominatesB_
-  commentId: Overload:Itinero.Transit.Journeys.MinimizeTransfers.ADominatesB
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.MinimizeTransfers.ADominatesB
-  nameWithType: MinimizeTransfers.ADominatesB
-- uid: Itinero.Transit.Journeys.MinimizeTravelTimes
-  name: MinimizeTravelTimes
-  href: api/Itinero.Transit.Journeys.MinimizeTravelTimes.html
-  commentId: T:Itinero.Transit.Journeys.MinimizeTravelTimes
-  fullName: Itinero.Transit.Journeys.MinimizeTravelTimes
-  nameWithType: MinimizeTravelTimes
-- uid: Itinero.Transit.Journeys.MinimizeTravelTimes.ADominatesB(Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats},Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats})
-  name: ADominatesB(Journey<TransferStats>, Journey<TransferStats>)
-  href: api/Itinero.Transit.Journeys.MinimizeTravelTimes.html#Itinero_Transit_Journeys_MinimizeTravelTimes_ADominatesB_Itinero_Transit_Journeys_Journey_Itinero_Transit_Journeys_TransferStats__Itinero_Transit_Journeys_Journey_Itinero_Transit_Journeys_TransferStats__
-  commentId: M:Itinero.Transit.Journeys.MinimizeTravelTimes.ADominatesB(Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats},Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats})
-  name.vb: ADominatesB(Journey(Of TransferStats), Journey(Of TransferStats))
-  fullName: Itinero.Transit.Journeys.MinimizeTravelTimes.ADominatesB(Itinero.Transit.Journeys.Journey<Itinero.Transit.Journeys.TransferStats>, Itinero.Transit.Journeys.Journey<Itinero.Transit.Journeys.TransferStats>)
-  fullName.vb: Itinero.Transit.Journeys.MinimizeTravelTimes.ADominatesB(Itinero.Transit.Journeys.Journey(Of Itinero.Transit.Journeys.TransferStats), Itinero.Transit.Journeys.Journey(Of Itinero.Transit.Journeys.TransferStats))
-  nameWithType: MinimizeTravelTimes.ADominatesB(Journey<TransferStats>, Journey<TransferStats>)
-  nameWithType.vb: MinimizeTravelTimes.ADominatesB(Journey(Of TransferStats), Journey(Of TransferStats))
-- uid: Itinero.Transit.Journeys.MinimizeTravelTimes.ADominatesB*
-  name: ADominatesB
-  href: api/Itinero.Transit.Journeys.MinimizeTravelTimes.html#Itinero_Transit_Journeys_MinimizeTravelTimes_ADominatesB_
-  commentId: Overload:Itinero.Transit.Journeys.MinimizeTravelTimes.ADominatesB
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.MinimizeTravelTimes.ADominatesB
-  nameWithType: MinimizeTravelTimes.ADominatesB
-- uid: Itinero.Transit.Journeys.ParetoCompare
-  name: ParetoCompare
-  href: api/Itinero.Transit.Journeys.ParetoCompare.html
-  commentId: T:Itinero.Transit.Journeys.ParetoCompare
-  fullName: Itinero.Transit.Journeys.ParetoCompare
-  nameWithType: ParetoCompare
-- uid: Itinero.Transit.Journeys.ParetoCompare.ADominatesB(Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats},Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats})
-  name: ADominatesB(Journey<TransferStats>, Journey<TransferStats>)
-  href: api/Itinero.Transit.Journeys.ParetoCompare.html#Itinero_Transit_Journeys_ParetoCompare_ADominatesB_Itinero_Transit_Journeys_Journey_Itinero_Transit_Journeys_TransferStats__Itinero_Transit_Journeys_Journey_Itinero_Transit_Journeys_TransferStats__
-  commentId: M:Itinero.Transit.Journeys.ParetoCompare.ADominatesB(Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats},Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats})
-  name.vb: ADominatesB(Journey(Of TransferStats), Journey(Of TransferStats))
-  fullName: Itinero.Transit.Journeys.ParetoCompare.ADominatesB(Itinero.Transit.Journeys.Journey<Itinero.Transit.Journeys.TransferStats>, Itinero.Transit.Journeys.Journey<Itinero.Transit.Journeys.TransferStats>)
-  fullName.vb: Itinero.Transit.Journeys.ParetoCompare.ADominatesB(Itinero.Transit.Journeys.Journey(Of Itinero.Transit.Journeys.TransferStats), Itinero.Transit.Journeys.Journey(Of Itinero.Transit.Journeys.TransferStats))
-  nameWithType: ParetoCompare.ADominatesB(Journey<TransferStats>, Journey<TransferStats>)
-  nameWithType.vb: ParetoCompare.ADominatesB(Journey(Of TransferStats), Journey(Of TransferStats))
-- uid: Itinero.Transit.Journeys.ParetoCompare.ADominatesB*
-  name: ADominatesB
-  href: api/Itinero.Transit.Journeys.ParetoCompare.html#Itinero_Transit_Journeys_ParetoCompare_ADominatesB_
-  commentId: Overload:Itinero.Transit.Journeys.ParetoCompare.ADominatesB
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.ParetoCompare.ADominatesB
-  nameWithType: ParetoCompare.ADominatesB
-- uid: Itinero.Transit.Journeys.ProfileCompare
-  name: ProfileCompare
-  href: api/Itinero.Transit.Journeys.ProfileCompare.html
-  commentId: T:Itinero.Transit.Journeys.ProfileCompare
-  fullName: Itinero.Transit.Journeys.ProfileCompare
-  nameWithType: ProfileCompare
-- uid: Itinero.Transit.Journeys.ProfileCompare.ADominatesB(Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats},Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats})
-  name: ADominatesB(Journey<TransferStats>, Journey<TransferStats>)
-  href: api/Itinero.Transit.Journeys.ProfileCompare.html#Itinero_Transit_Journeys_ProfileCompare_ADominatesB_Itinero_Transit_Journeys_Journey_Itinero_Transit_Journeys_TransferStats__Itinero_Transit_Journeys_Journey_Itinero_Transit_Journeys_TransferStats__
-  commentId: M:Itinero.Transit.Journeys.ProfileCompare.ADominatesB(Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats},Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats})
-  name.vb: ADominatesB(Journey(Of TransferStats), Journey(Of TransferStats))
-  fullName: Itinero.Transit.Journeys.ProfileCompare.ADominatesB(Itinero.Transit.Journeys.Journey<Itinero.Transit.Journeys.TransferStats>, Itinero.Transit.Journeys.Journey<Itinero.Transit.Journeys.TransferStats>)
-  fullName.vb: Itinero.Transit.Journeys.ProfileCompare.ADominatesB(Itinero.Transit.Journeys.Journey(Of Itinero.Transit.Journeys.TransferStats), Itinero.Transit.Journeys.Journey(Of Itinero.Transit.Journeys.TransferStats))
-  nameWithType: ProfileCompare.ADominatesB(Journey<TransferStats>, Journey<TransferStats>)
-  nameWithType.vb: ProfileCompare.ADominatesB(Journey(Of TransferStats), Journey(Of TransferStats))
-- uid: Itinero.Transit.Journeys.ProfileCompare.ADominatesB*
-  name: ADominatesB
-  href: api/Itinero.Transit.Journeys.ProfileCompare.html#Itinero_Transit_Journeys_ProfileCompare_ADominatesB_
-  commentId: Overload:Itinero.Transit.Journeys.ProfileCompare.ADominatesB
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.ProfileCompare.ADominatesB
-  nameWithType: ProfileCompare.ADominatesB
-- uid: Itinero.Transit.Journeys.ProfiledStatsComparator`1
-  name: ProfiledStatsComparator<T>
-  href: api/Itinero.Transit.Journeys.ProfiledStatsComparator-1.html
-  commentId: T:Itinero.Transit.Journeys.ProfiledStatsComparator`1
-  name.vb: ProfiledStatsComparator(Of T)
-  fullName: Itinero.Transit.Journeys.ProfiledStatsComparator<T>
-  fullName.vb: Itinero.Transit.Journeys.ProfiledStatsComparator(Of T)
-  nameWithType: ProfiledStatsComparator<T>
-  nameWithType.vb: ProfiledStatsComparator(Of T)
-- uid: Itinero.Transit.Journeys.ProfileTransferCompare
-  name: ProfileTransferCompare
-  href: api/Itinero.Transit.Journeys.ProfileTransferCompare.html
-  commentId: T:Itinero.Transit.Journeys.ProfileTransferCompare
-  fullName: Itinero.Transit.Journeys.ProfileTransferCompare
-  nameWithType: ProfileTransferCompare
-- uid: Itinero.Transit.Journeys.ProfileTransferCompare.ADominatesB(Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats},Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats})
-  name: ADominatesB(Journey<TransferStats>, Journey<TransferStats>)
-  href: api/Itinero.Transit.Journeys.ProfileTransferCompare.html#Itinero_Transit_Journeys_ProfileTransferCompare_ADominatesB_Itinero_Transit_Journeys_Journey_Itinero_Transit_Journeys_TransferStats__Itinero_Transit_Journeys_Journey_Itinero_Transit_Journeys_TransferStats__
-  commentId: M:Itinero.Transit.Journeys.ProfileTransferCompare.ADominatesB(Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats},Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats})
-  name.vb: ADominatesB(Journey(Of TransferStats), Journey(Of TransferStats))
-  fullName: Itinero.Transit.Journeys.ProfileTransferCompare.ADominatesB(Itinero.Transit.Journeys.Journey<Itinero.Transit.Journeys.TransferStats>, Itinero.Transit.Journeys.Journey<Itinero.Transit.Journeys.TransferStats>)
-  fullName.vb: Itinero.Transit.Journeys.ProfileTransferCompare.ADominatesB(Itinero.Transit.Journeys.Journey(Of Itinero.Transit.Journeys.TransferStats), Itinero.Transit.Journeys.Journey(Of Itinero.Transit.Journeys.TransferStats))
-  nameWithType: ProfileTransferCompare.ADominatesB(Journey<TransferStats>, Journey<TransferStats>)
-  nameWithType.vb: ProfileTransferCompare.ADominatesB(Journey(Of TransferStats), Journey(Of TransferStats))
-- uid: Itinero.Transit.Journeys.ProfileTransferCompare.ADominatesB*
-  name: ADominatesB
-  href: api/Itinero.Transit.Journeys.ProfileTransferCompare.html#Itinero_Transit_Journeys_ProfileTransferCompare_ADominatesB_
-  commentId: Overload:Itinero.Transit.Journeys.ProfileTransferCompare.ADominatesB
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.ProfileTransferCompare.ADominatesB
-  nameWithType: ProfileTransferCompare.ADominatesB
-- uid: Itinero.Transit.Journeys.StatsComparator`1
-  name: StatsComparator<T>
-  href: api/Itinero.Transit.Journeys.StatsComparator-1.html
-  commentId: T:Itinero.Transit.Journeys.StatsComparator`1
-  name.vb: StatsComparator(Of T)
-  fullName: Itinero.Transit.Journeys.StatsComparator<T>
-  fullName.vb: Itinero.Transit.Journeys.StatsComparator(Of T)
-  nameWithType: StatsComparator<T>
-  nameWithType.vb: StatsComparator(Of T)
-- uid: Itinero.Transit.Journeys.StatsComparator`1.ADominates
-  name: ADominates
-  href: api/Itinero.Transit.Journeys.StatsComparator-1.html#Itinero_Transit_Journeys_StatsComparator_1_ADominates
-  commentId: F:Itinero.Transit.Journeys.StatsComparator`1.ADominates
-  fullName: Itinero.Transit.Journeys.StatsComparator<T>.ADominates
-  fullName.vb: Itinero.Transit.Journeys.StatsComparator(Of T).ADominates
-  nameWithType: StatsComparator<T>.ADominates
-  nameWithType.vb: StatsComparator(Of T).ADominates
-- uid: Itinero.Transit.Journeys.StatsComparator`1.ADominatesB(Itinero.Transit.Journeys.Journey{`0},Itinero.Transit.Journeys.Journey{`0})
-  name: ADominatesB(Journey<T>, Journey<T>)
-  href: api/Itinero.Transit.Journeys.StatsComparator-1.html#Itinero_Transit_Journeys_StatsComparator_1_ADominatesB_Itinero_Transit_Journeys_Journey__0__Itinero_Transit_Journeys_Journey__0__
-  commentId: M:Itinero.Transit.Journeys.StatsComparator`1.ADominatesB(Itinero.Transit.Journeys.Journey{`0},Itinero.Transit.Journeys.Journey{`0})
-  name.vb: ADominatesB(Journey(Of T), Journey(Of T))
-  fullName: Itinero.Transit.Journeys.StatsComparator<T>.ADominatesB(Itinero.Transit.Journeys.Journey<T>, Itinero.Transit.Journeys.Journey<T>)
-  fullName.vb: Itinero.Transit.Journeys.StatsComparator(Of T).ADominatesB(Itinero.Transit.Journeys.Journey(Of T), Itinero.Transit.Journeys.Journey(Of T))
-  nameWithType: StatsComparator<T>.ADominatesB(Journey<T>, Journey<T>)
-  nameWithType.vb: StatsComparator(Of T).ADominatesB(Journey(Of T), Journey(Of T))
-- uid: Itinero.Transit.Journeys.StatsComparator`1.ADominatesB*
-  name: ADominatesB
-  href: api/Itinero.Transit.Journeys.StatsComparator-1.html#Itinero_Transit_Journeys_StatsComparator_1_ADominatesB_
-  commentId: Overload:Itinero.Transit.Journeys.StatsComparator`1.ADominatesB
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.StatsComparator<T>.ADominatesB
-  fullName.vb: Itinero.Transit.Journeys.StatsComparator(Of T).ADominatesB
-  nameWithType: StatsComparator<T>.ADominatesB
-  nameWithType.vb: StatsComparator(Of T).ADominatesB
-- uid: Itinero.Transit.Journeys.StatsComparator`1.BDominates
-  name: BDominates
-  href: api/Itinero.Transit.Journeys.StatsComparator-1.html#Itinero_Transit_Journeys_StatsComparator_1_BDominates
-  commentId: F:Itinero.Transit.Journeys.StatsComparator`1.BDominates
-  fullName: Itinero.Transit.Journeys.StatsComparator<T>.BDominates
-  fullName.vb: Itinero.Transit.Journeys.StatsComparator(Of T).BDominates
-  nameWithType: StatsComparator<T>.BDominates
-  nameWithType.vb: StatsComparator(Of T).BDominates
-- uid: Itinero.Transit.Journeys.StatsComparator`1.EqualsCode
-  name: EqualsCode
-  href: api/Itinero.Transit.Journeys.StatsComparator-1.html#Itinero_Transit_Journeys_StatsComparator_1_EqualsCode
-  commentId: F:Itinero.Transit.Journeys.StatsComparator`1.EqualsCode
-  fullName: Itinero.Transit.Journeys.StatsComparator<T>.EqualsCode
-  fullName.vb: Itinero.Transit.Journeys.StatsComparator(Of T).EqualsCode
-  nameWithType: StatsComparator<T>.EqualsCode
-  nameWithType.vb: StatsComparator(Of T).EqualsCode
-- uid: Itinero.Transit.Journeys.StatsComparator`1.NotComparable
-  name: NotComparable
-  href: api/Itinero.Transit.Journeys.StatsComparator-1.html#Itinero_Transit_Journeys_StatsComparator_1_NotComparable
-  commentId: F:Itinero.Transit.Journeys.StatsComparator`1.NotComparable
-  fullName: Itinero.Transit.Journeys.StatsComparator<T>.NotComparable
-  fullName.vb: Itinero.Transit.Journeys.StatsComparator(Of T).NotComparable
-  nameWithType: StatsComparator<T>.NotComparable
-  nameWithType.vb: StatsComparator(Of T).NotComparable
-- uid: Itinero.Transit.Journeys.TransferStats
-  name: TransferStats
-  href: api/Itinero.Transit.Journeys.TransferStats.html
-  commentId: T:Itinero.Transit.Journeys.TransferStats
-  fullName: Itinero.Transit.Journeys.TransferStats
-  nameWithType: TransferStats
-- uid: Itinero.Transit.Journeys.TransferStats.#ctor
-  name: TransferStats()
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats__ctor
-  commentId: M:Itinero.Transit.Journeys.TransferStats.#ctor
-  fullName: Itinero.Transit.Journeys.TransferStats.TransferStats()
-  nameWithType: TransferStats.TransferStats()
-- uid: Itinero.Transit.Journeys.TransferStats.#ctor*
-  name: TransferStats
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats__ctor_
-  commentId: Overload:Itinero.Transit.Journeys.TransferStats.#ctor
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.TransferStats.TransferStats
-  nameWithType: TransferStats.TransferStats
-- uid: Itinero.Transit.Journeys.TransferStats.Add(Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats})
-  name: Add(Journey<TransferStats>)
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_Add_Itinero_Transit_Journeys_Journey_Itinero_Transit_Journeys_TransferStats__
-  commentId: M:Itinero.Transit.Journeys.TransferStats.Add(Itinero.Transit.Journeys.Journey{Itinero.Transit.Journeys.TransferStats})
-  name.vb: Add(Journey(Of TransferStats))
-  fullName: Itinero.Transit.Journeys.TransferStats.Add(Itinero.Transit.Journeys.Journey<Itinero.Transit.Journeys.TransferStats>)
-  fullName.vb: Itinero.Transit.Journeys.TransferStats.Add(Itinero.Transit.Journeys.Journey(Of Itinero.Transit.Journeys.TransferStats))
-  nameWithType: TransferStats.Add(Journey<TransferStats>)
-  nameWithType.vb: TransferStats.Add(Journey(Of TransferStats))
-- uid: Itinero.Transit.Journeys.TransferStats.Add*
-  name: Add
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_Add_
-  commentId: Overload:Itinero.Transit.Journeys.TransferStats.Add
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.TransferStats.Add
-  nameWithType: TransferStats.Add
-- uid: Itinero.Transit.Journeys.TransferStats.EmptyStat
-  name: EmptyStat()
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_EmptyStat
-  commentId: M:Itinero.Transit.Journeys.TransferStats.EmptyStat
-  fullName: Itinero.Transit.Journeys.TransferStats.EmptyStat()
-  nameWithType: TransferStats.EmptyStat()
-- uid: Itinero.Transit.Journeys.TransferStats.EmptyStat*
-  name: EmptyStat
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_EmptyStat_
-  commentId: Overload:Itinero.Transit.Journeys.TransferStats.EmptyStat
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.TransferStats.EmptyStat
-  nameWithType: TransferStats.EmptyStat
-- uid: Itinero.Transit.Journeys.TransferStats.Equals(System.Object)
-  name: Equals(Object)
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_Equals_System_Object_
-  commentId: M:Itinero.Transit.Journeys.TransferStats.Equals(System.Object)
-  fullName: Itinero.Transit.Journeys.TransferStats.Equals(System.Object)
-  nameWithType: TransferStats.Equals(Object)
-- uid: Itinero.Transit.Journeys.TransferStats.Equals*
-  name: Equals
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_Equals_
-  commentId: Overload:Itinero.Transit.Journeys.TransferStats.Equals
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.TransferStats.Equals
-  nameWithType: TransferStats.Equals
-- uid: Itinero.Transit.Journeys.TransferStats.Factory
-  name: Factory
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_Factory
-  commentId: F:Itinero.Transit.Journeys.TransferStats.Factory
-  fullName: Itinero.Transit.Journeys.TransferStats.Factory
-  nameWithType: TransferStats.Factory
-- uid: Itinero.Transit.Journeys.TransferStats.GetHashCode
-  name: GetHashCode()
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_GetHashCode
-  commentId: M:Itinero.Transit.Journeys.TransferStats.GetHashCode
-  fullName: Itinero.Transit.Journeys.TransferStats.GetHashCode()
-  nameWithType: TransferStats.GetHashCode()
-- uid: Itinero.Transit.Journeys.TransferStats.GetHashCode*
-  name: GetHashCode
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_GetHashCode_
-  commentId: Overload:Itinero.Transit.Journeys.TransferStats.GetHashCode
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.TransferStats.GetHashCode
-  nameWithType: TransferStats.GetHashCode
-- uid: Itinero.Transit.Journeys.TransferStats.MinimizeTransfers
-  name: MinimizeTransfers
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_MinimizeTransfers
-  commentId: F:Itinero.Transit.Journeys.TransferStats.MinimizeTransfers
-  fullName: Itinero.Transit.Journeys.TransferStats.MinimizeTransfers
-  nameWithType: TransferStats.MinimizeTransfers
-- uid: Itinero.Transit.Journeys.TransferStats.MinimizeTransfersFirst
-  name: MinimizeTransfersFirst
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_MinimizeTransfersFirst
-  commentId: F:Itinero.Transit.Journeys.TransferStats.MinimizeTransfersFirst
-  fullName: Itinero.Transit.Journeys.TransferStats.MinimizeTransfersFirst
-  nameWithType: TransferStats.MinimizeTransfersFirst
-- uid: Itinero.Transit.Journeys.TransferStats.MinimizeTravelTimeFirst
-  name: MinimizeTravelTimeFirst
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_MinimizeTravelTimeFirst
-  commentId: F:Itinero.Transit.Journeys.TransferStats.MinimizeTravelTimeFirst
-  fullName: Itinero.Transit.Journeys.TransferStats.MinimizeTravelTimeFirst
-  nameWithType: TransferStats.MinimizeTravelTimeFirst
-- uid: Itinero.Transit.Journeys.TransferStats.MinimizeTravelTimes
-  name: MinimizeTravelTimes
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_MinimizeTravelTimes
-  commentId: F:Itinero.Transit.Journeys.TransferStats.MinimizeTravelTimes
-  fullName: Itinero.Transit.Journeys.TransferStats.MinimizeTravelTimes
-  nameWithType: TransferStats.MinimizeTravelTimes
-- uid: Itinero.Transit.Journeys.TransferStats.NumberOfTransfers
-  name: NumberOfTransfers
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_NumberOfTransfers
-  commentId: F:Itinero.Transit.Journeys.TransferStats.NumberOfTransfers
-  fullName: Itinero.Transit.Journeys.TransferStats.NumberOfTransfers
-  nameWithType: TransferStats.NumberOfTransfers
-- uid: Itinero.Transit.Journeys.TransferStats.ParetoCompare
-  name: ParetoCompare
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_ParetoCompare
-  commentId: F:Itinero.Transit.Journeys.TransferStats.ParetoCompare
-  fullName: Itinero.Transit.Journeys.TransferStats.ParetoCompare
-  nameWithType: TransferStats.ParetoCompare
-- uid: Itinero.Transit.Journeys.TransferStats.ProfileCompare
-  name: ProfileCompare
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_ProfileCompare
-  commentId: F:Itinero.Transit.Journeys.TransferStats.ProfileCompare
-  fullName: Itinero.Transit.Journeys.TransferStats.ProfileCompare
-  nameWithType: TransferStats.ProfileCompare
-- uid: Itinero.Transit.Journeys.TransferStats.ProfileTransferCompare
-  name: ProfileTransferCompare
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_ProfileTransferCompare
-  commentId: F:Itinero.Transit.Journeys.TransferStats.ProfileTransferCompare
-  fullName: Itinero.Transit.Journeys.TransferStats.ProfileTransferCompare
-  nameWithType: TransferStats.ProfileTransferCompare
-- uid: Itinero.Transit.Journeys.TransferStats.ToString
-  name: ToString()
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_ToString
-  commentId: M:Itinero.Transit.Journeys.TransferStats.ToString
-  fullName: Itinero.Transit.Journeys.TransferStats.ToString()
-  nameWithType: TransferStats.ToString()
-- uid: Itinero.Transit.Journeys.TransferStats.ToString*
-  name: ToString
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_ToString_
-  commentId: Overload:Itinero.Transit.Journeys.TransferStats.ToString
-  isSpec: "True"
-  fullName: Itinero.Transit.Journeys.TransferStats.ToString
-  nameWithType: TransferStats.ToString
-- uid: Itinero.Transit.Journeys.TransferStats.TravelTime
-  name: TravelTime
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_TravelTime
-  commentId: F:Itinero.Transit.Journeys.TransferStats.TravelTime
-  fullName: Itinero.Transit.Journeys.TransferStats.TravelTime
-  nameWithType: TransferStats.TravelTime
-- uid: Itinero.Transit.Journeys.TransferStats.WalkingDistance
-  name: WalkingDistance
-  href: api/Itinero.Transit.Journeys.TransferStats.html#Itinero_Transit_Journeys_TransferStats_WalkingDistance
-  commentId: F:Itinero.Transit.Journeys.TransferStats.WalkingDistance
-  fullName: Itinero.Transit.Journeys.TransferStats.WalkingDistance
-  nameWithType: TransferStats.WalkingDistance
-- uid: Itinero.Transit.Logging
-  name: Itinero.Transit.Logging
-  href: api/Itinero.Transit.Logging.html
-  commentId: N:Itinero.Transit.Logging
-  fullName: Itinero.Transit.Logging
-  nameWithType: Itinero.Transit.Logging
-- uid: Itinero.Transit.Logging.Log
-  name: Log
-  href: api/Itinero.Transit.Logging.Log.html
-  commentId: T:Itinero.Transit.Logging.Log
-  fullName: Itinero.Transit.Logging.Log
-  nameWithType: Log
-- uid: Itinero.Transit.Logging.Log.Error(System.String)
-  name: Error(String)
-  href: api/Itinero.Transit.Logging.Log.html#Itinero_Transit_Logging_Log_Error_System_String_
-  commentId: M:Itinero.Transit.Logging.Log.Error(System.String)
-  fullName: Itinero.Transit.Logging.Log.Error(System.String)
-  nameWithType: Log.Error(String)
-- uid: Itinero.Transit.Logging.Log.Error*
-  name: Error
-  href: api/Itinero.Transit.Logging.Log.html#Itinero_Transit_Logging_Log_Error_
-  commentId: Overload:Itinero.Transit.Logging.Log.Error
-  isSpec: "True"
-  fullName: Itinero.Transit.Logging.Log.Error
-  nameWithType: Log.Error
-- uid: Itinero.Transit.Logging.Log.Information(System.String)
-  name: Information(String)
-  href: api/Itinero.Transit.Logging.Log.html#Itinero_Transit_Logging_Log_Information_System_String_
-  commentId: M:Itinero.Transit.Logging.Log.Information(System.String)
-  fullName: Itinero.Transit.Logging.Log.Information(System.String)
-  nameWithType: Log.Information(String)
-- uid: Itinero.Transit.Logging.Log.Information*
-  name: Information
-  href: api/Itinero.Transit.Logging.Log.html#Itinero_Transit_Logging_Log_Information_
-  commentId: Overload:Itinero.Transit.Logging.Log.Information
-  isSpec: "True"
-  fullName: Itinero.Transit.Logging.Log.Information
-  nameWithType: Log.Information
-- uid: Itinero.Transit.Logging.Log.Verbose(System.String)
-  name: Verbose(String)
-  href: api/Itinero.Transit.Logging.Log.html#Itinero_Transit_Logging_Log_Verbose_System_String_
-  commentId: M:Itinero.Transit.Logging.Log.Verbose(System.String)
-  fullName: Itinero.Transit.Logging.Log.Verbose(System.String)
-  nameWithType: Log.Verbose(String)
-- uid: Itinero.Transit.Logging.Log.Verbose*
-  name: Verbose
-  href: api/Itinero.Transit.Logging.Log.html#Itinero_Transit_Logging_Log_Verbose_
-  commentId: Overload:Itinero.Transit.Logging.Log.Verbose
-  isSpec: "True"
-  fullName: Itinero.Transit.Logging.Log.Verbose
-  nameWithType: Log.Verbose
-- uid: Itinero.Transit.Logging.Log.Warning(System.Exception,System.String)
-  name: Warning(Exception, String)
-  href: api/Itinero.Transit.Logging.Log.html#Itinero_Transit_Logging_Log_Warning_System_Exception_System_String_
-  commentId: M:Itinero.Transit.Logging.Log.Warning(System.Exception,System.String)
-  fullName: Itinero.Transit.Logging.Log.Warning(System.Exception, System.String)
-  nameWithType: Log.Warning(Exception, String)
-- uid: Itinero.Transit.Logging.Log.Warning(System.String)
-  name: Warning(String)
-  href: api/Itinero.Transit.Logging.Log.html#Itinero_Transit_Logging_Log_Warning_System_String_
-  commentId: M:Itinero.Transit.Logging.Log.Warning(System.String)
-  fullName: Itinero.Transit.Logging.Log.Warning(System.String)
-  nameWithType: Log.Warning(String)
-- uid: Itinero.Transit.Logging.Log.Warning*
-  name: Warning
-  href: api/Itinero.Transit.Logging.Log.html#Itinero_Transit_Logging_Log_Warning_
-  commentId: Overload:Itinero.Transit.Logging.Log.Warning
-  isSpec: "True"
-  fullName: Itinero.Transit.Logging.Log.Warning
-  nameWithType: Log.Warning
-- uid: Itinero.Transit.Logging.Logger
-  name: Logger
-  href: api/Itinero.Transit.Logging.Logger.html
-  commentId: T:Itinero.Transit.Logging.Logger
-  fullName: Itinero.Transit.Logging.Logger
-  nameWithType: Logger
-- uid: Itinero.Transit.Logging.Logger.#ctor(System.String)
-  name: Logger(String)
-  href: api/Itinero.Transit.Logging.Logger.html#Itinero_Transit_Logging_Logger__ctor_System_String_
-  commentId: M:Itinero.Transit.Logging.Logger.#ctor(System.String)
-  fullName: Itinero.Transit.Logging.Logger.Logger(System.String)
-  nameWithType: Logger.Logger(String)
-- uid: Itinero.Transit.Logging.Logger.#ctor*
-  name: Logger
-  href: api/Itinero.Transit.Logging.Logger.html#Itinero_Transit_Logging_Logger__ctor_
-  commentId: Overload:Itinero.Transit.Logging.Logger.#ctor
-  isSpec: "True"
-  fullName: Itinero.Transit.Logging.Logger.Logger
-  nameWithType: Logger.Logger
-- uid: Itinero.Transit.Logging.Logger.Log(Itinero.Transit.Logging.TraceEventType,System.String,System.Object[])
-  name: Log(TraceEventType, String, Object[])
-  href: api/Itinero.Transit.Logging.Logger.html#Itinero_Transit_Logging_Logger_Log_Itinero_Transit_Logging_TraceEventType_System_String_System_Object___
-  commentId: M:Itinero.Transit.Logging.Logger.Log(Itinero.Transit.Logging.TraceEventType,System.String,System.Object[])
-  name.vb: Log(TraceEventType, String, Object())
-  fullName: Itinero.Transit.Logging.Logger.Log(Itinero.Transit.Logging.TraceEventType, System.String, System.Object[])
-  fullName.vb: Itinero.Transit.Logging.Logger.Log(Itinero.Transit.Logging.TraceEventType, System.String, System.Object())
-  nameWithType: Logger.Log(TraceEventType, String, Object[])
-  nameWithType.vb: Logger.Log(TraceEventType, String, Object())
-- uid: Itinero.Transit.Logging.Logger.Log(System.String,Itinero.Transit.Logging.TraceEventType,System.String,System.Object[])
-  name: Log(String, TraceEventType, String, Object[])
-  href: api/Itinero.Transit.Logging.Logger.html#Itinero_Transit_Logging_Logger_Log_System_String_Itinero_Transit_Logging_TraceEventType_System_String_System_Object___
-  commentId: M:Itinero.Transit.Logging.Logger.Log(System.String,Itinero.Transit.Logging.TraceEventType,System.String,System.Object[])
-  name.vb: Log(String, TraceEventType, String, Object())
-  fullName: Itinero.Transit.Logging.Logger.Log(System.String, Itinero.Transit.Logging.TraceEventType, System.String, System.Object[])
-  fullName.vb: Itinero.Transit.Logging.Logger.Log(System.String, Itinero.Transit.Logging.TraceEventType, System.String, System.Object())
-  nameWithType: Logger.Log(String, TraceEventType, String, Object[])
-  nameWithType.vb: Logger.Log(String, TraceEventType, String, Object())
-- uid: Itinero.Transit.Logging.Logger.Log*
-  name: Log
-  href: api/Itinero.Transit.Logging.Logger.html#Itinero_Transit_Logging_Logger_Log_
-  commentId: Overload:Itinero.Transit.Logging.Logger.Log
-  isSpec: "True"
-  fullName: Itinero.Transit.Logging.Logger.Log
-  nameWithType: Logger.Log
-- uid: Itinero.Transit.Logging.Logger.LogAction
-  name: LogAction
-  href: api/Itinero.Transit.Logging.Logger.html#Itinero_Transit_Logging_Logger_LogAction
-  commentId: P:Itinero.Transit.Logging.Logger.LogAction
-  fullName: Itinero.Transit.Logging.Logger.LogAction
-  nameWithType: Logger.LogAction
-- uid: Itinero.Transit.Logging.Logger.LogAction*
-  name: LogAction
-  href: api/Itinero.Transit.Logging.Logger.html#Itinero_Transit_Logging_Logger_LogAction_
-  commentId: Overload:Itinero.Transit.Logging.Logger.LogAction
-  isSpec: "True"
-  fullName: Itinero.Transit.Logging.Logger.LogAction
-  nameWithType: Logger.LogAction
-- uid: Itinero.Transit.Logging.Logger.LogActionFunction
-  name: Logger.LogActionFunction
-  href: api/Itinero.Transit.Logging.Logger.LogActionFunction.html
-  commentId: T:Itinero.Transit.Logging.Logger.LogActionFunction
-  fullName: Itinero.Transit.Logging.Logger.LogActionFunction
-  nameWithType: Logger.LogActionFunction
-- uid: Itinero.Transit.Logging.TraceEventType
-  name: TraceEventType
-  href: api/Itinero.Transit.Logging.TraceEventType.html
-  commentId: T:Itinero.Transit.Logging.TraceEventType
-  fullName: Itinero.Transit.Logging.TraceEventType
-  nameWithType: TraceEventType
-- uid: Itinero.Transit.Logging.TraceEventType.Critical
-  name: Critical
-  href: api/Itinero.Transit.Logging.TraceEventType.html#Itinero_Transit_Logging_TraceEventType_Critical
-  commentId: F:Itinero.Transit.Logging.TraceEventType.Critical
-  fullName: Itinero.Transit.Logging.TraceEventType.Critical
-  nameWithType: TraceEventType.Critical
-- uid: Itinero.Transit.Logging.TraceEventType.Error
-  name: Error
-  href: api/Itinero.Transit.Logging.TraceEventType.html#Itinero_Transit_Logging_TraceEventType_Error
-  commentId: F:Itinero.Transit.Logging.TraceEventType.Error
-  fullName: Itinero.Transit.Logging.TraceEventType.Error
-  nameWithType: TraceEventType.Error
-- uid: Itinero.Transit.Logging.TraceEventType.Information
-  name: Information
-  href: api/Itinero.Transit.Logging.TraceEventType.html#Itinero_Transit_Logging_TraceEventType_Information
-  commentId: F:Itinero.Transit.Logging.TraceEventType.Information
-  fullName: Itinero.Transit.Logging.TraceEventType.Information
-  nameWithType: TraceEventType.Information
-- uid: Itinero.Transit.Logging.TraceEventType.Verbose
-  name: Verbose
-  href: api/Itinero.Transit.Logging.TraceEventType.html#Itinero_Transit_Logging_TraceEventType_Verbose
-  commentId: F:Itinero.Transit.Logging.TraceEventType.Verbose
-  fullName: Itinero.Transit.Logging.TraceEventType.Verbose
-  nameWithType: TraceEventType.Verbose
-- uid: Itinero.Transit.Logging.TraceEventType.Warning
-  name: Warning
-  href: api/Itinero.Transit.Logging.TraceEventType.html#Itinero_Transit_Logging_TraceEventType_Warning
-  commentId: F:Itinero.Transit.Logging.TraceEventType.Warning
-  fullName: Itinero.Transit.Logging.TraceEventType.Warning
-  nameWithType: TraceEventType.Warning
-- uid: Itinero.Transit.OsmTransferGenerator
-  name: OsmTransferGenerator
-  href: api/Itinero.Transit.OsmTransferGenerator.html
-  commentId: T:Itinero.Transit.OsmTransferGenerator
-  fullName: Itinero.Transit.OsmTransferGenerator
-  nameWithType: OsmTransferGenerator
-- uid: Itinero.Transit.OsmTransferGenerator.#ctor(System.String,Itinero.Transit.Data.StopsDb.StopsDbReader,Itinero.Profiles.Profile)
-  name: OsmTransferGenerator(String, StopsDb.StopsDbReader, Profiles.Profile)
-  href: api/Itinero.Transit.OsmTransferGenerator.html#Itinero_Transit_OsmTransferGenerator__ctor_System_String_Itinero_Transit_Data_StopsDb_StopsDbReader_Itinero_Profiles_Profile_
-  commentId: M:Itinero.Transit.OsmTransferGenerator.#ctor(System.String,Itinero.Transit.Data.StopsDb.StopsDbReader,Itinero.Profiles.Profile)
-  fullName: Itinero.Transit.OsmTransferGenerator.OsmTransferGenerator(System.String, Itinero.Transit.Data.StopsDb.StopsDbReader, Itinero.Profiles.Profile)
-  nameWithType: OsmTransferGenerator.OsmTransferGenerator(String, StopsDb.StopsDbReader, Profiles.Profile)
-- uid: Itinero.Transit.OsmTransferGenerator.#ctor*
-  name: OsmTransferGenerator
-  href: api/Itinero.Transit.OsmTransferGenerator.html#Itinero_Transit_OsmTransferGenerator__ctor_
-  commentId: Overload:Itinero.Transit.OsmTransferGenerator.#ctor
-  isSpec: "True"
-  fullName: Itinero.Transit.OsmTransferGenerator.OsmTransferGenerator
-  nameWithType: OsmTransferGenerator.OsmTransferGenerator
-- uid: Itinero.Transit.OsmTransferGenerator.CreateArrivingTransfer*
-  name: CreateArrivingTransfer
-  href: api/Itinero.Transit.OsmTransferGenerator.html#Itinero_Transit_OsmTransferGenerator_CreateArrivingTransfer_
-  commentId: Overload:Itinero.Transit.OsmTransferGenerator.CreateArrivingTransfer
-  isSpec: "True"
-  fullName: Itinero.Transit.OsmTransferGenerator.CreateArrivingTransfer
-  nameWithType: OsmTransferGenerator.CreateArrivingTransfer
-- uid: Itinero.Transit.OsmTransferGenerator.CreateArrivingTransfer``1(Itinero.Transit.Journeys.Journey{``0},System.UInt64,System.ValueTuple{System.UInt32,System.UInt32})
-  name: CreateArrivingTransfer<T>(Journey<T>, UInt64, (UInt32, UInt32))
-  href: api/Itinero.Transit.OsmTransferGenerator.html#Itinero_Transit_OsmTransferGenerator_CreateArrivingTransfer__1_Itinero_Transit_Journeys_Journey___0__System_UInt64_System_ValueTuple_System_UInt32_System_UInt32__
-  commentId: M:Itinero.Transit.OsmTransferGenerator.CreateArrivingTransfer``1(Itinero.Transit.Journeys.Journey{``0},System.UInt64,System.ValueTuple{System.UInt32,System.UInt32})
-  name.vb: CreateArrivingTransfer(Of T)(Journey(Of T), UInt64, (UInt32, UInt32))
-  fullName: Itinero.Transit.OsmTransferGenerator.CreateArrivingTransfer<T>(Itinero.Transit.Journeys.Journey<T>, System.UInt64, System.ValueTuple<System.UInt32, System.UInt32>)
-  fullName.vb: Itinero.Transit.OsmTransferGenerator.CreateArrivingTransfer(Of T)(Itinero.Transit.Journeys.Journey(Of T), System.UInt64, System.ValueTuple(Of System.UInt32, System.UInt32))
-  nameWithType: OsmTransferGenerator.CreateArrivingTransfer<T>(Journey<T>, UInt64, (UInt32, UInt32))
-  nameWithType.vb: OsmTransferGenerator.CreateArrivingTransfer(Of T)(Journey(Of T), UInt64, (UInt32, UInt32))
-- uid: Itinero.Transit.OsmTransferGenerator.CreateDepartureTransfer*
-  name: CreateDepartureTransfer
-  href: api/Itinero.Transit.OsmTransferGenerator.html#Itinero_Transit_OsmTransferGenerator_CreateDepartureTransfer_
-  commentId: Overload:Itinero.Transit.OsmTransferGenerator.CreateDepartureTransfer
-  isSpec: "True"
-  fullName: Itinero.Transit.OsmTransferGenerator.CreateDepartureTransfer
-  nameWithType: OsmTransferGenerator.CreateDepartureTransfer
-- uid: Itinero.Transit.OsmTransferGenerator.CreateDepartureTransfer``1(Itinero.Transit.Journeys.Journey{``0},System.UInt64,System.ValueTuple{System.UInt32,System.UInt32})
-  name: CreateDepartureTransfer<T>(Journey<T>, UInt64, (UInt32, UInt32))
-  href: api/Itinero.Transit.OsmTransferGenerator.html#Itinero_Transit_OsmTransferGenerator_CreateDepartureTransfer__1_Itinero_Transit_Journeys_Journey___0__System_UInt64_System_ValueTuple_System_UInt32_System_UInt32__
-  commentId: M:Itinero.Transit.OsmTransferGenerator.CreateDepartureTransfer``1(Itinero.Transit.Journeys.Journey{``0},System.UInt64,System.ValueTuple{System.UInt32,System.UInt32})
-  name.vb: CreateDepartureTransfer(Of T)(Journey(Of T), UInt64, (UInt32, UInt32))
-  fullName: Itinero.Transit.OsmTransferGenerator.CreateDepartureTransfer<T>(Itinero.Transit.Journeys.Journey<T>, System.UInt64, System.ValueTuple<System.UInt32, System.UInt32>)
-  fullName.vb: Itinero.Transit.OsmTransferGenerator.CreateDepartureTransfer(Of T)(Itinero.Transit.Journeys.Journey(Of T), System.UInt64, System.ValueTuple(Of System.UInt32, System.UInt32))
-  nameWithType: OsmTransferGenerator.CreateDepartureTransfer<T>(Journey<T>, UInt64, (UInt32, UInt32))
-  nameWithType.vb: OsmTransferGenerator.CreateDepartureTransfer(Of T)(Journey(Of T), UInt64, (UInt32, UInt32))
-- uid: Itinero.Transit.OsmTransferGenerator.Range
-  name: Range()
-  href: api/Itinero.Transit.OsmTransferGenerator.html#Itinero_Transit_OsmTransferGenerator_Range
-  commentId: M:Itinero.Transit.OsmTransferGenerator.Range
-  fullName: Itinero.Transit.OsmTransferGenerator.Range()
-  nameWithType: OsmTransferGenerator.Range()
-- uid: Itinero.Transit.OsmTransferGenerator.Range*
-  name: Range
-  href: api/Itinero.Transit.OsmTransferGenerator.html#Itinero_Transit_OsmTransferGenerator_Range_
-  commentId: Overload:Itinero.Transit.OsmTransferGenerator.Range
-  isSpec: "True"
-  fullName: Itinero.Transit.OsmTransferGenerator.Range
-  nameWithType: OsmTransferGenerator.Range
+  name: Equa

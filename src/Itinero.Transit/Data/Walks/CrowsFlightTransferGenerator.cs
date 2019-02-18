@@ -27,12 +27,12 @@ namespace Itinero.Transit.Data.Walks
         ///  
         ///  </summary>
         /// <param name="reader"></param>
-        /// <param name="maxDistance"></param>
+        /// <param name="maxDistance">The maximum walkable distance in meter</param>
         ///  <param name="speed">In meter per second. According to Wikipedia, about 1.4m/s is preferred average</param>
         public CrowsFlightTransferGenerator(
-            StopsDb.StopsDbReader reader, int maxDistance = 500, float speed = 1.4f)
+            TransitDb transitDb, int maxDistance = 500, float speed = 1.4f)
         {
-            _reader = reader;
+            _reader = transitDb.Latest.StopsDb.GetReader();
             _maxDistance = maxDistance;
             _speed = speed;
         }

@@ -19,7 +19,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var latest = input.transitDb.Latest;
             var p = new Profile<TransferStats>(latest,
                 new InternalTransferGenerator(), 
-                new CrowsFlightTransferGenerator(latest.StopsDb.GetReader()), 
+                new CrowsFlightTransferGenerator(input.transitDb), 
                 new TransferStats(), TransferStats.ProfileTransferCompare);
 
             // get departure and arrival stop ids.
@@ -30,7 +30,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var arrival = reader.Id;
 
             // instantiate and run EAS.
-            var las = new LatestConnectionScan<TransferStats>(
+            var las = new LatestConnectionScan<TransferStats>(input.transitDb,
                 departure, arrival,
                 input.departureTime, input.departureTime.AddHours(24), p);
             var journey = las.CalculateJourney();

@@ -118,7 +118,7 @@
     <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Data_StopsDbExtensions_CalculateDistanceBetween_Itinero_Transit_Data_StopsDb_StopsDbReader_System_ValueTuple_System_UInt32_System_UInt32__System_ValueTuple_System_UInt32_System_UInt32__.md&amp;value=---%0Auid%3A%20Itinero.Transit.Data.StopsDbExtensions.CalculateDistanceBetween(Itinero.Transit.Data.StopsDb.StopsDbReader%2CSystem.ValueTuple%7BSystem.UInt32%2CSystem.UInt32%7D%2CSystem.ValueTuple%7BSystem.UInt32%2CSystem.UInt32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Database/StopsDbExtensions.cs/#L36">View Source</a>
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Database/StopsDbExtensions.cs/#L50">View Source</a>
   </span>
   <a id="Itinero_Transit_Data_StopsDbExtensions_CalculateDistanceBetween_" data-uid="Itinero.Transit.Data.StopsDbExtensions.CalculateDistanceBetween*"></a>
   <h4 id="Itinero_Transit_Data_StopsDbExtensions_CalculateDistanceBetween_Itinero_Transit_Data_StopsDb_StopsDbReader_System_ValueTuple_System_UInt32_System_UInt32__System_ValueTuple_System_UInt32_System_UInt32__" data-uid="Itinero.Transit.Data.StopsDbExtensions.CalculateDistanceBetween(Itinero.Transit.Data.StopsDb.StopsDbReader,System.ValueTuple{System.UInt32,System.UInt32},System.ValueTuple{System.UInt32,System.UInt32})">CalculateDistanceBetween(StopsDb.StopsDbReader, (UInt32, UInt32), (UInt32, UInt32))</h4>
@@ -172,10 +172,67 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Data_StopsDbExtensions_FindStop_Itinero_Transit_Data_StopsDb_StopsDbReader_System_String_System_String_.md&amp;value=---%0Auid%3A%20Itinero.Transit.Data.StopsDbExtensions.FindStop(Itinero.Transit.Data.StopsDb.StopsDbReader%2CSystem.String%2CSystem.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Database/StopsDbExtensions.cs/#L16">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Data_StopsDbExtensions_FindStop_" data-uid="Itinero.Transit.Data.StopsDbExtensions.FindStop*"></a>
+  <h4 id="Itinero_Transit_Data_StopsDbExtensions_FindStop_Itinero_Transit_Data_StopsDb_StopsDbReader_System_String_System_String_" data-uid="Itinero.Transit.Data.StopsDbExtensions.FindStop(Itinero.Transit.Data.StopsDb.StopsDbReader,System.String,System.String)">FindStop(StopsDb.StopsDbReader, String, String)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static (uint tileId, uint localId)FindStop(this StopsDb.StopsDbReader reader, string locationId, string errorMessage = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.StopsDb.StopsDbReader.html">StopsDb.StopsDbReader</a></td>
+        <td><span class="parametername">reader</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">locationId</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">errorMessage</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.ValueTuple</span>&lt;<span class="xref">System.UInt32</span>, <span class="xref">System.UInt32</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Data_StopsDbExtensions_LocationsInRange_Itinero_Transit_Data_StopsDb_Itinero_Transit_Data_IStop_System_Single_.md&amp;value=---%0Auid%3A%20Itinero.Transit.Data.StopsDbExtensions.LocationsInRange(Itinero.Transit.Data.StopsDb%2CItinero.Transit.Data.IStop%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Database/StopsDbExtensions.cs/#L15">View Source</a>
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Database/StopsDbExtensions.cs/#L29">View Source</a>
   </span>
   <a id="Itinero_Transit_Data_StopsDbExtensions_LocationsInRange_" data-uid="Itinero.Transit.Data.StopsDbExtensions.LocationsInRange*"></a>
   <h4 id="Itinero_Transit_Data_StopsDbExtensions_LocationsInRange_Itinero_Transit_Data_StopsDb_Itinero_Transit_Data_IStop_System_Single_" data-uid="Itinero.Transit.Data.StopsDbExtensions.LocationsInRange(Itinero.Transit.Data.StopsDb,Itinero.Transit.Data.IStop,System.Single)">LocationsInRange(StopsDb, IStop, Single)</h4>
@@ -232,7 +289,7 @@
     <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Data_StopsDbExtensions_LocationsInRange_Itinero_Transit_Data_StopsDb_System_Single_System_Single_System_Single_.md&amp;value=---%0Auid%3A%20Itinero.Transit.Data.StopsDbExtensions.LocationsInRange(Itinero.Transit.Data.StopsDb%2CSystem.Single%2CSystem.Single%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Database/StopsDbExtensions.cs/#L23">View Source</a>
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Database/StopsDbExtensions.cs/#L37">View Source</a>
   </span>
   <a id="Itinero_Transit_Data_StopsDbExtensions_LocationsInRange_" data-uid="Itinero.Transit.Data.StopsDbExtensions.LocationsInRange*"></a>
   <h4 id="Itinero_Transit_Data_StopsDbExtensions_LocationsInRange_Itinero_Transit_Data_StopsDb_System_Single_System_Single_System_Single_" data-uid="Itinero.Transit.Data.StopsDbExtensions.LocationsInRange(Itinero.Transit.Data.StopsDb,System.Single,System.Single,System.Single)">LocationsInRange(StopsDb, Single, Single, Single)</h4>
@@ -300,7 +357,7 @@
                     <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Data_StopsDbExtensions.md&amp;value=---%0Auid%3A%20Itinero.Transit.Data.StopsDbExtensions%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Database/StopsDbExtensions.cs/#L13" class="contribution-link">View Source</a>
+                    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Database/StopsDbExtensions.cs/#L14" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

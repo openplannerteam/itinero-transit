@@ -69,6 +69,7 @@
             <article class="content wrap" id="_content" data-uid="">
 
 <p>Once the <a href="index.html">core concepts</a> are clear, using the library in your project should be quite easy.</p>
+<p><strong>Important</strong>: This section is subject to change! While the big outlines will remaint the same, we will streamline the code below. Expect breaking changes in the coming months</p>
 <p>Performing route planning queries (at the bare minimum) consists of the following parts:</p>
 <ol>
 <li>Setting up a provider</li>
@@ -110,14 +111,36 @@ A linked Connections dataset has two entry points:</p>
 </ul>
 <p>A profile is constructed with:</p>
 <pre><code>    var p = new Profile
-            &lt;TransferStats&gt;
+            &lt;TransferStats&gt;         // The metrics used, here total travel time and number of transfers are minimized
                 (
-                State.TransitDb,
-                new InternalTransferGenerator(internalTransferTime),
-                null,
+                
+                // The time it takes to transfer from one train to another (and the underlying algorithm, in this case: always the same time)
+                new InternalTransferGenerator(180 /*seconds*/), 
+
+                // The intermodal stop algorithm. Note that a transitDb is used to search stop location
+                new CrowsFlightTransferGenerator(transitDb, maxDistance: 500 /*meter*/,  walkingSpeed: 1.4 /*meter/second*/),
+                
+                // The object that can create a metric
                 TransferStats.Factory,
-                TransferStats.ProfileTransferCompare);
+                
+                // The comparison between routes. _This comparison should check if two journeys are covering each other, as seen in core concepts!_
+                TransferStats.ProfileTransferCompare
+                ); 
+                
 </code></pre>
+<h2 id="asking-a-query">Asking a query</h2>
+<p>Now that all data is gathered, a journey can be requested with:</p>
+<pre><code>    var possibleJourneys = transitDB.CalculateJourneys&lt;TransferStats&gt;
+        (p,
+        from, // a string containing the URI for the departure station
+        to, // a string containing the URI for the arrival station
+        DateTime? departure = null,     // The (earliest) departure time
+        DateTime? arrival = null        // The (latest) arrival time
+        );         
+</code></pre>
+<p>This will give a list of journeys.</p>
+<p>There are more options available (such as Isochrone lines, Earliest arriving journey or latest arriving journy).
+For a full overview, refer to <a href="/_site/api/Itinero.Transit.Algorithms.CSA.ProfileExtensions.html">the generated docs</a>.</p>
 </article>
           </div>
           

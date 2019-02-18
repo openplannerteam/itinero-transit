@@ -28,7 +28,8 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
                 null,
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
-            var found = profile.Isochrone(input.stopId, input.departureTime, input.arrivalTime);
+            var tbd = input.transitDb;
+            var found = tbd.Isochrone(profile, input.stopId, input.departureTime, input.arrivalTime);
 
             Assert.True(found.Count() > 100);
             Assert.Contains(checkId, found);
@@ -37,7 +38,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             Assert.True(timeNeeded < TimeSpan.FromMinutes(45));
 
 
-            found = profile.IsochroneLatestArrival(input.stopId, input.departureTime, input.arrivalTime);
+            found = tbd.IsochroneLatestArrival(profile, input.stopId, input.departureTime, input.arrivalTime);
 
             Assert.True(found.Count() > 100);
             Assert.Contains(checkId, found);
