@@ -71,11 +71,6 @@ namespace Itinero.Transit.IO.LC.CSA
         /// Adds all connection data between the given dates into the databases.
         /// Locations are only added as needed
         /// </summary>
-        /// <param name="linkedConnectionDataset"></param>
-        /// <param name="transitDb"></param>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <param name="onError"></param>
         /// <param name="onTimeTableHandled">Callback when a timetable has been handled</param>
         public void AddAllConnectionsTo(TransitDb.TransitDbWriter writer,
             DateTime start, DateTime end, Action<string> onError,

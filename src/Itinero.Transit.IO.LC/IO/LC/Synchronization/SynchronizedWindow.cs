@@ -50,7 +50,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
                             (_forceUpdate ? " (Hard update enabled)" : ""));
 
             var attempts = 0;
-            while (attempts <= 0)
+            while (attempts <= _retries)
             {
                 try
                 {

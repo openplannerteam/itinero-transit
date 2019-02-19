@@ -39,7 +39,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
             }
 
             _clockRate = clockRate;
-            var timer = new Timer(clockRate);
+            var timer = new Timer(clockRate*1000);
             timer.Elapsed += RunAll;
             timer.Start();
         }
@@ -62,6 +62,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
                 var triggerDate = date.FromUnixTime();
                 policy.Run(triggerDate, _db);
             }
+            _firstRun = false;
         }
 
 

@@ -20,6 +20,7 @@ namespace Itinero.Transit.IO.LC
 
         private readonly TransitDb.TransitDbWriter _writer;
 
+        /// <inheritdoc />
         public DatabaseLoader(TransitDb.TransitDbWriter writer, LoggingOptions locationsLogger,
             LoggingOptions connectionsLogger, Action<string> onError)
         {
@@ -51,7 +52,7 @@ namespace Itinero.Transit.IO.LC
 
         public void AddAllConnections(LinkedConnectionDataset p, DateTime startDate, DateTime endDate)
         {
-            for (int i = 0; i < p.ConnectionsProvider.Count; i++)
+            for (var i = 0; i < p.ConnectionsProvider.Count; i++)
             {
                 var cons = p.ConnectionsProvider[i];
                 var loc = p.LocationProvider[i];
