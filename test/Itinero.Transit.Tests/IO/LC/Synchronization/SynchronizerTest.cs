@@ -1,0 +1,85 @@
+using System;
+using System.Threading;
+using Itinero.Transit.Data;
+using Itinero.Transit.IO.LC.IO.LC.Synchronization;
+using Xunit;
+
+namespace Itinero.Transit.Tests.IO.LC.Synchronization
+{
+    public class SynchronizerTest
+    {
+        [Fact]
+        public void TestLoading()
+        {
+            bool triggered = false;
+
+
+            void Update(TransitDb.TransitDbWriter wr, DateTime start, DateTime end)
+            {
+                triggered = true;
+                Assert.Equal(TimeSpan.FromSeconds(3), end - start);
+            }
+
+            var tdb = new TransitDb(Update);
+
+
+            var sync = new Synchronizer(tdb,
+                new SynchronizedWindow(5, TimeSpan.FromSeconds(-1), TimeSpan.FromSeconds(2)));
+
+            Thread.Sleep(100);
+            Assert.True(triggered);
+        }
+
+
+        [Fact]
+        public void TestLoading0()
+        {
+            var triggered5 = 0;
+            var triggered10 = 0;
+
+            void Update(TransitDb.TransitDbWriter wr, DateTime start, DateTime end)
+            {
+                var diff = (int) (end - start).TotalSeconds;
+                if (diff == 5)
+                {
+                    triggered5++;
+                }
+                else
+                {
+                    triggered10++;
+                }
+            }
+
+            var tdb = new TransitDb(Update);
+
+
+            var sync = new Synchronizer(tdb,
+                new SynchronizedWindow(5, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(5)),
+                new SynchronizedWindow(10, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(10)));
+            
+            Thread.Sleep(1000);
+
+
+            Assert.Equal(1, triggered5);
+            Assert.Equal(1, triggered10);
+
+            Thread.Sleep(5000);
+
+            Assert.Equal(2, triggered5);
+
+            Thread.Sleep(5000);
+
+            Assert.Equal(3, triggered5);
+            Assert.Equal(2, triggered10);
+
+            Thread.Sleep(5000);
+
+            Assert.Equal(4, triggered5);
+
+            Thread.Sleep(5000);
+
+            Assert.Equal(5, triggered5);
+            Assert.Equal(3, triggered10);
+        }
+    }
+}
