@@ -240,7 +240,6 @@ namespace Itinero.Transit.Algorithms.CSA
                 var lasTime = lasJourney.ArrivalTime() - lasJourney.Root.DepartureTime();
                 departureTime = lasJourney.Root.DepartureTime() - lasTime;
                 lastArrivalTime = lasJourney.ArrivalTime();
-                filter = las;
             }
 
             var lastArrivalTimeSet = lastArrivalTime != 0;
@@ -274,14 +273,7 @@ namespace Itinero.Transit.Algorithms.CSA
                                   (earliestJourney.ArrivalTime() - earliestJourney.Root.DepartureTime());
             }
 
-            if (filter == null)
-            {
-                filter = eas;
-            }
-            else
-            {
-                filter = new DoubleFilter(eas, filter);
-            }
+            filter = eas;
 
             var pcs = new ProfiledConnectionScan<T>(
                 tdb,
