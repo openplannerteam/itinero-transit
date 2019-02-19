@@ -60,6 +60,9 @@ namespace Itinero.Transit.Tests.Functional
 //                db = ReadTransitDbTest.Default.Run(stream);
 //            }
 //
+            
+            
+            
             TripHeadsignTest.Default.Run(db);
             
             //new MultipleLoadTest().Run(0);

@@ -15,7 +15,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
         public uint Frequency { get; }
         private TimeSpan LoadBefore { get; }
         private TimeSpan LoadAfter { get; }
-        private readonly int _retries;
+        private readonly uint _retries;
         private readonly bool _forceUpdate;
 
         /// <summary>
@@ -29,18 +29,12 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
         public SynchronizedWindow(
             uint frequency,
             TimeSpan loadBefore,
-            TimeSpan loadAfter, int retries = 0, bool forceUpdate = false
+            TimeSpan loadAfter, uint retries = 0, bool forceUpdate = false
         )
         {
             Frequency = frequency;
-            if (LoadBefore < TimeSpan.Zero)
-            {
-                LoadBefore = TimeSpan.Zero - LoadBefore;
-            }
-            else
-            {
-                LoadBefore = loadBefore;
-            }
+
+            LoadBefore = loadBefore;
 
             LoadAfter = loadAfter;
             _retries = retries;
