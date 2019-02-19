@@ -4,7 +4,6 @@ using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
-using Xunit;
 
 // ReSharper disable PossibleMultipleEnumeration
 
@@ -37,7 +36,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
                 departure, arrival, input.departureTime.ToUnixTime(), input.arrivalTime.ToUnixTime()
             );
             // verify result.
-            Assert.NotNull(journeys);
+            NotNull(journeys);
             True(journeys.Any());
 
             Information($"Found {journeys.Count()} profiles");

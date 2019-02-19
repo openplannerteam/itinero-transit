@@ -1,8 +1,6 @@
 using System;
 using Itinero.Transit.Data;
-using Itinero.Transit.IO.LC;
 using Itinero.Transit.IO.LC.CSA;
-using Xunit;
 
 namespace Itinero.Transit.Tests.Functional.Data
 {
@@ -55,7 +53,7 @@ namespace Itinero.Transit.Tests.Functional.Data
                 }
             }
 
-            Assert.True(count > 0);
+            True(count > 0);
             TripHeadsignTest.Default.Run(db);
         }
     }

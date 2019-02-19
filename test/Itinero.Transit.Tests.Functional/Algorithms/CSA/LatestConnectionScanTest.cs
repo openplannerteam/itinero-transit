@@ -3,7 +3,6 @@ using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
-using Xunit;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
@@ -35,7 +34,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var journey = las.CalculateJourney();
 
             // verify result.
-            Assert.NotNull(journey);
+            NotNull(journey);
 
             return true;
         }

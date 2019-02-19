@@ -1,5 +1,4 @@
 using System;
-using Itinero.Transit.IO.LC;
 using Itinero.Transit.Data;
 using Itinero.Transit.IO.LC.CSA;
 

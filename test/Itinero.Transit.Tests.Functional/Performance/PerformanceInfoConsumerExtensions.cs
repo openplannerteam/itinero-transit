@@ -1,5 +1,4 @@
 using System;
-using Xunit.Sdk;
 
 namespace Itinero.Transit.Tests.Functional.Performance
 {
@@ -92,7 +91,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
 
             if (res == null)
             {
-                throw new NullException("Performance test is null");
+                throw new ArgumentNullException("Performance test is null");
             }
             info.Stop(res.Message);
             return res.Result;

@@ -5,7 +5,6 @@ using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
-using Xunit;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
@@ -34,11 +33,11 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             True(reader.MoveTo(input.arrivalStopId));
             var arrival = reader.Id;
 
-            var eas = new EarliestConnectionScan<TransferStats>(tbd, 
+            var eas = new EarliestConnectionScan<TransferStats>(tbd,
                 departure, arrival, input.departureTime, input.arrivalTime, profile);
 
             var easJ = eas.CalculateJourney();
-            var pcs = new ProfiledConnectionScan<TransferStats>(tbd, 
+            var pcs = new ProfiledConnectionScan<TransferStats>(tbd,
                 departure, arrival, input.departureTime, input.arrivalTime, profile);
 
             var pcsJs = pcs.CalculateJourneys();
@@ -48,8 +47,8 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             Information(pcsJ.ToString(latest.StopsDb));
 
             // PCS could find a route which arrives at the same time, but departs later
-            Assert.True(easJ.Root.DepartureTime() <= pcsJ.Root.DepartureTime());
-            Assert.True(easJ.ArrivalTime() <= pcsJ.ArrivalTime());
+            True(easJ.Root.DepartureTime() <= pcsJ.Root.DepartureTime());
+            True(easJ.ArrivalTime() <= pcsJ.ArrivalTime());
 
             return true;
         }

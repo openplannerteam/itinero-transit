@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Tests.Functional.Algorithms.CSA;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
@@ -27,18 +26,6 @@ namespace Itinero.Transit.Tests.Functional
         private const string Kortrijk = "http://irail.be/stations/NMBS/008896008";
 
 
-        private static int _nrOfRuns = 1;
-
-        private static readonly List<DefaultFunctionalTest> AllTests =
-            new List<DefaultFunctionalTest>
-            {
-                EarliestConnectionScanTest.Default,
-                LatestConnectionScanTest.Default,
-                ProfiledConnectionScanTest.Default,
-                EasPcsComparison.Default,
-                EasLasComparison.Default
-            };
-
         private static readonly Dictionary<string, DefaultFunctionalTest> AllTestsNamed =
             new Dictionary<string, DefaultFunctionalTest>
             {
@@ -47,50 +34,23 @@ namespace Itinero.Transit.Tests.Functional
                 {"pcs", ProfiledConnectionScanTest.Default},
                 {"easpcs", EasPcsComparison.Default},
                 {"easlas", EasLasComparison.Default},
-                
+                {"isochrone", IsochroneTest.Default}
             };
 
-        public static void Main(string[] args)
+
+        private static void RunTests(IReadOnlyCollection<DefaultFunctionalTest> tests, int nrOfRuns)
         {
-
-            var tests = AllTests;
-            if (args.Length > 0)
-            {
-                _nrOfRuns = int.Parse(args[0]);
-            }
-
-            if (args.Length > 1)
-            {
-                tests = new List<DefaultFunctionalTest>();
-                for (int i = 1; i < args.Length; i++)
-                {
-                    var testName = args[i];
-                    if (!AllTestsNamed.ContainsKey(testName))
-                    {
-                        var keys = "";
-                        foreach (var k in AllTestsNamed.Keys)
-                        {
-                            keys += k + ", ";
-                        }
-
-                        throw new ArgumentException(
-                            $"No test named {testName} found. Try one (or more) of the following as argument: {keys}");
-                    }
-
-                    tests.Add(AllTestsNamed[testName]);
-                }
-            }
-
             EnableLogging();
 
 
             Log.Information("Starting the Functional Tests...");
-
-            //new MultipleLoadTest().Run(0);
-
             var date = DateTime.Now.Date; // LOCAL TIMES! //
             // test loading a connections db
             var db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
+
+            
+            
+
 
 //            // test read/writing a transit db from/to a stream.
 //            using (var stream = WriteTransitDbTest.Default.Run(db))
@@ -101,19 +61,15 @@ namespace Itinero.Transit.Tests.Functional
 //            }
 //
             TripHeadsignTest.Default.Run(db);
-            new MultipleLoadTest().Run();
+            
+            //new MultipleLoadTest().Run(0);
 
-            /*
             ConnectionsDbDepartureEnumeratorTest.Default.Run(db);
+            
             TestClosestStopsAndRouting(db);
-            new IsochroneTest().Run((db, Brugge, Gent, date.Date.AddHours(12), date.Date.AddHours(14)));
-            AlgorithmTests(db, date, tests);
-            */
-        }
 
-        private static void AlgorithmTests(TransitDb db, DateTime date,
-            IReadOnlyCollection<DefaultFunctionalTest> tests)
-        {
+            // Tests all the algorithms on multiple inputs
+            
             var inputs = new List<(TransitDb, string, string, DateTime, DateTime)>
             {
                 (db, Brugge,
@@ -143,25 +99,24 @@ namespace Itinero.Transit.Tests.Functional
                 results[name] = 0;
                 foreach (var i in inputs)
                 {
-//                    try
-//                    {
-                    if (!t.RunPerformance(i, _nrOfRuns))
+                    try
                     {
-                        Log.Information($"{name} failed");
+                        if (!t.RunPerformance(i, nrOfRuns))
+                        {
+                            Log.Information($"{name} failed");
+                            failed++;
+                        }
+                        else
+                        {
+                            results[name]++;
+                        }
+                    }
+                    catch (Exception e)
+                    {
                         failed++;
+                        Log.Error(e.Message);
+                        Log.Error(e.StackTrace);
                     }
-                    else
-                    {
-                        results[name]++;
-                    }
-
-//                    }
-//                    catch (Exception e)
-//                    {
-//                        failed++;
-//                        Log.Error(e.Message);
-//                        Log.Error(e.StackTrace);
-//                    }
                 }
             }
 
@@ -177,16 +132,73 @@ namespace Itinero.Transit.Tests.Functional
             }
         }
 
+        
+        
+        
+        
         private static void TestClosestStopsAndRouting(TransitDb db)
         {
             StopSearchTest.Default.RunPerformance((db, 4.336209297180176,
-                50.83567623496864, 1000), _nrOfRuns);
+                50.83567623496864, 1000));
             StopSearchTest.Default.RunPerformance((db, 4.436824321746825,
-                50.41119778957908, 1000), _nrOfRuns);
+                50.41119778957908, 1000));
             StopSearchTest.Default.RunPerformance((db, 3.329758644104004,
-                50.99052927907061, 1000), _nrOfRuns);
+                50.99052927907061, 1000));
         }
 
+        
+        
+        
+        
+        public static void Main(string[] args)
+        {
+            List<DefaultFunctionalTest> tests = null;
+            var nrOfRuns = 1;
+
+
+            // Handle input arguments
+            // Determine how many times each test should be run
+            if (args.Length > 0)
+            {
+                nrOfRuns = int.Parse(args[0]);
+            }
+
+            // Determine if tests should be skipped
+            if (args.Length > 1)
+            {
+                tests = new List<DefaultFunctionalTest>();
+                for (int i = 1; i < args.Length; i++)
+                {
+                    var testName = args[i];
+                    if (!AllTestsNamed.ContainsKey(testName))
+                    {
+                        var keys = "";
+                        foreach (var k in AllTestsNamed.Keys)
+                        {
+                            keys += k + ", ";
+                        }
+
+                        throw new ArgumentException(
+                            $"No test named {testName} found. Try one (or more) of the following as argument: {keys}");
+                    }
+
+                    tests.Add(AllTestsNamed[testName]);
+                }
+            }
+
+
+            if (tests == null)
+            {
+                tests = new List<DefaultFunctionalTest>();
+                foreach (var t in AllTestsNamed)
+                {
+                    tests.Add(t.Value);
+                }
+            }
+
+            // And actually run the tests
+            RunTests(tests, nrOfRuns);
+        }
 
         private static void EnableLogging()
         {

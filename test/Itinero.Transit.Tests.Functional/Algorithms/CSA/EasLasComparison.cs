@@ -3,7 +3,6 @@ using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
-using Xunit;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
@@ -47,8 +46,8 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             Information(lasJ.Pruned().ToString(latest.StopsDb));
 
             // Eas is bound by the first departing train, while las is not
-            Assert.True(easJ.Root.DepartureTime() <= lasJ.Root.DepartureTime());
-            Assert.True(easJ.ArrivalTime() >= lasJ.ArrivalTime());
+            True(easJ.Root.DepartureTime() <= lasJ.Root.DepartureTime());
+            True(easJ.ArrivalTime() >= lasJ.ArrivalTime());
 
             return true;
         }
