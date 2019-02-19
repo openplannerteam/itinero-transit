@@ -56,30 +56,15 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
             var sync = new Synchronizer(tdb,
                 new SynchronizedWindow(5, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(5)),
                 new SynchronizedWindow(10, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(10)));
-            
-            Thread.Sleep(1000);
 
 
-            Assert.Equal(1, triggered5);
-            Assert.Equal(1, triggered10);
+            Thread.Sleep(21000);
 
-            Thread.Sleep(5000);
 
-            Assert.Equal(2, triggered5);
-
-            Thread.Sleep(5000);
-
-            Assert.Equal(3, triggered5);
-            Assert.Equal(2, triggered10);
-
-            Thread.Sleep(5000);
-
-            Assert.Equal(4, triggered5);
-
-            Thread.Sleep(5000);
-
-            Assert.Equal(5, triggered5);
-            Assert.Equal(3, triggered10);
+            Assert.True(4 <= triggered5);
+            Assert.True(8 >= triggered5);
+            Assert.True(2 <= triggered10);
+            Assert.True(triggered5 > triggered10);
         }
     }
 }
