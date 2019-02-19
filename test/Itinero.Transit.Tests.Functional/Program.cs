@@ -101,11 +101,14 @@ namespace Itinero.Transit.Tests.Functional
 //            }
 //
             TripHeadsignTest.Default.Run(db);
+            new MultipleLoadTest().Run();
 
+            /*
             ConnectionsDbDepartureEnumeratorTest.Default.Run(db);
             TestClosestStopsAndRouting(db);
             new IsochroneTest().Run((db, Brugge, Gent, date.Date.AddHours(12), date.Date.AddHours(14)));
             AlgorithmTests(db, date, tests);
+            */
         }
 
         private static void AlgorithmTests(TransitDb db, DateTime date,
