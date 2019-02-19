@@ -96,9 +96,8 @@ namespace Itinero.Transit.IO.LC.CSA
             var dbs = new DatabaseLoader(writer, onLocationHandled, null, onError);
             dbs.AddAllLocations(this);
         }
-        
-        
-        
+
+
         private static void OnLocationLoaded((int, int, int, int) status)
         {
             var (currentCount, batchTarget, batchCount, nrOfBatches) = status;
@@ -113,26 +112,11 @@ namespace Itinero.Transit.IO.LC.CSA
             Log.Information(
                 $"Importing connections: Running batch {batchCount}/{nrOfBatches}: Importing timetable {currentCount} (out of an estimated {batchTarget})");
         }
-        
-       private void UpdateTimeFrame(TransitDb.TransitDbWriter w, DateTime start, DateTime end)
+
+        public void UpdateTimeFrame(TransitDb.TransitDbWriter w, DateTime start, DateTime end)
         {
             Log.Information($"Loading time window {start}->{end}");
             AddAllConnectionsTo(w, start, end, Log.Warning, new LoggingOptions(OnConnectionLoaded, 1));
         }
-
-        /// <summary>
-        /// Initialized a new transitDB which will automatically load data from this linked connection dataset whenever needed.
-        /// Some progress information will be written to 'Log.Information'.
-        ///
-        /// If you need more control, use 'new TransitDB(someCustomUpdateFunction)' 
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public TransitDb AsTransitDb()
-        {
-            return new TransitDb(UpdateTimeFrame);
-        }
-        
-        
     }
 }

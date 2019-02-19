@@ -8,18 +8,19 @@ using Itinero.Transit.Logging;
 namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
 {
     /// <summary>
-    /// This class keeps track of one or more 'SynchronizerPolicies' and triggers them when needed
+    /// This class keeps track of the 'SynchronizerPolicies' which are in use and triggers them every now and then to load them
     /// </summary>
     public class Synchronizer
     {
         private readonly List<SynchronizedWindow> _policies;
         private readonly uint _clockRate;
-        private readonly TransitDb _db;
+        private readonly TransitDbUpdater _db;
         private bool _firstRun = true;
 
-        public Synchronizer(TransitDb db, List<SynchronizedWindow> policies)
+        public Synchronizer(TransitDb db,
+            Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb, List<SynchronizedWindow> policies)
         {
-            _db = db;
+            _db = new TransitDbUpdater(db, updateDb);
             // Highest frequency should be run often and thus has priority
             _policies = policies.OrderBy(p => p.Frequency).ToList();
             if (policies.Count == 0)
@@ -39,13 +40,14 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
             }
 
             _clockRate = clockRate;
-            var timer = new Timer(clockRate*1000);
+            var timer = new Timer(clockRate * 1000);
             timer.Elapsed += RunAll;
             timer.Start();
         }
 
-        public Synchronizer(TransitDb db, params SynchronizedWindow[] policies) :
-            this(db, new List<SynchronizedWindow>(policies))
+        public Synchronizer(TransitDb db, Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb,
+            params SynchronizedWindow[] policies) :
+            this(db, updateDb, new List<SynchronizedWindow>(policies))
         {
         }
 
@@ -62,11 +64,12 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
                 var triggerDate = date.FromUnixTime();
                 policy.Run(triggerDate, _db);
             }
+
             _firstRun = false;
         }
 
 
-        public void RunAll(Object sender = null, ElapsedEventArgs eventArgs = null)
+        private void RunAll(Object sender = null, ElapsedEventArgs eventArgs = null)
         {
             var unixNow = DateTime.Now.ToUnixTime();
             var date = unixNow - unixNow % _clockRate;

@@ -16,10 +16,10 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         {
             var tdb = Db.GetDefaultTestDb();
 
-            var profile = new Profile<TransferStats>((IOtherModeGenerator) new InternalTransferGenerator(),
-                (IOtherModeGenerator) new CrowsFlightTransferGenerator(tdb),
+            var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
+                new CrowsFlightTransferGenerator(tdb),
                 TransferStats.Factory,
-                (ProfiledStatsComparator<TransferStats>) TransferStats.ProfileTransferCompare
+                TransferStats.ProfileTransferCompare
             );
 
             var db = tdb.Latest;
@@ -50,7 +50,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         public void EarliestConnectionScan_WithWalk()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb(null);
+            var transitDb = new TransitDb();
             var writer = transitDb.GetWriter();
 
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
@@ -89,7 +89,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         public void EarliestConnectionScan_ShouldFindOneConnectionJourney()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb(null);
+            var transitDb = new TransitDb();
             var writer = transitDb.GetWriter();
 
             var stop1 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
@@ -122,7 +122,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         public void EarliestConnectionScan_ShouldFindOneConnectionJourneyWithArrivalTravelTime()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb(null);
+            var transitDb = new TransitDb();
             var writer = transitDb.GetWriter();
 
             var stop1 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
@@ -161,7 +161,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         public void EarliestConnectionScan_ShouldFindOneConnectionJourneyWithDepartureTravelTime()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb(null);
+            var transitDb = new TransitDb();
             var writer = transitDb.GetWriter();
 
             var stop1 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);

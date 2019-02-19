@@ -5,7 +5,6 @@ using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
 using Xunit;
-using Xunit.Sdk;
 
 // ReSharper disable PossibleMultipleEnumeration
 
@@ -51,7 +50,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         [Fact]
         public static void TestFiltering()
         {
-            var transitDb = new TransitDb(null);
+            var transitDb = new TransitDb();
             var writer = transitDb.GetWriter();
 
             writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);

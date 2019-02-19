@@ -23,6 +23,7 @@
 using System.IO;
 using Itinero.Transit.Data.Tiles;
 using Xunit;
+
 // ReSharper disable RedundantArgumentDefaultValue
 
 namespace Itinero.Transit.Tests.Data.Tiles

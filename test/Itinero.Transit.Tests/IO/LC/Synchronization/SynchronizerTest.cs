@@ -20,10 +20,10 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
                 Assert.Equal(TimeSpan.FromSeconds(3), end - start);
             }
 
-            var tdb = new TransitDb(Update);
+            var tdb = new TransitDb();
 
 
-            var sync = new Synchronizer(tdb,
+            var sync = new Synchronizer(tdb,Update,
                 new SynchronizedWindow(5, TimeSpan.FromSeconds(-1), TimeSpan.FromSeconds(2)));
 
             Thread.Sleep(100);
@@ -50,10 +50,10 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
                 }
             }
 
-            var tdb = new TransitDb(Update);
+            var tdb = new TransitDb();
 
 
-            var sync = new Synchronizer(tdb,
+            var sync = new Synchronizer(tdb,Update,
                 new SynchronizedWindow(5, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(5)),
                 new SynchronizedWindow(10, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(10)));
 

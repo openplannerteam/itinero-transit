@@ -42,7 +42,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
         }
 
 
-        public void Run(DateTime triggeredOn, TransitDb toUpdate)
+        public void Run(DateTime triggeredOn, TransitDbUpdater toUpdate)
         {
             var start = triggeredOn - LoadBefore;
             var end = triggeredOn + LoadAfter;

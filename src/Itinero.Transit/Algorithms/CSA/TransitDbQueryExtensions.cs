@@ -39,8 +39,6 @@ namespace Itinero.Transit.Algorithms.CSA
             DateTime departure, DateTime lastArrival)
             where T : IJourneyStats<T>
         {
-            tdb.UpdateTimeFrame(departure, lastArrival);
-
             var reader = tdb.Latest.StopsDb.GetReader();
             var fromId = reader.FindStop(from, $"Departure location {from} was not found");
             var toId = reader.FindStop(to, $"Departure location {to} was not found");
@@ -73,8 +71,6 @@ namespace Itinero.Transit.Algorithms.CSA
             string from, DateTime departure, DateTime lastArrival)
             where T : IJourneyStats<T>
         {
-            tdb.UpdateTimeFrame(departure, lastArrival);
-
             var fromId = tdb.FindStop(from, $"Departure location {from} was not found");
 
             /*
@@ -109,8 +105,6 @@ namespace Itinero.Transit.Algorithms.CSA
             Profile<T> profile, string from, string to, DateTime departure, DateTime lastArrival)
             where T : IJourneyStats<T>
         {
-            tdb.UpdateTimeFrame(departure, lastArrival);
-
             var reader = tdb.Latest.StopsDb.GetReader();
             var fromId = reader.FindStop(from);
             var toId = reader.FindStop(to);
@@ -142,8 +136,6 @@ namespace Itinero.Transit.Algorithms.CSA
             Profile<T> profile, string to, DateTime departure, DateTime lastArrival)
             where T : IJourneyStats<T>
         {
-            tdb.UpdateTimeFrame(departure, lastArrival);
-
             var reader = tdb.Latest.StopsDb.GetReader();
             if (!reader.MoveTo(to)) throw new ArgumentException($"Departure location {to} was not found");
             var toId = reader.Id;
@@ -223,11 +215,8 @@ namespace Itinero.Transit.Algorithms.CSA
                 throw new ArgumentException("Departure and arrival location are the same");
             }
 
-            IConnectionFilter filter = null;
             if (departureTime == 0)
             {
-                tdb.UpdateTimeFrame((lastArrivalTime - 24 * 60 * 60).FromUnixTime(),
-                    lastArrivalTime.FromUnixTime());
                 var las = new LatestConnectionScan<T>(tdb, depLocation, arrivalLocation,
                     lastArrivalTime - 24 * 60 * 60, lastArrivalTime,
                     profile);
@@ -248,8 +237,6 @@ namespace Itinero.Transit.Algorithms.CSA
                 lastArrivalTime = departureTime + 24 * 60 * 60;
             }
 
-            // Make sure that enough entries are loaded
-            tdb.UpdateTimeFrame(departureTime.FromUnixTime(), lastArrivalTime.FromUnixTime());
             var eas = new EarliestConnectionScan<T>(tdb,
                 depLocation, arrivalLocation,
                 departureTime, lastArrivalTime,
@@ -273,7 +260,7 @@ namespace Itinero.Transit.Algorithms.CSA
                                   (earliestJourney.ArrivalTime() - earliestJourney.Root.DepartureTime());
             }
 
-            filter = eas;
+            IConnectionFilter filter = eas;
 
             var pcs = new ProfiledConnectionScan<T>(
                 tdb,
