@@ -7,14 +7,17 @@ using Newtonsoft.Json.Linq;
 
 namespace Itinero.Transit.IO.LC.CSA
 {
-    /**
-     * A linked object is an object which has an Uniform Resource Identifier
-     */
+    /// <summary>
+    /// A linked object is an object which has an Uniform Resource Identifier.
+    /// The linked object should be initialised with the URI.
+    /// 
+    /// Then, the attributes should be set via the 'FromJson' object. This JSON can be provided directly or via the 'Download'method
+    /// </summary>
     [Serializable]
     public abstract class LinkedObject
     {
         // ReSharper disable once MemberCanBeProtected.Global
-        public Uri Uri;
+        public readonly Uri Uri;
 
         protected LinkedObject(Uri uri)
         {

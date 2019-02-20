@@ -75,25 +75,25 @@ namespace Itinero.Transit.IO.LC.IO.LC
         public static void UseLinkedConnections(this TransitDb tdb,
             string connectionsUri,
             string locationsUri,
-            params SynchronizedWindow[] syncPolicies)
+            params SynchronizationPolicy[] syncPolicies)
         {
-            tdb.UseLinkedConnections(connectionsUri, locationsUri, new List<SynchronizedWindow>(syncPolicies));
+            tdb.UseLinkedConnections(connectionsUri, locationsUri, new List<SynchronizationPolicy>(syncPolicies));
         }
 
         /// <summary>
         /// Adds a 'Linked Connection' dataset to the transitDB. The transitdb will automatically update as is specified by the syncPolicies.
         /// </summary>
-        public static void UseLinkedConnections(this TransitDb tdb,
+        public static Synchronizer UseLinkedConnections(this TransitDb tdb,
             string connectionsUri,
             string locationsUri,
-            List<SynchronizedWindow> syncPolicies)
+            List<SynchronizationPolicy> syncPolicies)
         {
             // Add all the locations to the tdb
             var dataset = tdb.UseLinkedConnections("", locationsUri, DateTime.MaxValue, DateTime.MinValue);
 
-
-            // ReSharper disable once ObjectCreationAsStatement
-            new Synchronizer(tdb, dataset.UpdateTimeFrame, syncPolicies);
+            // Merely initializing the synchronizer is enough to activate it
+            // We return it though, e.g. if the user wants to query the loaded time frames
+            return new Synchronizer(tdb, dataset.UpdateTimeFrame, syncPolicies);
         }
     }
 }

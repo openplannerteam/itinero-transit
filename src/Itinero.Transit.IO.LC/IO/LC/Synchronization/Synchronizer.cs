@@ -12,13 +12,13 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
     /// </summary>
     public class Synchronizer
     {
-        private readonly List<SynchronizedWindow> _policies;
+        private readonly List<SynchronizationPolicy> _policies;
         private readonly uint _clockRate;
         private readonly TransitDbUpdater _db;
         private bool _firstRun = true;
 
         public Synchronizer(TransitDb db,
-            Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb, List<SynchronizedWindow> policies)
+            Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb, IReadOnlyCollection<SynchronizationPolicy> policies)
         {
             _db = new TransitDbUpdater(db, updateDb);
             // Highest frequency should be run often and thus has priority
@@ -46,8 +46,8 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
         }
 
         public Synchronizer(TransitDb db, Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb,
-            params SynchronizedWindow[] policies) :
-            this(db, updateDb, new List<SynchronizedWindow>(policies))
+            params SynchronizationPolicy[] policies) :
+            this(db, updateDb, new List<SynchronizationPolicy>(policies))
         {
         }
 
