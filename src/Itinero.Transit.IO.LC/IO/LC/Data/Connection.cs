@@ -23,9 +23,14 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
         private DateTime _arrivalTime;
 
         /// <summary>
-        /// Gets or sets the delay.
+        /// Gets or sets the arrival delay.
         /// </summary>
-        public ushort Delay { get; private set; }
+        public ushort ArrivalDelay { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the departure delay.
+        /// </summary>
+        public ushort DepartureDelay { get; private set; }
 
         /// <summary>
         /// Human readable name where the vehicle is heading (e.g. "Brugge")
@@ -93,18 +98,28 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
             _arrivalStop = json.GetId("http://semweb.mmlab.be/ns/linkedconnections#arrivalStop");
 
             var depDel = json.GetInt("http://semweb.mmlab.be/ns/linkedconnections#departureDelay", 0);
-            // Departure time already includes delay
-            _departureTime = GetDateFixed(json,  "http://semweb.mmlab.be/ns/linkedconnections#departureTime");
-
-            var arrDel = json.GetInt("http://semweb.mmlab.be/ns/linkedconnections#arrivalDelay", 0);
-            this.Delay = 0;
-            if (arrDel < ushort.MaxValue)
+            this.DepartureDelay = 0;
+            if (depDel < ushort.MaxValue)
             {
-                this.Delay = (ushort)arrDel;
+                this.DepartureDelay = (ushort)depDel;
             }
             else
             {
-                this.Delay = ushort.MaxValue;
+                this.DepartureDelay = ushort.MaxValue;
+            }
+            
+            // Departure time already includes delay
+            _departureTime = GetDateFixed(json,  "http://semweb.mmlab.be/ns/linkedconnections#departureTime");
+            
+            var arrDel = json.GetInt("http://semweb.mmlab.be/ns/linkedconnections#arrivalDelay", 0);
+            this.ArrivalDelay = 0;
+            if (arrDel < ushort.MaxValue)
+            {
+                this.ArrivalDelay = (ushort)arrDel;
+            }
+            else
+            {
+                this.ArrivalDelay = ushort.MaxValue;
             }
             // Arrival time already includes delay
             _arrivalTime = GetDateFixed(json, "http://semweb.mmlab.be/ns/linkedconnections#arrivalTime");
