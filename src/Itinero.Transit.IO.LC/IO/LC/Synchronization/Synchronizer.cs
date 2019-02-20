@@ -91,6 +91,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
                 try
                 {
                     CurrentlyRunning = policy;
+                    Log.Information($"Currently running automated task:{policy}");
                     policy.Run(triggerDate, _db);
                 }
                 catch (Exception e)
