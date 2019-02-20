@@ -179,13 +179,13 @@ namespace Itinero.Transit.Data
             /// <param name="stop2">The second stop.</param>
             /// <param name="tripId">The trip id.</param>
             /// <param name="departureTime">The departure time.</param>
+            /// <param name="delay">The delay.</param>
             /// <param name="travelTime">The travel time in seconds.</param>
             /// <returns></returns>
             public uint AddOrUpdateConnection((uint localTileId, uint localId) stop1,
-                (uint localTileId, uint localId) stop2, string globalId, DateTime departureTime, ushort travelTime,
-                uint tripId)
+                (uint localTileId, uint localId) stop2, string globalId, DateTime departureTime, ushort travelTime, ushort delay, uint tripId)
             {
-                return _connectionsDb.AddOrUpdate(stop1, stop2, globalId, departureTime, travelTime, tripId);
+                return _connectionsDb.AddOrUpdate(stop1, stop2, globalId, departureTime, travelTime, delay, tripId);
             }
 
             /// <summary>

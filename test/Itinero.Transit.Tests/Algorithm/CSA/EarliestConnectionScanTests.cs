@@ -59,13 +59,13 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var stop3 = writer.AddOrUpdateStop("https://example.com/stops/3", 60.1, 60.1);
 
             writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 10, 00, 00), 10 * 60, 0);
+                new DateTime(2018, 12, 04, 10, 00, 00), 10 * 60, 0,0);
             writer.AddOrUpdateConnection(stop2, stop3, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 10, 30, 00), 10 * 60, 1);
+                new DateTime(2018, 12, 04, 10, 30, 00), 10 * 60, 0,1);
 
             // Prevent depletion of the DB
             writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 2);
+                new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 0,2);
 
             writer.Close();
 
@@ -96,11 +96,11 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var stop2 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
 
             writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 16, 20, 00), 10 * 60, 0);
+                new DateTime(2018, 12, 04, 16, 20, 00), 10 * 60, 0,0);
 
             // Prevent depletion of the DB
             writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 0);
+                new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 0,0);
 
             writer.Close();
 
@@ -129,11 +129,11 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var stop2 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
 
             writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 16, 20, 00), 10 * 60, 0);
+                new DateTime(2018, 12, 04, 16, 20, 00), 10 * 60, 0,0);
 
             // Prevent depletion of the DB
             writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 0);
+                new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 0,0);
 
             writer.Close();
 
@@ -168,11 +168,11 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var stop2 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
 
             writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 16, 20, 00), 10 * 60, 0);
+                new DateTime(2018, 12, 04, 16, 20, 00), 10 * 60, 0,0);
 
             // Prevent depletion of the DB
             writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 0);
+                new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 0,0);
 
             writer.Close();
 

@@ -23,6 +23,11 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
         private DateTime _arrivalTime;
 
         /// <summary>
+        /// Gets or sets the delay.
+        /// </summary>
+        public ushort Delay { get; private set; }
+
+        /// <summary>
         /// Human readable name where the vehicle is heading (e.g. "Brugge")
         /// Aka the 'headsign'
         /// </summary>
@@ -92,6 +97,15 @@ namespace Itinero.Transit.IO.LC.CSA.Connections
             _departureTime = GetDateFixed(json,  "http://semweb.mmlab.be/ns/linkedconnections#departureTime");
 
             var arrDel = json.GetInt("http://semweb.mmlab.be/ns/linkedconnections#arrivalDelay", 0);
+            this.Delay = 0;
+            if (arrDel < ushort.MaxValue)
+            {
+                this.Delay = (ushort)arrDel;
+            }
+            else
+            {
+                this.Delay = ushort.MaxValue;
+            }
             // Arrival time already includes delay
             _arrivalTime = GetDateFixed(json, "http://semweb.mmlab.be/ns/linkedconnections#arrivalTime");
 
