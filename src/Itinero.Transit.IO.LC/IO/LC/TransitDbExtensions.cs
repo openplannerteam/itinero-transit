@@ -95,5 +95,10 @@ namespace Itinero.Transit.IO.LC.IO.LC
             // We return it though, e.g. if the user wants to query the loaded time frames
             return (new Synchronizer(tdb, dataset.UpdateTimeFrame, syncPolicies), dataset);
         }
+
+        public static Synchronizer AddSyncPolicy(this TransitDb db, params SynchronizationPolicy[] policy)
+        {
+            return new Synchronizer(db, null, policy);
+        }
     }
 }
