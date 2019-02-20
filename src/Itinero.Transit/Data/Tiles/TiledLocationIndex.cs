@@ -12,7 +12,7 @@ namespace Itinero.Transit.Data.Tiles
     {
         private readonly int _zoom;
         
-        private const byte DefaultTileCapacityInBytes = 1; 
+        private const byte DefaultTileCapacityInBytes = 0; 
         private const int CoordinateSizeInBytes = 3; // 3 bytes = 24 bits = 4096 x 4096, the needed resolution depends on the zoom-level, higher, less resolution.
         const int TileResolutionInBits = CoordinateSizeInBytes * 8 / 2;
 
@@ -71,9 +71,7 @@ namespace Itinero.Transit.Data.Tiles
             // find or create a place to store the location.
             uint nextEmpty;
             const int defaultCapacity = 1 << DefaultTileCapacityInBytes;
-            if (capacity > defaultCapacity &&
-                GetEncodedLocation((uint) (tileDataPointer + capacity - 1), tile).hasData &&
-                (capacity & (capacity - 1)) == 0)
+            if (GetEncodedLocation((uint) (tileDataPointer + capacity - 1), tile).hasData)
             {
                 // tile is maximum capacity.
                 (tileDataPointer, capacity) = IncreaseCapacityForTile(tileIndexPointer, tileDataPointer);
@@ -83,7 +81,7 @@ namespace Itinero.Transit.Data.Tiles
             {
                 // find the last empty slot.
                 nextEmpty = (uint) (tileDataPointer + capacity - 1);
-                if (nextEmpty > _tileDataPointer)
+                if (nextEmpty > tileDataPointer)
                 {
                     for (var p = nextEmpty - 1; p >= tileDataPointer; p--)
                     {
