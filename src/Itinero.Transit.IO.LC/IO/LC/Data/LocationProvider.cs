@@ -81,13 +81,14 @@ namespace Itinero.Transit.IO.LC.CSA.LocationProviders
 
         public override string ToString()
         {
-            var overview = "";
-            foreach (var location in Locations)
-            {
-                overview += "  " + location + "\n";
-            }
-
-            return $"Location dump with {Locations.Count} locations:\n{overview}";
+//            var overview = "";
+//            foreach (var location in Locations)
+//            {
+//                overview += "  " + location + "\n";
+//            }
+//
+//            return $"Location dump with {Locations.Count} locations:\n{overview}";
+            return string.Empty;
         }
 
         public bool ContainsLocation(Uri locationId)
