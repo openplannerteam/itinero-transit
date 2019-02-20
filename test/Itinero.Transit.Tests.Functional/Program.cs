@@ -6,6 +6,7 @@ using Itinero.Transit.Tests.Functional.Algorithms.CSA;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
 using Itinero.Transit.Tests.Functional.Data;
 using Itinero.Transit.Tests.Functional.IO.LC;
+using Itinero.Transit.Tests.Functional.IO.LC.Synchronization;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
@@ -48,20 +49,13 @@ namespace Itinero.Transit.Tests.Functional
             // test loading a connections db
             var db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
 
-            
-            
 
+            new TestReadWrite().Run(db);
 
-            // test read/writing a transit db from/to a stream.
-            using (var stream = WriteTransitDbTest.Default.Run(db))
-           {
-               stream.Seek(0, SeekOrigin.Begin);
-               
-               db = ReadTransitDbTest.Default.Run(stream);
-           }
+            new TestWriteToDisk().Run(db);
 
             
-            
+            /*
             
             TripHeadsignTest.Default.Run(db);
             
@@ -133,6 +127,7 @@ namespace Itinero.Transit.Tests.Functional
             {
                 throw new Exception("Some tests failed");
             }
+            //*/
         }
 
         

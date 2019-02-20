@@ -107,6 +107,8 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
             _firstRun = false;
         }
 
+        
+        
 
         private static uint Gcd(uint a, uint b)
         {
@@ -119,6 +121,11 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
             }
 
             return a == 0 ? b : a;
+        }
+
+        public void Stop()
+        {
+            _timer.Stop();
         }
     }
 }
