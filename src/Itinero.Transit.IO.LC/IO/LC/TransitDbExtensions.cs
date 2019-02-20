@@ -41,7 +41,7 @@ namespace Itinero.Transit.IO.LC.IO.LC
             string locationsUri,
             DateTime loadingStart,
             DateTime loadingEnd,
-            bool onlyLoadLocations = false;
+            bool onlyLoadLocations = false
         )
         {
             var lcDataset = new LinkedConnectionDataset(
