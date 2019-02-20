@@ -54,7 +54,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var writer = transitDb.GetWriter();
 
             writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
-            writer.AddOrUpdateStop("https://example.com/stops/0", 0.1, 0.1);
+            writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
 
             writer.AddOrUpdateConnection((0, 0), (0, 1),
                 "https://example.com/connections/0",
@@ -63,7 +63,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
 
             writer.AddOrUpdateConnection((0, 0), (0, 1),
-                "https://example.com/connections/0",
+                "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 16, 00, 00),
                 40 * 60, 0, 1);
 
