@@ -40,7 +40,8 @@ namespace Itinero.Transit.IO.LC.IO.LC
             string connectionsUri,
             string locationsUri,
             DateTime loadingStart,
-            DateTime loadingEnd
+            DateTime loadingEnd,
+            bool onlyLoadLocations = false;
         )
         {
             var lcDataset = new LinkedConnectionDataset(
@@ -55,7 +56,7 @@ namespace Itinero.Transit.IO.LC.IO.LC
                 lcDataset.AddAllLocationsTo(writer,
                     Log.Warning);
 
-                if (!string.IsNullOrEmpty(connectionsUri))
+                if (!onlyLoadLocations)
                 {
                     lcDataset.AddAllConnectionsTo(writer, loadingStart, loadingEnd, Log.Warning);
                 }
@@ -89,7 +90,8 @@ namespace Itinero.Transit.IO.LC.IO.LC
             List<SynchronizationPolicy> syncPolicies)
         {
             // Add all the locations to the tdb
-            var dataset = tdb.UseLinkedConnections("", locationsUri, DateTime.MaxValue, DateTime.MinValue);
+            var dataset = tdb.UseLinkedConnections(connectionsUri, locationsUri, DateTime.MaxValue, DateTime.MinValue,
+                onlyLoadLocations: true);
 
             // Merely initializing the synchronizer is enough to activate it
             // We return it though, e.g. if the user wants to query the loaded time frames
