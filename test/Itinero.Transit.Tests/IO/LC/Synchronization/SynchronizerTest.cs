@@ -24,9 +24,9 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
 
 
             var sync = new Synchronizer(tdb, Update,
-                new SynchronizedWindow(5, TimeSpan.FromSeconds(-1), TimeSpan.FromSeconds(2)));
+                new SynchronizedWindow(1, TimeSpan.FromSeconds(-1), TimeSpan.FromSeconds(2)));
 
-            Thread.Sleep(6000);
+            Thread.Sleep(1200);
             Assert.True(triggered);
         }
 
@@ -54,12 +54,13 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
 
 
             var sync = new Synchronizer(tdb, Update,
-                new SynchronizedWindow(5, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(5)),
-                new SynchronizedWindow(10, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(10)));
+                new SynchronizedWindow(1, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(5)),
+                new SynchronizedWindow(2, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(10)));
 
 
-            Thread.Sleep(20500);
+            Thread.Sleep(8000);
 
+            throw new Exception($"{triggered5}, {triggered10}");
             Assert.True(4 <= triggered5);
             Assert.True(6 >= triggered5);
             Assert.True(2 <= triggered10);
