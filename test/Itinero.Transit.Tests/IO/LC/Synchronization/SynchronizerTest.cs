@@ -58,10 +58,12 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
                 new SynchronizedWindow(10, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(10)));
 
 
-            Thread.Sleep(23000);
+            Thread.Sleep(20500);
 
-            Assert.Equal(4, triggered5);
-            Assert.Equal(2, triggered10);
+            Assert.True(4 <= triggered5);
+            Assert.True(6 >= triggered5);
+            Assert.True(2 <= triggered10);
+            Assert.True(3 <= triggered10);
             Assert.True(triggered5 > triggered10);
         }
     }
