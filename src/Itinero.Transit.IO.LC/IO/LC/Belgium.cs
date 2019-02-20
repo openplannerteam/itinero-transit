@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Itinero.Transit.Data.Walks;
-using Itinero.Transit.IO.LC.CSA.Utils;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -13,65 +11,62 @@ namespace Itinero.Transit.IO.LC.CSA
 {
     public static class Belgium
     {
-        public static LinkedConnectionDataset Sncb(Downloader loader = null)
+        public static LinkedConnectionDataset Sncb()
         {
-            return new LinkedConnectionDataset(new Uri("https://graph.irail.be/sncb/connections"),
-                new Uri("https://irail.be/stations"),
-                loader
+            return new LinkedConnectionDataset(
+                new Uri("https://graph.irail.be/sncb/connections"),
+                new Uri("https://irail.be/stations")
             );
-            
         }
 
 
-        public static LinkedConnectionDataset DeLijn(Downloader loader = null)
+        public static LinkedConnectionDataset DeLijn()
         {
             return new LinkedConnectionDataset(new List<LinkedConnectionDataset>
             {
-                WestVlaanderen(loader),
-                OostVlaanderen(loader),
-                VlaamsBrabant(loader),
-                Limburg(loader),
-                Antwerpen(loader)
+                WestVlaanderen(),
+                OostVlaanderen(),
+                VlaamsBrabant(),
+                Limburg(),
+                Antwerpen()
             });
         }
 
 
-        private static LinkedConnectionDataset CreateDeLijnProfile(string province,
-            Downloader loader)
+        private static LinkedConnectionDataset CreateDeLijnProfile(string province)
         {
-            return new LinkedConnectionDataset(new Uri($"https://openplanner.ilabt.imec.be/delijn/{province}/connections"),
-                new Uri($"https://openplanner.ilabt.imec.be/delijn/{province}/stops"),
-                loader
+            return new LinkedConnectionDataset(
+                new Uri($"https://openplanner.ilabt.imec.be/delijn/{province}/connections"),
+                new Uri($"https://openplanner.ilabt.imec.be/delijn/{province}/stops")
             );
         }
 
-        public static LinkedConnectionDataset WestVlaanderen(
-            Downloader loader)
+        public static LinkedConnectionDataset WestVlaanderen()
         {
-            return CreateDeLijnProfile("West-Vlaanderen", loader);
+            return CreateDeLijnProfile("West-Vlaanderen");
         }
 
 
-        public static LinkedConnectionDataset OostVlaanderen(Downloader loader)
+        public static LinkedConnectionDataset OostVlaanderen()
         {
-            return CreateDeLijnProfile("Oost-Vlaanderen", loader);
+            return CreateDeLijnProfile("Oost-Vlaanderen");
         }
 
 
-        public static LinkedConnectionDataset Limburg(Downloader loader)
+        public static LinkedConnectionDataset Limburg()
         {
-            return CreateDeLijnProfile("Limburg", loader);
+            return CreateDeLijnProfile("Limburg");
         }
 
 
-        public static LinkedConnectionDataset VlaamsBrabant(Downloader loader)
+        public static LinkedConnectionDataset VlaamsBrabant()
         {
-            return CreateDeLijnProfile("Vlaams-Brabant", loader);
+            return CreateDeLijnProfile("Vlaams-Brabant");
         }
 
-        public static LinkedConnectionDataset Antwerpen(Downloader loader)
+        public static LinkedConnectionDataset Antwerpen()
         {
-            return CreateDeLijnProfile("Antwerpen", loader);
+            return CreateDeLijnProfile("Antwerpen");
         }
     }
 }

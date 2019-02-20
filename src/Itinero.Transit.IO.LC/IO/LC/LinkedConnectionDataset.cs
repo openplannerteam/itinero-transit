@@ -43,13 +43,12 @@ namespace Itinero.Transit.IO.LC.CSA
         ///  Creates a default profile, based on the locationsfragment-URL and conenctions-location fragment 
         /// </summary>
         /// <returns></returns>
-        public LinkedConnectionDataset(Uri connectionsLink,
-            Uri locationsUri,
-            Downloader loader = null
+        public LinkedConnectionDataset(
+            Uri connectionsLink,
+            Uri locationsUri
         )
         {
-            loader = loader ?? new Downloader();
-
+            var loader = new Downloader();
 
             var conProv = new ConnectionProvider
             (connectionsLink,
