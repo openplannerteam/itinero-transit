@@ -54,12 +54,12 @@ namespace Itinero.Transit.Tests.Functional
 
             // test read/writing a transit db from/to a stream.
             using (var stream = WriteTransitDbTest.Default.Run(db))
-//            {
-//                stream.Seek(0, SeekOrigin.Begin);
-//                
-//                db = ReadTransitDbTest.Default.Run(stream);
-//            }
-//
+           {
+               stream.Seek(0, SeekOrigin.Begin);
+               
+               db = ReadTransitDbTest.Default.Run(stream);
+           }
+
             
             
             

@@ -1,3 +1,5 @@
+using System.IO;
+using System.Net;
 using Itinero.Transit.Data.Attributes;
 
 namespace Itinero.Transit.Data
@@ -33,5 +35,7 @@ namespace Itinero.Transit.Data
         {
             return writer.AddOrUpdateTrip(globalId, attributes);
         }
+
+
     }
 }

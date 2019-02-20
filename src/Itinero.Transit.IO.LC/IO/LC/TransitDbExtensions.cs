@@ -83,7 +83,7 @@ namespace Itinero.Transit.IO.LC.IO.LC
         /// <summary>
         /// Adds a 'Linked Connection' dataset to the transitDB. The transitdb will automatically update as is specified by the syncPolicies.
         /// </summary>
-        public static Synchronizer UseLinkedConnections(this TransitDb tdb,
+        public static (Synchronizer, LinkedConnectionDataset) UseLinkedConnections(this TransitDb tdb,
             string connectionsUri,
             string locationsUri,
             List<SynchronizationPolicy> syncPolicies)
@@ -93,7 +93,7 @@ namespace Itinero.Transit.IO.LC.IO.LC
 
             // Merely initializing the synchronizer is enough to activate it
             // We return it though, e.g. if the user wants to query the loaded time frames
-            return new Synchronizer(tdb, dataset.UpdateTimeFrame, syncPolicies);
+            return (new Synchronizer(tdb, dataset.UpdateTimeFrame, syncPolicies), dataset)g g ;
         }
     }
 }
