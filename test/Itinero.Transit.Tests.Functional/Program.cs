@@ -53,13 +53,10 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Starting the Functional Tests...");
             var date = DateTime.Now.Date; // LOCAL TIMES! //
 
-//*
-            // TODO FIX THIS   new MultipleLoadTest().Run(0);
+            new MultipleLoadTest().Run(0);
 
             // test loading a connections db
-            var db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
-
-            
+            var db = LoadTransitDbTest.SncbDeLijn.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
 
 
             // test read/writing a transit db from/to a stream.
