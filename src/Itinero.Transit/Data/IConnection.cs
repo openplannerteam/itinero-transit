@@ -26,6 +26,16 @@ namespace Itinero.Transit.Data
         ushort TravelTime { get; }
         
         /// <summary>
+        /// Gets the arrival delay.
+        /// </summary>
+        ushort ArrivalDelay { get; }
+        
+        /// <summary>
+        /// Gets the departure delay.
+        /// </summary>
+        ushort DepartureDelay { get; }
+        
+        /// <summary>
         /// Gets the trip id.
         /// </summary>
         uint TripId { get; }

@@ -21,6 +21,10 @@ namespace Itinero.Transit.Tests.Data
 
         public ulong DepartureTime { get; }
 
+        public ushort ArrivalDelay { get; }
+
+        public ushort DepartureDelay { get; }
+
         public ushort TravelTime { get; }
 
         public uint TripId { get; }

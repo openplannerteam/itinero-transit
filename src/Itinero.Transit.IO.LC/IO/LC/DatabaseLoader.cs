@@ -159,7 +159,7 @@ namespace Itinero.Transit.IO.LC
             _writer.AddOrUpdateConnection(stop1Id, stop2Id, connectionUri,
                 connection.DepartureTime(),
                 (ushort) (connection.ArrivalTime() - connection.DepartureTime()).TotalSeconds,
-                connection.Delay, tripId);
+                connection.DepartureDelay, connection.ArrivalDelay, tripId);
         }
 
 
