@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 
@@ -17,16 +16,16 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
     /// </summary>
     public class TransitDbUpdater
     {
-        private readonly TransitDb _tdb;
         private readonly Action<TransitDb.TransitDbWriter, DateTime, DateTime> _updateTimeFrame;
         private readonly DateTracker _loadedTimeWindows = new DateTracker();
 
-        public List<(DateTime start, DateTime end)> LoadedTimeWindows => _loadedTimeWindows.TimeWindows();
+        public IReadOnlyList<(DateTime start, DateTime end)> LoadedTimeWindows => _loadedTimeWindows.TimeWindows();
 
-        
+        public TransitDb TransitDb { get; }
+
         public TransitDbUpdater(TransitDb tdb, Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateTimeFrame)
         {
-            _tdb = tdb;
+            TransitDb = tdb;
             _updateTimeFrame = updateTimeFrame;
         }
         
@@ -61,7 +60,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
                 return;
             }
 
-            var writer = _tdb.GetWriter();
+            var writer = TransitDb.GetWriter();
             try
             {
                 foreach (var (wStart, wEnd) in gaps)
