@@ -1,9 +1,7 @@
 using System;
 using Itinero.Transit.Data;
-using Itinero.Transit.IO.LC;
 using Itinero.Transit.IO.LC.CSA;
-using Itinero.Transit.IO.LC.CSA.Utils;
-using Xunit;
+using Itinero.Transit.IO.LC.IO.LC.Synchronization;
 
 namespace Itinero.Transit.Tests.Functional.Data
 {
@@ -18,7 +16,8 @@ namespace Itinero.Transit.Tests.Functional.Data
                 sncb.AddAllConnectionsTo(w, start, end, Serilog.Log.Warning);
             }
 
-            var db = new TransitDb(UpdateTimeFrame);
+            var db = new TransitDb();
+            var dbUpdater = new TransitDbUpdater(db, UpdateTimeFrame);
 
             var writer = db.GetWriter();
             sncb.AddAllLocationsTo(writer, Serilog.Log.Warning, null);
@@ -26,13 +25,13 @@ namespace Itinero.Transit.Tests.Functional.Data
 
             var hours = 24;
 
-            db.UpdateTimeFrame(DateTime.Today, DateTime.Today.AddHours(hours));
+            dbUpdater.UpdateTimeFrame(DateTime.Today, DateTime.Today.AddHours(hours));
             Test(db);
 
-            db.UpdateTimeFrame(DateTime.Today.AddDays(1), DateTime.Today.AddDays(1).AddHours(hours));
+            dbUpdater.UpdateTimeFrame(DateTime.Today.AddDays(1), DateTime.Today.AddDays(1).AddHours(hours));
             Test(db);
 
-            db.UpdateTimeFrame(DateTime.Today.AddHours(-hours), DateTime.Today.AddHours(0));
+            dbUpdater.UpdateTimeFrame(DateTime.Today.AddHours(-hours), DateTime.Today.AddHours(0));
             Test(db);
 
             return 1;
@@ -56,7 +55,8 @@ namespace Itinero.Transit.Tests.Functional.Data
                 }
             }
 
-            Assert.True(count > 0);
+            True(count > 0);
+            TripHeadsignTest.Default.Run(db);
         }
     }
 }

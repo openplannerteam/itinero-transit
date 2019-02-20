@@ -5,6 +5,7 @@ using Itinero.Transit.Data.Walks;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
+
 namespace Itinero.Transit.Data
 {
     /// <summary>
@@ -12,6 +13,19 @@ namespace Itinero.Transit.Data
     /// </summary>
     public static class StopsDbExtensions
     {
+        public static (uint tileId, uint localId) FindStop(this StopsDb.StopsDbReader reader, string locationId,
+            string errorMessage = null)
+        {
+            // var reader = tdb.Latest.StopsDb.GetReader();
+            if (!reader.MoveTo(locationId))
+            {
+                errorMessage = errorMessage ?? $"Departure location {locationId} was not found";
+                throw new KeyNotFoundException(errorMessage);
+            }
+
+            return reader.Id;
+        }
+
         public static IEnumerable<IStop> LocationsInRange(
             this StopsDb stopsDb, IStop stop, float maxDistance)
         {

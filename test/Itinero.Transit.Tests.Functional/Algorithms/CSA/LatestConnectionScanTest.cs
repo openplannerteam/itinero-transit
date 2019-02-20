@@ -3,7 +3,6 @@ using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
-using Xunit;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
@@ -17,9 +16,8 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
                 departureTime, DateTime arrivalTime) input)
         {
             var latest = input.transitDb.Latest;
-            var p = new Profile<TransferStats>(latest,
-                new InternalTransferGenerator(), 
-                new BirdsEyeInterWalkTransferGenerator(latest.StopsDb.GetReader()), 
+            var p = new Profile<TransferStats>(new InternalTransferGenerator(), 
+                new CrowsFlightTransferGenerator(input.transitDb), 
                 new TransferStats(), TransferStats.ProfileTransferCompare);
 
             // get departure and arrival stop ids.
@@ -30,13 +28,13 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var arrival = reader.Id;
 
             // instantiate and run EAS.
-            var las = new LatestConnectionScan<TransferStats>(
+            var las = new LatestConnectionScan<TransferStats>(input.transitDb,
                 departure, arrival,
                 input.departureTime, input.departureTime.AddHours(24), p);
             var journey = las.CalculateJourney();
 
             // verify result.
-            Assert.NotNull(journey);
+            NotNull(journey);
 
             return true;
         }

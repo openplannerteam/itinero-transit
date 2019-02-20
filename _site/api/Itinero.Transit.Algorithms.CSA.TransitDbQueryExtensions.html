@@ -1,0 +1,749 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class TransitDbQueryExtensions
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class TransitDbQueryExtensions
+   ">
+    <meta name="generator" content="docfx 2.40.10.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions">
+  
+  
+  <h1 id="Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions" data-uid="Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions" class="text-break">Class TransitDbQueryExtensions
+  </h1>
+  <div class="markdown level0 summary"><p>This class is the main entry point to request routes as library user.
+It exposes all the core algorithms in a consistent and easy to use way.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><span class="xref">TransitDbQueryExtensions</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetHashCode()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ToString()</span>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Itinero.Transit.Algorithms.CSA.html">Itinero.Transit.Algorithms.CSA</a></h6>
+  <h6><strong>Assembly</strong>: Itinero.Transit.dll</h6>
+  <h5 id="Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static class TransitDbQueryExtensions</code></pre>
+  </div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_CalculateJourneys__1_Itinero_Transit_Data_TransitDb_Itinero_Transit_Data_Profile___0__System_String_System_String_System_Nullable_System_DateTime__System_Nullable_System_DateTime__.md&amp;value=---%0Auid%3A%20Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.CalculateJourneys%60%601(Itinero.Transit.Data.TransitDb%2CItinero.Transit.Data.Profile%7B%60%600%7D%2CSystem.String%2CSystem.String%2CSystem.Nullable%7BSystem.DateTime%7D%2CSystem.Nullable%7BSystem.DateTime%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Algorithms/CSA/TransitDbQueryExtensions.cs/#L187">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_CalculateJourneys_" data-uid="Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.CalculateJourneys*"></a>
+  <h4 id="Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_CalculateJourneys__1_Itinero_Transit_Data_TransitDb_Itinero_Transit_Data_Profile___0__System_String_System_String_System_Nullable_System_DateTime__System_Nullable_System_DateTime__" data-uid="Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.CalculateJourneys``1(Itinero.Transit.Data.TransitDb,Itinero.Transit.Data.Profile{``0},System.String,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime})">CalculateJourneys&lt;T&gt;(TransitDb, Profile&lt;T&gt;, String, String, Nullable&lt;DateTime&gt;, Nullable&lt;DateTime&gt;)</h4>
+  <div class="markdown level1 summary"><p>Calculates the profiles Journeys for the given coordinates.</p>
+<p>Starts with an EAS, then gives profiled journeys.</p>
+<p>Note that the profile scan might scan in a window far smaller then the last-arrival time</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IEnumerable&lt;Journey&lt;T&gt;&gt; CalculateJourneys&lt;T&gt;(this TransitDb tdb, Profile&lt;T&gt; profile, string from, string to, DateTime? departure = default(DateTime? ), DateTime? arrival = default(DateTime? ))
+    where T : IJourneyStats&lt;T&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.TransitDb.html">TransitDb</a></td>
+        <td><span class="parametername">tdb</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.Profile-1.html">Profile</a>&lt;T&gt;</td>
+        <td><span class="parametername">profile</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">from</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">to</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.DateTime</span>&gt;</td>
+        <td><span class="parametername">departure</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.DateTime</span>&gt;</td>
+        <td><span class="parametername">arrival</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IEnumerable</span>&lt;<a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_CalculateJourneys__1_Itinero_Transit_Data_TransitDb_Itinero_Transit_Data_Profile___0__System_ValueTuple_System_UInt32_System_UInt32__System_ValueTuple_System_UInt32_System_UInt32__System_UInt64_System_UInt64_.md&amp;value=---%0Auid%3A%20Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.CalculateJourneys%60%601(Itinero.Transit.Data.TransitDb%2CItinero.Transit.Data.Profile%7B%60%600%7D%2CSystem.ValueTuple%7BSystem.UInt32%2CSystem.UInt32%7D%2CSystem.ValueTuple%7BSystem.UInt32%2CSystem.UInt32%7D%2CSystem.UInt64%2CSystem.UInt64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Algorithms/CSA/TransitDbQueryExtensions.cs/#L211">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_CalculateJourneys_" data-uid="Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.CalculateJourneys*"></a>
+  <h4 id="Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_CalculateJourneys__1_Itinero_Transit_Data_TransitDb_Itinero_Transit_Data_Profile___0__System_ValueTuple_System_UInt32_System_UInt32__System_ValueTuple_System_UInt32_System_UInt32__System_UInt64_System_UInt64_" data-uid="Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.CalculateJourneys``1(Itinero.Transit.Data.TransitDb,Itinero.Transit.Data.Profile{``0},System.ValueTuple{System.UInt32,System.UInt32},System.ValueTuple{System.UInt32,System.UInt32},System.UInt64,System.UInt64)">CalculateJourneys&lt;T&gt;(TransitDb, Profile&lt;T&gt;, (UInt32, UInt32), (UInt32, UInt32), UInt64, UInt64)</h4>
+  <div class="markdown level1 summary"><p>Calculates the profiles Journeys for the given coordinates.</p>
+<p>Starts with an EAS, then gives profiled journeys.</p>
+<p>Note that the profile scan might scan in a window far smaller then the last-arrivaltime</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IEnumerable&lt;Journey&lt;T&gt;&gt; CalculateJourneys&lt;T&gt;(this TransitDb tdb, Profile&lt;T&gt; profile, (uint, uint)depLocation, (uint, uint)arrivalLocation, ulong departureTime = 0UL, ulong lastArrivalTime = 0UL)
+    where T : IJourneyStats&lt;T&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.TransitDb.html">TransitDb</a></td>
+        <td><span class="parametername">tdb</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.Profile-1.html">Profile</a>&lt;T&gt;</td>
+        <td><span class="parametername">profile</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.ValueTuple</span>&lt;<span class="xref">System.UInt32</span>, <span class="xref">System.UInt32</span>&gt;</td>
+        <td><span class="parametername">depLocation</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.ValueTuple</span>&lt;<span class="xref">System.UInt32</span>, <span class="xref">System.UInt32</span>&gt;</td>
+        <td><span class="parametername">arrivalLocation</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.UInt64</span></td>
+        <td><span class="parametername">departureTime</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.UInt64</span></td>
+        <td><span class="parametername">lastArrivalTime</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IEnumerable</span>&lt;<a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_EarliestArrival__1_Itinero_Transit_Data_TransitDb_Itinero_Transit_Data_Profile___0__System_String_System_String_System_DateTime_System_DateTime_.md&amp;value=---%0Auid%3A%20Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.EarliestArrival%60%601(Itinero.Transit.Data.TransitDb%2CItinero.Transit.Data.Profile%7B%60%600%7D%2CSystem.String%2CSystem.String%2CSystem.DateTime%2CSystem.DateTime)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Algorithms/CSA/TransitDbQueryExtensions.cs/#L35">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_EarliestArrival_" data-uid="Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.EarliestArrival*"></a>
+  <h4 id="Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_EarliestArrival__1_Itinero_Transit_Data_TransitDb_Itinero_Transit_Data_Profile___0__System_String_System_String_System_DateTime_System_DateTime_" data-uid="Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.EarliestArrival``1(Itinero.Transit.Data.TransitDb,Itinero.Transit.Data.Profile{``0},System.String,System.String,System.DateTime,System.DateTime)">EarliestArrival&lt;T&gt;(TransitDb, Profile&lt;T&gt;, String, String, DateTime, DateTime)</h4>
+  <div class="markdown level1 summary"><p>Calculates the earliest arriving journey which depart at 'from' at the given departure time and arrives at 'to'.</p>
+<p>Performs an Earliest Arrival Scan</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Journey&lt;T&gt; EarliestArrival&lt;T&gt;(this TransitDb tdb, Profile&lt;T&gt; profile, string from, string to, DateTime departure, DateTime lastArrival)
+    where T : IJourneyStats&lt;T&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.TransitDb.html">TransitDb</a></td>
+        <td><span class="parametername">tdb</span></td>
+        <td><p>The transit DB containing the PT-data</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.Profile-1.html">Profile</a>&lt;T&gt;</td>
+        <td><span class="parametername">profile</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">from</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">to</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.DateTime</span></td>
+        <td><span class="parametername">departure</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.DateTime</span></td>
+        <td><span class="parametername">lastArrival</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_FindStop_Itinero_Transit_Data_TransitDb_System_String_System_String_.md&amp;value=---%0Auid%3A%20Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.FindStop(Itinero.Transit.Data.TransitDb%2CSystem.String%2CSystem.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Algorithms/CSA/TransitDbQueryExtensions.cs/#L16">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_FindStop_" data-uid="Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.FindStop*"></a>
+  <h4 id="Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_FindStop_Itinero_Transit_Data_TransitDb_System_String_System_String_" data-uid="Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.FindStop(Itinero.Transit.Data.TransitDb,System.String,System.String)">FindStop(TransitDb, String, String)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static (uint, uint)FindStop(this TransitDb tdb, string locationId, string errMsg = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.TransitDb.html">TransitDb</a></td>
+        <td><span class="parametername">tdb</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">locationId</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">errMsg</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.ValueTuple</span>&lt;<span class="xref">System.UInt32</span>, <span class="xref">System.UInt32</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_Isochrone__1_Itinero_Transit_Data_TransitDb_Itinero_Transit_Data_Profile___0__System_String_System_DateTime_System_DateTime_.md&amp;value=---%0Auid%3A%20Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.Isochrone%60%601(Itinero.Transit.Data.TransitDb%2CItinero.Transit.Data.Profile%7B%60%600%7D%2CSystem.String%2CSystem.DateTime%2CSystem.DateTime)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Algorithms/CSA/TransitDbQueryExtensions.cs/#L70">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_Isochrone_" data-uid="Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.Isochrone*"></a>
+  <h4 id="Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_Isochrone__1_Itinero_Transit_Data_TransitDb_Itinero_Transit_Data_Profile___0__System_String_System_DateTime_System_DateTime_" data-uid="Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.Isochrone``1(Itinero.Transit.Data.TransitDb,Itinero.Transit.Data.Profile{``0},System.String,System.DateTime,System.DateTime)">Isochrone&lt;T&gt;(TransitDb, Profile&lt;T&gt;, String, DateTime, DateTime)</h4>
+  <div class="markdown level1 summary"><p>Calculates all journeys which depart at 'from' at the given departure time.</p>
+<p>Performs an Earliest Arrival Scan till as long as 'lastArrival' is not passed.</p>
+<p>the Journey will contain a 'Choice'-element</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IReadOnlyDictionary&lt;(uint localTileId, uint localId), Journey&lt;T&gt;&gt; Isochrone&lt;T&gt;(this TransitDb tdb, Profile&lt;T&gt; profile, string from, DateTime departure, DateTime lastArrival)
+    where T : IJourneyStats&lt;T&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.TransitDb.html">TransitDb</a></td>
+        <td><span class="parametername">tdb</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.Profile-1.html">Profile</a>&lt;T&gt;</td>
+        <td><span class="parametername">profile</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">from</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.DateTime</span></td>
+        <td><span class="parametername">departure</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.DateTime</span></td>
+        <td><span class="parametername">lastArrival</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.IReadOnlyDictionary</span>&lt;<span class="xref">System.ValueTuple</span>&lt;<span class="xref">System.UInt32</span>, <span class="xref">System.UInt32</span>&gt;, <a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_IsochroneLatestArrival__1_Itinero_Transit_Data_TransitDb_Itinero_Transit_Data_Profile___0__System_String_System_DateTime_System_DateTime_.md&amp;value=---%0Auid%3A%20Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.IsochroneLatestArrival%60%601(Itinero.Transit.Data.TransitDb%2CItinero.Transit.Data.Profile%7B%60%600%7D%2CSystem.String%2CSystem.DateTime%2CSystem.DateTime)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Algorithms/CSA/TransitDbQueryExtensions.cs/#L140">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_IsochroneLatestArrival_" data-uid="Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.IsochroneLatestArrival*"></a>
+  <h4 id="Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_IsochroneLatestArrival__1_Itinero_Transit_Data_TransitDb_Itinero_Transit_Data_Profile___0__System_String_System_DateTime_System_DateTime_" data-uid="Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.IsochroneLatestArrival``1(Itinero.Transit.Data.TransitDb,Itinero.Transit.Data.Profile{``0},System.String,System.DateTime,System.DateTime)">IsochroneLatestArrival&lt;T&gt;(TransitDb, Profile&lt;T&gt;, String, DateTime, DateTime)</h4>
+  <div class="markdown level1 summary"><p>Calculates all journeys which arrive at 'to' at last at the given arrival time.</p>
+<p>Performs a Latest Arrival Scan till as long as 'lastArrival' is not passed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Dictionary&lt;(uint localTileId, uint localId), Journey&lt;T&gt;&gt; IsochroneLatestArrival&lt;T&gt;(this TransitDb tdb, Profile&lt;T&gt; profile, string to, DateTime departure, DateTime lastArrival)
+    where T : IJourneyStats&lt;T&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.TransitDb.html">TransitDb</a></td>
+        <td><span class="parametername">tdb</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.Profile-1.html">Profile</a>&lt;T&gt;</td>
+        <td><span class="parametername">profile</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">to</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.DateTime</span></td>
+        <td><span class="parametername">departure</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.DateTime</span></td>
+        <td><span class="parametername">lastArrival</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Collections.Generic.Dictionary</span>&lt;<span class="xref">System.ValueTuple</span>&lt;<span class="xref">System.UInt32</span>, <span class="xref">System.UInt32</span>&gt;, <a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_LatestDeparture__1_Itinero_Transit_Data_TransitDb_Itinero_Transit_Data_Profile___0__System_String_System_String_System_DateTime_System_DateTime_.md&amp;value=---%0Auid%3A%20Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.LatestDeparture%60%601(Itinero.Transit.Data.TransitDb%2CItinero.Transit.Data.Profile%7B%60%600%7D%2CSystem.String%2CSystem.String%2CSystem.DateTime%2CSystem.DateTime)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Algorithms/CSA/TransitDbQueryExtensions.cs/#L107">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_LatestDeparture_" data-uid="Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.LatestDeparture*"></a>
+  <h4 id="Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions_LatestDeparture__1_Itinero_Transit_Data_TransitDb_Itinero_Transit_Data_Profile___0__System_String_System_String_System_DateTime_System_DateTime_" data-uid="Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions.LatestDeparture``1(Itinero.Transit.Data.TransitDb,Itinero.Transit.Data.Profile{``0},System.String,System.String,System.DateTime,System.DateTime)">LatestDeparture&lt;T&gt;(TransitDb, Profile&lt;T&gt;, String, String, DateTime, DateTime)</h4>
+  <div class="markdown level1 summary"><p>Calculates all journeys which arrive at 'to' at last at the given arrival time.</p>
+<p>Performs a Latest Arrival Scan till as long as 'lastArrival' is not passed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Journey&lt;T&gt; LatestDeparture&lt;T&gt;(this TransitDb tdb, Profile&lt;T&gt; profile, string from, string to, DateTime departure, DateTime lastArrival)
+    where T : IJourneyStats&lt;T&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.TransitDb.html">TransitDb</a></td>
+        <td><span class="parametername">tdb</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.Profile-1.html">Profile</a>&lt;T&gt;</td>
+        <td><span class="parametername">profile</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">from</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">to</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.DateTime</span></td>
+        <td><span class="parametername">departure</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.DateTime</span></td>
+        <td><span class="parametername">lastArrival</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Algorithms_CSA_TransitDbQueryExtensions.md&amp;value=---%0Auid%3A%20Itinero.Transit.Algorithms.CSA.TransitDbQueryExtensions%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Algorithms/CSA/TransitDbQueryExtensions.cs/#L14" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

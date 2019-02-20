@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Itinero.Transit.Data.Walks;
-using Itinero.Transit.Logging;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
 namespace Itinero.Transit.Data
@@ -13,21 +10,9 @@ namespace Itinero.Transit.Data
     /// </summary>
     public class TransitDb
     {
-        private readonly Action<TransitDbWriter, DateTime, DateTime> _updateTimeFrame;
-        private readonly DateTracker _loadedTimeWindows = new DateTracker();
-
-        /// <summary>
-        /// Construct a TransitDb, optionally with a callback to load something in the database
-        /// </summary>
-        /// <param name="updateTimeFrame">This function should add data via the writer. The writer will be closed when the callback finishes</param>
-        public TransitDb(Action<TransitDbWriter, DateTime, DateTime> updateTimeFrame = null)
+        public TransitDb() : this(
+            new StopsDb(), new TripsDb(), new ConnectionsDb())
         {
-            _updateTimeFrame = updateTimeFrame;
-            var stopsDb = new StopsDb();
-            var connectionsDb = new ConnectionsDb();
-            var tripsDb = new TripsDb();
-
-            _latestSnapshot = new TransitDbSnapShot(stopsDb, tripsDb, connectionsDb);
         }
 
         private TransitDb(StopsDb stopsDb, TripsDb tripsDb, ConnectionsDb connectionsDb)
@@ -39,43 +24,6 @@ namespace Itinero.Transit.Data
         private TransitDbWriter _writer;
         private TransitDbSnapShot _latestSnapshot;
 
-        /// <summary>
-        /// Loads more data into the transitDB, as specified by the callbackfunction.
-        /// </summary>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <param name="refresh">If true, overwrites. If false, only the gaps will be filled</param>
-        public void UpdateTimeFrame(DateTime start, DateTime end, bool refresh = false)
-        {
-            var gaps = new List<(DateTime , DateTime)>();
-            if (refresh)
-            {
-                gaps.Add((start, end));
-            }
-            else
-            {
-                gaps = _loadedTimeWindows.Gaps(start, end);
-            }
-
-            if (!gaps.Any())
-            {
-                // No work to do
-                return;
-            }
-
-            var writer = GetWriter();
-            foreach (var (wStart, wEnd) in gaps)
-            {
-                
-                _updateTimeFrame.Invoke(writer, wStart, wEnd);
-                _loadedTimeWindows.AddTimeWindow(wStart, wEnd);
-            }
-
-            writer.Close();
-        }
-
-
-        public List<(DateTime start, DateTime end)> LoadedTimeWindows => _loadedTimeWindows.TimeWindows();
 
         /// <summary>
         /// Gets a writer.
@@ -237,7 +185,7 @@ namespace Itinero.Transit.Data
                 (uint localTileId, uint localId) stop2, string globalId, DateTime departureTime, ushort travelTime,
                 uint tripId)
             {
-                return _connectionsDb.Add(stop1, stop2, globalId, departureTime, travelTime, tripId);
+                return _connectionsDb.AddOrUpdate(stop1, stop2, globalId, departureTime, travelTime, tripId);
             }
 
             /// <summary>

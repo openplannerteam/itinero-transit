@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Itinero.Transit.IO.LC;
 using Itinero.Transit.Data;
 using Itinero.Transit.IO.LC.CSA;
 using Itinero.Transit.IO.LC.CSA.Utils;
@@ -28,10 +27,9 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
         public static LoadTransitDbTest SncbDeLijn => new LoadTransitDbTest(new LinkedConnectionDataset(
             new List<LinkedConnectionDataset>
             {
-
                 new LinkedConnectionDataset(
                     new Uri("https://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/connections"),
-                    new Uri("https://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/stops"), new Downloader()),
+                    new Uri("https://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/stops")),
                 Belgium.Sncb(),
             }));
 
