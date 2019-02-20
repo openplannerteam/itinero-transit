@@ -112,10 +112,6 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
 
         private static uint Gcd(uint a, uint b)
         {
-            if (a == 1 || b == 1)
-            {
-                return 1;
-            }
             while (a != 0 && b != 0)
             {
                 if (a > b)
