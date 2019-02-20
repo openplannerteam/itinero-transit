@@ -185,7 +185,7 @@ namespace Itinero.Transit.Data
                 (uint localTileId, uint localId) stop2, string globalId, DateTime departureTime, ushort travelTime,
                 uint tripId)
             {
-                return _connectionsDb.Add(stop1, stop2, globalId, departureTime, travelTime, tripId);
+                return _connectionsDb.AddOrUpdate(stop1, stop2, globalId, departureTime, travelTime, tripId);
             }
 
             /// <summary>
