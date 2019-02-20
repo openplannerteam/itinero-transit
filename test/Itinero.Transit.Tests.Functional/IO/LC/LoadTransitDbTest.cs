@@ -28,11 +28,11 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
         public static LoadTransitDbTest SncbDeLijn => new LoadTransitDbTest(new LinkedConnectionDataset(
             new List<LinkedConnectionDataset>
             {
-                Belgium.Sncb(),
 
                 new LinkedConnectionDataset(
                     new Uri("https://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/connections"),
-                    new Uri("http://127.0.0.1:8888/stopsBrugge.json"), new Downloader())
+                    new Uri("https://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/stops"), new Downloader()),
+                Belgium.Sncb(),
             }));
 
 
