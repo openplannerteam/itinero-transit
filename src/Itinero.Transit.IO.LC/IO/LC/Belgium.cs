@@ -11,6 +11,25 @@ namespace Itinero.Transit.IO.LC.CSA
 {
     public static class Belgium
     {
+        /// <summary>
+        /// All links for Belgium
+        /// All lowercase, e.g. 'delijn-west-vlaanderen'
+        /// </summary>
+        public static IReadOnlyDictionary<string, (string connections, string locations)> AllLinks = new Dictionary<string, (string connections, string locations)>
+        {
+            {"sncb", ("https://graph.irail.be/sncb/connections", "https://irail.be/stations")},
+         
+            {"delijn-west-vlaanderen", ("https://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/connections", "https://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/stops")},
+            {"delijn-oost-vlaanderen", ("https://openplanner.ilabt.imec.be/delijn/Oost-Vlaanderen/connections", "https://openplanner.ilabt.imec.be/delijn/Oost-Vlaanderen/stops")},
+            {"delijn-limburg", ("https://openplanner.ilabt.imec.be/delijn/Limburg/connections", "https://openplanner.ilabt.imec.be/delijn/Limburg/stops")},
+            {"delijn-vlaams-brabant", ("https://openplanner.ilabt.imec.be/delijn/Vlaams-Brabant/connections", "https://openplanner.ilabt.imec.be/delijn/Vlaams-Brabant/stops")},
+            {"delijn-antwerpen", ("https://openplanner.ilabt.imec.be/delijn/Antwerpen/connections", "https://openplanner.ilabt.imec.be/delijn/Antwerpen/stops")},
+        };
+        
+        
+        
+        
+        
         public static LinkedConnectionDataset Sncb()
         {
             return new LinkedConnectionDataset(
@@ -64,7 +83,7 @@ namespace Itinero.Transit.IO.LC.CSA
             return CreateDeLijnProfile("Vlaams-Brabant");
         }
 
-        public static LinkedConnectionDataset Antwerpen()
+        private static LinkedConnectionDataset Antwerpen()
         {
             return CreateDeLijnProfile("Antwerpen");
         }

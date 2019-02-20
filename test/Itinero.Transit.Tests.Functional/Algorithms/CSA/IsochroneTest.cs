@@ -9,6 +9,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
     public class IsochroneTest : DefaultFunctionalTest
     {
+
         public static IsochroneTest Default = new IsochroneTest();
 
         protected override bool Execute(

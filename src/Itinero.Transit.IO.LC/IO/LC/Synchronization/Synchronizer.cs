@@ -16,7 +16,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
         private readonly uint _clockRate;
         private readonly TransitDbUpdater _db;
         private bool _firstRun = true;
-        private Timer _timer;
+        private readonly Timer _timer;
 
         public SynchronizationPolicy CurrentlyRunning { get; private set; }
         public IReadOnlyList<(DateTime start, DateTime end)> LoadedTimeWindows => _db.LoadedTimeWindows;

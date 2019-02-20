@@ -46,6 +46,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
 
         public void Run(DateTime triggeredOn, TransitDbUpdater toUpdate)
         {
+            _triggeredDate = triggeredOn;
             var start = triggeredOn - LoadBefore;
             var end = triggeredOn + LoadAfter;
             Log.Information($"Synchronization policy is updating timewindow {start} --> {end}" +
@@ -65,14 +66,19 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
                         $"Updating timewindow {start} --> {end} failed: {e.Message}\nThis is attempt {attempts} out of {_retries}");
                 }
             }
+
+            _triggeredDate = null;
         }
 
         public override string ToString()
         {
             var updates = _forceUpdate ? "no overwrite" : "forces updating";
-            var retr = _retries == 0 ? "No retries on failing" : (_retries == 1 ? "Single retry on failing" : $"{_retries} retries when failing");
+            var retr = _retries == 0
+                ? "No retries on failing"
+                : (_retries == 1 ? "Single retry on failing" : $"{_retries} retries when failing");
             var now = _triggeredDate == null ? "" : $" Now running with date {_triggeredDate.Value:O}";
-            return $"SynchronizedWindow, {LoadBefore:g} --> {LoadAfter:g} (triggers every {TimeSpan.FromSeconds(Frequency)}, {updates}, {retr}){now}";
+            return
+                $"SynchronizedWindow, {LoadBefore:g} --> {LoadAfter:g} (triggers every {TimeSpan.FromSeconds(Frequency)}, {updates}, {retr}){now}";
         }
     }
 }

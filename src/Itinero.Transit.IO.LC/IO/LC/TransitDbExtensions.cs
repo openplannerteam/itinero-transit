@@ -73,12 +73,13 @@ namespace Itinero.Transit.IO.LC.IO.LC
         /// <summary>
         /// Adds a 'Linked Connection' dataset to the transitDB. The transitdb will automatically update as is specified by the syncPolicies
         /// </summary>
-        public static void UseLinkedConnections(this TransitDb tdb,
+        public static (Synchronizer, LinkedConnectionDataset) UseLinkedConnections(this TransitDb tdb,
             string connectionsUri,
             string locationsUri,
             params SynchronizationPolicy[] syncPolicies)
         {
-            tdb.UseLinkedConnections(connectionsUri, locationsUri, new List<SynchronizationPolicy>(syncPolicies));
+            return tdb.UseLinkedConnections(connectionsUri, locationsUri,
+                new List<SynchronizationPolicy>(syncPolicies));
         }
 
         /// <summary>

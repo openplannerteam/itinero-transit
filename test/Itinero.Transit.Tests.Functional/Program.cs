@@ -10,6 +10,7 @@ using Itinero.Transit.Tests.Functional.IO.LC.Synchronization;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
+// ReSharper disable InconsistentNaming
 
 // ReSharper disable UnusedMember.Local
 
@@ -25,6 +26,12 @@ namespace Itinero.Transit.Tests.Functional
         private const string Vielsalm = "http://irail.be/stations/NMBS/008845146";
         private const string BrusselZuid = "http://irail.be/stations/NMBS/008814001";
         private const string Kortrijk = "http://irail.be/stations/NMBS/008896008";
+
+
+        private const string Howest = "https://data.delijn.be/stops/502132";
+        private const string ZandStraat = "https://data.delijn.be/stops/500562";
+        private const string AzSintJan = "https://data.delijn.be/stops/502083";
+
 
 
         private static readonly Dictionary<string, DefaultFunctionalTest> AllTestsNamed =
@@ -46,16 +53,17 @@ namespace Itinero.Transit.Tests.Functional
 
             Log.Information("Starting the Functional Tests...");
             var date = DateTime.Now.Date; // LOCAL TIMES! //
-            // test loading a connections db
-            var db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
 
 
-            new TestReadWrite().Run(db);
+            new TestAutoUpdating().Run(null);
 
-            new TestWriteToDisk().Run(db);
 
-            
+
             /*
+            new MultipleLoadTest().Run(0);
+            var db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
+            new TestReadWrite().Run(db);
+            new TestWriteToDisk().Run(db);
             
             TripHeadsignTest.Default.Run(db);
             
@@ -83,6 +91,10 @@ namespace Itinero.Transit.Tests.Functional
                     date.Date.AddHours(20)),
                 (db, Poperinge,
                     Vielsalm,
+                    date.Date.AddHours(10),
+                    date.Date.AddHours(18)),
+                (db, Howest,
+                    Gent,
                     date.Date.AddHours(10),
                     date.Date.AddHours(18))
             };
