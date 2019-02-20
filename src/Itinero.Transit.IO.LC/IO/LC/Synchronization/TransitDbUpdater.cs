@@ -55,7 +55,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
                 gaps = _loadedTimeWindows.Gaps(start, end);
             }
 
-            if (gaps.Count != 0)
+            if (gaps.Count == 0)
             {
                 // No work to do
                 return;

@@ -85,5 +85,18 @@ namespace Itinero.Transit.Tests.utils
             Assert.Single(gaps);
             Assert.Equal((d.AddDays(3), d.AddDays(4)), gaps[0]);
         }
+        
+        
+                
+        [Fact]
+        public void TestEmptyWindow()
+        {
+            var dt = new DateTracker();
+            var d = DateTime.Today.Date;
+
+            var gaps = dt.Gaps(d.AddDays(3), d.AddDays(4));
+            Assert.Single(gaps);
+            Assert.Equal((d.AddDays(3), d.AddDays(4)), gaps[0]);
+        }
     }
 }

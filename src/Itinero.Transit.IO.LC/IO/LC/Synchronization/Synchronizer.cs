@@ -16,6 +16,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
         private readonly uint _clockRate;
         private readonly TransitDbUpdater _db;
         private bool _firstRun = true;
+        private Timer _timer;
 
         public Synchronizer(TransitDb db,
             Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb, IReadOnlyCollection<SynchronizationPolicy> policies)
@@ -40,13 +41,12 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
             }
 
             _clockRate = clockRate;
-            var timer = new Timer(clockRate * 1000);
-            timer.Elapsed += RunAll;
-            timer.Start();
+            _timer = new Timer(clockRate * 1000);
+            _timer.Elapsed += RunAll;
+            _timer.Start();
         }
 
-        public Synchronizer(TransitDb db, Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb,
-            params SynchronizationPolicy[] policies) :
+        public Synchronizer(TransitDb db, Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb, params SynchronizationPolicy[] policies) :
             this(db, updateDb, new List<SynchronizationPolicy>(policies))
         {
         }

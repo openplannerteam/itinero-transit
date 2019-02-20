@@ -11,7 +11,7 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
         [Fact]
         public void TestLoading()
         {
-            bool triggered = false;
+            var triggered = false;
 
 
             void Update(TransitDb.TransitDbWriter wr, DateTime start, DateTime end)
@@ -23,10 +23,10 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
             var tdb = new TransitDb();
 
 
-            var sync = new Synchronizer(tdb,Update,
+            var sync = new Synchronizer(tdb, Update,
                 new SynchronizedWindow(5, TimeSpan.FromSeconds(-1), TimeSpan.FromSeconds(2)));
 
-            Thread.Sleep(100);
+            Thread.Sleep(6000);
             Assert.True(triggered);
         }
 
@@ -53,17 +53,15 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
             var tdb = new TransitDb();
 
 
-            var sync = new Synchronizer(tdb,Update,
+            var sync = new Synchronizer(tdb, Update,
                 new SynchronizedWindow(5, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(5)),
                 new SynchronizedWindow(10, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(10)));
 
 
-            Thread.Sleep(21000);
+            Thread.Sleep(23000);
 
-
-            Assert.True(4 <= triggered5);
-            Assert.True(8 >= triggered5);
-            Assert.True(2 <= triggered10);
+            Assert.Equal(4, triggered5);
+            Assert.Equal(2, triggered10);
             Assert.True(triggered5 > triggered10);
         }
     }
