@@ -927,7 +927,7 @@ namespace Itinero.Transit.Data
                         }
                     }
 
-                    pointer = _db._globalIdLinkedList[pointer + 2];
+                    pointer = _db._globalIdLinkedList[pointer + 1];
                 }
 
                 return false;
