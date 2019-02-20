@@ -30,7 +30,7 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
                 new LinkedConnectionDataset(
                     new Uri("https://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/connections"),
                     new Uri("https://openplanner.ilabt.imec.be/delijn/West-Vlaanderen/stops")),
-                Belgium.Sncb(),
+                    Belgium.Sncb(),
             }));
 
 

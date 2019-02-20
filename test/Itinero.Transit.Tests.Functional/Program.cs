@@ -53,7 +53,7 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Starting the Functional Tests...");
             var date = DateTime.Now.Date; // LOCAL TIMES! //
 
-            new MultipleLoadTest().Run(0);
+            //new MultipleLoadTest().Run(0);
 
             // test loading a connections db
             var db = LoadTransitDbTest.SncbDeLijn.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
@@ -96,6 +96,10 @@ namespace Itinero.Transit.Tests.Functional
                     date.Date.AddHours(20)),
                 (db, Poperinge,
                     Vielsalm,
+                    date.Date.AddHours(10),
+                    date.Date.AddHours(18)),
+                (db, Howest,
+                    Gent,
                     date.Date.AddHours(10),
                     date.Date.AddHours(18))
             };
