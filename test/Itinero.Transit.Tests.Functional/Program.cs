@@ -10,6 +10,7 @@ using Itinero.Transit.Tests.Functional.IO.LC.Synchronization;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
+
 // ReSharper disable InconsistentNaming
 
 // ReSharper disable UnusedMember.Local
@@ -31,7 +32,6 @@ namespace Itinero.Transit.Tests.Functional
         private const string Howest = "https://data.delijn.be/stops/502132";
         private const string ZandStraat = "https://data.delijn.be/stops/500562";
         private const string AzSintJan = "https://data.delijn.be/stops/502083";
-
 
 
         private static readonly Dictionary<string, DefaultFunctionalTest> AllTestsNamed =
@@ -58,23 +58,21 @@ namespace Itinero.Transit.Tests.Functional
             new TestAutoUpdating().Run(null);
 
 
-
-            /*
             new MultipleLoadTest().Run(0);
             var db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
             new TestReadWrite().Run(db);
             new TestWriteToDisk().Run(db);
-            
+
             TripHeadsignTest.Default.Run(db);
-            
+
             //new MultipleLoadTest().Run(0);
 
             ConnectionsDbDepartureEnumeratorTest.Default.Run(db);
-            
+
             TestClosestStopsAndRouting(db);
 
             // Tests all the algorithms on multiple inputs
-            
+
             var inputs = new List<(TransitDb, string, string, DateTime, DateTime)>
             {
                 (db, Brugge,
@@ -93,10 +91,10 @@ namespace Itinero.Transit.Tests.Functional
                     Vielsalm,
                     date.Date.AddHours(10),
                     date.Date.AddHours(18)),
-                (db, Howest,
-                    Gent,
-                    date.Date.AddHours(10),
-                    date.Date.AddHours(18))
+                //     (db, Howest,
+                //        Gent,
+                //        date.Date.AddHours(10),
+                //        date.Date.AddHours(18))
             };
 
             var failed = 0;
@@ -139,13 +137,9 @@ namespace Itinero.Transit.Tests.Functional
             {
                 throw new Exception("Some tests failed");
             }
-            //*/
         }
 
-        
-        
-        
-        
+
         private static void TestClosestStopsAndRouting(TransitDb db)
         {
             StopSearchTest.Default.RunPerformance((db, 4.336209297180176,
@@ -156,10 +150,7 @@ namespace Itinero.Transit.Tests.Functional
                 50.99052927907061, 1000));
         }
 
-        
-        
-        
-        
+
         public static void Main(string[] args)
         {
             List<DefaultFunctionalTest> tests = null;
