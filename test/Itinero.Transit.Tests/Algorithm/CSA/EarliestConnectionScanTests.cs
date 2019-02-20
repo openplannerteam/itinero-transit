@@ -64,7 +64,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 new DateTime(2018, 12, 04, 10, 30, 00), 10 * 60, 1);
 
             // Prevent depletion of the DB
-            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
+            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/2",
                 new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 2);
 
             writer.Close();
