@@ -1,6 +1,6 @@
 using System;
+using System.Collections;
 using Itinero.Transit.Tests.Functional.Performance;
-using Xunit;
 
 // ReSharper disable UnusedMember.Global
 
@@ -77,7 +77,32 @@ namespace Itinero.Transit.Tests.Functional
         // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Global
         protected void True(bool value)
         {
-            Assert.True(value);
+            if (!value)
+            {
+                throw new Exception("Assertion failed, expected true");
+            }
+        }
+
+        public void NotNull(object o)
+        {
+            if (o == null)
+            {
+                throw new ArgumentNullException("Not-null failed");
+            }
+        }
+
+
+        public void AssertContains( object o, IEnumerable xs)
+        {
+            foreach (var x in xs)
+            {
+                if (x.Equals(o))
+                {
+                    return;
+                }
+            }
+            
+            throw new Exception($"Element {o} was not found");
         }
 
         /// <summary>

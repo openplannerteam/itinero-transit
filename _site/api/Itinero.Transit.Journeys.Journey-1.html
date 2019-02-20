@@ -1,0 +1,1422 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class Journey&lt;T&gt;
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class Journey&lt;T&gt;
+   ">
+    <meta name="generator" content="docfx 2.40.10.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Itinero.Transit.Journeys.Journey`1">
+  
+  
+  <h1 id="Itinero_Transit_Journeys_Journey_1" data-uid="Itinero.Transit.Journeys.Journey`1" class="text-break">Class Journey&lt;T&gt;
+  </h1>
+  <div class="markdown level0 summary"><p>A journey is a part in an intermodal trip, describing the route the user takes.</p>
+<p>Normally, a journey is constructed with the start location hidden the deepest in the data structure.
+The Time is mostly the arrival time.</p>
+<p>The above properties are reversed in the CPS algorithm. The last step of that algorithm is to reverse the journeys,
+so that users of the lib get a uniform experience</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><span class="xref">Journey&lt;T&gt;</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Itinero.Transit.Journeys.html">Itinero.Transit.Journeys</a></h6>
+  <h6><strong>Assembly</strong>: Itinero.Transit.dll</h6>
+  <h5 id="Itinero_Transit_Journeys_Journey_1_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class Journey&lt;T&gt;
+    where T : IJourneyStats&lt;T&gt;</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1__ctor_Itinero_Transit_Journeys_Journey__0__Itinero_Transit_Journeys_Journey__0__.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.%23ctor(Itinero.Transit.Journeys.Journey%7B%600%7D%2CItinero.Transit.Journeys.Journey%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L191">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Journeys_Journey_1__ctor_" data-uid="Itinero.Transit.Journeys.Journey`1.#ctor*"></a>
+  <h4 id="Itinero_Transit_Journeys_Journey_1__ctor_Itinero_Transit_Journeys_Journey__0__Itinero_Transit_Journeys_Journey__0__" data-uid="Itinero.Transit.Journeys.Journey`1.#ctor(Itinero.Transit.Journeys.Journey{`0},Itinero.Transit.Journeys.Journey{`0})">Journey(Journey&lt;T&gt;, Journey&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Journey(Journey&lt;T&gt; optionA, Journey&lt;T&gt; optionB)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;</td>
+        <td><span class="parametername">optionA</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;</td>
+        <td><span class="parametername">optionB</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1__ctor_System_ValueTuple_System_UInt32_System_UInt32__System_UInt64__0_System_UInt32_.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.%23ctor(System.ValueTuple%7BSystem.UInt32%2CSystem.UInt32%7D%2CSystem.UInt64%2C%600%2CSystem.UInt32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L176">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Journeys_Journey_1__ctor_" data-uid="Itinero.Transit.Journeys.Journey`1.#ctor*"></a>
+  <h4 id="Itinero_Transit_Journeys_Journey_1__ctor_System_ValueTuple_System_UInt32_System_UInt32__System_UInt64__0_System_UInt32_" data-uid="Itinero.Transit.Journeys.Journey`1.#ctor(System.ValueTuple{System.UInt32,System.UInt32},System.UInt64,`0,System.UInt32)">Journey((UInt32 localTileId, UInt32 localId), UInt64, T, UInt32)</h4>
+  <div class="markdown level1 summary"><p>Genesis constructor.
+This constructor creates a root journey</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Journey((uint localTileId, uint localId)location, ulong departureTime, T initialStats, uint debuggingFreeformTag = 0U)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.ValueTuple</span>&lt;<span class="xref">System.UInt32</span>, <span class="xref">System.UInt32</span>&gt;</td>
+        <td><span class="parametername">location</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.UInt64</span></td>
+        <td><span class="parametername">departureTime</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">initialStats</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.UInt32</span></td>
+        <td><span class="parametername">debuggingFreeformTag</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="fields">Fields
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_AlternativePreviousLink.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.AlternativePreviousLink%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L46">View Source</a>
+  </span>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_AlternativePreviousLink" data-uid="Itinero.Transit.Journeys.Journey`1.AlternativePreviousLink">AlternativePreviousLink</h4>
+  <div class="markdown level1 summary"><p>Sometimes, we encounter two subjourneys which are equally optimal.
+Instead of duplicating them across the graph, we have this special journey part which gives an alternative version split</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Journey&lt;T&gt; AlternativePreviousLink</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_Connection.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.Connection%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L64">View Source</a>
+  </span>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_Connection" data-uid="Itinero.Transit.Journeys.Journey`1.Connection">Connection</h4>
+  <div class="markdown level1 summary"><p>The connection id, taken in this last part of this journey
+We resort to magic for special connections (if Special Connection is set), such as walks between stops</p>
+<p>1 This is the Genesis Connection
+2: This is a Transfer (within the same station)
+3: This is a Walk, from the previous journey collection to here.
+Note that the actual route is <em>not</em> saved as not to use too much memory</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly uint Connection</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_EarliestArrivalScanJourney.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.EarliestArrivalScanJourney%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L113">View Source</a>
+  </span>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_EarliestArrivalScanJourney" data-uid="Itinero.Transit.Journeys.Journey`1.EarliestArrivalScanJourney">EarliestArrivalScanJourney</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int EarliestArrivalScanJourney = 1</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_GENESIS.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.GENESIS%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L70">View Source</a>
+  </span>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_GENESIS" data-uid="Itinero.Transit.Journeys.Journey`1.GENESIS">GENESIS</h4>
+  <div class="markdown level1 summary"><p>Constant indicating that the journey starts here</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const uint GENESIS = 1U</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_InfiniteJourney.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.InfiniteJourney%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L26">View Source</a>
+  </span>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_InfiniteJourney" data-uid="Itinero.Transit.Journeys.Journey`1.InfiniteJourney">InfiniteJourney</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static readonly Journey&lt;T&gt; InfiniteJourney</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_JOINED_JOURNEYS.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.JOINED_JOURNEYS%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L87">View Source</a>
+  </span>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_JOINED_JOURNEYS" data-uid="Itinero.Transit.Journeys.Journey`1.JOINED_JOURNEYS">JOINED_JOURNEYS</h4>
+  <div class="markdown level1 summary"><p>Indicates that this journey represents a choice</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const uint JOINED_JOURNEYS = 4U</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_LatestArrivalScanJourney.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.LatestArrivalScanJourney%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L114">View Source</a>
+  </span>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_LatestArrivalScanJourney" data-uid="Itinero.Transit.Journeys.Journey`1.LatestArrivalScanJourney">LatestArrivalScanJourney</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int LatestArrivalScanJourney = 2</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_Location.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.Location%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L96">View Source</a>
+  </span>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_Location" data-uid="Itinero.Transit.Journeys.Journey`1.Location">Location</h4>
+  <div class="markdown level1 summary"><p>Keep track of Location.
+In normal circumstances, this is the location where the journey arrives
+(also in the cases for transfers, walks, ...)</p>
+<p>Only for the genesis connection, this is the departure location.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly (uint tileId, uint localId)Location</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.ValueTuple</span>&lt;<span class="xref">System.UInt32</span>, <span class="xref">System.UInt32</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_NegativeInfiniteJourney.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.NegativeInfiniteJourney%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L28">View Source</a>
+  </span>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_NegativeInfiniteJourney" data-uid="Itinero.Transit.Journeys.Journey`1.NegativeInfiniteJourney">NegativeInfiniteJourney</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static readonly Journey&lt;T&gt; NegativeInfiniteJourney</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_PreviousLink.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.PreviousLink%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L40">View Source</a>
+  </span>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_PreviousLink" data-uid="Itinero.Transit.Journeys.Journey`1.PreviousLink">PreviousLink</h4>
+  <div class="markdown level1 summary"><p>The previous link in this journey. Can be null if this is where we start the journey</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Journey&lt;T&gt; PreviousLink</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_ProfiledScanJourney.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.ProfiledScanJourney%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L115">View Source</a>
+  </span>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_ProfiledScanJourney" data-uid="Itinero.Transit.Journeys.Journey`1.ProfiledScanJourney">ProfiledScanJourney</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int ProfiledScanJourney = 3</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_Root.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.Root%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L34">View Source</a>
+  </span>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_Root" data-uid="Itinero.Transit.Journeys.Journey`1.Root">Root</h4>
+  <div class="markdown level1 summary"><p>The first link of the journey. Can be useful when in need of the real departure time</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Journey&lt;T&gt; Root</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_SpecialConnection.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.SpecialConnection%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L52">View Source</a>
+  </span>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_SpecialConnection" data-uid="Itinero.Transit.Journeys.Journey`1.SpecialConnection">SpecialConnection</h4>
+  <div class="markdown level1 summary"><p>Indicates that this journeyPart is not a simple PT-connection,
+but rather something as a walk, transfer, ...</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly bool SpecialConnection</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_Stats.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.Stats%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L121">View Source</a>
+  </span>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_Stats" data-uid="Itinero.Transit.Journeys.Journey`1.Stats">Stats</h4>
+  <div class="markdown level1 summary"><p>Keeps some statistics about the journey</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly T Stats</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_Time.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.Time%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L105">View Source</a>
+  </span>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_Time" data-uid="Itinero.Transit.Journeys.Journey`1.Time">Time</h4>
+  <div class="markdown level1 summary"><p>Keep track of Time.
+In normal circumstances, this is the time when the journey arrives
+(also in the cases for transfers, walks, ...)</p>
+<p>Only for the genesis connection, this is the departure time.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly ulong Time</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt64</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_TRANSFER.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.TRANSFER%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L78">View Source</a>
+  </span>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_TRANSFER" data-uid="Itinero.Transit.Journeys.Journey`1.TRANSFER">TRANSFER</h4>
+  <div class="markdown level1 summary"><p>Constant indicating that the traveller doesn't move, but waits or changes platform
+Also used as filler between the genesis and first departure</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const uint TRANSFER = 2U</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_TripId.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.TripId%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L111">View Source</a>
+  </span>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_TripId" data-uid="Itinero.Transit.Journeys.Journey`1.TripId">TripId</h4>
+  <div class="markdown level1 summary"><p>The trip id of the connection
+This is used as a freeform debugging tag in the Genesis Element</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly uint TripId</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_WALK.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.WALK%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L81">View Source</a>
+  </span>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_WALK" data-uid="Itinero.Transit.Journeys.Journey`1.WALK">WALK</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const uint WALK = 3U</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_ArrivalTime.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.ArrivalTime%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L319">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Journeys_Journey_1_ArrivalTime_" data-uid="Itinero.Transit.Journeys.Journey`1.ArrivalTime*"></a>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_ArrivalTime" data-uid="Itinero.Transit.Journeys.Journey`1.ArrivalTime">ArrivalTime()</h4>
+  <div class="markdown level1 summary"><p>Arrival time of this journey part</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ulong ArrivalTime()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt64</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_ChainBackward_Itinero_Transit_Data_IConnection_.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.ChainBackward(Itinero.Transit.Data.IConnection)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L241">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Journeys_Journey_1_ChainBackward_" data-uid="Itinero.Transit.Journeys.Journey`1.ChainBackward*"></a>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_ChainBackward_Itinero_Transit_Data_IConnection_" data-uid="Itinero.Transit.Journeys.Journey`1.ChainBackward(Itinero.Transit.Data.IConnection)">ChainBackward(IConnection)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Journey&lt;T&gt; ChainBackward(IConnection c)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.IConnection.html">IConnection</a></td>
+        <td><span class="parametername">c</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_ChainForward_Itinero_Transit_Data_IConnection_.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.ChainForward(Itinero.Transit.Data.IConnection)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L227">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Journeys_Journey_1_ChainForward_" data-uid="Itinero.Transit.Journeys.Journey`1.ChainForward*"></a>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_ChainForward_Itinero_Transit_Data_IConnection_" data-uid="Itinero.Transit.Journeys.Journey`1.ChainForward(Itinero.Transit.Data.IConnection)">ChainForward(IConnection)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Journey&lt;T&gt; ChainForward(IConnection c)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.IConnection.html">IConnection</a></td>
+        <td><span class="parametername">c</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_ChainSpecial_System_UInt32_System_UInt64_System_ValueTuple_System_UInt32_System_UInt32__System_UInt32_.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.ChainSpecial(System.UInt32%2CSystem.UInt64%2CSystem.ValueTuple%7BSystem.UInt32%2CSystem.UInt32%7D%2CSystem.UInt32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L259">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Journeys_Journey_1_ChainSpecial_" data-uid="Itinero.Transit.Journeys.Journey`1.ChainSpecial*"></a>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_ChainSpecial_System_UInt32_System_UInt64_System_ValueTuple_System_UInt32_System_UInt32__System_UInt32_" data-uid="Itinero.Transit.Journeys.Journey`1.ChainSpecial(System.UInt32,System.UInt64,System.ValueTuple{System.UInt32,System.UInt32},System.UInt32)">ChainSpecial(UInt32, UInt64, (UInt32 localTileId, UInt32 localId), UInt32)</h4>
+  <div class="markdown level1 summary"><p>Chaining constructorChain
+Gives a new journey which extends this journey with the given connection.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Journey&lt;T&gt; ChainSpecial(uint specialCode, ulong arrivalTime, (uint localTileId, uint localId)location, uint tripId)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt32</span></td>
+        <td><span class="parametername">specialCode</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.UInt64</span></td>
+        <td><span class="parametername">arrivalTime</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.ValueTuple</span>&lt;<span class="xref">System.UInt32</span>, <span class="xref">System.UInt32</span>&gt;</td>
+        <td><span class="parametername">location</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.UInt32</span></td>
+        <td><span class="parametername">tripId</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_DepartureTime.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.DepartureTime%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L305">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Journeys_Journey_1_DepartureTime_" data-uid="Itinero.Transit.Journeys.Journey`1.DepartureTime*"></a>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_DepartureTime" data-uid="Itinero.Transit.Journeys.Journey`1.DepartureTime">DepartureTime()</h4>
+  <div class="markdown level1 summary"><p>Departure time of this journey part</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ulong DepartureTime()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt64</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_Equals_Itinero_Transit_Journeys_Journey__0__.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.Equals(Itinero.Transit.Journeys.Journey%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L401">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Journeys_Journey_1_Equals_" data-uid="Itinero.Transit.Journeys.Journey`1.Equals*"></a>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_Equals_Itinero_Transit_Journeys_Journey__0__" data-uid="Itinero.Transit.Journeys.Journey`1.Equals(Itinero.Transit.Journeys.Journey{`0})">Equals(Journey&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected bool Equals(Journey&lt;T&gt; other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;</td>
+        <td><span class="parametername">other</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L406">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Journeys_Journey_1_Equals_" data-uid="Itinero.Transit.Journeys.Journey`1.Equals*"></a>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_Equals_System_Object_" data-uid="Itinero.Transit.Journeys.Journey`1.Equals(System.Object)">Equals(Object)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool Equals(object obj)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Object</span></td>
+        <td><span class="parametername">obj</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Boolean</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">System.Object.Equals(System.Object)</span></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_GetHashCode.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L414">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Journeys_Journey_1_GetHashCode_" data-uid="Itinero.Transit.Journeys.Journey`1.GetHashCode*"></a>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_GetHashCode" data-uid="Itinero.Transit.Journeys.Journey`1.GetHashCode">GetHashCode()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Int32</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">System.Object.GetHashCode()</span></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_LastTripId.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.LastTripId%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L296">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Journeys_Journey_1_LastTripId_" data-uid="Itinero.Transit.Journeys.Journey`1.LastTripId*"></a>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_LastTripId" data-uid="Itinero.Transit.Journeys.Journey`1.LastTripId">LastTripId()</h4>
+  <div class="markdown level1 summary"><p>Returns the trip id of the most recent connection which has a valid trip.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public uint? LastTripId()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Nullable</span>&lt;<span class="xref">System.UInt32</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_ToString.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L324">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Journeys_Journey_1_ToString_" data-uid="Itinero.Transit.Journeys.Journey`1.ToString*"></a>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_ToString" data-uid="Itinero.Transit.Journeys.Journey`1.ToString">ToString()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><span class="xref">System.Object.ToString()</span></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_ToString_Itinero_Transit_Data_StopsDb_.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.ToString(Itinero.Transit.Data.StopsDb)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L329">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Journeys_Journey_1_ToString_" data-uid="Itinero.Transit.Journeys.Journey`1.ToString*"></a>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_ToString_Itinero_Transit_Data_StopsDb_" data-uid="Itinero.Transit.Journeys.Journey`1.ToString(Itinero.Transit.Data.StopsDb)">ToString(StopsDb)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string ToString(StopsDb db)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.StopsDb.html">StopsDb</a></td>
+        <td><span class="parametername">db</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_ToString_Itinero_Transit_Data_StopsDb_StopsDbReader_.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.ToString(Itinero.Transit.Data.StopsDb.StopsDbReader)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L334">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Journeys_Journey_1_ToString_" data-uid="Itinero.Transit.Journeys.Journey`1.ToString*"></a>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_ToString_Itinero_Transit_Data_StopsDb_StopsDbReader_" data-uid="Itinero.Transit.Journeys.Journey`1.ToString(Itinero.Transit.Data.StopsDb.StopsDbReader)">ToString(StopsDb.StopsDbReader)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string ToString(StopsDb.StopsDbReader reader)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.StopsDb.StopsDbReader.html">StopsDb.StopsDbReader</a></td>
+        <td><span class="parametername">reader</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_Transfer_System_UInt64_.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.Transfer(System.UInt64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L271">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Journeys_Journey_1_Transfer_" data-uid="Itinero.Transit.Journeys.Journey`1.Transfer*"></a>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_Transfer_System_UInt64_" data-uid="Itinero.Transit.Journeys.Journey`1.Transfer(System.UInt64)">Transfer(UInt64)</h4>
+  <div class="markdown level1 summary"><p>Extends this journey with the given connection. If there is waiting time between this journey and the next,
+a 'Transfer' link is included.
+Transfer links <em>should not</em> be used to calculate the number of transfers, the differences in trip-ids should be used for this!</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Journey&lt;T&gt; Transfer(ulong departureTime)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt64</span></td>
+        <td><span class="parametername">departureTime</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1_TransferForward_Itinero_Transit_Data_IConnection_.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601.TransferForward(Itinero.Transit.Data.IConnection)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L279">View Source</a>
+  </span>
+  <a id="Itinero_Transit_Journeys_Journey_1_TransferForward_" data-uid="Itinero.Transit.Journeys.Journey`1.TransferForward*"></a>
+  <h4 id="Itinero_Transit_Journeys_Journey_1_TransferForward_Itinero_Transit_Data_IConnection_" data-uid="Itinero.Transit.Journeys.Journey`1.TransferForward(Itinero.Transit.Data.IConnection)">TransferForward(IConnection)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Journey&lt;T&gt; TransferForward(IConnection c)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.IConnection.html">IConnection</a></td>
+        <td><span class="parametername">c</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="Itinero.Transit.Journeys.JourneyExtensions.html#Itinero_Transit_Journeys_JourneyExtensions_AllParts__1_Itinero_Transit_Journeys_Journey___0__">JourneyExtensions.AllParts&lt;T&gt;(Journey&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="Itinero.Transit.Journeys.JourneyExtensions.html#Itinero_Transit_Journeys_JourneyExtensions_Reversed__1_Itinero_Transit_Journeys_Journey___0__">JourneyExtensions.Reversed&lt;T&gt;(Journey&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="Itinero.Transit.Journeys.JourneyExtensions.html#Itinero_Transit_Journeys_JourneyExtensions_Reversed__1_Itinero_Transit_Journeys_Journey___0__System_Collections_Generic_List_Itinero_Transit_Journeys_Journey___0___">JourneyExtensions.Reversed&lt;T&gt;(Journey&lt;T&gt;, List&lt;Journey&lt;T&gt;&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="Itinero.Transit.Journeys.JourneyExtensions.html#Itinero_Transit_Journeys_JourneyExtensions_Pruned__1_Itinero_Transit_Journeys_Journey___0__">JourneyExtensions.Pruned&lt;T&gt;(Journey&lt;T&gt;)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_Journeys_Journey_1.md&amp;value=---%0Auid%3A%20Itinero.Transit.Journeys.Journey%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit/Data/Journeys/Journey.cs/#L23" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

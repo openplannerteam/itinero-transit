@@ -1,0 +1,371 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class OsmTransferGenerator
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class OsmTransferGenerator
+   ">
+    <meta name="generator" content="docfx 2.40.10.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Itinero.Transit.OsmTransferGenerator">
+  
+  
+  <h1 id="Itinero_Transit_OsmTransferGenerator" data-uid="Itinero.Transit.OsmTransferGenerator" class="text-break">Class OsmTransferGenerator
+  </h1>
+  <div class="markdown level0 summary"><p>The transfer generator has the responsibility of creating
+transfers between multiple locations, possibly intermodal.
+If the departure and arrival location are the same, an internal
+transfer is generate.
+If not, the OpenStreetMap database is queried to generate a path between them.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><span class="xref">OsmTransferGenerator</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="Itinero.Transit.Data.Walks.IOtherModeGenerator.html">IOtherModeGenerator</a></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Itinero.Transit.html">Itinero.Transit</a></h6>
+  <h6><strong>Assembly</strong>: Itinero.Transit.IO.OSM.dll</h6>
+  <h5 id="Itinero_Transit_OsmTransferGenerator_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class OsmTransferGenerator : object, IOtherModeGenerator</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_OsmTransferGenerator__ctor_System_String_Itinero_Transit_Data_StopsDb_StopsDbReader_Itinero_Profiles_Profile_.md&amp;value=---%0Auid%3A%20Itinero.Transit.OsmTransferGenerator.%23ctor(System.String%2CItinero.Transit.Data.StopsDb.StopsDbReader%2CItinero.Profiles.Profile)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit.IO.OSM/OsmTransferGenerator.cs/#L45">View Source</a>
+  </span>
+  <a id="Itinero_Transit_OsmTransferGenerator__ctor_" data-uid="Itinero.Transit.OsmTransferGenerator.#ctor*"></a>
+  <h4 id="Itinero_Transit_OsmTransferGenerator__ctor_System_String_Itinero_Transit_Data_StopsDb_StopsDbReader_Itinero_Profiles_Profile_" data-uid="Itinero.Transit.OsmTransferGenerator.#ctor(System.String,Itinero.Transit.Data.StopsDb.StopsDbReader,Itinero.Profiles.Profile)">OsmTransferGenerator(String, StopsDb.StopsDbReader, Profiles.Profile)</h4>
+  <div class="markdown level1 summary"><p>Generate a new transfer generator, which takes into account
+the time needed to transfer, walk, ...</p>
+<p>Footpaths are generated using an Osm-based router database</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public OsmTransferGenerator(string routerdbPath, StopsDb.StopsDbReader stopsReader, Profiles.Profile walkingProfile = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">routerdbPath</span></td>
+        <td><p>To create paths</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Data.StopsDb.StopsDbReader.html">StopsDb.StopsDbReader</a></td>
+        <td><span class="parametername">stopsReader</span></td>
+        <td><p>The database containing all the stops</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">Itinero.Profiles.Profile</span></td>
+        <td><span class="parametername">walkingProfile</span></td>
+        <td><p>How does the user transport himself over the OSM graph? Default is pedestrian</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_OsmTransferGenerator_CreateArrivingTransfer__1_Itinero_Transit_Journeys_Journey___0__System_UInt64_System_ValueTuple_System_UInt32_System_UInt32__.md&amp;value=---%0Auid%3A%20Itinero.Transit.OsmTransferGenerator.CreateArrivingTransfer%60%601(Itinero.Transit.Journeys.Journey%7B%60%600%7D%2CSystem.UInt64%2CSystem.ValueTuple%7BSystem.UInt32%2CSystem.UInt32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit.IO.OSM/OsmTransferGenerator.cs/#L128">View Source</a>
+  </span>
+  <a id="Itinero_Transit_OsmTransferGenerator_CreateArrivingTransfer_" data-uid="Itinero.Transit.OsmTransferGenerator.CreateArrivingTransfer*"></a>
+  <h4 id="Itinero_Transit_OsmTransferGenerator_CreateArrivingTransfer__1_Itinero_Transit_Journeys_Journey___0__System_UInt64_System_ValueTuple_System_UInt32_System_UInt32__" data-uid="Itinero.Transit.OsmTransferGenerator.CreateArrivingTransfer``1(Itinero.Transit.Journeys.Journey{``0},System.UInt64,System.ValueTuple{System.UInt32,System.UInt32})">CreateArrivingTransfer&lt;T&gt;(Journey&lt;T&gt;, UInt64, (UInt32, UInt32))</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Journey&lt;T&gt; CreateArrivingTransfer&lt;T&gt;(Journey&lt;T&gt; buildOn, ulong timeWhenArriving, (uint, uint)otherLocation)
+    where T : IJourneyStats&lt;T&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;</td>
+        <td><span class="parametername">buildOn</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.UInt64</span></td>
+        <td><span class="parametername">timeWhenArriving</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.ValueTuple</span>&lt;<span class="xref">System.UInt32</span>, <span class="xref">System.UInt32</span>&gt;</td>
+        <td><span class="parametername">otherLocation</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_OsmTransferGenerator_CreateDepartureTransfer__1_Itinero_Transit_Journeys_Journey___0__System_UInt64_System_ValueTuple_System_UInt32_System_UInt32__.md&amp;value=---%0Auid%3A%20Itinero.Transit.OsmTransferGenerator.CreateDepartureTransfer%60%601(Itinero.Transit.Journeys.Journey%7B%60%600%7D%2CSystem.UInt64%2CSystem.ValueTuple%7BSystem.UInt32%2CSystem.UInt32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit.IO.OSM/OsmTransferGenerator.cs/#L102">View Source</a>
+  </span>
+  <a id="Itinero_Transit_OsmTransferGenerator_CreateDepartureTransfer_" data-uid="Itinero.Transit.OsmTransferGenerator.CreateDepartureTransfer*"></a>
+  <h4 id="Itinero_Transit_OsmTransferGenerator_CreateDepartureTransfer__1_Itinero_Transit_Journeys_Journey___0__System_UInt64_System_ValueTuple_System_UInt32_System_UInt32__" data-uid="Itinero.Transit.OsmTransferGenerator.CreateDepartureTransfer``1(Itinero.Transit.Journeys.Journey{``0},System.UInt64,System.ValueTuple{System.UInt32,System.UInt32})">CreateDepartureTransfer&lt;T&gt;(Journey&lt;T&gt;, UInt64, (UInt32, UInt32))</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Journey&lt;T&gt; CreateDepartureTransfer&lt;T&gt;(Journey&lt;T&gt; buildOn, ulong timeWhenDeparting, (uint, uint)otherLocation)
+    where T : IJourneyStats&lt;T&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;</td>
+        <td><span class="parametername">buildOn</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.UInt64</span></td>
+        <td><span class="parametername">timeWhenDeparting</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">System.ValueTuple</span>&lt;<span class="xref">System.UInt32</span>, <span class="xref">System.UInt32</span>&gt;</td>
+        <td><span class="parametername">otherLocation</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Itinero.Transit.Journeys.Journey-1.html">Journey</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_OsmTransferGenerator_Range.md&amp;value=---%0Auid%3A%20Itinero.Transit.OsmTransferGenerator.Range%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit.IO.OSM/OsmTransferGenerator.cs/#L155">View Source</a>
+  </span>
+  <a id="Itinero_Transit_OsmTransferGenerator_Range_" data-uid="Itinero.Transit.OsmTransferGenerator.Range*"></a>
+  <h4 id="Itinero_Transit_OsmTransferGenerator_Range" data-uid="Itinero.Transit.OsmTransferGenerator.Range">Range()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public float Range()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.Single</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="Itinero.Transit.Data.Walks.IOtherModeGenerator.html">IOtherModeGenerator</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/openplannerteam/itinero-transit/new/features/docfx/apiSpec/new?filename=Itinero_Transit_OsmTransferGenerator.md&amp;value=---%0Auid%3A%20Itinero.Transit.OsmTransferGenerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/openplannerteam/itinero-transit/blob/features/docfx/src/Itinero.Transit.IO.OSM/OsmTransferGenerator.cs/#L23" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

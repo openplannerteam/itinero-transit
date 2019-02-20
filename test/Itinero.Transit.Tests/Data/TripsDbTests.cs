@@ -1,5 +1,5 @@
-using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Attributes;
 using Xunit;
 
 namespace Itinero.Transit.Tests.Data

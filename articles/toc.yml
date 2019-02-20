@@ -1,0 +1,6 @@
+- name: Core Concepts
+  href: index.md
+- name: Connection Scan Algorithm
+  href: CSA.md 
+- name: Using the Library
+  href: UsingTheLibrary.md

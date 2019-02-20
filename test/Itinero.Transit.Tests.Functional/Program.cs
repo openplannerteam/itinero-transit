@@ -26,18 +26,6 @@ namespace Itinero.Transit.Tests.Functional
         private const string Kortrijk = "http://irail.be/stations/NMBS/008896008";
 
 
-        private static int _nrOfRuns = 1;
-
-        private static readonly List<DefaultFunctionalTest> AllTests =
-            new List<DefaultFunctionalTest>
-            {
-                EarliestConnectionScanTest.Default,
-                LatestConnectionScanTest.Default,
-                ProfiledConnectionScanTest.Default,
-                EasPcsComparison.Default,
-                EasLasComparison.Default
-            };
-
         private static readonly Dictionary<string, DefaultFunctionalTest> AllTestsNamed =
             new Dictionary<string, DefaultFunctionalTest>
             {
@@ -45,23 +33,140 @@ namespace Itinero.Transit.Tests.Functional
                 {"las", LatestConnectionScanTest.Default},
                 {"pcs", ProfiledConnectionScanTest.Default},
                 {"easpcs", EasPcsComparison.Default},
-                {"easlas", EasLasComparison.Default}
+                {"easlas", EasLasComparison.Default},
+                {"isochrone", IsochroneTest.Default}
             };
 
-        public static void Main(string[] args)
+
+        private static void RunTests(IReadOnlyCollection<DefaultFunctionalTest> tests, int nrOfRuns)
         {
-            args = new[]
-            {
-                "1",
-                "eas"
-            };
+            EnableLogging();
+
+
+            Log.Information("Starting the Functional Tests...");
+            var date = DateTime.Now.Date; // LOCAL TIMES! //
+            // test loading a connections db
+            var db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
+
             
-            var tests = AllTests;
-            if (args.Length > 0)
+            
+
+
+            // test read/writing a transit db from/to a stream.
+            using (var stream = WriteTransitDbTest.Default.Run(db))
+           {
+               stream.Seek(0, SeekOrigin.Begin);
+               
+               db = ReadTransitDbTest.Default.Run(stream);
+           }
+
+            
+            
+            
+            TripHeadsignTest.Default.Run(db);
+            
+            //new MultipleLoadTest().Run(0);
+
+            ConnectionsDbDepartureEnumeratorTest.Default.Run(db);
+            
+            TestClosestStopsAndRouting(db);
+
+            // Tests all the algorithms on multiple inputs
+            
+            var inputs = new List<(TransitDb, string, string, DateTime, DateTime)>
             {
-                _nrOfRuns = int.Parse(args[0]);
+                (db, Brugge,
+                    Gent,
+                    date.Date.AddHours(10),
+                    date.Date.AddHours(12)),
+                (db, Brugge,
+                    Poperinge,
+                    date.Date.AddHours(10),
+                    date.Date.AddHours(13)),
+                (db, Brugge,
+                    Kortrijk,
+                    date.Date.AddHours(6),
+                    date.Date.AddHours(20)),
+                (db, Poperinge,
+                    Vielsalm,
+                    date.Date.AddHours(10),
+                    date.Date.AddHours(18))
+            };
+
+            var failed = 0;
+            var results = new Dictionary<string, int>();
+
+            foreach (var t in tests)
+            {
+                var name = t.GetType().Name;
+                results[name] = 0;
+                foreach (var i in inputs)
+                {
+                    try
+                    {
+                        if (!t.RunPerformance(i, nrOfRuns))
+                        {
+                            Log.Information($"{name} failed");
+                            failed++;
+                        }
+                        else
+                        {
+                            results[name]++;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        failed++;
+                        Log.Error(e.Message);
+                        Log.Error(e.StackTrace);
+                    }
+                }
             }
 
+            foreach (var t in tests)
+            {
+                var name = t.GetType().Name;
+                Log.Information($"{name}: {results[name]}/{inputs.Count}");
+            }
+
+            if (failed > 0)
+            {
+                throw new Exception("Some tests failed");
+            }
+        }
+
+        
+        
+        
+        
+        private static void TestClosestStopsAndRouting(TransitDb db)
+        {
+            StopSearchTest.Default.RunPerformance((db, 4.336209297180176,
+                50.83567623496864, 1000));
+            StopSearchTest.Default.RunPerformance((db, 4.436824321746825,
+                50.41119778957908, 1000));
+            StopSearchTest.Default.RunPerformance((db, 3.329758644104004,
+                50.99052927907061, 1000));
+        }
+
+        
+        
+        
+        
+        public static void Main(string[] args)
+        {
+            List<DefaultFunctionalTest> tests = null;
+            var nrOfRuns = 1;
+
+
+            // Handle input arguments
+            // Determine how many times each test should be run
+            if (args.Length > 0)
+            {
+                nrOfRuns = int.Parse(args[0]);
+            }
+
+            // Determine if tests should be skipped
             if (args.Length > 1)
             {
                 tests = new List<DefaultFunctionalTest>();
@@ -84,108 +189,19 @@ namespace Itinero.Transit.Tests.Functional
                 }
             }
 
-            EnableLogging();
-            
-            
-            Log.Information("Starting the Functional Tests...");
 
-            //new MultipleLoadTest().Run(0);
-            
-            var date = DateTime.Now.Date; // LOCAL TIMES! //
-            // test loading a connections db
-            var db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
-            
-//            // test read/writing a transit db from/to a stream.
-//            using (var stream = WriteTransitDbTest.Default.Run(db))
-//            {
-//                stream.Seek(0, SeekOrigin.Begin);
-//                
-//                db = ReadTransitDbTest.Default.Run(stream);
-//            }
-//
-//            TripHeadsignTest.Default.Run(db);
-//
-//            ConnectionsDbDepartureEnumeratorTest.Default.Run(db);
-//            TestClosestStopsAndRouting(db);
-//            new IsochroneTest().Run((db, Brugge, Gent, date.Date.AddHours(12), date.Date.AddHours(14)));
-            AlgorithmTests(db, date, tests);
-        }
-
-        private static void AlgorithmTests(TransitDb db, DateTime date,
-            IReadOnlyCollection<DefaultFunctionalTest> tests)
-        {
-            var inputs = new List<(TransitDb, string, string, DateTime, DateTime)>
+            if (tests == null)
             {
-                (db, Brugge,
-                    Gent,
-                    date.Date.AddHours(10),
-                    date.Date.AddHours(12)),
-                (db, Brugge,
-                    Poperinge,
-                    date.Date.AddHours(10),
-                    date.Date.AddHours(13)),
-                (db, Brugge,
-                    Kortrijk,
-                    date.Date.AddHours(6),
-                    date.Date.AddHours(20)),
-                (db, Poperinge,
-                    Vielsalm,
-                    date.Date.AddHours(10),
-                    date.Date.AddHours(18))
-            };
-            
-            var failed = 0;
-            var results = new Dictionary<string, int>();
-
-            foreach (var t in tests)
-            {
-                var name = t.GetType().Name;
-                results[name] = 0;
-                foreach (var i in inputs)
+                tests = new List<DefaultFunctionalTest>();
+                foreach (var t in AllTestsNamed)
                 {
-//                    try
-//                    {
-                        if (!t.RunPerformance(i, _nrOfRuns))
-                        {
-                            Log.Information($"{name} failed");
-                            failed++;
-                        }
-                        else
-                        {
-                            results[name]++;
-                        }
-//                    }
-//                    catch (Exception e)
-//                    {
-//                        failed++;
-//                        Log.Error(e.Message);
-//                        Log.Error(e.StackTrace);
-//                    }
+                    tests.Add(t.Value);
                 }
             }
 
-            foreach (var t in tests)
-            {
-                var name = t.GetType().Name;
-                Log.Information($"{name}: {results[name]}/{inputs.Count}");
-            }
-
-            if (failed > 0)
-            {
-                throw new Exception("Some tests failed");
-            }
+            // And actually run the tests
+            RunTests(tests, nrOfRuns);
         }
-
-        private static void TestClosestStopsAndRouting(TransitDb db)
-        {
-            StopSearchTest.Default.RunPerformance((db, 4.336209297180176,
-                50.83567623496864, 1000), _nrOfRuns);
-            StopSearchTest.Default.RunPerformance((db, 4.436824321746825,
-                50.41119778957908, 1000), _nrOfRuns);
-            StopSearchTest.Default.RunPerformance((db, 3.329758644104004,
-                50.99052927907061, 1000), _nrOfRuns);
-        }
-
 
         private static void EnableLogging()
         {

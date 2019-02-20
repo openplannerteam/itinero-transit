@@ -42,19 +42,12 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         private readonly Dictionary<uint, Journey<T>> _trips = new Dictionary<uint, Journey<T>>();
 
-
-        /// <summary>
-        /// Construct a AES
-        /// </summary>
-        /// <param name="userDepartureLocation"></param>
-        /// <param name="userTargetLocation"></param>
-        /// <param name="earliestDeparture"></param>
-        /// <param name="lastDeparture"></param>
-        /// <param name="profile"></param>
-        public EarliestConnectionScan((uint localTileId, uint localId) userDepartureLocation,
+        public EarliestConnectionScan(
+            TransitDb transitDb,
+            (uint localTileId, uint localId) userDepartureLocation,
             (uint localTileId, uint localId) userTargetLocation,
             DateTime earliestDeparture, DateTime lastDeparture,
-            Profile<T> profile) : this(
+            Profile<T> profile) : this(transitDb,
             new List<(uint localTileId, uint localId)> {userDepartureLocation},
             new List<(uint localTileId, uint localId)> {userTargetLocation},
             (uint) earliestDeparture.ToUnixTime(), (uint) lastDeparture.ToUnixTime(),
@@ -63,10 +56,11 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
-        public EarliestConnectionScan((uint localTileId, uint localId) userDepartureLocation,
+        public EarliestConnectionScan(TransitDb transitDb,
+            (uint localTileId, uint localId) userDepartureLocation,
             (uint localTileId, uint localId) userTargetLocation,
             ulong earliestDeparture, ulong lastDeparture,
-            Profile<T> profile) : this(
+            Profile<T> profile) : this(transitDb,
             new List<(uint localTileId, uint localId)> {userDepartureLocation},
             new List<(uint localTileId, uint localId)> {userTargetLocation},
             earliestDeparture, lastDeparture,
@@ -76,8 +70,9 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
         public EarliestConnectionScan(
+            TransitDb transitDb,
             IEnumerable<(uint localTileId, uint localId)> userDepartureLocations,
-            List<(uint localTileId, uint localId)> userTargetLocations,
+            IEnumerable<(uint localTileId, uint localId)> userTargetLocations,
             Time earliestDeparture, Time lastDeparture,
             Profile<T> profile)
         {
@@ -85,12 +80,12 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 throw new ArgumentException("Departure time falls after arrival time");
             }
-            
+
             _earliestDeparture = earliestDeparture;
             _lastDeparture = lastDeparture;
-            _connectionsProvider = profile.TransitDbSnapShot.ConnectionsDb;
-            _stopsDb = profile.TransitDbSnapShot.StopsDb;
-        
+            _connectionsProvider = transitDb.Latest.ConnectionsDb;
+            _stopsDb = transitDb.Latest.StopsDb;
+
             _stopsReader = _stopsDb.GetReader();
             _transferPolicy = profile.InternalTransferGenerator;
             _walkPolicy = profile.WalksGenerator;
@@ -109,6 +104,7 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
         public EarliestConnectionScan(
+            TransitDb transitDb,
             IEnumerable<(uint localTileId, uint localId, ulong travelTime)> userDepartureLocations,
             List<(uint localTileId, uint localId, ulong travelTime)> userTargetLocations,
             Time earliestDeparture, Time lastDeparture,
@@ -121,8 +117,8 @@ namespace Itinero.Transit.Algorithms.CSA
             
             _earliestDeparture = earliestDeparture;
             _lastDeparture = lastDeparture;
-            _connectionsProvider = profile.TransitDbSnapShot.ConnectionsDb;
-            _stopsDb = profile.TransitDbSnapShot.StopsDb;
+            _connectionsProvider = transitDb.Latest.ConnectionsDb;
+            _stopsDb = transitDb.Latest.StopsDb;
         
             _stopsReader = _stopsDb.GetReader();
             _transferPolicy = profile.InternalTransferGenerator;
@@ -321,13 +317,13 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 return;
             }
-            
-             _stopsReader.MoveTo(location);
+
+            _stopsReader.MoveTo(location);
             var reachableLocations =
                 _stopsDb.LocationsInRange(_stopsReader, _walkPolicy.Range());
 
             var journey = _s[location];
-            
+
             foreach (var reachableLocation in reachableLocations)
             {
                 var id = reachableLocation.Id;
@@ -335,6 +331,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 {
                     continue;
                 }
+
                 var walkingJourney = _walkPolicy.CreateDepartureTransfer(journey, ulong.MaxValue, id);
                 if (walkingJourney == null)
                 {
@@ -345,14 +342,14 @@ namespace Itinero.Transit.Algorithms.CSA
                 {
                     _s[id] = walkingJourney;
                 }
-                else if(_s[id].Time > walkingJourney.Time)
+                else if (_s[id].Time > walkingJourney.Time)
                 {
                     _s[id] = walkingJourney;
                 }
             }
         }
-        
-        
+
+
         /// <summary>
         /// Iterates all the target locations.
         /// Returns the earliest time that one of them can be reached, along with the chosen location.
@@ -430,7 +427,5 @@ namespace Itinero.Transit.Algorithms.CSA
         {
             return _s;
         }
-        
-        
     }
 }

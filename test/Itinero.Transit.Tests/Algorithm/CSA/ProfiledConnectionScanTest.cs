@@ -15,17 +15,15 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         [Fact]
         public void TestPcsSimple()
         {
-            var db = Db.GetDefaultTestDb().Latest;
+            var tdb = Db.GetDefaultTestDb();
+            var db = tdb.Latest;
 
-            var profile = new Profile<TransferStats>(
-                db,
-                new InternalTransferGenerator(60),
-                new BirdsEyeInterWalkTransferGenerator(db.StopsDb.GetReader()),
+            var profile = new Profile<TransferStats>(new InternalTransferGenerator(60),
+                new CrowsFlightTransferGenerator(tdb),
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
-            //Pr("Starting PCS from (0,0) to (0,3)");
-
             var pcs = new ProfiledConnectionScan<TransferStats>(
+                tdb,
                 (0, 0), (0, 3),
                 new DateTime(2018, 12, 04, 16, 00, 00),
                 new DateTime(2018, 12, 04, 18, 00, 00),
@@ -81,13 +79,11 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
             var latest = transitDb.Latest;
 
-            var profile = new Profile<TransferStats>(
-                latest,
-                new InternalTransferGenerator(60),
-                new BirdsEyeInterWalkTransferGenerator(latest.StopsDb.GetReader()),
+            var profile = new Profile<TransferStats>(new InternalTransferGenerator(60),
+                new CrowsFlightTransferGenerator(transitDb),
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
-            var pcs = new ProfiledConnectionScan<TransferStats>(
+            var pcs = new ProfiledConnectionScan<TransferStats>(transitDb,
                 (0, 0), (0, 1), new DateTime(2018, 12, 04, 16, 00, 00),
                 new DateTime(2018, 12, 04, 18, 00, 00),
                 profile);

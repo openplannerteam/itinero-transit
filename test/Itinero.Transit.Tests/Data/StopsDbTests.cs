@@ -4,6 +4,7 @@ using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data.Tiles;
 using Xunit;
+
 // ReSharper disable UnusedVariable
 
 namespace Itinero.Transit.Tests.Data

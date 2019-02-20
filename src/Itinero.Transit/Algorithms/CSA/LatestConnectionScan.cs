@@ -45,15 +45,12 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <summary>
         /// Construct a AES
         /// </summary>
-        /// <param name="userDepartureLocation"></param>
-        /// <param name="userTargetLocation"></param>
-        /// <param name="earliestDeparture"></param>
-        /// <param name="lastDeparture"></param>
-        /// <param name="profile"></param>
-        public LatestConnectionScan((uint localTileId, uint localId) userDepartureLocation,
+        public LatestConnectionScan(
+            TransitDb transitDb,
+            (uint localTileId, uint localId) userDepartureLocation,
             (uint localTileId, uint localId) userTargetLocation,
             DateTime earliestDeparture, DateTime lastDeparture,
-            Profile<T> profile) : this(
+            Profile<T> profile) : this(transitDb,
             new List<(uint localTileId, uint localId)> {userDepartureLocation},
             new List<(uint localTileId, uint localId)> {userTargetLocation},
             (uint) earliestDeparture.ToUnixTime(), (uint) lastDeparture.ToUnixTime(),
@@ -62,10 +59,12 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
-        public LatestConnectionScan((uint localTileId, uint localId) userDepartureLocation,
+        public LatestConnectionScan(
+            TransitDb transitDb,
+            (uint localTileId, uint localId) userDepartureLocation,
             (uint localTileId, uint localId) userTargetLocation,
             ulong earliestDeparture, ulong lastDeparture,
-            Profile<T> profile) : this(
+            Profile<T> profile) : this(transitDb,
             new List<(uint localTileId, uint localId)> {userDepartureLocation},
             new List<(uint localTileId, uint localId)> {userTargetLocation},
             earliestDeparture, lastDeparture,
@@ -75,7 +74,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
 
         // ReSharper disable once MemberCanBePrivate.Global
-        public LatestConnectionScan(
+        public LatestConnectionScan(TransitDb transitDb,
             List<(uint localTileId, uint localId)> userDepartureLocation,
             IEnumerable<(uint localTileId, uint localId)> userTargetLocation,
             Time earliestDeparture, Time lastDeparture,
@@ -88,7 +87,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             _earliestDeparture = earliestDeparture;
             _lastDeparture = lastDeparture;
-            _connectionsProvider = profile.TransitDbSnapShot.ConnectionsDb;
+            _connectionsProvider = transitDb.Latest.ConnectionsDb;
             _transferPolicy = profile.InternalTransferGenerator;
             _userDepartureLocation = userDepartureLocation;
             foreach (var loc in userTargetLocation)
@@ -250,7 +249,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 else
                 {
                     var oldJourney = _s[c.DepartureStop];
-                    
+
                     if (journeyFromDeparture.Time > oldJourney.Time)
                     {
                         _s[c.DepartureStop] = journeyFromDeparture;

@@ -4,7 +4,6 @@ using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
-using Xunit;
 
 // ReSharper disable PossibleMultipleEnumeration
 
@@ -19,10 +18,10 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             (TransitDb transitDb, string departureStopId, string arrivalStopId, DateTime
                 departureTime, DateTime arrivalTime) input)
         {
-            var latest = input.transitDb.Latest;
-            var p = new Profile<TransferStats>(latest,
-                new InternalTransferGenerator(),
-                new BirdsEyeInterWalkTransferGenerator(latest.StopsDb.GetReader()),
+            var tbd = input.transitDb;
+            var latest = tbd.Latest;
+            var p = new Profile<TransferStats>(new InternalTransferGenerator(),
+                new CrowsFlightTransferGenerator(tbd),
                 new TransferStats(), TransferStats.ProfileTransferCompare);
 
 
@@ -33,11 +32,11 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             True(reader.MoveTo(input.arrivalStopId));
             var arrival = reader.Id;
 
-            var journeys = p.CalculateJourneys(
+            var journeys = tbd.CalculateJourneys(p,
                 departure, arrival, input.departureTime.ToUnixTime(), input.arrivalTime.ToUnixTime()
             );
             // verify result.
-            Assert.NotNull(journeys);
+            NotNull(journeys);
             True(journeys.Any());
 
             Information($"Found {journeys.Count()} profiles");
