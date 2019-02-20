@@ -19,6 +19,8 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
         private Timer _timer;
 
         public SynchronizationPolicy CurrentlyRunning { get; private set; }
+        public IReadOnlyList<(DateTime start, DateTime end)> LoadedTimeWindows => _db.LoadedTimeWindows;
+
 
         public Synchronizer(TransitDb db,
             Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb,
