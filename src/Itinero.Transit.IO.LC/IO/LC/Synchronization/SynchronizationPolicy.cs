@@ -7,5 +7,6 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
         uint Frequency { get; }
 
         void Run(DateTime triggerDate, TransitDbUpdater db);
+
     }
 }

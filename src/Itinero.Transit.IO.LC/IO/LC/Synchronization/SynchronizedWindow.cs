@@ -17,6 +17,9 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
         private readonly uint _retries;
         private readonly bool _forceUpdate;
 
+        // State leak to provide update reports. 
+        private DateTime? _triggeredDate = null;
+
         /// <summary>
         /// Create a new synchronization  policy
         /// </summary>
@@ -62,6 +65,14 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
                         $"Updating timewindow {start} --> {end} failed: {e.Message}\nThis is attempt {attempts} out of {_retries}");
                 }
             }
+        }
+
+        public override string ToString()
+        {
+            var updates = _forceUpdate ? "no overwrite" : "forces updating";
+            var retr = _retries == 0 ? "No retries on failing" : (_retries == 1 ? "Single retry on failing" : $"{_retries} retries when failing");
+            var now = _triggeredDate == null ? "" : $" Now running with date {_triggeredDate.Value:O}";
+            return $"SynchronizedWindow, {LoadBefore:g} --> {LoadAfter:g} (triggers every {TimeSpan.FromSeconds(Frequency)}, {updates}, {retr}){now}";
         }
     }
 }

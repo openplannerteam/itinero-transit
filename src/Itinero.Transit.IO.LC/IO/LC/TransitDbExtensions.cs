@@ -93,7 +93,7 @@ namespace Itinero.Transit.IO.LC.IO.LC
 
             // Merely initializing the synchronizer is enough to activate it
             // We return it though, e.g. if the user wants to query the loaded time frames
-            return (new Synchronizer(tdb, dataset.UpdateTimeFrame, syncPolicies), dataset)g g ;
+            return (new Synchronizer(tdb, dataset.UpdateTimeFrame, syncPolicies), dataset);
         }
     }
 }

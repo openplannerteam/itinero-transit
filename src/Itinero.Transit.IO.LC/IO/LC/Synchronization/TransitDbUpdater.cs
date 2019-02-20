@@ -74,7 +74,6 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
                 writer.Close();
             }
         }
-
     }
     
     

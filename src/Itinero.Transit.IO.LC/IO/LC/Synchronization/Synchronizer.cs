@@ -18,8 +18,11 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
         private bool _firstRun = true;
         private Timer _timer;
 
+        public SynchronizationPolicy CurrentlyRunning { get; private set; }
+
         public Synchronizer(TransitDb db,
-            Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb, IReadOnlyCollection<SynchronizationPolicy> policies)
+            Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb,
+            IReadOnlyCollection<SynchronizationPolicy> policies)
         {
             _db = new TransitDbUpdater(db, updateDb);
             // Highest frequency should be run often and thus has priority
@@ -46,7 +49,8 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
             _timer.Start();
         }
 
-        public Synchronizer(TransitDb db, Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb, params SynchronizationPolicy[] policies) :
+        public Synchronizer(TransitDb db, Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb,
+            params SynchronizationPolicy[] policies) :
             this(db, updateDb, new List<SynchronizationPolicy>(policies))
         {
         }
@@ -84,11 +88,16 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
 
                 try
                 {
+                    CurrentlyRunning = policy;
                     policy.Run(triggerDate, _db);
                 }
                 catch (Exception e)
                 {
                     Log.Error("Running synchronization failed:\n" + e);
+                }
+                finally
+                {
+                    CurrentlyRunning = null;
                 }
             }
 
