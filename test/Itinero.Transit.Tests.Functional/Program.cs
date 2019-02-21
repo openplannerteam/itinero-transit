@@ -55,16 +55,17 @@ namespace Itinero.Transit.Tests.Functional
             var date = DateTime.Now.Date; // LOCAL TIMES! //
 
 
-            new TestAutoUpdating().Run(null);
-
-
-            new MultipleLoadTest().Run(0);
             var db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
+            Log.Information("Running TestReadWrite");
             new TestReadWrite().Run(db);
-            new TestWriteToDisk().Run(db);
+            Log.Information("Running TestWriteToDisk");
 
+            new TestWriteToDisk().Run(db);
+            
+            Log.Information("Running TripHeadSignTest");
             TripHeadsignTest.Default.Run(db);
 
+            new TestAutoUpdating().Run(null);
             //new MultipleLoadTest().Run(0);
 
             ConnectionsDbDepartureEnumeratorTest.Default.Run(db);

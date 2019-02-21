@@ -4,6 +4,7 @@ using Itinero.Transit.Data;
 using Itinero.Transit.IO.LC.CSA;
 using Itinero.Transit.IO.LC.IO.LC;
 using Itinero.Transit.IO.LC.IO.LC.Synchronization;
+using Itinero.Transit.Tests.Functional.Data;
 
 namespace Itinero.Transit.Tests.Functional.IO.LC.Synchronization
 {
@@ -17,13 +18,15 @@ namespace Itinero.Transit.Tests.Functional.IO.LC.Synchronization
             var (syncer, _) = tdb.UseLinkedConnections(
                 sncb.connections,
                 sncb.locations,
-                new SynchronizedWindow(5, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(600)));
+                new SynchronizedWindow(5, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(3600)));
 
-            Thread.Sleep(6000);
-            syncer.Stop();
-
+            Thread.Sleep(5500);
             NotNull(syncer.CurrentlyRunning);
             NotNull(syncer.CurrentlyRunning.ToString());
+            
+            Thread.Sleep(1000);
+            syncer.Stop();
+
             
             
             return input;
