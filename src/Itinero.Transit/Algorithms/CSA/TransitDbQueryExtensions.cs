@@ -171,15 +171,20 @@ namespace Itinero.Transit.Algorithms.CSA
         ///
         /// Calculates the profiles Journeys for the given coordinates.
         /// 
-        ///  Starts with an EAS, then gives profiled journeys.
+        /// Starts with an EAS, then gives profiled journeys.
         /// 
-        ///  Note that the profile scan might scan in a window far smaller then the last-arrival time
+        /// Note that the profile scan might scan in a window far smaller then the last-arrival time
+        ///
+        /// If either departureTime of arrivalTime are given (but _not_ both), the earliestArrivalScan will be run.
+        /// The time of this EAS-journey (*2) is used as lookahead.
+        /// However, running this EAS needs a bound too. This bound is given by lookAhead (time in seconds) and will not be crossed
         /// 
         /// </summary>
         public static IEnumerable<Journey<T>> CalculateJourneys<T>
         (this TransitDb tdb,
             Profile<T> profile, string from, string to,
-            DateTime? departure = null, DateTime? arrival = null) where T : IJourneyStats<T>
+            DateTime? departure = null, DateTime? arrival = null, uint lookAhead = 24 * 60 * 60)
+            where T : IJourneyStats<T>
         {
             var reader = tdb.Latest.StopsDb.GetReader();
             if (!reader.MoveTo(from)) throw new ArgumentException($"Departure location {from} was not found");
@@ -189,21 +194,28 @@ namespace Itinero.Transit.Algorithms.CSA
             return tdb.CalculateJourneys(profile,
                 fromId, toId,
                 departure?.ToUnixTime() ?? 0,
-                arrival?.ToUnixTime() ?? 0);
+                arrival?.ToUnixTime() ?? 0,
+                lookAheadt);
         }
 
         ///  <summary>
-        ///  Calculates the profiles Journeys for the given coordinates.
+        ///
+        /// Calculates the profiles Journeys for the given coordinates.
         /// 
-        ///  Starts with an EAS, then gives profiled journeys.
+        /// Starts with an EAS, then gives profiled journeys.
         /// 
-        ///  Note that the profile scan might scan in a window far smaller then the last-arrivaltime
-        ///  
+        /// Note that the profile scan might scan in a window far smaller then the last-arrivaltime
+        ///
+        /// If either departureTime of arrivalTime are given (but _not_ both), the earliestArrivalScan will be run.
+        /// The time of this EAS-journey (*2) is used as lookahead.
+        /// However, running this EAS needs a bound too. This bound is given by lookAhead (time in seconds) and will not be crossed
+        /// 
         ///  </summary>
         public static IEnumerable<Journey<T>> CalculateJourneys<T>
         (this TransitDb tdb,
             Profile<T> profile, (uint, uint) depLocation, (uint, uint) arrivalLocation,
-            ulong departureTime = 0, ulong lastArrivalTime = 0) where T : IJourneyStats<T>
+            ulong departureTime = 0, ulong lastArrivalTime = 0, uint lookAhead = 24 * 60 * 60)
+            where T : IJourneyStats<T>
         {
             if (departureTime == 0 && lastArrivalTime == 0)
             {
