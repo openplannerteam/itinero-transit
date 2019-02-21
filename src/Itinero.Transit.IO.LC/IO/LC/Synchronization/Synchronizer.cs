@@ -64,21 +64,27 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
         /// </summary>
         public void InitialRun()
         {
+            currentlyRunning = true;
             foreach (var policy in _policies)
             {
                 var unixNow = DateTime.Now.ToUnixTime();
                 var date = unixNow - unixNow % policy.Frequency;
                 var triggerDate = date.FromUnixTime();
+
+                CurrentlyRunning = policy;
+                Log.Information($"Currently running automated task (via initialRun) :{policy}");
                 policy.Run(triggerDate, _db);
+                Log.Information($"Done running automated task (via initialRun) :{policy}");
+
             }
 
+            currentlyRunning = false;
             _firstRun = false;
         }
 
 
         private void RunAll(Object sender = null, ElapsedEventArgs eventArgs = null)
         {
-
             if (currentlyRunning)
             {
                 Log.Information("Timer ticked, but is already running... Skipping automated tasks for now");
@@ -86,7 +92,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
             }
 
             currentlyRunning = true;
-            
+
             var unixNow = DateTime.Now.ToUnixTime();
             var date = unixNow - unixNow % _clockRate;
             var triggerDate = date.FromUnixTime();
@@ -103,10 +109,12 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
                     CurrentlyRunning = policy;
                     Log.Information($"Currently running automated task:{policy}");
                     policy.Run(triggerDate, _db);
+                    Log.Information($"Done running automated task:{policy}");
+
                 }
                 catch (Exception e)
                 {
-                    Log.Error("Running synchronization failed:\n" + e);
+                    Log.Error($"Running automated task {policy} failed:\n" + e);
                 }
                 finally
                 {
@@ -118,8 +126,6 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
             currentlyRunning = true;
         }
 
-        
-        
 
         private static uint Gcd(uint a, uint b)
         {
