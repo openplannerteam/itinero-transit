@@ -351,7 +351,10 @@ namespace Itinero.Transit.Journeys
         {
             reader?.MoveTo(Location);
             var location = Location.ToString();
-            reader?.Attributes?.TryGetValue("name", out location);
+            if (reader?.Attributes != null)
+            {
+                location = reader.Attributes.ToString();
+            }
 
             if (!SpecialConnection)
                 return

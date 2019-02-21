@@ -120,11 +120,19 @@ namespace Itinero.Transit.IO.LC
         {
             var globalId = location.Id();
             var stop1Id = globalId.ToString();
+            
+            var attributes =new AttributeCollection();
+            attributes.AddOrReplace("name", location.Name);
+            if (location.Names != null)
+            {
+                foreach (var (lang, name) in location.Names)
+                {
+                    attributes.AddOrReplace($"name:{lang}", name);
+                }
+            }
 
-            return _writer.AddOrUpdateStop(stop1Id, location.Lon, location.Lat,
-                new Attribute("name", location.Name));
+            return _writer.AddOrUpdateStop(stop1Id, location.Lon, location.Lat, attributes);
         }
-
 
         /// <summary>
         /// Adds the given stop to the DB. Returns the internal ID
