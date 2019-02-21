@@ -18,6 +18,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
         private bool _firstRun = true;
         private readonly Timer _timer;
 
+        private bool currentlyRunning = false;
         public SynchronizationPolicy CurrentlyRunning { get; private set; }
         public IReadOnlyList<(DateTime start, DateTime end)> LoadedTimeWindows => _db.LoadedTimeWindows;
 
@@ -77,6 +78,15 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
 
         private void RunAll(Object sender = null, ElapsedEventArgs eventArgs = null)
         {
+
+            if (currentlyRunning)
+            {
+                Log.Information("Timer ticked, but is already running... Skipping automated tasks for now");
+                return;
+            }
+
+            currentlyRunning = true;
+            
             var unixNow = DateTime.Now.ToUnixTime();
             var date = unixNow - unixNow % _clockRate;
             var triggerDate = date.FromUnixTime();
@@ -105,6 +115,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
             }
 
             _firstRun = false;
+            currentlyRunning = true;
         }
 
         
