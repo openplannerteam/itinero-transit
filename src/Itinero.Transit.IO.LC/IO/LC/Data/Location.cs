@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
@@ -16,6 +18,8 @@ namespace Itinero.Transit.IO.LC.CSA.LocationProviders
         public string Name;
         public float Lat, Lon;
 
+        public (string lang, string name)[] Names { get; set; }
+
         public Location(Uri uri) : base(uri)
         {
         }
@@ -30,6 +34,21 @@ namespace Itinero.Transit.IO.LC.CSA.LocationProviders
             Lat = json.GetFloat("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
             Lon = json.GetFloat("http://www.w3.org/2003/01/geo/wgs84_pos#long");
             Name = json.GetLDValue("http://xmlns.com/foaf/0.1/name");
+            if (json.TryGetValue("http://purl.org/dc/terms/alternative", out var alternativeNamesToken))
+            {
+                var names = new List<(string lang, string name)>();
+                foreach (var val in alternativeNamesToken)
+                {
+                    var lang = val.GetContents("@language") is JValue langVal ? langVal.ToString(CultureInfo.InvariantCulture) : string.Empty;
+                    var name = val.GetContents("@value") is JValue nameVal ? nameVal.ToString(CultureInfo.InvariantCulture) : string.Empty;
+                    if (!string.IsNullOrWhiteSpace(lang))
+                    {
+                        names.Add((lang, name));
+                    }
+                }
+
+                this.Names = names.ToArray();
+            }
         }
 
         public override string ToString()
