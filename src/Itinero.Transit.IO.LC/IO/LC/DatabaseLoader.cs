@@ -96,7 +96,7 @@ namespace Itinero.Transit.IO.LC
                 connection =>
                 {
                     _onError($"A connection is mentioned multiple times: {connection.Uri}");
-                    return false;
+                    return true;
                 },
                 (connection, errorMsg) =>
                 {
@@ -174,8 +174,8 @@ namespace Itinero.Transit.IO.LC
 
             var attributes = new AttributeCollection(
                 new Attribute("headsign", connection.Direction),
-                new Attribute("trip", connection.Trip().ToString()),
-                new Attribute("route", connection.Route().ToString())
+                new Attribute("trip", connection.Trip().ToString()+"-"+connection.Direction),
+                new Attribute("route", connection.Route().ToString()+"-"+connection.Direction)
             );
             return _writer.AddOrUpdateTrip(tripUri, attributes);
         }
