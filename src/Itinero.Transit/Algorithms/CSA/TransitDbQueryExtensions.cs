@@ -195,7 +195,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 fromId, toId,
                 departure?.ToUnixTime() ?? 0,
                 arrival?.ToUnixTime() ?? 0,
-                lookAheadt);
+                lookAhead);
         }
 
         ///  <summary>
