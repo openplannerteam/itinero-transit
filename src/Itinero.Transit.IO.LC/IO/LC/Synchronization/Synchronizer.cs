@@ -87,7 +87,8 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
         {
             if (currentlyRunning)
             {
-                Log.Information("Timer ticked, but is already running... Skipping automated tasks for now");
+                Log.Information("Timer ticked, but is already running... Skipping automated tasks for now\n." +
+                                $"Now running task is {CurrentlyRunning}");
                 return;
             }
 
