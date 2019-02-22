@@ -61,9 +61,9 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
             Thread.Sleep(11000);
 
             Assert.True(2 <= triggered5);
-            Assert.True(3 >= triggered5);
+            Assert.True(4 >= triggered5);
             Assert.True(1 <= triggered10);
-            Assert.True(2 >= triggered10);
+            Assert.True(3 >= triggered10);
         }
     }
 }
