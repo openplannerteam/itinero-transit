@@ -101,7 +101,7 @@ namespace Itinero.Transit.IO.LC.CSA
         {
             var (currentCount, batchTarget, batchCount, nrOfBatches) = status;
             Log.Information(
-                $"Importing locations: Running batch {batchCount}/{nrOfBatches}: Importing location {currentCount}/{batchTarget}");
+                $"Importing locations: Running batch {batchCount+1}/{nrOfBatches}: Importing location {currentCount}/{batchTarget}");
         }
 
 
@@ -109,7 +109,7 @@ namespace Itinero.Transit.IO.LC.CSA
         {
             var (currentCount, batchTarget, batchCount, nrOfBatches) = status;
             Log.Information(
-                $"Importing connections: Running batch {batchCount}/{nrOfBatches}: Importing timetable {currentCount} (out of an estimated {batchTarget})");
+                $"Importing connections: Running batch {batchCount+1}/{nrOfBatches}: Importing timetable {currentCount} (out of an estimated {batchTarget})");
         }
 
         public void UpdateTimeFrame(TransitDb.TransitDbWriter w, DateTime start, DateTime end)

@@ -18,7 +18,6 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
         private bool _firstRun = true;
         private readonly Timer _timer;
 
-        private bool currentlyRunning = false;
         public SynchronizationPolicy CurrentlyRunning { get; private set; }
         public IReadOnlyList<(DateTime start, DateTime end)> LoadedTimeWindows => _db.LoadedTimeWindows;
 
@@ -75,7 +74,6 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
         /// </summary>
         public void InitialRun()
         {
-            currentlyRunning = true;
             foreach (var policy in _policies)
             {
                 var unixNow = DateTime.Now.ToUnixTime();
@@ -88,7 +86,6 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
                 Log.Information($"Done running automated task (via initialRun) :{policy}");
             }
 
-            currentlyRunning = false;
             _firstRun = false;
         }
 
@@ -97,45 +94,46 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
         {
             _timer.Interval = _clockRate * 1000;
 
-            if (currentlyRunning)
+            if (CurrentlyRunning != null)
             {
                 Log.Information("Timer ticked, but is already running... Skipping automated tasks for now\n." +
                                 $"Now running task is {CurrentlyRunning}");
                 return;
             }
 
-            currentlyRunning = true;
 
             var unixNow = DateTime.Now.ToUnixTime();
             var date = unixNow - unixNow % _clockRate;
             var triggerDate = date.FromUnixTime();
-            foreach (var policy in _policies)
+            try
             {
-                if (date % policy.Frequency != 0 && !_firstRun)
+                foreach (var policy in _policies)
                 {
-                    // This one does not have to be triggered this cycle
-                    continue;
-                }
+                    if (date % policy.Frequency != 0 && !_firstRun)
+                    {
+                        // This one does not have to be triggered this cycle
+                        continue;
+                    }
 
-                try
-                {
-                    CurrentlyRunning = policy;
-                    Log.Information($"Currently running automated task:{policy}");
-                    policy.Run(triggerDate, _db);
-                    Log.Information($"Done running automated task:{policy}");
+                    try
+                    {
+                        CurrentlyRunning = policy;
+                        Log.Information($"Currently running automated task:{policy}");
+                        policy.Run(triggerDate, _db);
+                        Log.Information($"Done running automated task:{policy}");
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($"Running automated task {policy} failed:\n" + e);
+                    }
                 }
-                catch (Exception e)
-                {
-                    Log.Error($"Running automated task {policy} failed:\n" + e);
-                }
-                finally
-                {
-                    CurrentlyRunning = null;
-                }
+            }
+            finally
+            {
+                CurrentlyRunning = null;
             }
 
             _firstRun = false;
-            currentlyRunning = true;
         }
 
 
