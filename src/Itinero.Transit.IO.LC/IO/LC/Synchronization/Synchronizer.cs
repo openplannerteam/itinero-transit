@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Timers;
 using Itinero.Transit.Data;
 using Itinero.Transit.Logging;
+using Timer = System.Timers.Timer;
 
 namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
 {
@@ -47,9 +50,11 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
             }
 
             _clockRate = clockRate;
-            _timer = new Timer(initialDelaySeconds * 1000); // Clockrate is in seconds, timer expects millis
+            _timer = new Timer(clockRate * 1000); // Clockrate is in seconds, timer expects millis
             _timer.Elapsed += RunAll;
             _timer.Start();
+
+            Task.Factory.StartNew(() => {Thread.Sleep((int) (initialDelaySeconds*1000)); InitialRun();});
 
 
             var txt = "";
@@ -131,9 +136,8 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
             finally
             {
                 CurrentlyRunning = null;
+                _firstRun = false;
             }
-
-            _firstRun = false;
         }
 
 
