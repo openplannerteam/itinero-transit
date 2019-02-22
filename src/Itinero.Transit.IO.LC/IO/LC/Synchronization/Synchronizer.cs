@@ -50,12 +50,11 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
             }
 
             _clockRate = clockRate;
-            _timer = new Timer(clockRate * 1000); // Clockrate is in seconds, timer expects millis
+            _timer = new Timer(Math.Min(initialDelaySeconds, clockRate) *
+                               1000); // Clockrate is in seconds, timer expects millis
             _timer.Elapsed += RunAll;
+            _timer.AutoReset = false;
             _timer.Start();
-
-            Task.Factory.StartNew(() => {Thread.Sleep((int) (initialDelaySeconds*1000)); InitialRun();});
-
 
             var txt = "";
             foreach (var policy in _policies)
@@ -67,6 +66,13 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
                 $"Started an automated task timer with clockrate {_clockRate} sec. Initial delay is {initialDelaySeconds} Included policies are:\n{txt}");
         }
 
+        public Synchronizer(TransitDb db, Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb,
+            uint initialDelaySeconds,
+            params SynchronizationPolicy[] policies) :
+            this(db, updateDb, new List<SynchronizationPolicy>(policies), initialDelaySeconds)
+        {
+        }
+        
         public Synchronizer(TransitDb db, Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb,
             params SynchronizationPolicy[] policies) :
             this(db, updateDb, new List<SynchronizationPolicy>(policies))
@@ -97,16 +103,6 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
 
         private void RunAll(Object sender = null, ElapsedEventArgs eventArgs = null)
         {
-            _timer.Interval = _clockRate * 1000;
-
-            if (CurrentlyRunning != null)
-            {
-                Log.Information("Timer ticked, but is already running... Skipping automated tasks for now\n." +
-                                $"Now running task is {CurrentlyRunning}");
-                return;
-            }
-
-
             var unixNow = DateTime.Now.ToUnixTime();
             var date = unixNow - unixNow % _clockRate;
             var triggerDate = date.FromUnixTime();
@@ -137,6 +133,8 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
             {
                 CurrentlyRunning = null;
                 _firstRun = false;
+                _timer.Interval = _clockRate * 1000;
+                _timer.Start();
             }
         }
 

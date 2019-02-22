@@ -23,7 +23,7 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
             var tdb = new TransitDb();
 
 
-            var sync = new Synchronizer(tdb, Update,
+            var sync = new Synchronizer(tdb, Update, 5,
                 new SynchronizedWindow(1, TimeSpan.FromSeconds(-1), TimeSpan.FromSeconds(2)));
 
             Thread.Sleep(1200);
