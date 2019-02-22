@@ -25,7 +25,8 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
 
         public Synchronizer(TransitDb db,
             Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb,
-            IReadOnlyCollection<SynchronizationPolicy> policies)
+            IReadOnlyCollection<SynchronizationPolicy> policies,
+            uint initialDelaySeconds = 1)
         {
             _db = new TransitDbUpdater(db, updateDb);
             // Highest frequency should be run often and thus has priority
@@ -47,7 +48,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
             }
 
             _clockRate = clockRate;
-            _timer = new Timer(clockRate * 1000);
+            _timer = new Timer(initialDelaySeconds * 1000); // Clockrate is in seconds, timer expects millis
             _timer.Elapsed += RunAll;
             _timer.Start();
 
@@ -55,10 +56,11 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
             var txt = "";
             foreach (var policy in policies)
             {
-                txt += $"    {policy}\n";
+                txt += $"    Freq: 1/{policy.Frequency}sec: {policy}\n";
             }
-            
-            Log.Information($"Started an automated task timer with clockrate {_clockRate} sec. Included policies are:\n{txt}");
+
+            Log.Information(
+                $"Started an automated task timer with clockrate {_clockRate} sec. Initial delay is {initialDelaySeconds} Included policies are:\n{txt}");
         }
 
         public Synchronizer(TransitDb db, Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb,
@@ -84,7 +86,6 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
                 Log.Information($"Currently running automated task (via initialRun) :{policy}");
                 policy.Run(triggerDate, _db);
                 Log.Information($"Done running automated task (via initialRun) :{policy}");
-
             }
 
             currentlyRunning = false;
@@ -94,6 +95,8 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
 
         private void RunAll(Object sender = null, ElapsedEventArgs eventArgs = null)
         {
+            _timer.Interval = _clockRate * 1000;
+
             if (currentlyRunning)
             {
                 Log.Information("Timer ticked, but is already running... Skipping automated tasks for now\n." +
@@ -120,7 +123,6 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
                     Log.Information($"Currently running automated task:{policy}");
                     policy.Run(triggerDate, _db);
                     Log.Information($"Done running automated task:{policy}");
-
                 }
                 catch (Exception e)
                 {
