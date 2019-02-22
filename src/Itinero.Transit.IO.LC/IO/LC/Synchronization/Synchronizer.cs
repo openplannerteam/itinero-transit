@@ -53,7 +53,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
 
 
             var txt = "";
-            foreach (var policy in policies)
+            foreach (var policy in _policies)
             {
                 txt += $"    Freq: 1/{policy.Frequency}sec: {policy}\n";
             }
