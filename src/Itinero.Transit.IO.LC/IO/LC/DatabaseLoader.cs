@@ -90,7 +90,7 @@ namespace Itinero.Transit.IO.LC
         {
             tt.Validate(locations, (connection, uri) =>
                 {
-                    _onError($"A connection uses a unknown location {uri}\nThe connection is {connection}");
+                    _onError($"A connection uses an unknown location {uri}\nThe connection is {connection}");
                     return false;
                 },
                 connection =>

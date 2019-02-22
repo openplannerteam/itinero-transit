@@ -49,9 +49,6 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
             _triggeredDate = triggeredOn;
             var start = triggeredOn - LoadBefore;
             var end = triggeredOn + LoadAfter;
-            Log.Information($"Synchronization policy is updating timewindow {start} --> {end}" +
-                            (_forceUpdate ? " (Hard update enabled)" : ""));
-
             var attempts = 0;
             while (attempts <= _retries)
             {
@@ -72,7 +69,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
 
         public override string ToString()
         {
-            var updates = _forceUpdate ? "no overwrite" : "forces updating";
+            var updates = _forceUpdate ? "forces updating" : "no overwrite" ;
             var retr = _retries == 0
                 ? "No retries on failing"
                 : (_retries == 1 ? "Single retry on failing" : $"{_retries} retries when failing");

@@ -50,6 +50,15 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
             _timer = new Timer(clockRate * 1000);
             _timer.Elapsed += RunAll;
             _timer.Start();
+
+
+            var txt = "";
+            foreach (var policy in policies)
+            {
+                txt += $"    {policy}\n";
+            }
+            
+            Log.Information($"Started an automated task timer with clockrate {_clockRate} sec. Included policies are:\n{txt}");
         }
 
         public Synchronizer(TransitDb db, Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb,
