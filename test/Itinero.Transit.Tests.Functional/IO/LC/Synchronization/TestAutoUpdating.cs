@@ -20,7 +20,8 @@ namespace Itinero.Transit.Tests.Functional.IO.LC.Synchronization
                 sncb.locations,
                 new SynchronizedWindow(5, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(3600)));
 
-            Thread.Sleep(5500);
+            // There is a default initial delay of 1 second
+            Thread.Sleep(1500);
             NotNull(syncer.CurrentlyRunning);
             NotNull(syncer.CurrentlyRunning.ToString());
             
