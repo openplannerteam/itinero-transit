@@ -23,6 +23,6 @@ It contains stops, connections and trips. The stops can be retrieved, updated or
 
 A high-level overview of how these things tie together:
 
-![transit-db-diagram](docs/images/transit-db-lc-io-diagram.png)
+![transit-db-diagram](images/transit-db-lc-io-diagram.png)
 
 A transit db can request new data from its connection source and a connection source can notify the transit db if it there is new data available.
