@@ -849,7 +849,6 @@ namespace Itinero.Transit.Data
             private uint _internalId;
             private (uint localTileId, uint localId) _departureStop;
             private (uint localTileId, uint localId) _arrivalStop;
-            private ulong _arrivalLocation, _departureLocation;
             private Time _departureTime, _arrivalTime;
             private ushort _travelTime, _departureDelay, _arrivalDelay;
 
@@ -926,10 +925,6 @@ namespace Itinero.Transit.Data
                 _departureDelay = details.departureDelay;
                 _arrivalDelay = details.arrivalDelay;
 
-                _departureLocation = (ulong) details.departureLocation.localTileId * uint.MaxValue +
-                                     details.departureLocation.localId;
-                _arrivalLocation = (ulong) details.arrivalLocation.localTileId * uint.MaxValue +
-                                   details.arrivalLocation.localId;
                 return true;
             }
 

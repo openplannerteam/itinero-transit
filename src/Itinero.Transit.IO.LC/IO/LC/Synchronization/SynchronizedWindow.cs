@@ -18,7 +18,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
         private readonly bool _forceUpdate;
 
         // State leak to provide update reports. 
-        private DateTime? _triggeredDate = null;
+        private DateTime? _triggeredDate;
 
         /// <summary>
         /// Create a new synchronization  policy
@@ -66,6 +66,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
 
             _triggeredDate = null;
         }
+
 
         public override string ToString()
         {

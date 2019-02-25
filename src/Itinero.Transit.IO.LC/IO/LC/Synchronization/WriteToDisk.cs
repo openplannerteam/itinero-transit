@@ -28,6 +28,7 @@ namespace Itinero.Transit.Api.Logic
             }
         }
 
+
         public override string ToString()
         {
             return $"TransitDB to Disk Writer. Saves to {_saveTo} every {TimeSpan.FromSeconds(Frequency):g}";

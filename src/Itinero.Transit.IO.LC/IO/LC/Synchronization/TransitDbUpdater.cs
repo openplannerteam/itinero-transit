@@ -11,7 +11,6 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
     ///
     /// - Which timewindows are already loaded
     /// - A callback to actually update the transitdb
-    ///
     /// 
     /// </summary>
     public class TransitDbUpdater
