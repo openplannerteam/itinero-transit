@@ -21,7 +21,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var tbd = input.transitDb;
             var latest = input.transitDb.Latest;
             var profile = new Profile<TransferStats>(new InternalTransferGenerator(1),
-                new CrowsFlightTransferGenerator(tbd),
+                new CrowsFlightTransferGenerator(latest),
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
             // get departure and arrival stop ids.

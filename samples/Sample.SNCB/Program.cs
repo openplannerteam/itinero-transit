@@ -31,7 +31,7 @@ namespace Sample.SNCB
                     new InternalTransferGenerator(180 /*seconds*/), 
 
                     // The intermodal stop algorithm. Note that a transitDb is used to search stop location
-                    new CrowsFlightTransferGenerator(transitDb, maxDistance: 500 /*meter*/,  speed: 1.4f /*meter/second*/),
+                    new CrowsFlightTransferGenerator(snapshot, maxDistance: 500 /*meter*/,  speed: 1.4f /*meter/second*/),
 
                     // The object that can create a metric
                     TransferStats.Factory,

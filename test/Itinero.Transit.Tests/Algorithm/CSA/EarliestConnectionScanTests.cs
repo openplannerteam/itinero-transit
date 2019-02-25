@@ -15,14 +15,14 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         public void SimpleEasTest()
         {
             var tdb = Db.GetDefaultTestDb();
-
+            var db = tdb.Latest;
+            
             var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
-                new CrowsFlightTransferGenerator(tdb),
+                new CrowsFlightTransferGenerator(db),
                 TransferStats.Factory,
                 TransferStats.ProfileTransferCompare
             );
 
-            var db = tdb.Latest;
             var eas = new EarliestConnectionScan<TransferStats>(db,
                 (0, 0), (0, 1), db.GetConn(0).DepartureTime, db.GetConn(0).DepartureTime + 60 * 60 * 6,
                 profile
@@ -72,7 +72,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var latest = transitDb.Latest;
 
             var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
-                new CrowsFlightTransferGenerator(transitDb),
+                new CrowsFlightTransferGenerator(latest),
                 new TransferStats(),
                 TransferStats.ProfileTransferCompare);
             var eas = new EarliestConnectionScan<TransferStats>(latest,

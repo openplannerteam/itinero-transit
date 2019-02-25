@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.IO.LC.CSA;
@@ -114,6 +115,7 @@ namespace Itinero.Transit.IO.LC
             foreach (var connection in tt.Connections())
             {
                 AddConnection(connection, locations);
+                
             }
         }
 
