@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.IO.LC.CSA;
@@ -43,10 +44,12 @@ namespace Itinero.Transit.IO.LC
                 {
                     AddLocation(location);
                     count++;
-                    _locationsLogger?.Ping(count, locationsFragment.Locations.Count, batchCount, linkedConnectionDataset.LocationProvider.Count);
+                    _locationsLogger?.Ping(count, locationsFragment.Locations.Count, batchCount,
+                        linkedConnectionDataset.LocationProvider.Count);
                 }
-                _locationsLogger?.Ping(count, locationsFragment.Locations.Count, batchCount, linkedConnectionDataset.LocationProvider.Count);
 
+                _locationsLogger?.Ping(count, locationsFragment.Locations.Count, batchCount,
+                    linkedConnectionDataset.LocationProvider.Count);
             }
         }
 
@@ -120,8 +123,8 @@ namespace Itinero.Transit.IO.LC
         {
             var globalId = location.Id();
             var stop1Id = globalId.ToString();
-            
-            var attributes =new AttributeCollection();
+
+            var attributes = new AttributeCollection();
             attributes.AddOrReplace("name", location.Name);
             if (location.Names != null)
             {
@@ -182,8 +185,8 @@ namespace Itinero.Transit.IO.LC
 
             var attributes = new AttributeCollection(
                 new Attribute("headsign", connection.Direction),
-                new Attribute("trip", connection.Trip().ToString()+"-"+connection.Direction),
-                new Attribute("route", connection.Route().ToString()+"-"+connection.Direction)
+                new Attribute("trip", connection.Trip().ToString() + "-" + connection.Direction),
+                new Attribute("route", connection.Route().ToString() + "-" + connection.Direction)
             );
             return _writer.AddOrUpdateTrip(tripUri, attributes);
         }

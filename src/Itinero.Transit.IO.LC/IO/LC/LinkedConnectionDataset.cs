@@ -19,14 +19,42 @@ namespace Itinero.Transit.IO.LC.CSA
         public readonly List<ConnectionProvider> ConnectionsProvider;
         public readonly List<LocationProvider> LocationProvider;
 
+
+        private readonly Action<string> _onError;
+        private readonly LoggingOptions _onLocationLoaded;
+        private readonly LoggingOptions _onTimeTableLoaded;
+
+
+        // Small helper constructor which handles the default values
+        private LinkedConnectionDataset(LoggingOptions onLocationLoaded = null,
+            LoggingOptions onTimeTableLoaded = null,
+            Action<string> onError = null)
+        {
+            // Note the differences between _onTimeTableLoaded (the field), onTimeTableLoaded (the parameter) and onTimeTableLoaded (the function)
+            _onLocationLoaded = onLocationLoaded ??
+                                new LoggingOptions(OnLocationLoaded, 50);
+            _onTimeTableLoaded = onTimeTableLoaded ??
+                                  new LoggingOptions(OnTimeTableLoaded, 1);
+            _onError = onError ?? Log.Warning;
+        }
+
+
         public LinkedConnectionDataset(ConnectionProvider[] connectionsProvider,
-            LocationProvider[] locationProvider)
+            LocationProvider[] locationProvider,
+            LoggingOptions onLocationLoaded = null,
+            LoggingOptions onTimeTableLoaded = null,
+            Action<string> onError = null
+        ) : this(onLocationLoaded, onTimeTableLoaded, onError)
         {
             ConnectionsProvider = new List<ConnectionProvider>(connectionsProvider);
             LocationProvider = new List<LocationProvider>(locationProvider);
         }
 
-        public LinkedConnectionDataset(List<LinkedConnectionDataset> sources)
+        public LinkedConnectionDataset(List<LinkedConnectionDataset> sources,
+            LoggingOptions onLocationLoaded = null,
+            LoggingOptions onTimeTableLoaded = null,
+            Action<string> onError = null
+        ) : this(onLocationLoaded, onTimeTableLoaded, onError)
         {
             ConnectionsProvider = new List<ConnectionProvider>();
             LocationProvider = new List<LocationProvider>();
@@ -45,16 +73,21 @@ namespace Itinero.Transit.IO.LC.CSA
         /// <returns></returns>
         public LinkedConnectionDataset(
             Uri connectionsLink,
-            Uri locationsUri
-        )
+            Uri locationsUri,
+            LoggingOptions onLocationLoaded = null,
+            LoggingOptions onTimeTableLoaded = null,
+            Action<string> onError = null
+        ) : this(onLocationLoaded, onTimeTableLoaded, onError)
         {
+            _onError = onError;
+            _onLocationLoaded = onLocationLoaded;
+            _onTimeTableLoaded = onTimeTableLoaded;
             var loader = new Downloader();
 
             var conProv = new ConnectionProvider
             (connectionsLink,
                 connectionsLink + "{?departureTime}",
                 loader);
-
             ConnectionsProvider = new List<ConnectionProvider> {conProv};
 
             // Create the locations provider
@@ -70,29 +103,19 @@ namespace Itinero.Transit.IO.LC.CSA
         /// Adds all connection data between the given dates into the databases.
         /// Locations are only added as needed
         /// </summary>
-        /// <param name="onTimeTableHandled">Callback when a timetable has been handled</param>
         public void AddAllConnectionsTo(TransitDb.TransitDbWriter writer,
-            DateTime start, DateTime end, Action<string> onError,
-            LoggingOptions onTimeTableHandled = null)
+            DateTime start, DateTime end)
         {
-            var dbs = new DatabaseLoader(writer, null, onTimeTableHandled, onError);
+            var dbs = new DatabaseLoader(writer, null, _onTimeTableLoaded, _onError);
             dbs.AddAllConnections(this, start, end);
         }
 
         /// <summary>
         /// Adds all location data into the database
         /// </summary>
-        /// <param name="linkedConnectionDataset"></param>
-        /// <param name="transitDb"></param>
-        /// <param name="onError"></param>
-        /// <param name="onLocationHandled"></param>
-        public void AddAllLocationsTo(
-            TransitDb.TransitDbWriter writer,
-            Action<string> onError,
-            LoggingOptions onLocationHandled = null
-        )
+        public void AddAllLocationsTo(TransitDb.TransitDbWriter writer)
         {
-            var dbs = new DatabaseLoader(writer, onLocationHandled, null, onError);
+            var dbs = new DatabaseLoader(writer, _onLocationLoaded, null, _onError);
             dbs.AddAllLocations(this);
         }
 
@@ -101,21 +124,22 @@ namespace Itinero.Transit.IO.LC.CSA
         {
             var (currentCount, batchTarget, batchCount, nrOfBatches) = status;
             Log.Information(
-                $"Importing locations: Running batch {batchCount+1}/{nrOfBatches}: Importing location {currentCount}/{batchTarget}");
+                $"Importing locations: Running batch {batchCount + 1}/{nrOfBatches}: Importing location {currentCount}/{batchTarget}");
         }
 
 
-        private static void OnConnectionLoaded((int, int, int, int) status)
+        private static void OnTimeTableLoaded((int, int, int, int) status)
         {
             var (currentCount, batchTarget, batchCount, nrOfBatches) = status;
             Log.Information(
-                $"Importing connections: Running batch {batchCount+1}/{nrOfBatches}: Importing timetable {currentCount} (out of an estimated {batchTarget})");
+                $"Importing connections: Running batch {batchCount + 1}/{nrOfBatches}: Importing timetable {currentCount} (out of an estimated {batchTarget})");
         }
 
-        public void UpdateTimeFrame(TransitDb.TransitDbWriter w, DateTime start, DateTime end)
+        public void UpdateTimeFrame(TransitDb.TransitDbWriter w, DateTime start, DateTime end
+        )
         {
             Log.Information($"Loading time window {start}->{end}");
-            AddAllConnectionsTo(w, start, end, Log.Warning, new LoggingOptions(OnConnectionLoaded, 1));
+            AddAllConnectionsTo(w, start, end);
         }
     }
 }

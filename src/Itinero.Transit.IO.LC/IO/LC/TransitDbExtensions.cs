@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.IO.LC.CSA;
 using Itinero.Transit.IO.LC.IO.LC.Synchronization;
-using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.IO.LC.IO.LC
 {
@@ -53,12 +52,11 @@ namespace Itinero.Transit.IO.LC.IO.LC
 
             try
             {
-                lcDataset.AddAllLocationsTo(writer,
-                    Log.Warning);
+                lcDataset.AddAllLocationsTo(writer);
 
                 if (!onlyLoadLocations)
                 {
-                    lcDataset.AddAllConnectionsTo(writer, loadingStart, loadingEnd, Log.Warning);
+                    lcDataset.AddAllConnectionsTo(writer, loadingStart, loadingEnd);
                 }
             }
             finally

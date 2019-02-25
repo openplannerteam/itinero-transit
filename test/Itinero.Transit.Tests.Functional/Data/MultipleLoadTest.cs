@@ -13,14 +13,14 @@ namespace Itinero.Transit.Tests.Functional.Data
 
             void UpdateTimeFrame(TransitDb.TransitDbWriter w, DateTime start, DateTime end)
             {
-                sncb.AddAllConnectionsTo(w, start, end, Serilog.Log.Warning);
+                sncb.AddAllConnectionsTo(w, start, end);
             }
 
             var db = new TransitDb();
             var dbUpdater = new TransitDbUpdater(db, UpdateTimeFrame);
 
             var writer = db.GetWriter();
-            sncb.AddAllLocationsTo(writer, Serilog.Log.Warning, null);
+            sncb.AddAllLocationsTo(writer);
             writer.Close();
 
             var hours = 24;
