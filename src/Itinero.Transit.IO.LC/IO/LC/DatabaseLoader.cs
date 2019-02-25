@@ -30,6 +30,10 @@ namespace Itinero.Transit.IO.LC
             _locationsLogger = locationsLogger;
             _connectionsLogger = connectionsLogger;
             _onError = onError;
+            if (onError == null)
+            {
+                throw new ArgumentNullException(nameof(onError));
+            }
         }
 
 
@@ -185,8 +189,8 @@ namespace Itinero.Transit.IO.LC
 
             var attributes = new AttributeCollection(
                 new Attribute("headsign", connection.Direction),
-                new Attribute("trip", connection.Trip().ToString() + "-" + connection.Direction),
-                new Attribute("route", connection.Route().ToString() + "-" + connection.Direction)
+                new Attribute("trip", $"{connection.Trip()}-{connection.Direction}"),
+                new Attribute("route", $"{connection.Route()}-{connection.Direction}")
             );
             return _writer.AddOrUpdateTrip(tripUri, attributes);
         }

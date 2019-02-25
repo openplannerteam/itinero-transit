@@ -5,7 +5,7 @@ using Itinero.Transit.IO.LC.CSA;
 namespace Itinero.Transit.Tests.Functional.IO.LC
 {
     /// <summary>
-    /// Tests the updating connections.
+    /// Tests the updating of connections.
     /// </summary>
     public class UpdateTransitDbTest : FunctionalTest<TransitDb,
         (TransitDb transitDb, DateTime date, TimeSpan window)>

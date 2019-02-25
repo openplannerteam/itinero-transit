@@ -60,13 +60,13 @@ namespace Itinero.Transit.Tests.Functional
             new TestReadWrite().Run(db);
             Log.Information("Running TestWriteToDisk");
 
-            new TestWriteToDisk().Run(db);
+        //    new TestWriteToDisk().Run(db);
             
             Log.Information("Running TripHeadSignTest");
             TripHeadsignTest.Default.Run(db);
 
             new TestAutoUpdating().Run(null);
-            //new MultipleLoadTest().Run(0);
+            new MultipleLoadTest().Run(0);
 
             ConnectionsDbDepartureEnumeratorTest.Default.Run(db);
 

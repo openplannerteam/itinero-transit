@@ -79,9 +79,6 @@ namespace Itinero.Transit.IO.LC.CSA
             Action<string> onError = null
         ) : this(onLocationLoaded, onTimeTableLoaded, onError)
         {
-            _onError = onError;
-            _onLocationLoaded = onLocationLoaded;
-            _onTimeTableLoaded = onTimeTableLoaded;
             var loader = new Downloader();
 
             var conProv = new ConnectionProvider
@@ -106,7 +103,7 @@ namespace Itinero.Transit.IO.LC.CSA
         public void AddAllConnectionsTo(TransitDb.TransitDbWriter writer,
             DateTime start, DateTime end)
         {
-            var dbs = new DatabaseLoader(writer, null, _onTimeTableLoaded, _onError);
+            var dbs = new DatabaseLoader(writer, _onLocationLoaded, _onTimeTableLoaded, _onError);
             dbs.AddAllConnections(this, start, end);
         }
 
@@ -115,7 +112,7 @@ namespace Itinero.Transit.IO.LC.CSA
         /// </summary>
         public void AddAllLocationsTo(TransitDb.TransitDbWriter writer)
         {
-            var dbs = new DatabaseLoader(writer, _onLocationLoaded, null, _onError);
+            var dbs = new DatabaseLoader(writer, _onLocationLoaded, _onTimeTableLoaded, _onError);
             dbs.AddAllLocations(this);
         }
 
