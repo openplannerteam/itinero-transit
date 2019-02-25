@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Itinero.Transit.Journeys;
 
-namespace Itinero.IO.LC
+namespace Itinero.Transit.Algorithms.CSA
 {
     public class ParetoFrontier<T>
         where T : IJourneyStats<T>

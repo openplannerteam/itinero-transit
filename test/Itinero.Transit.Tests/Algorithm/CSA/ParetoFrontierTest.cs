@@ -1,4 +1,4 @@
-using Itinero.IO.LC;
+using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Journeys;
 using Itinero.Transit.Tests.Data;
 using Xunit;

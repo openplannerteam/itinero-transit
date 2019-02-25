@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Itinero.IO.LC;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journeys;
 using Itinero.Transit.Logging;

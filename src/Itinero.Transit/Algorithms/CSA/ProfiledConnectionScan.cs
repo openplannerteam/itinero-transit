@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Itinero.Transit;
-using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
 
-namespace Itinero.IO.LC
+namespace Itinero.Transit.Algorithms.CSA
 {
     using UnixTime = UInt64;
 
