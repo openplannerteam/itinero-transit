@@ -17,7 +17,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var tbd = input.transitDb;
             var latest = tbd.Latest;
             var p = new Profile<TransferStats>(new InternalTransferGenerator(),
-                new CrowsFlightTransferGenerator(tbd),
+                new CrowsFlightTransferGenerator(latest),
                 new TransferStats(), TransferStats.ProfileTransferCompare
                 );
 
@@ -32,7 +32,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 
             // instantiate and run EAS.
             var eas = new EarliestConnectionScan<TransferStats>(
-                tbd,
+                latest,
                 departure, arrival,
                 depTime, depTime.AddHours(24), p);
             var journey = eas.CalculateJourney();

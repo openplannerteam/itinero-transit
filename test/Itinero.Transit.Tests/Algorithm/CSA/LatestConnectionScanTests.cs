@@ -17,12 +17,12 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var db = tdb.Latest;
             
             var profile = new Profile<TransferStats>(new InternalTransferGenerator(0),
-                new CrowsFlightTransferGenerator(tdb),
+                new CrowsFlightTransferGenerator(db),
                 new TransferStats(),
                 TransferStats.ProfileTransferCompare
             );
 
-            var las = new LatestConnectionScan<TransferStats>(tdb,
+            var las = new LatestConnectionScan<TransferStats>(db,
                 (0, 0), (0, 1),
                 new DateTime(2018, 12, 04, 16, 00, 00), new DateTime(2018, 12, 04, 18, 00, 00),
                 profile
@@ -33,7 +33,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             Assert.NotNull(j);
             Assert.Equal((uint) 0, j.Connection);
 
-            las = new LatestConnectionScan<TransferStats>(tdb,
+            las = new LatestConnectionScan<TransferStats>(db,
                 (0, 0), (0, 2), db.GetConn(0).DepartureTime, db.GetConn(0).DepartureTime + 60 * 60 * 2,
                 profile
             );
@@ -64,10 +64,10 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var latest = transitDb.Latest;
 
             var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
-                new CrowsFlightTransferGenerator(transitDb),
+                new CrowsFlightTransferGenerator(latest),
                 new TransferStats(),
                 TransferStats.ProfileTransferCompare);
-            var las = new LatestConnectionScan<TransferStats>(transitDb,
+            var las = new LatestConnectionScan<TransferStats>(latest,
                 stop1, stop2, new DateTime(2018, 12, 04, 16, 00, 00), new DateTime(2018, 12, 04, 19, 00, 00),
                 profile);
             var journey = las.CalculateJourney();

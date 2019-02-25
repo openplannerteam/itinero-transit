@@ -65,7 +65,10 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Running TripHeadSignTest");
             TripHeadsignTest.Default.Run(db);
 
-            new TestAutoUpdating().Run(null);
+            
+            // This tests starts a timer which reloads a lot
+//            new TestAutoUpdating().Run(null);
+            
             new MultipleLoadTest().Run(0);
 
             ConnectionsDbDepartureEnumeratorTest.Default.Run(db);

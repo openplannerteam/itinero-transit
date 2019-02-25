@@ -43,7 +43,7 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly Dictionary<uint, Journey<T>> _trips = new Dictionary<uint, Journey<T>>();
 
         public EarliestConnectionScan(
-            TransitDb transitDb,
+            TransitDb.TransitDbSnapShot transitDb,
             (uint localTileId, uint localId) userDepartureLocation,
             (uint localTileId, uint localId) userTargetLocation,
             DateTime earliestDeparture, DateTime lastDeparture,
@@ -56,7 +56,7 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
-        public EarliestConnectionScan(TransitDb transitDb,
+        public EarliestConnectionScan(TransitDb.TransitDbSnapShot transitDb,
             (uint localTileId, uint localId) userDepartureLocation,
             (uint localTileId, uint localId) userTargetLocation,
             ulong earliestDeparture, ulong lastDeparture,
@@ -66,11 +66,10 @@ namespace Itinero.Transit.Algorithms.CSA
             earliestDeparture, lastDeparture,
             profile)
         {
-            
         }
 
         public EarliestConnectionScan(
-            TransitDb transitDb,
+            TransitDb.TransitDbSnapShot transitDb,
             IEnumerable<(uint localTileId, uint localId)> userDepartureLocations,
             IEnumerable<(uint localTileId, uint localId)> userTargetLocations,
             Time earliestDeparture, Time lastDeparture,
@@ -83,8 +82,8 @@ namespace Itinero.Transit.Algorithms.CSA
 
             _earliestDeparture = earliestDeparture;
             _lastDeparture = lastDeparture;
-            _connectionsProvider = transitDb.Latest.ConnectionsDb;
-            _stopsDb = transitDb.Latest.StopsDb;
+            _connectionsProvider = transitDb.ConnectionsDb;
+            _stopsDb = transitDb.StopsDb;
 
             _stopsReader = _stopsDb.GetReader();
             _transferPolicy = profile.InternalTransferGenerator;
@@ -95,6 +94,7 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 _userTargetLocations.Add((targetLocation.localTileId, targetLocation.localId, 0));
             }
+
             foreach (var loc in userDepartureLocations)
             {
                 _s.Add(loc,
@@ -114,12 +114,12 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 throw new ArgumentException("Departure time falls after arrival time");
             }
-            
+
             _earliestDeparture = earliestDeparture;
             _lastDeparture = lastDeparture;
             _connectionsProvider = transitDb.Latest.ConnectionsDb;
             _stopsDb = transitDb.Latest.StopsDb;
-        
+
             _stopsReader = _stopsDb.GetReader();
             _transferPolicy = profile.InternalTransferGenerator;
             _walkPolicy = profile.WalksGenerator;
