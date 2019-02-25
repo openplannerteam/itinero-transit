@@ -31,12 +31,12 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             True(reader.MoveTo(input.arrivalStopId));
             var arrival = reader.Id;
 
-            var eas = new EarliestConnectionScan<TransferStats>(tbd, 
+            var eas = new EarliestConnectionScan<TransferStats>(latest, 
                 departure, arrival, input.departureTime, input.arrivalTime, profile);
 
             var easJ = eas.CalculateJourney();
 
-            var las = new LatestConnectionScan<TransferStats>(tbd, 
+            var las = new LatestConnectionScan<TransferStats>(latest, 
                 departure, arrival, input.departureTime.ToUnixTime(),
                 easJ.ArrivalTime(), profile);
 

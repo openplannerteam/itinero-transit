@@ -25,7 +25,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
                 null,
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
-            var tbd = input.transitDb;
+            var tbd = input.transitDb.Latest;
             var found = tbd.Isochrone(profile, input.departureStopId, input.departureTime, input.arrivalTime);
 
             True(found.Count() > 100);

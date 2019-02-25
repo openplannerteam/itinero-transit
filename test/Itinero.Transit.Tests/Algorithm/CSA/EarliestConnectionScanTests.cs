@@ -23,7 +23,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             );
 
             var db = tdb.Latest;
-            var eas = new EarliestConnectionScan<TransferStats>(tdb,
+            var eas = new EarliestConnectionScan<TransferStats>(db,
                 (0, 0), (0, 1), db.GetConn(0).DepartureTime, db.GetConn(0).DepartureTime + 60 * 60 * 6,
                 profile
             );
@@ -34,7 +34,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             Assert.Equal((uint) 0, j.Connection);
 
 
-            eas = new EarliestConnectionScan<TransferStats>(tdb,
+            eas = new EarliestConnectionScan<TransferStats>(db,
                 (0, 0), (0, 2), db.GetConn(0).DepartureTime, db.GetConn(0).DepartureTime + 60 * 60 * 2,
                 profile
             );
@@ -75,7 +75,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 new CrowsFlightTransferGenerator(transitDb),
                 new TransferStats(),
                 TransferStats.ProfileTransferCompare);
-            var eas = new EarliestConnectionScan<TransferStats>(transitDb,
+            var eas = new EarliestConnectionScan<TransferStats>(latest,
                 stop0, stop3, new DateTime(2018, 12, 04, 10, 00, 00), new DateTime(2018, 12, 04, 11, 00, 00),
                 profile);
             var journey = eas.CalculateJourney();
@@ -109,7 +109,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 null,
                 new TransferStats(),
                 TransferStats.ProfileTransferCompare);
-            var eas = new EarliestConnectionScan<TransferStats>(transitDb,
+            var eas = new EarliestConnectionScan<TransferStats>(latest,
                 stop1, stop2, new DateTime(2018, 12, 04, 16, 00, 00), new DateTime(2018, 12, 04, 19, 00, 00),
                 profile);
             var journey = eas.CalculateJourney();
@@ -146,7 +146,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 new TransferStats(),
                 TransferStats.ProfileTransferCompare);
             var eas = new EarliestConnectionScan<TransferStats>(
-                transitDb,
+                latest,
                 sources, targets, 
                 new DateTime(2018, 12, 04, 16, 00, 00).ToUnixTime(), 
                 new DateTime(2018, 12, 04, 19, 00, 00).ToUnixTime(),
@@ -185,7 +185,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 new TransferStats(),
                 TransferStats.ProfileTransferCompare);
             var eas = new EarliestConnectionScan<TransferStats>(
-                transitDb,
+                latest,
                 sources, targets, 
                 new DateTime(2018, 12, 04, 16, 00, 00).ToUnixTime(), 
                 new DateTime(2018, 12, 04, 19, 00, 00).ToUnixTime(),

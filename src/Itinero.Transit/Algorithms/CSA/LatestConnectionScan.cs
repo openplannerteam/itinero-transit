@@ -46,11 +46,11 @@ namespace Itinero.Transit.Algorithms.CSA
         /// Construct a AES
         /// </summary>
         public LatestConnectionScan(
-            TransitDb transitDb,
+            TransitDb.TransitDbSnapShot snapshot,
             (uint localTileId, uint localId) userDepartureLocation,
             (uint localTileId, uint localId) userTargetLocation,
             DateTime earliestDeparture, DateTime lastDeparture,
-            Profile<T> profile) : this(transitDb,
+            Profile<T> profile) : this(snapshot,
             new List<(uint localTileId, uint localId)> {userDepartureLocation},
             new List<(uint localTileId, uint localId)> {userTargetLocation},
             (uint) earliestDeparture.ToUnixTime(), (uint) lastDeparture.ToUnixTime(),
@@ -60,11 +60,11 @@ namespace Itinero.Transit.Algorithms.CSA
 
 
         public LatestConnectionScan(
-            TransitDb transitDb,
+            TransitDb.TransitDbSnapShot snapshot,
             (uint localTileId, uint localId) userDepartureLocation,
             (uint localTileId, uint localId) userTargetLocation,
             ulong earliestDeparture, ulong lastDeparture,
-            Profile<T> profile) : this(transitDb,
+            Profile<T> profile) : this(snapshot,
             new List<(uint localTileId, uint localId)> {userDepartureLocation},
             new List<(uint localTileId, uint localId)> {userTargetLocation},
             earliestDeparture, lastDeparture,
@@ -74,7 +74,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
 
         // ReSharper disable once MemberCanBePrivate.Global
-        public LatestConnectionScan(TransitDb transitDb,
+        public LatestConnectionScan(TransitDb.TransitDbSnapShot snapshot,
             List<(uint localTileId, uint localId)> userDepartureLocation,
             IEnumerable<(uint localTileId, uint localId)> userTargetLocation,
             Time earliestDeparture, Time lastDeparture,
@@ -87,7 +87,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             _earliestDeparture = earliestDeparture;
             _lastDeparture = lastDeparture;
-            _connectionsProvider = transitDb.Latest.ConnectionsDb;
+            _connectionsProvider = snapshot.ConnectionsDb;
             _transferPolicy = profile.InternalTransferGenerator;
             _userDepartureLocation = userDepartureLocation;
             foreach (var loc in userTargetLocation)

@@ -32,7 +32,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             True(reader.MoveTo(input.arrivalStopId));
             var arrival = reader.Id;
 
-            var journeys = tbd.CalculateJourneys(p,
+            var journeys = latest.CalculateJourneys(p,
                 departure, arrival, input.departureTime.ToUnixTime(), input.arrivalTime.ToUnixTime()
             );
             // verify result.

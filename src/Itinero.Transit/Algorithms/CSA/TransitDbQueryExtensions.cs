@@ -13,9 +13,9 @@ namespace Itinero.Transit.Algorithms.CSA
     /// </summary>
     public static class TransitDbQueryExtensions
     {
-        public static (uint, uint) FindStop(this TransitDb tdb, string locationId, string errMsg = null)
+        public static (uint, uint) FindStop(this TransitDb.TransitDbSnapShot snapshot, string locationId, string errMsg = null)
         {
-            return tdb.Latest.StopsDb.GetReader().FindStop(locationId, errMsg);
+            return snapshot.StopsDb.GetReader().FindStop(locationId, errMsg);
         }
 
 
@@ -25,7 +25,7 @@ namespace Itinero.Transit.Algorithms.CSA
         ///  Performs an Earliest Arrival Scan
         ///
         /// </summary>
-        /// <param name="tdb">The transit DB containing the PT-data</param>
+        /// <param name="snapshot">The transit DB containing the PT-data</param>
         /// <param name="profile"></param>
         ///  <param name="from"></param>
         ///  <param name="departure"></param>
@@ -33,13 +33,13 @@ namespace Itinero.Transit.Algorithms.CSA
         ///  <typeparam name="T"></typeparam>
         ///  <returns></returns>
         public static Journey<T> EarliestArrival<T>
-        (this TransitDb tdb,
+        (this TransitDb.TransitDbSnapShot snapshot,
             Profile<T> profile,
             string from, string to,
             DateTime departure, DateTime lastArrival)
             where T : IJourneyStats<T>
         {
-            var reader = tdb.Latest.StopsDb.GetReader();
+            var reader = snapshot.StopsDb.GetReader();
             var fromId = reader.FindStop(from, $"Departure location {from} was not found");
             var toId = reader.FindStop(to, $"Departure location {to} was not found");
 
@@ -48,7 +48,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 throw new ArgumentException($"The departure and arrival arguments are the same ({from})");
             }
 
-            var eas = new EarliestConnectionScan<T>(tdb,
+            var eas = new EarliestConnectionScan<T>(snapshot,
                 new List<(uint localTileId, uint localId)> {fromId},
                 new List<(uint localTileId, uint localId)> {toId},
                 departure.ToUnixTime(), lastArrival.ToUnixTime(),
@@ -66,12 +66,12 @@ namespace Itinero.Transit.Algorithms.CSA
         ///  
         ///  </summary>
         public static IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> Isochrone<T>
-        (this TransitDb tdb,
+        (this TransitDb.TransitDbSnapShot snapshot,
             Profile<T> profile,
             string from, DateTime departure, DateTime lastArrival)
             where T : IJourneyStats<T>
         {
-            var fromId = tdb.FindStop(from, $"Departure location {from} was not found");
+            var fromId = snapshot.FindStop(from, $"Departure location {from} was not found");
 
             /*
              * We construct an Earliest Connection Scan.
@@ -82,7 +82,7 @@ namespace Itinero.Transit.Algorithms.CSA
              * EAS.calculateJourneys will thus be null - but meanwhile every reachable station will be marked.
              * And it is exactly that which we need!
              */
-            var eas = new EarliestConnectionScan<T>(tdb,
+            var eas = new EarliestConnectionScan<T>(snapshot,
                 new List<(uint localTileId, uint localId)> {fromId},
                 new List<(uint localTileId, uint localId)>(), // EMPTY LIST!
                 departure.ToUnixTime(), lastArrival.ToUnixTime(),
@@ -101,11 +101,11 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         /// <returns></returns>
         public static Journey<T> LatestDeparture<T>
-        (this TransitDb tdb,
+        (this TransitDb.TransitDbSnapShot snapshot,
             Profile<T> profile, string from, string to, DateTime departure, DateTime lastArrival)
             where T : IJourneyStats<T>
         {
-            var reader = tdb.Latest.StopsDb.GetReader();
+            var reader = snapshot.StopsDb.GetReader();
             var fromId = reader.FindStop(from);
             var toId = reader.FindStop(to);
 
@@ -115,7 +115,7 @@ namespace Itinero.Transit.Algorithms.CSA
             }
 
             var las = new LatestConnectionScan<T>(
-                tdb,
+                snapshot,
                 new List<(uint localTileId, uint localId)> {fromId},
                 new List<(uint localTileId, uint localId)> {toId},
                 departure.ToUnixTime(), lastArrival.ToUnixTime(),
@@ -132,11 +132,11 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         /// <returns></returns>
         public static Dictionary<(uint localTileId, uint localId), Journey<T>> IsochroneLatestArrival<T>
-        (this TransitDb tdb,
+        (this TransitDb.TransitDbSnapShot snapshot,
             Profile<T> profile, string to, DateTime departure, DateTime lastArrival)
             where T : IJourneyStats<T>
         {
-            var reader = tdb.Latest.StopsDb.GetReader();
+            var reader = snapshot.StopsDb.GetReader();
             if (!reader.MoveTo(to)) throw new ArgumentException($"Departure location {to} was not found");
             var toId = reader.Id;
 
@@ -145,7 +145,7 @@ namespace Itinero.Transit.Algorithms.CSA
              * Same principle as the other IsochroneFunction
              */
             var las = new LatestConnectionScan<T>(
-                tdb,
+                snapshot,
                 new List<(uint localTileId, uint localId)>(), // EMPTY LIST!
                 new List<(uint localTileId, uint localId)> {toId},
                 departure.ToUnixTime(), lastArrival.ToUnixTime(),
@@ -181,17 +181,17 @@ namespace Itinero.Transit.Algorithms.CSA
         /// 
         /// </summary>
         public static IEnumerable<Journey<T>> CalculateJourneys<T>
-        (this TransitDb tdb,
+        (this TransitDb.TransitDbSnapShot snapshot,
             Profile<T> profile, string from, string to,
             DateTime? departure = null, DateTime? arrival = null, uint lookAhead = 24 * 60 * 60)
             where T : IJourneyStats<T>
         {
-            var reader = tdb.Latest.StopsDb.GetReader();
+            var reader = snapshot.StopsDb.GetReader();
             if (!reader.MoveTo(from)) throw new ArgumentException($"Departure location {from} was not found");
             var fromId = reader.Id;
             if (!reader.MoveTo(to)) throw new ArgumentException($"Arrival location {to} was not found");
             var toId = reader.Id;
-            return tdb.CalculateJourneys(profile,
+            return snapshot.CalculateJourneys(profile,
                 fromId, toId,
                 departure?.ToUnixTime() ?? 0,
                 arrival?.ToUnixTime() ?? 0,
@@ -212,7 +212,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// 
         ///  </summary>
         public static IEnumerable<Journey<T>> CalculateJourneys<T>
-        (this TransitDb tdb,
+        (this TransitDb.TransitDbSnapShot snapshot,
             Profile<T> profile, (uint, uint) depLocation, (uint, uint) arrivalLocation,
             ulong departureTime = 0, ulong lastArrivalTime = 0, uint lookAhead = 24 * 60 * 60)
             where T : IJourneyStats<T>
@@ -229,7 +229,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             if (departureTime == 0)
             {
-                var las = new LatestConnectionScan<T>(tdb, depLocation, arrivalLocation,
+                var las = new LatestConnectionScan<T>(snapshot, depLocation, arrivalLocation,
                     lastArrivalTime - 24 * 60 * 60, lastArrivalTime,
                     profile);
                 var lasJourney = las.CalculateJourney(
@@ -249,7 +249,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 lastArrivalTime = departureTime + 24 * 60 * 60;
             }
 
-            var eas = new EarliestConnectionScan<T>(tdb,
+            var eas = new EarliestConnectionScan<T>(snapshot,
                 depLocation, arrivalLocation,
                 departureTime, lastArrivalTime,
                 profile
@@ -275,7 +275,7 @@ namespace Itinero.Transit.Algorithms.CSA
             IConnectionFilter filter = eas;
 
             var pcs = new ProfiledConnectionScan<T>(
-                tdb,
+                snapshot,
                 depLocation, arrivalLocation,
                 departureTime, lastArrivalTime,
                 profile,

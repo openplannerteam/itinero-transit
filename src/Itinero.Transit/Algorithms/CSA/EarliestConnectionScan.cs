@@ -43,11 +43,11 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly Dictionary<uint, Journey<T>> _trips = new Dictionary<uint, Journey<T>>();
 
         public EarliestConnectionScan(
-            TransitDb transitDb,
+            TransitDb.TransitDbSnapShot snapshot,
             (uint localTileId, uint localId) userDepartureLocation,
             (uint localTileId, uint localId) userTargetLocation,
             DateTime earliestDeparture, DateTime lastDeparture,
-            Profile<T> profile) : this(transitDb,
+            Profile<T> profile) : this(snapshot,
             new List<(uint localTileId, uint localId)> {userDepartureLocation},
             new List<(uint localTileId, uint localId)> {userTargetLocation},
             (uint) earliestDeparture.ToUnixTime(), (uint) lastDeparture.ToUnixTime(),
@@ -56,11 +56,11 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
-        public EarliestConnectionScan(TransitDb transitDb,
+        public EarliestConnectionScan(TransitDb.TransitDbSnapShot snapshot,
             (uint localTileId, uint localId) userDepartureLocation,
             (uint localTileId, uint localId) userTargetLocation,
             ulong earliestDeparture, ulong lastDeparture,
-            Profile<T> profile) : this(transitDb,
+            Profile<T> profile) : this(snapshot,
             new List<(uint localTileId, uint localId)> {userDepartureLocation},
             new List<(uint localTileId, uint localId)> {userTargetLocation},
             earliestDeparture, lastDeparture,
@@ -70,7 +70,7 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
         public EarliestConnectionScan(
-            TransitDb transitDb,
+            TransitDb.TransitDbSnapShot snapshot,
             IEnumerable<(uint localTileId, uint localId)> userDepartureLocations,
             IEnumerable<(uint localTileId, uint localId)> userTargetLocations,
             Time earliestDeparture, Time lastDeparture,
@@ -83,8 +83,8 @@ namespace Itinero.Transit.Algorithms.CSA
 
             _earliestDeparture = earliestDeparture;
             _lastDeparture = lastDeparture;
-            _connectionsProvider = transitDb.Latest.ConnectionsDb;
-            _stopsDb = transitDb.Latest.StopsDb;
+            _connectionsProvider = snapshot.ConnectionsDb;
+            _stopsDb = snapshot.StopsDb;
 
             _stopsReader = _stopsDb.GetReader();
             _transferPolicy = profile.InternalTransferGenerator;
@@ -104,7 +104,7 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
         public EarliestConnectionScan(
-            TransitDb transitDb,
+            TransitDb.TransitDbSnapShot snapshot,
             IEnumerable<(uint localTileId, uint localId, ulong travelTime)> userDepartureLocations,
             List<(uint localTileId, uint localId, ulong travelTime)> userTargetLocations,
             Time earliestDeparture, Time lastDeparture,
@@ -117,8 +117,8 @@ namespace Itinero.Transit.Algorithms.CSA
             
             _earliestDeparture = earliestDeparture;
             _lastDeparture = lastDeparture;
-            _connectionsProvider = transitDb.Latest.ConnectionsDb;
-            _stopsDb = transitDb.Latest.StopsDb;
+            _connectionsProvider = snapshot.ConnectionsDb;
+            _stopsDb = snapshot.StopsDb;
         
             _stopsReader = _stopsDb.GetReader();
             _transferPolicy = profile.InternalTransferGenerator;

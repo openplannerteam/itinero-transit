@@ -35,7 +35,7 @@ namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
             _policies = policies.OrderBy(p => p.Frequency).ToList();
             if (policies.Count == 0)
             {
-                throw new ArgumentException("At least one synchronization policy should be given");
+                _policies.Add(new SynchronizedWindow(60, TimeSpan.Zero,  TimeSpan.FromHours(3)));
             }
 
             var clockRate = _policies[0].Frequency;

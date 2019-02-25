@@ -97,20 +97,20 @@ namespace Itinero.IO.LC
             new Dictionary<ulong, ParetoFrontier<T>>();
 
 
-        public ProfiledConnectionScan(TransitDb transitDb,
+        public ProfiledConnectionScan(TransitDb.TransitDbSnapShot snapshot,
             (uint, uint) departureStop,
             (uint, uint) arrivalStop,
             DateTime earliestDeparture, DateTime lastArrival,
             Profile<T> profile,
             IConnectionFilter filter = null) :
-            this(transitDb, departureStop, arrivalStop, earliestDeparture.ToUnixTime(), lastArrival.ToUnixTime(), profile, filter)
+            this(snapshot, departureStop, arrivalStop, earliestDeparture.ToUnixTime(), lastArrival.ToUnixTime(), profile, filter)
         {
         }
 
         ///  <summary>
         ///  Create a new ProfiledConnectionScan algorithm.
         ///  </summary>
-        public ProfiledConnectionScan(TransitDb transitDb,
+        public ProfiledConnectionScan(TransitDb.TransitDbSnapShot snapshot,
             (uint, uint) departureStop,
             (uint, uint) arrivalStop,
             UnixTime earliestDeparture, UnixTime lastDeparture,
@@ -135,7 +135,7 @@ namespace Itinero.IO.LC
             _earliestDeparture = earliestDeparture;
             _lastArrival = lastDeparture;
 
-            _connectionsProvider = transitDb.Latest.ConnectionsDb;
+            _connectionsProvider = snapshot.ConnectionsDb;
             
             _comparator = profile.ProfileComparator;
             _empty = new ParetoFrontier<T>(_comparator);

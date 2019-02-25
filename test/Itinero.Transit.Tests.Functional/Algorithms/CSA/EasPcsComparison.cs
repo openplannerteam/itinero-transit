@@ -33,11 +33,11 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             True(reader.MoveTo(input.arrivalStopId));
             var arrival = reader.Id;
 
-            var eas = new EarliestConnectionScan<TransferStats>(tbd,
+            var eas = new EarliestConnectionScan<TransferStats>(latest,
                 departure, arrival, input.departureTime, input.arrivalTime, profile);
 
             var easJ = eas.CalculateJourney();
-            var pcs = new ProfiledConnectionScan<TransferStats>(tbd,
+            var pcs = new ProfiledConnectionScan<TransferStats>(latest,
                 departure, arrival, input.departureTime, input.arrivalTime, profile);
 
             var pcsJs = pcs.CalculateJourneys();
