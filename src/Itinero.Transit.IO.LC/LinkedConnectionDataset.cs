@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
-using Itinero.Transit.IO.LC.CSA.ConnectionProviders;
-using Itinero.Transit.IO.LC.CSA.LocationProviders;
-using Itinero.Transit.IO.LC.CSA.Utils;
+using Itinero.Transit.IO.LC.Data;
 using Itinero.Transit.Logging;
 using JsonLD.Core;
 
-namespace Itinero.Transit.IO.LC.CSA
+namespace Itinero.Transit.IO.LC
 {
     /// <summary>
     /// A profile represents the preferences of the traveller.

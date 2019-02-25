@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 
-namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
+namespace Itinero.Transit.IO.LC.Synchronization
 {
     
     /// <summary>

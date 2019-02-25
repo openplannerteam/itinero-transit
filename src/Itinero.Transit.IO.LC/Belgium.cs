@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
 
-namespace Itinero.Transit.IO.LC.CSA
+namespace Itinero.Transit.IO.LC
 {
     public static class Belgium
     {

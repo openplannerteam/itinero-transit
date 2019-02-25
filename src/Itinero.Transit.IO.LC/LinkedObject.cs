@@ -5,7 +5,7 @@ using JsonLD.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Itinero.Transit.IO.LC.CSA
+namespace Itinero.Transit.IO.LC
 {
     /// <summary>
     /// A linked object is an object which has an Uniform Resource Identifier.

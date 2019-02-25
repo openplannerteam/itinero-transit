@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
-using Itinero.Transit.IO.LC.CSA;
-using Itinero.Transit.IO.LC.CSA.ConnectionProviders;
-using Itinero.Transit.IO.LC.CSA.Connections;
-using Itinero.Transit.IO.LC.CSA.Data;
-using Itinero.Transit.IO.LC.CSA.LocationProviders;
+using Itinero.Transit.IO.LC.Data;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
 namespace Itinero.Transit.IO.LC

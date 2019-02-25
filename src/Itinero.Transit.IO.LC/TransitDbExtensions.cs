@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
-using Itinero.Transit.IO.LC.CSA;
-using Itinero.Transit.IO.LC.IO.LC.Synchronization;
+using Itinero.Transit.IO.LC.Synchronization;
 
-namespace Itinero.Transit.IO.LC.IO.LC
+namespace Itinero.Transit.IO.LC
 {
     public static class TransitDbExtensions
     {

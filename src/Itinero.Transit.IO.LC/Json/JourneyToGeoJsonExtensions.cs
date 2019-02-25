@@ -6,7 +6,7 @@ using Itinero.Transit.Journeys;
 
 // ReSharper disable UnusedMember.Global
 
-namespace Itinero.Transit.IO.Json
+namespace Itinero.Transit.IO.LC.Json
 {
     public static class JourneyToGeoJsonExtensions
     {

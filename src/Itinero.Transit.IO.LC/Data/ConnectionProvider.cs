@@ -1,11 +1,9 @@
 using System;
-using Itinero.Transit.IO.LC.CSA.Connections;
-using Itinero.Transit.IO.LC.CSA.Utils;
 using Itinero.Transit.Logging;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 
-namespace Itinero.Transit.IO.LC.CSA.ConnectionProviders
+namespace Itinero.Transit.IO.LC.Data
 {
     ///  <summary>
     ///  A LinkedConnectionProvider-object corresponds with one data source,

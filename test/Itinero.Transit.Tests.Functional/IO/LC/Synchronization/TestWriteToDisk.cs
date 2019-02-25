@@ -1,8 +1,8 @@
 using System.IO;
 using System.Threading;
-using Itinero.Transit.Api.Logic;
 using Itinero.Transit.Data;
-using Itinero.Transit.IO.LC.IO.LC;
+using Itinero.Transit.IO.LC;
+using Itinero.Transit.IO.LC.Synchronization;
 
 namespace Itinero.Transit.Tests.Functional.IO.LC.Synchronization
 {

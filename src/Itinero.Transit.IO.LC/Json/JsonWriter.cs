@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Itinero.Transit.IO.Json
+namespace Itinero.Transit.IO.LC.Json
 {
     /// <summary>
     /// A json-writer.

@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
 
-namespace Itinero.Transit.IO.LC.CSA.Utils
+namespace Itinero.Transit.IO.LC.Data
 {
     /// <summary>
     /// Utilities to help downloading, caching and testing (e.g. to inject a fixed string while testing)

@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
-namespace Itinero.Transit.IO.LC.CSA.LocationProviders
+namespace Itinero.Transit.IO.LC.Data
 {
     /// <summary>
     /// Represents a transit location, such as a bus stop or train station

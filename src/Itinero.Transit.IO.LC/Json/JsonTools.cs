@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace Itinero.Transit.IO.Json
+namespace Itinero.Transit.IO.LC.Json
 {
     /// <summary>
     /// Contains some tools for json.

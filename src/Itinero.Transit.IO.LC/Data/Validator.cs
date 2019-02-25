@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Itinero.Transit.IO.LC.CSA.Connections;
-using Itinero.Transit.IO.LC.CSA.LocationProviders;
 
-namespace Itinero.Transit.IO.LC.CSA.Data
+namespace Itinero.Transit.IO.LC.Data
 {
 
     internal static class TimeTableExtensions

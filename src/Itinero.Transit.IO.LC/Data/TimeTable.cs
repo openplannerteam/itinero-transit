@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Itinero.Transit.IO.LC.CSA.LocationProviders;
 using Itinero.Transit.Logging;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 
-namespace Itinero.Transit.IO.LC.CSA.Connections
+namespace Itinero.Transit.IO.LC.Data
 {
     /// <summary>
     /// Represents one entire page of connections, based on a LinkedConnections JSON-LD

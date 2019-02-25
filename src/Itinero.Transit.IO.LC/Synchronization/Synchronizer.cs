@@ -8,7 +8,7 @@ using Itinero.Transit.Data;
 using Itinero.Transit.Logging;
 using Timer = System.Timers.Timer;
 
-namespace Itinero.Transit.IO.LC.IO.LC.Synchronization
+namespace Itinero.Transit.IO.LC.Synchronization
 {
     /// <summary>
     /// This class keeps track of the 'SynchronizerPolicies' which are in use and triggers them every now and then to load them

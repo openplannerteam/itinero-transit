@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
-using Itinero.Transit.IO.LC.CSA;
-using Itinero.Transit.IO.LC.CSA.Utils;
+using Itinero.Transit.IO.LC;
 
 namespace Itinero.Transit.Tests.Functional.IO.LC
 {

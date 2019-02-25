@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
-namespace Itinero.Transit.IO.LC.CSA.LocationProviders
+namespace Itinero.Transit.IO.LC.Data
 {
     /// <summary>
     /// This class is (on of) the actual classes that searches station locations.
