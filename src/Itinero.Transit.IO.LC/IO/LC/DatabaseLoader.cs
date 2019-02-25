@@ -112,13 +112,9 @@ namespace Itinero.Transit.IO.LC
                     return false;
                 }
             );
-            var i = 0;
-            var e = tt.Connections().Count;
             foreach (var connection in tt.Connections())
             {
                 AddConnection(connection, locations);
-                i++;
-                Console.WriteLine($"{i}/{e}");
                 
             }
         }
