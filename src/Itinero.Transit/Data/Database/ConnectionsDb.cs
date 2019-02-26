@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Algorithms.Sorting;
@@ -123,7 +124,7 @@ namespace Itinero.Transit.Data
         }
 
         private ConnectionsDb(int windowSizeInSeconds, ArrayBase<byte> data, uint nextInternalId, ArrayBase<string> globalIds,
-            ArrayBase<uint> tripIds, ArrayBase<uint> globalIdPointersPerHash, ArrayBase<uint> globalIdLinkedList,
+            ArrayBase<uint> tripIds, ArrayBase<uint> globalIdPointersPerHash, ArrayBase<uint> globalIdLinkedList, uint globalIdLinkedListPointer,
             ArrayBase<uint> departureWindowPointers, ArrayBase<uint> departurePointers, uint departurePointer,
             ArrayBase<uint> arrivalWindowPointers, ArrayBase<uint> arrivalPointers,  uint arrivalPointer,
             uint earliestDate, uint latestDate)
@@ -133,6 +134,7 @@ namespace Itinero.Transit.Data
             _nextInternalId = nextInternalId;
             _globalIds = globalIds;
             _tripIds = tripIds;
+            _globalIdLinkedListPointer = globalIdLinkedListPointer;
             _globalIdPointersPerHash = globalIdPointersPerHash;
             _globalIdLinkedList = globalIdLinkedList;
 
@@ -457,19 +459,42 @@ namespace Itinero.Transit.Data
                 _globalIds.Resize(_globalIds.Length + 1024);
             }
 
+            var existingId = _globalIds[internalId];
             _globalIds[internalId] = globalId;
 
             // add stop id to the index.
+            var linkedListPointer = _globalIdLinkedListPointer;
             _globalIdLinkedListPointer += 2;
-            while (_globalIdLinkedList.Length <= _globalIdLinkedListPointer)
+            while (_globalIdLinkedList.Length <= linkedListPointer)
             {
                 _globalIdLinkedList.Resize(_globalIdLinkedList.Length + 1024);
             }
-
+            
             var hash = Hash(globalId);
-            _globalIdLinkedList[_globalIdLinkedListPointer - 2] = internalId;
-            _globalIdLinkedList[_globalIdLinkedListPointer - 1] = _globalIdPointersPerHash[hash];
-            _globalIdPointersPerHash[hash] = _globalIdLinkedListPointer - 2;
+            
+//            // check if there is actually an end to the link.
+//            var pointers = new HashSet<uint>();
+//            var tempP = _globalIdPointersPerHash[hash];
+//            while (tempP != NoData)
+//            {
+//                pointers.Add(tempP);
+//                tempP = _globalIdLinkedList[tempP + 1];
+//            }
+//            if (pointers.Contains(linkedListPointer))
+//            {
+//                Console.WriteLine("Pointer already in use!");
+//            }
+
+            _globalIdLinkedList[linkedListPointer + 0] = internalId;
+            _globalIdLinkedList[linkedListPointer + 1] = _globalIdPointersPerHash[hash];
+            _globalIdPointersPerHash[hash] = linkedListPointer + 0;
+            
+//            // check if there is actually an end to the link.
+//            tempP = _globalIdPointersPerHash[hash];
+//            while (tempP != NoData)
+//            {
+//                tempP = _globalIdLinkedList[tempP + 1];
+//            }
         }
 
         private uint Hash(string id)
@@ -734,7 +759,7 @@ namespace Itinero.Transit.Data
             arrivalPointers.CopyFrom(_arrivalPointers, _arrivalPointers.Length);
             
             return new ConnectionsDb((int)_windowSizeInSeconds, data, _nextInternalId, globalIds, tripIds, globalIdPointersPerHash, globalIdLinkedList,
-                departureWindowPointers, departurePointers, _departurePointer,
+                _globalIdLinkedListPointer, departureWindowPointers, departurePointers, _departurePointer,
                 arrivalWindowPointers, arrivalPointers, _arrivalPointer,
                 _earliestDate, _latestDate);
         }
@@ -752,10 +777,13 @@ namespace Itinero.Transit.Data
             length += _tripIds.CopyToWithSize(stream);
             length += _globalIdPointersPerHash.CopyToWithSize(stream);
             length += _globalIdLinkedList.CopyToWithSize(stream);
-
+            var bytes = BitConverter.GetBytes(_globalIdLinkedListPointer);
+            stream.Write(bytes, 0, 4);
+            length += 4;
+            
             length += _departureWindowPointers.CopyToWithSize(stream);
             length += _departurePointers.CopyToWithSize(stream);
-            var bytes = BitConverter.GetBytes(_departurePointer);
+            bytes = BitConverter.GetBytes(_departurePointer);
             stream.Write(bytes, 0, 4);
             length += 4;
 
@@ -796,6 +824,8 @@ namespace Itinero.Transit.Data
             var tripIds = MemoryArray<uint>.CopyFromWithSize(stream);
             var globalIdPointersPerHash = MemoryArray<uint>.CopyFromWithSize(stream);
             var globalIdLinkedList = MemoryArray<uint>.CopyFromWithSize(stream);
+            stream.Read(buffer, 0, 4);
+            var globalIdLinkedListPointer = BitConverter.ToUInt32(buffer, 0);
             
             var departureWindowPointers = MemoryArray<uint>.CopyFromWithSize(stream);
             var departurePointers = MemoryArray<uint>.CopyFromWithSize(stream);
@@ -819,7 +849,7 @@ namespace Itinero.Transit.Data
             stream.Read(buffer, 0, 4);
             var latestDate = BitConverter.ToUInt32(buffer, 0);
             
-            return new ConnectionsDb((int)windowSizeInSeconds, data, nextInternalId, globalIds, tripIds, globalIdPointersPerHash, globalIdLinkedList,
+            return new ConnectionsDb((int)windowSizeInSeconds, data, nextInternalId, globalIds, tripIds, globalIdPointersPerHash, globalIdLinkedList, globalIdLinkedListPointer,
                 departureWindowPointers, departurePointers, departurePointer,
                 arrivalWindowPointers, arrivalPointers, arrivalPointer,
                 earliestDate, latestDate);
