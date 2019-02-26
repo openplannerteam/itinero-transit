@@ -74,7 +74,7 @@ namespace Itinero.Transit.IO.LC.Synchronization
             var retr = _retries == 0
                 ? "No retries on failing"
                 : (_retries == 1 ? "Single retry on failing" : $"{_retries} retries when failing");
-            var now = _triggeredDate == null ? "" : $" Now running with date {_triggeredDate.Value:O}";
+            var now = _triggeredDate == null ? "" : $" Now running with trigger date {_triggeredDate.Value:O}";
             return
                 $"SynchronizedWindow, {LoadBefore:g} --> {LoadAfter:g} (triggers every {TimeSpan.FromSeconds(Frequency)}, {updates}, {retr}){now}";
         }

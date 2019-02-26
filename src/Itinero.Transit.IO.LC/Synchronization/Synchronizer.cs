@@ -53,7 +53,6 @@ namespace Itinero.Transit.IO.LC.Synchronization
             _timer = new Timer(Math.Min(initialDelaySeconds, clockRate) *
                                1000); // Clockrate is in seconds, timer expects millis
             _timer.Elapsed += RunAll;
-            _timer.AutoReset = false;
             _timer.Start();
 
             var txt = "";
@@ -106,7 +105,12 @@ namespace Itinero.Transit.IO.LC.Synchronization
             var unixNow = DateTime.Now.ToUnixTime();
             var date = unixNow - unixNow % _clockRate;
             var triggerDate = date.FromUnixTime();
-            try
+
+            if (CurrentlyRunning != null)
+            {
+                Log.Information("Tasks are already running... Skipping automated tasks for this tick");
+                return;
+            }       try
             {
                 foreach (var policy in _policies)
                 {
@@ -134,7 +138,6 @@ namespace Itinero.Transit.IO.LC.Synchronization
                 CurrentlyRunning = null;
                 _firstRun = false;
                 _timer.Interval = _clockRate * 1000;
-                _timer.Start();
             }
         }
 
