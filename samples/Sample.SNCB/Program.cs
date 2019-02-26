@@ -26,8 +26,8 @@ namespace Sample.SNCB
             // calculate journeys.
             Console.WriteLine("Calculating journeys...");
             var p = new DefaultProfile(snapshot);
-            var journeys = snapshot.CalculateJourneys(p, departureStop.Id, arrivalStop.Id, 
-                DateTime.Now)?.ToList();
+            var journeys = snapshot.CalculateJourneys(p, departureStop, arrivalStop, 
+                DateTime.Now);
             if (journeys == null || 
                 journeys.Count == 0)
             {

@@ -1,13 +1,12 @@
-using System.IO;
-using System.Net;
 using Itinero.Transit.Data.Attributes;
 
 namespace Itinero.Transit.Data
 {
     /// <summary>
-    /// Contains extension methods for the transit db.
+    /// Contains extension methods for updating the transit db.
+    /// For internal use only
     /// </summary>
-    public static class TransitDbExtensions
+    internal static class TransitDbUpdateExtensions
     {
         /// <summary>
         /// Adds a new stop and returns it's internal id.

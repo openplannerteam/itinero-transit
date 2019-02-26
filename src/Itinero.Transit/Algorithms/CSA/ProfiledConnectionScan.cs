@@ -145,7 +145,7 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
-        public IEnumerable<Journey<T>> CalculateJourneys()
+        public List<Journey<T>> CalculateJourneys()
         {
             var enumerator = _connectionsProvider.GetDepartureEnumerator();
 
