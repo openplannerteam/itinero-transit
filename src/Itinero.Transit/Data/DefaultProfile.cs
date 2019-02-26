@@ -11,10 +11,9 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// Creates a profile with default settings.
         /// </summary>
-        /// <param name="snapshot"></param>
-        public DefaultProfile(TransitDb.TransitDbSnapShot snapshot)
+        public DefaultProfile()
         : base(new InternalTransferGenerator(180), 
-            new CrowsFlightTransferGenerator(snapshot, maxDistance: 500 /*meter*/,  speed: 1.4f /*meter/second*/),
+            new CrowsFlightTransferGenerator(maxDistance: 500 /*meter*/,  speed: 1.4f /*meter/second*/),
             TransferStats.Factory,
             TransferStats.ProfileTransferCompare)
         {

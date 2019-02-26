@@ -18,6 +18,7 @@ namespace Itinero.Transit.Algorithms.CSA
     {
         private readonly List<(uint localTileId, uint localId, Time travelTime)> _userTargetLocations;
 
+        private readonly TransitDb.TransitDbSnapShot _tdb;
         private readonly ConnectionsDb _connectionsProvider;
         private readonly StopsDb _stopsDb;
         private readonly StopsDb.StopsDbReader _stopsReader;
@@ -84,9 +85,11 @@ namespace Itinero.Transit.Algorithms.CSA
             _earliestDeparture = earliestDeparture;
             _lastDeparture = lastDeparture;
             _connectionsProvider = snapshot.ConnectionsDb;
-            _stopsDb = snapshot.StopsDb;
+            _tdb = snapshot;
 
+            _stopsDb = snapshot.StopsDb;
             _stopsReader = _stopsDb.GetReader();
+            
             _transferPolicy = profile.InternalTransferGenerator;
             _walkPolicy = profile.WalksGenerator;
 
@@ -279,7 +282,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 {
                     journeyToArrival =
                         _transferPolicy
-                            .CreateDepartureTransfer(journeyTillDeparture, c.DepartureTime, c.DepartureStop)
+                            .CreateDepartureTransfer(_tdb, journeyTillDeparture, c.DepartureTime, c.DepartureStop)
                             ?.ChainForward(c);
                 }
 
@@ -332,7 +335,7 @@ namespace Itinero.Transit.Algorithms.CSA
                     continue;
                 }
 
-                var walkingJourney = _walkPolicy.CreateDepartureTransfer(journey, ulong.MaxValue, id);
+                var walkingJourney = _walkPolicy.CreateDepartureTransfer(_tdb, journey, ulong.MaxValue, id);
                 if (walkingJourney == null)
                 {
                     continue;

@@ -23,7 +23,7 @@ namespace Itinero.Transit.Data.Walks
         /// <param name="buildOn"></param>
         /// <param name="timeNearTransfer">The departure time in the normal case, the arrival time if building journeys from en </param>
         /// <returns></returns>
-        private Journey<T> CreateInternalTransfer<T>(Journey<T> buildOn,
+        private Journey<T> CreateInternalTransfer<T>(TransitDb.TransitDbSnapShot _, Journey<T> buildOn,
             ulong timeNearTransfer) where T : IJourneyStats<T>
         {
             ulong timeDiff;
@@ -45,7 +45,8 @@ namespace Itinero.Transit.Data.Walks
             return buildOn.Transfer(timeNearTransfer);
         }
 
-        public Journey<T> CreateDepartureTransfer<T>(Journey<T> buildOn, ulong timeWhenLeaving,
+        public Journey<T> CreateDepartureTransfer<T>(TransitDb.TransitDbSnapShot tdb, Journey<T> buildOn,
+            ulong timeWhenLeaving,
             (uint, uint) otherLocation) where T : IJourneyStats<T>
         {
             if (timeWhenLeaving < buildOn.Time)
@@ -60,10 +61,11 @@ namespace Itinero.Transit.Data.Walks
                 return null;
             }
 
-            return CreateInternalTransfer(buildOn, timeWhenLeaving);
+            return CreateInternalTransfer(tdb, buildOn, timeWhenLeaving);
         }
 
-        public Journey<T> CreateArrivingTransfer<T>(Journey<T> buildOn, ulong timeWhenArriving,
+        public Journey<T> CreateArrivingTransfer<T>(TransitDb.TransitDbSnapShot tdb, Journey<T> buildOn,
+            ulong timeWhenArriving,
             (uint, uint) otherLocation) where T : IJourneyStats<T>
         {
             if (timeWhenArriving > buildOn.Time)
@@ -77,7 +79,7 @@ namespace Itinero.Transit.Data.Walks
                 return null;
             }
 
-            return CreateInternalTransfer(buildOn, timeWhenArriving);
+            return CreateInternalTransfer(tdb, buildOn, timeWhenArriving);
         }
 
         public float Range()

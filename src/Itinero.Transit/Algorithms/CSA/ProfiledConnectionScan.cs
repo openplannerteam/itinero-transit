@@ -21,6 +21,7 @@ namespace Itinero.Transit.Algorithms.CSA
     /// </summary>
     public class ProfiledConnectionScan<T> where T : IJourneyStats<T>
     {
+        private readonly TransitDb.TransitDbSnapShot _tdb;
         private readonly ConnectionsDb _connectionsProvider;
         private readonly UnixTime _earliestDeparture, _lastArrival;
         private readonly (uint, uint) _departureLocation, _targetLocation;
@@ -101,7 +102,8 @@ namespace Itinero.Transit.Algorithms.CSA
             DateTime earliestDeparture, DateTime lastArrival,
             Profile<T> profile,
             IConnectionFilter filter = null) :
-            this(snapshot, departureStop, arrivalStop, earliestDeparture.ToUnixTime(), lastArrival.ToUnixTime(), profile, filter)
+            this(snapshot, departureStop, arrivalStop, earliestDeparture.ToUnixTime(), lastArrival.ToUnixTime(),
+                profile, filter)
         {
         }
 
@@ -127,6 +129,7 @@ namespace Itinero.Transit.Algorithms.CSA
                     "Departure time falls after arrival time. Do you intend to travel backwards in time? If so, lend me that time machine!");
             }
 
+            _tdb = snapshot;
             _departureLocation = departureStop;
             _targetLocation = arrivalStop;
 
@@ -134,7 +137,7 @@ namespace Itinero.Transit.Algorithms.CSA
             _lastArrival = lastDeparture;
 
             _connectionsProvider = snapshot.ConnectionsDb;
-            
+
             _comparator = profile.ProfileComparator;
             _empty = new ParetoFrontier<T>(_comparator);
             _statsFactory = profile.StatsFactory;
@@ -353,7 +356,7 @@ namespace Itinero.Transit.Algorithms.CSA
             // We get all possible, pareto optimal journeys departing here...
             var pareto = _stationJourneys[c.ArrivalStop];
             // .. and we extend them with c. What is non-dominated, we return
-            return pareto.ExtendFrontier(c, _transferPolicy);
+            return pareto.ExtendFrontier(_tdb, c, _transferPolicy);
         }
 
 

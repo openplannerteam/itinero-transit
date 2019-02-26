@@ -18,6 +18,7 @@ namespace Itinero.Transit.Algorithms.CSA
     {
         private readonly List<(uint localTileId, uint localId)> _userDepartureLocation;
 
+        private readonly TransitDb.TransitDbSnapShot _tdb;
         private readonly ConnectionsDb _connectionsProvider;
 
         private readonly Time _earliestDeparture, _lastDeparture;
@@ -85,6 +86,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 throw new ArgumentException("Departure time falls after arrival time");
             }
 
+            _tdb = snapshot;
             _earliestDeparture = earliestDeparture;
             _lastDeparture = lastDeparture;
             _connectionsProvider = snapshot.ConnectionsDb;
@@ -230,7 +232,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 else
                 {
                     journeyFromDeparture = _transferPolicy
-                        .CreateArrivingTransfer(journeyFromArrival, c.ArrivalTime, c.ArrivalStop)
+                        .CreateArrivingTransfer(_tdb, journeyFromArrival, c.ArrivalTime, c.ArrivalStop)
                         ?.ChainBackward(c);
                 }
 

@@ -10,7 +10,6 @@ namespace Itinero.Transit.Data.Walks
     /// </summary>
     public class CrowsFlightTransferGenerator : IOtherModeGenerator
     {
-        private readonly StopsDb.StopsDbReader _reader;
         private readonly int _maxDistance;
         private readonly float _speed;
 
@@ -26,13 +25,10 @@ namespace Itinero.Transit.Data.Walks
         ///  - the speed parameter
         ///  
         ///  </summary>
-        /// <param name="reader"></param>
         /// <param name="maxDistance">The maximum walkable distance in meter</param>
         ///  <param name="speed">In meter per second. According to Wikipedia, about 1.4m/s is preferred average</param>
-        public CrowsFlightTransferGenerator(
-            TransitDb.TransitDbSnapShot transitDb, int maxDistance = 500, float speed = 1.4f)
+        public CrowsFlightTransferGenerator(int maxDistance = 500, float speed = 1.4f)
         {
-            _reader = transitDb.StopsDb.GetReader();
             _maxDistance = maxDistance;
             _speed = speed;
         }
@@ -40,14 +36,12 @@ namespace Itinero.Transit.Data.Walks
         /// <summary>
         /// Adds a walk to 'targetLocation' at the end of the journey 'buildOn'
         /// </summary>
-        /// <param name="buildOn"></param>
-        /// <param name="timeWhenLeaving"></param>
-        /// <param name="otherLocation"></param>
-        /// <returns></returns>
-        public Journey<T> CreateDepartureTransfer<T>(Journey<T> buildOn, ulong timeWhenLeaving,
+        public Journey<T> CreateDepartureTransfer<T>(TransitDb.TransitDbSnapShot tdb, Journey<T> buildOn,
+            ulong timeWhenLeaving,
             (uint, uint) otherLocation) where T : IJourneyStats<T>
         {
-            var distance = _reader.CalculateDistanceBetween(buildOn.Location, otherLocation);
+            var reader = tdb.StopsDb.GetReader();
+            var distance = reader.CalculateDistanceBetween(buildOn.Location, otherLocation);
             if (distance > _maxDistance)
             {
                 return null;
@@ -66,10 +60,13 @@ namespace Itinero.Transit.Data.Walks
         }
 
 
-        public Journey<T> CreateArrivingTransfer<T>(Journey<T> buildOn, ulong timeWhenDeparting,
+        public Journey<T> CreateArrivingTransfer<T>(TransitDb.TransitDbSnapShot tdb, Journey<T> buildOn,
+            ulong timeWhenDeparting,
             (uint, uint) otherLocation) where T : IJourneyStats<T>
         {
-            var distance = _reader.CalculateDistanceBetween(buildOn.Location, otherLocation);
+            var reader = tdb.StopsDb.GetReader();
+
+            var distance = reader.CalculateDistanceBetween(buildOn.Location, otherLocation);
             if (distance > _maxDistance)
             {
                 return null;

@@ -19,7 +19,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var db = tdb.Latest;
 
             var profile = new Profile<TransferStats>(new InternalTransferGenerator(60),
-                new CrowsFlightTransferGenerator(db),
+                new CrowsFlightTransferGenerator(),
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
             var pcs = new ProfiledConnectionScan<TransferStats>(
@@ -80,7 +80,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var latest = transitDb.Latest;
 
             var profile = new Profile<TransferStats>(new InternalTransferGenerator(60),
-                new CrowsFlightTransferGenerator(latest),
+                new CrowsFlightTransferGenerator(),
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
             var pcs = new ProfiledConnectionScan<TransferStats>(latest,
