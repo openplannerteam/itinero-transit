@@ -18,7 +18,7 @@ namespace Itinero.Transit.Journeys
             return parts;
         }
 
-        public static List<Journey<T>> Reversed<T>(this Journey<T> j) where T : IJourneyStats<T>
+        internal static List<Journey<T>> Reversed<T>(this Journey<T> j) where T : IJourneyStats<T>
         {
             var l = new List<Journey<T>>();
             Reversed(j, l);
@@ -30,7 +30,7 @@ namespace Itinero.Transit.Journeys
         /// The resulting, new journeys will not contain alternative choices and will be added to the list
         /// </summary>
         /// <returns></returns>
-        public static void Reversed<T>(this Journey<T> j, List<Journey<T>> addTo) where T : IJourneyStats<T>
+        internal static void Reversed<T>(this Journey<T> j, List<Journey<T>> addTo) where T : IJourneyStats<T>
         {
             Reversed(j, new Journey<T>(j.Location, j.Time, j.Stats.EmptyStat(), j.Root.TripId), addTo);
         }
@@ -102,7 +102,7 @@ namespace Itinero.Transit.Journeys
         /// Takes a journey with a statistics tracker T and applies a statistics tracker S to them
         /// The structure of the journey will be kept
         /// </summary>
-        private static Journey<S> MeasureWith<T, S>(this Journey<T> j, S newStatFactory)
+        public static Journey<S> MeasureWith<T, S>(this Journey<T> j, S newStatFactory)
             where S : IJourneyStats<S>
             where T : IJourneyStats<T>
         {

@@ -12,7 +12,8 @@ namespace Itinero.Transit.Algorithms.CSA
     /// </summary>
     public static class TransitDbQueryExtensions
     {
-        public static (uint, uint) FindStop(this TransitDb.TransitDbSnapShot snapshot, string locationId, string errMsg = null)
+        public static (uint, uint) FindStop(this TransitDb.TransitDbSnapShot snapshot, string locationId,
+            string errMsg = null)
         {
             return snapshot.StopsDb.GetReader().FindStop(locationId, errMsg);
         }
@@ -25,12 +26,14 @@ namespace Itinero.Transit.Algorithms.CSA
         ///
         /// </summary>
         /// <param name="snapshot">The transit DB containing the PT-data</param>
-        /// <param name="profile"></param>
-        ///  <param name="from"></param>
-        ///  <param name="departure"></param>
-        ///  <param name="lastArrival"></param>
-        ///  <typeparam name="T"></typeparam>
-        ///  <returns></returns>
+        /// <param name="profile">The travellers' preferences</param>
+        /// <param name="from">Where the traveller starts</param>
+        /// <param name="to">WHere the traveller wishes to go to</param>
+        /// <param name="departure">When the traveller would like to depart</param>
+        /// <param name="lastArrival">When the traveller would like to arrive</param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>A journey which is guaranteed to arrive as early as possible (or null if none was found)</returns>
+        // ReSharper disable once UnusedMember.Global
         public static Journey<T> EarliestArrival<T>
         (this TransitDb.TransitDbSnapShot snapshot,
             Profile<T> profile,
