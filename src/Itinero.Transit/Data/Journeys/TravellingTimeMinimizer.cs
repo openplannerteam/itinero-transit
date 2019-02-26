@@ -1,9 +1,8 @@
+using System;
 using Reminiscence.Collections;
 
 namespace Itinero.Transit.Journeys
 {
-    
-    
     /// <summary>
     /// This JourneyStatistic will attempt to optimize the journeys in the following way:
     ///
@@ -26,10 +25,10 @@ namespace Itinero.Transit.Journeys
     /// </summary>
     public class TravellingTimeMinimizer : IJourneyStats<TravellingTimeMinimizer>
     {
-
         private uint _totalTimeWalking = 0;
         private uint _totalTimeInVehicle = 0;
         private uint _smallestTransfer = uint.MaxValue;
+        private uint _leastImportantTransferstation = uint.MaxValue;
 
         private readonly Dictionary<(uint, uint), uint> _importances;
 
@@ -38,9 +37,18 @@ namespace Itinero.Transit.Journeys
             _importances = importances;
         }
 
-        public TravellingTimeMinimizer():this(null)
+        public TravellingTimeMinimizer() : this(null)
         {
-            
+        }
+
+        public TravellingTimeMinimizer(Dictionary<(uint, uint), uint> importances,
+            uint totalTimeWalking, uint totalTimeInVehicle, uint smallestTransfer, uint leastImportantTransferstation)
+        {
+            _importances = importances;
+            _totalTimeWalking = totalTimeWalking;
+            _totalTimeInVehicle = totalTimeInVehicle;
+            _smallestTransfer = smallestTransfer;
+            _leastImportantTransferstation = leastImportantTransferstation;
         }
 
 
@@ -51,7 +59,33 @@ namespace Itinero.Transit.Journeys
 
         public TravellingTimeMinimizer Add(Journey<TravellingTimeMinimizer> journey)
         {
-            throw new System.NotImplementedException();
+            var totalTimeWalking = _totalTimeWalking;
+            var totalTimeInVehicle = _totalTimeInVehicle;
+            var smallestTransfer = _smallestTransfer;
+            var leastImportantTransferstation = _leastImportantTransferstation;
+
+            var journeyTime = (uint) (journey.ArrivalTime() - journey.DepartureTime());
+            
+            if (journey.SpecialConnection && journey.Connection == Journey<TravellingTimeMinimizer>.WALK)
+            {
+                totalTimeWalking += journeyTime;
+            }else if (journey.SpecialConnection && journey.Connection == Journey<TravellingTimeMinimizer>.TRANSFER)
+            {
+                smallestTransfer = Math.Min(smallestTransfer, journeyTime);
+
+                var importance = leastImportantTransferstation;
+                if (_importances?.TryGetValue(journey.Location, out importance) ?? false)
+                {
+                    leastImportantTransferstation = Math.Min(leastImportantTransferstation, importance);
+                }
+                
+            }else if (!journey.SpecialConnection)
+            {
+                // We simply are travelling in a vehicle
+                totalTimeInVehicle += journeyTime;
+            }
+
+            return new TravellingTimeMinimizer(_importances, totalTimeWalking, totalTimeInVehicle, smallestTransfer, leastImportantTransferstation);
         }
     }
 }
