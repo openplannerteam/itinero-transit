@@ -25,12 +25,14 @@ namespace Itinero.Transit.Journeys
     /// </summary>
     public class TravellingTimeMinimizer : IJourneyStats<TravellingTimeMinimizer>
     {
-        private uint _totalTimeWalking = 0;
-        private uint _totalTimeInVehicle = 0;
-        private uint _smallestTransfer = uint.MaxValue;
-        private uint _leastImportantTransferstation = uint.MaxValue;
+        private readonly uint _totalTimeWalking = 0;
+        private readonly uint _totalTimeInVehicle = 0;
+        private readonly uint _smallestTransfer = uint.MaxValue;
+        private readonly uint _leastImportantTransferstation = uint.MaxValue;
 
         private readonly Dictionary<(uint, uint), uint> _importances;
+        
+        public static readonly Minimizer Minimize = new Minimizer();
 
         public TravellingTimeMinimizer(Dictionary<(uint, uint), uint> importances)
         {
@@ -86,6 +88,41 @@ namespace Itinero.Transit.Journeys
             }
 
             return new TravellingTimeMinimizer(_importances, totalTimeWalking, totalTimeInVehicle, smallestTransfer, leastImportantTransferstation);
+        }
+        
+        
+        public class Minimizer : StatsComparator<TravellingTimeMinimizer>
+        {
+            public override int ADominatesB(Journey<TravellingTimeMinimizer> ja, Journey<TravellingTimeMinimizer> jb)
+            {
+
+                var a = ja.Stats;
+                var b = jb.Stats;
+
+                if (a._totalTimeWalking != b._totalTimeWalking)
+                {
+                    return a._totalTimeWalking.CompareTo(b._totalTimeWalking);
+                }
+ 
+                if (a._totalTimeInVehicle != b._totalTimeInVehicle)
+                {
+                    return a._totalTimeInVehicle.CompareTo(b._totalTimeInVehicle);
+                }
+               
+                if (a._smallestTransfer != b._smallestTransfer)
+                {
+                    // SHOULD BE MAXIMIZED! 
+                    return b._smallestTransfer.CompareTo(a._smallestTransfer);
+                }
+
+                if (a._leastImportantTransferstation != b._leastImportantTransferstation)
+                {
+                    // SHOULD BE MAXIMIZED
+                    return b._leastImportantTransferstation.CompareTo(a._leastImportantTransferstation);
+                }
+
+                return 0;
+            }
         }
     }
 }

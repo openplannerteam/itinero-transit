@@ -229,7 +229,7 @@ namespace Itinero.Transit.Algorithms.CSA
             if (departureTime == 0)
             {
                 var las = new LatestConnectionScan<T>(snapshot, depLocation, arrivalLocation,
-                    lastArrivalTime - 24 * 60 * 60, lastArrivalTime,
+                    lastArrivalTime - lookAhead, lastArrivalTime,
                     profile);
                 var lasJourney = las.CalculateJourney(
                     (journeyArr, journeyDep) =>
@@ -245,7 +245,7 @@ namespace Itinero.Transit.Algorithms.CSA
             var lastArrivalTimeSet = lastArrivalTime != 0;
             if (!lastArrivalTimeSet)
             {
-                lastArrivalTime = departureTime + 24 * 60 * 60;
+                lastArrivalTime = departureTime + lookAhead;
             }
 
             var eas = new EarliestConnectionScan<T>(snapshot,
