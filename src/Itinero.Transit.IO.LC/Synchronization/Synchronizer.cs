@@ -35,7 +35,7 @@ namespace Itinero.Transit.IO.LC.Synchronization
             _policies = policies.OrderBy(p => p.Frequency).ToList();
             if (policies.Count == 0)
             {
-                _policies.Add(new SynchronizedWindow(60, TimeSpan.Zero,  TimeSpan.FromHours(3)));
+                _policies.Add(new SynchronizedWindow(60, TimeSpan.Zero, TimeSpan.FromHours(3)));
             }
 
             var clockRate = _policies[0].Frequency;
@@ -71,7 +71,7 @@ namespace Itinero.Transit.IO.LC.Synchronization
             this(db, updateDb, new List<SynchronizationPolicy>(policies), initialDelaySeconds)
         {
         }
-        
+
         public Synchronizer(TransitDb db, Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb,
             params SynchronizationPolicy[] policies) :
             this(db, updateDb, new List<SynchronizationPolicy>(policies))
@@ -102,6 +102,9 @@ namespace Itinero.Transit.IO.LC.Synchronization
 
         private void RunAll(Object sender = null, ElapsedEventArgs eventArgs = null)
         {
+            _timer.Interval = _clockRate * 1000;
+
+            
             var unixNow = DateTime.Now.ToUnixTime();
             var date = unixNow - unixNow % _clockRate;
             var triggerDate = date.FromUnixTime();
@@ -110,7 +113,9 @@ namespace Itinero.Transit.IO.LC.Synchronization
             {
                 Log.Information("Tasks are already running... Skipping automated tasks for this tick");
                 return;
-            }       try
+            }
+
+            try
             {
                 foreach (var policy in _policies)
                 {
@@ -137,7 +142,6 @@ namespace Itinero.Transit.IO.LC.Synchronization
             {
                 CurrentlyRunning = null;
                 _firstRun = false;
-                _timer.Interval = _clockRate * 1000;
             }
         }
 
