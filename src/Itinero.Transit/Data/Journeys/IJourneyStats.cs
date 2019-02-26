@@ -12,7 +12,9 @@
         where T : IJourneyStats<T>
     {
         /// <summary>
-        /// Gives an object representing a journey which hasn't begun yet.
+        /// Gives an object containing statistics for a journey which hasn't begun yet.
+        /// A good candidate to reuse is an empty factory object 
+        /// 
         /// 'Even the longest journey begins with the zeroth step'
         /// </summary>
         T EmptyStat();

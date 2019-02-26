@@ -18,7 +18,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             
             var profile = new Profile<TransferStats>(new InternalTransferGenerator(0),
                 new CrowsFlightTransferGenerator(db),
-                new TransferStats(),
+                TransferStats.Factory,
                 TransferStats.ProfileTransferCompare
             );
 
@@ -65,7 +65,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
             var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(latest),
-                new TransferStats(),
+                TransferStats.Factory,
                 TransferStats.ProfileTransferCompare);
             var las = new LatestConnectionScan<TransferStats>(latest,
                 stop1, stop2, new DateTime(2018, 12, 04, 16, 00, 00), new DateTime(2018, 12, 04, 19, 00, 00),

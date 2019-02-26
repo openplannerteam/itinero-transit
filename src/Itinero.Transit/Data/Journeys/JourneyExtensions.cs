@@ -5,8 +5,6 @@ namespace Itinero.Transit.Journeys
     // ReSharper disable once UnusedMember.Global
     public static class JourneyExtensions
     {
-    
-
         public static List<Journey<T>> AllParts<T>(this Journey<T> j) where T : IJourneyStats<T>
         {
             var parts = new List<Journey<T>>();
@@ -98,10 +96,41 @@ namespace Itinero.Transit.Journeys
 
             return j.PreviousLink.PrunedWithoutLast();
         }
-        
-        /*
-    // ReSharper disable once UnusedMember.Global
-    
-*/
+
+
+        /// <summary>
+        /// Takes a journey with a statistics tracker T and applies a statistics tracker S to them
+        /// The structure of the journey will be kept
+        /// </summary>
+        private static Journey<S> MeasureWith<T, S>(this Journey<T> j, S newStatFactory)
+            where S : IJourneyStats<S>
+            where T : IJourneyStats<T>
+        {
+            if (j.PreviousLink == null)
+            {
+                // We have found the genesis
+                return new Journey<S>(
+                    j.Location, j.Time, newStatFactory.EmptyStat(), j.TripId);
+            }
+
+            if (j.SpecialConnection && j.Connection == Journey<T>.JOINED_JOURNEYS)
+            {
+                var prev = j.PreviousLink.MeasureWith(newStatFactory);
+                var altPrev = j.AlternativePreviousLink?.MeasureWith(newStatFactory);
+                return new Journey<S>(prev, altPrev);
+            }
+
+
+
+            if (j.SpecialConnection)
+            {
+                return j.PreviousLink.MeasureWith(newStatFactory)
+                    .ChainSpecial(j.Connection, j.Time, j.Location, j.TripId); 
+            }
+
+            return j.PreviousLink.MeasureWith(newStatFactory).Chain(
+                j.Connection, j.Time, j.Location, j.TripId);
+            
+        }
     }
 }

@@ -22,7 +22,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var latest = tbd.Latest;
             var p = new Profile<TransferStats>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(latest),
-                new TransferStats(), TransferStats.ProfileTransferCompare);
+                TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
 
             // get departure and arrival stop ids.

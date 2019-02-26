@@ -38,7 +38,7 @@ namespace Itinero.Transit.Journeys
         // ----------------- ZERO ELEMENT ------------------
 
         public static readonly TransferStats Factory =
-            new TransferStats(int.MaxValue, TimeSpan.MaxValue, int.MaxValue);
+            new TransferStats(0, 0, 0);
 
 
         // ---------------- ACTUAL STATISTICS -------------------------
@@ -49,7 +49,6 @@ namespace Itinero.Transit.Journeys
 
         public readonly float WalkingTime;
 
-
         private TransferStats(uint numberOfTransfers,
             TimeSpan travelTime,
             float walkingDistance)
@@ -59,13 +58,9 @@ namespace Itinero.Transit.Journeys
             WalkingTime = walkingDistance;
         }
 
-        public TransferStats() : this(0, 0, 0)
-        {
-        }
-
         public TransferStats EmptyStat()
         {
-            return new TransferStats();
+            return Factory;
         }
 
         public TransferStats Add(Journey<TransferStats> journey)
@@ -91,7 +86,7 @@ namespace Itinero.Transit.Journeys
             {
                 walkingTime = travelTime;
             }
-            
+
             return new TransferStats((uint) (NumberOfTransfers + (transferred ? 1 : 0)),
                 (uint) (TravelTime + travelTime),
                 WalkingTime + walkingTime);
@@ -104,7 +99,7 @@ namespace Itinero.Transit.Journeys
             seconds = seconds % (60 * 60);
             var minutes = seconds / 60;
             seconds = seconds % 60;
-            
+
             return
                 $"Stats: {NumberOfTransfers} transfers, {hours}:{minutes}:{seconds} total time), {WalkingTime} seconds to walk";
         }

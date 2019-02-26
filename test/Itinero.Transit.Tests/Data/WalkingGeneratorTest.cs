@@ -18,7 +18,7 @@ namespace Itinero.Transit.Tests.Data
             var c1 = connDb.GetReader();
             c1.MoveTo(1);
 
-            var root = new Journey<TransferStats>((0, 1), c0.DepartureTime, new TransferStats());
+            var root = new Journey<TransferStats>((0, 1), c0.DepartureTime, TransferStats.Factory);
             var j = root.ChainForward(c0);
             var transfered = transferGen
                 .CreateDepartureTransfer(j, c1.DepartureTime, c1.DepartureStop)

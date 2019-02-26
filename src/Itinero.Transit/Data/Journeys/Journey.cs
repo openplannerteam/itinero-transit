@@ -218,11 +218,11 @@ namespace Itinero.Transit.Journeys
         /// Chaining constructor
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
-        internal Journey<T> Chain(uint connection, UnixTime arrivalTime, (uint localTileId, uint localId) location,
+        internal Journey<T> Chain(uint connection, UnixTime time, (uint localTileId, uint localId) location,
             uint tripId)
         {
             return new Journey<T>(
-                Root, this, false, connection, location, arrivalTime, tripId, Stats);
+                Root, this, false, connection, location, time, tripId, Stats);
         }
 
         public Journey<T> ChainForward(IConnection c)
@@ -257,11 +257,11 @@ namespace Itinero.Transit.Journeys
         /// Chaining constructorChain
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
-        public Journey<T> ChainSpecial(uint specialCode, UnixTime arrivalTime,
+        public Journey<T> ChainSpecial(uint specialCode, UnixTime time,
             (uint localTileId, uint localId) location, uint tripId)
         {
             return new Journey<T>(
-                Root, this, true, specialCode, location, arrivalTime, tripId, Stats);
+                Root, this, true, specialCode, location, time, tripId, Stats);
         }
 
         /// <summary>

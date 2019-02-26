@@ -24,7 +24,7 @@ namespace Itinero.Transit.Tests.Data
 
             var time = new DateTime(2018, 12, 04, 16, 20, 00).ToUnixTime();
             var j = new Journey<TransferStats>((0, 0), time,
-                new TransferStats());
+                TransferStats.Factory);
 
             var reader = connDb.GetReader();
             reader.MoveTo(c0);
@@ -63,7 +63,7 @@ namespace Itinero.Transit.Tests.Data
 
             var time = new DateTime(2018, 12, 04, 16, 43, 00).ToUnixTime();
             var j = new Journey<TransferStats>((0, 2), time,
-                new TransferStats());
+                TransferStats.Factory);
 
             var reader = connDb.GetReader();
             reader.MoveTo(c1);
