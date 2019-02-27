@@ -404,7 +404,7 @@ namespace Itinero.Transit
                     jS = j.MeasureWith(newStatistic);
                     // ... and we compare
 
-                    var comparison = newComparer.Compare(lastS, jS);
+                    var comparison = newComparer.Compare(lastS.Stats, jS.Stats);
                     if (comparison < 0)
                     {
                         // lastS is better
