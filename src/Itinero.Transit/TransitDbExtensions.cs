@@ -373,7 +373,7 @@ namespace Itinero.Transit
         public static List<Journey<T>> PruneInAlternatives<S, T>(
             this IEnumerable<Journey<T>> profiledJourneys,
             S newStatistic,
-            Comparer<S> newComparer)
+            StatsComparator<S> newComparer)
             where T : IJourneyStats<T>
             where S : IJourneyStats<S>
         {
@@ -404,7 +404,7 @@ namespace Itinero.Transit
                     jS = j.MeasureWith(newStatistic);
                     // ... and we compare
 
-                    var comparison = newComparer.Compare(lastS.Stats, jS.Stats);
+                    var comparison = newComparer.ADominatesB(lastS, jS);
                     if (comparison < 0)
                     {
                         // lastS is better
