@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Algorithms.Search;
 using Itinero.Transit.Data;
@@ -315,17 +316,17 @@ namespace Itinero.Transit
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public static List<Journey<T>> CalculateJourneys<T>(this TransitDb.TransitDbSnapShot snapshot,
-            Profile<T> profile, 
+            Profile<T> profile,
             (uint tileId, uint localId) departureStop, (uint tileId, uint localId) arrivalStop,
-            DateTime? departure = null, 
-            DateTime? arrival = null, 
+            DateTime? departure = null,
+            DateTime? arrival = null,
             uint lookAheadInSeconds = 24 * 60 * 60)
             where T : IJourneyStats<T>
         {
             return snapshot.CalculateJourneys(profile, departureStop, arrivalStop,
                 departure?.ToUnixTime() ?? 0, arrival?.ToUnixTime() ?? 0, lookAheadInSeconds);
         }
-        
+
         /// <summary>
         /// Calculates all journeys between departure and arrival stop.
         /// </summary>
@@ -339,15 +340,101 @@ namespace Itinero.Transit
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public static List<Journey<T>> CalculateJourneys<T>(this TransitDb.TransitDbSnapShot snapshot,
-            Profile<T> profile, 
+            Profile<T> profile,
             IStop departureStop, IStop arrivalStop,
-            DateTime? departure = null, 
-            DateTime? arrival = null, 
+            DateTime? departure = null,
+            DateTime? arrival = null,
             uint lookAheadInSeconds = 24 * 60 * 60)
             where T : IJourneyStats<T>
         {
             return snapshot.CalculateJourneys(profile, departureStop.Id, arrivalStop.Id,
                 departure?.ToUnixTime() ?? 0, arrival?.ToUnixTime() ?? 0, lookAheadInSeconds);
+        }
+
+        /// <summary>
+        /// When running PCS with CalculateJourneys, sometimes 'families' of journeys pop up.
+        ///
+        /// Such a family consists of a set of journeys, where each journey has
+        /// - The same departure time
+        /// - The same arrival time
+        /// - The same number of transfers.
+        ///
+        /// In other words, they are identical in terms of the already applied statistic T on a 'profileComparison'-basis.
+        ///
+        /// Of course, ppl don't like too much options; this method applies another statistic on a journey and filters based on this second statistic.
+        ///
+        /// 
+        /// 
+        /// </summary>
+        /// <param name="profiledJourneys">The list of journeys, ordered by departure time</param>
+        /// <typeparam name="S"></typeparam>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static List<Journey<T>> PruneInAlternatives<S, T>(
+            this IEnumerable<Journey<T>> profiledJourneys,
+            S newStatistic,
+            Comparer<S> newComparer)
+            where T : IJourneyStats<T>
+            where S : IJourneyStats<S>
+        {
+            var result = new List<Journey<T>>();
+
+            var alreadySeen = new HashSet<Journey<T>>();
+
+            Journey<T> lastT = null;
+            Journey<S> lastS = null;
+
+            foreach (var j in profiledJourneys)
+            {
+                if (alreadySeen.Contains(j))
+                {
+                    // This exact journey is a duplicate
+                    continue;
+                }
+
+                alreadySeen.Add(j);
+
+                Journey<S> jS = null;
+                if (lastT != null && lastT.Time == j.Time && lastT.Root.Time == j.Root.Time)
+                {
+                    // The previous and current journeys have the same departure and arrival time
+                    // We assume they are part of a family and have the same number of transfers
+                    // So, we apply the statistic S...
+                    lastS = lastS ?? lastT.MeasureWith(newStatistic);
+                    jS = j.MeasureWith(newStatistic);
+                    // ... and we compare
+
+                    var comparison = newComparer.Compare(lastS, jS);
+                    if (comparison < 0)
+                    {
+                        // lastS is better
+                        // We ignore the current element
+                        continue;
+                    }
+
+                    if (comparison > 0)
+                    {
+                        // Current one is better
+                        // We overwrite the previous element
+                        result[result.Count - 1] = j;
+                        lastT = j;
+                        lastS = jS;
+                        continue;
+                    }
+
+                    // Else:
+                    // Both options bring something to the table and should be kept
+                    // We just let the loop run its course
+                }
+                // either the departure and arrival time are different here
+                // Or the big if statement above fell through till here
+                result.Add(j);
+                lastT = j;
+                lastS = jS;
+            }
+
+
+            return result;
         }
     }
 }

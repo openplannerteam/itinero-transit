@@ -8,7 +8,7 @@ namespace Itinero.Transit.Data
     {
         public readonly T StatsFactory;
         public readonly ProfiledStatsComparator<T> ProfileComparator;
-
+        
         public readonly IOtherModeGenerator InternalTransferGenerator;
         public readonly IOtherModeGenerator WalksGenerator;
 
