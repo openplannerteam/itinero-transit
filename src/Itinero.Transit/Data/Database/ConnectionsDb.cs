@@ -174,6 +174,8 @@ namespace Itinero.Transit.Data
             var currentArrivalTime = (uint)reader.ArrivalTime;
             var currentDepartureStop = reader.DepartureStop;
             var currentArrivalStop = reader.ArrivalStop;
+            var currentDepartureDelay = reader.DepartureDelay;
+            var currentArrivalDelay = reader.ArrivalDelay;
             var internalId = reader.Id;
             reader = null; // don't use the reader, we will start modifying the data from this point on.
             
@@ -227,10 +229,15 @@ namespace Itinero.Transit.Data
                 }
             }
             else
-            { // timings have not changed but perhaps the stops (WHY? but let's implement this anyway)
-                if (currentDepartureStop != stop1 ||
+            {
+                if (currentDepartureDelay != departureDelay ||
+                    currentArrivalDelay != arrivalDelay)
+                { // perhaps delays are update but not the timings.
+                    SetConnection(internalId, stop1, stop2, departureSeconds, travelTime, departureDelay, arrivalDelay);
+                }
+                else if (currentDepartureStop != stop1 ||
                     currentArrivalStop != stop2)
-                {
+                { // timings have not changed but perhaps the stops (WHY? but let's implement this anyway)
                     SetConnection(internalId, stop1, stop2, departureSeconds, travelTime, departureDelay, arrivalDelay);
                 }
             }
