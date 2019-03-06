@@ -25,16 +25,17 @@ namespace Itinero.Transit.IO.LC
             {"delijn-vlaams-brabant", ("https://openplanner.ilabt.imec.be/delijn/Vlaams-Brabant/connections", "https://openplanner.ilabt.imec.be/delijn/Vlaams-Brabant/stops")},
             {"delijn-antwerpen", ("https://openplanner.ilabt.imec.be/delijn/Antwerpen/connections", "https://openplanner.ilabt.imec.be/delijn/Antwerpen/stops")},
         };
-        
-        
-        
-        
+
+
+        public const string SNCB_Connections = "https://graph.irail.be/sncb/connections";
+        public const string SNCB_Locations = "https://irail.be/stations";
+
         
         public static LinkedConnectionDataset Sncb()
         {
             return new LinkedConnectionDataset(
-                new Uri("https://graph.irail.be/sncb/connections"),
-                new Uri("https://irail.be/stations")
+                new Uri(SNCB_Connections),
+                new Uri(SNCB_Locations)
             );
         }
 

@@ -180,12 +180,14 @@ namespace Itinero.Transit.Data
 
             // get all current data from reader.
             var currentTripId = reader.TripId;
+            
             var currentDepartureTime = (uint) reader.DepartureTime;
             var currentArrivalTime = (uint) reader.ArrivalTime;
             var currentDepartureStop = reader.DepartureStop;
             var currentArrivalStop = reader.ArrivalStop;
             var currentDepartureDelay = reader.DepartureDelay;
             var currentArrivalDelay = reader.ArrivalDelay;
+            
             var internalId = reader.Id;
             reader = null; // don't use the reader, we will start modifying the data from this point on.
 
@@ -197,68 +199,61 @@ namespace Itinero.Transit.Data
 
             var departureSeconds = (uint) departureTime.ToUnixTime();
             var arrivalSeconds = (uint) (departureTime.ToUnixTime() + travelTime);
-            if (currentDepartureTime != departureSeconds ||
-                currentArrivalTime != arrivalSeconds)
+
+
+            if (currentDepartureTime == departureSeconds && currentArrivalTime == arrivalSeconds &&
+                currentDepartureDelay == departureDelay && currentArrivalDelay == arrivalDelay &&
+                currentDepartureStop == stop1 && currentArrivalStop == stop2)
             {
-                // timings have been updated - probably due to delays.
-                // update the connection data.
-                SetConnection(internalId, stop1, stop2, departureSeconds, travelTime, departureDelay, arrivalDelay);
+                // The important variables have stayed the same - no update needed
+                return internalId;
+            }
+            
+            
+            
+            // something changed - probably departure time due to delays. #SNCB
+            // update the connection data.
+            SetConnection(internalId, stop1, stop2, departureSeconds, travelTime, departureDelay, arrivalDelay);
 
-                if (currentDepartureTime != departureSeconds)
+            if (currentDepartureTime != departureSeconds)
+            {
+                // update departure index if needed.
+                var currentWindow = WindowFor(currentDepartureTime);
+                var window = WindowFor(departureSeconds);
+
+                if (currentWindow != window)
                 {
-                    // update departure index if needed.
-                    var currentWindow = WindowFor(currentDepartureTime);
-                    var window = WindowFor(departureSeconds);
+                    // remove from current window.
+                    RemoveDepartureIndex(internalId, currentWindow);
 
-                    if (currentWindow != window)
-                    {
-                        // remove from current window.
-                        RemoveDepartureIndex(internalId, currentWindow);
-
-                        // add add again to new window.
-                        AddDepartureIndex(internalId);
-                    }
-                    else
-                    {
-                        // just resort the window.
-                        SortDepartureWindow(window);
-                    }
+                    // add add again to new window.
+                    AddDepartureIndex(internalId);
                 }
-
-                if (currentArrivalTime != arrivalSeconds)
+                else
                 {
-                    // update arrival index if needed.
-                    var currentWindow = WindowFor(currentArrivalTime);
-                    var window = WindowFor(arrivalSeconds);
-
-                    if (currentWindow != window)
-                    {
-                        // remove from current window.
-                        RemoveArrivalIndex(internalId, currentWindow);
-
-                        // add add again to new window.
-                        AddArrivalIndex(internalId);
-                    }
-                    else
-                    {
-                        // just resort the window.
-                        SortArrivalWindow(window);
-                    }
+                    // just resort the window.
+                    SortDepartureWindow(window);
                 }
             }
-            else
+
+            if (currentArrivalTime != arrivalSeconds)
             {
-                if (currentDepartureDelay != departureDelay ||
-                    currentArrivalDelay != arrivalDelay)
+                // update arrival index if needed.
+                var currentWindow = WindowFor(currentArrivalTime);
+                var window = WindowFor(arrivalSeconds);
+
+                if (currentWindow != window)
                 {
-                    // perhaps delays are updated but not the timings.
-                    SetConnection(internalId, stop1, stop2, departureSeconds, travelTime, departureDelay, arrivalDelay);
+                    // remove from current window.
+                    RemoveArrivalIndex(internalId, currentWindow);
+
+                    // add add again to new window.
+                    AddArrivalIndex(internalId);
                 }
-                else if (currentDepartureStop != stop1 ||
-                         currentArrivalStop != stop2)
+                else
                 {
-                    // timings have not changed but perhaps the stops (WHY? but let's implement this anyway)
-                    SetConnection(internalId, stop1, stop2, departureSeconds, travelTime, departureDelay, arrivalDelay);
+                    // just resort the window.
+                    SortArrivalWindow(window);
                 }
             }
 
@@ -311,7 +306,6 @@ namespace Itinero.Transit.Data
 
             // update arrival time index.
             AddArrivalIndex(internalId);
-
             return internalId;
         }
 
@@ -332,6 +326,7 @@ namespace Itinero.Transit.Data
             }
 
             var offset = 0;
+
             var bytes = BitConverter.GetBytes(stop1.localTileId);
             for (var b = 0; b < 4; b++)
             {
@@ -339,7 +334,6 @@ namespace Itinero.Transit.Data
             }
 
             offset += 4;
-
             bytes = BitConverter.GetBytes(stop1.localId);
             for (var b = 0; b < 4; b++)
             {
@@ -347,7 +341,6 @@ namespace Itinero.Transit.Data
             }
 
             offset += 4;
-
             bytes = BitConverter.GetBytes(stop2.localTileId);
             for (var b = 0; b < 4; b++)
             {
@@ -355,7 +348,6 @@ namespace Itinero.Transit.Data
             }
 
             offset += 4;
-
             bytes = BitConverter.GetBytes(stop2.localId);
             for (var b = 0; b < 4; b++)
             {
@@ -363,7 +355,6 @@ namespace Itinero.Transit.Data
             }
 
             offset += 4;
-
             bytes = BitConverter.GetBytes(departure);
             for (var b = 0; b < 4; b++)
             {
@@ -371,7 +362,6 @@ namespace Itinero.Transit.Data
             }
 
             offset += 4;
-
             bytes = BitConverter.GetBytes(travelTime);
             for (var b = 0; b < 2; b++)
             {
@@ -379,7 +369,6 @@ namespace Itinero.Transit.Data
             }
 
             offset += 2;
-
             bytes = BitConverter.GetBytes(departureDelay);
             for (var b = 0; b < 2; b++)
             {
@@ -387,7 +376,6 @@ namespace Itinero.Transit.Data
             }
 
             offset += 2;
-
             bytes = BitConverter.GetBytes(arrivalDelay);
             for (var b = 0; b < 2; b++)
             {
@@ -411,12 +399,15 @@ namespace Itinero.Transit.Data
             }
 
             var bytes = new byte[ConnectionSizeInBytes];
-            for (var b = 0; b < ConnectionSizeInBytes; b++)
+            for (var b = 0;
+                b < ConnectionSizeInBytes;
+                b++)
             {
                 bytes[b] = _data[dataPointer + b];
             }
 
             var offset = 0;
+
             var stop1 = (BitConverter.ToUInt32(bytes, 0),
                 BitConverter.ToUInt32(bytes, 4));
             if (stop1.Item1 == uint.MaxValue &&
@@ -430,20 +421,16 @@ namespace Itinero.Transit.Data
 
             var stop2 = (BitConverter.ToUInt32(bytes, offset + 0),
                 BitConverter.ToUInt32(bytes, offset + 4));
-            offset += 8;
 
+            offset += 8;
             var departureTime = BitConverter.ToUInt32(bytes, offset);
             offset += 4;
-
             var travelTime = BitConverter.ToUInt16(bytes, offset);
             offset += 2;
-
             var departureDelay = BitConverter.ToUInt16(bytes, offset);
             offset += 2;
-
             var arrivalDelay = BitConverter.ToUInt16(bytes, offset);
             offset += 2;
-
             return (stop1, stop2, departureTime, travelTime, departureDelay, arrivalDelay);
         }
 
@@ -502,7 +489,7 @@ namespace Itinero.Transit.Data
             var existingId = _globalIds[internalId];
             _globalIds[internalId] = globalId;
 
-            // add stop id to the index.
+// add stop id to the index.
             var linkedListPointer = _globalIdLinkedListPointer;
             _globalIdLinkedListPointer += 2;
             while (_globalIdLinkedList.Length <= linkedListPointer)
@@ -524,7 +511,6 @@ namespace Itinero.Transit.Data
 //            {
 //                Console.WriteLine("Pointer already in use!");
 //            }
-
             _globalIdLinkedList[linkedListPointer + 0] = internalId;
             _globalIdLinkedList[linkedListPointer + 1] = _globalIdPointersPerHash[hash];
             _globalIdPointersPerHash[hash] = linkedListPointer + 0;
@@ -539,7 +525,7 @@ namespace Itinero.Transit.Data
 
         private uint Hash(string id)
         {
-            // https://stackoverflow.com/questions/5154970/how-do-i-create-a-hashcode-in-net-c-for-a-string-that-is-safe-to-store-in-a
+// https://stackoverflow.com/questions/5154970/how-do-i-create-a-hashcode-in-net-c-for-a-string-that-is-safe-to-store-in-a
             unchecked
             {
                 uint hash = 23;
@@ -563,25 +549,25 @@ namespace Itinero.Transit.Data
             var windowPointer = _departureWindowPointers[window * 2 + 0];
             if (_departureWindowPointers[window * 2 + 0] == NoData)
             {
-                // nothing to remove.
+// nothing to remove.
                 return false;
             }
 
             var windowSize = _departureWindowPointers[window * 2 + 1];
 
-            // find entry.
+// find entry.
             for (var p = windowPointer; p < windowPointer + windowSize; p++)
             {
                 var id = _departurePointers[p];
                 if (id != internalId) continue;
 
-                // move all after one down.
+// move all after one down.
                 for (; p < windowPointer + windowSize - 1; p++)
                 {
                     _departurePointers[p] = _departurePointers[p + 1];
                 }
 
-                // decrease window size.
+// decrease window size.
                 _departureWindowPointers[window * 2 + 1] = windowSize - 1;
                 return true;
             }
@@ -591,34 +577,33 @@ namespace Itinero.Transit.Data
 
         private void AddDepartureIndex(uint internalId)
         {
-            // determine window.
+// determine window.
             var departure = GetConnectionDeparture(internalId);
             var window = WindowFor(departure);
-
             var nextEmpty = uint.MaxValue;
             var windowPointer = _departureWindowPointers[window * 2 + 0];
             if (_departureWindowPointers[window * 2 + 0] == NoData)
             {
-                // add a new window.
+// add a new window.
                 nextEmpty = _departurePointer;
                 _departurePointer += 1;
 
-                // update the window.
+// update the window.
                 _departureWindowPointers[window * 2 + 0] = nextEmpty;
                 _departureWindowPointers[window * 2 + 1] = 1;
             }
             else
             {
-                // there is already data in the window.
+// there is already data in the window.
                 var windowSize = _departureWindowPointers[window * 2 + 1];
                 if ((windowSize & (windowSize - 1)) == 0)
                 {
-                    // power of 2, time to increase the window capacity.
-                    // allocate new space.
+// power of 2, time to increase the window capacity.
+// allocate new space.
                     var newWindowPointer = _departurePointer;
                     _departurePointer += windowSize * 2;
 
-                    // copy over data.
+// copy over data.
                     while (_departurePointers.Length <= _departurePointer)
                     {
                         _departurePointers.Resize(_departurePointers.Length + 1024);
@@ -634,12 +619,12 @@ namespace Itinero.Transit.Data
                     _departureWindowPointers[window * 2 + 0] = newWindowPointer;
                 }
 
-                // increase size.
+// increase size.
                 _departureWindowPointers[window * 2 + 1] = windowSize + 1;
                 nextEmpty = windowPointer + windowSize;
             }
 
-            // set the data.
+// set the data.
             while (_departurePointers.Length <= nextEmpty)
             {
                 _departurePointers.Resize(_departurePointers.Length + 1024);
@@ -647,7 +632,7 @@ namespace Itinero.Transit.Data
 
             _departurePointers[nextEmpty] = internalId;
 
-            // sort the window.
+// sort the window.
             SortDepartureWindow(window);
         }
 
@@ -655,7 +640,6 @@ namespace Itinero.Transit.Data
         {
             var windowPointer = _departureWindowPointers[window * 2 + 0];
             var windowSize = _departureWindowPointers[window * 2 + 1];
-
             QuickSort.Sort(i => GetConnectionDeparture(_departurePointers[i]),
                 (i1, i2) =>
                 {
@@ -670,25 +654,25 @@ namespace Itinero.Transit.Data
             var windowPointer = _arrivalWindowPointers[window * 2 + 0];
             if (_arrivalWindowPointers[window * 2 + 0] == NoData)
             {
-                // nothing to remove.
+// nothing to remove.
                 return false;
             }
 
             var windowSize = _arrivalWindowPointers[window * 2 + 1];
 
-            // find entry.
+// find entry.
             for (var p = windowPointer; p < windowPointer + windowSize; p++)
             {
                 var id = _arrivalPointers[p];
                 if (id != internalId) continue;
 
-                // move all after one down.
+// move all after one down.
                 for (; p < windowPointer + windowSize - 1; p++)
                 {
                     _arrivalPointers[p] = _arrivalPointers[p + 1];
                 }
 
-                // decrease window size.
+// decrease window size.
                 _arrivalWindowPointers[window * 2 + 1] = windowSize - 1;
                 return true;
             }
@@ -698,35 +682,34 @@ namespace Itinero.Transit.Data
 
         private void AddArrivalIndex(uint internalId)
         {
-            // determine window.
+// determine window.
             var arrival = GetConnectionArrival(internalId);
             var window = (uint) Math.Floor(DateTimeExtensions.FromUnixTime(arrival).TimeOfDay.TotalSeconds /
                                            _windowSizeInSeconds);
-
             var nextEmpty = uint.MaxValue;
             var windowPointer = _arrivalWindowPointers[window * 2 + 0];
             if (_arrivalWindowPointers[window * 2 + 0] == NoData)
             {
-                // add a new window.
+// add a new window.
                 nextEmpty = _arrivalPointer;
                 _arrivalPointer += 1;
 
-                // update the window.
+// update the window.
                 _arrivalWindowPointers[window * 2 + 0] = nextEmpty;
                 _arrivalWindowPointers[window * 2 + 1] = 1;
             }
             else
             {
-                // there is already data in the window.
+// there is already data in the window.
                 var windowSize = _arrivalWindowPointers[window * 2 + 1];
                 if ((windowSize & (windowSize - 1)) == 0)
                 {
-                    // power of 2, time to increase the window capacity.
-                    // allocate new space.
+// power of 2, time to increase the window capacity.
+// allocate new space.
                     var newWindowPointer = _arrivalPointer;
                     _arrivalPointer += windowSize * 2;
 
-                    // copy over data.
+// copy over data.
                     while (_arrivalPointers.Length <= _arrivalPointer)
                     {
                         _arrivalPointers.Resize(_arrivalPointers.Length + 1024);
@@ -742,12 +725,12 @@ namespace Itinero.Transit.Data
                     _arrivalWindowPointers[window * 2 + 0] = newWindowPointer;
                 }
 
-                // increase size.
+// increase size.
                 _arrivalWindowPointers[window * 2 + 1] = windowSize + 1;
                 nextEmpty = windowPointer + windowSize;
             }
 
-            // set the data.
+// set the data.
             while (_arrivalPointers.Length <= nextEmpty)
             {
                 _arrivalPointers.Resize(_arrivalPointers.Length + 1024);
@@ -755,7 +738,7 @@ namespace Itinero.Transit.Data
 
             _arrivalPointers[nextEmpty] = internalId;
 
-            // sort the window.
+// sort the window.
             SortArrivalWindow(window);
         }
 
@@ -763,7 +746,6 @@ namespace Itinero.Transit.Data
         {
             var windowPointer = _arrivalWindowPointers[window * 2 + 0];
             var windowSize = _arrivalWindowPointers[window * 2 + 1];
-
             QuickSort.Sort(i => GetConnectionArrival(_arrivalPointers[i]),
                 (i1, i2) =>
                 {
@@ -789,17 +771,14 @@ namespace Itinero.Transit.Data
             globalIdPointersPerHash.CopyFrom(_globalIdPointersPerHash, _globalIdPointersPerHash.Length);
             var globalIdLinkedList = new MemoryArray<uint>(_globalIdLinkedList.Length);
             globalIdLinkedList.CopyFrom(_globalIdLinkedList, _globalIdLinkedList.Length);
-
             var departureWindowPointers = new MemoryArray<uint>(_departureWindowPointers.Length);
             departureWindowPointers.CopyFrom(_departureWindowPointers, _departureWindowPointers.Length);
             var departurePointers = new MemoryArray<uint>(_departurePointers.Length);
             departurePointers.CopyFrom(_departurePointers, _departurePointers.Length);
-
             var arrivalWindowPointers = new MemoryArray<uint>(_arrivalWindowPointers.Length);
             arrivalWindowPointers.CopyFrom(_arrivalWindowPointers, _arrivalWindowPointers.Length);
             var arrivalPointers = new MemoryArray<uint>(_arrivalPointers.Length);
             arrivalPointers.CopyFrom(_arrivalPointers, _arrivalPointers.Length);
-
             return new ConnectionsDb((int) _windowSizeInSeconds, data, _nextInternalId, globalIds, tripIds,
                 globalIdPointersPerHash, globalIdLinkedList,
                 _globalIdLinkedListPointer, departureWindowPointers, departurePointers, _departurePointer,
@@ -811,10 +790,9 @@ namespace Itinero.Transit.Data
         {
             var length = 0L;
 
-            // write version #.
+// write version #.
             stream.WriteByte(1);
             length++;
-
             length += _data.CopyToWithSize(stream);
             length += _globalIds.CopyToWithSize(stream);
             length += _tripIds.CopyToWithSize(stream);
@@ -823,46 +801,37 @@ namespace Itinero.Transit.Data
             var bytes = BitConverter.GetBytes(_globalIdLinkedListPointer);
             stream.Write(bytes, 0, 4);
             length += 4;
-
             length += _departureWindowPointers.CopyToWithSize(stream);
             length += _departurePointers.CopyToWithSize(stream);
             bytes = BitConverter.GetBytes(_departurePointer);
             stream.Write(bytes, 0, 4);
             length += 4;
-
             length += _arrivalWindowPointers.CopyToWithSize(stream);
             length += _arrivalPointers.CopyToWithSize(stream);
             bytes = BitConverter.GetBytes(_arrivalPointer);
             stream.Write(bytes, 0, 4);
             length += 4;
-
             bytes = BitConverter.GetBytes(_windowSizeInSeconds);
             stream.Write(bytes, 0, 8);
             length += 8;
-
             bytes = BitConverter.GetBytes(_nextInternalId);
             stream.Write(bytes, 0, 4);
             length += 4;
-
             bytes = BitConverter.GetBytes(_earliestDate);
             stream.Write(bytes, 0, 4);
             length += 4;
-
             bytes = BitConverter.GetBytes(_latestDate);
             stream.Write(bytes, 0, 4);
             length += 4;
-
             return length;
         }
 
         internal static ConnectionsDb ReadFrom(Stream stream)
         {
             var buffer = new byte[8];
-
             var version = stream.ReadByte();
             if (version != 1)
                 throw new InvalidDataException($"Cannot read {nameof(ConnectionsDb)}, invalid version #.");
-
             var data = MemoryArray<byte>.CopyFromWithSize(stream);
             var globalIds = MemoryArray<string>.CopyFromWithSize(stream);
             var tripIds = MemoryArray<uint>.CopyFromWithSize(stream);
@@ -870,29 +839,22 @@ namespace Itinero.Transit.Data
             var globalIdLinkedList = MemoryArray<uint>.CopyFromWithSize(stream);
             stream.Read(buffer, 0, 4);
             var globalIdLinkedListPointer = BitConverter.ToUInt32(buffer, 0);
-
             var departureWindowPointers = MemoryArray<uint>.CopyFromWithSize(stream);
             var departurePointers = MemoryArray<uint>.CopyFromWithSize(stream);
             stream.Read(buffer, 0, 4);
             var departurePointer = BitConverter.ToUInt32(buffer, 0);
-
             var arrivalWindowPointers = MemoryArray<uint>.CopyFromWithSize(stream);
             var arrivalPointers = MemoryArray<uint>.CopyFromWithSize(stream);
             stream.Read(buffer, 0, 4);
             var arrivalPointer = BitConverter.ToUInt32(buffer, 0);
-
             stream.Read(buffer, 0, 8);
             var windowSizeInSeconds = BitConverter.ToInt64(buffer, 0);
-
             stream.Read(buffer, 0, 4);
             var nextInternalId = BitConverter.ToUInt32(buffer, 0);
-
             stream.Read(buffer, 0, 4);
             var earliestDate = BitConverter.ToUInt32(buffer, 0);
-
             stream.Read(buffer, 0, 4);
             var latestDate = BitConverter.ToUInt32(buffer, 0);
-
             return new ConnectionsDb((int) windowSizeInSeconds, data, nextInternalId, globalIds, tripIds,
                 globalIdPointersPerHash, globalIdLinkedList, globalIdLinkedListPointer,
                 departureWindowPointers, departurePointers, departurePointer,
@@ -987,7 +949,7 @@ namespace Itinero.Transit.Data
                 var details = _db.GetConnection(internalId);
                 if (details.departureLocation.localTileId == uint.MaxValue)
                 {
-                    // no data.
+// no data.
                     return false;
                 }
 
@@ -999,7 +961,6 @@ namespace Itinero.Transit.Data
                 _arrivalTime = details.departureTime + details.travelTime;
                 _departureDelay = details.departureDelay;
                 _arrivalDelay = details.arrivalDelay;
-
                 return true;
             }
 
@@ -1015,7 +976,6 @@ namespace Itinero.Transit.Data
                 while (pointer != NoData)
                 {
                     var internalId = _db._globalIdLinkedList[pointer + 0];
-
                     if (MoveTo(internalId))
                     {
                         var potentialMatch = GlobalId;
@@ -1052,7 +1012,6 @@ namespace Itinero.Transit.Data
             internal DepartureEnumerator(ConnectionsDb db)
             {
                 _db = db;
-
                 _reader = _db.GetReader();
                 _date = uint.MaxValue;
             }
@@ -1091,14 +1050,13 @@ namespace Itinero.Transit.Data
             {
                 if (dateTime != null)
                 {
-                    // move to the given date.
+// move to the given date.
                     _date = (uint) DateTimeExtensions.ExtractDate(dateTime.Value.ToUnixTime());
                 }
 
                 if (_date == uint.MaxValue)
                 {
                     if (_db._earliestDate == uint.MaxValue) return false;
-
                     _date = _db._earliestDate;
                 }
 
@@ -1106,14 +1064,14 @@ namespace Itinero.Transit.Data
                 {
                     if (!MoveNextIgnoreDate(dateTime))
                     {
-                        // move to next date. 
+// move to next date. 
                         _date = (uint) DateTimeExtensions.AddDay(_date);
                         if (_date > _db._latestDate)
                         {
                             return false;
                         }
 
-                        // reset enumerator.
+// reset enumerator.
                         ResetIgnoreDate();
                     }
                     else
@@ -1136,7 +1094,7 @@ namespace Itinero.Transit.Data
             {
                 if (dateTime != null)
                 {
-                    // move directly to the actual window.
+// move directly to the actual window.
                     _window = (uint) Math.Floor(dateTime.Value.TimeOfDay.TotalSeconds /
                                                 _db._windowSizeInSeconds);
                     _windowSize = _db._departureWindowPointers[_window * 2 + 1];
@@ -1151,10 +1109,10 @@ namespace Itinero.Transit.Data
                         var unixTime = dateTime.Value.ToUnixTime();
                         while (unixTime > _reader.DepartureTime)
                         {
-                            // move next.
+// move next.
                             if (!MoveNextIgnoreDate())
                             {
-                                // connection after this departure time doesn't exist.
+// connection after this departure time doesn't exist.
                                 return false;
                             }
                         }
@@ -1165,12 +1123,11 @@ namespace Itinero.Transit.Data
 
                 if (_window == uint.MaxValue)
                 {
-                    // no data, find first window with data.
+// no data, find first window with data.
                     for (uint w = 0; w < _db._departureWindowPointers.Length / 2; w++)
                     {
                         var windowSize = _db._departureWindowPointers[w * 2 + 1];
                         if (windowSize <= 0) continue;
-
                         _window = w;
                         _windowSize = windowSize;
                         break;
@@ -1178,27 +1135,26 @@ namespace Itinero.Transit.Data
 
                     if (_window == uint.MaxValue)
                     {
-                        // no window with data found.
+// no window with data found.
                         return false;
                     }
 
-                    // window changed.
+// window changed.
                     _windowPointer = _db._departureWindowPointers[_window * 2 + 0];
                     _windowPosition = 0;
                 }
                 else
                 {
-                    // there is an active window, try to move to the next window.
+// there is an active window, try to move to the next window.
                     if (_windowPosition + 1 >= _windowSize)
                     {
-                        // move to next window.
+// move to next window.
                         var w = _window + 1;
                         _window = uint.MaxValue;
                         for (; w < _db._departureWindowPointers.Length / 2; w++)
                         {
                             var windowSize = _db._departureWindowPointers[w * 2 + 1];
                             if (windowSize <= 0) continue;
-
                             _window = w;
                             _windowSize = windowSize;
                             break;
@@ -1206,33 +1162,33 @@ namespace Itinero.Transit.Data
 
                         if (_window == uint.MaxValue)
                         {
-                            // no more windows with data found.
+// no more windows with data found.
                             return false;
                         }
 
-                        // window changed.
+// window changed.
                         _windowPointer = _db._departureWindowPointers[_window * 2 + 0];
                         _windowPosition = 0;
                     }
                     else
                     {
-                        // move to the next connection.
+// move to the next connection.
                         _windowPosition++;
                     }
                 }
 
-                // move the reader to the correct location.
+// move the reader to the correct location.
                 _reader.MoveTo(_db._departurePointers[_windowPointer + _windowPosition]);
                 if (dateTime != null)
                 {
-                    // keep move next until we reach a departure time after the given date time.
+// keep move next until we reach a departure time after the given date time.
                     var unixTime = dateTime.Value.ToUnixTime();
                     while (unixTime > _reader.DepartureTime)
                     {
-                        // move next.
+// move next.
                         if (!MoveNextIgnoreDate())
                         {
-                            // connection after this departure time doesn't exist.
+// connection after this departure time doesn't exist.
                             return false;
                         }
                     }
@@ -1250,14 +1206,13 @@ namespace Itinero.Transit.Data
             {
                 if (dateTime != null)
                 {
-                    // move to the given date.
+// move to the given date.
                     _date = (uint) DateTimeExtensions.ExtractDate(dateTime.Value.ToUnixTime());
                 }
 
                 if (_date == uint.MaxValue)
                 {
                     if (_db._latestDate == uint.MaxValue) return false;
-
                     _date = _db._latestDate;
                 }
 
@@ -1265,14 +1220,14 @@ namespace Itinero.Transit.Data
                 {
                     if (!MovePreviousIgnoreDate(dateTime))
                     {
-                        // move to next date. 
+// move to next date. 
                         _date = (uint) DateTimeExtensions.RemoveDay(_date);
                         if (_date < _db._earliestDate)
                         {
                             return false;
                         }
 
-                        // reset enumerator.
+// reset enumerator.
                         ResetIgnoreDate();
                     }
                     else
@@ -1295,7 +1250,7 @@ namespace Itinero.Transit.Data
             {
                 if (dateTime != null)
                 {
-                    // move directly to the actual window.
+// move directly to the actual window.
                     _window = (uint) Math.Floor(dateTime.Value.TimeOfDay.TotalSeconds /
                                                 _db._windowSizeInSeconds);
                     _windowPointer = _db._departureWindowPointers[_window * 2 + 0];
@@ -1305,35 +1260,33 @@ namespace Itinero.Transit.Data
 
                 if (_window == uint.MaxValue)
                 {
-                    // no data, find last window with data.
+// no data, find last window with data.
                     for (var w = _db._departureWindowPointers.Length / 2 - 1; w >= 0; w--)
                     {
                         var windowSize = _db._departureWindowPointers[w * 2 + 1];
                         if (windowSize <= 0) continue;
-
                         _window = (uint) w;
                         _windowSize = windowSize;
                         break;
                     }
 
-                    // window changed.
+// window changed.
                     _windowPosition = _windowSize - 1;
                     _windowPointer = _db._departureWindowPointers[_window * 2 + 0];
                 }
                 else
                 {
-                    // there is an active window, try to move to the previous window.
+// there is an active window, try to move to the previous window.
                     if (_windowPosition <= 0 ||
                         _windowPointer == uint.MaxValue)
                     {
-                        // move to next window.
+// move to next window.
                         var w = (long) _window - 1;
                         _window = uint.MaxValue;
                         for (; w >= 0; w--)
                         {
                             var windowSize = _db._departureWindowPointers[w * 2 + 1];
                             if (windowSize <= 0) continue;
-
                             _window = (uint) w;
                             _windowSize = windowSize;
                             break;
@@ -1341,40 +1294,39 @@ namespace Itinero.Transit.Data
 
                         if (_window == uint.MaxValue)
                         {
-                            // no more windows with data found.
+// no more windows with data found.
                             return false;
                         }
 
-                        // window changed.
+// window changed.
                         _windowPosition = _windowSize - 1;
                         _windowPointer = _db._departureWindowPointers[_window * 2 + 0];
-
                         if (_windowPointer == uint.MaxValue)
                         {
-                            //Console.WriteLine($"{_date}:{_window}-{_windowPosition}: Invalid pointer here, there is supposed to be one here.");
+//Console.WriteLine($"{_date}:{_window}-{_windowPosition}: Invalid pointer here, there is supposed to be one here.");
                             _windowPosition = 0;
                             return MovePreviousIgnoreDate();
                         }
                     }
                     else
                     {
-                        // move to the next connection.
+// move to the next connection.
                         _windowPosition--;
                     }
                 }
 
-                // move the reader to the correct location.
+// move the reader to the correct location.
                 _reader.MoveTo(_db._departurePointers[_windowPointer + _windowPosition]);
                 if (dateTime != null)
                 {
-                    // keep move next until we reach a departure time after the given date time.
+// keep move next until we reach a departure time after the given date time.
                     var unixTime = dateTime.Value.ToUnixTime();
                     while (unixTime < _reader.DepartureTime)
                     {
-                        // move next.
+// move next.
                         if (!MovePreviousIgnoreDate())
                         {
-                            // connection after this departure time doesn't exist.
+// connection after this departure time doesn't exist.
                             return false;
                         }
                     }
@@ -1386,13 +1338,13 @@ namespace Itinero.Transit.Data
             /// <summary>
             /// Gets the first stop.
             /// </summary>
-            // ReSharper disable once UnusedMember.Global
+// ReSharper disable once UnusedMember.Global
             public (uint localTileId, uint localId) DepartureStop => _reader.DepartureStop;
 
             /// <summary>
             /// Gets the second stop.
             /// </summary>
-            // ReSharper disable once UnusedMember.Global
+// ReSharper disable once UnusedMember.Global
             public (uint localTileId, uint localId) ArrivalStop => _reader.ArrivalStop;
 
             /// <summary>
@@ -1456,7 +1408,6 @@ namespace Itinero.Transit.Data
             internal ArrivalEnumerator(ConnectionsDb db)
             {
                 _db = db;
-
                 _reader = _db.GetReader();
                 _date = _db._earliestDate;
             }
@@ -1493,19 +1444,18 @@ namespace Itinero.Transit.Data
             public bool MoveNext()
             {
                 if (_date == uint.MaxValue) return false;
-
                 while (true)
                 {
                     if (!MoveNextIgnoreDate())
                     {
-                        // move to next date. 
+// move to next date. 
                         _date = (uint) DateTimeExtensions.AddDay(_date);
                         if (_date > _db._latestDate)
                         {
                             return false;
                         }
 
-                        // reset enumerator.
+// reset enumerator.
                         ResetIgnoreDate();
                     }
                     else
@@ -1526,12 +1476,11 @@ namespace Itinero.Transit.Data
             {
                 if (_window == uint.MaxValue)
                 {
-                    // no data, find first window with data.
+// no data, find first window with data.
                     for (uint w = 0; w < _db._arrivalWindowPointers.Length / 2; w++)
                     {
                         var windowSize = _db._arrivalWindowPointers[w * 2 + 1];
                         if (windowSize <= 0) continue;
-
                         _window = w;
                         _windowSize = windowSize;
                         break;
@@ -1539,27 +1488,26 @@ namespace Itinero.Transit.Data
 
                     if (_window == uint.MaxValue)
                     {
-                        // no window with data found.
+// no window with data found.
                         return false;
                     }
 
-                    // window changed.
+// window changed.
                     _windowPointer = _db._arrivalWindowPointers[_window * 2 + 0];
                     _windowPosition = 0;
                 }
                 else
                 {
-                    // there is an active window, try to move to the next window.
+// there is an active window, try to move to the next window.
                     if (_windowPosition + 1 >= _windowSize)
                     {
-                        // move to next window.
+// move to next window.
                         var w = _window + 1;
                         _window = uint.MaxValue;
                         for (; w < _db._arrivalWindowPointers.Length / 2; w++)
                         {
                             var windowSize = _db._arrivalWindowPointers[w * 2 + 1];
                             if (windowSize <= 0) continue;
-
                             _window = w;
                             _windowSize = windowSize;
                             break;
@@ -1567,24 +1515,23 @@ namespace Itinero.Transit.Data
 
                         if (_window == uint.MaxValue)
                         {
-                            // no more windows with data found.
+// no more windows with data found.
                             return false;
                         }
 
-                        // window changed.
+// window changed.
                         _windowPointer = _db._arrivalWindowPointers[_window * 2 + 0];
                         _windowPosition = 0;
                     }
                     else
                     {
-                        // move to the next connection.
+// move to the next connection.
                         _windowPosition++;
                     }
                 }
 
-                // move the reader to the correct location.
+// move the reader to the correct location.
                 _reader.MoveTo(_db._arrivalPointers[_windowPointer + _windowPosition]);
-
                 return true;
             }
 

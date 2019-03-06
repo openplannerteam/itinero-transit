@@ -66,7 +66,8 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Running TripHeadSignTest");
             TripHeadsignTest.Default.Run(db);
 
-
+            Log.Information("Running NoDuplicationTest");
+            new NoDuplicationTest().Run();
             // This tests starts a timer which reloads a lot
             new TestAutoUpdating().Run(null);
 
@@ -75,6 +76,7 @@ namespace Itinero.Transit.Tests.Functional
             ConnectionsDbDepartureEnumeratorTest.Default.Run(db);
 
             TestClosestStopsAndRouting(db);
+
 
             // Tests all the algorithms on multiple inputs
 

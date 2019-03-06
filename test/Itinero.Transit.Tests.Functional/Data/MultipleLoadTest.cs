@@ -7,7 +7,7 @@ namespace Itinero.Transit.Tests.Functional.Data
 {
     public class MultipleLoadTest : FunctionalTest<uint, uint>
     {
-        protected override uint Execute(uint input)
+        protected override uint Execute(uint _)
         {
             var sncb = Belgium.Sncb();
 
