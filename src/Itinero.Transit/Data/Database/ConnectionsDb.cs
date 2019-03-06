@@ -200,7 +200,7 @@ namespace Itinero.Transit.Data
             if (currentDepartureTime != departureSeconds ||
                 currentArrivalTime != arrivalSeconds)
             {
-                // timings have been updated.
+                // timings have been updated - probably due to delays.
                 // update the connection data.
                 SetConnection(internalId, stop1, stop2, departureSeconds, travelTime, departureDelay, arrivalDelay);
 
