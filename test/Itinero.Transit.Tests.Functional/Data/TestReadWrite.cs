@@ -7,17 +7,16 @@ namespace Itinero.Transit.Tests.Functional.Data
     /// <summary>
     /// Simply write the transitDB and reads it from a in-memory stream
     /// </summary>
-    public class TestReadWrite : FunctionalTest<bool, TransitDb>
+    public class TestReadWrite : FunctionalTest<TransitDb, TransitDb>
     {
-        protected override bool Execute(TransitDb db)
+        protected override TransitDb Execute(TransitDb db)
         {
             using (var stream = WriteTransitDbTest.Default.Run(db))
             {
                 stream.Seek(0, SeekOrigin.Begin);
-                db = ReadTransitDbTest.Default.Run(stream);
+               return ReadTransitDbTest.Default.Run(stream);
             }
 
-            return true;
         }
     }
 }

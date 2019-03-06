@@ -61,15 +61,15 @@ namespace Itinero.Transit.Tests.Functional
             new TestReadWrite().Run(db);
             Log.Information("Running TestWriteToDisk");
 
-           //new TestWriteToDisk().Run(db);
-            
+            db = new TestReadWrite().Run(db);
+
             Log.Information("Running TripHeadSignTest");
             TripHeadsignTest.Default.Run(db);
 
-            
+
             // This tests starts a timer which reloads a lot
             new TestAutoUpdating().Run(null);
-            
+
             new MultipleLoadTest().Run(0);
 
             ConnectionsDbDepartureEnumeratorTest.Default.Run(db);
