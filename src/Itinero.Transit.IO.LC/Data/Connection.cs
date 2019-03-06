@@ -12,7 +12,7 @@ namespace Itinero.Transit.IO.LC.Data
      * It consists of a departure and arrival stop, departure and arrival time.
      * Note that a connection does _never_ have intermediate stops.
      */
-    [Serializable()]
+    [Serializable]
     public class Connection : LinkedObject
     {
         private Uri _departureStop;
@@ -97,28 +97,28 @@ namespace Itinero.Transit.IO.LC.Data
             _arrivalStop = json.GetId("http://semweb.mmlab.be/ns/linkedconnections#arrivalStop");
 
             var depDel = json.GetInt("http://semweb.mmlab.be/ns/linkedconnections#departureDelay", 0);
-            this.DepartureDelay = 0;
+            DepartureDelay = 0;
             if (depDel < ushort.MaxValue)
             {
-                this.DepartureDelay = (ushort)depDel;
+                DepartureDelay = (ushort)depDel;
             }
             else
             {
-                this.DepartureDelay = ushort.MaxValue;
+                DepartureDelay = ushort.MaxValue;
             }
             
             // Departure time already includes delay
             _departureTime = GetDateFixed(json,  "http://semweb.mmlab.be/ns/linkedconnections#departureTime");
             
             var arrDel = json.GetInt("http://semweb.mmlab.be/ns/linkedconnections#arrivalDelay", 0);
-            this.ArrivalDelay = 0;
+            ArrivalDelay = 0;
             if (arrDel < ushort.MaxValue)
             {
-                this.ArrivalDelay = (ushort)arrDel;
+                ArrivalDelay = (ushort)arrDel;
             }
             else
             {
-                this.ArrivalDelay = ushort.MaxValue;
+                ArrivalDelay = ushort.MaxValue;
             }
             // Arrival time already includes delay
             _arrivalTime = GetDateFixed(json, "http://semweb.mmlab.be/ns/linkedconnections#arrivalTime");
@@ -132,9 +132,10 @@ namespace Itinero.Transit.IO.LC.Data
             {
                 // Sometimes, a departure delay is already known but the arrival delay is not known yet
                 // Thus, the arrivalDelay defaults to 0
-                // This can lead to (esp. on short connections of only a few minutes) departure times which lie _after_
-                // the arrival time
-                // We fix this by estimating the arrival delay to be equal to the departureDelay
+                // This can lead to departure times which lie _after_ the arrival time,
+                // especially on short connections of only a few minutes.
+                // We attempt to fix this by estimating the arrival delay to be equal to the departureDelay
+                // If that still ain't enough, the upstream code is responsible of handling the case (e.g. by logging, crashing or dropping this connection)
                 depDel += arrDel;
                 _arrivalTime = _arrivalTime.AddSeconds(depDel);
             }

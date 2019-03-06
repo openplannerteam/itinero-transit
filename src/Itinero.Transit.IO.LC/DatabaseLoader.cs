@@ -159,7 +159,7 @@ namespace Itinero.Transit.IO.LC
         /// <summary>
         /// Adds the connection to the connectionsDB
         /// </summary>
-        internal void AddConnection(Connection connection,
+        private void AddConnection(Connection connection,
             LocationProvider locations)
         {
             var stop1Id = AddStop(locations, connection.DepartureLocation());

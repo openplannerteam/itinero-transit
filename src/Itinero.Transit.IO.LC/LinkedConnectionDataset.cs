@@ -77,17 +77,15 @@ namespace Itinero.Transit.IO.LC
             Action<string> onError = null
         ) : this(onLocationLoaded, onTimeTableLoaded, onError)
         {
-            var loader = new Downloader();
 
             var conProv = new ConnectionProvider
             (connectionsLink,
-                connectionsLink + "{?departureTime}",
-                loader);
+                connectionsLink + "{?departureTime}");
             ConnectionsProvider = new List<ConnectionProvider> {conProv};
 
             // Create the locations provider
 
-            var proc = new JsonLdProcessor(loader, locationsUri);
+            var proc = new JsonLdProcessor(new Downloader(), locationsUri);
             var loc = new LocationProvider(locationsUri);
             loc.Download(proc);
             LocationProvider = new List<LocationProvider> {loc};

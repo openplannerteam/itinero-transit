@@ -20,7 +20,7 @@ namespace Itinero.Transit.IO.LC.Data
         /// Creates a new Connections-provider, based on a 'hydra-search' field.
         /// The 'hydra-search' should already be expanded JSON-LD
         /// </summary>
-        public ConnectionProvider(JToken hydraSearch, Downloader loader = null)
+        public ConnectionProvider(JToken hydraSearch)
         {
             _searchTemplate = hydraSearch.GetLDValue("http://www.w3.org/ns/hydra/core#template");
 
@@ -29,14 +29,14 @@ namespace Itinero.Transit.IO.LC.Data
             var baseString = _searchTemplate.Replace("{?departureTime}", "");
             Log.Information($"Base string is {baseString}");
             var baseUri = new Uri(baseString);
-            loader = loader ?? new Downloader();
+            var loader =  new Downloader();
             _processor = new JsonLdProcessor(loader, baseUri);
         }
 
-        public ConnectionProvider(Uri baseUri, string searchUri, Downloader loader = null)
+        public ConnectionProvider(Uri baseUri, string searchUri)
         {
             _searchTemplate = searchUri;
-            loader = loader ?? new Downloader();
+           var loader = new Downloader();
             _processor = new JsonLdProcessor(loader, baseUri);
         }
 
