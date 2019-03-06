@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Itinero.Transit.Data;
+using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms.CSA;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
 using Itinero.Transit.Tests.Functional.Data;
@@ -10,6 +11,7 @@ using Itinero.Transit.Tests.Functional.IO.LC.Synchronization;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
+using Log = Serilog.Log;
 
 // ReSharper disable InconsistentNaming
 
@@ -49,7 +51,6 @@ namespace Itinero.Transit.Tests.Functional
         private static void RunTests(IReadOnlyCollection<DefaultFunctionalTest> tests, int nrOfRuns)
         {
             EnableLogging();
-
 
             Log.Information("Starting the Functional Tests...");
             var date = DateTime.Now.Date; // LOCAL TIMES! //
@@ -222,7 +223,7 @@ namespace Itinero.Transit.Tests.Functional
 #else
             var loggingBlacklist = new HashSet<string>();
 #endif
-            Logging.Logger.LogAction = (o, level, message, parameters) =>
+            Logger.LogAction = (o, level, message, parameters) =>
             {
                 if (loggingBlacklist.Contains(o))
                 {
@@ -234,23 +235,23 @@ namespace Itinero.Transit.Tests.Functional
                     message = $"[{o}] {message}";
                 }
 
-                if (level == Logging.TraceEventType.Verbose.ToString().ToLower())
+                if (level == TraceEventType.Verbose.ToString().ToLower())
                 {
                     Log.Debug(message);
                 }
-                else if (level == Logging.TraceEventType.Information.ToString().ToLower())
+                else if (level == TraceEventType.Information.ToString().ToLower())
                 {
                     Log.Information(message);
                 }
-                else if (level == Logging.TraceEventType.Warning.ToString().ToLower())
+                else if (level == TraceEventType.Warning.ToString().ToLower())
                 {
                     Log.Warning(message);
                 }
-                else if (level == Logging.TraceEventType.Critical.ToString().ToLower())
+                else if (level == TraceEventType.Critical.ToString().ToLower())
                 {
                     Log.Fatal(message);
                 }
-                else if (level == Logging.TraceEventType.Error.ToString().ToLower())
+                else if (level == TraceEventType.Error.ToString().ToLower())
                 {
                     Log.Error(message);
                 }
