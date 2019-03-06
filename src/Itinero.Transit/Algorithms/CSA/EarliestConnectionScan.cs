@@ -67,7 +67,6 @@ namespace Itinero.Transit.Algorithms.CSA
             earliestDeparture, lastDeparture,
             profile)
         {
-            
         }
 
         public EarliestConnectionScan(
@@ -89,7 +88,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             _stopsDb = snapshot.StopsDb;
             _stopsReader = _stopsDb.GetReader();
-            
+
             _transferPolicy = profile.InternalTransferGenerator;
             _walkPolicy = profile.WalksGenerator;
 
@@ -98,6 +97,7 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 _userTargetLocations.Add((targetLocation.localTileId, targetLocation.localId, 0));
             }
+
             foreach (var loc in userDepartureLocations)
             {
                 _s.Add(loc,
@@ -117,12 +117,12 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 throw new ArgumentException("Departure time falls after arrival time");
             }
-            
+
             _earliestDeparture = earliestDeparture;
             _lastDeparture = lastDeparture;
             _connectionsProvider = snapshot.ConnectionsDb;
             _stopsDb = snapshot.StopsDb;
-        
+
             _stopsReader = _stopsDb.GetReader();
             _transferPolicy = profile.InternalTransferGenerator;
             _walkPolicy = profile.WalksGenerator;
@@ -170,6 +170,18 @@ namespace Itinero.Transit.Algorithms.CSA
                 // we have reached a new batch of departure times
                 // Let's first check if we can reach an end destination already
 
+                /*
+                 * if(GetBestTime().bestTime != uint.MaxValue){
+                 *  -> We found a best route, with a best arrival time.
+                 *  -> We lower the 'scan until'-time (lastDeparture) to the time we have found
+                 *  lastDeparture = GetBestTime() < lastDeparture ? GetBestTime().bestTime : lastDeparture
+                 *
+                 * if(GetBestTime().bestTime == uint.MaxValue)
+                 *  -> No best route is found yet
+                 *  -> we do not update lastDeparture.
+                 *
+                 * The above pseudo code is summarized with:
+                 */
                 lastDeparture = Math.Min(GetBestTime().bestTime, lastDeparture);
             }
 
@@ -187,6 +199,8 @@ namespace Itinero.Transit.Algorithms.CSA
 
             if (depArrivalToTimeout == null)
             {
+                // We do not need to extend the search
+                _filterEndTime = lastDeparture;
                 return journey;
             }
 
@@ -426,9 +440,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 : Journey<T>.InfiniteJourney;
         }
 
-        public IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> GetAllJourneys()
-        {
-            return _s;
-        }
+        public DateTime ScanEndTime() => _filterEndTime.FromUnixTime();
+        public IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> GetAllJourneys() => _s;
     }
 }

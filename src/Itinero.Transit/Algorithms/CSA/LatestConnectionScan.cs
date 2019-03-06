@@ -133,6 +133,17 @@ namespace Itinero.Transit.Algorithms.CSA
                 // we have reached a new batch of departure times
                 // Let's first check if we can reach an end destination already
 
+                /*
+                 * if(GetBestTime().bestTime != uint.MinValue){
+                 *  -> We found a best route, with a best departure time.
+                 *  -> We heighten the 'scan until'-time (earliestAllowedDeparture) to the time we have found
+                 *
+                 * if(GetBestTime().bestTime == uint.MinValue)
+                 *  -> No best route is found yet
+                 *  -> we do not update earliestAllowedDeparture.
+                 *
+                 * The above pseudo code is summarized with:
+                 */
                 earliestAllowedDeparture = Math.Max(GetBestTime().bestTime, _earliestDeparture);
             }
 
@@ -332,9 +343,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 : Journey<T>.NegativeInfiniteJourney;
         }
 
-        public IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> GetAllJourneys()
-        {
-            return _s;
-        }
+        public DateTime ScanBeginTime => _filterStartTime.FromUnixTime();
+        public IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> GetAllJourneys() => _s;
     }
 }
