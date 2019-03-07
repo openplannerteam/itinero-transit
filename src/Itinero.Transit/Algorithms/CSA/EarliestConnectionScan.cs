@@ -13,7 +13,7 @@ namespace Itinero.Transit.Algorithms.CSA
     /// Calculates the fastest journey from A to B starting at a given time; using CSA (forward A*).
     /// It does _not_ use footpath interlinks (yet)
     /// </summary>
-    public class EarliestConnectionScan<T> : IConnectionFilter
+    internal class EarliestConnectionScan<T>
         where T : IJourneyStats<T>
     {
         private readonly List<(uint localTileId, uint localId, Time travelTime)> _userTargetLocations;
@@ -23,12 +23,16 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly StopsDb _stopsDb;
         private readonly StopsDb.StopsDbReader _stopsReader;
 
-        private readonly Time _earliestDeparture, _lastDeparture;
-
         /// <summary>
-        /// At what time should we stop using this filter?
+        /// The last allowed departure time. Note that scanning could continue after it, if a scan-overshoot is given
         /// </summary>
-        private Time _filterEndTime = Time.MinValue;
+        private readonly Time _lastDeparture;
+        
+        public IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> Isochrone() => _s;
+
+        public ulong ScanEndTime { get; private set; } = ulong.MinValue;
+
+        public ulong ScanBeginTime { get; }
 
         private readonly IOtherModeGenerator _transferPolicy, _walkPolicy;
 
@@ -81,7 +85,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 throw new ArgumentException("Departure time falls after arrival time");
             }
 
-            _earliestDeparture = earliestDeparture;
+            ScanBeginTime = earliestDeparture;
             _lastDeparture = lastDeparture;
             _connectionsProvider = snapshot.ConnectionsDb;
             _tdb = snapshot;
@@ -118,7 +122,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 throw new ArgumentException("Departure time falls after arrival time");
             }
 
-            _earliestDeparture = earliestDeparture;
+            ScanBeginTime = earliestDeparture;
             _lastDeparture = lastDeparture;
             _connectionsProvider = snapshot.ConnectionsDb;
             _stopsDb = snapshot.StopsDb;
@@ -157,7 +161,7 @@ namespace Itinero.Transit.Algorithms.CSA
         public Journey<T> CalculateJourney(Func<Time, Time, Time> depArrivalToTimeout = null)
         {
             var enumerator = _connectionsProvider.GetDepartureEnumerator();
-            enumerator.MoveNext(_earliestDeparture);
+            enumerator.MoveNext(ScanBeginTime);
 
             var lastDeparture = _lastDeparture;
             while (enumerator.DepartureTime <= lastDeparture)
@@ -200,15 +204,15 @@ namespace Itinero.Transit.Algorithms.CSA
             if (depArrivalToTimeout == null)
             {
                 // We do not need to extend the search
-                _filterEndTime = lastDeparture;
+                ScanEndTime = lastDeparture;
                 return journey;
             }
 
             // Wait! There is one more thing!
             // The user might need a profile to optimize PCS later on
             // We got an alternative end time, we still calculate a little
-            _filterEndTime = depArrivalToTimeout(journey.Root.Time, journey.Time);
-            while (enumerator.DepartureTime < _filterEndTime)
+            ScanEndTime = depArrivalToTimeout(journey.Root.Time, journey.Time);
+            while (enumerator.DepartureTime < ScanEndTime)
             {
                 if (!IntegrateBatch(enumerator))
                 {
@@ -397,40 +401,6 @@ namespace Itinero.Transit.Algorithms.CSA
             return (currentBestArrival, bestTarget);
         }
 
-        public void CheckWindow(ulong earliestDepTime, ulong latestArrivalTime)
-        {
-            if (!(earliestDepTime >= _earliestDeparture))
-            {
-                throw new ArgumentException(
-                    "This EAS can not be used as connection filter, the requesting algorithm requests connections before my scantime ");
-            }
-
-
-            if (!(latestArrivalTime <= _filterEndTime))
-            {
-                throw new ArgumentException(
-                    "This EAS can not be used as connection filter, the requesting algorithm requests connections after my scantime ");
-            }
-
-            if (_s.Count == 1)
-            {
-                throw new ArgumentException("This algorithm hasn't run yet");
-            }
-        }
-
-        public bool CanBeTaken(IConnection c)
-        {
-            var depStation = c.DepartureStop;
-            // _s describes the earliest journey we can possible arrive at c.DepStation
-            if (!_s.ContainsKey(depStation))
-            {
-                return false;
-            }
-
-            // Is the moment we can realistically arrive at the station before this connection?
-            // If not, it is no use to take the train
-            return _s[depStation].Time <= c.DepartureTime;
-        }
 
         private Journey<T>
             GetJourneyTo((uint localTileId, uint localId) stop)
@@ -440,7 +410,5 @@ namespace Itinero.Transit.Algorithms.CSA
                 : Journey<T>.InfiniteJourney;
         }
 
-        public DateTime ScanEndTime() => _filterEndTime.FromUnixTime();
-        public IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> GetAllJourneys() => _s;
     }
 }

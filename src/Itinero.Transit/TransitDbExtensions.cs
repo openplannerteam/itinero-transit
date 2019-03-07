@@ -109,7 +109,7 @@ namespace Itinero.Transit
             );
             eas.CalculateJourney();
 
-            return eas.GetAllJourneys();
+            return eas.Isochrone();
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace Itinero.Transit
             );
             las.CalculateJourney();
 
-            var allJourneys = las.GetAllJourneys();
+            var allJourneys = las.Isochrone();
 
 
             var reversedJourneys = new Dictionary<(uint localTileId, uint localId), Journey<T>>();
@@ -290,7 +290,7 @@ namespace Itinero.Transit
                                   (earliestJourney.ArrivalTime() - earliestJourney.Root.DepartureTime());
             }
 
-            IConnectionFilter filter = eas;
+            IConnectionFilter filter = eas.AsFilter();
 
             var pcs = new ProfiledConnectionScan<T>(
                 snapshot,

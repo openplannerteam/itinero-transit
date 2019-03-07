@@ -6,7 +6,7 @@ namespace Itinero.Transit.Tests.Data
 {
     public class LostDelayTest
     {
-        public void AddConn(TransitDb tdb, int departureHour, int departureMinute,
+        private static void AddConn(TransitDb tdb, int departureHour, int departureMinute,
             ushort travelTime,
             ushort depDelay, ushort arrDelay)
         {
@@ -51,7 +51,7 @@ namespace Itinero.Transit.Tests.Data
             AddConn(db, 10, 00, 55, 5, 0);
             AddConn(db, 10, 05, 60, 5, 5);
             AddConn(db, 10, 00, 60, 0, 5);
-            AddConn(db, 10, 10, 60, 10, 10);
+            AddConn(db, 11, 00, 60, 60, 60);
 
         }
     }

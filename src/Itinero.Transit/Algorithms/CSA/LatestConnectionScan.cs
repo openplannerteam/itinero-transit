@@ -13,7 +13,7 @@ namespace Itinero.Transit.Algorithms.CSA
     /// Calculates the fastest journey from A to B arriving at a given time; using CSA (backward A*).
     /// It does _not_ use footpath interlinks (yet)
     /// </summary>
-    internal class LatestConnectionScan<T> : IConnectionFilter
+    internal class LatestConnectionScan<T> 
         where T : IJourneyStats<T>
     {
         private readonly List<(uint localTileId, uint localId)> _userDepartureLocation;
@@ -21,15 +21,17 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly TransitDb.TransitDbSnapShot _tdb;
         private readonly ConnectionsDb _connectionsProvider;
 
-        private readonly Time _earliestDeparture, _lastDeparture;
-
-        /// <summary>
-        /// At what time can we start using this as a filter?
-        /// </summary>
-        private Time _filterStartTime = Time.MaxValue;
+        private readonly Time _earliestDeparture;
 
         private readonly IOtherModeGenerator _transferPolicy;
 
+        public ulong ScanBeginTime { get; private set; } = Time.MaxValue;
+
+        public ulong ScanEndTime { get; }
+
+        public IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> Isochrone() => _s;
+        
+        
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as late as possible
         /// </summary>
@@ -88,7 +90,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             _tdb = snapshot;
             _earliestDeparture = earliestDeparture;
-            _lastDeparture = lastDeparture;
+            ScanEndTime = lastDeparture;
             _connectionsProvider = snapshot.ConnectionsDb;
             _transferPolicy = profile.InternalTransferGenerator;
             _userDepartureLocation = userDepartureLocation;
@@ -120,7 +122,7 @@ namespace Itinero.Transit.Algorithms.CSA
         public Journey<T> CalculateJourney(Func<Time, Time, Time> depArrivalToTimeout = null)
         {
             var enumerator = _connectionsProvider.GetDepartureEnumerator();
-            enumerator.MovePrevious(_lastDeparture);
+            enumerator.MovePrevious(ScanEndTime);
 
             var earliestAllowedDeparture = _earliestDeparture;
             while (enumerator.DepartureTime >= earliestAllowedDeparture)
@@ -162,14 +164,15 @@ namespace Itinero.Transit.Algorithms.CSA
 
             if (depArrivalToTimeout == null)
             {
+                ScanBeginTime = journey.Root.Time;
                 return journey;
             }
 
             // Wait! There is one more thing!
             // The user might need a profile to optimize PCS later on
             // We got an alternative end time, we still calculate a little
-            _filterStartTime = depArrivalToTimeout(journey.Root.Time, journey.Time);
-            while (enumerator.DepartureTime >= _filterStartTime)
+            ScanBeginTime = depArrivalToTimeout(journey.Root.Time, journey.Time);
+            while (enumerator.DepartureTime >= ScanBeginTime)
             {
                 if (!IntegrateBatch(enumerator))
                 {
@@ -300,40 +303,6 @@ namespace Itinero.Transit.Algorithms.CSA
             return (currentBestDeparture, bestTarget);
         }
 
-        public void CheckWindow(ulong earliestDepTime, ulong latestArrivalTime)
-        {
-            if (!(earliestDepTime >= _filterStartTime))
-            {
-                throw new ArgumentException(
-                    "This LAS can not be used as connection filter, the requesting algorithm requests connections before my scan time ");
-            }
-
-
-            if (!(latestArrivalTime <= _lastDeparture))
-            {
-                throw new ArgumentException(
-                    "This LAS can not be used as connection filter, the requesting algorithm needs connections after my scan time." +
-                    $"LAS last scanned connections at {_lastDeparture}, but connections at {latestArrivalTime} are requested ");
-            }
-
-            if (_s.Count == 1)
-            {
-                throw new ArgumentException("This algorithm hasn't run yet");
-            }
-        }
-
-        public bool CanBeTaken(IConnection c)
-        {
-            var depStation = c.ArrivalStop;
-            // _s describes the latest journey we can possible take to arrive at our destination at the right time
-            if (!_s.ContainsKey(depStation))
-            {
-                return false;
-            }
-
-            // We should arrive before the last possible moment we can still get a journey out
-            return c.ArrivalTime <= _s[depStation].Time;
-        }
 
         private Journey<T>
             GetJourneyFrom((uint, uint) location)
@@ -343,7 +312,6 @@ namespace Itinero.Transit.Algorithms.CSA
                 : Journey<T>.NegativeInfiniteJourney;
         }
 
-        public DateTime ScanBeginTime => _filterStartTime.FromUnixTime();
-        public IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> GetAllJourneys() => _s;
+     
     }
 }
