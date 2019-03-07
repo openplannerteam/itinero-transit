@@ -3,16 +3,17 @@ using System.Collections.Generic;
 
 namespace Itinero.Transit.IO.LC.Data
 {
-
     internal static class TimeTableExtensions
     {
-        internal static void Validate(this TimeTable tt, LocationProvider locations, Func<Connection, Uri, bool> locationNotFound, Func<Connection, bool> duplicateConnection, Func<Connection, string, bool> invalidConnection)
+        internal static void Validate(this TimeTable tt, LocationProvider locations,
+            Func<Connection, Uri, bool> locationNotFound, Func<Connection, bool> duplicateConnection,
+            Func<Connection, string, bool> invalidConnection)
         {
             var validator = new Validator(tt, locations, locationNotFound, duplicateConnection, invalidConnection);
             validator.Validate();
         }
     }
-    
+
     /// <summary>
     /// The validator checks each connection for a few simple things:
     ///
@@ -56,7 +57,7 @@ namespace Itinero.Transit.IO.LC.Data
                                         $"The connection using this location is{c}"));
 
 
-            _duplicateConnection = duplicateConnection ?? (c => { return false; });
+            _duplicateConnection = duplicateConnection ?? (c => false);
 
 
             _invalidConnection = invalidConnection ?? ((c, msg) =>
@@ -128,6 +129,13 @@ namespace Itinero.Transit.IO.LC.Data
             if (_locations.GetCoordinateFor(c.ArrivalLocation()) == null)
             {
                 keepInList &= _locationNotFound.Invoke(c, c.ArrivalLocation());
+            }
+
+
+            if (!c.GetOn && !c.GetOff)
+            {
+                keepInList &= _invalidConnection.Invoke(c,
+                    "This connections does not allow getting in or out. Perhaps this train is cancelled");
             }
 
             return keepInList;
