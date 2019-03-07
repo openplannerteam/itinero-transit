@@ -138,12 +138,12 @@ namespace Itinero.Transit.IO.LC.Data
             Direction = json.GetLDValue("http://vocab.gtfs.org/terms#headsign");
             GtfsTrip = json.GetId("http://vocab.gtfs.org/terms#trip");
             GtfsRoute = json.GetId("http://vocab.gtfs.org/terms#route");
-            
-
-            GetOn = json.GetLDValue("http://vocab.gtfs.org/terms#pickupType")
-                .Equals("gtfs:regular");
-            GetOff = json.GetLDValue("http://vocab.gtfs.org/terms#dropOffType")
-                .Equals("gtfs:regular");
+     
+            Console.WriteLine(json.GetId("http://vocab.gtfs.org/terms#pickupType").ToString());
+            GetOn = json.GetId("http://vocab.gtfs.org/terms#pickupType").ToString()
+                .Equals("http://vocab.gtfs.org/terms#Regular");
+            GetOff = json.GetId("http://vocab.gtfs.org/terms#dropOffType").ToString()
+                .Equals("http://vocab.gtfs.org/terms#Regular");
 
             // ReSharper disable once InvertIf
             if (_arrivalTime <= _departureTime)
