@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Algorithms.Search;
 using Itinero.Transit.Data;
@@ -138,7 +137,7 @@ namespace Itinero.Transit
                 new List<(uint localTileId, uint localId)> {fromId},
                 new List<(uint localTileId, uint localId)> {toId},
                 departure.ToUnixTime(), lastArrival.ToUnixTime(),
-                profile
+                profile.StatsFactory, profile.InternalTransferGenerator
             );
             return las.CalculateJourney();
         }
@@ -168,7 +167,7 @@ namespace Itinero.Transit
                 new List<(uint localTileId, uint localId)>(), // EMPTY LIST!
                 new List<(uint localTileId, uint localId)> {toId},
                 departure.ToUnixTime(), lastArrival.ToUnixTime(),
-                profile
+                profile.StatsFactory, profile.InternalTransferGenerator
             );
             las.CalculateJourney();
 
@@ -250,7 +249,7 @@ namespace Itinero.Transit
             {
                 var las = new LatestConnectionScan<T>(snapshot, depLocation, arrivalLocation,
                     lastArrivalTime - lookAhead, lastArrivalTime,
-                    profile);
+                    profile.StatsFactory, profile.InternalTransferGenerator);
                 var lasJourney = las.CalculateJourney(
                     (journeyArr, journeyDep) =>
                     {
@@ -363,13 +362,10 @@ namespace Itinero.Transit
         ///
         /// Of course, ppl don't like too much options; this method applies another statistic on a journey and filters based on this second statistic.
         ///
-        /// 
+        /// The list of journeys must be ordered by departure time
         /// 
         /// </summary>
-        /// <param name="profiledJourneys">The list of journeys, ordered by departure time</param>
-        /// <typeparam name="S"></typeparam>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        // ReSharper disable once InconsistentNaming
         public static List<Journey<T>> PruneInAlternatives<S, T>(
             this IEnumerable<Journey<T>> profiledJourneys,
             S newStatistic,

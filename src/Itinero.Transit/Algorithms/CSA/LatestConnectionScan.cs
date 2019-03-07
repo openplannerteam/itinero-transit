@@ -53,11 +53,12 @@ namespace Itinero.Transit.Algorithms.CSA
             (uint localTileId, uint localId) userDepartureLocation,
             (uint localTileId, uint localId) userTargetLocation,
             DateTime earliestDeparture, DateTime lastDeparture,
-            Profile<T> profile) : this(snapshot,
+            T statsFactory,
+            IOtherModeGenerator internalTransferGenerator) : this(snapshot,
             new List<(uint localTileId, uint localId)> {userDepartureLocation},
             new List<(uint localTileId, uint localId)> {userTargetLocation},
             (uint) earliestDeparture.ToUnixTime(), (uint) lastDeparture.ToUnixTime(),
-            profile)
+            statsFactory, internalTransferGenerator)
         {
         }
 
@@ -67,11 +68,12 @@ namespace Itinero.Transit.Algorithms.CSA
             (uint localTileId, uint localId) userDepartureLocation,
             (uint localTileId, uint localId) userTargetLocation,
             ulong earliestDeparture, ulong lastDeparture,
-            Profile<T> profile) : this(snapshot,
+            T statsFactory,
+            IOtherModeGenerator internalTransferGenerator) : this(snapshot,
             new List<(uint localTileId, uint localId)> {userDepartureLocation},
             new List<(uint localTileId, uint localId)> {userTargetLocation},
             earliestDeparture, lastDeparture,
-            profile)
+            statsFactory, internalTransferGenerator)
         {
         }
 
@@ -81,7 +83,8 @@ namespace Itinero.Transit.Algorithms.CSA
             List<(uint localTileId, uint localId)> userDepartureLocation,
             IEnumerable<(uint localTileId, uint localId)> userTargetLocation,
             Time earliestDeparture, Time lastDeparture,
-            Profile<T> profile)
+            T statsFactory,
+            IOtherModeGenerator internalTransferGenerator)
         {
             if (lastDeparture <= earliestDeparture)
             {
@@ -92,12 +95,12 @@ namespace Itinero.Transit.Algorithms.CSA
             _earliestDeparture = earliestDeparture;
             ScanEndTime = lastDeparture;
             _connectionsProvider = snapshot.ConnectionsDb;
-            _transferPolicy = profile.InternalTransferGenerator;
+            _transferPolicy = internalTransferGenerator;
             _userDepartureLocation = userDepartureLocation;
             foreach (var loc in userTargetLocation)
             {
                 _s.Add(loc,
-                    new Journey<T>(loc, lastDeparture, profile.StatsFactory,
+                    new Journey<T>(loc, lastDeparture, statsFactory,
                         Journey<T>.LatestArrivalScanJourney));
             }
         }

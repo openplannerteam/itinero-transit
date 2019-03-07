@@ -38,7 +38,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 
             var las = new LatestConnectionScan<TransferStats>(latest, 
                 departure, arrival, input.departureTime.ToUnixTime(),
-                easJ.ArrivalTime(), profile);
+                easJ.ArrivalTime(), profile.StatsFactory, profile.InternalTransferGenerator);
 
             var lasJ = las.CalculateJourney();
 

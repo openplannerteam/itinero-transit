@@ -30,7 +30,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             // instantiate and run EAS.
             var las = new LatestConnectionScan<TransferStats>(latest,
                 departure, arrival,
-                input.departureTime, input.departureTime.AddHours(24), p);
+                input.departureTime, input.departureTime.AddHours(24), p.StatsFactory, p.InternalTransferGenerator);
             var journey = las.CalculateJourney();
 
             // verify result.

@@ -25,7 +25,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var las = new LatestConnectionScan<TransferStats>(db,
                 (0, 0), (0, 1),
                 new DateTime(2018, 12, 04, 16, 00, 00), new DateTime(2018, 12, 04, 18, 00, 00),
-                profile
+                profile.StatsFactory, profile.InternalTransferGenerator
             );
 
             var j = las.CalculateJourney();
@@ -35,7 +35,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
             las = new LatestConnectionScan<TransferStats>(db,
                 (0, 0), (0, 2), db.GetConn(0).DepartureTime, db.GetConn(0).DepartureTime + 60 * 60 * 2,
-                profile
+                profile.StatsFactory, profile.InternalTransferGenerator
             );
 
             j = las.CalculateJourney();
@@ -69,7 +69,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 TransferStats.ProfileTransferCompare);
             var las = new LatestConnectionScan<TransferStats>(latest,
                 stop1, stop2, new DateTime(2018, 12, 04, 16, 00, 00), new DateTime(2018, 12, 04, 19, 00, 00),
-                profile);
+                profile.StatsFactory, profile.InternalTransferGenerator);
             var journey = las.CalculateJourney();
 
             Assert.NotNull(journey);
