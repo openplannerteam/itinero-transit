@@ -139,7 +139,6 @@ namespace Itinero.Transit.IO.LC.Data
             GtfsTrip = json.GetId("http://vocab.gtfs.org/terms#trip");
             GtfsRoute = json.GetId("http://vocab.gtfs.org/terms#route");
      
-            Console.WriteLine(json.GetId("http://vocab.gtfs.org/terms#pickupType").ToString());
             GetOn = json.GetId("http://vocab.gtfs.org/terms#pickupType").ToString()
                 .Equals("http://vocab.gtfs.org/terms#Regular");
             GetOff = json.GetId("http://vocab.gtfs.org/terms#dropOffType").ToString()
