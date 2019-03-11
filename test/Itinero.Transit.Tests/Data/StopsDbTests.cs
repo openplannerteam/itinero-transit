@@ -178,5 +178,39 @@ namespace Itinero.Transit.Tests.Data
             
             Assert.False(stopsReader.MoveNext());
         }
+        
+        
+        [Fact]
+        public void FarFromEachOtherTest()
+        {
+
+            var tdb = new TransitDb();
+            var wr = tdb.GetWriter();
+            // THIS TEST IS NEARLY IDENTICAL TO THE ONE ABOVE but   ↓ this value is different
+            wr.AddOrUpdateStop("http://example.org/stop/1", (float) 6.0001, (float) 51.0001, new List<Attribute>
+            {
+                new Attribute("name","Brugge")
+            });
+            
+            wr.AddOrUpdateStop("http://example.org/stop/2",(float) 5.0003,(float) 51.0003, new List<Attribute>
+            {
+                new Attribute("name","Helemaal niet Brugge")
+            });
+            wr.Close();
+
+            var stopsReader = tdb.Latest.StopsDb.GetReader();
+
+            Assert.True(stopsReader.MoveNext());
+            Assert.Equal("http://example.org/stop/1", stopsReader.GlobalId);
+            stopsReader.Attributes.TryGetValue("name", out var name);
+            Assert.Equal("Brugge", name);
+            
+            Assert.True(stopsReader.MoveNext());
+            Assert.Equal("http://example.org/stop/2", stopsReader.GlobalId);
+            stopsReader.Attributes.TryGetValue("name", out name);
+            Assert.Equal("Helemaal niet Brugge", name);
+            
+            Assert.False(stopsReader.MoveNext());
+        }
     }
 }
