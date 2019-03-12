@@ -96,11 +96,11 @@ namespace Itinero.Transit.IO.LC
         /// Adds all connection data between the given dates into the databases.
         /// Locations are only added as needed
         /// </summary>
-        public void AddAllConnectionsTo(TransitDb.TransitDbWriter writer,
+        public (int loaded, int reused) AddAllConnectionsTo(TransitDb.TransitDbWriter writer,
             DateTime start, DateTime end)
         {
             var dbs = new DatabaseLoader(writer, _onLocationLoaded, _onTimeTableLoaded, _onError);
-            dbs.AddAllConnections(this, start, end);
+            return dbs.AddAllConnections(this, start, end);
         }
 
         /// <summary>

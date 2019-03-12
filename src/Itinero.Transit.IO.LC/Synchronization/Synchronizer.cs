@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Timers;
 using Itinero.Transit.Data;
 using Itinero.Transit.Logging;
-using Timer = System.Timers.Timer;
 
 namespace Itinero.Transit.IO.LC.Synchronization
 {
@@ -15,19 +12,19 @@ namespace Itinero.Transit.IO.LC.Synchronization
     /// </summary>
     public class Synchronizer
     {
-        private readonly List<SynchronizationPolicy> _policies;
+        private readonly List<ISynchronizationPolicy> _policies;
         private readonly uint _clockRate;
         private readonly TransitDbUpdater _db;
         private bool _firstRun = true;
         private readonly Timer _timer;
 
-        public SynchronizationPolicy CurrentlyRunning { get; private set; }
+        public ISynchronizationPolicy CurrentlyRunning { get; private set; }
         public IReadOnlyList<(DateTime start, DateTime end)> LoadedTimeWindows => _db.LoadedTimeWindows;
 
 
         public Synchronizer(TransitDb db,
             Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb,
-            IReadOnlyCollection<SynchronizationPolicy> policies,
+            IReadOnlyCollection<ISynchronizationPolicy> policies,
             uint initialDelaySeconds = 1)
         {
             _db = new TransitDbUpdater(db, updateDb);
@@ -67,14 +64,14 @@ namespace Itinero.Transit.IO.LC.Synchronization
 
         public Synchronizer(TransitDb db, Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb,
             uint initialDelaySeconds,
-            params SynchronizationPolicy[] policies) :
-            this(db, updateDb, new List<SynchronizationPolicy>(policies), initialDelaySeconds)
+            params ISynchronizationPolicy[] policies) :
+            this(db, updateDb, new List<ISynchronizationPolicy>(policies), initialDelaySeconds)
         {
         }
 
         public Synchronizer(TransitDb db, Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb,
-            params SynchronizationPolicy[] policies) :
-            this(db, updateDb, new List<SynchronizationPolicy>(policies))
+            params ISynchronizationPolicy[] policies) :
+            this(db, updateDb, new List<ISynchronizationPolicy>(policies))
         {
         }
 

@@ -18,7 +18,7 @@ namespace Itinero.Transit.IO.LC.Data
         private DateTime _startTime, _endTime;
 
         private List<Connection> Graph { get; set; }
-
+        
         public TimeTable(Uri uri) : base(uri)
         {
         }
@@ -36,6 +36,7 @@ namespace Itinero.Transit.IO.LC.Data
                 throw new ArgumentException("The passed JSON does not follow the expected ontology");                
             }
 
+            
             Next = new Uri(json["http://www.w3.org/ns/hydra/core#next"][0]["@id"].ToString());
             Prev = new Uri(json["http://www.w3.org/ns/hydra/core#previous"][0]["@id"].ToString());
             _startTime = _extractTime(new Uri(json["@id"].ToString()));
@@ -46,6 +47,7 @@ namespace Itinero.Transit.IO.LC.Data
             var jsonGraph = json["@graph"];
             foreach (var conn in jsonGraph)
             {
+                
                 try
                 {
                     Graph.Add(new Connection((JObject) conn));

@@ -42,10 +42,10 @@ namespace Itinero.Transit.IO.LC
         public static (Synchronizer, LinkedConnectionDataset) UseLinkedConnections(this TransitDb tdb,
             string connectionsUri,
             string locationsUri,
-            params SynchronizationPolicy[] syncPolicies)
+            params ISynchronizationPolicy[] syncPolicies)
         {
             return tdb.UseLinkedConnections(connectionsUri, locationsUri,
-                new List<SynchronizationPolicy>(syncPolicies));
+                new List<ISynchronizationPolicy>(syncPolicies));
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Itinero.Transit.IO.LC
         public static (Synchronizer, LinkedConnectionDataset) UseLinkedConnections(this TransitDb tdb,
             string connectionsUri,
             string locationsUri,
-            List<SynchronizationPolicy> syncPolicies)
+            List<ISynchronizationPolicy> syncPolicies)
         {
             // Add all the locations to the tdb
             var dataset = tdb.UseLinkedConnections(connectionsUri, locationsUri, DateTime.MaxValue, DateTime.MinValue);
@@ -64,7 +64,7 @@ namespace Itinero.Transit.IO.LC
             return (new Synchronizer(tdb, dataset.UpdateTimeFrame, syncPolicies), dataset);
         }
 
-        public static Synchronizer AddSyncPolicy(this TransitDb db, params SynchronizationPolicy[] policy)
+        public static Synchronizer AddSyncPolicy(this TransitDb db, params ISynchronizationPolicy[] policy)
         {
             return new Synchronizer(db, null, policy);
         }

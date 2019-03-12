@@ -16,6 +16,9 @@ namespace Itinero.Transit.IO.LC.Data
 
         private readonly string _searchTemplate;
 
+        private readonly Downloader _loader = new Downloader();
+
+
         /// <summary>
         /// Creates a new Connections-provider, based on a 'hydra-search' field.
         /// The 'hydra-search' should already be expanded JSON-LD
@@ -29,27 +32,26 @@ namespace Itinero.Transit.IO.LC.Data
             var baseString = _searchTemplate.Replace("{?departureTime}", "");
             Log.Information($"Base string is {baseString}");
             var baseUri = new Uri(baseString);
-            var loader =  new Downloader();
-            _processor = new JsonLdProcessor(loader, baseUri);
+            _processor = new JsonLdProcessor(_loader, baseUri);
         }
 
         public ConnectionProvider(Uri baseUri, string searchUri)
         {
             _searchTemplate = searchUri;
-           var loader = new Downloader();
-            _processor = new JsonLdProcessor(loader, baseUri);
+            _processor = new JsonLdProcessor(_loader, baseUri);
         }
 
-        public TimeTable GetTimeTable(Uri id)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public (TimeTable, bool hasChanged) GetTimeTable(Uri id)
         {
             var tt = new TimeTable(id);
             tt.Download(_processor);
-            return tt;
-        }
-
-        public TimeTable GetTimeTable(DateTime time)
-        {
-            return GetTimeTable(TimeTableIdFor(time));
+            var wasCached = _loader.IsCached(id.ToString());
+            return (tt, !wasCached);
         }
 
         public Uri TimeTableIdFor(DateTime time)

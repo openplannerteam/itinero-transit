@@ -6,7 +6,7 @@ namespace Itinero.Transit.IO.LC.Synchronization
     /// <summary>
     /// Saves the database to the disk every now and then
     /// </summary>
-    public class WriteToDisk : SynchronizationPolicy
+    public class WriteToDisk : ISynchronizationPolicy
     {
         private readonly string _saveTo;
 

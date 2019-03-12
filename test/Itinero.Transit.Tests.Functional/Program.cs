@@ -56,6 +56,9 @@ namespace Itinero.Transit.Tests.Functional
             var date = DateTime.Now.Date; // LOCAL TIMES! //
 
 
+            new CachingTest().Run(true);
+            
+
             var db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
             Log.Information("Running TestReadWrite");
             new TestReadWrite().Run(db);

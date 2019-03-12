@@ -9,7 +9,7 @@ namespace Itinero.Transit.IO.LC.Synchronization
     /// It should be triggered every `freq`-seconds and will then, based on the time it was triggered, calculate what window should be loaded by the transitDB.
     /// 
     /// </summary>
-    public class SynchronizedWindow : SynchronizationPolicy
+    public class SynchronizedWindow : ISynchronizationPolicy
     {
         public uint Frequency { get; }
         private TimeSpan LoadBefore { get; }

@@ -2,7 +2,7 @@ using System;
 
 namespace Itinero.Transit.IO.LC.Synchronization
 {
-    public interface SynchronizationPolicy
+    public interface ISynchronizationPolicy
     {
         uint Frequency { get; }
 

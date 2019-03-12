@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using CacheCow.Client;
+using CacheCow.Client.Headers;
 using Itinero.Transit.Logging;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
@@ -27,9 +30,11 @@ namespace Itinero.Transit.IO.LC.Data
 
         private readonly HttpClient _client;
 
+        private readonly Dictionary<string, bool> _isCached = new Dictionary<string, bool>();
+
         public Downloader()
         {
-            _client = new HttpClient();
+            _client = ClientExtensions.CreateClient();
             _client.DefaultRequestHeaders.Add("user-agent",
                 "Itinero-Transit-dev/0.0.2 (anyways.eu; pieter@anyways.eu)");
             _client.DefaultRequestHeaders.Add("accept", "application/ld+json");
@@ -48,7 +53,7 @@ namespace Itinero.Transit.IO.LC.Data
         /// </summary>
         /// <returns></returns>
         /// <exception cref="FileNotFoundException"></exception>
-        public async Task<string> DownloadRaw(Uri uri)
+        private async Task<string> DownloadRaw(Uri uri)
         {
             if (AlwaysReturn != null)
             {
@@ -76,10 +81,12 @@ namespace Itinero.Transit.IO.LC.Data
                 }
 
                 var data = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var cacheCowHeader = response.Headers.GetCacheCowHeader();
+                var cached = !cacheCowHeader.ToString().Contains("did-not-exist=true");
+                _isCached[uri.ToString()] = cached;
 
                 var end = DateTime.Now;
 
-               
 
                 var timeNeeded = (end - start).TotalMilliseconds / 1000;
                 Log.Information(
@@ -93,5 +100,9 @@ namespace Itinero.Transit.IO.LC.Data
             }
         }
 
+        public bool IsCached(string url)
+        {
+            return _isCached.ContainsKey(url) && _isCached[url];
+        }
     }
 }

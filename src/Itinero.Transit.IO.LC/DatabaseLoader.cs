@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.IO.LC.Data;
@@ -54,30 +52,46 @@ namespace Itinero.Transit.IO.LC
             }
         }
 
-        public void AddAllConnections(LinkedConnectionDataset p, DateTime startDate, DateTime endDate)
+        public (int loaded, int reused) AddAllConnections(LinkedConnectionDataset p, DateTime startDate, DateTime endDate)
         {
+            var loaded = 0;
+            var reused = 0;
             for (var i = 0; i < p.ConnectionsProvider.Count; i++)
             {
                 var cons = p.ConnectionsProvider[i];
                 var loc = p.LocationProvider[i];
-                AddTimeTableWindow(cons, loc, startDate, endDate, i, p.ConnectionsProvider.Count);
+                var (l, r) = AddTimeTableWindow(cons, loc, startDate, endDate, i, p.ConnectionsProvider.Count);
+                loaded += l;
+                reused += r;
             }
+
+            return (loaded, reused);
         }
 
 
-        private void AddTimeTableWindow(ConnectionProvider cons, LocationProvider locations,
+        private (int loaded, int ofWhichReused) AddTimeTableWindow(ConnectionProvider cons, LocationProvider locations,
             DateTime startDate, DateTime endDate, int batchNr, int totalBatches)
         {
             var currentTimeTableUri = cons.TimeTableIdFor(startDate);
 
             var count = 0;
+            var reused = 0;
             TimeTable timeTable;
             do
             {
-                timeTable = cons.GetTimeTable(currentTimeTableUri);
-
+                bool wasChanged;
+                (timeTable, wasChanged) = cons.GetTimeTable(currentTimeTableUri);
                 count++;
-                AddTimeTable(timeTable, locations);
+
+
+                if (wasChanged)
+                {
+                    AddTimeTable(timeTable, locations);
+                }
+                else
+                {
+                    reused++;
+                }
 
                 var estimatedCount = (float) (timeTable.EndTime().Ticks - startDate.Ticks) /
                                      (endDate.Ticks - startDate.Ticks);
@@ -85,10 +99,12 @@ namespace Itinero.Transit.IO.LC
 
                 currentTimeTableUri = timeTable.NextTable();
             } while (timeTable.EndTime() < endDate);
+
+            return (count, reused);
         }
 
         /// <summary>
-        /// Adds the entire time table
+        /// Adds the entire time table.
         /// </summary>
         private void AddTimeTable(TimeTable tt, LocationProvider locations)
         {
@@ -111,7 +127,6 @@ namespace Itinero.Transit.IO.LC
             foreach (var connection in tt.Connections())
             {
                 AddConnection(connection, locations);
-                
             }
         }
 
@@ -124,7 +139,7 @@ namespace Itinero.Transit.IO.LC
         private (uint, uint) AddLocation(Location location)
         {
             var globalId = location.Id();
-            var stop1Id = globalId.ToString();
+            var stopId = globalId.ToString();
 
             var attributes = new AttributeCollection();
             attributes.AddOrReplace("name", location.Name);
@@ -136,7 +151,7 @@ namespace Itinero.Transit.IO.LC
                 }
             }
 
-            return _writer.AddOrUpdateStop(stop1Id, location.Lon, location.Lat, attributes);
+            return _writer.AddOrUpdateStop(stopId, location.Lon, location.Lat, attributes);
         }
 
         /// <summary>
