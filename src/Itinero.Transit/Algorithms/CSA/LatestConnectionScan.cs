@@ -16,7 +16,7 @@ namespace Itinero.Transit.Algorithms.CSA
     internal class LatestConnectionScan<T> 
         where T : IJourneyStats<T>
     {
-        private readonly List<(uint localTileId, uint localId)> _userDepartureLocation;
+        private readonly List<((uint localTileId, uint localId), Journey<T>)> _userDepartureLocation;
 
         private readonly TransitDb.TransitDbSnapShot _tdb;
         private readonly ConnectionsDb _connectionsProvider;
@@ -45,63 +45,24 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly Dictionary<uint, Journey<T>> _trips = new Dictionary<uint, Journey<T>>();
 
 
-        /// <summary>
-        /// Construct a AES
-        /// </summary>
-        public LatestConnectionScan(
-            TransitDb.TransitDbSnapShot snapshot,
-            (uint localTileId, uint localId) userDepartureLocation,
-            (uint localTileId, uint localId) userTargetLocation,
-            DateTime earliestDeparture, DateTime lastDeparture,
-            T statsFactory,
-            IOtherModeGenerator internalTransferGenerator) : this(snapshot,
-            new List<(uint localTileId, uint localId)> {userDepartureLocation},
-            new List<(uint localTileId, uint localId)> {userTargetLocation},
-            (uint) earliestDeparture.ToUnixTime(), (uint) lastDeparture.ToUnixTime(),
-            statsFactory, internalTransferGenerator)
+      
+
+        public LatestConnectionScan(ScanSettings<T> settings)
         {
-        }
-
-
-        public LatestConnectionScan(
-            TransitDb.TransitDbSnapShot snapshot,
-            (uint localTileId, uint localId) userDepartureLocation,
-            (uint localTileId, uint localId) userTargetLocation,
-            ulong earliestDeparture, ulong lastDeparture,
-            T statsFactory,
-            IOtherModeGenerator internalTransferGenerator) : this(snapshot,
-            new List<(uint localTileId, uint localId)> {userDepartureLocation},
-            new List<(uint localTileId, uint localId)> {userTargetLocation},
-            earliestDeparture, lastDeparture,
-            statsFactory, internalTransferGenerator)
-        {
-        }
-
-
-        // ReSharper disable once MemberCanBePrivate.Global
-        public LatestConnectionScan(TransitDb.TransitDbSnapShot snapshot,
-            List<(uint localTileId, uint localId)> userDepartureLocation,
-            IEnumerable<(uint localTileId, uint localId)> userTargetLocation,
-            Time earliestDeparture, Time lastDeparture,
-            T statsFactory,
-            IOtherModeGenerator internalTransferGenerator)
-        {
-            if (lastDeparture <= earliestDeparture)
+            settings.SanityCheck();
+            _tdb = settings.TransitDb;
+            _earliestDeparture = settings.EarliestDeparture.ToUnixTime();
+            ScanEndTime = settings.LastArrival.ToUnixTime();
+            _connectionsProvider = _tdb.ConnectionsDb;
+            _transferPolicy = settings.TransferPolicy;
+            _userDepartureLocation = settings.DepartureLocation;
+            foreach (var (loc, j) in settings.TargetLocation)
             {
-                throw new ArgumentException("Departure time falls after arrival time");
-            }
 
-            _tdb = snapshot;
-            _earliestDeparture = earliestDeparture;
-            ScanEndTime = lastDeparture;
-            _connectionsProvider = snapshot.ConnectionsDb;
-            _transferPolicy = internalTransferGenerator;
-            _userDepartureLocation = userDepartureLocation;
-            foreach (var loc in userTargetLocation)
-            {
-                _s.Add(loc,
-                    new Journey<T>(loc, lastDeparture, statsFactory,
-                        Journey<T>.LatestArrivalScanJourney));
+                var journey = j?.SetTag(Journey<T>.LatestArrivalScanJourney)
+                              ?? new Journey<T>(loc, settings.LastArrival.ToUnixTime(), settings.StatsFactory,
+                                  Journey<T>.LatestArrivalScanJourney);
+                _s.Add(loc,journey);
             }
         }
 
@@ -128,6 +89,7 @@ namespace Itinero.Transit.Algorithms.CSA
             enumerator.MovePrevious(ScanEndTime);
 
             var earliestAllowedDeparture = _earliestDeparture;
+            Journey<T> bestJourney = null;
             while (enumerator.DepartureTime >= earliestAllowedDeparture)
             {
                 if (!IntegrateBatch(enumerator))
@@ -149,32 +111,30 @@ namespace Itinero.Transit.Algorithms.CSA
                  *
                  * The above pseudo code is summarized with:
                  */
-                earliestAllowedDeparture = Math.Max(GetBestTime().bestTime, _earliestDeparture);
+                bestJourney = GetBestJourney();
+                earliestAllowedDeparture = Math.Max(bestJourney.Time, _earliestDeparture);
             }
 
             // If we en up here, normally we should have found a route.
 
-            var route = GetBestTime();
-            if (route.bestTime == Time.MinValue)
+            bestJourney = bestJourney ?? GetBestJourney();
+            if (bestJourney.Time == Time.MinValue)
             {
                 // Sadly, we didn't find a route within the required time
                 return null;
             }
 
 
-            // We grab the journey we need
-            var journey = _s[route.bestLocation.Value].Reversed()[0];
-
             if (depArrivalToTimeout == null)
             {
-                ScanBeginTime = journey.Root.Time;
-                return journey;
+                ScanBeginTime = bestJourney.Root.Time;
+                return bestJourney;
             }
 
             // Wait! There is one more thing!
             // The user might need a profile to optimize PCS later on
             // We got an alternative end time, we still calculate a little
-            ScanBeginTime = depArrivalToTimeout(journey.Root.Time, journey.Time);
+            ScanBeginTime = depArrivalToTimeout(bestJourney.Root.Time, bestJourney.Time);
             while (enumerator.DepartureTime >= ScanBeginTime)
             {
                 if (!IntegrateBatch(enumerator))
@@ -183,7 +143,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 }
             }
 
-            return journey;
+            return bestJourney;
         }
 
         /// <summary>
@@ -283,27 +243,31 @@ namespace Itinero.Transit.Algorithms.CSA
         /// If no location can be reached, returns 'Time.MinValue'
         /// </summary>
         /// <returns></returns>
-        private (Time bestTime, (uint localTileId, uint localId)? bestLocation) GetBestTime()
+        private Journey<T> GetBestJourney()
         {
-            var currentBestDeparture = Time.MinValue;
-            (uint localTileId, uint localId)? bestTarget = null;
-            foreach (var targetLoc in _userDepartureLocation)
+            var currentBestJourney = Journey<T>.NegativeInfiniteJourney;
+            foreach (var (targetLoc, restingJourney) in _userDepartureLocation)
             {
                 if (!_s.ContainsKey(targetLoc))
                 {
                     continue;
                 }
 
-                var departure = _s[targetLoc].Time;
+                var journey = _s[targetLoc].Append(restingJourney);
 
-                if (departure > currentBestDeparture)
+                if (journey.Time < _earliestDeparture)
                 {
-                    currentBestDeparture = departure;
-                    bestTarget = targetLoc;
+                    // Journey departs to early, we skip it
+                    continue;
+                }
+
+                if (journey.Time > currentBestJourney.Time)
+                {
+                    currentBestJourney = journey;
                 }
             }
 
-            return (currentBestDeparture, bestTarget);
+            return currentBestJourney;
         }
 
 

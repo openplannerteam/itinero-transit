@@ -99,9 +99,45 @@ namespace Itinero.Transit.Journeys
 
 
         /// <summary>
+        /// Given a journey and a reversed journey, append the reversed journey to the journey
+        /// </summary>
+        public static Journey<T> Append<T>(this Journey<T> j, Journey<T> restingJourney) where T : IJourneyStats<T>
+        {
+
+            if (restingJourney == null)
+            {
+                return j;
+            }
+
+            // ReSharper disable once PossibleUnintendedReferenceComparison
+            while (restingJourney.PreviousLink != restingJourney)
+            {
+                var timeDiff = restingJourney.PreviousLink.Time - restingJourney.Time;
+                j = j.Chain(
+                    restingJourney.Connection,
+                    j.Time + timeDiff,
+                    restingJourney.PreviousLink.Location, // restingJourney is backward, so will contain the departure location
+                    restingJourney.TripId
+                );
+            }
+            return j;
+        }
+
+        public static Journey<T> SetTag<T>(this Journey<T> j, uint tag) where T : IJourneyStats<T>
+        {
+
+            if (j.SpecialConnection && j.Connection == Journey<T>.GENESIS)
+            {
+                return new Journey<T>(j.Location, j.DepartureTime(), j.Stats, tag);
+            }
+            return j.PreviousLink.SetTag(tag).Chain(j.Connection, j.Time, j.Location, j.TripId);
+        }
+
+        /// <summary>
         /// Takes a journey with a statistics tracker T and applies a statistics tracker S to them
         /// The structure of the journey will be kept
         /// </summary>
+        // ReSharper disable once InconsistentNaming
         public static Journey<S> MeasureWith<T, S>(this Journey<T> j, S newStatFactory)
             where S : IJourneyStats<S>
             where T : IJourneyStats<T>
