@@ -22,12 +22,12 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 new CrowsFlightTransferGenerator(),
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
-            var pcs = new ProfiledConnectionScan<TransferStats>(
+            var pcs = new ProfiledConnectionScan<TransferStats>(new ScanSettings<TransferStats>(
                 db,
                 (0, 0), (0, 3),
                 new DateTime(2018, 12, 04, 16, 00, 00),
                 new DateTime(2018, 12, 04, 18, 00, 00),
-                profile);
+                profile));
 
             var journeys = pcs.CalculateJourneys();
 
@@ -83,10 +83,13 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 new CrowsFlightTransferGenerator(),
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
-            var pcs = new ProfiledConnectionScan<TransferStats>(latest,
-                (0, 0), (0, 1), new DateTime(2018, 12, 04, 16, 00, 00),
+            var pcs = new ProfiledConnectionScan<TransferStats>
+            (new ScanSettings<TransferStats>(
+                latest,
+                (0, 0), (0, 1),
+                new DateTime(2018, 12, 04, 16, 00, 00),
                 new DateTime(2018, 12, 04, 18, 00, 00),
-                profile);
+                profile));
             var journeys = pcs.CalculateJourneys();
             Assert.Single(journeys);
             foreach (var j in journeys)

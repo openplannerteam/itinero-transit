@@ -62,11 +62,11 @@ namespace Itinero.Transit.Algorithms.CSA
             _transferPolicy = settings.TransferPolicy;
             _walkPolicy = settings.WalkPolicy;
 
-            _userTargetLocations = settings.TargetLocation;
+            _userTargetLocations = settings.TargetStop;
 
-            foreach (var (loc, j) in settings.DepartureLocation)
+            foreach (var (loc, j) in settings.DepartureStop)
             {
-                var journey = j?.SetTag(Journey<T>.EarliestArrivalScanJourney)
+                var journey = j
                               ?? new Journey<T>(loc, settings.EarliestDeparture.ToUnixTime(), settings.StatsFactory);
                 
                 _s.Add(loc, journey);
@@ -317,7 +317,7 @@ namespace Itinero.Transit.Algorithms.CSA
                     continue;
                 }
 
-                // The journey to 'targetLoc' according to the algorithm
+                // The journey to 'targetLoc' according to the algorithm + the resting journey to 'go home'
                 var journey = _s[targetLoc].Append(restingJourney);
 
                 if (journey.Time > _lastArrival)

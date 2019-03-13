@@ -30,23 +30,45 @@ namespace Itinero.Transit.Algorithms.CSA
         /// A list of possible departure locations with possible departure journeys.
         /// Journeys should be in a forward order (genesis, then take...)
         /// </summary>
-        public List<((uint, uint), Journey<T>)> DepartureLocation { get; set; }
+        public List<((uint, uint), Journey<T>)> DepartureStop { get; set; }
         /// <summary>
         /// A list of possible arrival locations with possible arrival journeys
         /// Journeys should be in a backward order (..., then take to arrive at, genesis)
         /// </summary>
-        public List<((uint, uint), Journey<T>)> TargetLocation { get; set; }
+        public List<((uint, uint), Journey<T>)> TargetStop { get; set; }
+        /// <summary>
+        /// The statistics that are used in the journeys
+        /// </summary>
         public T StatsFactory { get; set; }
+        /// <summary>
+        /// How to compare the statistics
+        /// </summary>
         public ProfiledStatsComparator<T> Comparator { get; set; }
-        public IConnectionFilter Filter { get; set; }
+        /// <summary>
+        /// How long we should at least wait between two trains
+        /// </summary>
         public IOtherModeGenerator TransferPolicy { get; set; }
+        /// <summary>
+        /// How to walk from one stop to another, possibly between operators
+        /// </summary>
         public IOtherModeGenerator WalkPolicy { get; set; }
+        
+        /// <summary>
+        /// A class filtering out connections which are useless to check
+        /// </summary>
+        public IConnectionFilter Filter { get; set; }
+        
+        /// <summary>
+        /// An example journey in order to filter out sub-optimal journeys.
+        /// Optional
+        /// </summary>
+        public Journey<T> ExampleJourney { get; set; }
 
         public ScanSettings(TransitDb.TransitDbSnapShot transitDb, DateTime earliestDeparture, DateTime lastDeparture,
             T statsFactory, ProfiledStatsComparator<T> comparator, IOtherModeGenerator transferPolicy,
-            IOtherModeGenerator walkPolicy, (uint, uint) departureLocation, (uint, uint) targetLocation)
+            IOtherModeGenerator walkPolicy, (uint, uint) departureStop, (uint, uint) targetStop)
             : this(transitDb, earliestDeparture, lastDeparture, statsFactory, comparator, transferPolicy, walkPolicy,
-                new List<(uint, uint)> {departureLocation}, new List<(uint, uint)> {targetLocation})
+                new List<(uint, uint)> {departureStop}, new List<(uint, uint)> {targetStop})
         {
         }
 
@@ -71,9 +93,10 @@ namespace Itinero.Transit.Algorithms.CSA
         }
         
         
-        public ScanSettings(TransitDb.TransitDbSnapShot transitDb, DateTime earliestDeparture, DateTime lastDeparture,
+        public ScanSettings(TransitDb.TransitDbSnapShot transitDb, 
+            DateTime earliestDeparture, DateTime lastDeparture,
             T statsFactory, ProfiledStatsComparator<T> comparator, IOtherModeGenerator transferPolicy,
-            IOtherModeGenerator walkPolicy, List<((uint, uint), Journey<T>)> departureLocation, List<((uint, uint), Journey<T>)> targetLocation)
+            IOtherModeGenerator walkPolicy, List<((uint, uint), Journey<T>)> departureStop, List<((uint, uint), Journey<T>)> targetLocation)
         {
             TransitDb = transitDb;
             EarliestDeparture = earliestDeparture;
@@ -82,25 +105,42 @@ namespace Itinero.Transit.Algorithms.CSA
             Comparator = comparator;
             TransferPolicy = transferPolicy;
             WalkPolicy = walkPolicy;
-            DepartureLocation = departureLocation;
-            TargetLocation = targetLocation;
+            DepartureStop = departureStop;
+            TargetStop = targetLocation;
+        }
+
+        public ScanSettings(TransitDb.TransitDbSnapShot snapshot, (uint, uint) departureStop, (uint, uint) arrivalStop,
+            DateTime departureTime, DateTime arrivalTime, Profile<T> profile)
+        : this(
+            snapshot,
+            departureTime, arrivalTime, 
+            profile.StatsFactory, profile.ProfileComparator, 
+            profile.InternalTransferGenerator, profile.WalksGenerator, 
+            departureStop, arrivalStop )
+        {
         }
 
         public void SanityCheck()
         {
+            if (EarliestDeparture == DateTime.MinValue && LastArrival == DateTime.MinValue)
+            {
+                throw new ArgumentException("Both Earliest Departure time and Latest Arrival time are missing or MIN_VALUE. At least one should be given");
+            }
+            
             if (EarliestDeparture >= LastArrival)
             {
                 throw new ArgumentException("The specified departure time is after the arrival time");
             }
 
-            if (DepartureLocation.Count == 0 && TargetLocation.Count == 0)
+            if (DepartureStop.Count == 0 && TargetStop.Count == 0)
             {
                 throw new Exception("No departure nor arrival locations givens");
             }
 
-            foreach (var dep in DepartureLocation)
+
+            foreach (var dep in DepartureStop)
             {
-                foreach (var target in TargetLocation)
+                foreach (var target in TargetStop)
                 {
                     if (!dep.Equals(target)) continue;
                     

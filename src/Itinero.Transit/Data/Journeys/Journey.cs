@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using Itinero.Transit.Data;
 
 // ReSharper disable BuiltInTypeReferenceStyle
@@ -145,7 +144,8 @@ namespace Itinero.Transit.Journeys
         }
 
         /// <summary>
-        /// All-exposing constructor. I like the 'readonly' aspect of code.
+        /// All-exposing private constructor. All values are read-only
+        /// 
         /// Note that Stats will not be saved, but be used as constructor with 'stats.add(this)' is
         /// </summary>
         /// <param name="root"></param>
@@ -321,6 +321,37 @@ namespace Itinero.Transit.Journeys
             return Time;
         }
 
+
+        /// <summary>
+        /// Given a journey and a reversed journey, append the reversed journey to the journey
+        /// </summary>
+        public Journey<T> Append(Journey<T> restingJourney)
+        {
+            var j = this;
+            while (restingJourney != null &&
+                   (!restingJourney.SpecialConnection || restingJourney.Connection != GENESIS))
+            {
+                // Resting journey is backwards - so restingJourney is departure, restingJourney.PreviousLink the arrival time
+                var timeDiff =
+                    (long) restingJourney.Time -
+                    (long) restingJourney.PreviousLink.Time; // Cast to long to allow negative values
+                j = new Journey<T>(
+                    j.Root,
+                    j,
+                    restingJourney.SpecialConnection,
+                    restingJourney.Connection,
+                    restingJourney.PreviousLink.Location,
+                    j.Time + (ulong) timeDiff,
+                    restingJourney.TripId,
+                    j.Stats
+                );
+                restingJourney = restingJourney.PreviousLink;
+            }
+
+            return j;
+        }
+
+
         public override string ToString()
         {
             return ToString((StopsDb.StopsDbReader) null);
@@ -337,7 +368,7 @@ namespace Itinero.Transit.Journeys
             {
                 return "... More connections omitted, journey maxDepth has been reached ...";
             }
-            
+
             var previous = "";
             if (PreviousLink != null && !ReferenceEquals(PreviousLink, this))
             {
@@ -388,7 +419,7 @@ namespace Itinero.Transit.Journeys
                         $"Genesis at {location}, time is {Time.FromUnixTime():HH:mm}{freeForm}";
                 case WALK:
                     return
-                        $"Walk to {location} in {Time - PreviousLink.Time} till {Time.FromUnixTime():HH:mm} seconds";
+                        $"Walk to {location} in {(long) Time - (long) PreviousLink.Time} seconds till it is {Time.FromUnixTime():HH:mm:ss}";
                 case TRANSFER:
                     return
                         $"Transfer/Wait for {Time - PreviousLink.Time} seconds till {Time.FromUnixTime():HH:mm} in {location}";

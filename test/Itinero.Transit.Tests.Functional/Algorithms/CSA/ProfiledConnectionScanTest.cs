@@ -25,16 +25,11 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
 
 
-            // get departure and arrival stop ids.
-            var reader = latest.StopsDb.GetReader();
-            True(reader.MoveTo(input.departureStopId));
-            var departure = reader.Id;
-            True(reader.MoveTo(input.arrivalStopId));
-            var arrival = reader.Id;
-
-            var journeys = latest.CalculateJourneys(p,
-                departure, arrival, input.departureTime.ToUnixTime(), input.arrivalTime.ToUnixTime()
-            );
+            var journeys = latest.CalculateJourneys(
+                p,
+                input.departureStopId, input.arrivalStopId,
+                input.departureTime, input.arrivalTime
+                );
             // verify result.
             NotNull(journeys);
             True(journeys.Any());

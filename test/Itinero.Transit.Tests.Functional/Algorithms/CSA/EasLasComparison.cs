@@ -12,13 +12,12 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
     /// </summary>
     public class EasLasComparison : DefaultFunctionalTest
     {
-        public static EasLasComparison Default = new EasLasComparison();
+        public static readonly EasLasComparison Default = new EasLasComparison();
 
         protected override bool Execute(
             (TransitDb transitDb, string departureStopId, string arrivalStopId, DateTime
                 departureTime, DateTime arrivalTime) input)
         {
-            var tbd = input.transitDb;
             var latest = input.transitDb.Latest;
             var profile = new Profile<TransferStats>(new InternalTransferGenerator(1),
                 new CrowsFlightTransferGenerator(),
@@ -31,14 +30,19 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             True(reader.MoveTo(input.arrivalStopId));
             var arrival = reader.Id;
 
-            var eas = new EarliestConnectionScan<TransferStats>(latest, 
-                departure, arrival, input.departureTime, input.arrivalTime, profile);
+            var eas = new EarliestConnectionScan<TransferStats>(
+                new ScanSettings<TransferStats>(
+                    latest,
+                    departure, arrival,
+                    input.departureTime,
+                    input.arrivalTime,
+                    profile));
 
             var easJ = eas.CalculateJourney();
 
-            var las = new LatestConnectionScan<TransferStats>(latest, 
-                departure, arrival, input.departureTime.ToUnixTime(),
-                easJ.ArrivalTime(), profile.StatsFactory, profile.InternalTransferGenerator);
+            var las = new LatestConnectionScan<TransferStats>(new ScanSettings<TransferStats>(latest,
+                departure, arrival, input.departureTime,
+                easJ.ArrivalTime().FromUnixTime(), profile));
 
             var lasJ = las.CalculateJourney();
 

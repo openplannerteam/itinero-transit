@@ -30,11 +30,15 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             True(reader.MoveTo(input.arrivalStopId));
             var arrival = reader.Id;
 
+            
+            var settings = new ScanSettings<TransferStats>(
+                latest, depTime
+                , depTime.AddHours(24), p.StatsFactory, p.ProfileComparator,
+                p.InternalTransferGenerator, p.WalksGenerator,
+                departure, arrival
+                );
             // instantiate and run EAS.
-            var eas = new EarliestConnectionScan<TransferStats>(
-                latest,
-                departure, arrival,
-                depTime, depTime.AddHours(24), p);
+            var eas = new EarliestConnectionScan<TransferStats>(settings);
             var journey = eas.CalculateJourney();
 
             if (journey == null)
@@ -45,7 +49,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             // verify result.
             NotNull(journey);
 
-            Information(journey.ToString(latest.StopsDb));
+            if (journey != null) Information(journey.ToString(latest.StopsDb));
 
             return true;
         }

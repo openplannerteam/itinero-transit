@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
@@ -24,7 +25,8 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly TransitDb.TransitDbSnapShot _tdb;
         private readonly ConnectionsDb _connectionsProvider;
         private readonly UnixTime _earliestDeparture, _lastArrival;
-        private readonly (uint, uint) _departureLocation, _targetLocation;
+        private readonly List<(uint, uint)> _departureLocations;
+        private readonly List<(uint, uint)> _targetLocations;
 
         private readonly ProfiledStatsComparator<T> _comparator;
 
@@ -96,55 +98,49 @@ namespace Itinero.Transit.Algorithms.CSA
             new Dictionary<ulong, ParetoFrontier<T>>();
 
 
-        public ProfiledConnectionScan(TransitDb.TransitDbSnapShot snapshot,
-            (uint, uint) departureStop,
-            (uint, uint) arrivalStop,
-            DateTime earliestDeparture, DateTime lastArrival,
-            Profile<T> profile,
-            IConnectionFilter filter = null) :
-            this(snapshot, departureStop, arrivalStop, earliestDeparture.ToUnixTime(), lastArrival.ToUnixTime(),
-                profile, filter)
-        {
-        }
-
         ///  <summary>
         ///  Create a new ProfiledConnectionScan algorithm.
         ///  </summary>
-        public ProfiledConnectionScan(TransitDb.TransitDbSnapShot snapshot,
-            (uint, uint) departureStop,
-            (uint, uint) arrivalStop,
-            UnixTime earliestDeparture, UnixTime lastDeparture,
-            Profile<T> profile,
-            IConnectionFilter filter = null,
-            Journey<T> possibleJourney = null)
+        public ProfiledConnectionScan(ScanSettings<T> settings)
         {
-            if (Equals(departureStop, arrivalStop))
+            settings.SanityCheck();
+
+            _tdb = settings.TransitDb;
+            _targetLocations = new List<(uint, uint)>();
+            foreach (var (target, journey) in settings.TargetStop)
             {
-                throw new ArgumentException("Target and destination are the same");
+                if (journey != null)
+                {
+                    throw new ArgumentException("PCS does not support target location journeys.");
+                }
+
+                _targetLocations.Add(target);
             }
 
-            if (earliestDeparture >= lastDeparture)
+            _departureLocations = new List<(uint, uint)>();
+            foreach (var (target, journey) in settings.DepartureStop)
             {
-                throw new ArgumentException(
-                    "Departure time falls after arrival time. Do you intend to travel backwards in time? If so, lend me that time machine!");
+                if (journey != null)
+                {
+                    throw new ArgumentException("PCS does not support departure location journeys.");
+                }
+
+                _departureLocations.Add(target);
             }
 
-            _tdb = snapshot;
-            _departureLocation = departureStop;
-            _targetLocation = arrivalStop;
 
-            _earliestDeparture = earliestDeparture;
-            _lastArrival = lastDeparture;
+            _earliestDeparture = settings.EarliestDeparture.ToUnixTime();
+            _lastArrival = settings.LastArrival.ToUnixTime();
 
-            _connectionsProvider = snapshot.ConnectionsDb;
+            _connectionsProvider = _tdb.ConnectionsDb;
 
-            _comparator = profile.ProfileComparator;
+            _comparator = settings.Comparator;
             _empty = new ParetoFrontier<T>(_comparator);
-            _statsFactory = profile.StatsFactory;
-            _transferPolicy = profile.InternalTransferGenerator;
-            _possibleJourney = possibleJourney;
-            _filter = filter;
-            filter?.CheckWindow(_earliestDeparture, _lastArrival);
+            _statsFactory = settings.StatsFactory;
+            _transferPolicy = settings.TransferPolicy;
+            _possibleJourney = settings.ExampleJourney;
+            _filter = settings.Filter;
+            _filter?.CheckWindow(_earliestDeparture, _lastArrival);
         }
 
 
@@ -157,25 +153,36 @@ namespace Itinero.Transit.Algorithms.CSA
 
             while (enumerator.DepartureTime >= _earliestDeparture)
             {
-                IntegrateBatch(enumerator);
+                if (!IntegrateBatch(enumerator))
+                {
+                    // Database depleted
+                    break;
+                }
             }
 
-            // We have scanned all connections in the given timeframe
-            // Time to extract the wanted journeys
-            if (!_stationJourneys.ContainsKey(_departureLocation))
+            // Add all journeys from every possible departure location
+            var revJourneys = new List<Journey<T>>();
+            foreach (var location in _departureLocations)
             {
+                var journeys = _stationJourneys[location].Frontier;
+
+                foreach (var j in journeys)
+                {
+                    j.ReverseAndAddTo(revJourneys); // Reverse, add to revJourneys
+                }
+            }
+
+            if (!revJourneys.Any())
+            {
+                // Nothing found
                 return null;
             }
 
-            var journeys = _stationJourneys[_departureLocation].Frontier;
-            var revJourneys = new List<Journey<T>>();
-            foreach (var j in journeys)
-            {
-                j.Reversed(revJourneys);
-            }
 
-            revJourneys.Reverse();
-            return revJourneys;
+            // Sort journeys by absolute departure time
+            var sorted = revJourneys.OrderBy(journey => journey.Root.Time).ToList();
+
+            return sorted;
         }
 
 
@@ -183,7 +190,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// Integrates all connections of the enumerator where the departure time is the current departure time
         /// </summary>
         /// <param name="enumerator"></param>
-        private void IntegrateBatch(ConnectionsDb.DepartureEnumerator enumerator)
+        private bool IntegrateBatch(ConnectionsDb.DepartureEnumerator enumerator)
         {
             var depTime = enumerator.DepartureTime;
             do
@@ -191,9 +198,11 @@ namespace Itinero.Transit.Algorithms.CSA
                 IntegrateConnection(enumerator);
                 if (!enumerator.MovePrevious())
                 {
-                    throw new Exception("Enumerator depleted");
+                    return false;
                 }
             } while (depTime == enumerator.DepartureTime);
+
+            return true;
         }
 
 
@@ -203,12 +212,12 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <param name="c"></param>
         private void IntegrateConnection(IConnection c)
         {
-            if (c.DepartureStop == _targetLocation)
+            if (_targetLocations.Contains(c.DepartureStop))
             {
                 return;
             }
 
-            if (c.ArrivalStop == _departureLocation)
+            if (_departureLocations.Contains(c.ArrivalStop))
             {
                 return;
             }
@@ -251,9 +260,7 @@ namespace Itinero.Transit.Algorithms.CSA
              */
             _tripJourneys[c.TripId] = journeys;
 
-            /*
-             * And ofc, we have a pretty good way out from the departure stop as well
-             */
+            // And ofc, we have a pretty good way out from the departure stop as well
             if (!_stationJourneys.ContainsKey(c.DepartureStop))
             {
                 _stationJourneys[c.DepartureStop] = new ParetoFrontier<T>(_comparator);
@@ -277,16 +284,19 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <returns></returns>
         private Journey<T> WalkToTargetFrom(IConnection c)
         {
-            // ReSharper disable once InvertIf
-            if (Equals(c.ArrivalStop, _targetLocation))
+            foreach (var targetLocation in _targetLocations)
             {
-                // We are at our target location
-                // No real need to walk
-                var arrivingJourney = new Journey<T>
-                (_targetLocation, c.ArrivalTime, _statsFactory.EmptyStat(),
-                    Journey<T>.ProfiledScanJourney);
-                var journey = arrivingJourney.ChainBackward(c);
-                return journey;
+                // ReSharper disable once InvertIf
+                if (Equals(c.ArrivalStop, targetLocation))
+                {
+                    // We are at a possible target location
+                    // No real need to walk
+                    var arrivingJourney = new Journey<T>
+                    (targetLocation, c.ArrivalTime, _statsFactory.EmptyStat(),
+                        Journey<T>.ProfiledScanJourney);
+                    var journey = arrivingJourney.ChainBackward(c);
+                    return journey;
+                }
             }
 
 
@@ -310,20 +320,6 @@ namespace Itinero.Transit.Algorithms.CSA
             var frontier = pareto.Frontier;
             for (var i = 0; i < frontier.Count; i++)
             {
-                if (!(frontier[i].Time >= c.ArrivalTime))
-                {
-                    /*  Log.Warning(
-                           $"This trip is nonlinear! TripId: {c.TripId}; the current connection {c.Id} arrives at {c.ArrivalTime} " +
-                           $"whereas the rest of the trip starts at {frontier[i].Time}");
-                           */
-                }
-
-                if (!(frontier[i].Location == c.ArrivalStop))
-                {
-                    /*Log.Warning($"This trip is loops! TripId: {c.TripId}; the current connection {c.Id} arrives at {c.ArrivalTime} " +
-                     $"whereas the rest of the trip starts at {frontier[i].Time}");*/
-                }
-
                 var newFrontier = frontier[i].ChainBackward(c);
                 if (FilterJourney(newFrontier))
                 {
@@ -361,7 +357,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
 
         /// <summary>
-        /// When a departure stop can be reached by a new journey, each closeby stop can be reached via walking too
+        /// When a departure stop can be reached by a new journey, each close by stop can be reached via walking too
         /// This method creates all those footpaths and transfers 
         /// </summary>
         /// <param name="journeys"></param>
@@ -372,7 +368,7 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
-        public ParetoFrontier<T> PickBestJourneys(Journey<T> j, ParetoFrontier<T> a, ParetoFrontier<T> b)
+        private ParetoFrontier<T> PickBestJourneys(Journey<T> j, ParetoFrontier<T> a, ParetoFrontier<T> b)
         {
             if (a.Frontier.Count == 0 && b.Frontier.Count == 0)
             {
@@ -403,32 +399,11 @@ namespace Itinero.Transit.Algorithms.CSA
         /// Returns false if no need to add the journey
         /// </summary>
         /// <returns></returns>
-        public bool FilterJourney(Journey<T> j)
+        private bool FilterJourney(Journey<T> j)
         {
-            //*
-            if (_possibleJourney != null)
-            {
-                var duel = _comparator.ADominatesB(_possibleJourney, j);
-                if (duel < 0)
-                {
-                    return false;
-                }
-            }
-
-            /*/
-         
-
-         if (_stationJourneys.ContainsKey(_departureLocation))
-         {
-             var frontier = _stationJourneys[_departureLocation];
-             if (_comparator.ADominatesB(frontier.Frontier[0], j) < 0)
-             {
-                 return false;
-             }
-         }
-
-//*/
-            return true;
+            if (_possibleJourney == null) return true;
+            var duel = _comparator.ADominatesB(_possibleJourney, j);
+            return duel >= 0;
         }
     }
 }

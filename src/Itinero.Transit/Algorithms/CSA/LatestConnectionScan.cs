@@ -55,12 +55,13 @@ namespace Itinero.Transit.Algorithms.CSA
             ScanEndTime = settings.LastArrival.ToUnixTime();
             _connectionsProvider = _tdb.ConnectionsDb;
             _transferPolicy = settings.TransferPolicy;
-            _userDepartureLocation = settings.DepartureLocation;
-            foreach (var (loc, j) in settings.TargetLocation)
+            _userDepartureLocation = settings.DepartureStop;
+            foreach (var (loc, j) in settings.TargetStop)
             {
 
                 var journey = j?.SetTag(Journey<T>.LatestArrivalScanJourney)
-                              ?? new Journey<T>(loc, settings.LastArrival.ToUnixTime(), settings.StatsFactory,
+                              ?? new Journey<T>(loc, settings.LastArrival.ToUnixTime(), 
+                                  settings.StatsFactory,
                                   Journey<T>.LatestArrivalScanJourney);
                 _s.Add(loc,journey);
             }
@@ -124,7 +125,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 return null;
             }
 
-
+            bestJourney = bestJourney.Reversed()[0];
             if (depArrivalToTimeout == null)
             {
                 ScanBeginTime = bestJourney.Root.Time;
