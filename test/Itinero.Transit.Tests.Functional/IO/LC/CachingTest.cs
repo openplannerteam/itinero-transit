@@ -12,17 +12,20 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
             var cons = new ConnectionProvider(new Uri(Belgium.SNCB_Connections),
                 Belgium.SNCB_Connections + "{?departureTime}");
 
+            var (tt, _) =
+                cons.GetTimeTable(
+                    new Uri("https://graph.irail.be/sncb/connections"));
+
+
+            var uri = tt.Uri;
+
+
             var (_, changed) =
                 cons.GetTimeTable(
-                    new Uri("https://graph.irail.be/sncb/connections?departureTime=2019-03-12T15:49:00.000Z"));
-
-            True(changed);
-
-
+                    uri);
             (_, changed) =
                 cons.GetTimeTable(
-                    new Uri("https://graph.irail.be/sncb/connections?departureTime=2019-03-12T15:49:00.000Z"));
-
+                    uri);
             True(!changed);
             return input;
         }
