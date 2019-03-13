@@ -11,6 +11,8 @@ namespace Itinero.Transit.Algorithms.CSA
     /// </summary>
     public class ScanSettings<T> where T : IJourneyStats<T>
     {
+        private IConnectionFilter _filter;
+
         /// <summary>
         /// The snapshot on which the algorithms should be run
         /// </summary>
@@ -52,12 +54,20 @@ namespace Itinero.Transit.Algorithms.CSA
         /// How to walk from one stop to another, possibly between operators
         /// </summary>
         public IOtherModeGenerator WalkPolicy { get; set; }
-        
+
         /// <summary>
         /// A class filtering out connections which are useless to check
         /// </summary>
-        public IConnectionFilter Filter { get; set; }
-        
+        public IConnectionFilter Filter
+        {
+            get => _filter;
+            set
+            {
+                value.CheckWindow(EarliestDeparture.ToUnixTime(), LastArrival.ToUnixTime());
+                _filter = value;
+            }
+        }
+
         /// <summary>
         /// An example journey in order to filter out sub-optimal journeys.
         /// Optional

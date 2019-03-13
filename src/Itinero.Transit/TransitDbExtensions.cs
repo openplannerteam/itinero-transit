@@ -238,7 +238,8 @@ namespace Itinero.Transit
 
                 // We run an Eas too, to give optimization data to PCS later on
                 var eas = new EarliestConnectionScan<T>(settings);
-                var easJourney = eas.CalculateJourney();
+                var easJourney = eas.CalculateJourney(
+                    (dep, arr) => settings.LastArrival.ToUnixTime());
 
                 settings.EarliestDeparture = easJourney.Root.DepartureTime().FromUnixTime();
 
@@ -267,7 +268,8 @@ namespace Itinero.Transit
                 // Both start and end times are given
                 // We still run an EAS to optimize PCS afterwards
                 var eas = new EarliestConnectionScan<T>(settings);
-                var easJourney = eas.CalculateJourney();
+                var easJourney = eas.CalculateJourney(
+                    ((dep, arr) => settings.LastArrival.ToUnixTime()));
 
                 settings.EarliestDeparture = easJourney.Root.DepartureTime().FromUnixTime();
 
