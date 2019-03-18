@@ -264,10 +264,18 @@ namespace Itinero.Transit.Algorithms.CSA
              We have handled this connection and have a few journeys containing C
              This means we can update the various tables for the rest of the algo.
              
-             The first one is the trip table, when we come across the predecessor of this Connection, 
-             it'll know wat to do best
+             The first to update is the trip table, where we add the best option.
+             Again, we don't check whether we can get on or off
              */
             _tripJourneys[c.TripId] = journeys;
+            
+            
+            // Now, we update the journeys from the departure station to the arrival station
+            // However, we can only do this if we _can get on_ the connection
+            if (!c.CanGetOn())
+            {
+                return;
+            }
 
             // And ofc, we have a pretty good way out from the departure stop as well
             if (!_stationJourneys.ContainsKey(c.DepartureStop))
@@ -293,6 +301,13 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <returns></returns>
         private Journey<T> WalkToTargetFrom(IConnection c)
         {
+
+            if (!c.CanGetOff())
+            {
+                // We can't get off c and thus can't walk to the destination
+                return Journey<T>.InfiniteJourney;
+            }
+            
             foreach (var targetLocation in _targetLocations)
             {
                 // ReSharper disable once InvertIf
@@ -324,6 +339,8 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 return _empty;
             }
+            
+            // If we already are on the trip, we can stay seated. We don't have to check if we can get on or off
 
             var pareto = _tripJourneys[key];
             var frontier = pareto.Frontier;
@@ -358,6 +375,12 @@ namespace Itinero.Transit.Algorithms.CSA
                 return _empty;
             }
 
+            if (!c.CanGetOff())
+            {
+                // No! We can not get out of this connection;
+                return _empty;
+            }
+            
             // We get all possible, pareto optimal journeys departing here...
             var pareto = _stationJourneys[c.ArrivalStop];
             // .. and we extend them with c. What is non-dominated, we return
