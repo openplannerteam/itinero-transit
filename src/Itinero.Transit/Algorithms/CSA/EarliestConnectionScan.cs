@@ -268,10 +268,8 @@ namespace Itinero.Transit.Algorithms.CSA
                 return false;
             }
 
-            if (c.CanGetOff())
-            {
-                _s[c.ArrivalStop] = journeyToArrival;
-            }
+            if (!c.CanGetOff()) return false;
+            _s[c.ArrivalStop] = journeyToArrival;
 
             return true;
         }

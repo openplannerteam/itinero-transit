@@ -30,13 +30,14 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             True(reader.MoveTo(input.arrivalStopId));
             var arrival = reader.Id;
 
-            var eas = new EarliestConnectionScan<TransferStats>(
-                new ScanSettings<TransferStats>(
-                    latest,
-                    departure, arrival,
-                    input.departureTime,
-                    input.arrivalTime,
-                    profile));
+            var settings = new ScanSettings<TransferStats>(
+                latest,
+                departure, arrival,
+                input.departureTime-TimeSpan.FromMinutes(1),
+                input.arrivalTime+TimeSpan.FromMinutes(1),
+                profile);
+            
+            var eas = new EarliestConnectionScan<TransferStats>(settings);
 
             var easJ = eas.CalculateJourney();
 
@@ -46,8 +47,11 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 
             var lasJ = las.CalculateJourney();
 
+            NotNull(easJ);
             Information(easJ.Pruned().ToString(latest.StopsDb));
+            NotNull(lasJ);
             Information(lasJ.Pruned().ToString(latest.StopsDb));
+            
 
             // Eas is bound by the first departing train, while las is not
             True(easJ.Root.DepartureTime() <= lasJ.Root.DepartureTime());

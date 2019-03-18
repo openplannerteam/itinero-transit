@@ -211,7 +211,7 @@ namespace Itinero.Transit.Algorithms.CSA
                         ?.ChainBackward(c);
                 }
 
-                if (journeyFromDeparture != null && c.CanGetOn())
+                if (journeyFromDeparture != null && c.CanGetOff())
                 {
                     _trips[trip] = journeyFromDeparture;
                 }
@@ -223,9 +223,9 @@ namespace Itinero.Transit.Algorithms.CSA
             }
 
             // Below this point, we only add it to the journey table...
-            // If we can get off at the arrivalStop that is
+            // If we can get on at the arrivalStop that is
 
-            if (!c.CanGetOff())
+            if (!c.CanGetOn())
             {
                 return;
             }
@@ -233,16 +233,15 @@ namespace Itinero.Transit.Algorithms.CSA
             if (!_s.ContainsKey(c.DepartureStop))
             {
                 _s[c.DepartureStop] = journeyFromDeparture;
+                return;
             }
-            else
-            {
-                var oldJourney = _s[c.DepartureStop];
 
-                if (journeyFromDeparture.Time > oldJourney.Time)
-                {
-                    _s[c.DepartureStop] = journeyFromDeparture;
-                }
-            }
+            var oldJourney = _s[c.DepartureStop];
+
+            if (journeyFromDeparture.Time <= oldJourney.Time) return;
+
+            if (!c.CanGetOn()) return;
+            _s[c.DepartureStop] = journeyFromDeparture;
         }
 
         /// <summary>
