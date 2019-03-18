@@ -68,7 +68,7 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 var journey = j
                               ?? new Journey<T>(loc, settings.EarliestDeparture.ToUnixTime(), settings.StatsFactory);
-                
+
                 _s.Add(loc, journey);
             }
         }
@@ -214,8 +214,8 @@ namespace Itinero.Transit.Algorithms.CSA
             }
 
 
-            Journey<T> journeyToArrival;
-            // Extend trip journey
+            Journey<T> journeyToArrival = null;
+            // Extend trip journey: if we already are on the trip we can always stay seated on it
             if (_trips.ContainsKey(trip))
             {
                 _trips[trip] = _trips[trip].ChainForward(c);
@@ -235,13 +235,23 @@ namespace Itinero.Transit.Algorithms.CSA
                             ?.ChainForward(c);
                 }
 
-                if (journeyToArrival != null)
+                if (journeyToArrival != null && c.CanGetOn())
                 {
+                    // If we can get on the connection, we keep track of the trip
+                    // We don't necessarily have to get off at c.ArrivalStop, so we don't have to check 'canGetOff'
                     _trips[trip] = journeyToArrival;
                 }
             }
 
             if (journeyToArrival == null)
+            {
+                return false;
+            }
+
+
+            // Update the possible journeys index
+            // But for that, we should be able to get of at the arrival stop!
+            if (!c.CanGetOff())
             {
                 return false;
             }
@@ -258,7 +268,11 @@ namespace Itinero.Transit.Algorithms.CSA
                 return false;
             }
 
-            _s[c.ArrivalStop] = journeyToArrival;
+            if (c.CanGetOff())
+            {
+                _s[c.ArrivalStop] = journeyToArrival;
+            }
+
             return true;
         }
 
@@ -324,7 +338,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 {
                     // We skip this connection: it arrives too late
                     // Either we hope another connection does arrive in time
-                    
+
                     // Note that EAS is monotone: if a good solution is found, we won't search further
                     continue;
                 }

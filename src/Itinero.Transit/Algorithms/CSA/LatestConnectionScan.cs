@@ -13,7 +13,7 @@ namespace Itinero.Transit.Algorithms.CSA
     /// Calculates the fastest journey from A to B arriving at a given time; using CSA (backward A*).
     /// It does _not_ use footpath interlinks (yet)
     /// </summary>
-    internal class LatestConnectionScan<T> 
+    internal class LatestConnectionScan<T>
         where T : IJourneyStats<T>
     {
         private readonly List<((uint localTileId, uint localId), Journey<T>)> _userDepartureLocation;
@@ -30,8 +30,8 @@ namespace Itinero.Transit.Algorithms.CSA
         public ulong ScanEndTime { get; }
 
         public IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> Isochrone() => _s;
-        
-        
+
+
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as late as possible
         /// </summary>
@@ -45,8 +45,6 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly Dictionary<uint, Journey<T>> _trips = new Dictionary<uint, Journey<T>>();
 
 
-      
-
         public LatestConnectionScan(ScanSettings<T> settings)
         {
             settings.SanityCheck();
@@ -58,12 +56,11 @@ namespace Itinero.Transit.Algorithms.CSA
             _userDepartureLocation = settings.DepartureStop;
             foreach (var (loc, j) in settings.TargetStop)
             {
-
                 var journey = j?.SetTag(Journey<T>.LatestArrivalScanJourney)
-                              ?? new Journey<T>(loc, settings.LastArrival.ToUnixTime(), 
+                              ?? new Journey<T>(loc, settings.LastArrival.ToUnixTime(),
                                   settings.StatsFactory,
                                   Journey<T>.LatestArrivalScanJourney);
-                _s.Add(loc,journey);
+                _s.Add(loc, journey);
             }
         }
 
@@ -214,26 +211,36 @@ namespace Itinero.Transit.Algorithms.CSA
                         ?.ChainBackward(c);
                 }
 
-                if (journeyFromDeparture != null)
+                if (journeyFromDeparture != null && c.CanGetOn())
                 {
                     _trips[trip] = journeyFromDeparture;
                 }
             }
 
-            if (journeyFromDeparture != null)
+            if (journeyFromDeparture == null)
             {
-                if (!_s.ContainsKey(c.DepartureStop))
+                return;
+            }
+
+            // Below this point, we only add it to the journey table...
+            // If we can get off at the arrivalStop that is
+
+            if (!c.CanGetOff())
+            {
+                return;
+            }
+
+            if (!_s.ContainsKey(c.DepartureStop))
+            {
+                _s[c.DepartureStop] = journeyFromDeparture;
+            }
+            else
+            {
+                var oldJourney = _s[c.DepartureStop];
+
+                if (journeyFromDeparture.Time > oldJourney.Time)
                 {
                     _s[c.DepartureStop] = journeyFromDeparture;
-                }
-                else
-                {
-                    var oldJourney = _s[c.DepartureStop];
-
-                    if (journeyFromDeparture.Time > oldJourney.Time)
-                    {
-                        _s[c.DepartureStop] = journeyFromDeparture;
-                    }
                 }
             }
         }
@@ -279,7 +286,5 @@ namespace Itinero.Transit.Algorithms.CSA
                 ? _s[location]
                 : Journey<T>.NegativeInfiniteJourney;
         }
-
-     
     }
 }

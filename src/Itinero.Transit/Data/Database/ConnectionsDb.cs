@@ -175,19 +175,20 @@ namespace Itinero.Transit.Data
             {
                 // The connection is not yet added
                 // We add the connection fresh
-                return Add(stop1, stop2, globalId, departureTime, travelTime, departureDelay, arrivalDelay, tripId, mode);
+                return Add(stop1, stop2, globalId, departureTime, travelTime, departureDelay, arrivalDelay, tripId,
+                    mode);
             }
 
             // get all current data from reader.
             var currentTripId = reader.TripId;
-            
+
             var currentDepartureTime = (uint) reader.DepartureTime;
             var currentArrivalTime = (uint) reader.ArrivalTime;
             var currentDepartureStop = reader.DepartureStop;
             var currentArrivalStop = reader.ArrivalStop;
             var currentDepartureDelay = reader.DepartureDelay;
             var currentArrivalDelay = reader.ArrivalDelay;
-            
+
             var internalId = reader.Id;
             reader = null; // don't use the reader, we will start modifying the data from this point on.
 
@@ -208,9 +209,8 @@ namespace Itinero.Transit.Data
                 // The important variables have stayed the same - no update needed
                 return internalId;
             }
-            
-            
-            
+
+
             // something changed - probably departure time due to delays. #SNCB
             // update the connection data.
             SetConnection(internalId, stop1, stop2, departureSeconds, travelTime, departureDelay, arrivalDelay, mode);
@@ -384,7 +384,7 @@ namespace Itinero.Transit.Data
             }
 
             offset += 2;
-            bytes = BitConverter.GetBytes(arrivalDelay);
+            bytes = BitConverter.GetBytes(mode);
             for (var b = 0; b < 2; b++)
             {
                 _data[dataPointer + offset + b] = bytes[b];
@@ -392,8 +392,10 @@ namespace Itinero.Transit.Data
 
             offset += 2;
 
-
-
+            if (offset != ConnectionSizeInBytes)
+            {
+                throw new ArgumentException($"Only wrote {offset} bytes while {ConnectionSizeInBytes} expected");
+            }
         }
 
         private ((uint localTileId, uint localId) departureLocation,
@@ -424,7 +426,7 @@ namespace Itinero.Transit.Data
             if (stop1.Item1 == uint.MaxValue &&
                 stop1.Item1 == uint.MaxValue)
             {
-                return ((uint.MaxValue, uint.MaxValue), (uint.MaxValue, uint.MaxValue), 
+                return ((uint.MaxValue, uint.MaxValue), (uint.MaxValue, uint.MaxValue),
                     uint.MaxValue, ushort.MaxValue,
                     ushort.MaxValue, ushort.MaxValue, ushort.MaxValue);
             }

@@ -50,6 +50,41 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             Assert.Equal(j.Location, ((uint) 0, (uint) 2));
             Assert.Equal((uint) 1, j.Connection);
         }
+        
+        
+        [Fact]
+        public void LatestConnectionScan_ShouldFindNoConnectionJourney()
+        {
+            // build a one-connection db.
+            var transitDb = new TransitDb();
+            var writer = transitDb.GetWriter();
+
+            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
+            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
+
+            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 16, 20, 00), 10 * 60, 0, 0, 0, 3); // MODE 3 - cant get on or off
+
+            // Prevent depletion of the DB
+            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
+                new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 0, 0, 0, 3);
+            writer.Close();
+            var latest = transitDb.Latest;
+
+            var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
+                new CrowsFlightTransferGenerator(),
+                TransferStats.Factory,
+                TransferStats.ProfileTransferCompare);
+            var las = new LatestConnectionScan<TransferStats>(
+                new ScanSettings<TransferStats>(latest,
+                    stop1, stop2,
+                    new DateTime(2018, 12, 04, 16, 00, 00),
+                    new DateTime(2018, 12, 04, 19, 00, 00),
+                    profile));
+            var journey = las.CalculateJourney();
+
+            Assert.Null(journey);
+        }
 
         [Fact]
         public void LatestConnectionScan_ShouldFindOneConnectionJourney()
