@@ -59,21 +59,21 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             writer.AddOrUpdateConnection((0, 0), (0, 1),
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 00, 00),
-                30 * 60, 0,0, 0);
+                30 * 60, 0,0, 0, 0);
 
 
             writer.AddOrUpdateConnection((0, 0), (0, 1),
                 "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 16, 00, 00),
-                40 * 60, 0,0, 1);
+                40 * 60, 0,0, 1, 0);
 
             writer.AddOrUpdateConnection((1, 1), (2, 2), "https//example.com/connections/2",
                 new DateTime(2018, 12, 04, 20, 00, 00),
-                40 * 60, 0,0, 2);
+                40 * 60, 0,0, 2, 0);
 
             writer.AddOrUpdateConnection((1, 1), (2, 2), "https//example.com/connections/4",
                 new DateTime(2018, 12, 04, 2, 00, 00),
-                40 * 60, 0,0, 3);
+                40 * 60, 0,0, 3, 0);
 
             writer.Close();
 

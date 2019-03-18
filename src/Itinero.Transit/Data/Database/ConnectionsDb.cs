@@ -49,7 +49,7 @@ namespace Itinero.Transit.Data
         private readonly ArrayBase<byte> _data; // the connection data.
 
         // this stores the connections global id index.
-        private const int GlobalIdHashSize = ushort.MaxValue;
+        private const int _globalIdHashSize = ushort.MaxValue;
         private readonly ArrayBase<uint> _globalIdPointersPerHash;
 
         // ReSharper disable once RedundantDefaultMemberInitializer
@@ -78,7 +78,7 @@ namespace Itinero.Transit.Data
 
         private const uint NoData = uint.MaxValue;
         private readonly long _windowSizeInSeconds; // one window per minute by default
-        private const int ConnectionSizeInBytes = 8 + 8 + 4 + 2 + 2 + 2;
+        private const int ConnectionSizeInBytes = 8 + 8 + 4 + 2 + 2 + 2 + 2;
 
         private uint _earliestDate = uint.MaxValue;
         private uint _latestDate = uint.MinValue;
@@ -100,7 +100,7 @@ namespace Itinero.Transit.Data
             _nextInternalId = 0;
 
             // initialize the ids reverse index.
-            _globalIdPointersPerHash = new MemoryArray<uint>(GlobalIdHashSize);
+            _globalIdPointersPerHash = new MemoryArray<uint>(_globalIdHashSize);
             for (var h = 0; h < _globalIdPointersPerHash.Length; h++)
             {
                 _globalIdPointersPerHash[h] = NoData;
@@ -168,14 +168,14 @@ namespace Itinero.Transit.Data
         /// <returns>An internal id representing the connection in this transit db.</returns>
         internal uint AddOrUpdate((uint localTileId, uint localId) stop1,
             (uint localTileId, uint localId) stop2, string globalId, DateTime departureTime, ushort travelTime,
-            ushort departureDelay, ushort arrivalDelay, uint tripId)
+            ushort departureDelay, ushort arrivalDelay, uint tripId, ushort mode)
         {
             var reader = GetReader();
             if (!reader.MoveTo(globalId))
             {
                 // The connection is not yet added
                 // We add the connection fresh
-                return Add(stop1, stop2, globalId, departureTime, travelTime, departureDelay, arrivalDelay, tripId);
+                return Add(stop1, stop2, globalId, departureTime, travelTime, departureDelay, arrivalDelay, tripId, mode);
             }
 
             // get all current data from reader.
@@ -213,7 +213,7 @@ namespace Itinero.Transit.Data
             
             // something changed - probably departure time due to delays. #SNCB
             // update the connection data.
-            SetConnection(internalId, stop1, stop2, departureSeconds, travelTime, departureDelay, arrivalDelay);
+            SetConnection(internalId, stop1, stop2, departureSeconds, travelTime, departureDelay, arrivalDelay, mode);
 
             if (currentDepartureTime != departureSeconds)
             {
@@ -271,11 +271,12 @@ namespace Itinero.Transit.Data
         /// <param name="departureDelay">The departure delay time in seconds.</param>
         /// <param name="arrivalDelay">The arrival delay time in seconds.</param>
         /// <param name="tripId">The trip id.</param>
+        /// <param name="mode">The trip mode</param>
         /// <returns>An internal id representing the connection in this transit db.</returns>
         private uint Add((uint localTileId, uint localId) stop1,
             (uint localTileId, uint localId) stop2, string globalId, DateTime departureTime, ushort travelTime,
             ushort departureDelay,
-            ushort arrivalDelay, uint tripId)
+            ushort arrivalDelay, uint tripId, ushort mode)
         {
             // get the next internal id.
             var internalId = _nextInternalId;
@@ -283,7 +284,7 @@ namespace Itinero.Transit.Data
 
             // set this connection info int the data array.
             var departureSeconds = (uint) departureTime.ToUnixTime();
-            SetConnection(internalId, stop1, stop2, departureSeconds, travelTime, departureDelay, arrivalDelay);
+            SetConnection(internalId, stop1, stop2, departureSeconds, travelTime, departureDelay, arrivalDelay, mode);
 
             // check if this connections is the 'earliest' or 'latest' date-wise.
             var departureDateSeconds = DateTimeExtensions.ExtractDate(departureSeconds);
@@ -311,7 +312,7 @@ namespace Itinero.Transit.Data
 
         private void SetConnection(uint internalId, (uint localTileId, uint localId) stop1,
             (uint localTileId, uint localId) stop2, uint departure, ushort travelTime, ushort departureDelay,
-            ushort arrivalDelay)
+            ushort arrivalDelay, ushort mode)
         {
             // make sure the data array is big enough.
             var dataPointer = internalId * ConnectionSizeInBytes;
@@ -383,19 +384,29 @@ namespace Itinero.Transit.Data
             }
 
             offset += 2;
+            bytes = BitConverter.GetBytes(arrivalDelay);
+            for (var b = 0; b < 2; b++)
+            {
+                _data[dataPointer + offset + b] = bytes[b];
+            }
+
+            offset += 2;
+
+
+
         }
 
         private ((uint localTileId, uint localId) departureLocation,
             (Id localTileId, Id localId) arrivalLocation,
             Time departureTime, TimeSpan travelTime,
-            ushort departureDelay, ushort arrivalDelay)
+            ushort departureDelay, ushort arrivalDelay, ushort mode)
             GetConnection(uint internalId)
         {
             var dataPointer = internalId * ConnectionSizeInBytes;
             if (_data.Length <= dataPointer + ConnectionSizeInBytes)
             {
                 return ((uint.MaxValue, uint.MaxValue), (uint.MaxValue, uint.MaxValue), uint.MaxValue, ushort.MaxValue,
-                    ushort.MaxValue, ushort.MaxValue);
+                    ushort.MaxValue, ushort.MaxValue, ushort.MaxValue);
             }
 
             var bytes = new byte[ConnectionSizeInBytes];
@@ -413,8 +424,9 @@ namespace Itinero.Transit.Data
             if (stop1.Item1 == uint.MaxValue &&
                 stop1.Item1 == uint.MaxValue)
             {
-                return ((uint.MaxValue, uint.MaxValue), (uint.MaxValue, uint.MaxValue), uint.MaxValue, ushort.MaxValue,
-                    ushort.MaxValue, ushort.MaxValue);
+                return ((uint.MaxValue, uint.MaxValue), (uint.MaxValue, uint.MaxValue), 
+                    uint.MaxValue, ushort.MaxValue,
+                    ushort.MaxValue, ushort.MaxValue, ushort.MaxValue);
             }
 
             offset += 8;
@@ -431,7 +443,9 @@ namespace Itinero.Transit.Data
             offset += 2;
             var arrivalDelay = BitConverter.ToUInt16(bytes, offset);
             offset += 2;
-            return (stop1, stop2, departureTime, travelTime, departureDelay, arrivalDelay);
+            var mode = BitConverter.ToUInt16(bytes, offset);
+            offset += 2;
+            return (stop1, stop2, departureTime, travelTime, departureDelay, arrivalDelay, mode);
         }
 
         private uint GetConnectionDeparture(uint internalId)
@@ -534,7 +548,7 @@ namespace Itinero.Transit.Data
                     hash = hash * 31 + c;
                 }
 
-                return hash % GlobalIdHashSize;
+                return hash % _globalIdHashSize;
             }
         }
 
@@ -887,7 +901,7 @@ namespace Itinero.Transit.Data
             private (uint localTileId, uint localId) _departureStop;
             private (uint localTileId, uint localId) _arrivalStop;
             private Time _departureTime, _arrivalTime;
-            private ushort _travelTime, _departureDelay, _arrivalDelay;
+            private ushort _travelTime, _departureDelay, _arrivalDelay, _mode;
 
             /// <summary>
             /// Gets the global id.
@@ -940,6 +954,11 @@ namespace Itinero.Transit.Data
             public uint Id => _internalId;
 
             /// <summary>
+            /// Gets the mode
+            /// </summary>
+            public ushort Mode => _mode;
+
+            /// <summary>
             /// Moves this reader to the connection with the given internal id.
             /// </summary>
             /// <param name="internalId">The internal id.</param>
@@ -961,6 +980,7 @@ namespace Itinero.Transit.Data
                 _arrivalTime = details.departureTime + details.travelTime;
                 _departureDelay = details.departureDelay;
                 _arrivalDelay = details.arrivalDelay;
+                _mode = details.mode;
                 return true;
             }
 
@@ -1386,6 +1406,9 @@ namespace Itinero.Transit.Data
             /// Gets the trip id.
             /// </summary>
             public uint TripId => _reader.TripId;
+
+            /// <inheritdoc />
+            public ushort Mode => _reader.Mode;
         }
 
         /// <summary>
@@ -1574,6 +1597,8 @@ namespace Itinero.Transit.Data
             /// The internal ID within the DB
             /// </summary>
             public uint Id => _reader.Id;
+
+            public uint Mode => _reader.Mode;
         }
     }
 }

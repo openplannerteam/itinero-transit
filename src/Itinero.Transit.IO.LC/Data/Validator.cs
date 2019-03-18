@@ -131,13 +131,6 @@ namespace Itinero.Transit.IO.LC.Data
                 keepInList &= _locationNotFound.Invoke(c, c.ArrivalLocation());
             }
 
-
-            if (!c.GetOn && !c.GetOff)
-            {
-                keepInList &= _invalidConnection.Invoke(c,
-                    "This connections does not allow getting in or out. Perhaps this train is cancelled");
-            }
-
             return keepInList;
         }
     }

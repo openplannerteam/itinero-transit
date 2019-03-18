@@ -34,12 +34,12 @@ namespace Itinero.Transit.Tests.Data
             writer.AddOrUpdateConnection(stop0, stop1, "http://example.org/connection/0",
                 new DateTime(2019, 03, 06, 10, 00, 00),
                 60 * 60,
-                0, 0, 0);
+                0, 0, 0, 0);
             
             writer.AddOrUpdateConnection(stop1, stop0, "http://example.org/connection/1",
                 new DateTime(2019, 03, 06, 11, 00, 00),
                 30 * 60,
-                0, 0, 0);
+                0, 0, 0, 0);
 
 
             writer.Close();

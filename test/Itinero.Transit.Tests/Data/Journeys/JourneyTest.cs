@@ -14,12 +14,12 @@ namespace Itinero.Transit.Tests.Data
             var c0 = connDb.AddOrUpdate((0, 0), (0, 1),
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 20, 00),
-                10 * 60, 0,0, 0);
+                10 * 60, 0,0, 0, 0);
 
             var c1 = connDb.AddOrUpdate((0, 0), (0, 1),
                 "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 16, 33, 00),
-                10 * 60, 0,0, 1);
+                10 * 60, 0,0, 1, 0);
 
 
             var time = new DateTime(2018, 12, 04, 16, 20, 00).ToUnixTime();
@@ -53,12 +53,12 @@ namespace Itinero.Transit.Tests.Data
             var c0 = connDb.AddOrUpdate((0, 0), (0, 1),
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 20, 00),
-                10 * 60, 0,0, 0);
+                10 * 60, 0,0, 0, 0);
 
             var c1 = connDb.AddOrUpdate((0, 1), (0, 2),
                 "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 16, 33, 00),
-                10 * 60, 0,0, 1);
+                10 * 60, 0,0, 1, 0);
 
 
             var time = new DateTime(2018, 12, 04, 16, 43, 00).ToUnixTime();

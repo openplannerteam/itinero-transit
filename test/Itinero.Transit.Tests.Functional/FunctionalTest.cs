@@ -3,7 +3,6 @@ using System.Collections;
 using Itinero.Transit.Tests.Functional.Performance;
 
 // ReSharper disable UnusedMember.Global
-
 namespace Itinero.Transit.Tests.Functional
 {
     
@@ -45,9 +44,17 @@ namespace Itinero.Transit.Tests.Functional
         /// <returns>The output.</returns>
         public virtual TOut Run(TIn input)
         {
-            return TrackPerformance ? 
-                RunPerformance(input) : 
-                Execute(input);
+            try
+            {
+
+                return TrackPerformance ? RunPerformance(input) : Execute(input);
+            }
+            catch (Exception)
+            {
+                Serilog.Log.Error($"Running {Name} with inputs {input} failed");
+
+                throw;
+            }
         }
 
         /// <summary>

@@ -35,6 +35,17 @@ namespace Itinero.Transit.Data
         /// </summary>
         ushort DepartureDelay { get; }
         
+        
+        /// <summary>
+        /// An extra piece of state to sneak in more data.
+        /// The first usage is to indicate Dropoff and pickup types:
+        /// (Mode % 4) == 0 => Both pickup and dropoff are possible - the normal situation
+        ///           == 1 => Only pickup is possible
+        ///           == 2 => Only dropoff is possible
+        ///           == 3 => Neither pickup nor dropoff are possible
+        /// </summary>
+        ushort Mode { get; }
+        
         /// <summary>
         /// Gets the trip id.
         /// </summary>

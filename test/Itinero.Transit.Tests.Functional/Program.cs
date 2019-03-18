@@ -61,10 +61,22 @@ namespace Itinero.Transit.Tests.Functional
 
             TransitDb db;
 
-            db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
-            Log.Information("Running TestReadWrite");
-
-            db = new TestReadWrite().Run(db);
+            // db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
+            // Log.Information("Running TestReadWrite");
+//
+            // db = new TestReadWrite().Run(db);
+            var fileN = $"{DateTime.Now:yyyy-MM-dd}";
+            try
+            {
+                db = TransitDb.ReadFrom($"test-write-to-disk-{fileN}.transitdb");
+                Log.Information("Reused already existing tdb for testing");
+            }
+            catch (Exception e)
+            {
+                Log.Error(e.ToString());
+                db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
+                new TestWriteToDisk().Run((db, fileN));
+            }
 
 
             Log.Information("Running TripHeadSignTest");
@@ -93,7 +105,7 @@ namespace Itinero.Transit.Tests.Functional
                 (db, Brugge,
                     Poperinge,
                     date.Date.AddHours(10),
-                    date.Date.AddHours(13)),
+                    date.Date.AddHours(15)),
                 (db, Brugge,
                     Kortrijk,
                     date.Date.AddHours(6),
@@ -117,24 +129,14 @@ namespace Itinero.Transit.Tests.Functional
                 results[name] = 0;
                 foreach (var i in inputs)
                 {
-                    try
+                    if (!t.RunPerformance(i, nrOfRuns))
                     {
-                        if (!t.RunPerformance(i, nrOfRuns))
-                        {
-                            Log.Information($"{name} failed");
-                            failed++;
-                        }
-                        else
-                        {
-                            results[name]++;
-                        }
-                    }
-                    catch (Exception e)
-                    {
+                        Log.Information($"{name} failed on {i}");
                         failed++;
-                        Log.Error(e.Message);
-                        Log.Error(e.StackTrace);
-                        throw;
+                    }
+                    else
+                    {
+                        results[name]++;
                     }
                 }
             }
@@ -151,7 +153,6 @@ namespace Itinero.Transit.Tests.Functional
             }
         }
 
-
         private static void TestClosestStopsAndRouting(TransitDb db)
         {
             StopSearchTest.Default.RunPerformance((db, 4.336209297180176,
@@ -162,21 +163,19 @@ namespace Itinero.Transit.Tests.Functional
                 50.99052927907061, 1000));
         }
 
-
         public static void Main(string[] args)
         {
             List<DefaultFunctionalTest> tests = null;
             var nrOfRuns = 1;
 
-
-            // Handle input arguments
-            // Determine how many times each test should be run
+// Handle input arguments
+// Determine how many times each test should be run
             if (args.Length > 0)
             {
                 nrOfRuns = int.Parse(args[0]);
             }
 
-            // Determine if tests should be skipped
+// Determine if tests should be skipped
             if (args.Length > 1)
             {
                 tests = new List<DefaultFunctionalTest>();
@@ -199,7 +198,6 @@ namespace Itinero.Transit.Tests.Functional
                 }
             }
 
-
             if (tests == null)
             {
                 tests = new List<DefaultFunctionalTest>();
@@ -209,7 +207,7 @@ namespace Itinero.Transit.Tests.Functional
                 }
             }
 
-            // And actually run the tests
+// And actually run the tests
             RunTests(tests, nrOfRuns);
         }
 
@@ -224,7 +222,6 @@ namespace Itinero.Transit.Tests.Functional
                 .WriteTo.File(new JsonFormatter(), logFile)
                 .WriteTo.Console()
                 .CreateLogger();
-
 #if DEBUG
             var loggingBlacklist = new HashSet<string>();
 #else

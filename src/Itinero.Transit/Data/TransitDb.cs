@@ -50,6 +50,14 @@ namespace Itinero.Transit.Data
         /// </summary>
         public TransitDbSnapShot Latest => _latestSnapshot;
 
+        public static TransitDb ReadFrom(string path)
+        {
+            using (var stream = File.OpenRead(path))
+            {
+                return ReadFrom(stream);
+            }
+        }
+        
         /// <summary>
         /// Reads a transit db an all its data from the given stream.
         /// </summary>
@@ -174,19 +182,21 @@ namespace Itinero.Transit.Data
             /// <summary>
             /// Adds or updates a connection.
             /// </summary>
-            /// <param name="globalId">The global id.</param>
             /// <param name="stop1">The first stop.</param>
             /// <param name="stop2">The second stop.</param>
-            /// <param name="tripId">The trip id.</param>
+            /// <param name="globalId">The global id.</param>
             /// <param name="departureTime">The departure time.</param>
             /// <param name="travelTime">The travel time in seconds.</param>
             /// <param name="departureDelay">The departure delay time in seconds.</param>
             /// <param name="arrivalDelay">The arrival delay time in seconds.</param>
+            /// <param name="tripId">The trip id.</param>
+            /// <param name="mode"></param>
             /// <returns></returns>
             public uint AddOrUpdateConnection((uint localTileId, uint localId) stop1,
-                (uint localTileId, uint localId) stop2, string globalId, DateTime departureTime, ushort travelTime, ushort departureDelay, ushort arrivalDelay, uint tripId)
+                (uint localTileId, uint localId) stop2, string globalId, DateTime departureTime, ushort travelTime,
+                ushort departureDelay, ushort arrivalDelay, uint tripId, ushort mode)
             {
-                return _connectionsDb.AddOrUpdate(stop1, stop2, globalId, departureTime, travelTime, departureDelay, arrivalDelay, tripId);
+                return _connectionsDb.AddOrUpdate(stop1, stop2, globalId, departureTime, travelTime, departureDelay, arrivalDelay, tripId, mode);
             }
 
             /// <summary>

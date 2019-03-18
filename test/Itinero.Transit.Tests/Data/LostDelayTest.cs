@@ -16,7 +16,7 @@ namespace Itinero.Transit.Tests.Data
             writer.AddOrUpdateConnection(
                 (0, 0), (1, 1), "http://example.org/connection/0",
                 depTime,
-                travelTime, depDelay, arrDelay, 0);
+                travelTime, depDelay, arrDelay, 0, 0);
 
             writer.Close();
 

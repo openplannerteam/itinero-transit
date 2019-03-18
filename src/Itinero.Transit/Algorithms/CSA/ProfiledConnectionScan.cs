@@ -159,11 +159,20 @@ namespace Itinero.Transit.Algorithms.CSA
                     break;
                 }
             }
-
-            // Add all journeys from every possible departure location
+            
+            // The main algorithm is done
+            // Time to gather the results
+            // To do this, we collect all journeys from every possible departure location
             var revJourneys = new List<Journey<T>>();
             foreach (var location in _departureLocations)
             {
+
+                if (!_stationJourneys.ContainsKey(location))
+                {
+                    // Seemed it wasn't possible to reach the destination from this departure location
+                    continue;
+                }
+                
                 var journeys = _stationJourneys[location].Frontier;
 
                 foreach (var j in journeys)

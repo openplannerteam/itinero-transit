@@ -4,6 +4,8 @@ namespace Itinero.Transit.Tests.Data
 {
     internal class ConnectionMock : IConnection
     {
+        private ushort _mode;
+
         public ConnectionMock(uint id, ulong departureTime, ulong arrivalTime, uint tripId, (uint localTileId, uint localId) arrivalStop, (uint localTileId, uint localId) departureStop)
         {
             Id = id;
@@ -24,6 +26,8 @@ namespace Itinero.Transit.Tests.Data
         public ushort ArrivalDelay { get; }
 
         public ushort DepartureDelay { get; }
+
+        public ushort Mode => 0;
 
         public ushort TravelTime { get; }
 

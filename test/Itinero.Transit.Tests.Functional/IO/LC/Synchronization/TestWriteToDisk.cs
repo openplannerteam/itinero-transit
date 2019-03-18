@@ -6,12 +6,12 @@ using Itinero.Transit.IO.LC.Synchronization;
 
 namespace Itinero.Transit.Tests.Functional.IO.LC.Synchronization
 {
-    public class TestWriteToDisk : FunctionalTest<TransitDb, TransitDb>
+    public class TestWriteToDisk : FunctionalTest<TransitDb, (TransitDb db, string name) >
     {
-        protected override TransitDb Execute(TransitDb input)
+        protected override TransitDb Execute((TransitDb db, string name) input)
         {
-            var path = "test-write-to-disk.transitdb";
-            var syncer = input.AddSyncPolicy(new WriteToDisk(1, path));
+            var path = $"test-write-to-disk-{input.name}.transitdb";
+            var syncer = input.db.AddSyncPolicy(new WriteToDisk(1, path));
 
             Thread.Sleep(1200);
             syncer.Stop();
