@@ -9,14 +9,17 @@ namespace Itinero.Transit.Algorithms.CSA
     /// <summary>
     /// Scansettings is a small object keeping track of all common parameters to run a scan
     /// </summary>
-    public class ScanSettings<T> where T : IJourneyStats<T>
+    internal class ScanSettings<T> where T : IJourneyStats<T>
     {
         private IConnectionFilter _filter;
 
         /// <summary>
-        /// The snapshot on which the algorithms should be run
+        /// The connections that can be used, orderd by departure time
         /// </summary>
-        public TransitDb.TransitDbSnapShot TransitDb { get; set; }
+        public IConnectionEnumerator Connections { get; set; }
+        public StopsDb.StopsDbReader StopsDbReader { get; set; }
+        public StopsDb StopsDb { get; set; }
+        
         /// <summary>
         /// The earliest time the traveller wants to depart.
         /// In the case of LAS, this is a timeout if no route is found (or to calculate isochrone lines)
@@ -108,7 +111,9 @@ namespace Itinero.Transit.Algorithms.CSA
             T statsFactory, ProfiledStatsComparator<T> comparator, IOtherModeGenerator transferPolicy,
             IOtherModeGenerator walkPolicy, List<((uint, uint), Journey<T>)> departureStop, List<((uint, uint), Journey<T>)> targetLocation)
         {
-            TransitDb = transitDb;
+            Connections = transitDb.ConnectionsDb.GetDepartureEnumerator();
+            StopsDb = transitDb.StopsDb;
+            StopsDbReader = transitDb.StopsDb.GetReader();
             EarliestDeparture = earliestDeparture;
             LastArrival = lastDeparture;
             StatsFactory = statsFactory;
@@ -155,9 +160,8 @@ namespace Itinero.Transit.Algorithms.CSA
                     if (!dep.Equals(target)) continue;
                     
                     
-                    var reader = TransitDb.StopsDb.GetReader();
-                    reader.MoveTo(dep.Item1);
-                    throw new ArgumentException("A departure location is the same as an arrival location: "+reader.GlobalId);
+                    StopsDbReader.MoveTo(dep.Item1);
+                    throw new ArgumentException("A departure location is the same as an arrival location: "+StopsDbReader.GlobalId);
                 }
                 
             }

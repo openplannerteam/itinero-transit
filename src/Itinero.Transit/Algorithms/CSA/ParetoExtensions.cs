@@ -20,7 +20,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <typeparam name="T"></typeparam>
         ///  <returns></returns>
         public static ParetoFrontier<T> ExtendFrontier<T>(this ParetoFrontier<T> pareto,
-            TransitDb.TransitDbSnapShot tdb,
+            StopsDb.StopsDbReader stopsReader,
             IConnection c, IOtherModeGenerator transferPolicy) where T : IJourneyStats<T>
         {
             // The journeys in the frontier are ordered: the journeys which are added later to the profile,
@@ -43,7 +43,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 else
                 {
                     extendedJourney = transferPolicy
-                        .CreateArrivingTransfer(tdb, journey, c.ArrivalTime, c.ArrivalStop)
+                        .CreateArrivingTransfer(stopsReader, journey, c.ArrivalTime, c.ArrivalStop)
                         ?.ChainBackward(c);
                 }
 

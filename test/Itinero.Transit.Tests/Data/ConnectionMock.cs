@@ -4,9 +4,8 @@ namespace Itinero.Transit.Tests.Data
 {
     internal class ConnectionMock : IConnection
     {
-        private ushort _mode;
-
-        public ConnectionMock(uint id, ulong departureTime, ulong arrivalTime, uint tripId, (uint localTileId, uint localId) arrivalStop, (uint localTileId, uint localId) departureStop)
+        public ConnectionMock(uint id, ulong departureTime, ulong arrivalTime, uint tripId,
+            (uint localTileId, uint localId) arrivalStop, (uint localTileId, uint localId) departureStop)
         {
             Id = id;
             DepartureTime = departureTime;
@@ -15,6 +14,20 @@ namespace Itinero.Transit.Tests.Data
             TripId = tripId;
             ArrivalStop = arrivalStop;
             DepartureStop = departureStop;
+            Mode = 0;
+        }
+
+        public ConnectionMock(uint id, ulong departureTime, ulong arrivalTime, uint tripId,
+            (uint localTileId, uint localId) arrivalStop, (uint localTileId, uint localId) departureStop, ushort mode)
+        {
+            Id = id;
+            DepartureTime = departureTime;
+            ArrivalTime = arrivalTime;
+            TravelTime = (ushort) (arrivalTime - departureTime);
+            TripId = tripId;
+            ArrivalStop = arrivalStop;
+            DepartureStop = departureStop;
+            Mode = mode;
         }
 
         public uint Id { get; }
@@ -27,7 +40,7 @@ namespace Itinero.Transit.Tests.Data
 
         public ushort DepartureDelay { get; }
 
-        public ushort Mode => 0;
+        public ushort Mode { get; }
 
         public ushort TravelTime { get; }
 

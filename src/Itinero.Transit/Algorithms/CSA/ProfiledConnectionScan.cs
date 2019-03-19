@@ -20,10 +20,10 @@ namespace Itinero.Transit.Algorithms.CSA
     /// 
     /// 
     /// </summary>
-    public class ProfiledConnectionScan<T> where T : IJourneyStats<T>
+    internal class ProfiledConnectionScan<T> where T : IJourneyStats<T>
     {
-        private readonly TransitDb.TransitDbSnapShot _tdb;
-        private readonly ConnectionsDb _connectionsProvider;
+        private readonly IConnectionEnumerator _connections;
+        private readonly StopsDb.StopsDbReader _stopsReader;
         private readonly UnixTime _earliestDeparture, _lastArrival;
         private readonly List<(uint, uint)> _departureLocations;
         private readonly List<(uint, uint)> _targetLocations;
@@ -105,7 +105,6 @@ namespace Itinero.Transit.Algorithms.CSA
         {
             settings.SanityCheck();
 
-            _tdb = settings.TransitDb;
             _targetLocations = new List<(uint, uint)>();
             foreach (var (target, journey) in settings.TargetStop)
             {
@@ -132,7 +131,8 @@ namespace Itinero.Transit.Algorithms.CSA
             _earliestDeparture = settings.EarliestDeparture.ToUnixTime();
             _lastArrival = settings.LastArrival.ToUnixTime();
 
-            _connectionsProvider = _tdb.ConnectionsDb;
+            _connections = settings.Connections;
+            _stopsReader = settings.StopsDbReader;
 
             _comparator = settings.Comparator;
             _empty = new ParetoFrontier<T>(_comparator);
@@ -146,7 +146,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
         public List<Journey<T>> CalculateJourneys()
         {
-            var enumerator = _connectionsProvider.GetDepartureEnumerator();
+            var enumerator = _connections;
 
             // Move the enumerator after the last arrival time
             enumerator.MovePrevious(_lastArrival);
@@ -199,7 +199,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// Integrates all connections of the enumerator where the departure time is the current departure time
         /// </summary>
         /// <param name="enumerator"></param>
-        private bool IntegrateBatch(ConnectionsDb.DepartureEnumerator enumerator)
+        private bool IntegrateBatch(IConnectionEnumerator enumerator)
         {
             var depTime = enumerator.DepartureTime;
             do
@@ -384,7 +384,7 @@ namespace Itinero.Transit.Algorithms.CSA
             // We get all possible, pareto optimal journeys departing here...
             var pareto = _stationJourneys[c.ArrivalStop];
             // .. and we extend them with c. What is non-dominated, we return
-            return pareto.ExtendFrontier(_tdb, c, _transferPolicy);
+            return pareto.ExtendFrontier(_stopsReader, c, _transferPolicy);
         }
 
 

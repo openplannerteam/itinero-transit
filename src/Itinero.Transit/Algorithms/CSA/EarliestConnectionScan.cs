@@ -18,8 +18,7 @@ namespace Itinero.Transit.Algorithms.CSA
     {
         private readonly List<((uint localTileId, uint localId), Journey<T>)> _userTargetLocations;
 
-        private readonly TransitDb.TransitDbSnapShot _tdb;
-        private readonly ConnectionsDb _connectionsProvider;
+        private readonly IConnectionEnumerator _connections;
         private readonly StopsDb _stopsDb;
         private readonly StopsDb.StopsDbReader _stopsReader;
 
@@ -53,11 +52,9 @@ namespace Itinero.Transit.Algorithms.CSA
             settings.SanityCheck();
             ScanBeginTime = settings.EarliestDeparture.ToUnixTime();
             _lastArrival = settings.LastArrival.ToUnixTime();
-            _tdb = settings.TransitDb;
-            _connectionsProvider = _tdb.ConnectionsDb;
-
-            _stopsDb = _tdb.StopsDb;
-            _stopsReader = _stopsDb.GetReader();
+            _connections = settings.Connections;
+            _stopsDb = settings.StopsDb;
+            _stopsReader = settings.StopsDbReader;
 
             _transferPolicy = settings.TransferPolicy;
             _walkPolicy = settings.WalkPolicy;
@@ -92,7 +89,8 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <exception cref="Exception"></exception>
         public Journey<T> CalculateJourney(Func<Time, Time, Time> depArrivalToTimeout = null)
         {
-            IConnectionEnumerator enumerator = _connectionsProvider.GetDepartureEnumerator();
+            var enumerator = _connections;
+            
             enumerator.MoveNext(ScanBeginTime);
 
             var lastDeparture = _lastArrival;
@@ -231,7 +229,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 {
                     journeyToArrival =
                         _transferPolicy
-                            .CreateDepartureTransfer(_tdb, journeyTillDeparture, c.DepartureTime, c.DepartureStop)
+                            .CreateDepartureTransfer(_stopsReader, journeyTillDeparture, c.DepartureTime, c.DepartureStop)
                             ?.ChainForward(c);
                 }
 
@@ -296,7 +294,7 @@ namespace Itinero.Transit.Algorithms.CSA
                     continue;
                 }
 
-                var walkingJourney = _walkPolicy.CreateDepartureTransfer(_tdb, journey, ulong.MaxValue, id);
+                var walkingJourney = _walkPolicy.CreateDepartureTransfer(_stopsReader, journey, ulong.MaxValue, id);
                 if (walkingJourney == null)
                 {
                     continue;

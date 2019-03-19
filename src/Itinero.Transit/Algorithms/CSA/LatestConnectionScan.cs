@@ -18,8 +18,9 @@ namespace Itinero.Transit.Algorithms.CSA
     {
         private readonly List<((uint localTileId, uint localId), Journey<T>)> _userDepartureLocation;
 
-        private readonly TransitDb.TransitDbSnapShot _tdb;
-        private readonly ConnectionsDb _connectionsProvider;
+        private readonly IConnectionEnumerator _connections;
+        private readonly StopsDb _stopsDb;
+        private readonly StopsDb.StopsDbReader _stopsReader;
 
         private readonly Time _earliestDeparture;
 
@@ -48,10 +49,11 @@ namespace Itinero.Transit.Algorithms.CSA
         public LatestConnectionScan(ScanSettings<T> settings)
         {
             settings.SanityCheck();
-            _tdb = settings.TransitDb;
+            _stopsDb = settings.StopsDb;
+            _stopsReader = settings.StopsDbReader;
             _earliestDeparture = settings.EarliestDeparture.ToUnixTime();
             ScanEndTime = settings.LastArrival.ToUnixTime();
-            _connectionsProvider = _tdb.ConnectionsDb;
+            _connections = settings.Connections;
             _transferPolicy = settings.TransferPolicy;
             _userDepartureLocation = settings.DepartureStop;
             foreach (var (loc, j) in settings.TargetStop)
@@ -83,7 +85,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <exception cref="Exception"></exception>
         public Journey<T> CalculateJourney(Func<Time, Time, Time> depArrivalToTimeout = null)
         {
-            var enumerator = _connectionsProvider.GetDepartureEnumerator();
+            var enumerator = _connections;
             enumerator.MovePrevious(ScanEndTime);
 
             var earliestAllowedDeparture = _earliestDeparture;
@@ -149,7 +151,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// Once all those connections are handled, the walks from the improved locations are batched
         /// </summary>
         /// <param name="enumerator"></param>
-        private bool IntegrateBatch(ConnectionsDb.DepartureEnumerator enumerator)
+        private bool IntegrateBatch(IConnectionEnumerator enumerator)
         {
             var lastDepartureTime = enumerator.DepartureTime;
             do
@@ -207,7 +209,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 else
                 {
                     journeyFromDeparture = _transferPolicy
-                        .CreateArrivingTransfer(_tdb, journeyFromArrival, c.ArrivalTime, c.ArrivalStop)
+                        .CreateArrivingTransfer(_stopsReader, journeyFromArrival, c.ArrivalTime, c.ArrivalStop)
                         ?.ChainBackward(c);
                 }
 
