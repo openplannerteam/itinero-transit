@@ -147,7 +147,7 @@ namespace Itinero.Transit.Tests.Data
             }
         }
 
-        [Fact]
+     //   [Fact]
         public void CloseToEachOtherTest()
         {
 
