@@ -1026,7 +1026,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// A enumerator by departure.
         /// </summary>
-        public class DepartureEnumerator : IConnection
+        public class DepartureEnumerator : IConnectionEnumerator, IConnection
         {
             private readonly ConnectionsDb _db;
             private readonly ConnectionsDbReader _reader;

@@ -21,7 +21,7 @@ namespace Itinero.Transit.Data
         /// </summary>
         /// <param name="enumerator">The enumerator.</param>
         /// <param name="time">The time to move to.</param>
-        public static void MovePrevious(this ConnectionsDb.DepartureEnumerator enumerator, ulong time)
+        public static void MovePrevious(this IConnectionEnumerator enumerator, ulong time)
         {
             if (!enumerator.MovePrevious(time.FromUnixTime()))
             {
@@ -35,7 +35,7 @@ namespace Itinero.Transit.Data
         /// </summary>
         /// <param name="enumerator">The enumerator.</param>
         /// <param name="time">The time to move to.</param>
-        public static void MoveNext(this ConnectionsDb.DepartureEnumerator enumerator, ulong time)
+        public static void MoveNext(this IConnectionEnumerator enumerator, ulong time)
         {
             if (!enumerator.MoveNext(time.FromUnixTime()))
             {

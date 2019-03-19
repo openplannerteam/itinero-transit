@@ -92,7 +92,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <exception cref="Exception"></exception>
         public Journey<T> CalculateJourney(Func<Time, Time, Time> depArrivalToTimeout = null)
         {
-            var enumerator = _connectionsProvider.GetDepartureEnumerator();
+            IConnectionEnumerator enumerator = _connectionsProvider.GetDepartureEnumerator();
             enumerator.MoveNext(ScanBeginTime);
 
             var lastDeparture = _lastArrival;
@@ -159,7 +159,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// Once all those connections are handled, the walks from the improved locations are batched
         /// </summary>
         /// <param name="enumerator"></param>
-        private bool IntegrateBatch(ConnectionsDb.DepartureEnumerator enumerator)
+        private bool IntegrateBatch(IConnectionEnumerator enumerator)
         {
             var improvedLocations = new HashSet<(uint, uint)>();
             var lastDepartureTime = enumerator.DepartureTime;
@@ -214,7 +214,7 @@ namespace Itinero.Transit.Algorithms.CSA
             }
 
 
-            Journey<T> journeyToArrival = null;
+            Journey<T> journeyToArrival;
             // Extend trip journey: if we already are on the trip we can always stay seated on it
             if (_trips.ContainsKey(trip))
             {
