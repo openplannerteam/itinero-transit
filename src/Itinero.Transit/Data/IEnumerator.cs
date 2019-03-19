@@ -7,7 +7,7 @@ namespace Itinero.Transit.Data
     /// An enumerator is an object which has all the fields of an IConnection, but changes those fields when
     /// 'MoveNext' is called.
     /// </summary>
-    internal interface IConnectionEnumerator : IConnection
+    public interface IConnectionEnumerator : IConnection
     {
 
         bool MoveNext(DateTime? dateTime = null);
