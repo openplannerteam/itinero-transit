@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Algorithms.Search;
@@ -37,12 +38,27 @@ namespace Itinero.Transit.Data
         public static IEnumerable<IStop> LocationsInRange(
             this IStopsReader stopsDb, float lat, float lon, float maxDistance)
         {
+            if (maxDistance <= 0.1)
+            {
+                throw new ArgumentException("Oops, distance is zero or very small");
+            }
+
+            if (float.IsNaN(maxDistance) || float.IsInfinity(maxDistance) ||
+                float.IsNaN(lat) || float.IsInfinity(lat) ||
+                float.IsNaN(lon) || float.IsInfinity(lon)
+            )
+            {
+                throw new ArgumentException(
+                    "Oops, either lat, lon or maxDistance are invalid (such as NaN or Infinite)");
+            }
+
             var box = (
                 DistanceEstimate.MoveEast(lat, lon, -maxDistance), // minLon
                 DistanceEstimate.MoveNorth(lat, lon, +maxDistance), // MinLat
                 DistanceEstimate.MoveEast(lat, lon, +maxDistance), // MaxLon
                 DistanceEstimate.MoveNorth(lat, lon, -maxDistance) //maxLat
             );
+
             return stopsDb.SearchInBox(box);
         }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
+using Itinero.Transit.IO.LC;
 using Itinero.Transit.Journeys;
 using Xunit;
 
@@ -23,10 +24,22 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 TransferStats.ProfileTransferCompare
             );
 
+            var stopsReader = tdb.Latest.StopsDb.GetReader();
+
+            stopsReader.MoveTo("https://example.com/stops/0");
+            var stop0 = stopsReader.Id;
+           
+            stopsReader.MoveTo("https://example.com/stops/1");
+            var stop1 = stopsReader.Id;
+
+            stopsReader.MoveTo("https://example.com/stops/2");
+            var stop2 = stopsReader.Id;
+
+            
             var eas = new EarliestConnectionScan<TransferStats>(
                 new ScanSettings<TransferStats>(
                     db,
-                    (0, 0), (0, 1),
+                    stop0, stop1,
                     db.GetConn(0).DepartureTime.FromUnixTime(),
                     (db.GetConn(0).DepartureTime + 60 * 60 * 6).FromUnixTime(),
                     profile
@@ -40,7 +53,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
 
             eas = new EarliestConnectionScan<TransferStats>(new ScanSettings<TransferStats>(db,
-                (0, 0), (0, 2), db.GetConn(0).DepartureTime.FromUnixTime(),
+                stop0,  stop2, db.GetConn(0).DepartureTime.FromUnixTime(),
                 (db.GetConn(0).DepartureTime + 60 * 60 * 2).FromUnixTime(),
                 profile
             ));

@@ -10,7 +10,7 @@ namespace Itinero.Transit.Data.Walks
         /// Returns an estimate of the distance between the two given coordinates.
         /// Stolen from https://github.com/itinero/routing/blob/1764afc75db43a1459789592de175283f642123f/src/Itinero/LocalGeo/Coordinate.cs
         /// </summary>
-        /// <remarks>Accuraccy decreases with distance.</remarks>
+        /// <remarks>Accuracy decreases with distance.</remarks>
         public static float DistanceEstimateInMeter(float latitude1, float longitude1, float latitude2,
             float longitude2)
         {
@@ -34,10 +34,10 @@ namespace Itinero.Transit.Data.Walks
         /// <param name="lon"></param>
         /// <param name="meters"></param>
         /// <returns></returns>
-        public static float MoveNorth(float lat, float lon, float meters)
+        public static double MoveNorth(float lat, float lon, float meters)
         {
             var dLat = -meters / RadiusOfEarth;
-            return (float) (lat + dLat * 180 / Math.PI);
+            return lat + dLat * 180 / Math.PI;
         }
         
         /// <summary>
@@ -47,10 +47,10 @@ namespace Itinero.Transit.Data.Walks
         /// <param name="lon"></param>
         /// <param name="meters"></param>
         /// <returns></returns>
-        public static float MoveEast(float lat, float lon, float meters)
+        public static double MoveEast(float lat, float lon, float meters)
         {
             var dLon = meters/(RadiusOfEarth*Math.Cos(Math.PI*lat/180));
-            return (float) (lon + dLon * 180 / Math.PI);
+            return lon + dLon * 180 / Math.PI;
         }
     }
 }

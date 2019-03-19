@@ -278,7 +278,10 @@ namespace Itinero.Transit.Algorithms.CSA
                 return;
             }
 
-            _stopsReader.MoveTo(location);
+            if (!_stopsReader.MoveTo(location))
+            {
+                throw new ArgumentException($"Location {location} not found, could not move to it");
+            }
             var reachableLocations =
                 _stopsReader.LocationsInRange(_stopsReader, _walkPolicy.Range());
 
