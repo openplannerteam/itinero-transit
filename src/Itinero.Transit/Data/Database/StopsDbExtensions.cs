@@ -12,7 +12,7 @@ namespace Itinero.Transit.Data
     /// <summary>
     /// Contains extension methods for the stops db.
     /// </summary>
-    internal static class StopsDbExtensions
+    public static class StopsDbExtensions
     {
         public static (uint tileId, uint localId) FindStop(this IStopsReader reader, string locationId,
             string errorMessage = null)
