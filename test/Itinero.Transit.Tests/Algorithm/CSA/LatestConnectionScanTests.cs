@@ -22,8 +22,19 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 TransferStats.ProfileTransferCompare
             );
 
+            var stopsReader = tdb.Latest.StopsDb.GetReader();
+
+            stopsReader.MoveTo("https://example.com/stops/0");
+            var stop0 = stopsReader.Id;
+
+            stopsReader.MoveTo("https://example.com/stops/1");
+            var stop1 = stopsReader.Id;
+            stopsReader.MoveTo("https://example.com/stops/2");
+            var stop2 = stopsReader.Id;
+
+
             var las = new LatestConnectionScan<TransferStats>(new ScanSettings<TransferStats>(db,
-                (0, 0), (0, 1),
+                stop0, stop1,
                 new DateTime(2018, 12, 04, 16, 00, 00),
                 new DateTime(2018, 12, 04, 18, 00, 00),
                 profile
@@ -37,7 +48,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             las = new LatestConnectionScan<TransferStats>(
                 new ScanSettings<TransferStats>(
                     db,
-                    (0, 0), (0, 2),
+                    stop0, stop2,
                     db.GetConn(0).DepartureTime.FromUnixTime(),
                     (db.GetConn(0).DepartureTime + 60 * 60 * 2).FromUnixTime(),
                     profile
@@ -46,12 +57,11 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             j = las.CalculateJourney();
 
             Assert.NotNull(j);
-            Assert.Equal(j.Root.Location, ((uint) 0, (uint) 0));
-            Assert.Equal(j.Location, ((uint) 0, (uint) 2));
-            Assert.Equal((uint) 1, j.Connection);
+            Assert.Equal(j.Root.Location, stop0);
+            Assert.Equal(j.Location, stop2);
         }
-        
-        
+
+
         [Fact]
         public void LatestConnectionScan_ShouldFindNoConnectionJourney()
         {

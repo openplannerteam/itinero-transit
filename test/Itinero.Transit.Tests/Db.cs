@@ -11,11 +11,11 @@ namespace Itinero.Transit.Tests
             var writer = transitDb.GetWriter();
 
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
+            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 1.1);
             var stop2 = writer.AddOrUpdateStop("https://example.com/stops/2", 0.5, 0.5);
-            var stop3 = writer.AddOrUpdateStop("https://example.com/stops/2", 1.5, 0.5);
-            var stop10 = writer.AddOrUpdateStop("https://example.com/stops/2", 2.5, 0.5);
-            var stop11 = writer.AddOrUpdateStop("https://example.com/stops/2", 3.5, 0.5);
+            var stop3 = writer.AddOrUpdateStop("https://example.com/stops/3", 1.5, 0.5);
+            var stop10 = writer.AddOrUpdateStop("https://example.com/stops/10", 2.5, 0.5);
+            var stop11 = writer.AddOrUpdateStop("https://example.com/stops/11", 3.5, 0.5);
 
             writer.AddOrUpdateConnection(stop0, stop1,
                 "https://example.com/connections/0",

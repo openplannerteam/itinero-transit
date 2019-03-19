@@ -21,23 +21,31 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var profile = new Profile<TransferStats>(new InternalTransferGenerator(60),
                 new CrowsFlightTransferGenerator(),
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
+            var stopsReader = tdb.Latest.StopsDb.GetReader();
 
+            stopsReader.MoveTo("https://example.com/stops/0");
+            var stop0 = stopsReader.Id;
+           
+            stopsReader.MoveTo("https://example.com/stops/3");
+            var stop3 = stopsReader.Id;
+
+
+            
             var pcs = new ProfiledConnectionScan<TransferStats>(new ScanSettings<TransferStats>(
                 db,
-                (0, 0), (0, 3),
+                stop0, stop3,
                 new DateTime(2018, 12, 04, 16, 00, 00),
                 new DateTime(2018, 12, 04, 18, 00, 00),
                 profile));
 
             var journeys = pcs.CalculateJourneys();
 
-
             //Pr("---------------- DONE ----------------");
             foreach (var j in journeys)
             {
                 //Pr(j.ToString());
-                Assert.True(Equals(((uint) 0, (uint) 0), j.Root.Location));
-                Assert.True(Equals(((uint) 0, (uint) 3), j.Location));
+                Assert.True(Equals(stop0, j.Root.Location));
+                Assert.True(Equals(stop3, j.Location));
             }
 
             Assert.Equal(2, journeys.Count());

@@ -385,6 +385,10 @@ namespace Itinero.Transit.Journeys
             if (reader?.Attributes != null)
             {
                 location = reader.Attributes.ToString();
+                if (string.IsNullOrEmpty(location))
+                {
+                    location = reader.GlobalId;
+                }
             }
 
             if (!SpecialConnection)
