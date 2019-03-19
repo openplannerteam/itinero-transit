@@ -362,7 +362,7 @@ namespace Itinero.Transit.Journeys
             return ToString(db.GetReader());
         }
 
-        public string ToString(StopsDb.StopsDbReader reader, int maxDepth = 50)
+        public string ToString(IStopsReader reader, int maxDepth = 50)
         {
             if (maxDepth == 0)
             {
@@ -378,7 +378,7 @@ namespace Itinero.Transit.Journeys
             return $"{previous}\n  {PartToString(reader)}\n    {Stats} (Trip {TripId})";
         }
 
-        private string PartToString(StopsDb.StopsDbReader reader)
+        private string PartToString(IStopsReader reader)
         {
             reader?.MoveTo(Location);
             var location = Location.ToString();

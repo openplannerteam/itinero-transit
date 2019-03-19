@@ -10,6 +10,7 @@ using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
+
 namespace Itinero.Transit.Data
 {
     /// <summary>
@@ -22,11 +23,11 @@ namespace Itinero.Transit.Data
         private readonly ArrayBase<string> _stopIds; // holds the stop ids per stop.
         private readonly ArrayBase<uint> _stopAttributeIds; // holds the stop attribute ids per stop.
 
-        private const uint NoData = uint.MaxValue;
+        private const uint _noData = uint.MaxValue;
         private readonly ArrayBase<uint> _stopIdPointersPerHash;
         private uint _stopIdLinkedListPointer;
         private readonly ArrayBase<uint> _stopIdLinkedList;
-        
+
         private readonly AttributesIndex _attributes;
 
         /// <summary>
@@ -40,15 +41,16 @@ namespace Itinero.Transit.Data
             _stopIdPointersPerHash = new MemoryArray<uint>(_stopIdHashSize);
             for (var h = 0; h < _stopIdPointersPerHash.Length; h++)
             {
-                _stopIdPointersPerHash[h] = NoData;
+                _stopIdPointersPerHash[h] = _noData;
             }
+
             _stopIdLinkedList = new MemoryArray<uint>(0);
             _attributes = new AttributesIndex(AttributesIndexMode.ReverseStringIndexKeysOnly);
         }
 
         private StopsDb(TiledLocationIndex stopLocations, ArrayBase<string> stopIds, ArrayBase<uint> stopAttributeIds,
             ArrayBase<uint> stopIdPointsPerHash, ArrayBase<uint> stopIdLinkedList, AttributesIndex attributes,
-                uint stopIdLinkedListPointer)
+            uint stopIdLinkedListPointer)
         {
             _stopIdLinkedListPointer = stopIdLinkedListPointer;
             _stopLocations = stopLocations;
@@ -73,6 +75,7 @@ namespace Itinero.Transit.Data
                 _stopIds.Resize(_stopIds.Length + 1024);
                 _stopAttributeIds.Resize(_stopAttributeIds.Length + 1024);
             }
+
             for (var s = 0; s < count; s++)
             {
                 _stopIds[to + s] = _stopIds[from + s];
@@ -88,7 +91,8 @@ namespace Itinero.Transit.Data
         /// <param name="latitude">The stop latitude.</param>
         /// <param name="attributes">The stop attributes.</param>
         /// <returns>An internal id representing the stop in this transit db.</returns>
-        internal (uint tileId, uint localId) Add(string globalId, double longitude, double latitude, IEnumerable<Attribute> attributes = null)
+        internal (uint tileId, uint localId) Add(string globalId, double longitude, double latitude,
+            IEnumerable<Attribute> attributes = null)
         {
             // store location.
             var (tileId, localId, dataPointer) = _stopLocations.Add(longitude, latitude);
@@ -99,6 +103,7 @@ namespace Itinero.Transit.Data
                 _stopIds.Resize(_stopIds.Length + 1024);
                 _stopAttributeIds.Resize(_stopIds.Length + 1024);
             }
+
             _stopIds[dataPointer] = globalId;
             _stopAttributeIds[dataPointer] = _attributes.Add(attributes);
 
@@ -124,7 +129,8 @@ namespace Itinero.Transit.Data
         internal TiledLocationIndex StopLocations => _stopLocations;
 
         private uint Hash(string id)
-        { // https://stackoverflow.com/questions/5154970/how-do-i-create-a-hashcode-in-net-c-for-a-string-that-is-safe-to-store-in-a
+        {
+            // https://stackoverflow.com/questions/5154970/how-do-i-create-a-hashcode-in-net-c-for-a-string-that-is-safe-to-store-in-a
             unchecked
             {
                 var hash = (uint) 23;
@@ -133,21 +139,21 @@ namespace Itinero.Transit.Data
                     hash = hash * 31 + c;
                 }
 
-                return  (uint) (hash % _stopIdHashSize);
+                return (uint) (hash % _stopIdHashSize);
             }
         }
 
         internal long WriteTo(Stream stream)
         {
             var length = 0L;
-            
+
             // write version #.
             stream.WriteByte(1);
             length++;
-                
+
             // write location index.
             length += _stopLocations.WriteTo(stream);
-            
+
             // write data.
             length += _stopIds.CopyToWithSize(stream);
             length += _stopAttributeIds.CopyToWithSize(stream);
@@ -156,7 +162,7 @@ namespace Itinero.Transit.Data
             length += bytes.Length;
             stream.Write(bytes, 0, 4);
             length += _stopIdLinkedList.CopyToWithSize(stream);
-            
+
             // write attributes.
             length += _attributes.Serialize(stream);
 
@@ -166,13 +172,13 @@ namespace Itinero.Transit.Data
         internal static StopsDb ReadFrom(Stream stream)
         {
             var buffer = new byte[4];
-            
+
             var version = stream.ReadByte();
             if (version != 1) throw new InvalidDataException($"Cannot read {nameof(StopsDb)}, invalid version #.");
-            
+
             // read location index.
             var stopLocations = TiledLocationIndex.ReadFrom(stream);
-            
+
             // read data.
             var stopIds = MemoryArray<string>.CopyFromWithSize(stream);
             var stopAttributeIds = MemoryArray<uint>.CopyFromWithSize(stream);
@@ -180,10 +186,10 @@ namespace Itinero.Transit.Data
             stream.Read(buffer, 0, 4);
             var stopIdLinkedListPointer = BitConverter.ToUInt32(buffer, 0);
             var stopIdLinkedList = MemoryArray<uint>.CopyFromWithSize(stream);
-            
+
             // read attributes.
             var attributes = AttributesIndex.Deserialize(stream, true);
-            
+
             return new StopsDb(stopLocations, stopIds, stopAttributeIds, stopIdPointsPerHash, stopIdLinkedList,
                 attributes, stopIdLinkedListPointer);
         }
@@ -195,9 +201,9 @@ namespace Itinero.Transit.Data
         public StopsDb Clone()
         {
             // it is up to the user to make sure not to clone when writing. 
-            
+
             var stopLocations = _stopLocations.Clone();
-            
+
             var stopIds = new MemoryArray<string>(_stopIds.Length);
             stopIds.CopyFrom(_stopIds, _stopIds.Length);
             var stopAttributesIds = new MemoryArray<uint>(_stopAttributeIds.Length);
@@ -206,10 +212,11 @@ namespace Itinero.Transit.Data
             stopIdPointersPerHash.CopyFrom(_stopIdPointersPerHash, _stopIdPointersPerHash.Length);
             var stopIdLinkedList = new MemoryArray<uint>(_stopIdLinkedList.Length);
             stopIdLinkedList.CopyFrom(_stopIdLinkedList, _stopIdLinkedList.Length);
-            
+
             // don't clone the attributes, it's supposed to be add-only anyway.
             // it's up to the user not to write to it from multiple threads.
-            return new StopsDb(stopLocations, stopIds, stopAttributesIds, stopIdPointersPerHash, stopIdLinkedList, _attributes,
+            return new StopsDb(stopLocations, stopIds, stopAttributesIds, stopIdPointersPerHash, stopIdLinkedList,
+                _attributes,
                 _stopIdLinkedListPointer);
         }
 
@@ -225,7 +232,8 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// A stops reader.
         /// </summary>
-        public class StopsDbReader : IStop
+        /// <inheritdoc />
+        public class StopsDbReader : IStopsReader
         {
             private readonly StopsDb _stopsDb;
             private readonly TiledLocationIndex.Enumerator _locationEnumerator;
@@ -276,7 +284,7 @@ namespace Itinero.Transit.Data
             {
                 var hash = _stopsDb.Hash(globalId);
                 var pointer = _stopsDb._stopIdPointersPerHash[hash];
-                while (pointer != NoData)
+                while (pointer != _noData)
                 {
                     var localTileId = _stopsDb._stopIdLinkedList[pointer + 0];
                     var localId = _stopsDb._stopIdLinkedList[pointer + 1];
@@ -295,7 +303,7 @@ namespace Itinero.Transit.Data
 
                 return false;
             }
-            
+
             /// <summary>
             /// Moves to the next stop.
             /// </summary>
@@ -305,31 +313,27 @@ namespace Itinero.Transit.Data
                 return _locationEnumerator.MoveNext();
             }
 
-            /// <summary>
-            /// Gets the global id.
-            /// </summary>
+            /// <inheritdoc />
             public string GlobalId => _stopsDb._stopIds[_locationEnumerator.DataPointer];
 
-            /// <summary>
-            /// Gets the stop id.
-            /// </summary>
+            /// <inheritdoc />
             public (uint tileId, uint localId) Id =>
                 (_locationEnumerator.TileId, _locationEnumerator.LocalId);
 
-            /// <summary>
-            /// Gets the latitude.
-            /// </summary>
+            /// <inheritdoc />
             public double Latitude => _locationEnumerator.Latitude;
 
-            /// <summary>
-            /// Gets the longitude.
-            /// </summary>
+            /// <inheritdoc />
             public double Longitude => _locationEnumerator.Longitude;
 
             /// <summary>
             /// Gets the attributes.
             /// </summary>
-            public IAttributeCollection Attributes => _stopsDb._attributes.Get(_stopsDb._stopAttributeIds[_locationEnumerator.DataPointer]);
+            public IAttributeCollection Attributes =>
+                _stopsDb._attributes.Get(_stopsDb._stopAttributeIds[_locationEnumerator.DataPointer]);
+
+            public StopsDb StopsDb => _stopsDb;
+
         }
     }
 }

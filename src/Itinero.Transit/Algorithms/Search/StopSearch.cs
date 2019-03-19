@@ -12,11 +12,11 @@ namespace Itinero.Transit.Algorithms.Search
         /// <param name="stopsDb">The stops db.</param>
         /// <param name="box">The box to enumerate in.</param>
         /// <returns>An enumerator with all the stops.</returns>
-        public static IEnumerable<IStop> SearchInBox(this StopsDb stopsDb,
+        public static IEnumerable<IStop> SearchInBox(this IStopsReader stopsDb,
             (double minLon, double minLat, double maxLon, double maxLat) box)
         {
-            var range = new TileRange(box, stopsDb.StopLocations.Zoom);
-            var tileRangeLocationEnumerator = stopsDb.StopLocations.GetTileRangeEnumerator(range);
+            var range = new TileRange(box, stopsDb.StopsDb.StopLocations.Zoom);
+            var tileRangeLocationEnumerator = stopsDb.StopsDb.StopLocations.GetTileRangeEnumerator(range);
             var rangeStops = new TileRangeStopEnumerable(stopsDb, tileRangeLocationEnumerator);
             using (var rangeStopsEnumerator = rangeStops.GetEnumerator())
             {
@@ -43,7 +43,7 @@ namespace Itinero.Transit.Algorithms.Search
         /// <param name="lat">The latitude.</param>
         /// <param name="maxDistanceInMeters">The maximum distance in meters.</param>
         /// <returns>An enumerator with all the stops.</returns>
-        public static IStop SearchClosest(this StopsDb stopsDb,
+        public static IStop SearchClosest(this IStopsReader stopsDb,
             double lon, double lat, double maxDistanceInMeters = 1000)
         {
             var bestDistance = maxDistanceInMeters;
@@ -61,8 +61,8 @@ namespace Itinero.Transit.Algorithms.Search
 
             return bestStop;
         }
-        
-        const double RadiusOfEarth = 6371000;
+
+        private const double _radiusOfEarth = 6371000;
 
         /// <summary>
         /// Returns an estimate of the distance between the two given coordinates.
@@ -78,7 +78,7 @@ namespace Itinero.Transit.Algorithms.Search
             var x = (lon2Rad - lon1Rad) * System.Math.Cos((lat1Rad + lat2Rad) / 2.0);
             var y = lat2Rad - lat1Rad;
 
-            var m = System.Math.Sqrt(x * x + y * y) * RadiusOfEarth;
+            var m = System.Math.Sqrt(x * x + y * y) * _radiusOfEarth;
 
             return m;
         }
@@ -89,7 +89,7 @@ namespace Itinero.Transit.Algorithms.Search
         private static (double minLon, double minLat, double maxLon, double maxLat) BoxWithSize(this (double lon, double lat) location,
             double distance)
         {
-            var ratioInRadians = distance / RadiusOfEarth;
+            var ratioInRadians = distance / _radiusOfEarth;
 
             var oldLatRadians = location.lat.ToRadians();
             var oldLonRadians = location.lon.ToRadians();

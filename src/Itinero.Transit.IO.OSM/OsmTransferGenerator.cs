@@ -99,7 +99,7 @@ namespace Itinero.Transit
             return route.IsError ? null : route.Value;
         }
 
-        public Journey<T> CreateDepartureTransfer<T>(StopsDb.StopsDbReader _, Journey<T> buildOn, ulong timeWhenDeparting, (uint, uint) otherLocation) where T : IJourneyStats<T>
+        public Journey<T> CreateDepartureTransfer<T>(IStopsReader _, Journey<T> buildOn, ulong timeWhenDeparting, (uint, uint) otherLocation) where T : IJourneyStats<T>
         {
             if (timeWhenDeparting < buildOn.Time)
             {
@@ -125,7 +125,7 @@ namespace Itinero.Transit
                 Journey<T>.WALK, (uint) (buildOn.Time + route.TotalDistance), otherLocation, uint.MaxValue);
         }
 
-        public Journey<T> CreateArrivingTransfer<T>(StopsDb.StopsDbReader _, Journey<T> buildOn, ulong timeWhenArriving, (uint, uint) otherLocation) where T : IJourneyStats<T>
+        public Journey<T> CreateArrivingTransfer<T>(IStopsReader _, Journey<T> buildOn, ulong timeWhenArriving, (uint, uint) otherLocation) where T : IJourneyStats<T>
         {
             if (timeWhenArriving > buildOn.Time)
             {

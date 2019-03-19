@@ -19,8 +19,7 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly List<((uint localTileId, uint localId), Journey<T>)> _userTargetLocations;
 
         private readonly IConnectionEnumerator _connections;
-        private readonly StopsDb _stopsDb;
-        private readonly StopsDb.StopsDbReader _stopsReader;
+        private readonly IStopsReader _stopsReader;
 
         /// <summary>
         /// The last allowed departure time. Note that scanning could continue after it, if a scan-overshoot is given
@@ -53,7 +52,6 @@ namespace Itinero.Transit.Algorithms.CSA
             ScanBeginTime = settings.EarliestDeparture.ToUnixTime();
             _lastArrival = settings.LastArrival.ToUnixTime();
             _connections = settings.Connections;
-            _stopsDb = settings.StopsDb;
             _stopsReader = settings.StopsDbReader;
 
             _transferPolicy = settings.TransferPolicy;
@@ -282,7 +280,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             _stopsReader.MoveTo(location);
             var reachableLocations =
-                _stopsDb.LocationsInRange(_stopsReader, _walkPolicy.Range());
+                _stopsReader.LocationsInRange(_stopsReader, _walkPolicy.Range());
 
             var journey = _s[location];
 

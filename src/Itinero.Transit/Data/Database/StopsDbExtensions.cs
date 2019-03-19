@@ -11,9 +11,9 @@ namespace Itinero.Transit.Data
     /// <summary>
     /// Contains extension methods for the stops db.
     /// </summary>
-    public static class StopsDbExtensions
+    internal static class StopsDbExtensions
     {
-        public static (uint tileId, uint localId) FindStop(this StopsDb.StopsDbReader reader, string locationId,
+        public static (uint tileId, uint localId) FindStop(this IStopsReader reader, string locationId,
             string errorMessage = null)
         {
             // var reader = tdb.Latest.StopsDb.GetReader();
@@ -27,7 +27,7 @@ namespace Itinero.Transit.Data
         }
 
         public static IEnumerable<IStop> LocationsInRange(
-            this StopsDb stopsDb, IStop stop, float maxDistance)
+            this IStopsReader stopsDb, IStop stop, float maxDistance)
         {
             var lat = (float) stop.Latitude;
             var lon = (float) stop.Longitude;
@@ -35,7 +35,7 @@ namespace Itinero.Transit.Data
         }
 
         public static IEnumerable<IStop> LocationsInRange(
-            this StopsDb stopsDb, float lat, float lon, float maxDistance)
+            this IStopsReader stopsDb, float lat, float lon, float maxDistance)
         {
             var box = (
                 DistanceEstimate.MoveEast(lat, lon, -maxDistance), // minLon
@@ -48,7 +48,7 @@ namespace Itinero.Transit.Data
 
 
         public static float CalculateDistanceBetween
-            (this StopsDb.StopsDbReader reader, (uint, uint) departureLocation, (uint, uint) targetLocation)
+            (this IStopsReader reader, (uint, uint) departureLocation, (uint, uint) targetLocation)
         {
             reader.MoveTo(departureLocation);
             var lat0 = (float) reader.Latitude;

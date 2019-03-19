@@ -20,7 +20,7 @@ namespace Itinero.Transit.Tests.Algorithm.Search
             var id5 = db.Add("http://irail.be/stations/NMBS/008863011", 4.830207824707031, 51.37328062064337);
             var id6 = db.Add("http://irail.be/stations/NMBS/008863012", 5.538825988769531, 51.177621156752494);
 
-            var stops = db.SearchInBox((4.64, 51.17, 5.54, 51.38));
+            var stops = db.GetReader().SearchInBox((4.64, 51.17, 5.54, 51.38));
             Assert.NotNull(stops);
 
             var stopsList = stops.ToList();
@@ -38,7 +38,7 @@ namespace Itinero.Transit.Tests.Algorithm.Search
             var id5 = db.Add("http://irail.be/stations/NMBS/008863011", 4.830207824707031, 51.37328062064337);
             var id6 = db.Add("http://irail.be/stations/NMBS/008863012", 5.538825988769531, 51.177621156752494);
 
-            var stop = db.SearchClosest(4.78686332702636, 51.26277419739382);
+            var stop = db.GetReader().SearchClosest(4.78686332702636, 51.26277419739382);
             Assert.NotNull(stop);
             Assert.Equal(id1, stop.Id);
         }

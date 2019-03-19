@@ -23,7 +23,7 @@ namespace Itinero.Transit.Algorithms.CSA
     internal class ProfiledConnectionScan<T> where T : IJourneyStats<T>
     {
         private readonly IConnectionEnumerator _connections;
-        private readonly StopsDb.StopsDbReader _stopsReader;
+        private readonly IStopsReader _stopsReader;
         private readonly UnixTime _earliestDeparture, _lastArrival;
         private readonly List<(uint, uint)> _departureLocations;
         private readonly List<(uint, uint)> _targetLocations;

@@ -45,7 +45,7 @@ namespace Itinero.Transit.Data.Walks
             return buildOn.Transfer(timeNearTransfer);
         }
 
-        public Journey<T> CreateDepartureTransfer<T>(StopsDb.StopsDbReader _, Journey<T> buildOn,
+        public Journey<T> CreateDepartureTransfer<T>(IStopsReader _, Journey<T> buildOn,
             ulong timeWhenLeaving,
             (uint, uint) otherLocation) where T : IJourneyStats<T>
         {
@@ -64,7 +64,7 @@ namespace Itinero.Transit.Data.Walks
             return CreateInternalTransfer(buildOn, timeWhenLeaving);
         }
 
-        public Journey<T> CreateArrivingTransfer<T>(StopsDb.StopsDbReader _, Journey<T> buildOn,
+        public Journey<T> CreateArrivingTransfer<T>(IStopsReader _, Journey<T> buildOn,
             ulong timeWhenArriving,
             (uint, uint) otherLocation) where T : IJourneyStats<T>
         {

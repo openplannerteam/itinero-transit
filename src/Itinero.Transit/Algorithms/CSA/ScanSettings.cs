@@ -17,8 +17,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// The connections that can be used, orderd by departure time
         /// </summary>
         public IConnectionEnumerator Connections { get; set; }
-        public StopsDb.StopsDbReader StopsDbReader { get; set; }
-        public StopsDb StopsDb { get; set; }
+        public IStopsReader StopsDbReader { get; set; }
         
         /// <summary>
         /// The earliest time the traveller wants to depart.
@@ -112,7 +111,6 @@ namespace Itinero.Transit.Algorithms.CSA
             IOtherModeGenerator walkPolicy, List<((uint, uint), Journey<T>)> departureStop, List<((uint, uint), Journey<T>)> targetLocation)
         {
             Connections = transitDb.ConnectionsDb.GetDepartureEnumerator();
-            StopsDb = transitDb.StopsDb;
             StopsDbReader = transitDb.StopsDb.GetReader();
             EarliestDeparture = earliestDeparture;
             LastArrival = lastDeparture;

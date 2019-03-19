@@ -19,8 +19,7 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly List<((uint localTileId, uint localId), Journey<T>)> _userDepartureLocation;
 
         private readonly IConnectionEnumerator _connections;
-        private readonly StopsDb _stopsDb;
-        private readonly StopsDb.StopsDbReader _stopsReader;
+        private readonly IStopsReader _stopsReader;
 
         private readonly Time _earliestDeparture;
 
@@ -49,7 +48,6 @@ namespace Itinero.Transit.Algorithms.CSA
         public LatestConnectionScan(ScanSettings<T> settings)
         {
             settings.SanityCheck();
-            _stopsDb = settings.StopsDb;
             _stopsReader = settings.StopsDbReader;
             _earliestDeparture = settings.EarliestDeparture.ToUnixTime();
             ScanEndTime = settings.LastArrival.ToUnixTime();

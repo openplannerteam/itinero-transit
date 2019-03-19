@@ -25,7 +25,7 @@ namespace Itinero.Transit
             double latitude,
             double maxDistanceInMeters = 1000)
         {
-            return snapShot.StopsDb.SearchClosest(longitude, latitude, maxDistanceInMeters);
+            return snapShot.StopsDb.GetReader().SearchClosest(longitude, latitude, maxDistanceInMeters);
         }
 
         public static (uint, uint) FindStop(this TransitDb.TransitDbSnapShot snapshot, string locationId,

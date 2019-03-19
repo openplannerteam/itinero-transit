@@ -10,10 +10,10 @@ namespace Itinero.Transit.Algorithms.Search
     /// </summary>
     internal class TileRangeStopEnumerable : IEnumerable<IStop>
     {
-        private readonly StopsDb _stopsDb;
+        private readonly IStopsReader _stopsDb;
         private readonly TileRangeLocationEnumerable _tileRangeLocationEnumerable;
 
-        public TileRangeStopEnumerable(StopsDb stopsDb, TileRangeLocationEnumerable tileRangeLocationEnumerable)
+        public TileRangeStopEnumerable(IStopsReader stopsDb, TileRangeLocationEnumerable tileRangeLocationEnumerable)
         {
             _stopsDb = stopsDb;
             _tileRangeLocationEnumerable = tileRangeLocationEnumerable;
@@ -37,12 +37,12 @@ namespace Itinero.Transit.Algorithms.Search
         internal class TileRangeStopEnumerator : IEnumerator<IStop>
         {
             private readonly TileRangeLocationEnumerable.TileRangeLocationEnumerator _tileRangeLocationEnumerator;
-            private readonly StopsDb.StopsDbReader _stopsDbReader;
+            private readonly IStopsReader _stopsDbReader;
 
             public TileRangeStopEnumerator(TileRangeStopEnumerable enumerable)
             {
                 _tileRangeLocationEnumerator = enumerable._tileRangeLocationEnumerable.GetEnumerator();
-                _stopsDbReader = enumerable._stopsDb.GetReader();
+                _stopsDbReader = enumerable._stopsDb;
             }
             
             public bool MoveNext()
@@ -50,7 +50,7 @@ namespace Itinero.Transit.Algorithms.Search
                 if (!_tileRangeLocationEnumerator.MoveNext()) return false;
                 var current = _tileRangeLocationEnumerator.Current;
 
-                if (!_stopsDbReader.MoveTo(current.tileId, current.localId)) return false;
+                if (!_stopsDbReader.MoveTo((current.tileId, current.localId))) return false;
 
                 return true;
             }
@@ -62,8 +62,6 @@ namespace Itinero.Transit.Algorithms.Search
             }
 
             public TileRangeLocationEnumerable.TileRangeLocationEnumerator TileRangeLocationEnumerator => _tileRangeLocationEnumerator;
-
-            public StopsDb.StopsDbReader StopsDbReader => _stopsDbReader;
 
             public IStop Current => new Stop(_stopsDbReader); // enumerator and enumerable expect unique clones.
 

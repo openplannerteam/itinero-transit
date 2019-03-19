@@ -36,7 +36,7 @@ namespace Itinero.Transit.Data.Walks
         /// <summary>
         /// Adds a walk to 'targetLocation' at the end of the journey 'buildOn'
         /// </summary>
-        public Journey<T> CreateDepartureTransfer<T>(StopsDb.StopsDbReader reader, Journey<T> buildOn,
+        public Journey<T> CreateDepartureTransfer<T>(IStopsReader reader, Journey<T> buildOn,
             ulong timeWhenLeaving,
             (uint, uint) otherLocation) where T : IJourneyStats<T>
         {
@@ -59,7 +59,7 @@ namespace Itinero.Transit.Data.Walks
         }
 
 
-        public Journey<T> CreateArrivingTransfer<T>(StopsDb.StopsDbReader reader, Journey<T> buildOn,
+        public Journey<T> CreateArrivingTransfer<T>(IStopsReader reader, Journey<T> buildOn,
             ulong timeWhenDeparting,
             (uint, uint) otherLocation) where T : IJourneyStats<T>
         {
