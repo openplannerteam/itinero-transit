@@ -14,6 +14,8 @@ namespace Itinero.Transit.Tests.Data
             TripId = tripId;
             ArrivalStop = arrivalStop;
             DepartureStop = departureStop;
+            ArrivalDelay = 0;
+            DepartureDelay = 0;
             Mode = 0;
         }
 
@@ -27,6 +29,8 @@ namespace Itinero.Transit.Tests.Data
             TripId = tripId;
             ArrivalStop = arrivalStop;
             DepartureStop = departureStop;
+            ArrivalDelay = 0;
+            DepartureDelay = 0;
             Mode = mode;
         }
 

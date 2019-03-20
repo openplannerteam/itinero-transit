@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
@@ -19,7 +18,6 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         {
             var reader = input.transitDb.Latest.StopsDb.GetReader();
             reader.MoveTo(input.arrivalStopId);
-            var checkId = reader.Id;
 
             var profile = new Profile<TransferStats>(new InternalTransferGenerator(1),
                 null,

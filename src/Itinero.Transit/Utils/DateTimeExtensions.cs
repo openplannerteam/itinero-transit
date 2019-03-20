@@ -11,16 +11,16 @@ namespace Itinero.Transit
     /// </summary>
     public static class DateTimeExtensions
     {
-        private static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime _epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        internal const ulong SecondsInADay = 24 * 60 * 60;
+        private const ulong _secondsInADay = 24 * 60 * 60;
 
         /// <summary>
         /// Converts a number of milliseconds from 1/1/1970 into a standard DateTime.
         /// </summary>
         public static DateTime FromUnixTime(this ulong seconds)
         {
-            return Epoch.AddSeconds(seconds); // to a multiple of 100 nanosec or ticks.
+            return _epoch.AddSeconds(seconds); // to a multiple of 100 nanosec or ticks.
         }
     
         /// <summary>
@@ -28,7 +28,7 @@ namespace Itinero.Transit
         /// </summary>
         public static ulong ToUnixTime(this DateTime date)
         {
-            return (ulong) (date - Epoch).TotalSeconds; // from a multiple of 100 nanosec or ticks to milliseconds.
+            return (ulong) (date - _epoch).TotalSeconds; // from a multiple of 100 nanosec or ticks to milliseconds.
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Itinero.Transit
         /// <returns></returns>
         internal static ulong ExtractDate(ulong seconds)
         {
-            return (seconds - (seconds % SecondsInADay));
+            return (seconds - (seconds % _secondsInADay));
         }
 
         /// <summary>

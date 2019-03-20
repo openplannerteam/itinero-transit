@@ -4,7 +4,7 @@ namespace Itinero.Transit.Data.Walks
 {
     public static class DistanceEstimate
     {
-        private const double RadiusOfEarth = 6371000;
+        private const double _radiusOfEarth = 6371000;
 
         /// <summary>
         /// Returns an estimate of the distance between the two given coordinates.
@@ -22,7 +22,7 @@ namespace Itinero.Transit.Data.Walks
             var x = (lon2Rad - lon1Rad) * Math.Cos((lat1Rad + lat2Rad) / 2.0);
             var y = lat2Rad - lat1Rad;
 
-            var m = Math.Sqrt(x * x + y * y) * RadiusOfEarth;
+            var m = Math.Sqrt(x * x + y * y) * _radiusOfEarth;
 
             return (float) m;
         }
@@ -36,7 +36,7 @@ namespace Itinero.Transit.Data.Walks
         /// <returns></returns>
         public static double MoveNorth(float lat, float lon, float meters)
         {
-            var dLat = -meters / RadiusOfEarth;
+            var dLat = -meters / _radiusOfEarth;
             return lat + dLat * 180 / Math.PI;
         }
         
@@ -49,7 +49,7 @@ namespace Itinero.Transit.Data.Walks
         /// <returns></returns>
         public static double MoveEast(float lat, float lon, float meters)
         {
-            var dLon = meters/(RadiusOfEarth*Math.Cos(Math.PI*lat/180));
+            var dLon = meters/(_radiusOfEarth*Math.Cos(Math.PI*lat/180));
             return lon + dLon * 180 / Math.PI;
         }
     }

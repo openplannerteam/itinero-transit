@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Itinero.Transit.Journeys
@@ -24,15 +25,18 @@ namespace Itinero.Transit.Journeys
                 public override int Compare(Journey<T> x, Journey<T> y)
                 {
                     var sum = 0;
+                    if (x == null || y == null)
+                    {
+                        throw new NullReferenceException();
+                    }
+                    
                     if (x.PreviousLink != null && y.PreviousLink != null)
                     {
                         sum += Compare(x.PreviousLink, y.PreviousLink);
                     }
 
-                    uint xL = 0;
-                    uint yL = 0;
-                    _importances.TryGetValue(x.Location, out xL);
-                    _importances.TryGetValue(y.Location, out yL);
+                    _importances.TryGetValue(x.Location, out var xL);
+                    _importances.TryGetValue(y.Location, out var yL);
 
 
                     sum += (int) (yL - xL);

@@ -94,7 +94,7 @@ namespace Itinero.Transit.Tests.Functional
         {
             if (o == null)
             {
-                throw new ArgumentNullException("Not-null failed");
+                throw new ArgumentNullException(nameof(o));
             }
         }
 

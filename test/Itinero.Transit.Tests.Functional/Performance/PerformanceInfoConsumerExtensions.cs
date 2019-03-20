@@ -91,7 +91,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
 
             if (res == null)
             {
-                throw new ArgumentNullException("Performance test is null");
+                throw new ArgumentNullException(nameof(res));
             }
             info.Stop(res.Message);
             return res.Result;

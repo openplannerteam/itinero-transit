@@ -12,13 +12,13 @@ namespace Itinero.Transit.Data.Tiles
     {
         private readonly int _zoom;
         
-        private const byte DefaultTileCapacityInBytes = 0; 
-        private const int CoordinateSizeInBytes = 3; // 3 bytes = 24 bits = 4096 x 4096, the needed resolution depends on the zoom-level, higher, less resolution.
-        const int TileResolutionInBits = CoordinateSizeInBytes * 8 / 2;
+        private const byte _defaultTileCapacityInBytes = 0; 
+        private const int _coordinateSizeInBytes = 3; // 3 bytes = 24 bits = 4096 x 4096, the needed resolution depends on the zoom-level, higher, less resolution.
+        private const int _tileResolutionInBits = _coordinateSizeInBytes * 8 / 2;
 
         private readonly ArrayBase<byte> _tileIndex;
         private readonly ArrayBase<byte> _locations; // holds stop locations, encode relative to the tile they are in.
-        private const uint TileNotLoaded = uint.MaxValue;
+        private const uint _tileNotLoaded = uint.MaxValue;
         private uint _tileIndexPointer;
         private uint _tileDataPointer;
         
@@ -62,7 +62,7 @@ namespace Itinero.Transit.Data.Tiles
 
             // try to find the tile.
             var (tileDataPointer, tileIndexPointer, capacity) = FindTile(tileId);
-            if (tileDataPointer == TileNotLoaded)
+            if (tileDataPointer == _tileNotLoaded)
             {
                 // create the tile if it doesn't exist yet.
                 (tileDataPointer, tileIndexPointer, capacity) = AddTile(tileId);
@@ -70,7 +70,7 @@ namespace Itinero.Transit.Data.Tiles
 
             // find or create a place to store the location.
             uint nextEmpty;
-            const int defaultCapacity = 1 << DefaultTileCapacityInBytes;
+            const int defaultCapacity = 1 << _defaultTileCapacityInBytes;
             if (GetEncodedLocation((uint) (tileDataPointer + capacity - 1), tile).hasData)
             {
                 // tile is maximum capacity.
@@ -151,7 +151,7 @@ namespace Itinero.Transit.Data.Tiles
                 return (BitConverter.ToUInt32(tileBytes, 0), p, 1 << _tileIndex[p + 8]);
             }
 
-            return (TileNotLoaded, uint.MaxValue, 0);
+            return (_tileNotLoaded, uint.MaxValue, 0);
         }
 
         /// <summary>
@@ -197,10 +197,10 @@ namespace Itinero.Transit.Data.Tiles
             {
                 _tileIndex[_tileIndexPointer + 4 + b] = tileBytes[b];
             }
-            _tileIndex[_tileIndexPointer + 9] = DefaultTileCapacityInBytes;
+            _tileIndex[_tileIndexPointer + 9] = _defaultTileCapacityInBytes;
             var tilePointer = _tileIndexPointer;
             _tileIndexPointer += 9;
-            const int capacity = 1 << DefaultTileCapacityInBytes;
+            const int capacity = 1 << _defaultTileCapacityInBytes;
             var pointer = _tileDataPointer;
             _tileDataPointer += capacity;
             return (pointer, tilePointer, capacity);
@@ -234,7 +234,7 @@ namespace Itinero.Transit.Data.Tiles
             
             // make sure locations array is the proper size.
             var length = _locations.Length;
-            while ((_tileDataPointer + (oldCapacity * 2)) * CoordinateSizeInBytes >= length)
+            while ((_tileDataPointer + (oldCapacity * 2)) * _coordinateSizeInBytes >= length)
             {
                 length += 1024;
             }
@@ -262,10 +262,10 @@ namespace Itinero.Transit.Data.Tiles
 
         private void CopyLocations(uint pointer1, uint pointer2)
         {
-            var locationPointer1 = pointer1 * CoordinateSizeInBytes;
-            var locationPointer2 = pointer2 * CoordinateSizeInBytes;
+            var locationPointer1 = pointer1 * _coordinateSizeInBytes;
+            var locationPointer2 = pointer2 * _coordinateSizeInBytes;
 
-            for (var b = 0; b < CoordinateSizeInBytes; b++)
+            for (var b = 0; b < _coordinateSizeInBytes; b++)
             {
                 _locations[locationPointer2 + b] = _locations[locationPointer1 + b];
             }
@@ -274,8 +274,8 @@ namespace Itinero.Transit.Data.Tiles
         
         private (double longitude, double latitude, bool hasData) GetEncodedLocation(uint pointer, Tile tile)
         {
-            const int TileResolutionInBits = CoordinateSizeInBytes * 8 / 2;
-            var locationPointer = pointer * (long)CoordinateSizeInBytes;
+            const int TileResolutionInBits = _coordinateSizeInBytes * 8 / 2;
+            var locationPointer = pointer * (long)_coordinateSizeInBytes;
 
             if (locationPointer + 4 > _locations.Length)
             {
@@ -283,7 +283,7 @@ namespace Itinero.Transit.Data.Tiles
             }
             
             var bytes = new byte[4];
-            for (var b = 0; b < CoordinateSizeInBytes; b++)
+            for (var b = 0; b < _coordinateSizeInBytes; b++)
             {
                 bytes[b] = _locations[locationPointer + b];
             }
@@ -303,11 +303,11 @@ namespace Itinero.Transit.Data.Tiles
         
         private void SetEncodedLocation(uint pointer, Tile tile, double longitude, double latitude)
         {
-            var localCoordinates = tile.ToLocalCoordinates(longitude, latitude, 1 << TileResolutionInBits);
-            var localCoordinatesEncoded = (localCoordinates.x << TileResolutionInBits) + localCoordinates.y;
+            var localCoordinates = tile.ToLocalCoordinates(longitude, latitude, 1 << _tileResolutionInBits);
+            var localCoordinatesEncoded = (localCoordinates.x << _tileResolutionInBits) + localCoordinates.y;
             var localCoordinatesBits = BitConverter.GetBytes(localCoordinatesEncoded);
-            var tileDataPointer = pointer * (long)CoordinateSizeInBytes;
-            if (tileDataPointer + CoordinateSizeInBytes > _locations.Length)
+            var tileDataPointer = pointer * (long)_coordinateSizeInBytes;
+            if (tileDataPointer + _coordinateSizeInBytes > _locations.Length)
             {
                 var p = _locations.Length;
                 _locations.Resize(_locations.Length + 1024);
@@ -316,7 +316,7 @@ namespace Itinero.Transit.Data.Tiles
                     _locations[i] = byte.MaxValue;
                 }
             }
-            for (var b = 0; b < CoordinateSizeInBytes; b++)
+            for (var b = 0; b < _coordinateSizeInBytes; b++)
             {
                 _locations[tileDataPointer + b] = localCoordinatesBits[b];
             }

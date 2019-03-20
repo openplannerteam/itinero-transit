@@ -23,11 +23,12 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
             var tdb = new TransitDb();
 
 
-            var sync = new Synchronizer(tdb, Update, 5,
+            var synchronizer = new Synchronizer(tdb, Update, 5,
                 new SynchronizedWindow(1, TimeSpan.FromSeconds(-1), TimeSpan.FromSeconds(2)));
 
             Thread.Sleep(1200);
             Assert.True(triggered);
+            synchronizer.Stop();
         }
 
 
@@ -64,6 +65,7 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
             Assert.True(4 >= triggered5);
             Assert.True(1 <= triggered10);
             Assert.True(3 >= triggered10);
+            sync.Stop();
         }
     }
 }

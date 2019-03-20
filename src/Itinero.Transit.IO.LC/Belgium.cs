@@ -27,15 +27,15 @@ namespace Itinero.Transit.IO.LC
         };
 
 
-        public const string SNCB_Connections = "https://graph.irail.be/sncb/connections";
-        public const string SNCB_Locations = "https://irail.be/stations";
+        public const string SncbConnections = "https://graph.irail.be/sncb/connections";
+        public const string SncbLocations = "https://irail.be/stations";
 
         
         public static LinkedConnectionDataset Sncb()
         {
             return new LinkedConnectionDataset(
-                new Uri(SNCB_Connections),
-                new Uri(SNCB_Locations)
+                new Uri(SncbConnections),
+                new Uri(SncbLocations)
             );
         }
 

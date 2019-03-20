@@ -47,7 +47,7 @@ namespace Itinero.Transit.IO.LC.Data
                     }
                 }
 
-                this.Names = names.ToArray();
+                Names = names.ToArray();
             }
         }
 

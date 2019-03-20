@@ -20,7 +20,7 @@ namespace Itinero.Transit.Data
         private readonly ArrayBase<uint> _tripAttributeIds; // holds the trip attribute ids.
 
         private readonly int _tripIdHashSize = ushort.MaxValue;
-        private const uint NoData = uint.MaxValue;
+        private const uint _noData = uint.MaxValue;
         private readonly ArrayBase<uint> _tripIdPointersPerHash;
         private uint _tripIdLinkedListPointer;
         private readonly ArrayBase<uint> _tripIdLinkedList;
@@ -38,7 +38,7 @@ namespace Itinero.Transit.Data
             _tripIdPointersPerHash = new MemoryArray<uint>(_tripIdHashSize);
             for (var h = 0; h < _tripIdPointersPerHash.Length; h++)
             {
-                _tripIdPointersPerHash[h] = NoData;
+                _tripIdPointersPerHash[h] = _noData;
             }
             _tripIdLinkedList = new MemoryArray<uint>(0);
             _attributes = new AttributesIndex();
@@ -228,7 +228,7 @@ namespace Itinero.Transit.Data
             {
                 var hash = _tripsDb.Hash(globalId);
                 var pointer = _tripsDb._tripIdPointersPerHash[hash];
-                while (pointer != NoData)
+                while (pointer != _noData)
                 {
                     var tripId = _tripsDb._tripIdLinkedList[pointer + 0];
 

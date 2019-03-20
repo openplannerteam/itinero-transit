@@ -25,11 +25,11 @@ namespace Itinero.Transit
         private readonly Router _router;
         private readonly Profile _walkingProfile;
         
-        private const float SearchDistance = 50f;
+        private const float _searchDistance = 50f;
         private readonly StopsDb.StopsDbReader _stopsDb;
 
         // When  router db is loaded, it is saved into this dict to avoid reloading it
-        private static readonly Dictionary<string, Router> KnownRouters
+        private static readonly Dictionary<string, Router> _knownRouters
             = new Dictionary<string, Router>();
 
 
@@ -49,7 +49,7 @@ namespace Itinero.Transit
 
             _walkingProfile = walkingProfile ?? Pedestrian.Fastest();
             routerdbPath = Path.GetFullPath(routerdbPath);
-            if (!KnownRouters.ContainsKey(routerdbPath))
+            if (!_knownRouters.ContainsKey(routerdbPath))
             {
                 using (var fs = new FileStream(routerdbPath, FileMode.Open, FileAccess.Read))
                 {
@@ -59,11 +59,11 @@ namespace Itinero.Transit
                         throw new NullReferenceException("Could not load the routerDb");
                     }
 
-                    KnownRouters[routerdbPath] = new Router(routerDb);
+                    _knownRouters[routerdbPath] = new Router(routerDb);
                 }
             }
 
-            _router = KnownRouters[routerdbPath];
+            _router = _knownRouters[routerdbPath];
         }
 
 
@@ -86,9 +86,9 @@ namespace Itinero.Transit
             var lonE = (float) _stopsDb.Longitude;
 
             // ReSharper disable once RedundantArgumentDefaultValue
-            var startPoint = _router.TryResolve(_walkingProfile, lat, lon, SearchDistance);
+            var startPoint = _router.TryResolve(_walkingProfile, lat, lon, _searchDistance);
             // ReSharper disable once RedundantArgumentDefaultValue
-            var endPoint = _router.TryResolve(_walkingProfile, latE, lonE, SearchDistance);
+            var endPoint = _router.TryResolve(_walkingProfile, latE, lonE, _searchDistance);
 
             if (startPoint.IsError || endPoint.IsError)
             {
@@ -154,7 +154,7 @@ namespace Itinero.Transit
 
         public float Range()
         {
-            return SearchDistance;
+            return _searchDistance;
         }
     }
 }

@@ -185,10 +185,6 @@ namespace Itinero.Transit.IO.LC
             var connectionUri = connection.Id().ToString();
 
             
-            /// (Mode % 4) == 0 => Both pickup and dropoff are possible - the normal situation
-            ///           == 1 => Only pickup is possible
-            ///           == 2 => Only dropoff is possible
-            ///           == 3 => Neither pickup nor dropoff are possible
             ushort mode = 0;
             if (!connection.GetOff)
             {

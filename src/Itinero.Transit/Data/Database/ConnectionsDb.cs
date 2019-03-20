@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Algorithms.Sorting;
@@ -76,9 +75,9 @@ namespace Itinero.Transit.Data
 
         private uint _arrivalPointer;
 
-        private const uint NoData = uint.MaxValue;
+        private const uint _noData = uint.MaxValue;
         private readonly long _windowSizeInSeconds; // one window per minute by default
-        private const int ConnectionSizeInBytes = 8 + 8 + 4 + 2 + 2 + 2 + 2;
+        private const int _connectionSizeInBytes = 8 + 8 + 4 + 2 + 2 + 2 + 2;
 
         private uint _earliestDate = uint.MaxValue;
         private uint _latestDate = uint.MinValue;
@@ -103,7 +102,7 @@ namespace Itinero.Transit.Data
             _globalIdPointersPerHash = new MemoryArray<uint>(_globalIdHashSize);
             for (var h = 0; h < _globalIdPointersPerHash.Length; h++)
             {
-                _globalIdPointersPerHash[h] = NoData;
+                _globalIdPointersPerHash[h] = _noData;
             }
 
             _globalIdLinkedList = new MemoryArray<uint>(0);
@@ -115,9 +114,9 @@ namespace Itinero.Transit.Data
                 new MemoryArray<uint>((long) Math.Ceiling(24d * 60 * 60 / _windowSizeInSeconds) * 2);
             for (var w = 0; w < _departureWindowPointers.Length / 2; w++)
             {
-                _departureWindowPointers[w * 2 + 0] = NoData; // point to nothing.
+                _departureWindowPointers[w * 2 + 0] = _noData; // point to nothing.
                 _departureWindowPointers[w * 2 + 1] = 0; // empty.
-                _arrivalWindowPointers[w * 2 + 0] = NoData; // point to nothing.
+                _arrivalWindowPointers[w * 2 + 0] = _noData; // point to nothing.
                 _arrivalWindowPointers[w * 2 + 1] = 0; // empty.
             }
 
@@ -165,6 +164,7 @@ namespace Itinero.Transit.Data
         /// <param name="departureDelay">The departure delay time in seconds.</param>
         /// <param name="arrivalDelay">The arrival delay time in seconds.</param>
         /// <param name="tripId">The trip id.</param>
+        /// <param name="mode">The mode, indicates if getting on or off is supported</param>
         /// <returns>An internal id representing the connection in this transit db.</returns>
         internal uint AddOrUpdate((uint localTileId, uint localId) stop1,
             (uint localTileId, uint localId) stop2, string globalId, DateTime departureTime, ushort travelTime,
@@ -315,8 +315,8 @@ namespace Itinero.Transit.Data
             ushort arrivalDelay, ushort mode)
         {
             // make sure the data array is big enough.
-            var dataPointer = internalId * ConnectionSizeInBytes;
-            while (_data.Length <= dataPointer + ConnectionSizeInBytes)
+            var dataPointer = internalId * _connectionSizeInBytes;
+            while (_data.Length <= dataPointer + _connectionSizeInBytes)
             {
                 var oldLength = _data.Length;
                 _data.Resize(_data.Length + 1024);
@@ -392,9 +392,9 @@ namespace Itinero.Transit.Data
 
             offset += 2;
 
-            if (offset != ConnectionSizeInBytes)
+            if (offset != _connectionSizeInBytes)
             {
-                throw new ArgumentException($"Only wrote {offset} bytes while {ConnectionSizeInBytes} expected");
+                throw new ArgumentException($"Only wrote {offset} bytes while {_connectionSizeInBytes} expected");
             }
         }
 
@@ -404,16 +404,16 @@ namespace Itinero.Transit.Data
             ushort departureDelay, ushort arrivalDelay, ushort mode)
             GetConnection(uint internalId)
         {
-            var dataPointer = internalId * ConnectionSizeInBytes;
-            if (_data.Length <= dataPointer + ConnectionSizeInBytes)
+            var dataPointer = internalId * _connectionSizeInBytes;
+            if (_data.Length <= dataPointer + _connectionSizeInBytes)
             {
                 return ((uint.MaxValue, uint.MaxValue), (uint.MaxValue, uint.MaxValue), uint.MaxValue, ushort.MaxValue,
                     ushort.MaxValue, ushort.MaxValue, ushort.MaxValue);
             }
 
-            var bytes = new byte[ConnectionSizeInBytes];
+            var bytes = new byte[_connectionSizeInBytes];
             for (var b = 0;
-                b < ConnectionSizeInBytes;
+                b < _connectionSizeInBytes;
                 b++)
             {
                 bytes[b] = _data[dataPointer + b];
@@ -452,8 +452,8 @@ namespace Itinero.Transit.Data
 
         private uint GetConnectionDeparture(uint internalId)
         {
-            var dataPointer = internalId * ConnectionSizeInBytes;
-            if (_data.Length <= dataPointer + ConnectionSizeInBytes)
+            var dataPointer = internalId * _connectionSizeInBytes;
+            if (_data.Length <= dataPointer + _connectionSizeInBytes)
             {
                 return uint.MaxValue;
             }
@@ -469,8 +469,8 @@ namespace Itinero.Transit.Data
 
         private uint GetConnectionArrival(uint internalId)
         {
-            var dataPointer = internalId * ConnectionSizeInBytes;
-            if (_data.Length <= dataPointer + ConnectionSizeInBytes)
+            var dataPointer = internalId * _connectionSizeInBytes;
+            if (_data.Length <= dataPointer + _connectionSizeInBytes)
             {
                 return uint.MaxValue;
             }
@@ -563,7 +563,7 @@ namespace Itinero.Transit.Data
         private bool RemoveDepartureIndex(uint internalId, uint window)
         {
             var windowPointer = _departureWindowPointers[window * 2 + 0];
-            if (_departureWindowPointers[window * 2 + 0] == NoData)
+            if (_departureWindowPointers[window * 2 + 0] == _noData)
             {
 // nothing to remove.
                 return false;
@@ -598,7 +598,7 @@ namespace Itinero.Transit.Data
             var window = WindowFor(departure);
             var nextEmpty = uint.MaxValue;
             var windowPointer = _departureWindowPointers[window * 2 + 0];
-            if (_departureWindowPointers[window * 2 + 0] == NoData)
+            if (_departureWindowPointers[window * 2 + 0] == _noData)
             {
 // add a new window.
                 nextEmpty = _departurePointer;
@@ -668,7 +668,7 @@ namespace Itinero.Transit.Data
         private bool RemoveArrivalIndex(uint internalId, uint window)
         {
             var windowPointer = _arrivalWindowPointers[window * 2 + 0];
-            if (_arrivalWindowPointers[window * 2 + 0] == NoData)
+            if (_arrivalWindowPointers[window * 2 + 0] == _noData)
             {
 // nothing to remove.
                 return false;
@@ -704,7 +704,7 @@ namespace Itinero.Transit.Data
                                            _windowSizeInSeconds);
             var nextEmpty = uint.MaxValue;
             var windowPointer = _arrivalWindowPointers[window * 2 + 0];
-            if (_arrivalWindowPointers[window * 2 + 0] == NoData)
+            if (_arrivalWindowPointers[window * 2 + 0] == _noData)
             {
 // add a new window.
                 nextEmpty = _arrivalPointer;
@@ -995,7 +995,7 @@ namespace Itinero.Transit.Data
             {
                 var hash = _db.Hash(globalId);
                 var pointer = _db._globalIdPointersPerHash[hash];
-                while (pointer != NoData)
+                while (pointer != _noData)
                 {
                     var internalId = _db._globalIdLinkedList[pointer + 0];
                     if (MoveTo(internalId))
@@ -1026,7 +1026,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// A enumerator by departure.
         /// </summary>
-        public class DepartureEnumerator : IConnectionEnumerator, IConnection
+        public class DepartureEnumerator : IConnectionEnumerator
         {
             private readonly ConnectionsDb _db;
             private readonly ConnectionsDbReader _reader;

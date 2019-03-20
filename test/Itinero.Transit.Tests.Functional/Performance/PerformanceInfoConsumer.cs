@@ -15,7 +15,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
         private readonly System.Threading.Timer _memoryUsageTimer; // Holds the memory usage timer.
         private readonly List<double> _memoryUsageLog = new List<double>(); // Holds the memory usage log.
         private long _memoryUsageLoggingDuration; // Holds the time spent on logging memory usage.
-        private readonly int _iterations = 1;
+        private readonly int _iterations;
 
         /// <summary>
         /// Creates the a new performance info consumer.
@@ -47,6 +47,7 @@ namespace Itinero.Transit.Tests.Functional.Performance
             {
                 GC.Collect();
                 var p = Process.GetCurrentProcess();
+                // ReSharper disable once PossibleInvalidOperationException
                 _memoryUsageLog.Add(Math.Round((p.PrivateMemorySize64 - _memory.Value) / 1024.0 / 1024.0, 4));
 
                 _memoryUsageLoggingDuration = _memoryUsageLoggingDuration + (DateTime.Now.Ticks - ticksBefore);

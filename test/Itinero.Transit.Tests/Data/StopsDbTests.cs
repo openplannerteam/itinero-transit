@@ -11,7 +11,7 @@ namespace Itinero.Transit.Tests.Data
 {
     public class StopsDbTests
     {
-        private const int P = 4; // TODO: this is not good enough!
+        private const int _p = 4; // TODO: this is not good enough!
 
         [Fact]
         public void StopsDb_ShouldStoreWithTiledId()
@@ -32,8 +32,8 @@ namespace Itinero.Transit.Tests.Data
 
             var enumerator = db.GetReader();
             Assert.True(enumerator.MoveNext());
-            Assert.Equal(4.78686332702636700, enumerator.Longitude, P);
-            Assert.Equal(51.26277419739382, enumerator.Latitude, P);
+            Assert.Equal(4.78686332702636700, enumerator.Longitude, _p);
+            Assert.Equal(51.26277419739382, enumerator.Latitude, _p);
             Assert.Equal(id.tileId, enumerator.Id.tileId);
             Assert.Equal(id.localId, enumerator.Id.localId);
             Assert.Equal("http://irail.be/stations/NMBS/008863008", enumerator.GlobalId);
@@ -73,8 +73,8 @@ namespace Itinero.Transit.Tests.Data
 
             var enumerator = db.GetReader();
             Assert.True(enumerator.MoveTo(id4.tileId, id4.localId));
-            Assert.Equal(4.955863952636719, enumerator.Longitude, P);
-            Assert.Equal(51.32546294433130, enumerator.Latitude, P);
+            Assert.Equal(4.955863952636719, enumerator.Longitude, _p);
+            Assert.Equal(51.32546294433130, enumerator.Latitude, _p);
             Assert.Equal(id4.tileId, enumerator.Id.tileId);
             Assert.Equal(id4.localId, enumerator.Id.localId);
             Assert.Equal("http://irail.be/stations/NMBS/008863010", enumerator.GlobalId);
