@@ -19,7 +19,7 @@ namespace Itinero.Transit.Data
     public class StopsDb
     {
         private readonly TiledLocationIndex _stopLocations; // holds the stop location in a tiled way.
-        private readonly int _stopIdHashSize = ushort.MaxValue;
+        private const int _stopIdHashSize = ushort.MaxValue;
         private readonly ArrayBase<string> _stopIds; // holds the stop ids per stop.
         private readonly ArrayBase<uint> _stopAttributeIds; // holds the stop attribute ids per stop.
 
@@ -139,7 +139,7 @@ namespace Itinero.Transit.Data
                     hash = hash * 31 + c;
                 }
 
-                return (uint) (hash % _stopIdHashSize);
+                return hash % _stopIdHashSize;
             }
         }
 

@@ -157,6 +157,17 @@ namespace Itinero.Transit.Data.Tiles
         /// <returns>The tile a the given coordinates.</returns>
         public static Tile WorldToTile(double longitude, double latitude, int zoom)
         {
+
+            if (longitude > 180 || longitude < -180)
+            {
+                throw new ArgumentOutOfRangeException(nameof(longitude));
+            }
+            
+            if (latitude > 90 || latitude < -90)
+            {
+                throw new ArgumentOutOfRangeException(nameof(latitude));
+            }
+            
             var n = (int) Math.Floor(Math.Pow(2, zoom)); // replace by bitshifting?
 
             var rad = (latitude / 180d) * Math.PI;
