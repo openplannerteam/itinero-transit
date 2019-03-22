@@ -13,9 +13,11 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDb_ShouldStoreConnection()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
             var departureTime = new DateTime(2018, 11, 14, 2, 3, 9);
-            var id = db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            var id = db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 departureTime, 1024, 0, 0, 10245, 0);
 
             Assert.Equal((uint) 0, id);
@@ -24,9 +26,11 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDbReader_ShouldMoveToConnectionByInternalId()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
             var departureTime = new DateTime(2018, 11, 14, 2, 3, 9);
-            var id = db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            var id = db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 departureTime, 1024, 0, 0, 10245, 0);
 
             var reader = db.GetReader();
@@ -36,9 +40,11 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDbReader_ShouldMoveToConnectionByGlobalId()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
             var departureTime = new DateTime(2018, 11, 14, 2, 3, 9);
-            var id = db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            var id = db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 departureTime, 1024, 0, 0, 10245, 0);
 
             var reader = db.GetReader();
@@ -49,9 +55,11 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDbReader_ShouldReturnGlobalId()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
             var departureTime = new DateTime(2018, 11, 14, 2, 3, 9);
-            var id = db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            var id = db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 departureTime, 1024, 0, 0, 10245, 0);
 
             var reader = db.GetReader();
@@ -62,9 +70,11 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDbReader_ShouldReturnTripId()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
             var departureTime = new DateTime(2018, 11, 14, 2, 3, 9);
-            var id = db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            var id = db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 departureTime, 1024, 0, 0, 10245, 0);
 
             var reader = db.GetReader();
@@ -75,9 +85,11 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDbEnumerator_ShouldEnumerateConnectionByDeparture()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
             var departureTime = new DateTime(2018, 11, 14, 2, 3, 9);
-            var id = db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            var id = db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 departureTime, 1024, 0, 0, 10245, 0);
 
             var enumerator = db.GetDepartureEnumerator();
@@ -91,16 +103,18 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDbEnumerator_ShouldEnumerateConnectionsByDeparture()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 new DateTime(2018, 11, 14, 2, 3, 9), 1024, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8892056/20181216/IC544",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8892056/20181216/IC544",
                 new DateTime(2018, 11, 14, 4, 3, 9), 54, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8821311/20181216/IC1822",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8821311/20181216/IC1822",
                 new DateTime(2018, 11, 14, 2, 3, 10), 102, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813045/20181216/IC3744",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813045/20181216/IC3744",
                 new DateTime(2018, 11, 14, 5, 3, 9), 4500, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8812005/20181216/S11793",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8812005/20181216/S11793",
                 new DateTime(2018, 11, 14, 10, 3, 35), 3600, 0, 0, 10245, 0);
 
             var enumerator = db.GetDepartureEnumerator();
@@ -122,16 +136,18 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDbEnumerator_ShouldEnumerateConnectionsInTheSameMinuteByDeparture()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 new DateTime(2018, 11, 14, 2, 3, 09), 1024, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8892056/20181216/IC544",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8892056/20181216/IC544",
                 new DateTime(2018, 11, 14, 2, 3, 07), 54, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8812005/20181216/S11793",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8812005/20181216/S11793",
                 new DateTime(2018, 11, 14, 2, 3, 35), 3600, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8821311/20181216/IC1822",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8821311/20181216/IC1822",
                 new DateTime(2018, 11, 14, 2, 3, 10), 102, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813045/20181216/IC3744",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813045/20181216/IC3744",
                 new DateTime(2018, 11, 14, 2, 3, 01), 4500, 0, 0, 10245, 0);
 
             var enumerator = db.GetDepartureEnumerator();
@@ -153,16 +169,18 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDbEnumerator_ShouldEnumerateConnectionsByArrival()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 new DateTime(2018, 11, 14, 2, 3, 9), 1024, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8892056/20181216/IC544",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8892056/20181216/IC544",
                 new DateTime(2018, 11, 14, 2, 3, 9), 54, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8821311/20181216/IC1822",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8821311/20181216/IC1822",
                 new DateTime(2018, 11, 14, 2, 3, 9), 102, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813045/20181216/IC3744",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813045/20181216/IC3744",
                 new DateTime(2018, 11, 14, 2, 3, 9), 4500, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8812005/20181216/S11793",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8812005/20181216/S11793",
                 new DateTime(2018, 11, 14, 2, 3, 9), 3600, 0, 0, 10245, 0);
 
             var enumerator = db.GetArrivalEnumerator();
@@ -184,16 +202,18 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDbEnumerator_ShouldEnumerateConnectionsByDepartureOnDifferentDates()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 new DateTime(2018, 11, 14, 2, 4, 09), 1024, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8892056/20181216/IC544",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8892056/20181216/IC544",
                 new DateTime(2018, 11, 15, 2, 6, 07), 54, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8812005/20181216/S11793",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8812005/20181216/S11793",
                 new DateTime(2018, 11, 16, 2, 8, 35), 3600, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8821311/20181216/IC1822",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8821311/20181216/IC1822",
                 new DateTime(2018, 11, 15, 2, 9, 10), 102, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813045/20181216/IC3744",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813045/20181216/IC3744",
                 new DateTime(2018, 11, 14, 2, 10, 01), 4500, 0, 0, 10245, 0);
 
             var enumerator = db.GetDepartureEnumerator();
@@ -215,16 +235,18 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDbEnumerator_ShouldEnumerateConnectionsByArrivalOnDifferentDates()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 new DateTime(2018, 11, 14, 2, 4, 09), 1024, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8892056/20181216/IC544",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8892056/20181216/IC544",
                 new DateTime(2018, 11, 15, 2, 6, 07), 1024, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8812005/20181216/S11793",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8812005/20181216/S11793",
                 new DateTime(2018, 11, 16, 2, 8, 35), 1024, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8821311/20181216/IC1822",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8821311/20181216/IC1822",
                 new DateTime(2018, 11, 15, 2, 9, 10), 1024, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813045/20181216/IC3744",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813045/20181216/IC3744",
                 new DateTime(2018, 11, 14, 2, 10, 01), 1024, 0, 0, 10245, 0);
 
             var enumerator = db.GetArrivalEnumerator();
@@ -246,16 +268,18 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDbEnumerator_ShouldEnumerateConnectionsByDepartureInReverse()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 new DateTime(2018, 11, 14, 2, 3, 9), 1024, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8892056/20181216/IC544",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8892056/20181216/IC544",
                 new DateTime(2018, 11, 14, 4, 3, 9), 54, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8821311/20181216/IC1822",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8821311/20181216/IC1822",
                 new DateTime(2018, 11, 14, 2, 3, 10), 102, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813045/20181216/IC3744",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813045/20181216/IC3744",
                 new DateTime(2018, 11, 14, 5, 3, 9), 4500, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8812005/20181216/S11793",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8812005/20181216/S11793",
                 new DateTime(2018, 11, 14, 10, 3, 35), 3600, 0, 0, 10245, 0);
 
             var enumerator = db.GetDepartureEnumerator();
@@ -277,16 +301,18 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDbEnumerator_ShouldEnumerateConnectionsByDepartureInReverseOnDifferentDates()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 new DateTime(2018, 11, 14, 2, 4, 09), 1024, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8892056/20181216/IC544",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8892056/20181216/IC544",
                 new DateTime(2018, 11, 15, 2, 6, 07), 54, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8812005/20181216/S11793",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8812005/20181216/S11793",
                 new DateTime(2018, 11, 16, 2, 8, 35), 3600, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8821311/20181216/IC1822",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8821311/20181216/IC1822",
                 new DateTime(2018, 11, 15, 2, 9, 10), 102, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813045/20181216/IC3744",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813045/20181216/IC3744",
                 new DateTime(2018, 11, 14, 2, 10, 01), 4500, 0, 0, 10245, 0);
 
             var enumerator = db.GetDepartureEnumerator();
@@ -308,16 +334,18 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDbEnumerator_ShouldMoveNextToDateTimeAndEnumerateFromThere()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 new DateTime(2018, 11, 14, 2, 3, 9), 1024, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8892056/20181216/IC544",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8892056/20181216/IC544",
                 new DateTime(2018, 11, 13, 4, 3, 9), 54, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8821311/20181216/IC1822",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8821311/20181216/IC1822",
                 new DateTime(2018, 11, 14, 2, 3, 10), 102, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813045/20181216/IC3744",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813045/20181216/IC3744",
                 new DateTime(2018, 11, 15, 5, 3, 9), 4500, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8812005/20181216/S11793",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8812005/20181216/S11793",
                 new DateTime(2018, 11, 14, 10, 3, 35), 3600, 0, 0, 10245, 0);
 
             var enumerator = db.GetDepartureEnumerator();
@@ -357,16 +385,18 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDbEnumerator_ShouldMovePreviousToDateTimeAndEnumerateFromThere()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 new DateTime(2018, 11, 14, 2, 3, 9), 1024, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8892056/20181216/IC544",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8892056/20181216/IC544",
                 new DateTime(2018, 11, 13, 4, 3, 9), 54, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8821311/20181216/IC1822",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8821311/20181216/IC1822",
                 new DateTime(2018, 11, 14, 2, 3, 10), 102, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813045/20181216/IC3744",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813045/20181216/IC3744",
                 new DateTime(2018, 11, 15, 5, 3, 9), 4500, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8812005/20181216/S11793",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8812005/20181216/S11793",
                 new DateTime(2018, 11, 14, 10, 3, 35), 3600, 0, 0, 10245, 0);
 
             var enumerator = db.GetDepartureEnumerator();
@@ -401,16 +431,18 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDb_CloneShouldBeCopy()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 new DateTime(2018, 11, 14, 2, 3, 9), 1024, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8892056/20181216/IC544",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8892056/20181216/IC544",
                 new DateTime(2018, 11, 13, 4, 3, 9), 54, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8821311/20181216/IC1822",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8821311/20181216/IC1822",
                 new DateTime(2018, 11, 14, 2, 3, 10), 102, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813045/20181216/IC3744",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813045/20181216/IC3744",
                 new DateTime(2018, 11, 15, 5, 3, 9), 4500, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8812005/20181216/S11793",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8812005/20181216/S11793",
                 new DateTime(2018, 11, 14, 10, 3, 35), 3600, 0, 0, 10245, 0);
 
             db = db.Clone();
@@ -447,16 +479,18 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDb_WriteToReadFromShouldBeCopy()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 new DateTime(2018, 11, 14, 2, 3, 9), 1024, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8892056/20181216/IC544",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8892056/20181216/IC544",
                 new DateTime(2018, 11, 13, 4, 3, 9), 54, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8821311/20181216/IC1822",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8821311/20181216/IC1822",
                 new DateTime(2018, 11, 14, 2, 3, 10), 102, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813045/20181216/IC3744",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813045/20181216/IC3744",
                 new DateTime(2018, 11, 15, 5, 3, 9), 4500, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8812005/20181216/S11793",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8812005/20181216/S11793",
                 new DateTime(2018, 11, 14, 10, 3, 35), 3600, 0, 0, 10245, 0);
 
             using (var stream = new MemoryStream())
@@ -465,7 +499,7 @@ namespace Itinero.Transit.Tests.Data
 
                 stream.Seek(0, SeekOrigin.Begin);
 
-                db = ConnectionsDb.ReadFrom(stream);
+                db = ConnectionsDb.ReadFrom(stream,0);
 
                 var enumerator = db.GetDepartureEnumerator();
                 Assert.NotNull(enumerator);
@@ -500,10 +534,12 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDbEnumerator_AddOrUpdate_ShouldUpdateTrips()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 new DateTime(2018, 11, 14, 2, 3, 9), 1024, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 new DateTime(2018, 11, 14, 2, 3, 9), 1024, 0, 0, 10246, 0);
 
             var enumerator = db.GetDepartureEnumerator();
@@ -515,28 +551,35 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDbEnumerator_AddOrUpdate_ShouldUpdateStops()
         {
+            var loc3 = new LocationId(0, 100, 3);
+            var loc2 = new LocationId(0, 100, 2);
+
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 new DateTime(2018, 11, 14, 2, 3, 9), 1024, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 2), (100, 3), "http://irail.be/connections/8813003/20181216/IC1545",
+            db.AddOrUpdate(loc2, loc3, "http://irail.be/connections/8813003/20181216/IC1545",
                 new DateTime(2018, 11, 14, 2, 3, 9), 1024, 0, 0, 10245, 0);
 
             var enumerator = db.GetDepartureEnumerator();
             Assert.NotNull(enumerator);
             Assert.True(enumerator.MovePrevious(new DateTime(2018, 11, 16)));
-            Assert.Equal((uint) 2, enumerator.DepartureStop.localId);
-            Assert.Equal((uint) 3, enumerator.ArrivalStop.localId);
+            Assert.Equal((uint) 2, enumerator.DepartureStop.LocalId);
+            Assert.Equal((uint) 3, enumerator.ArrivalStop.LocalId);
         }
 
         [Fact]
         public void ConnectionsDbEnumerator_AddOrUpdate_ShouldUpdateDepartureTimeWithinSameWindow()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 new DateTime(2018, 11, 14, 2, 3, 9), 1024, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8892056/20181216/IC544",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8892056/20181216/IC544",
                 new DateTime(2018, 11, 14, 2, 3, 10), 54, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 new DateTime(2018, 11, 14, 2, 3, 11), 1024, 0, 0, 10245, 0);
 
             var enumerator = db.GetDepartureEnumerator();
@@ -550,12 +593,14 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void ConnectionsDbEnumerator_AddOrUpdate_ShouldUpdateDepartureTimeBetweenWindows()
         {
+            var loc1 = new LocationId(0, 100, 1);
+            var loc = new LocationId(0, 100, 0);
             var db = new ConnectionsDb(60);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 new DateTime(2018, 11, 14, 2, 3, 9), 1024, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8892056/20181216/IC544",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8892056/20181216/IC544",
                 new DateTime(2018, 11, 14, 2, 3, 10), 54, 0, 0, 10245, 0);
-            db.AddOrUpdate((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
+            db.AddOrUpdate(loc, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
                 new DateTime(2018, 11, 14, 2, 4, 9), 1024, 0, 0, 10245, 0);
 
             var enumerator = db.GetDepartureEnumerator();

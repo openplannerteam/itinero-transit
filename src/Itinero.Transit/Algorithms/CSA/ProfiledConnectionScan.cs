@@ -25,8 +25,8 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly IConnectionEnumerator _connections;
         private readonly IStopsReader _stopsReader;
         private readonly UnixTime _earliestDeparture, _lastArrival;
-        private readonly List<(uint, uint)> _departureLocations;
-        private readonly List<(uint, uint)> _targetLocations;
+        private readonly List<LocationId> _departureLocations;
+        private readonly List<LocationId> _targetLocations;
 
         private readonly ProfiledStatsComparator<T> _comparator;
 
@@ -56,8 +56,8 @@ namespace Itinero.Transit.Algorithms.CSA
         /// Also known as 'S' in the paper
         ///
         /// </summary>
-        private readonly Dictionary<(uint, uint), ParetoFrontier<T>> _stationJourneys =
-            new Dictionary<(uint, uint), ParetoFrontier<T>>();
+        private readonly Dictionary<LocationId, ParetoFrontier<T>> _stationJourneys =
+            new Dictionary<LocationId, ParetoFrontier<T>>();
 
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace Itinero.Transit.Algorithms.CSA
         {
             settings.SanityCheck();
 
-            _targetLocations = new List<(uint, uint)>();
+            _targetLocations = new List<LocationId>();
             foreach (var (target, journey) in settings.TargetStop)
             {
                 if (journey != null)
@@ -116,7 +116,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 _targetLocations.Add(target);
             }
 
-            _departureLocations = new List<(uint, uint)>();
+            _departureLocations = new List<LocationId>();
             foreach (var (target, journey) in settings.DepartureStop)
             {
                 if (journey != null)
@@ -394,7 +394,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         /// <param name="journeys"></param>
         /// <param name="cDepartureStop"></param>
-        private void UpdateFootpaths(ParetoFrontier<T> journeys, (uint localTileId, uint localId) cDepartureStop)
+        private void UpdateFootpaths(ParetoFrontier<T> journeys, LocationId cDepartureStop)
         {
             // TODO incorporate intermodality
         }

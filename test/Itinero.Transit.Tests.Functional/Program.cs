@@ -53,8 +53,8 @@ namespace Itinero.Transit.Tests.Functional
             EnableLogging();
 
             Log.Information("Starting the Functional Tests...");
-            var date = DateTime.Now.Date; // LOCAL TIMES! //
-
+            var date = new DateTime(2019,03,22); // LOCAL TIMES! //
+    
 
             new CachingTest().Run(true);
 
@@ -65,10 +65,10 @@ namespace Itinero.Transit.Tests.Functional
             // Log.Information("Running TestReadWrite");
 //
             // db = new TestReadWrite().Run(db);
-            var fileN = $"{DateTime.Now:yyyy-MM-dd}";
+            var fileN = $"{date:yyyy-MM-dd}";
             try
             {
-                db = TransitDb.ReadFrom($"test-write-to-disk-{fileN}.transitdb");
+                db = TransitDb.ReadFrom($"test-write-to-disk-{fileN}.transitdb", 0);
                 Log.Information("Reused already existing tdb for testing");
             }
             catch (Exception e)
@@ -102,8 +102,9 @@ namespace Itinero.Transit.Tests.Functional
                     Gent,
                     date.Date.AddHours(10),
                     date.Date.AddHours(12)),
-                (db, Brugge,
+                (db,
                     Poperinge,
+                    Brugge,
                     date.Date.AddHours(10),
                     date.Date.AddHours(15)),
                 (db, Brugge,
@@ -123,20 +124,35 @@ namespace Itinero.Transit.Tests.Functional
             var failed = 0;
             var results = new Dictionary<string, int>();
 
+
+            void RegisterFail<T>(string name, T i)
+            {
+                Log.Error($"{name} failed on {i}");
+                failed++;
+            }
+
+
             foreach (var t in tests)
             {
                 var name = t.GetType().Name;
                 results[name] = 0;
                 foreach (var i in inputs)
                 {
-                    if (!t.RunPerformance(i, nrOfRuns))
+                    try
                     {
-                        Log.Information($"{name} failed on {i}");
-                        failed++;
+                        if (!t.RunPerformance(i, nrOfRuns))
+                        {
+                            RegisterFail(name, i);
+                        }
+                        else
+                        {
+                            results[name]++;
+                        }
                     }
-                    else
+                    catch (Exception e)
                     {
-                        results[name]++;
+                        Log.Error(e.ToString());
+                        RegisterFail(name, i);
                     }
                 }
             }

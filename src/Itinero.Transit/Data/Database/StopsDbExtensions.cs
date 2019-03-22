@@ -14,10 +14,9 @@ namespace Itinero.Transit.Data
     /// </summary>
     public static class StopsDbExtensions
     {
-        public static (uint tileId, uint localId) FindStop(this IStopsReader reader, string locationId,
+        public static LocationId FindStop(this IStopsReader reader, string locationId,
             string errorMessage = null)
         {
-            // var reader = tdb.Latest.StopsDb.GetReader();
             if (!reader.MoveTo(locationId))
             {
                 errorMessage = errorMessage ?? $"Departure location {locationId} was not found";
@@ -64,7 +63,7 @@ namespace Itinero.Transit.Data
 
 
         public static float CalculateDistanceBetween
-            (this IStopsReader reader, (uint, uint) departureLocation, (uint, uint) targetLocation)
+            (this IStopsReader reader, LocationId departureLocation, LocationId targetLocation)
         {
             reader.MoveTo(departureLocation);
             var lat0 = (float) reader.Latitude;

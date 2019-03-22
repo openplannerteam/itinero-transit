@@ -47,7 +47,7 @@ namespace Itinero.Transit.Data.Walks
 
         public Journey<T> CreateDepartureTransfer<T>(IStopsReader _, Journey<T> buildOn,
             ulong timeWhenLeaving,
-            (uint, uint) otherLocation) where T : IJourneyStats<T>
+            LocationId otherLocation) where T : IJourneyStats<T>
         {
             if (timeWhenLeaving < buildOn.Time)
             {
@@ -55,7 +55,8 @@ namespace Itinero.Transit.Data.Walks
                     "Seems like the connection you gave departs before the journey arrives. Are you building backward routes? Use the other method (CreateArrivingTransfer)");
             }
 
-            if (buildOn.Location != otherLocation)
+            // ReSharper disable once ConvertIfStatementToReturnStatement
+            if (!otherLocation.Equals(buildOn.Location))
             {
                 // Internal transfer policy does not take care of different locations
                 return null;
@@ -66,7 +67,7 @@ namespace Itinero.Transit.Data.Walks
 
         public Journey<T> CreateArrivingTransfer<T>(IStopsReader _, Journey<T> buildOn,
             ulong timeWhenArriving,
-            (uint, uint) otherLocation) where T : IJourneyStats<T>
+            LocationId otherLocation) where T : IJourneyStats<T>
         {
             if (timeWhenArriving > buildOn.Time)
             {
@@ -74,7 +75,8 @@ namespace Itinero.Transit.Data.Walks
                     "Seems like the connection you gave arrives after the rest of the journey departs. Are you building forward routes? Use the other method (CreateDepartingTransfer)");
             }
 
-            if (otherLocation != buildOn.Location)
+            // ReSharper disable once ConvertIfStatementToReturnStatement
+            if (!otherLocation.Equals(buildOn.Location))
             {
                 return null;
             }

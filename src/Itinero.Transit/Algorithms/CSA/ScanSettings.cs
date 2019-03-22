@@ -34,12 +34,12 @@ namespace Itinero.Transit.Algorithms.CSA
         /// A list of possible departure locations with possible departure journeys.
         /// Journeys should be in a forward order (genesis, then take...)
         /// </summary>
-        public List<((uint, uint), Journey<T>)> DepartureStop { get; set; }
+        public List<(LocationId, Journey<T>)> DepartureStop { get; set; }
         /// <summary>
         /// A list of possible arrival locations with possible arrival journeys
         /// Journeys should be in a backward order (..., then take to arrive at, genesis)
         /// </summary>
-        public List<((uint, uint), Journey<T>)> TargetStop { get; set; }
+        public List<(LocationId, Journey<T>)> TargetStop { get; set; }
         /// <summary>
         /// The statistics that are used in the journeys
         /// </summary>
@@ -78,25 +78,25 @@ namespace Itinero.Transit.Algorithms.CSA
 
         public ScanSettings(TransitDb.TransitDbSnapShot transitDb, DateTime earliestDeparture, DateTime lastDeparture,
             T statsFactory, ProfiledStatsComparator<T> comparator, IOtherModeGenerator transferPolicy,
-            IOtherModeGenerator walkPolicy, (uint, uint) departureStop, (uint, uint) targetStop)
+            IOtherModeGenerator walkPolicy, LocationId departureStop, LocationId targetStop)
             : this(transitDb, earliestDeparture, lastDeparture, statsFactory, comparator, transferPolicy, walkPolicy,
-                new List<(uint, uint)> {departureStop}, new List<(uint, uint)> {targetStop})
+                new List<LocationId> {departureStop}, new List<LocationId> {targetStop})
         {
         }
 
         
         public ScanSettings(TransitDb.TransitDbSnapShot transitDb, DateTime earliestDeparture, DateTime lastDeparture,
             T statsFactory, ProfiledStatsComparator<T> comparator, IOtherModeGenerator transferPolicy,
-            IOtherModeGenerator walkPolicy, List<(uint, uint)>  departureLocations, List<(uint, uint)>  targetLocations)
+            IOtherModeGenerator walkPolicy, List<LocationId>  departureLocations, List<LocationId>  targetLocations)
             : this(transitDb, earliestDeparture, lastDeparture, statsFactory, comparator, transferPolicy, walkPolicy,
               AddNullJourneys(departureLocations), AddNullJourneys(targetLocations))
         {
         }
 
 
-        private static List<((uint, uint), Journey<T>)> AddNullJourneys(IEnumerable<(uint, uint)> locs)
+        private static List<(LocationId, Journey<T>)> AddNullJourneys(IEnumerable<LocationId> locs)
         {
-            var l = new List<((uint, uint), Journey<T>)>();
+            var l = new List<(LocationId, Journey<T>)>();
             foreach (var loc in locs)
             {
                 l.Add((loc, null));
@@ -108,7 +108,7 @@ namespace Itinero.Transit.Algorithms.CSA
         public ScanSettings(TransitDb.TransitDbSnapShot transitDb, 
             DateTime earliestDeparture, DateTime lastDeparture,
             T statsFactory, ProfiledStatsComparator<T> comparator, IOtherModeGenerator transferPolicy,
-            IOtherModeGenerator walkPolicy, List<((uint, uint), Journey<T>)> departureStop, List<((uint, uint), Journey<T>)> targetLocation)
+            IOtherModeGenerator walkPolicy, List<(LocationId, Journey<T>)> departureStop, List<(LocationId, Journey<T>)> targetLocation)
         {
             Connections = transitDb.ConnectionsDb.GetDepartureEnumerator();
             StopsDbReader = transitDb.StopsDb.GetReader();
@@ -122,7 +122,7 @@ namespace Itinero.Transit.Algorithms.CSA
             TargetStop = targetLocation;
         }
 
-        public ScanSettings(TransitDb.TransitDbSnapShot snapshot, (uint, uint) departureStop, (uint, uint) arrivalStop,
+        public ScanSettings(TransitDb.TransitDbSnapShot snapshot, LocationId departureStop, LocationId arrivalStop,
             DateTime departureTime, DateTime arrivalTime, Profile<T> profile)
         : this(
             snapshot,

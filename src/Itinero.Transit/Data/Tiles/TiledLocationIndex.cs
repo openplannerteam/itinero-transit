@@ -496,7 +496,7 @@ namespace Itinero.Transit.Data.Tiles
                 { // there is a current tile.
                     if (LocalId == _currentTileCapacity - 1)
                     { // this was the last location in this tile, move to the next tile.
-                        var localTileId = uint.MaxValue;
+                        uint localTileId;
                         do
                         {
                             _currentTileIndexPointer += 9;

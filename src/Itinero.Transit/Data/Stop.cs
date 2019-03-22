@@ -2,6 +2,7 @@ using Itinero.Transit.Data.Attributes;
 
 namespace Itinero.Transit.Data
 {
+    /// <inheritdoc />
     /// <summary>
     /// Representation of a stop.
     /// </summary>
@@ -19,7 +20,7 @@ namespace Itinero.Transit.Data
             }
         }
         
-        internal Stop(string globalId, (uint tileId, uint localId) id,
+        internal Stop(string globalId, LocationId id,
             double longitude, double latitude, IAttributeCollection attributes)
         {
             GlobalId = globalId;
@@ -40,7 +41,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// Gets the id.
         /// </summary>
-        public (uint tileId, uint localId) Id { get; }
+        public LocationId Id { get; }
 
         /// <summary>
         /// Gets the longitude.

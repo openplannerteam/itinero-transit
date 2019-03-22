@@ -15,7 +15,7 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
         
         protected override TransitDb Execute(Stream input)
         {
-            return TransitDb.ReadFrom(input);
+            return TransitDb.ReadFrom(input, 0);
         }
     }
 }

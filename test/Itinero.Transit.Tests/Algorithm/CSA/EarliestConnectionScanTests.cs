@@ -14,7 +14,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         [Fact]
         public void SimpleEasTest()
         {
-            var tdb = Db.GetDefaultTestDb();
+            var tdb = Db.GetDefaultTestDb(out var stop0, out var stop1, out var stop2, out var _, out var _, out var _);
             var db = tdb.Latest;
 
             var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
@@ -23,18 +23,6 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 TransferStats.ProfileTransferCompare
             );
 
-            var stopsReader = tdb.Latest.StopsDb.GetReader();
-
-            stopsReader.MoveTo("https://example.com/stops/0");
-            var stop0 = stopsReader.Id;
-           
-            stopsReader.MoveTo("https://example.com/stops/1");
-            var stop1 = stopsReader.Id;
-
-            stopsReader.MoveTo("https://example.com/stops/2");
-            var stop2 = stopsReader.Id;
-
-            
             var eas = new EarliestConnectionScan<TransferStats>(
                 new ScanSettings<TransferStats>(
                     db,
@@ -52,7 +40,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
 
             eas = new EarliestConnectionScan<TransferStats>(new ScanSettings<TransferStats>(db,
-                stop0,  stop2, db.GetConn(0).DepartureTime.FromUnixTime(),
+                stop0, stop2, db.GetConn(0).DepartureTime.FromUnixTime(),
                 (db.GetConn(0).DepartureTime + 60 * 60 * 2).FromUnixTime(),
                 profile
             ));
@@ -62,7 +50,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             Assert.NotNull(j);
             Assert.Equal((uint) 1, j.Connection);
         }
-        
+
         [Fact]
         public void SimpleNotGettingOffTest()
         {
@@ -99,7 +87,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 new DateTime(2018, 12, 04, 11, 00, 00),
                 profile));
             var journey = eas.CalculateJourney();
-            
+
             // It is not possible to get on or off any connection
             // So we should not find anything
             Assert.Null(journey);
@@ -204,9 +192,9 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 TransferStats.Factory,
                 TransferStats.ProfileTransferCompare);
 
-            var sources = new List<((uint tileId, uint localId), Journey<TransferStats> journey)>
+            var sources = new List<(LocationId, Journey<TransferStats> journey)>
                 {(stop1, null)};
-            var targets = new List<((uint tileId, uint localId), Journey<TransferStats> journey)>
+            var targets = new List<(LocationId, Journey<TransferStats> journey)>
             {
                 (stop2,
                     new Journey<TransferStats>(stop2, 0, profile.StatsFactory, 42)
@@ -267,16 +255,16 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
 
             var startTime = new DateTime(2018, 12, 04, 16, 00, 00);
-            var sources = new List<((uint tileId, uint localId), Journey<TransferStats> journey)>
+            var sources = new List<(LocationId, Journey<TransferStats> journey)>
             {
                 (stop1,
                     new Journey<TransferStats>(stop1, startTime.ToUnixTime(), profile.StatsFactory, 42)
-                        .ChainSpecial(Journey<TransferStats>.WALK, 
-                            startTime.ToUnixTime() + 1000, stop1, tripId: 42 )
+                        .ChainSpecial(Journey<TransferStats>.WALK,
+                            startTime.ToUnixTime() + 1000, stop1, tripId: 42)
                 )
             };
 
-            var targets = new List<((uint tileId, uint localId), Journey<TransferStats> journey)>
+            var targets = new List<(LocationId, Journey<TransferStats> journey)>
                 {(stop2, null)};
 
 
@@ -298,11 +286,10 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             Assert.True(journey.PreviousLink.PreviousLink.SpecialConnection);
             Assert.Equal(Journey<TransferStats>.WALK,
                 journey.PreviousLink.PreviousLink.Connection);
-            
+
             Assert.Equal((uint) 1, journey.Stats.NumberOfTransfers);
             Assert.Equal(1000, journey.Stats.WalkingTime);
-            Assert.Equal((uint) 30*60, journey.Stats.TravelTime);
-
+            Assert.Equal((uint) 30 * 60, journey.Stats.TravelTime);
         }
 
         [Fact]

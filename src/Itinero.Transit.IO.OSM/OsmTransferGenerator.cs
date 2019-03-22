@@ -74,8 +74,8 @@ namespace Itinero.Transit
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <returns></returns>
-        private Route CreateRouteBetween((uint localTileId, uint localId) start, 
-            (uint localTileId, uint localId) end)
+        private Route CreateRouteBetween(LocationId start, 
+            LocationId end)
         {
             _stopsDb.MoveTo(start);
             var lat = (float) _stopsDb.Latitude;
@@ -99,7 +99,7 @@ namespace Itinero.Transit
             return route.IsError ? null : route.Value;
         }
 
-        public Journey<T> CreateDepartureTransfer<T>(IStopsReader _, Journey<T> buildOn, ulong timeWhenDeparting, (uint, uint) otherLocation) where T : IJourneyStats<T>
+        public Journey<T> CreateDepartureTransfer<T>(IStopsReader _, Journey<T> buildOn, ulong timeWhenDeparting,LocationId otherLocation) where T : IJourneyStats<T>
         {
             if (timeWhenDeparting < buildOn.Time)
             {
@@ -125,7 +125,7 @@ namespace Itinero.Transit
                 Journey<T>.WALK, (uint) (buildOn.Time + route.TotalDistance), otherLocation, uint.MaxValue);
         }
 
-        public Journey<T> CreateArrivingTransfer<T>(IStopsReader _, Journey<T> buildOn, ulong timeWhenArriving, (uint, uint) otherLocation) where T : IJourneyStats<T>
+        public Journey<T> CreateArrivingTransfer<T>(IStopsReader _, Journey<T> buildOn, ulong timeWhenArriving, LocationId otherLocation) where T : IJourneyStats<T>
         {
             if (timeWhenArriving > buildOn.Time)
             {

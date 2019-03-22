@@ -10,8 +10,8 @@ namespace Itinero.Transit.Data
     /// </summary>
     public class TransitDb
     {
-        public TransitDb() : this(
-            new StopsDb(), new TripsDb(), new ConnectionsDb())
+        public TransitDb(uint databaseId = 0) : this(
+            new StopsDb(databaseId), new TripsDb(), new ConnectionsDb(databaseId))
         {
         }
 
@@ -50,27 +50,28 @@ namespace Itinero.Transit.Data
         /// </summary>
         public TransitDbSnapShot Latest => _latestSnapshot;
 
-        public static TransitDb ReadFrom(string path)
+        public static TransitDb ReadFrom(string path, uint databaseId)
         {
             using (var stream = File.OpenRead(path))
             {
-                return ReadFrom(stream);
+                return ReadFrom(stream, databaseId);
             }
         }
-        
+
         /// <summary>
         /// Reads a transit db an all its data from the given stream.
         /// </summary>
         /// <param name="stream">The stream.</param>
+        /// <param name="databaseId"></param>
         /// <returns>The transit db.</returns>
-        public static TransitDb ReadFrom(Stream stream)
+        public static TransitDb ReadFrom(Stream stream, uint databaseId)
         {
             var version = stream.ReadByte();
             if (version != 1) throw new InvalidDataException($"Cannot read {nameof(TransitDb)}, invalid version #.");
 
-            var stopsDb = StopsDb.ReadFrom(stream);
+            var stopsDb = StopsDb.ReadFrom(stream, databaseId);
             var tripsDb = TripsDb.ReadFrom(stream);
-            var connectionsDb = ConnectionsDb.ReadFrom(stream);
+            var connectionsDb = ConnectionsDb.ReadFrom(stream, databaseId);
 
             return new TransitDb(stopsDb, tripsDb, connectionsDb);
         }
@@ -149,8 +150,7 @@ namespace Itinero.Transit.Data
             /// <param name="latitude">The latitude.</param>
             /// <param name="attributes">The attributes.</param>
             /// <returns>The stop id.</returns>
-            public (uint tileId, uint localId) AddOrUpdateStop(string globalId, double longitude, double latitude,
-                IEnumerable<Attribute> attributes = null)
+            public LocationId AddOrUpdateStop(string globalId, double longitude, double latitude, IEnumerable<Attribute> attributes = null)
             {
                 var stopsDbReader = _stopsDb.GetReader();
                 if (stopsDbReader.MoveTo(globalId))
@@ -192,8 +192,8 @@ namespace Itinero.Transit.Data
             /// <param name="tripId">The trip id.</param>
             /// <param name="mode"></param>
             /// <returns></returns>
-            public uint AddOrUpdateConnection((uint localTileId, uint localId) stop1,
-                (uint localTileId, uint localId) stop2, string globalId, DateTime departureTime, ushort travelTime,
+            public uint AddOrUpdateConnection(LocationId stop1,
+                LocationId stop2, string globalId, DateTime departureTime, ushort travelTime,
                 ushort departureDelay, ushort arrivalDelay, uint tripId, ushort mode)
             {
                 return _connectionsDb.AddOrUpdate(stop1, stop2, globalId, departureTime, travelTime, departureDelay, arrivalDelay, tripId, mode);

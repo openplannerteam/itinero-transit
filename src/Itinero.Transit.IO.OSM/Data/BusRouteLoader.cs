@@ -11,6 +11,9 @@ namespace Itinero.Transit.Data
         public BusRouteLoader(uint relationId)
         {
             _relationId = relationId;
-        }
+            
+            
+            
+        }   
     }
 }

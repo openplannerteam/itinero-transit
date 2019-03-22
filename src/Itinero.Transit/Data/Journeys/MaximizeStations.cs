@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Journeys
 {
@@ -7,6 +8,7 @@ namespace Itinero.Transit.Journeys
     {
         public partial class Minimizer
         {
+            /// <inheritdoc />
             /// <summary>
             /// A simple Journey Comparer, which walks along two journeys and takes the difference in station importance.
             /// </summary>
@@ -14,9 +16,9 @@ namespace Itinero.Transit.Journeys
             public class MaximizeStations<T> : Comparer<Journey<T>> where T : IJourneyStats<T>
             {
                 
-                private readonly Dictionary<(uint, uint), uint> _importances;
+                private readonly Dictionary<LocationId, uint> _importances;
 
-                public MaximizeStations(Dictionary<(uint, uint), uint> importances)
+                public MaximizeStations(Dictionary<LocationId, uint> importances)
                 {
                     _importances = importances;
                 }

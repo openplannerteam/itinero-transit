@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Journeys
 {
@@ -77,14 +78,14 @@ namespace Itinero.Transit.Journeys
 
         public partial class Minimizer : StatsComparator<TravellingTimeMinimizer>
         {
-            private readonly Dictionary<(uint, uint), uint> _importances;
+            private readonly Dictionary<LocationId, uint> _importances;
 
             public Minimizer() : this(null)
             {
             }
 
             // ReSharper disable once MemberCanBePrivate.Global
-            public Minimizer(Dictionary<(uint, uint), uint> importances)
+            public Minimizer(Dictionary<LocationId, uint> importances)
             {
                 _importances = importances;
             }
