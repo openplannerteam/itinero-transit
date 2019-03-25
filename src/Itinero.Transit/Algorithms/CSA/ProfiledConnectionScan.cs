@@ -220,15 +220,6 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <param name="c"></param>
         private void IntegrateConnection(IConnection c)
         {
-            if (_targetLocations.Contains(c.DepartureStop))
-            {
-                return;
-            }
-
-            if (_departureLocations.Contains(c.ArrivalStop))
-            {
-                return;
-            }
 
             if (c.ArrivalTime > _lastArrival)
             {
