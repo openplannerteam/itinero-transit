@@ -39,12 +39,12 @@ namespace Itinero.Transit.Algorithms.CSA
     internal class IsochroneFilter<T> : IConnectionFilter
         where T : IJourneyStats<T>
     {
-        private readonly IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> _isochrone;
+        private readonly IReadOnlyDictionary<LocationId, Journey<T>> _isochrone;
         private readonly bool _isForward;
 
         private readonly ulong _earliestValidDate, _latestValidDate;
 
-        public IsochroneFilter(IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> isochrone, bool isForward,
+        public IsochroneFilter(IReadOnlyDictionary<LocationId, Journey<T>> isochrone, bool isForward,
             ulong earliestValidDate, ulong latestValidDate)
         {
             _isochrone = isochrone;

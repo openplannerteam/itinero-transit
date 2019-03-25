@@ -11,10 +11,12 @@ namespace Itinero.Transit.Tests.Data
             ushort depDelay, ushort arrDelay)
         {
             var writer = tdb.GetWriter();
+            var loc0 = new LocationId(0, 0, 0);
+            var loc1 = new LocationId(0, 0, 1);
 
             var depTime = new DateTime(2019, 03, 06, departureHour, departureMinute, 00);
             writer.AddOrUpdateConnection(
-                (0, 0), (1, 1), "http://example.org/connection/0",
+                loc0, loc1, "http://example.org/connection/0",
                 depTime,
                 travelTime, depDelay, arrDelay, 0, 0);
 
@@ -52,7 +54,6 @@ namespace Itinero.Transit.Tests.Data
             AddConn(db, 10, 05, 60, 5, 5);
             AddConn(db, 10, 00, 60, 0, 5);
             AddConn(db, 11, 00, 60, 60, 60);
-
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         [Fact]
         public void SimpleLasTest()
         {
-            var tdb = Db.GetDefaultTestDb();
+            var tdb = Db.GetDefaultTestDb(out var stop0, out var stop1, out var stop2, out var _, out var _, out var _);
             var db = tdb.Latest;
 
             var profile = new Profile<TransferStats>(new InternalTransferGenerator(0),
@@ -21,17 +21,6 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 TransferStats.Factory,
                 TransferStats.ProfileTransferCompare
             );
-
-            var stopsReader = tdb.Latest.StopsDb.GetReader();
-
-            stopsReader.MoveTo("https://example.com/stops/0");
-            var stop0 = stopsReader.Id;
-
-            stopsReader.MoveTo("https://example.com/stops/1");
-            var stop1 = stopsReader.Id;
-            stopsReader.MoveTo("https://example.com/stops/2");
-            var stop2 = stopsReader.Id;
-
 
             var las = new LatestConnectionScan<TransferStats>(new ScanSettings<TransferStats>(db,
                 stop0, stop1,

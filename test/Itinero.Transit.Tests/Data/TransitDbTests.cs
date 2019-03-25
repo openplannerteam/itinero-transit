@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
+using Itinero.Transit.IO.LC.Data;
 using Xunit;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
@@ -37,16 +38,20 @@ namespace Itinero.Transit.Tests.Data
             writer.AddOrUpdateTrip("http://irail.be/vehicle/IC704",
                 new[] {new Attribute("headsign", "IC704"), new Attribute("name", "Antwerpen-Centraal - Poperinge")});
 
-            writer.AddOrUpdateConnection((100, 0), (100, 1), "http://irail.be/connections/8813003/20181216/IC1545",
-                new DateTime(2018, 11, 14, 2, 3, 9), 1024, 0,0, 10245, 0);
-            writer.AddOrUpdateConnection((100, 0), (100, 1), "http://irail.be/connections/8892056/20181216/IC544",
-                new DateTime(2018, 11, 13, 4, 3, 9), 54, 0,0, 10245, 0);
-            writer.AddOrUpdateConnection((100, 0), (100, 1), "http://irail.be/connections/8821311/20181216/IC1822",
-                new DateTime(2018, 11, 14, 2, 3, 10), 102, 0,0, 10245, 0);
-            writer.AddOrUpdateConnection((100, 0), (100, 1), "http://irail.be/connections/8813045/20181216/IC3744",
-                new DateTime(2018, 11, 15, 5, 3, 9), 4500, 0,0, 10245, 0);
-            writer.AddOrUpdateConnection((100, 0), (100, 1), "http://irail.be/connections/8812005/20181216/S11793",
-                new DateTime(2018, 11, 14, 10, 3, 35), 3600, 0,0, 10245, 0);
+
+            var loc0 = new LocationId(0, 100, 0);
+            var loc1 = new LocationId(0, 100, 1);
+
+            writer.AddOrUpdateConnection(loc0, loc1, "http://irail.be/connections/8813003/20181216/IC1545",
+                new DateTime(2018, 11, 14, 2, 3, 9), 1024, 0, 0, 10245, 0);
+            writer.AddOrUpdateConnection(loc0, loc1, "http://irail.be/connections/8892056/20181216/IC544",
+                new DateTime(2018, 11, 13, 4, 3, 9), 54, 0, 0, 10245, 0);
+            writer.AddOrUpdateConnection(loc0, loc1, "http://irail.be/connections/8821311/20181216/IC1822",
+                new DateTime(2018, 11, 14, 2, 3, 10), 102, 0, 0, 10245, 0);
+            writer.AddOrUpdateConnection(loc0, loc1, "http://irail.be/connections/8813045/20181216/IC3744",
+                new DateTime(2018, 11, 15, 5, 3, 9), 4500, 0, 0, 10245, 0);
+            writer.AddOrUpdateConnection(loc0, loc1, "http://irail.be/connections/8812005/20181216/S11793",
+                new DateTime(2018, 11, 14, 10, 3, 35), 3600, 0, 0, 10245, 0);
 
             writer.Close();
 
@@ -56,7 +61,7 @@ namespace Itinero.Transit.Tests.Data
 
                 stream.Seek(0, SeekOrigin.Begin);
 
-                var newDb = TransitDb.ReadFrom(stream);
+                var newDb = TransitDb.ReadFrom(stream, 0);
 
                 var latest = newDb.Latest;
 
@@ -114,7 +119,7 @@ namespace Itinero.Transit.Tests.Data
                 Assert.False(departureEnumerator.MovePrevious());
             }
         }
-        
+
         [Fact]
         public void TransitDb_ShouldStoreIdenticalGlobalIdsWithIdenticalId()
         {
@@ -122,7 +127,7 @@ namespace Itinero.Transit.Tests.Data
 
             var writer = db.GetWriter();
 
-            var globalIds = new []
+            var globalIds = new[]
             {
                 "http://irail.be/stations/NMBS/008863008",
                 "http://irail.be/stations/NMBS/008863010",
@@ -140,7 +145,7 @@ namespace Itinero.Transit.Tests.Data
             foreach (var globalId in globalIds)
             {
                 var id = writer.AddOrUpdateStop(globalId, 4.786863327026367, 51.26277419739382);
-            
+
                 Assert.Equal(id, writer.AddOrUpdateStop(globalId, 4.786863327026367, 51.26277419739382));
                 Assert.Equal(id, writer.AddOrUpdateStop(globalId, 4.786863327026367, 51.26277419739382));
                 Assert.Equal(id, writer.AddOrUpdateStop(globalId, 4.786863327026367, 51.26277419739382));

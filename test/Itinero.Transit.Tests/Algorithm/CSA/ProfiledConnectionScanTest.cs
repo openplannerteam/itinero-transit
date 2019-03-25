@@ -15,22 +15,15 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         [Fact]
         public void TestPcsSimple()
         {
-            var tdb = Db.GetDefaultTestDb();
+            var tdb = Db.GetDefaultTestDb(out var stop0, out var stop1, out var stop2, out var stop3, out var _, out var _);
+
             var db = tdb.Latest;
 
             var profile = new Profile<TransferStats>(new InternalTransferGenerator(60),
                 new CrowsFlightTransferGenerator(),
                 TransferStats.Factory, TransferStats.ProfileTransferCompare);
-            var stopsReader = tdb.Latest.StopsDb.GetReader();
-
-            stopsReader.MoveTo("https://example.com/stops/0");
-            var stop0 = stopsReader.Id;
-           
-            stopsReader.MoveTo("https://example.com/stops/3");
-            var stop3 = stopsReader.Id;
 
 
-            
             var pcs = new ProfiledConnectionScan<TransferStats>(new ScanSettings<TransferStats>(
                 db,
                 stop0, stop3,
@@ -61,27 +54,29 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var transitDb = new TransitDb();
             var writer = transitDb.GetWriter();
 
-            writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
-            writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
+            var loc0 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
+            var loc1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
+            var loc2 = writer.AddOrUpdateStop("https://example.com/stops/1", 2.1, 0.1);
+            var loc3 = writer.AddOrUpdateStop("https://example.com/stops/1", 3.1, 0.1);
 
-            writer.AddOrUpdateConnection((0, 0), (0, 1),
+          writer.AddOrUpdateConnection(loc0, loc1,
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 00, 00),
-                30 * 60, 0,0, 0, 0);
+                30 * 60, 0, 0, 0, 0);
 
 
-            writer.AddOrUpdateConnection((0, 0), (0, 1),
+            writer.AddOrUpdateConnection(loc0, loc1,
                 "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 16, 00, 00),
-                40 * 60, 0,0, 1, 0);
+                40 * 60, 0, 0, 1, 0);
 
-            writer.AddOrUpdateConnection((1, 1), (2, 2), "https//example.com/connections/2",
+            writer.AddOrUpdateConnection(loc2,loc3, "https//example.com/connections/2",
                 new DateTime(2018, 12, 04, 20, 00, 00),
-                40 * 60, 0,0, 2, 0);
+                40 * 60, 0, 0, 2, 0);
 
-            writer.AddOrUpdateConnection((1, 1), (2, 2), "https//example.com/connections/4",
+            writer.AddOrUpdateConnection(loc2,loc3, "https//example.com/connections/4",
                 new DateTime(2018, 12, 04, 2, 00, 00),
-                40 * 60, 0,0, 3, 0);
+                40 * 60, 0, 0, 3, 0);
 
             writer.Close();
 
@@ -94,7 +89,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var pcs = new ProfiledConnectionScan<TransferStats>
             (new ScanSettings<TransferStats>(
                 latest,
-                (0, 0), (0, 1),
+                loc0, loc1,
                 new DateTime(2018, 12, 04, 16, 00, 00),
                 new DateTime(2018, 12, 04, 18, 00, 00),
                 profile));
@@ -105,7 +100,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 Assert.Equal(30 * 60, (int) j.Stats.TravelTime);
             }
         }
-        
+
         [Fact]
         public void ShouldFindNoConnectionJourney()
         {

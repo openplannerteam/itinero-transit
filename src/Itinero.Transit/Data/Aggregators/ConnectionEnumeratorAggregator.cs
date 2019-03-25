@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Itinero.Transit.Data.Aggregators
 {
@@ -220,8 +219,8 @@ namespace Itinero.Transit.Data.Aggregators
 
         public uint TripId => _currentConnection.TripId;
 
-        public (uint localTileId, uint localId) DepartureStop => _currentConnection.DepartureStop;
+        public LocationId DepartureStop => _currentConnection.DepartureStop;
 
-        public (uint localTileId, uint localId) ArrivalStop => _currentConnection.ArrivalStop;
+        public LocationId ArrivalStop => _currentConnection.ArrivalStop;
     }
 }

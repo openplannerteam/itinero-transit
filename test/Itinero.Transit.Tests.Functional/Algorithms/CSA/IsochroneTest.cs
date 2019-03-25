@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
@@ -19,7 +18,6 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         {
             var reader = input.transitDb.Latest.StopsDb.GetReader();
             reader.MoveTo(input.arrivalStopId);
-            var checkId = reader.Id;
 
             var profile = new Profile<TransferStats>(new InternalTransferGenerator(1),
                 null,
@@ -28,11 +26,11 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var tbd = input.transitDb.Latest;
             var found = tbd.Isochrone(profile, input.departureStopId, input.departureTime, input.arrivalTime);
 
-            True(found.Count() > 100);
+            True(found.Count() > 10);
           
             found = tbd.IsochroneLatestArrival(profile, input.departureStopId, input.departureTime, input.arrivalTime);
 
-            True(found.Count() > 100);
+            True(found.Count() > 10);
             
             return true;
         }

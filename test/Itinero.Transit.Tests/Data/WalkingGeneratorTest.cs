@@ -1,3 +1,4 @@
+using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
 using Xunit;
@@ -9,20 +10,23 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void TestSimpleGenerator()
         {
-            var connDb = Db.GetDefaultTestDb().Latest.ConnectionsDb;
+            var tdb = Db.GetDefaultTestDb(out var stop0, out var stop1, out var stop2, out var _, out var _, out var _);
+
+            var connDb = tdb.Latest.ConnectionsDb;
 
             // ReSharper disable once RedundantArgumentDefaultValue
             var transferGen = new InternalTransferGenerator(180);
             var c0 = connDb.GetReader();
-            c0.MoveTo(0);
+            c0.MoveTo("https://example.com/connections/0");
             var c1 = connDb.GetReader();
-            c1.MoveTo(1);
+            c1.MoveTo("https://example.com/connections/1");
 
-            var root = new Journey<TransferStats>((0, 1), c0.DepartureTime, TransferStats.Factory);
+            var root = new Journey<TransferStats>(c0.DepartureStop, c0.DepartureTime, TransferStats.Factory);
             var j = root.ChainForward(c0);
             var transfered = transferGen
-                .CreateDepartureTransfer(null, j, c1.DepartureTime, c1.DepartureStop)
-                .ChainForward(c1);
+                .CreateDepartureTransfer(null, j, c1.DepartureTime, c1.DepartureStop);
+            Assert.NotNull(transfered);
+            transfered = transfered.ChainForward(c1);
 
             Assert.NotNull(transfered);
             Assert.True(transfered.PreviousLink.SpecialConnection);

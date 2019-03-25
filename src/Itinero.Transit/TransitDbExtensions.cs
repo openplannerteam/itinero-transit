@@ -28,7 +28,7 @@ namespace Itinero.Transit
             return snapShot.StopsDb.GetReader().SearchClosest(longitude, latitude, maxDistanceInMeters);
         }
 
-        public static (uint, uint) FindStop(this TransitDb.TransitDbSnapShot snapshot, string locationId,
+        public static LocationId FindStop(this TransitDb.TransitDbSnapShot snapshot, string locationId,
             string errMsg = null)
         {
             return snapshot.StopsDb.GetReader().FindStop(locationId, errMsg);
@@ -83,7 +83,7 @@ namespace Itinero.Transit
         ///  the Journey will contain a 'Choice'-element
         ///  
         ///  </summary>
-        public static IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> Isochrone<T>
+        public static IReadOnlyDictionary<LocationId, Journey<T>> Isochrone<T>
         (this TransitDb.TransitDbSnapShot snapshot,
             Profile<T> profile,
             string from, DateTime departure, DateTime lastArrival)
@@ -103,8 +103,8 @@ namespace Itinero.Transit
             var settings = new ScanSettings<T>(
                 snapshot, departure, lastArrival, profile.StatsFactory,
                 profile.ProfileComparator, profile.InternalTransferGenerator, profile.WalksGenerator,
-                new List<(uint, uint)> {fromId},
-                new List<(uint, uint)>() // EMPTY LIST
+                new List<LocationId> {fromId},
+                new List<LocationId>() // EMPTY LIST
             );
             var eas = new EarliestConnectionScan<T>(settings);
             eas.CalculateJourney();
@@ -148,7 +148,7 @@ namespace Itinero.Transit
         ///
         /// </summary>
         /// <returns></returns>
-        public static Dictionary<(uint localTileId, uint localId), Journey<T>> IsochroneLatestArrival<T>
+        public static Dictionary<LocationId, Journey<T>> IsochroneLatestArrival<T>
         (this TransitDb.TransitDbSnapShot snapshot,
             Profile<T> profile, string to, DateTime departure, DateTime lastArrival)
             where T : IJourneyStats<T>
@@ -164,8 +164,8 @@ namespace Itinero.Transit
             var settings = new ScanSettings<T>(
                 snapshot, departure, lastArrival, profile.StatsFactory,
                 profile.ProfileComparator, profile.InternalTransferGenerator, profile.WalksGenerator,
-                new List<(uint, uint)>(), // EMPTY LIST
-                new List<(uint, uint)> {toId}
+                new List<LocationId>(), // EMPTY LIST
+                new List<LocationId> {toId}
             );
             var las = new LatestConnectionScan<T>(settings);
             las.CalculateJourney();
@@ -173,7 +173,7 @@ namespace Itinero.Transit
             var allJourneys = las.Isochrone();
 
 
-            var reversedJourneys = new Dictionary<(uint localTileId, uint localId), Journey<T>>();
+            var reversedJourneys = new Dictionary<LocationId, Journey<T>>();
             foreach (var pair in allJourneys)
             {
                 // Due to the nature of LAS, there can be no choices in the journeys; reversal will only return one value
@@ -304,7 +304,7 @@ namespace Itinero.Transit
         ///  </summary>
         public static List<Journey<T>> CalculateJourneys<T>
         (this TransitDb.TransitDbSnapShot snapshot,
-            Profile<T> profile, (uint, uint) depLocation, (uint, uint) arrivalLocation,
+            Profile<T> profile, LocationId depLocation, LocationId arrivalLocation,
             DateTime? departureTime = null, DateTime? lastArrivalTime = null) where T : IJourneyStats<T>
         {
             var settings = new ScanSettings<T>(

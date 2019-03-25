@@ -59,8 +59,7 @@ namespace Itinero.Transit.IO.LC.Data
         public bool GetOff { get; private set; }
 
 
-        private const string GtfsRegular = "http://vocab.gtfs.org/terms#Regular";
-        private static readonly JObject GtfsRegularToken = JObject.Parse("{ @id: "+GtfsRegular+"}");
+        private const string _gtfsRegular = "http://vocab.gtfs.org/terms#Regular";
 
         // ReSharper disable once UnusedMember.Global
         public Connection(Uri uri) : base(uri)
@@ -141,14 +140,14 @@ namespace Itinero.Transit.IO.LC.Data
             GtfsTrip = json.GetId("http://vocab.gtfs.org/terms#trip");
             GtfsRoute = json.GetId("http://vocab.gtfs.org/terms#route");
 
-            var getOn = json.GetContents("http://vocab.gtfs.org/terms#pickupType", GtfsRegular);
+            var getOn = json.GetContents("http://vocab.gtfs.org/terms#pickupType", _gtfsRegular);
             
-            GetOn = (getOn.IsString() && getOn.ToString().Equals(GtfsRegular))
-                        || getOn.GetId().ToString().Equals(GtfsRegular);
+            GetOn = (getOn.IsString() && getOn.ToString().Equals(_gtfsRegular))
+                        || getOn.GetId().ToString().Equals(_gtfsRegular);
                 
-            var getOff = json.GetContents("http://vocab.gtfs.org/terms#dropOffType", GtfsRegular);
-                GetOff = (getOff.IsString() && getOff.ToString().Equals(GtfsRegular))
-                    || getOff.GetId().ToString().Equals(GtfsRegular);
+            var getOff = json.GetContents("http://vocab.gtfs.org/terms#dropOffType", _gtfsRegular);
+                GetOff = (getOff.IsString() && getOff.ToString().Equals(_gtfsRegular))
+                    || getOff.GetId().ToString().Equals(_gtfsRegular);
 
             // ReSharper disable once InvertIf
             if (_arrivalTime <= _departureTime)

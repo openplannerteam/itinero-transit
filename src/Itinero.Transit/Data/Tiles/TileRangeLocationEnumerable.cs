@@ -34,16 +34,15 @@ namespace Itinero.Transit.Data.Tiles
 
         internal class TileRangeLocationEnumerator : IEnumerator<(uint tileId, uint localId, uint dataPointer)>
         {
-            private readonly TileRangeLocationEnumerable _enumerable;
             private readonly IEnumerator<Tile> _tileEnumerator;
             private readonly TiledLocationIndex.Enumerator _locationEnumerator;
 
             public TileRangeLocationEnumerator(TileRangeLocationEnumerable enumerable)
             {
-                _enumerable = enumerable;
+                var enumerable1 = enumerable;
                 
-                _tileEnumerator = _enumerable._tileRange.GetEnumerator();
-                _locationEnumerator = _enumerable._locationIndex.GetEnumerator();
+                _tileEnumerator = enumerable1._tileRange.GetEnumerator();
+                _locationEnumerator = enumerable1._locationIndex.GetEnumerator();
             }
             
             private uint _currentTile = uint.MaxValue;
@@ -60,6 +59,7 @@ namespace Itinero.Transit.Data.Tiles
                         _currentTile = _tileEnumerator.Current.LocalId;
                         _currentLocal = 0;
 
+                        // ReSharper disable once InvertIf
                         if (_locationEnumerator.MoveTo(_currentTile, _currentLocal))
                         {
                             _currentLatitude = _locationEnumerator.Latitude;

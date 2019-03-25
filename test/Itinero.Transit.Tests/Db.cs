@@ -5,17 +5,23 @@ namespace Itinero.Transit.Tests
 {
     internal static class Db
     {
-        public static TransitDb GetDefaultTestDb()
+        public static TransitDb GetDefaultTestDb(
+            out LocationId stop0,
+            out LocationId stop1,
+            out LocationId stop2,
+            out LocationId stop3,
+            out LocationId stop10,
+            out LocationId stop11)
         {
             var transitDb = new TransitDb();
             var writer = transitDb.GetWriter();
 
-            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 1.1);
-            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/2", 0.5, 0.5);
-            var stop3 = writer.AddOrUpdateStop("https://example.com/stops/3", 1.5, 0.5);
-            var stop10 = writer.AddOrUpdateStop("https://example.com/stops/10", 2.5, 0.5);
-            var stop11 = writer.AddOrUpdateStop("https://example.com/stops/11", 3.5, 0.5);
+            stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
+            stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 1.1);
+            stop2 = writer.AddOrUpdateStop("https://example.com/stops/2", 0.5, 0.5);
+            stop3 = writer.AddOrUpdateStop("https://example.com/stops/3", 1.5, 0.5);
+            stop10 = writer.AddOrUpdateStop("https://example.com/stops/10", 2.5, 0.5);
+            stop11 = writer.AddOrUpdateStop("https://example.com/stops/11", 3.5, 0.5);
 
             writer.AddOrUpdateConnection(stop0, stop1,
                 "https://example.com/connections/0",

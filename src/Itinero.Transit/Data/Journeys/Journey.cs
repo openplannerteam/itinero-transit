@@ -93,7 +93,7 @@ namespace Itinero.Transit.Journeys
         /// 
         /// Only for the genesis connection, this is the departure location.
         /// </summary>
-        public readonly (uint tileId, uint localId) Location;
+        public readonly LocationId Location;
 
         /// <summary>
         /// Keep track of Time.
@@ -136,7 +136,7 @@ namespace Itinero.Transit.Journeys
             Root = this;
             PreviousLink = this;
             Connection = int.MaxValue;
-            Location = (uint.MaxValue, uint.MaxValue);
+            Location = LocationId.Invalid;
             Time = time;
             SpecialConnection = true;
             TripId = uint.MaxValue;
@@ -157,7 +157,7 @@ namespace Itinero.Transit.Journeys
         /// <param name="tripId"></param>
         /// <param name="stats"></param>
         private Journey(Journey<T> root, Journey<T> previousLink, bool specialLink, uint connection,
-            (uint localTileId, uint localId) location, UnixTime time, uint tripId, T stats)
+            LocationId location, UnixTime time, uint tripId, T stats)
         {
             Root = root;
             SpecialConnection = specialLink;
@@ -174,7 +174,7 @@ namespace Itinero.Transit.Journeys
         /// Genesis constructor.
         /// This constructor creates a root journey
         /// </summary>
-        public Journey((uint localTileId, uint localId) location, UnixTime departureTime, T initialStats,
+        public Journey(LocationId location, UnixTime departureTime, T initialStats,
             uint debuggingFreeformTag = 0)
         {
             Root = this;
@@ -218,7 +218,7 @@ namespace Itinero.Transit.Journeys
         /// Chaining constructor
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
-        internal Journey<T> Chain(uint connection, UnixTime time, (uint localTileId, uint localId) location,
+        internal Journey<T> Chain(uint connection, UnixTime time, LocationId location,
             uint tripId)
         {
             return new Journey<T>(
@@ -258,7 +258,7 @@ namespace Itinero.Transit.Journeys
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
         public Journey<T> ChainSpecial(uint specialCode, UnixTime time,
-            (uint localTileId, uint localId) location, uint tripId)
+            LocationId location, uint tripId)
         {
             return new Journey<T>(
                 Root, this, true, specialCode, location, time, tripId, Stats);
@@ -354,12 +354,7 @@ namespace Itinero.Transit.Journeys
 
         public override string ToString()
         {
-            return ToString((StopsDb.StopsDbReader) null);
-        }
-
-        public string ToString(StopsDb db)
-        {
-            return ToString(db.GetReader());
+            return ToString(null);
         }
 
         public string ToString(IStopsReader reader, int maxDepth = 50)

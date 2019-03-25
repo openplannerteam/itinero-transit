@@ -48,9 +48,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var lasJ = las.CalculateJourney();
 
             NotNull(easJ);
-            Information(easJ.Pruned().ToString(latest.StopsDb));
+            Information(easJ.Pruned().ToString(latest.StopsDb.GetReader()));
             NotNull(lasJ);
-            Information(lasJ.Pruned().ToString(latest.StopsDb));
+            Information(lasJ.Pruned().ToString(latest.StopsDb.GetReader()));
             
 
             // Eas is bound by the first departing train, while las is not

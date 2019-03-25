@@ -48,7 +48,7 @@ namespace Itinero.Transit.Tests.Data
             {
                 tdb.Latest.WriteTo(stream);
                 stream.Seek(0, SeekOrigin.Begin);
-                var loadedDb = TransitDb.ReadFrom(stream);
+                var loadedDb = TransitDb.ReadFrom(stream, 0);
 
 
                 var snapShot = loadedDb.Latest;
@@ -62,7 +62,7 @@ namespace Itinero.Transit.Tests.Data
 
 
                 var enumerator = snapShot.ConnectionsDb.GetDepartureEnumerator();
-                Assert.True(enumerator.MoveNext(new DateTime(2019, 03, 06, 10, 00, 00)));
+                Assert.True(enumerator.MoveNext(new DateTime(2019, 03, 06, 9, 59, 00)));
                 
                 Assert.Equal(stop0, enumerator.DepartureStop);
                 Assert.Equal(stop1, enumerator.ArrivalStop);

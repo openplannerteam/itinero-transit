@@ -15,7 +15,8 @@ namespace Itinero.Transit.Algorithms.CSA
         ///  
         ///  </summary>
         ///  <param name="pareto"></param>
-        ///  <param name="c"></param>
+        /// <param name="stopsReader"></param>
+        /// <param name="c"></param>
         /// <param name="transferPolicy"></param>
         /// <typeparam name="T"></typeparam>
         ///  <returns></returns>

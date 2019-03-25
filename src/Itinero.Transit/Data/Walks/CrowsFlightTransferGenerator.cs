@@ -38,7 +38,7 @@ namespace Itinero.Transit.Data.Walks
         /// </summary>
         public Journey<T> CreateDepartureTransfer<T>(IStopsReader reader, Journey<T> buildOn,
             ulong timeWhenLeaving,
-            (uint, uint) otherLocation) where T : IJourneyStats<T>
+            LocationId otherLocation) where T : IJourneyStats<T>
         {
             var distance = reader.CalculateDistanceBetween(buildOn.Location, otherLocation);
             if (distance > _maxDistance)
@@ -61,7 +61,7 @@ namespace Itinero.Transit.Data.Walks
 
         public Journey<T> CreateArrivingTransfer<T>(IStopsReader reader, Journey<T> buildOn,
             ulong timeWhenDeparting,
-            (uint, uint) otherLocation) where T : IJourneyStats<T>
+            LocationId otherLocation) where T : IJourneyStats<T>
         {
             var distance = reader.CalculateDistanceBetween(buildOn.Location, otherLocation);
             if (distance > _maxDistance)

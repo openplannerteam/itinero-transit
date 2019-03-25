@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms.CSA;
@@ -29,7 +30,10 @@ namespace Itinero.Transit.Tests.Functional
         private const string Vielsalm = "http://irail.be/stations/NMBS/008845146";
         private const string BrusselZuid = "http://irail.be/stations/NMBS/008814001";
         private const string Kortrijk = "http://irail.be/stations/NMBS/008896008";
-
+        private const string Oostende = "http://irail.be/stations/NMBS/008891702";
+        private const string Antwerpen = "http://irail.be/stations/NMBS/008821006"; // Antwerpen centraal
+        private const string SintJorisWeert = "http://irail.be/stations/NMBS/008833159"; // Antwerpen centraal
+        private const string Leuven = "http://irail.be/stations/NMBS/008833001"; // Antwerpen centraal
 
         private const string Howest = "https://data.delijn.be/stops/502132";
         private const string ZandStraat = "https://data.delijn.be/stops/500562";
@@ -39,12 +43,12 @@ namespace Itinero.Transit.Tests.Functional
         private static readonly Dictionary<string, DefaultFunctionalTest> AllTestsNamed =
             new Dictionary<string, DefaultFunctionalTest>
             {
-                {"eas", EarliestConnectionScanTest.Default},
-                {"las", LatestConnectionScanTest.Default},
+              //  {"eas", EarliestConnectionScanTest.Default},
+            //    {"las", LatestConnectionScanTest.Default},
                 {"pcs", ProfiledConnectionScanTest.Default},
-                {"easpcs", EasPcsComparison.Default},
+             /*   {"easpcs", EasPcsComparison.Default},
                 {"easlas", EasLasComparison.Default},
-                {"isochrone", IsochroneTest.Default}
+                {"isochrone", IsochroneTest.Default}*/
             };
 
 
@@ -53,7 +57,7 @@ namespace Itinero.Transit.Tests.Functional
             EnableLogging();
 
             Log.Information("Starting the Functional Tests...");
-            var date = DateTime.Now.Date; // LOCAL TIMES! //
+            var date = DateTime.Now; // new DateTime(2019,03,22); // LOCAL TIMES! //
 
 
             new CachingTest().Run(true);
@@ -65,10 +69,11 @@ namespace Itinero.Transit.Tests.Functional
             // Log.Information("Running TestReadWrite");
 //
             // db = new TestReadWrite().Run(db);
-            var fileN = $"{DateTime.Now:yyyy-MM-dd}";
+            var fileN = $"{date:yyyy-MM-dd}";
             try
             {
-                db = TransitDb.ReadFrom($"test-write-to-disk-{fileN}.transitdb");
+                var path = $"test-write-to-disk-{fileN}.transitdb";
+                db = TransitDb.ReadFrom(path, 0);
                 Log.Information("Reused already existing tdb for testing");
             }
             catch (Exception e)
@@ -98,53 +103,113 @@ namespace Itinero.Transit.Tests.Functional
 
             var inputs = new List<(TransitDb, string, string, DateTime, DateTime)>
             {
-                (db, Brugge,
+             /*   (db, Brugge,
                     Gent,
-                    date.Date.AddHours(10),
-                    date.Date.AddHours(12)),
-                (db, Brugge,
-                    Poperinge,
-                    date.Date.AddHours(10),
-                    date.Date.AddHours(15)),
-                (db, Brugge,
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(12)), //*/
+                /* TODO: see #49
+                 (db, Poperinge, Brugge,
+                        date.Date.AddHours(9),
+                        date.Date.AddHours(12)), //*/
+                /*(db,
+                    Oostende,
+                    Brugge,
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(11)),
+                (db,
+                    Brugge,
+                    Oostende,
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(11)), //*/
+                /*(db,
+                    BrusselZuid,
+                    Leuven,
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(14)), //*/
+                (db,
+                    Leuven,
+                    SintJorisWeert,
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(14)), //*/
+                (db,
+                    BrusselZuid,
+                    SintJorisWeert,
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(14)), //*/
+             /*   (db,
+                    Brugge,
                     Kortrijk,
                     date.Date.AddHours(6),
                     date.Date.AddHours(20)),
-                (db, Poperinge,
+                (db, Kortrijk,
                     Vielsalm,
-                    date.Date.AddHours(10),
+                    date.Date.AddHours(9),
                     date.Date.AddHours(18)),
-                //     (db, Howest,
-                //        Gent,
-                //        date.Date.AddHours(10),
-                //        date.Date.AddHours(18))
+                /* TODO Truly multimodal routes
+                 (db, Howest,
+                       Gent,
+                       date.Date.AddHours(10),
+                       date.Date.AddHours(18))
+                //*/
             };
 
             var failed = 0;
-            var results = new Dictionary<string, int>();
+            var results = new Dictionary<string, List<int>>();
+
+
+            void RegisterFail<T>(string name, T input, int i)
+            {
+                Log.Error($"{name} failed on input #{i} {input}");
+                failed++;
+            }
+
 
             foreach (var t in tests)
             {
+                var i = 0;
                 var name = t.GetType().Name;
-                results[name] = 0;
-                foreach (var i in inputs)
+                results[name] = new List<int>();
+                foreach (var input in inputs)
                 {
-                    if (!t.RunPerformance(i, nrOfRuns))
+                    try
                     {
-                        Log.Information($"{name} failed on {i}");
-                        failed++;
+                        if (!t.RunPerformance(input, nrOfRuns))
+                        {
+                            RegisterFail(name, input, i);
+                        }
+                        else
+                        {
+                            results[name].Add(i);
+                        }
                     }
-                    else
+                    catch (Exception e)
                     {
-                        results[name]++;
+                        Log.Error(e.ToString());
+                        RegisterFail(name, input, i);
                     }
+
+                    i++;
                 }
             }
 
             foreach (var t in tests)
             {
                 var name = t.GetType().Name;
-                Log.Information($"{name}: {results[name]}/{inputs.Count}");
+                var fails = "";
+                for (var j = 0; j < inputs.Count; j++)
+                {
+                    if (!results[name].Contains(j))
+                    {
+                        fails += $"{j}, ";
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(fails))
+                {
+                    fails = "Failed: " + fails;
+                }
+                
+                Log.Information($"{name}: {results[name].Count}/{inputs.Count} {fails}");
             }
 
             if (failed > 0)

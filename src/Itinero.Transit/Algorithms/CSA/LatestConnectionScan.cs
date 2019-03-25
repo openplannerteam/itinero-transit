@@ -16,7 +16,7 @@ namespace Itinero.Transit.Algorithms.CSA
     internal class LatestConnectionScan<T>
         where T : IJourneyStats<T>
     {
-        private readonly List<((uint localTileId, uint localId), Journey<T>)> _userDepartureLocation;
+        private readonly List<(LocationId, Journey<T>)> _userDepartureLocation;
 
         private readonly IConnectionEnumerator _connections;
         private readonly IStopsReader _stopsReader;
@@ -29,14 +29,14 @@ namespace Itinero.Transit.Algorithms.CSA
 
         public ulong ScanEndTime { get; }
 
-        public IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> Isochrone() => _s;
+        public IReadOnlyDictionary<LocationId, Journey<T>> Isochrone() => _s;
 
 
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as late as possible
         /// </summary>
-        private readonly Dictionary<(uint localTileId, uint localId), Journey<T>> _s =
-            new Dictionary<(uint localTileId, uint localId), Journey<T>>();
+        private readonly Dictionary<LocationId, Journey<T>> _s =
+            new Dictionary<LocationId, Journey<T>>();
 
 
         /// <summary>
@@ -279,7 +279,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
 
         private Journey<T>
-            GetJourneyFrom((uint, uint) location)
+            GetJourneyFrom(LocationId location)
         {
             return _s.ContainsKey(location)
                 ? _s[location]

@@ -10,20 +10,25 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void TestSimpleJourney()
         {
-            var connDb = new ConnectionsDb();
-            var c0 = connDb.AddOrUpdate((0, 0), (0, 1),
+            var connDb = new ConnectionsDb(0);
+            
+            
+            var loc0 = new LocationId(0,0,0);
+            var loc1 = new LocationId(0,0,1);
+            
+            var c0 = connDb.AddOrUpdate(loc0, loc1,
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 20, 00),
                 10 * 60, 0,0, 0, 0);
 
-            var c1 = connDb.AddOrUpdate((0, 0), (0, 1),
+            var c1 = connDb.AddOrUpdate(loc0, loc1,
                 "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 16, 33, 00),
                 10 * 60, 0,0, 1, 0);
 
 
             var time = new DateTime(2018, 12, 04, 16, 20, 00).ToUnixTime();
-            var j = new Journey<TransferStats>((0, 0), time,
+            var j = new Journey<TransferStats>(loc0, time,
                 TransferStats.Factory);
 
             var reader = connDb.GetReader();
@@ -49,20 +54,26 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void TestReverseJourney()
         {
-            var connDb = new ConnectionsDb();
-            var c0 = connDb.AddOrUpdate((0, 0), (0, 1),
+            var connDb = new ConnectionsDb(0);
+            
+            var loc0 = new LocationId(0,0,0);
+            var loc1 = new LocationId(0,0,1);
+            var loc2 = new LocationId(0,0,2);
+
+
+            var c0 = connDb.AddOrUpdate(loc0, loc1,
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 20, 00),
                 10 * 60, 0,0, 0, 0);
 
-            var c1 = connDb.AddOrUpdate((0, 1), (0, 2),
+            var c1 = connDb.AddOrUpdate(loc1, loc2,
                 "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 16, 33, 00),
                 10 * 60, 0,0, 1, 0);
 
 
             var time = new DateTime(2018, 12, 04, 16, 43, 00).ToUnixTime();
-            var j = new Journey<TransferStats>((0, 2), time,
+            var j = new Journey<TransferStats>(loc2, time,
                 TransferStats.Factory);
 
             var reader = connDb.GetReader();
@@ -72,7 +83,7 @@ namespace Itinero.Transit.Tests.Data
 
             j = j.ChainSpecial(Journey<TransferStats>.TRANSFER,
                 new DateTime(2018, 12, 04, 16, 30, 00).ToUnixTime(),
-                (0, 1), uint.MaxValue);
+                loc1, uint.MaxValue);
 
             reader.MoveTo(c0);
             j = j.ChainBackward(reader);

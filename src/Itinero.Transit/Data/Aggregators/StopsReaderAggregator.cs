@@ -7,21 +7,23 @@ namespace Itinero.Transit.Data.Aggregators
     {
         private IStopsReader _currentStop;
 
-        private readonly List<IStopsReader> _stops;
+        public List<IStopsReader> UnderlyingDatabases { get; }
 
         public StopsReaderAggregator(List<IStopsReader> stops)
         {
-            _stops = stops;
+            UnderlyingDatabases = stops;
         }
 
-        public bool MoveTo((uint localTileId, uint localId) stop)
+        public bool MoveTo(LocationId stop)
         {
-            throw new System.NotImplementedException();
+            _currentStop = UnderlyingDatabases[(int) stop.DatabaseId];
+            return _currentStop.MoveTo(stop);
+
         }
 
         public bool MoveTo(string globalId)
         {
-            foreach (var stop in _stops)
+            foreach (var stop in UnderlyingDatabases)
             {
                 // ReSharper disable once InvertIf
                 if (stop.MoveTo(globalId))
@@ -35,7 +37,7 @@ namespace Itinero.Transit.Data.Aggregators
 
         public void Reset()
         {
-            foreach (var reader in _stops)
+            foreach (var reader in UnderlyingDatabases)
             {
                 reader.Reset();
             }
@@ -44,7 +46,7 @@ namespace Itinero.Transit.Data.Aggregators
 
         public string GlobalId => _currentStop.GlobalId;
 
-        public (uint tileId, uint localId) Id => _currentStop.Id;
+        public LocationId Id => _currentStop.Id;
 
         public double Longitude => _currentStop.Longitude;
 

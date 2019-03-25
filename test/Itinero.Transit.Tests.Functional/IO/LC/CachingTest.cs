@@ -1,7 +1,6 @@
 using System;
 using Itinero.Transit.IO.LC;
 using Itinero.Transit.IO.LC.Data;
-using JsonLD.Core;
 
 namespace Itinero.Transit.Tests.Functional.IO.LC
 {
@@ -9,8 +8,8 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
     {
         protected override bool Execute(bool input)
         {
-            var cons = new ConnectionProvider(new Uri(Belgium.SNCB_Connections),
-                Belgium.SNCB_Connections + "{?departureTime}");
+            var cons = new ConnectionProvider(new Uri(Belgium.SncbConnections),
+                Belgium.SncbConnections + "{?departureTime}");
 
             var (tt, _) =
                 cons.GetTimeTable(
@@ -20,10 +19,9 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
             var uri = tt.Uri;
 
 
+            cons.GetTimeTable(
+                uri);
             var (_, changed) =
-                cons.GetTimeTable(
-                    uri);
-            (_, changed) =
                 cons.GetTimeTable(
                     uri);
             True(!changed);

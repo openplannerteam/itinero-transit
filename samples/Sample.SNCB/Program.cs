@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Linq;
 using Itinero.Transit;
 using Itinero.Transit.Data;
 using Itinero.Transit.IO.LC;
 
 namespace Sample.SNCB
 {
-    class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        // ReSharper disable once UnusedParameter.Local
+        private static void Main(string[] args)
         {
             // create an empty transit db and specify where to get data from, in this case linked connections.
             var transitDb = new TransitDb();
@@ -37,7 +37,7 @@ namespace Sample.SNCB
             {
                 foreach (var journey in journeys)
                 {
-                    Console.WriteLine(journey.ToString(snapshot.StopsDb));
+                    Console.WriteLine(journey.ToString(snapshot.StopsDb.GetReader()));
                 }
             }
         }

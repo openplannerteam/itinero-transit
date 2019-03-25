@@ -16,15 +16,18 @@ namespace Itinero.Transit.IO.LC
 
         private readonly TransitDb.TransitDbWriter _writer;
 
+        private readonly uint _dbId;
+        
         /// <inheritdoc />
         public DatabaseLoader(TransitDb.TransitDbWriter writer, LoggingOptions locationsLogger,
-            LoggingOptions connectionsLogger, Action<string> onError)
+            LoggingOptions connectionsLogger, Action<string> onError, uint dbId = 0)
         {
             _writer = writer;
 
             _locationsLogger = locationsLogger;
             _connectionsLogger = connectionsLogger;
             _onError = onError;
+            _dbId = dbId;
             if (onError == null)
             {
                 throw new ArgumentNullException(nameof(onError));
@@ -136,13 +139,14 @@ namespace Itinero.Transit.IO.LC
         /// </summary>
         /// <param name="location"></param>
         /// <returns></returns>
-        private (uint, uint) AddLocation(Location location)
+        private LocationId AddLocation(Location location)
         {
             var globalId = location.Id();
             var stopId = globalId.ToString();
 
             var attributes = new AttributeCollection();
             attributes.AddOrReplace("name", location.Name);
+            // ReSharper disable once InvertIf
             if (location.Names != null)
             {
                 foreach (var (lang, name) in location.Names)
@@ -158,7 +162,7 @@ namespace Itinero.Transit.IO.LC
         /// Adds the given stop to the DB. Returns the internal ID
         /// </summary>
         /// <returns></returns>
-        private (uint tileId, uint localId)
+        private LocationId
             AddStop(LocationProvider profile, Uri stopUri)
         {
             var location = profile.GetCoordinateFor(stopUri);
@@ -185,10 +189,6 @@ namespace Itinero.Transit.IO.LC
             var connectionUri = connection.Id().ToString();
 
             
-            /// (Mode % 4) == 0 => Both pickup and dropoff are possible - the normal situation
-            ///           == 1 => Only pickup is possible
-            ///           == 2 => Only dropoff is possible
-            ///           == 3 => Neither pickup nor dropoff are possible
             ushort mode = 0;
             if (!connection.GetOff)
             {

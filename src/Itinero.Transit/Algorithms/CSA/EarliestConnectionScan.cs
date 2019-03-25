@@ -16,7 +16,7 @@ namespace Itinero.Transit.Algorithms.CSA
     internal class EarliestConnectionScan<T>
         where T : IJourneyStats<T>
     {
-        private readonly List<((uint localTileId, uint localId), Journey<T>)> _userTargetLocations;
+        private readonly List<(LocationId, Journey<T>)> _userTargetLocations;
 
         private readonly IConnectionEnumerator _connections;
         private readonly IStopsReader _stopsReader;
@@ -26,7 +26,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         private readonly Time _lastArrival;
 
-        public IReadOnlyDictionary<(uint localTileId, uint localId), Journey<T>> Isochrone() => _s;
+        public IReadOnlyDictionary<LocationId, Journey<T>> Isochrone() => _s;
 
         public ulong ScanEndTime { get; private set; } = ulong.MinValue;
 
@@ -37,8 +37,8 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as early as possible
         /// </summary>
-        private readonly Dictionary<(uint localTileId, uint localId), Journey<T>> _s =
-            new Dictionary<(uint localTileId, uint localId), Journey<T>>();
+        private readonly Dictionary<LocationId, Journey<T>> _s =
+            new Dictionary<LocationId, Journey<T>>();
 
         /// <summary>
         /// Keeps track of where we are on each trip, thus if we wouldn't leave a bus once we're on it
@@ -88,7 +88,7 @@ namespace Itinero.Transit.Algorithms.CSA
         public Journey<T> CalculateJourney(Func<Time, Time, Time> depArrivalToTimeout = null)
         {
             var enumerator = _connections;
-            
+
             enumerator.MoveNext(ScanBeginTime);
 
             var lastDeparture = _lastArrival;
@@ -157,7 +157,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <param name="enumerator"></param>
         private bool IntegrateBatch(IConnectionEnumerator enumerator)
         {
-            var improvedLocations = new HashSet<(uint, uint)>();
+            var improvedLocations = new HashSet<LocationId>();
             var lastDepartureTime = enumerator.DepartureTime;
             do
             {
@@ -227,7 +227,8 @@ namespace Itinero.Transit.Algorithms.CSA
                 {
                     journeyToArrival =
                         _transferPolicy
-                            .CreateDepartureTransfer(_stopsReader, journeyTillDeparture, c.DepartureTime, c.DepartureStop)
+                            .CreateDepartureTransfer(_stopsReader, journeyTillDeparture, c.DepartureTime,
+                                c.DepartureStop)
                             ?.ChainForward(c);
                 }
 
@@ -271,7 +272,7 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
-        private void WalkAwayFrom((uint, uint) location)
+        private void WalkAwayFrom(LocationId location)
         {
             if (_walkPolicy == null || _walkPolicy.Range() <= 0f)
             {
@@ -282,6 +283,7 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 throw new ArgumentException($"Location {location} not found, could not move to it");
             }
+
             var reachableLocations =
                 _stopsReader.LocationsInRange(_stopsReader, _walkPolicy.Range());
 
@@ -290,7 +292,7 @@ namespace Itinero.Transit.Algorithms.CSA
             foreach (var reachableLocation in reachableLocations)
             {
                 var id = reachableLocation.Id;
-                if (id == location)
+                if (id.Equals(location))
                 {
                     continue;
                 }
@@ -351,7 +353,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
 
         private Journey<T>
-            GetJourneyTo((uint localTileId, uint localId) stop)
+            GetJourneyTo(LocationId stop)
         {
             return _s.ContainsKey(stop)
                 ? _s[stop]

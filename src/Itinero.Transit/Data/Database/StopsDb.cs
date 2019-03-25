@@ -30,11 +30,14 @@ namespace Itinero.Transit.Data
 
         private readonly AttributesIndex _attributes;
 
+        public readonly uint DatabaseId;
+
         /// <summary>
         /// Creates a new stops database.
         /// </summary>
-        internal StopsDb()
+        internal StopsDb(uint databaseId)
         {
+            DatabaseId = databaseId;
             _stopLocations = new TiledLocationIndex {Moved = Move};
             _stopIds = new MemoryArray<string>(0);
             _stopAttributeIds = new MemoryArray<uint>(0);
@@ -48,11 +51,12 @@ namespace Itinero.Transit.Data
             _attributes = new AttributesIndex(AttributesIndexMode.ReverseStringIndexKeysOnly);
         }
 
-        private StopsDb(TiledLocationIndex stopLocations, ArrayBase<string> stopIds, ArrayBase<uint> stopAttributeIds,
+        private StopsDb( uint databaseId, TiledLocationIndex stopLocations, ArrayBase<string> stopIds, ArrayBase<uint> stopAttributeIds,
             ArrayBase<uint> stopIdPointsPerHash, ArrayBase<uint> stopIdLinkedList, AttributesIndex attributes,
             uint stopIdLinkedListPointer)
         {
             _stopIdLinkedListPointer = stopIdLinkedListPointer;
+            DatabaseId = databaseId;
             _stopLocations = stopLocations;
             _stopLocations.Moved = Move;
             _stopIds = stopIds;
@@ -91,7 +95,7 @@ namespace Itinero.Transit.Data
         /// <param name="latitude">The stop latitude.</param>
         /// <param name="attributes">The stop attributes.</param>
         /// <returns>An internal id representing the stop in this transit db.</returns>
-        internal (uint tileId, uint localId) Add(string globalId, double longitude, double latitude,
+        internal LocationId Add(string globalId, double longitude, double latitude, 
             IEnumerable<Attribute> attributes = null)
         {
             // store location.
@@ -120,7 +124,7 @@ namespace Itinero.Transit.Data
             _stopIdLinkedList[_stopIdLinkedListPointer - 1] = _stopIdPointersPerHash[hash];
             _stopIdPointersPerHash[hash] = _stopIdLinkedListPointer - 3;
 
-            return (tileId, localId);
+            return new LocationId(DatabaseId, tileId, localId);
         }
 
         /// <summary>
@@ -169,7 +173,7 @@ namespace Itinero.Transit.Data
             return length;
         }
 
-        internal static StopsDb ReadFrom(Stream stream)
+        internal static StopsDb ReadFrom(Stream stream, uint databaseId)
         {
             var buffer = new byte[4];
 
@@ -190,7 +194,7 @@ namespace Itinero.Transit.Data
             // read attributes.
             var attributes = AttributesIndex.Deserialize(stream, true);
 
-            return new StopsDb(stopLocations, stopIds, stopAttributeIds, stopIdPointsPerHash, stopIdLinkedList,
+            return new StopsDb(databaseId, stopLocations, stopIds, stopAttributeIds, stopIdPointsPerHash, stopIdLinkedList,
                 attributes, stopIdLinkedListPointer);
         }
 
@@ -215,7 +219,8 @@ namespace Itinero.Transit.Data
 
             // don't clone the attributes, it's supposed to be add-only anyway.
             // it's up to the user not to write to it from multiple threads.
-            return new StopsDb(stopLocations, stopIds, stopAttributesIds, stopIdPointersPerHash, stopIdLinkedList,
+            return new StopsDb(DatabaseId,
+                stopLocations, stopIds, stopAttributesIds, stopIdPointersPerHash, stopIdLinkedList,
                 _attributes,
                 _stopIdLinkedListPointer);
         }
@@ -241,7 +246,6 @@ namespace Itinero.Transit.Data
             internal StopsDbReader(StopsDb stopsDb)
             {
                 _stopsDb = stopsDb;
-
                 _locationEnumerator = _stopsDb._stopLocations.GetEnumerator();
             }
 
@@ -260,7 +264,7 @@ namespace Itinero.Transit.Data
             /// <param name="localTileId">The local tile id.</param>
             /// <param name="localId">The local id.</param>
             /// <returns>True if there is more data.</returns>
-            public bool MoveTo(uint localTileId, uint localId)
+            private bool MoveTo(uint localTileId, uint localId)
             {
                 return _locationEnumerator.MoveTo(localTileId, localId);
             }
@@ -270,9 +274,10 @@ namespace Itinero.Transit.Data
             /// </summary>
             /// <param name="stop">The stop.</param>
             /// <returns>True if there is more data.</returns>
-            public bool MoveTo((uint localTileId, uint localId) stop)
+            public bool MoveTo(LocationId stop)
             {
-                return _locationEnumerator.MoveTo(stop.localTileId, stop.localId);
+                // That's right, we ignore the databaseTag completely here
+                return MoveTo(stop.LocalTileId, stop.LocalId);
             }
 
             /// <summary>
@@ -317,8 +322,8 @@ namespace Itinero.Transit.Data
             public string GlobalId => _stopsDb._stopIds[_locationEnumerator.DataPointer];
 
             /// <inheritdoc />
-            public (uint tileId, uint localId) Id =>
-                (_locationEnumerator.TileId, _locationEnumerator.LocalId);
+            public LocationId Id =>
+                new LocationId(_stopsDb.DatabaseId, _locationEnumerator.TileId, _locationEnumerator.LocalId);
 
             /// <inheritdoc />
             public double Latitude => _locationEnumerator.Latitude;
@@ -333,6 +338,8 @@ namespace Itinero.Transit.Data
                 _stopsDb._attributes.Get(_stopsDb._stopAttributeIds[_locationEnumerator.DataPointer]);
 
             public StopsDb StopsDb => _stopsDb;
+
+            public List<IStopsReader> UnderlyingDatabases => null;
 
         }
     }

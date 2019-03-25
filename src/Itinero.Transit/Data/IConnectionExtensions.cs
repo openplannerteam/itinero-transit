@@ -1,6 +1,6 @@
 namespace Itinero.Transit.Data
 {
-    public static class IConnectionExtensions
+    public static class ConnectionExtensions
     {
 
         public static bool CanGetOn(this IConnection c)

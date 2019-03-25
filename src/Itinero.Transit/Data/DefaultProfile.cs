@@ -1,5 +1,7 @@
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
+// ReSharper disable RedundantArgumentDefaultValue
+// ReSharper disable ArgumentsStyleLiteral
 
 namespace Itinero.Transit.Data
 {
