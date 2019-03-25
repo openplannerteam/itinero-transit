@@ -524,7 +524,7 @@ namespace Itinero.Transit.Data.Tiles
 
                 Longitude = longitude;
                 Latitude = latitude;
-                DataPointer = _currentTileDataPointer;
+                DataPointer = _currentTileDataPointer + LocalId;
 
                 return true;
             }
