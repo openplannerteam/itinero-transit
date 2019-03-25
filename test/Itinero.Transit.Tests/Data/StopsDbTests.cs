@@ -147,22 +147,20 @@ namespace Itinero.Transit.Tests.Data
         }
 
         [Fact]
-        public void CloseToEachOtherTest()
+        public void StopsDb_StopsInSameTile_ShouldReturnProperMetaData()
         {
-            var tdb = new TransitDb();
-            var wr = tdb.GetWriter();
-            wr.AddOrUpdateStop("http://example.org/stop/1", (float) 5.0001, (float) 51.0001, new List<Attribute>
+            var stopsDb = new StopsDb(0);
+            stopsDb.Add("http://example.org/stop/1", (float) 5.0001, (float) 51.0001, new List<Attribute>
             {
                 new Attribute("name", "Brugge")
             });
 
-            wr.AddOrUpdateStop("http://example.org/stop/2", (float) 5.0003, (float) 51.0003, new List<Attribute>
+            stopsDb.Add("http://example.org/stop/2", (float) 5.0003, (float) 51.0003, new List<Attribute>
             {
-                new Attribute("name", "Helemaal niet Brugge")
+                new Attribute("name", "Not Brugge")
             });
-            wr.Close();
 
-            var stopsReader = tdb.Latest.StopsDb.GetReader();
+            var stopsReader = stopsDb.GetReader();
 
             Assert.True(stopsReader.MoveNext());
             Assert.Equal("http://example.org/stop/1", stopsReader.GlobalId);
@@ -172,30 +170,27 @@ namespace Itinero.Transit.Tests.Data
             Assert.True(stopsReader.MoveNext());
             Assert.Equal("http://example.org/stop/2", stopsReader.GlobalId);
             stopsReader.Attributes.TryGetValue("name", out name);
-            Assert.Equal("Helemaal niet Brugge", name);
+            Assert.Equal("Not Brugge", name);
 
             Assert.False(stopsReader.MoveNext());
         }
 
 
         [Fact]
-        public void FarFromEachOtherTest()
+        public void StopsDb_StopsInDifferentTiles_ShouldReturnProperMetaData()
         {
-            var tdb = new TransitDb();
-            var wr = tdb.GetWriter();
-            // THIS TEST IS NEARLY IDENTICAL TO THE ONE ABOVE but   ↓ this value is different
-            wr.AddOrUpdateStop("http://example.org/stop/1", (float) 6.0001, (float) 51.0001, new List<Attribute>
+            var stopsDb = new StopsDb(0);
+            stopsDb.Add("http://example.org/stop/1", (float) 6.0001, (float) 51.0001, new List<Attribute>
             {
                 new Attribute("name", "Brugge")
             });
 
-            wr.AddOrUpdateStop("http://example.org/stop/2", (float) 5.0003, (float) 51.0003, new List<Attribute>
+            stopsDb.Add("http://example.org/stop/2", (float) 5.0003, (float) 51.0003, new List<Attribute>
             {
-                new Attribute("name", "Helemaal niet Brugge")
+                new Attribute("name", "Not Brugge")
             });
-            wr.Close();
 
-            var stopsReader = tdb.Latest.StopsDb.GetReader();
+            var stopsReader = stopsDb.GetReader();
 
             Assert.True(stopsReader.MoveNext());
             Assert.Equal("http://example.org/stop/1", stopsReader.GlobalId);
@@ -205,7 +200,7 @@ namespace Itinero.Transit.Tests.Data
             Assert.True(stopsReader.MoveNext());
             Assert.Equal("http://example.org/stop/2", stopsReader.GlobalId);
             stopsReader.Attributes.TryGetValue("name", out name);
-            Assert.Equal("Helemaal niet Brugge", name);
+            Assert.Equal("Not Brugge", name);
 
             Assert.False(stopsReader.MoveNext());
         }
