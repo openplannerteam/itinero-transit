@@ -110,7 +110,7 @@ namespace Itinero.Transit.Tests.Data
         }
 
         [Fact]
-        public void TiledLocationIndex_WriteToReadFromShouldBeCopy()
+        public void StopsDb_WriteToReadFromShouldBeCopy()
         {
             var db = new StopsDb();
             var id1 = db.Add("http://irail.be/stations/NMBS/008863354", 4.786863327026367, 51.26277419739382,
