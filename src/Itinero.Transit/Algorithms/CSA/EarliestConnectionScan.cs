@@ -88,7 +88,7 @@ namespace Itinero.Transit.Algorithms.CSA
         public Journey<T> CalculateJourney(Func<Time, Time, Time> depArrivalToTimeout = null)
         {
             var enumerator = _connections;
-            
+
             enumerator.MoveNext(ScanBeginTime);
 
             var lastDeparture = _lastArrival;
@@ -227,7 +227,8 @@ namespace Itinero.Transit.Algorithms.CSA
                 {
                     journeyToArrival =
                         _transferPolicy
-                            .CreateDepartureTransfer(_stopsReader, journeyTillDeparture, c.DepartureTime, c.DepartureStop)
+                            .CreateDepartureTransfer(_stopsReader, journeyTillDeparture, c.DepartureTime,
+                                c.DepartureStop)
                             ?.ChainForward(c);
                 }
 
@@ -282,6 +283,7 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 throw new ArgumentException($"Location {location} not found, could not move to it");
             }
+
             var reachableLocations =
                 _stopsReader.LocationsInRange(_stopsReader, _walkPolicy.Range());
 

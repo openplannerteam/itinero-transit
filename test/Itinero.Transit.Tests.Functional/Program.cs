@@ -29,7 +29,10 @@ namespace Itinero.Transit.Tests.Functional
         private const string Vielsalm = "http://irail.be/stations/NMBS/008845146";
         private const string BrusselZuid = "http://irail.be/stations/NMBS/008814001";
         private const string Kortrijk = "http://irail.be/stations/NMBS/008896008";
-
+        private const string Oostende = "http://irail.be/stations/NMBS/008891702";
+        private const string Antwerpen = "http://irail.be/stations/NMBS/008821006"; // Antwerpen centraal
+        private const string SintJorisWeert = "http://irail.be/stations/NMBS/008833159"; // Antwerpen centraal
+        private const string Leuven = "http://irail.be/stations/NMBS/008833001"; // Antwerpen centraal
 
         private const string Howest = "https://data.delijn.be/stops/502132";
         private const string ZandStraat = "https://data.delijn.be/stops/500562";
@@ -39,12 +42,12 @@ namespace Itinero.Transit.Tests.Functional
         private static readonly Dictionary<string, DefaultFunctionalTest> AllTestsNamed =
             new Dictionary<string, DefaultFunctionalTest>
             {
-                {"eas", EarliestConnectionScanTest.Default},
-                {"las", LatestConnectionScanTest.Default},
+                // {"eas", EarliestConnectionScanTest.Default},
+                //    {"las", LatestConnectionScanTest.Default},
                 {"pcs", ProfiledConnectionScanTest.Default},
-                {"easpcs", EasPcsComparison.Default},
-                {"easlas", EasLasComparison.Default},
-                {"isochrone", IsochroneTest.Default}
+                //   {"easpcs", EasPcsComparison.Default},
+                //   {"easlas", EasLasComparison.Default},
+                //   {"isochrone", IsochroneTest.Default}
             };
 
 
@@ -53,8 +56,8 @@ namespace Itinero.Transit.Tests.Functional
             EnableLogging();
 
             Log.Information("Starting the Functional Tests...");
-            var date = new DateTime(2019,03,22); // LOCAL TIMES! //
-    
+            var date = DateTime.Now; // new DateTime(2019,03,22); // LOCAL TIMES! //
+
 
             new CachingTest().Run(true);
 
@@ -68,7 +71,8 @@ namespace Itinero.Transit.Tests.Functional
             var fileN = $"{date:yyyy-MM-dd}";
             try
             {
-                db = TransitDb.ReadFrom($"test-write-to-disk-{fileN}.transitdb", 0);
+                var path = $"test-write-to-disk-{fileN}.transitdb";
+                db = TransitDb.ReadFrom(path, 0);
                 Log.Information("Reused already existing tdb for testing");
             }
             catch (Exception e)
@@ -100,49 +104,78 @@ namespace Itinero.Transit.Tests.Functional
             {
                 (db, Brugge,
                     Gent,
-                    date.Date.AddHours(10),
-                    date.Date.AddHours(12)),
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(12)), //*/
+                /* TODO: see #49
+                 (db, Poperinge, Brugge,
+                        date.Date.AddHours(9),
+                        date.Date.AddHours(12)), //*/
+                /*
                 (db,
-                    Poperinge,
+                    Oostende,
                     Brugge,
-                    date.Date.AddHours(10),
-                    date.Date.AddHours(15)),
-                (db, Brugge,
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(11)),
+                (db,
+                    Brugge,
+                    Oostende,
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(11)), //*/
+                (db,
+                    BrusselZuid,
+                    Leuven,
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(14)), //*/
+                (db,
+                    Leuven,
+                    SintJorisWeert,
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(14)), //*/
+                (db,
+                    BrusselZuid,
+                    SintJorisWeert,
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(14)), //*/
+                (db,
+                    Brugge,
                     Kortrijk,
                     date.Date.AddHours(6),
                     date.Date.AddHours(20)),
-                (db, Poperinge,
+                (db, Kortrijk,
                     Vielsalm,
-                    date.Date.AddHours(10),
+                    date.Date.AddHours(9),
                     date.Date.AddHours(18)),
-                //     (db, Howest,
-                //        Gent,
-                //        date.Date.AddHours(10),
-                //        date.Date.AddHours(18))
+                /* TODO Truly multimodal routes
+                 (db, Howest,
+                       Gent,
+                       date.Date.AddHours(10),
+                       date.Date.AddHours(18))
+                //*/
             };
 
             var failed = 0;
             var results = new Dictionary<string, int>();
 
 
-            void RegisterFail<T>(string name, T i)
+            void RegisterFail<T>(string name, T input, int i)
             {
-                Log.Error($"{name} failed on {i}");
+                Log.Error($"{name} failed on input #{i} {input}");
                 failed++;
             }
 
 
             foreach (var t in tests)
             {
+                var i = 0;
                 var name = t.GetType().Name;
                 results[name] = 0;
-                foreach (var i in inputs)
+                foreach (var input in inputs)
                 {
                     try
                     {
-                        if (!t.RunPerformance(i, nrOfRuns))
+                        if (!t.RunPerformance(input, nrOfRuns))
                         {
-                            RegisterFail(name, i);
+                            RegisterFail(name, input, i);
                         }
                         else
                         {
@@ -152,8 +185,10 @@ namespace Itinero.Transit.Tests.Functional
                     catch (Exception e)
                     {
                         Log.Error(e.ToString());
-                        RegisterFail(name, i);
+                        RegisterFail(name, input, i);
                     }
+
+                    i++;
                 }
             }
 
