@@ -26,11 +26,11 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var tbd = input.transitDb.Latest;
             var found = tbd.Isochrone(profile, input.departureStopId, input.departureTime, input.arrivalTime);
 
-            True(found.Count() > 100);
+            True(found.Count() > 10);
           
             found = tbd.IsochroneLatestArrival(profile, input.departureStopId, input.departureTime, input.arrivalTime);
 
-            True(found.Count() > 100);
+            True(found.Count() > 10);
             
             return true;
         }

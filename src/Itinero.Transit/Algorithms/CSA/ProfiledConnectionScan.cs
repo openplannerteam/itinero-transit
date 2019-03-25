@@ -50,7 +50,7 @@ namespace Itinero.Transit.Algorithms.CSA
         ///
         /// If the traveller were to appear in a given station, he could lookup here
         /// which non-dominated trips he could take to his destination - including time needed to get on the train
-        /// 
+        /// <br />
         /// If the station isn't in the dictionary yet, this means no trip from this station has been already found.
         ///
         /// Also known as 'S' in the paper
@@ -147,7 +147,6 @@ namespace Itinero.Transit.Algorithms.CSA
         public List<Journey<T>> CalculateJourneys()
         {
             var enumerator = _connections;
-
             // Move the enumerator after the last arrival time
             enumerator.MovePrevious(_lastArrival);
 

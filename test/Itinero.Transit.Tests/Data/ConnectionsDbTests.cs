@@ -499,7 +499,7 @@ namespace Itinero.Transit.Tests.Data
 
                 stream.Seek(0, SeekOrigin.Begin);
 
-                db = ConnectionsDb.ReadFrom(stream,0);
+                db = ConnectionsDb.ReadFrom(stream, 0);
 
                 var enumerator = db.GetDepartureEnumerator();
                 Assert.NotNull(enumerator);
@@ -609,6 +609,56 @@ namespace Itinero.Transit.Tests.Data
             Assert.Equal(new DateTime(2018, 11, 14, 2, 3, 10).ToUnixTime(), enumerator.DepartureTime);
             Assert.True(enumerator.MoveNext());
             Assert.Equal(new DateTime(2018, 11, 14, 2, 4, 9).ToUnixTime(), enumerator.DepartureTime);
+        }
+
+
+        [Fact]
+        public void ModeCopyTest()
+        {
+            var tdb = new TransitDb(0);
+
+            var wr = tdb.GetWriter();
+
+            var a = wr.AddOrUpdateStop("a", 0, 0, null);
+            var b = wr.AddOrUpdateStop("b", 1, 1, null);
+
+            var date = DateTime.Now;
+            wr.AddOrUpdateConnection(a, b, "c", date, 600, 60, 120, 1, 1);
+            wr.Close();
+
+
+            var con = tdb.Latest.ConnectionsDb.GetReader();
+            con.MoveTo(0);
+
+            Assert.Equal(1, con.Mode);
+
+
+            var nwTdb = new TransitDb(0);
+ 
+            wr = nwTdb.GetWriter();
+
+            a = wr.AddOrUpdateStop("a", 0, 0, null);
+            b = wr.AddOrUpdateStop("b", 1, 1, null);
+
+            wr.AddOrUpdateConnection(
+                con.DepartureStop,
+                con.ArrivalStop,
+                con.GlobalId,
+                con.DepartureTime.FromUnixTime(),
+                con.TravelTime,
+                con.DepartureDelay,
+                con.ArrivalDelay,
+                con.TripId,
+                con.Mode
+            );
+
+            wr.Close();
+
+
+            con = nwTdb.Latest.ConnectionsDb.GetReader();
+            con.MoveTo(0);
+
+            Assert.Equal(1, con.Mode);
         }
     }
 }

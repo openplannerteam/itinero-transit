@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms.CSA;
@@ -42,12 +43,12 @@ namespace Itinero.Transit.Tests.Functional
         private static readonly Dictionary<string, DefaultFunctionalTest> AllTestsNamed =
             new Dictionary<string, DefaultFunctionalTest>
             {
-                // {"eas", EarliestConnectionScanTest.Default},
-                //    {"las", LatestConnectionScanTest.Default},
+              //  {"eas", EarliestConnectionScanTest.Default},
+            //    {"las", LatestConnectionScanTest.Default},
                 {"pcs", ProfiledConnectionScanTest.Default},
-                //   {"easpcs", EasPcsComparison.Default},
-                //   {"easlas", EasLasComparison.Default},
-                //   {"isochrone", IsochroneTest.Default}
+             /*   {"easpcs", EasPcsComparison.Default},
+                {"easlas", EasLasComparison.Default},
+                {"isochrone", IsochroneTest.Default}*/
             };
 
 
@@ -102,7 +103,7 @@ namespace Itinero.Transit.Tests.Functional
 
             var inputs = new List<(TransitDb, string, string, DateTime, DateTime)>
             {
-                (db, Brugge,
+             /*   (db, Brugge,
                     Gent,
                     date.Date.AddHours(9),
                     date.Date.AddHours(12)), //*/
@@ -110,8 +111,7 @@ namespace Itinero.Transit.Tests.Functional
                  (db, Poperinge, Brugge,
                         date.Date.AddHours(9),
                         date.Date.AddHours(12)), //*/
-                /*
-                (db,
+                /*(db,
                     Oostende,
                     Brugge,
                     date.Date.AddHours(9),
@@ -121,7 +121,7 @@ namespace Itinero.Transit.Tests.Functional
                     Oostende,
                     date.Date.AddHours(9),
                     date.Date.AddHours(11)), //*/
-                (db,
+                /*(db,
                     BrusselZuid,
                     Leuven,
                     date.Date.AddHours(9),
@@ -136,7 +136,7 @@ namespace Itinero.Transit.Tests.Functional
                     SintJorisWeert,
                     date.Date.AddHours(9),
                     date.Date.AddHours(14)), //*/
-                (db,
+             /*   (db,
                     Brugge,
                     Kortrijk,
                     date.Date.AddHours(6),
@@ -154,7 +154,7 @@ namespace Itinero.Transit.Tests.Functional
             };
 
             var failed = 0;
-            var results = new Dictionary<string, int>();
+            var results = new Dictionary<string, List<int>>();
 
 
             void RegisterFail<T>(string name, T input, int i)
@@ -168,7 +168,7 @@ namespace Itinero.Transit.Tests.Functional
             {
                 var i = 0;
                 var name = t.GetType().Name;
-                results[name] = 0;
+                results[name] = new List<int>();
                 foreach (var input in inputs)
                 {
                     try
@@ -179,7 +179,7 @@ namespace Itinero.Transit.Tests.Functional
                         }
                         else
                         {
-                            results[name]++;
+                            results[name].Add(i);
                         }
                     }
                     catch (Exception e)
@@ -195,7 +195,21 @@ namespace Itinero.Transit.Tests.Functional
             foreach (var t in tests)
             {
                 var name = t.GetType().Name;
-                Log.Information($"{name}: {results[name]}/{inputs.Count}");
+                var fails = "";
+                for (var j = 0; j < inputs.Count; j++)
+                {
+                    if (!results[name].Contains(j))
+                    {
+                        fails += $"{j}, ";
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(fails))
+                {
+                    fails = "Failed: " + fails;
+                }
+                
+                Log.Information($"{name}: {results[name].Count}/{inputs.Count} {fails}");
             }
 
             if (failed > 0)
