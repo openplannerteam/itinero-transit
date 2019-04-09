@@ -70,15 +70,9 @@ namespace Itinero.Transit.Tests.Functional
             }
 
 
-            new CachingTest().Run(true);
 
 
             TransitDb db;
-
-            // db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
-            // Log.Information("Running TestReadWrite");
-//
-            // db = new TestReadWrite().Run(db);
             var fileN = $"{date:yyyy-MM-dd}";
             try
             {
@@ -108,19 +102,22 @@ namespace Itinero.Transit.Tests.Functional
             }
 
 
+            /*
+            new CachingTest().Run(true);
             Log.Information("Running TripHeadSignTest");
             TripHeadsignTest.Default.Run(db);
 
             Log.Information("Running NoDuplicationTest");
             new NoDuplicationTest().Run();
             // This tests starts a timer which reloads a lot
-            //  new TestAutoUpdating().Run(null);
+            new TestAutoUpdating().Run(null);
 
-            // new MultipleLoadTest().Run(0);
+            new MultipleLoadTest().Run(0);
 
             ConnectionsDbDepartureEnumeratorTest.Default.Run(db);
 
             TestClosestStopsAndRouting(db);
+            */
 
 
             // Tests all the algorithms on multiple inputs
