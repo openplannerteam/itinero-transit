@@ -39,5 +39,10 @@ namespace Itinero.Transit.Data
                 return hashCode;
             }
         }
+
+        public override string ToString()
+        {
+            return$"{(DatabaseId,LocalTileId,LocalId)}";
+        }
     }
 }

@@ -37,7 +37,7 @@ namespace Sample.SNCB
             {
                 foreach (var journey in journeys)
                 {
-                    Console.WriteLine(journey.ToString(snapshot.StopsDb.GetReader()));
+                    Console.WriteLine(journey.ToString(snapshot));
                 }
             }
         }

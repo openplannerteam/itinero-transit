@@ -45,8 +45,8 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var pcsJs = pcs.CalculateJourneys();
             var pcsJ = pcsJs.Last();
 
-            Information(easJ.ToString(latest.StopsDb.GetReader()));
-            Information(pcsJ.ToString(latest.StopsDb.GetReader()));
+            Information(easJ.ToString(latest));
+            Information(pcsJ.ToString(latest));
 
             // PCS could find a route which arrives at the same time, but departs later
             True(easJ.Root.DepartureTime() <= pcsJ.Root.DepartureTime());

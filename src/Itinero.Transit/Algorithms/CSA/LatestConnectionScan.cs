@@ -198,6 +198,14 @@ namespace Itinero.Transit.Algorithms.CSA
                 _trips[trip] = _trips[trip].ChainBackward(c);
                 journeyFromDeparture = _trips[trip];
             }
+            else if (!c.CanGetOff())
+            {
+                // We are not on the connection already
+                // And we can't get off
+                // No use to continue scanning
+                return;
+            }
+
             else
             {
                 if (journeyFromArrival.SpecialConnection && journeyFromArrival.Connection == Journey<T>.GENESIS)
@@ -219,11 +227,13 @@ namespace Itinero.Transit.Algorithms.CSA
 
             if (journeyFromDeparture == null)
             {
+                // There is no way to get to the destination from this connection
+                // Neither by staying seated or getting off at the destination
                 return;
             }
 
             // Below this point, we only add it to the journey table...
-            // If we can get on at the arrivalStop that is
+            // If we can get on at the departureStop that is
 
             if (!c.CanGetOn())
             {

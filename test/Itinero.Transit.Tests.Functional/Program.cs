@@ -43,12 +43,12 @@ namespace Itinero.Transit.Tests.Functional
         private static readonly Dictionary<string, DefaultFunctionalTest> AllTestsNamed =
             new Dictionary<string, DefaultFunctionalTest>
             {
-                //  {"eas", EarliestConnectionScanTest.Default},
-                //    {"las", LatestConnectionScanTest.Default},
+                {"eas", EarliestConnectionScanTest.Default},
+                {"las", LatestConnectionScanTest.Default},
                 {"pcs", ProfiledConnectionScanTest.Default},
-                /*   {"easpcs", EasPcsComparison.Default},
-                   {"easlas", EasLasComparison.Default},
-                   {"isochrone", IsochroneTest.Default}*/
+                {"easpcs", EasPcsComparison.Default},
+                {"easlas", EasLasComparison.Default},
+                {"isochrone", IsochroneTest.Default}
             };
 
 
@@ -57,7 +57,17 @@ namespace Itinero.Transit.Tests.Functional
             EnableLogging();
 
             Log.Information("Starting the Functional Tests...");
-            var date = DateTime.Now; // new DateTime(2019,03,22); // LOCAL TIMES! //
+            var fixedDate = true;
+
+            DateTime date; // LOCAL TIMES! //
+            if (fixedDate)
+            {
+                date = new DateTime(2019, 04, 09);
+            }
+            else
+            {
+                date = DateTime.Now;
+            }
 
 
             new CachingTest().Run(true);
@@ -72,13 +82,27 @@ namespace Itinero.Transit.Tests.Functional
             var fileN = $"{date:yyyy-MM-dd}";
             try
             {
-                var path = $"test-write-to-disk-{fileN}.transitdb";
+                string path;
+                if (fixedDate)
+                {
+                    path = "fixed-test-cases-2019-04-09.transitdb";
+                }
+                else
+                {
+                    path = $"test-write-to-disk-{fileN}.transitdb";
+                }
+
                 db = TransitDb.ReadFrom(path, 0);
                 Log.Information("Reused already existing tdb for testing");
             }
             catch (Exception e)
             {
                 Log.Error(e.ToString());
+                if (fixedDate)
+                {
+                    throw e;
+                }
+
                 db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
                 new TestWriteToDisk().Run((db, fileN));
             }
@@ -107,10 +131,12 @@ namespace Itinero.Transit.Tests.Functional
                     Gent,
                     date.Date.AddHours(9),
                     date.Date.AddHours(12)), //*/
-                /* TODO: see #49
-                 (db, Poperinge, Brugge,
-                        date.Date.AddHours(9),
-                        date.Date.AddHours(12)), //*/
+                (db, Poperinge, Brugge,
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(12)), //*/
+                (db, Brugge, Poperinge,
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(12)),
                 (db,
                     Oostende,
                     Brugge,
@@ -120,24 +146,22 @@ namespace Itinero.Transit.Tests.Functional
                     Brugge,
                     Oostende,
                     date.Date.AddHours(9),
-                    date.Date.AddHours(11)), //*/
+                    date.Date.AddHours(11)),
                 (db,
                     BrusselZuid,
                     Leuven,
                     date.Date.AddHours(9),
-                    date.Date.AddHours(14)), //*/
-                /* This case does not work together with PCS. Figure out why
-                  (db,
-                 
-                      Leuven,
-                      SintJorisWeert,
-                      date.Date.AddHours(9),
-                      date.Date.AddHours(14)), //*/
-                /*       (db,
-                           BrusselZuid,
-                           SintJorisWeert,
-                           date.Date.AddHours(9),
-                           date.Date.AddHours(14)), //*/
+                    date.Date.AddHours(14)),
+                (db,
+                    Leuven,
+                    SintJorisWeert,
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(14)),
+                (db,
+                    BrusselZuid,
+                    SintJorisWeert,
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(14)),
                 (db,
                     Brugge,
                     Kortrijk,
@@ -146,7 +170,7 @@ namespace Itinero.Transit.Tests.Functional
                 (db, Kortrijk,
                     Vielsalm,
                     date.Date.AddHours(9),
-                    date.Date.AddHours(18)),
+                    date.Date.AddHours(18)), //*/
                 /* TODO Truly multimodal routes
                  (db, Howest,
                        Gent,

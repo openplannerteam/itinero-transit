@@ -217,6 +217,13 @@ namespace Itinero.Transit.Algorithms.CSA
                 _trips[trip] = _trips[trip].ChainForward(c);
                 journeyToArrival = _trips[trip];
             }
+            else if (!c.CanGetOn())
+            {
+                // We are not on the trip
+                // And we can't get on...
+                // No use to continue
+                return false;
+            }
             else
             {
                 if (journeyTillDeparture.SpecialConnection && journeyTillDeparture.Connection == Journey<T>.GENESIS)
@@ -242,6 +249,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             if (journeyToArrival == null)
             {
+                // There was no way to be on the trip: neither by staying seated or by getting on
                 return false;
             }
 

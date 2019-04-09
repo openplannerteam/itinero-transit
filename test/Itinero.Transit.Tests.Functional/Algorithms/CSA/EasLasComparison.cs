@@ -40,17 +40,21 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var eas = new EarliestConnectionScan<TransferStats>(settings);
 
             var easJ = eas.CalculateJourney();
+            NotNull(easJ);
+            Information(easJ.ToString(latest));
+            
 
             var las = new LatestConnectionScan<TransferStats>(new ScanSettings<TransferStats>(latest,
-                departure, arrival, input.departureTime,
+                departure, arrival, input.departureTime-TimeSpan.FromMinutes(1),
                 easJ.ArrivalTime().FromUnixTime(), profile));
 
-            var lasJ = las.CalculateJourney();
 
-            NotNull(easJ);
-            Information(easJ.Pruned().ToString(latest.StopsDb.GetReader()));
+            
+            
+            var lasJ = las.CalculateJourney();
             NotNull(lasJ);
-            Information(lasJ.Pruned().ToString(latest.StopsDb.GetReader()));
+            Information(lasJ.ToString(
+                latest));
             
 
             // Eas is bound by the first departing train, while las is not

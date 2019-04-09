@@ -49,7 +49,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             // verify result.
             NotNull(journey);
 
-            if (journey != null) Information(journey.ToString(latest.StopsDb.GetReader()));
+            if (journey != null) Information(journey.ToString(latest));
 
             return true;
         }

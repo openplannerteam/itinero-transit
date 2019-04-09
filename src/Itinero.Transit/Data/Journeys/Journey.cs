@@ -357,7 +357,7 @@ namespace Itinero.Transit.Journeys
             return ToString(null);
         }
 
-        public string ToString(IStopsReader reader, int maxDepth = 50)
+        public string ToString(TransitDb.TransitDbSnapShot snapshot, int maxDepth = 50)
         {
             if (maxDepth == 0)
             {
@@ -367,13 +367,13 @@ namespace Itinero.Transit.Journeys
             var previous = "";
             if (PreviousLink != null && !ReferenceEquals(PreviousLink, this))
             {
-                previous = PreviousLink.ToString(reader, maxDepth - 1);
+                previous = PreviousLink.ToString(snapshot, maxDepth - 1);
             }
 
-            return $"{previous}\n  {PartToString(reader)}\n    {Stats} (Trip {TripId})";
+            return $"{previous}\n  {PartToString(snapshot?.StopsDb?.GetReader(), snapshot?.ConnectionsDb?.GetReader())}\n    {Stats} (Trip {TripId})";
         }
 
-        private string PartToString(IStopsReader reader)
+        private string PartToString(IStopsReader reader, ConnectionsDb.ConnectionsDbReader conn)
         {
             reader?.MoveTo(Location);
             var location = Location.ToString();
@@ -386,9 +386,16 @@ namespace Itinero.Transit.Journeys
                 }
             }
 
+            conn?.MoveTo(Connection);
+            var mode = "";
+            if (conn != null)
+            {
+                mode = $", mode is {conn.Mode}";
+            }
+            
             if (!SpecialConnection)
                 return
-                    $"Connection {Connection} to {location}, arriving at {DateTimeExtensions.FromUnixTime(Time):yyyy-MM-dd HH:mm}";
+                    $"Connection {Connection} to {location}, arriving at {DateTimeExtensions.FromUnixTime(Time):yyyy-MM-dd HH:mm}{mode}";
 
             switch (Connection)
             {
