@@ -16,18 +16,15 @@ namespace Itinero.Transit.IO.LC
 
         private readonly TransitDb.TransitDbWriter _writer;
 
-        private readonly uint _dbId;
-        
         /// <inheritdoc />
         public DatabaseLoader(TransitDb.TransitDbWriter writer, LoggingOptions locationsLogger,
-            LoggingOptions connectionsLogger, Action<string> onError, uint dbId = 0)
+            LoggingOptions connectionsLogger, Action<string> onError)
         {
             _writer = writer;
 
             _locationsLogger = locationsLogger;
             _connectionsLogger = connectionsLogger;
             _onError = onError;
-            _dbId = dbId;
             if (onError == null)
             {
                 throw new ArgumentNullException(nameof(onError));

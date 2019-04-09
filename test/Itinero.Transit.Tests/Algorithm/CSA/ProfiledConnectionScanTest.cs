@@ -15,7 +15,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         [Fact]
         public void TestPcsSimple()
         {
-            var tdb = Db.GetDefaultTestDb(out var stop0, out var stop1, out var stop2, out var stop3, out var _, out var _);
+            var tdb = Db.GetDefaultTestDb(out var stop0, out _, out _, out var stop3, out var _, out var _);
 
             var db = tdb.Latest;
 

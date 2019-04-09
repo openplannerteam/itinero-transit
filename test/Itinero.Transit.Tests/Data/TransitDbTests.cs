@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
-using Itinero.Transit.IO.LC.Data;
 using Xunit;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 

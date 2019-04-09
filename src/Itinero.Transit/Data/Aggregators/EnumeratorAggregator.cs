@@ -51,7 +51,7 @@ namespace Itinero.Transit.Data.Aggregators
             }
         }
 
-        public T Current => _enumerators.Current.Current;
+        public T Current => _enumerators.Current != null ? _enumerators.Current.Current : default(T);
 
         object IEnumerator.Current => Current;
     }

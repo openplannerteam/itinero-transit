@@ -1,4 +1,3 @@
-using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
 using Xunit;
@@ -10,7 +9,7 @@ namespace Itinero.Transit.Tests.Data
         [Fact]
         public void TestSimpleGenerator()
         {
-            var tdb = Db.GetDefaultTestDb(out var stop0, out var stop1, out var stop2, out var _, out var _, out var _);
+            var tdb = Db.GetDefaultTestDb(out _, out _, out _, out var _, out var _, out var _);
 
             var connDb = tdb.Latest.ConnectionsDb;
 
