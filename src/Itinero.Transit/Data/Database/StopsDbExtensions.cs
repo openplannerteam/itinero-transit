@@ -77,5 +77,18 @@ namespace Itinero.Transit.Data
                 lat0, lon0, lat1, lon1);
             return distance;
         }
+        
+    }
+
+
+    public static class StopsDbReaderExtensions
+    {
+
+        public static LocationId GetLocationIdOf(this StopsDb.StopsDbReader reader, string url)
+        {
+            reader.MoveTo(url);
+            return reader.Id;
+        }
+        
     }
 }
