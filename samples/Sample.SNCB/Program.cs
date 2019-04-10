@@ -27,7 +27,7 @@ namespace Sample.SNCB
             Console.WriteLine("Calculating journeys...");
             var p = new DefaultProfile();
             var journeys = snapshot.CalculateJourneys(p, departureStop, arrivalStop, 
-                DateTime.Now);
+                DateTime.Now, DateTime.Now.Add(TimeSpan.FromHours(3)));
             if (journeys == null || 
                 journeys.Count == 0)
             {
