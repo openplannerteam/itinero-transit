@@ -65,6 +65,11 @@ namespace Itinero.Transit.Algorithms.CSA
             get => _filter;
             set
             {
+                if (value == null)
+                {
+                    _filter = null;
+                    return;
+                }
                 value.CheckWindow(EarliestDeparture.ToUnixTime(), LastArrival.ToUnixTime());
                 _filter = value;
             }
