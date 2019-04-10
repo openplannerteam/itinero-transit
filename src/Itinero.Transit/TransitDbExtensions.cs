@@ -50,7 +50,7 @@ namespace Itinero.Transit
         /// <typeparam name="T"></typeparam>
         /// <returns>A journey which is guaranteed to arrive as early as possible (or null if none was found)</returns>
         // ReSharper disable once UnusedMember.Global
-        public static Journey<T> EarliestArrival<T>
+        public static Journey<T> CalculateEarliestArrival<T>
         (this TransitDb.TransitDbSnapShot snapshot,
             Profile<T> profile,
             string from, string to,
@@ -60,12 +60,40 @@ namespace Itinero.Transit
             var reader = snapshot.StopsDb.GetReader();
             var fromId = reader.FindStop(from, $"Departure location {from} was not found");
             var toId = reader.FindStop(to, $"Departure location {to} was not found");
-
             if (fromId.Equals(toId))
             {
                 throw new ArgumentException($"The departure and arrival arguments are the same ({from})");
             }
+            return snapshot.CalculateEarliestArrival(profile, fromId, toId, departure, lastArrival);
+        }
 
+        ///  <summary>
+        ///  Calculates the earliest arriving journey which depart at 'from' at the given departure time and arrives at 'to'.
+        /// 
+        ///  Performs an Earliest Arrival Scan
+        ///
+        /// </summary>
+        /// <param name="snapshot">The transit DB containing the PT-data</param>
+        /// <param name="profile">The travellers' preferences</param>
+        /// <param name="fromId">Where the traveller starts</param>
+        /// <param name="toId">WHere the traveller wishes to go to</param>
+        /// <param name="departure">When the traveller would like to depart</param>
+        /// <param name="lastArrival">When the traveller would like to arrive</param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>A journey which is guaranteed to arrive as early as possible (or null if none was found)</returns>
+        // ReSharper disable once UnusedMember.Global
+        public static Journey<T> CalculateEarliestArrival<T>
+        (this TransitDb.TransitDbSnapShot snapshot,
+            Profile<T> profile,
+            LocationId fromId, LocationId toId,
+            DateTime departure, DateTime lastArrival)
+            where T : IJourneyStats<T>
+        {
+            if (fromId.Equals(toId))
+            {
+                throw new ArgumentException($"The departure and arrival arguments are the same ({fromId})");
+            }
+           
             var settings = new ScanSettings<T>(
                 snapshot, departure, lastArrival, profile.StatsFactory,
                 profile.ProfileComparator, profile.InternalTransferGenerator, profile.WalksGenerator, fromId, toId
@@ -83,7 +111,7 @@ namespace Itinero.Transit
         ///  the Journey will contain a 'Choice'-element
         ///  
         ///  </summary>
-        public static IReadOnlyDictionary<LocationId, Journey<T>> Isochrone<T>
+        public static IReadOnlyDictionary<LocationId, Journey<T>> CalculateIsochrone<T>
         (this TransitDb.TransitDbSnapShot snapshot,
             Profile<T> profile,
             string from, DateTime departure, DateTime lastArrival)
@@ -119,7 +147,7 @@ namespace Itinero.Transit
         ///
         /// </summary>
         /// <returns></returns>
-        public static Journey<T> LatestDeparture<T>
+        public static Journey<T> CalculateLatestDeparture<T>
         (this TransitDb.TransitDbSnapShot snapshot,
             Profile<T> profile, string from, string to, DateTime departure, DateTime lastArrival)
             where T : IJourneyStats<T>
@@ -148,7 +176,7 @@ namespace Itinero.Transit
         ///
         /// </summary>
         /// <returns></returns>
-        public static Dictionary<LocationId, Journey<T>> IsochroneLatestArrival<T>
+        public static Dictionary<LocationId, Journey<T>> CalculateIsochroneLatestArrival<T>
         (this TransitDb.TransitDbSnapShot snapshot,
             Profile<T> profile, string to, DateTime departure, DateTime lastArrival)
             where T : IJourneyStats<T>
