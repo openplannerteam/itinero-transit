@@ -29,7 +29,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             True(found.Count() > 10);
           
             found = tbd.CalculateIsochroneLatestArrival(profile, input.departureStopId, input.departureTime, input.arrivalTime);
-
+            
             True(found.Count() > 10);
             
             return true;
