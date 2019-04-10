@@ -27,7 +27,7 @@ namespace Itinero.Transit
         /// <param name="from">Where the traveller starts</param>
         /// <param name="to">WHere the traveller wishes to go to</param>
         /// <param name="departure">When the traveller would like to depart</param>
-        /// <param name="lastArrival">When the traveller would like to arrive</param>
+        /// <param name="ldepartureastArrival">When the traveller would like to arrive</param>
         /// <typeparam name="T"></typeparam>
         /// <returns>A journey which is guaranteed to arrive as early as possible (or null if none was found)</returns>
         // ReSharper disable once UnusedMember.Global
@@ -139,6 +139,48 @@ namespace Itinero.Transit
             return journey;
         }
 
+
+        ///   <summary>
+        ///   Calculates the earliest arriving journey which depart at 'from' at the given departure time and arrives at 'to'.
+        ///  
+        ///   Performs an Earliest Arrival Scan
+        /// 
+        ///  </summary>
+        ///  <param name="snapshot">The transit DB containing the PT-data</param>
+        ///  <param name="profile">The travellers' preferences</param>
+        ///  <param name="fromId">Where the traveller starts</param>
+        ///  <param name="toId">WHere the traveller wishes to go to</param>
+        /// <param name="filter">Out parameter containing the possible earliest arrival times, usefull to speed up PCS</param>
+        /// <param name="departure">When the traveller would like to depart</param>
+        ///  <param name="stopCalculatingAt">An optional function which indicates how long the algo should keep scanning</param>
+        ///  <typeparam name="T"></typeparam>
+        ///  <returns>A journey which is guaranteed to arrive as early as possible (or null if none was found)</returns>
+        // ReSharper disable once UnusedMember.Global
+        public static Journey<T> CalculateEarliestArrival<T>
+        (this TransitDb.TransitDbSnapShot snapshot,
+            Profile<T> profile,
+            LocationId fromId, LocationId toId,
+            out IConnectionFilter filter,
+            DateTime departure, Func<DateTime, DateTime, DateTime> stopCalculatingAt = null
+            )
+            where T : IJourneyStats<T>
+        {
+            if (fromId.Equals(toId))
+            {
+                throw new ArgumentException($"The departure and arrival arguments are the same ({fromId})");
+            }
+
+            var settings = new ScanSettings<T>(
+                snapshot, departure, DateTime.MaxValue, profile.StatsFactory,
+                profile.ProfileComparator, profile.InternalTransferGenerator, profile.WalksGenerator, fromId, toId
+            );
+
+            var eas = new EarliestConnectionScan<T>(settings);
+            var journey = eas.CalculateJourney((start, end) => stopCalculatingAt(start.FromUnixTime(), end.FromUnixTime()).ToUnixTime());
+            filter = eas.AsFilter();
+            return journey;
+        }
+        
 
         /// <summary>
         /// Calculates all journeys which arrive at 'to' at last at the given arrival time.
