@@ -215,8 +215,8 @@ namespace Itinero.Transit.IO.LC
 
             var attributes = new AttributeCollection(
                 new Attribute("headsign", connection.Direction),
-                new Attribute("trip", $"{connection.Trip()}-{connection.Direction}"),
-                new Attribute("route", $"{connection.Route()}-{connection.Direction}")
+                new Attribute("trip", $"{connection.Trip()}"),
+                new Attribute("route", $"{connection.Route()}")
             );
             return _writer.AddOrUpdateTrip(tripUri, attributes);
         }

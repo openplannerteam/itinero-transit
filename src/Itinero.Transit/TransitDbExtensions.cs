@@ -162,7 +162,7 @@ namespace Itinero.Transit
             LocationId fromId, LocationId toId,
             out IConnectionFilter filter,
             DateTime departure, Func<DateTime, DateTime, DateTime> stopCalculatingAt = null
-            )
+        )
             where T : IJourneyStats<T>
         {
             if (fromId.Equals(toId))
@@ -176,11 +176,12 @@ namespace Itinero.Transit
             );
 
             var eas = new EarliestConnectionScan<T>(settings);
-            var journey = eas.CalculateJourney((start, end) => stopCalculatingAt(start.FromUnixTime(), end.FromUnixTime()).ToUnixTime());
+            var journey = eas.CalculateJourney((start, end) =>
+                stopCalculatingAt(start.FromUnixTime(), end.FromUnixTime()).ToUnixTime());
             filter = eas.AsFilter();
             return journey;
         }
-        
+
 
         /// <summary>
         /// Calculates all journeys which arrive at 'to' at last at the given arrival time.
@@ -449,41 +450,32 @@ namespace Itinero.Transit
                 alreadySeen.Add(j);
 
                 Journey<S> jS = null;
-                if (lastT != null && lastT.Time == j.Time && lastT.Root.Time == j.Root.Time)
+                if (lastT == null || lastT.Time != j.Time || lastT.Root.Time != j.Root.Time)
                 {
-                    // The previous and current journeys have the same departure and arrival time
-                    // We assume they are part of a family and have the same number of transfers
-                    // So, we apply the statistic S...
-                    lastS = lastS ?? lastT.MeasureWith(newStatistic);
-                    jS = j.MeasureWith(newStatistic);
-                    // ... and we compare
-
-                    var comparison = newComparer.ADominatesB(lastS, jS);
-                    if (comparison < 0)
-                    {
-                        // lastS is better
-                        // We ignore the current element
-                        continue;
-                    }
-
-                    if (comparison > 0)
-                    {
-                        // Current one is better
-                        // We overwrite the previous element
-                        result[result.Count - 1] = j;
-                        lastT = j;
-                        lastS = jS;
-                        continue;
-                    }
-
-                    // Else:
-                    // Both options bring something to the table and should be kept
-                    // We just let the loop run its course
+                    result.Add(j);
+                    lastT = j;
+                    lastS = jS;
+                    continue;
                 }
 
-                // either the departure and arrival time are different here
-                // Or the big if statement above fell through till here
-                result.Add(j);
+                // The previous and current journeys have the same departure and arrival time
+                // We assume they are part of a family and have the same number of transfers
+                // So, we apply the statistic S...
+                lastS = lastS ?? lastT.MeasureWith(newStatistic);
+                jS = j.MeasureWith(newStatistic);
+                // ... and we compare
+
+                var comparison = newComparer.ADominatesB(lastS, jS);
+                if (comparison < 0)
+                {
+                    // lastS is better
+                    // We ignore the current element
+                    continue;
+                }
+
+                // Current one is better
+                // We overwrite the previous element
+                result[result.Count - 1] = j;
                 lastT = j;
                 lastS = jS;
             }

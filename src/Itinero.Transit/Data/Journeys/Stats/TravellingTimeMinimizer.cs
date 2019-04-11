@@ -21,7 +21,7 @@ namespace Itinero.Transit.Journeys
     ///  (which is a small station), while I could have transfered in Liege as well (a big station with lots of facilities).
     ///  The closest food I could find at 19:00 was around one kilometer away.
     ///  </summary>
-    public partial class TravellingTimeMinimizer : IJourneyStats<TravellingTimeMinimizer>
+    public class TravellingTimeMinimizer : IJourneyStats<TravellingTimeMinimizer>
     {
         private readonly uint _totalTimeWalking;
         private readonly uint _totalTimeInVehicle;
@@ -76,18 +76,19 @@ namespace Itinero.Transit.Journeys
         }
 
 
-        public partial class Minimizer : StatsComparator<TravellingTimeMinimizer>
+        public class Minimizer : StatsComparator<TravellingTimeMinimizer>
         {
-            private readonly Dictionary<LocationId, uint> _importances;
+            private readonly MaximizeStations<TravellingTimeMinimizer> _comparator;
 
             public Minimizer() : this(null)
             {
+                _comparator = null;
             }
 
             // ReSharper disable once MemberCanBePrivate.Global
             public Minimizer(Dictionary<LocationId, uint> importances)
             {
-                _importances = importances;
+                _comparator = new MaximizeStations<TravellingTimeMinimizer>(importances);
             }
 
             public override int ADominatesB(Journey<TravellingTimeMinimizer> ja, Journey<TravellingTimeMinimizer> jb)
@@ -112,14 +113,7 @@ namespace Itinero.Transit.Journeys
                 }
 
 
-                if (_importances == null)
-                {
-                    return 0;
-                }
-
-                var comparator = new MaximizeStations<TravellingTimeMinimizer>(_importances);
-
-                return comparator.Compare(ja, jb);
+                return _comparator?.Compare(ja, jb) ?? 0;
             }
         }
     }
