@@ -5,10 +5,10 @@ using Itinero.Transit.Journeys;
 namespace Itinero.Transit.Data
 {
     public class Profile<T>
-        where T : IJourneyStats<T>
+        where T : IJourneyMetric<T>
     {
-        public readonly T StatsFactory;
-        public readonly ProfiledStatsComparator<T> ProfileComparator;
+        public readonly T MetricFactory;
+        public readonly ProfiledMetricComparator<T> ProfileComparator;
         
         public readonly IOtherModeGenerator InternalTransferGenerator;
         public readonly IOtherModeGenerator WalksGenerator;
@@ -21,11 +21,11 @@ namespace Itinero.Transit.Data
         
         public Profile(IOtherModeGenerator internalTransferGenerator,
             IOtherModeGenerator walksGenerator,
-            T statsFactory,
-            ProfiledStatsComparator<T> profileComparator
+            T metricFactory,
+            ProfiledMetricComparator<T> profileComparator
         )
         {
-            StatsFactory = statsFactory;
+            MetricFactory = metricFactory;
             ProfileComparator = profileComparator;
             InternalTransferGenerator = internalTransferGenerator;
             WalksGenerator = walksGenerator;

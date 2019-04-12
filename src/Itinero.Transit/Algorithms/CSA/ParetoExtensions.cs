@@ -22,7 +22,7 @@ namespace Itinero.Transit.Algorithms.CSA
         ///  <returns></returns>
         public static ParetoFrontier<T> ExtendFrontier<T>(this ParetoFrontier<T> pareto,
             IStopsReader stopsReader,
-            IConnection c, IOtherModeGenerator transferPolicy) where T : IJourneyStats<T>
+            IConnection c, IOtherModeGenerator transferPolicy) where T : IJourneyMetric<T>
         {
             // The journeys in the frontier are ordered: the journeys which are added later to the profile,
             // will have an _earlier_ departure time (because PCS) runs in reverse order.
@@ -76,7 +76,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <param name="b"></param>
         /// <returns></returns>
         // ReSharper disable once MemberCanBePrivate.Global
-        public static ParetoFrontier<T> Combine<T>(ParetoFrontier<T> a, ParetoFrontier<T> b) where T : IJourneyStats<T>
+        public static ParetoFrontier<T> Combine<T>(ParetoFrontier<T> a, ParetoFrontier<T> b) where T : IJourneyMetric<T>
         {
             var smallest = a;
             var biggest = b;

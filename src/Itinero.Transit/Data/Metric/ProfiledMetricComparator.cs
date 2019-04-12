@@ -2,8 +2,8 @@ namespace Itinero.Transit.Journeys
 {
     /// <inheritdoc />
     /// <summary>
-    /// A special subtype of StatsComparators.
-    /// StatsComparators should focus on comparing time ranges
+    /// A special subtype of MetricComparators.
+    /// MetricComparators should focus on comparing time ranges
     /// (thus A only dominates B if a.startTime > b.startTime && a.endTime &lt; b.endTime).
     /// 
     /// Note that this is far away from comparing the total travel times!
@@ -12,10 +12,10 @@ namespace Itinero.Transit.Journeys
     /// 
     /// This is used in the profileConnectionScan.
     ///
-    /// Note that this calss does not implement extra methods. It acts purely as a marker
+    /// Note that this class does not implement extra methods. It acts purely as a marker
     /// </summary>
-    public abstract class ProfiledStatsComparator<T> : StatsComparator<T>
-        where T : IJourneyStats<T>
+    public abstract class ProfiledMetricComparator<T> : MetricComparator<T>
+        where T : IJourneyMetric<T>
     {
     }
 }

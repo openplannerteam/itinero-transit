@@ -5,6 +5,8 @@ using Itinero.Transit.Algorithms.Search;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journeys;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace Itinero.Transit
 {
     /// <summary>
@@ -27,7 +29,7 @@ namespace Itinero.Transit
         /// <param name="from">Where the traveller starts</param>
         /// <param name="to">WHere the traveller wishes to go to</param>
         /// <param name="departure">When the traveller would like to depart</param>
-        /// <param name="ldepartureastArrival">When the traveller would like to arrive</param>
+        /// <param name="lastArrival">When the traveller would like to arrive</param>
         /// <typeparam name="T"></typeparam>
         /// <returns>A journey which is guaranteed to arrive as early as possible (or null if none was found)</returns>
         // ReSharper disable once UnusedMember.Global
@@ -36,7 +38,7 @@ namespace Itinero.Transit
             Profile<T> profile,
             string from, string to,
             DateTime departure, DateTime lastArrival)
-            where T : IJourneyStats<T>
+            where T : IJourneyMetric<T>
         {
             return snapshot.CalculateEarliestArrival(profile, from, to, departure, lastArrival, out var _);
         }
@@ -53,6 +55,7 @@ namespace Itinero.Transit
         /// <param name="to">WHere the traveller wishes to go to</param>
         /// <param name="departure">When the traveller would like to depart</param>
         /// <param name="lastArrival">When the traveller would like to arrive</param>
+        /// <param name="filter">Each EAS calculates an isochroneline. This isochroneline can be reused by PCS to optimize the runtime. This 'out'-param allows to get this filter</param>
         /// <typeparam name="T"></typeparam>
         /// <returns>A journey which is guaranteed to arrive as early as possible (or null if none was found)</returns>
         // ReSharper disable once UnusedMember.Global
@@ -62,7 +65,7 @@ namespace Itinero.Transit
             string from, string to,
             DateTime departure, DateTime lastArrival,
             out IConnectionFilter filter)
-            where T : IJourneyStats<T>
+            where T : IJourneyMetric<T>
         {
             var reader = snapshot.StopsDb.GetReader();
             var fromId = reader.FindStop(from, $"Departure location {from} was not found");
@@ -95,25 +98,26 @@ namespace Itinero.Transit
             Profile<T> profile,
             LocationId fromId, LocationId toId,
             DateTime departure, DateTime lastArrival)
-            where T : IJourneyStats<T>
+            where T : IJourneyMetric<T>
         {
             return snapshot.CalculateEarliestArrival(profile, fromId, toId, departure, lastArrival, out _);
         }
 
-        ///  <summary>
-        ///  Calculates the earliest arriving journey which depart at 'from' at the given departure time and arrives at 'to'.
+        ///   <summary>
+        ///   Calculates the earliest arriving journey which depart at 'from' at the given departure time and arrives at 'to'.
+        ///  
+        ///   Performs an Earliest Arrival Scan
         /// 
-        ///  Performs an Earliest Arrival Scan
-        ///
-        /// </summary>
-        /// <param name="snapshot">The transit DB containing the PT-data</param>
-        /// <param name="profile">The travellers' preferences</param>
-        /// <param name="fromId">Where the traveller starts</param>
-        /// <param name="toId">WHere the traveller wishes to go to</param>
-        /// <param name="departure">When the traveller would like to depart</param>
-        /// <param name="lastArrival">When the traveller would like to arrive</param>
+        ///  </summary>
+        ///  <param name="snapshot">The transit DB containing the PT-data</param>
+        ///  <param name="profile">The travellers' preferences</param>
+        ///  <param name="fromId">Where the traveller starts</param>
+        ///  <param name="toId">WHere the traveller wishes to go to</param>
+        ///  <param name="departure">When the traveller would like to depart</param>
+        ///  <param name="lastArrival">When the traveller would like to arrive</param>
+        /// <param name="filter">Each EAS calculates an isochroneline. This isochroneline can be reused by PCS to optimize the runtime. This 'out'-param allows to get this filter</param>
         /// <typeparam name="T"></typeparam>
-        /// <returns>A journey which is guaranteed to arrive as early as possible (or null if none was found)</returns>
+        ///  <returns>A journey which is guaranteed to arrive as early as possible (or null if none was found)</returns>
         // ReSharper disable once UnusedMember.Global
         public static Journey<T> CalculateEarliestArrival<T>
         (this TransitDb.TransitDbSnapShot snapshot,
@@ -121,7 +125,7 @@ namespace Itinero.Transit
             LocationId fromId, LocationId toId,
             DateTime departure, DateTime lastArrival,
             out IConnectionFilter filter)
-            where T : IJourneyStats<T>
+            where T : IJourneyMetric<T>
         {
             if (fromId.Equals(toId))
             {
@@ -129,7 +133,7 @@ namespace Itinero.Transit
             }
 
             var settings = new ScanSettings<T>(
-                snapshot, departure, lastArrival, profile.StatsFactory,
+                snapshot, departure, lastArrival, profile.MetricFactory,
                 profile.ProfileComparator, profile.InternalTransferGenerator, profile.WalksGenerator, fromId, toId
             );
 
@@ -150,8 +154,9 @@ namespace Itinero.Transit
         ///  <param name="profile">The travellers' preferences</param>
         ///  <param name="fromId">Where the traveller starts</param>
         ///  <param name="toId">WHere the traveller wishes to go to</param>
-        /// <param name="filter">Out parameter containing the possible earliest arrival times, usefull to speed up PCS</param>
-        /// <param name="departure">When the traveller would like to depart</param>
+        /// <param name="filter">Out parameter containing the possible earliest arrival times, useful to speed up PCS</param>
+        /// <param name="departureTime">When the traveller would like to depart</param>$
+        ///         <param name="arrivalTime">The last moment that the traveller would like to arrive. This acts as an timeout in the case no routes can be found </param>
         ///  <param name="stopCalculatingAt">An optional function which indicates how long the algo should keep scanning</param>
         ///  <typeparam name="T"></typeparam>
         ///  <returns>A journey which is guaranteed to arrive as early as possible (or null if none was found)</returns>
@@ -160,10 +165,11 @@ namespace Itinero.Transit
         (this TransitDb.TransitDbSnapShot snapshot,
             Profile<T> profile,
             LocationId fromId, LocationId toId,
+            DateTime departureTime, DateTime arrivalTime,
             out IConnectionFilter filter,
-            DateTime departure, Func<DateTime, DateTime, DateTime> stopCalculatingAt = null
+            Func<DateTime, DateTime, DateTime> stopCalculatingAt
         )
-            where T : IJourneyStats<T>
+            where T : IJourneyMetric<T>
         {
             if (fromId.Equals(toId))
             {
@@ -171,7 +177,7 @@ namespace Itinero.Transit
             }
 
             var settings = new ScanSettings<T>(
-                snapshot, departure, DateTime.MaxValue, profile.StatsFactory,
+                snapshot, departureTime, arrivalTime, profile.MetricFactory,
                 profile.ProfileComparator, profile.InternalTransferGenerator, profile.WalksGenerator, fromId, toId
             );
 
@@ -193,7 +199,7 @@ namespace Itinero.Transit
         public static Journey<T> CalculateLatestDeparture<T>
         (this TransitDb.TransitDbSnapShot snapshot,
             Profile<T> profile, string from, string to, DateTime departure, DateTime lastArrival)
-            where T : IJourneyStats<T>
+            where T : IJourneyMetric<T>
         {
             var reader = snapshot.StopsDb.GetReader();
             var fromId = reader.FindStop(from);
@@ -205,7 +211,7 @@ namespace Itinero.Transit
             }
 
             var settings = new ScanSettings<T>(
-                snapshot, departure, lastArrival, profile.StatsFactory,
+                snapshot, departure, lastArrival, profile.MetricFactory,
                 profile.ProfileComparator, profile.InternalTransferGenerator, profile.WalksGenerator, fromId, toId
             );
             var las = new LatestConnectionScan<T>(settings);
@@ -226,7 +232,7 @@ namespace Itinero.Transit
         (this TransitDb.TransitDbSnapShot snapshot,
             Profile<T> profile,
             string from, DateTime departure, DateTime lastArrival)
-            where T : IJourneyStats<T>
+            where T : IJourneyMetric<T>
         {
             var fromId = snapshot.FindStop(from, $"Departure location {from} was not found");
 
@@ -240,7 +246,7 @@ namespace Itinero.Transit
              * And it is exactly that which we need!
              */
             var settings = new ScanSettings<T>(
-                snapshot, departure, lastArrival, profile.StatsFactory,
+                snapshot, departure, lastArrival, profile.MetricFactory,
                 profile.ProfileComparator, profile.InternalTransferGenerator, profile.WalksGenerator,
                 new List<LocationId> {fromId},
                 new List<LocationId>() // EMPTY LIST
@@ -261,7 +267,7 @@ namespace Itinero.Transit
         public static Dictionary<LocationId, Journey<T>> CalculateIsochroneLatestArrival<T>
         (this TransitDb.TransitDbSnapShot snapshot,
             Profile<T> profile, string to, DateTime departure, DateTime lastArrival)
-            where T : IJourneyStats<T>
+            where T : IJourneyMetric<T>
         {
             var reader = snapshot.StopsDb.GetReader();
             if (!reader.MoveTo(to)) throw new ArgumentException($"Departure location {to} was not found");
@@ -272,7 +278,7 @@ namespace Itinero.Transit
              * Same principle as the other IsochroneFunction
              */
             var settings = new ScanSettings<T>(
-                snapshot, departure, lastArrival, profile.StatsFactory,
+                snapshot, departure, lastArrival, profile.MetricFactory,
                 profile.ProfileComparator, profile.InternalTransferGenerator, profile.WalksGenerator,
                 new List<LocationId>(), // EMPTY LIST
                 new List<LocationId> {toId}
@@ -317,7 +323,7 @@ namespace Itinero.Transit
             DateTime departure,
             DateTime arrival,
             IConnectionFilter filter = null)
-            where T : IJourneyStats<T>
+            where T : IJourneyMetric<T>
         {
             return snapshot.CalculateJourneys(profile, departureStop.Id, arrivalStop.Id, departure, arrival, filter);
         }
@@ -341,7 +347,7 @@ namespace Itinero.Transit
             DateTime departure,
             DateTime arrival,
             IConnectionFilter filter = null)
-            where T : IJourneyStats<T>
+            where T : IJourneyMetric<T>
         {
             var stopsReader = snapshot.StopsDb.GetReader();
             stopsReader.MoveTo(departureStop);
@@ -370,7 +376,7 @@ namespace Itinero.Transit
             DateTime departure,
             DateTime arrival,
             IConnectionFilter filter = null)
-            where T : IJourneyStats<T>
+            where T : IJourneyMetric<T>
         {
             var settings = new ScanSettings<T>(
                 snapshot,
@@ -417,9 +423,9 @@ namespace Itinero.Transit
         /// - The same arrival time
         /// - The same number of transfers.
         ///
-        /// In other words, they are identical in terms of the already applied statistic T on a 'profileComparison'-basis.
+        /// In other words, they are identical in terms of the already applied metrid T on a 'profileComparison'-basis.
         ///
-        /// Of course, ppl don't like too much options; this method applies another statistic on a journey and filters based on this second statistic.
+        /// Of course, ppl don't like too much options; this method applies another metric on a journey and filters based on this second metric.
         ///
         /// The list of journeys must be ordered by departure time
         /// 
@@ -427,10 +433,10 @@ namespace Itinero.Transit
         // ReSharper disable once InconsistentNaming
         public static List<Journey<T>> PruneInAlternatives<S, T>(
             this IEnumerable<Journey<T>> profiledJourneys,
-            S newStatistic,
-            StatsComparator<S> newComparer)
-            where T : IJourneyStats<T>
-            where S : IJourneyStats<S>
+            S newMetric,
+            MetricComparator<S> newComparer)
+            where T : IJourneyMetric<T>
+            where S : IJourneyMetric<S>
         {
             var result = new List<Journey<T>>();
 
@@ -449,20 +455,19 @@ namespace Itinero.Transit
 
                 alreadySeen.Add(j);
 
-                Journey<S> jS = null;
                 if (lastT == null || lastT.Time != j.Time || lastT.Root.Time != j.Root.Time)
                 {
                     result.Add(j);
                     lastT = j;
-                    lastS = jS;
+                    lastS = null;
                     continue;
                 }
 
                 // The previous and current journeys have the same departure and arrival time
                 // We assume they are part of a family and have the same number of transfers
-                // So, we apply the statistic S...
-                lastS = lastS ?? lastT.MeasureWith(newStatistic);
-                jS = j.MeasureWith(newStatistic);
+                // So, we apply the metric S...
+                lastS = lastS ?? lastT.MeasureWith(newMetric);
+                var jS = j.MeasureWith(newMetric);
                 // ... and we compare
 
                 var comparison = newComparer.ADominatesB(lastS, jS);

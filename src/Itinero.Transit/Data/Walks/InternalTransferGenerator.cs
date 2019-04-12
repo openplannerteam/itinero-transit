@@ -24,7 +24,7 @@ namespace Itinero.Transit.Data.Walks
         /// <param name="timeNearTransfer">The departure time in the normal case, the arrival time if building journeys from en </param>
         /// <returns></returns>
         private Journey<T> CreateInternalTransfer<T>(Journey<T> buildOn,
-            ulong timeNearTransfer) where T : IJourneyStats<T>
+            ulong timeNearTransfer) where T : IJourneyMetric<T>
         {
             ulong timeDiff;
             if (timeNearTransfer < buildOn.Time)
@@ -47,7 +47,7 @@ namespace Itinero.Transit.Data.Walks
 
         public Journey<T> CreateDepartureTransfer<T>(IStopsReader _, Journey<T> buildOn,
             ulong timeWhenLeaving,
-            LocationId otherLocation) where T : IJourneyStats<T>
+            LocationId otherLocation) where T : IJourneyMetric<T>
         {
             if (timeWhenLeaving < buildOn.Time)
             {
@@ -67,7 +67,7 @@ namespace Itinero.Transit.Data.Walks
 
         public Journey<T> CreateArrivingTransfer<T>(IStopsReader _, Journey<T> buildOn,
             ulong timeWhenArriving,
-            LocationId otherLocation) where T : IJourneyStats<T>
+            LocationId otherLocation) where T : IJourneyMetric<T>
         {
             if (timeWhenArriving > buildOn.Time)
             {

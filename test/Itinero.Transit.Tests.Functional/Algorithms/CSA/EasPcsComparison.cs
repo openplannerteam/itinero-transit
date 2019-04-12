@@ -20,9 +20,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
                 departureTime, DateTime arrivalTime) input)
         {
             var latest = input.transitDb.Latest;
-            var profile = new Profile<TransferStats>(new InternalTransferGenerator(1),
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(1),
                 new CrowsFlightTransferGenerator(),
-                TransferStats.Factory, TransferStats.ProfileTransferCompare);
+                TransferMetric.Factory, TransferMetric.ProfileTransferCompare);
 
             // get departure and arrival stop ids.
             var reader = latest.StopsDb.GetReader();
@@ -31,14 +31,14 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             True(reader.MoveTo(input.arrivalStopId));
             var arrival = reader.Id;
 
-            var eas = new EarliestConnectionScan<TransferStats>
-            (new ScanSettings<TransferStats>(
+            var eas = new EarliestConnectionScan<TransferMetric>
+            (new ScanSettings<TransferMetric>(
                 latest,
                 departure, arrival, input.departureTime, input.arrivalTime, profile));
 
             var easJ = eas.CalculateJourney();
-            var pcs = new ProfiledConnectionScan<TransferStats>(
-                new ScanSettings<TransferStats>(
+            var pcs = new ProfiledConnectionScan<TransferMetric>(
+                new ScanSettings<TransferMetric>(
                     latest,
                     departure, arrival, input.departureTime, input.arrivalTime, profile));
 

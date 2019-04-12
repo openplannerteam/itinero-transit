@@ -14,7 +14,7 @@ namespace Itinero.Transit.Algorithms.CSA
     /// It does _not_ use footpath interlinks (yet)
     /// </summary>
     internal class EarliestConnectionScan<T>
-        where T : IJourneyStats<T>
+        where T : IJourneyMetric<T>
     {
         private readonly List<(LocationId, Journey<T>)> _userTargetLocations;
 
@@ -62,7 +62,7 @@ namespace Itinero.Transit.Algorithms.CSA
             foreach (var (loc, j) in settings.DepartureStop)
             {
                 var journey = j
-                              ?? new Journey<T>(loc, settings.EarliestDeparture.ToUnixTime(), settings.StatsFactory);
+                              ?? new Journey<T>(loc, settings.EarliestDeparture.ToUnixTime(), settings.MetricFactory);
 
                 _s.Add(loc, journey);
             }

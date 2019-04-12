@@ -19,9 +19,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var reader = input.transitDb.Latest.StopsDb.GetReader();
             reader.MoveTo(input.arrivalStopId);
 
-            var profile = new Profile<TransferStats>(new InternalTransferGenerator(1),
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(1),
                 null,
-                TransferStats.Factory, TransferStats.ProfileTransferCompare);
+                TransferMetric.Factory, TransferMetric.ProfileTransferCompare);
 
             var tbd = input.transitDb.Latest;
             var found = tbd.CalculateIsochrone(profile, input.departureStopId, input.departureTime, input.arrivalTime);

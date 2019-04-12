@@ -17,14 +17,14 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var tdb = Db.GetDefaultTestDb(out var stop0, out var stop1, out var stop2, out var _, out var _, out var _);
             var db = tdb.Latest;
 
-            var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
-                TransferStats.Factory,
-                TransferStats.ProfileTransferCompare
+                TransferMetric.Factory,
+                TransferMetric.ProfileTransferCompare
             );
 
-            var eas = new EarliestConnectionScan<TransferStats>(
-                new ScanSettings<TransferStats>(
+            var eas = new EarliestConnectionScan<TransferMetric>(
+                new ScanSettings<TransferMetric>(
                     db,
                     stop0, stop1,
                     db.GetConn(0).DepartureTime.FromUnixTime(),
@@ -39,7 +39,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             Assert.Equal((uint) 0, j.Connection);
 
 
-            eas = new EarliestConnectionScan<TransferStats>(new ScanSettings<TransferStats>(db,
+            eas = new EarliestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(db,
                 stop0, stop2, db.GetConn(0).DepartureTime.FromUnixTime(),
                 (db.GetConn(0).DepartureTime + 60 * 60 * 2).FromUnixTime(),
                 profile
@@ -77,11 +77,11 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
             var latest = transitDb.Latest;
 
-            var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
-                TransferStats.Factory,
-                TransferStats.ProfileTransferCompare);
-            var eas = new EarliestConnectionScan<TransferStats>(new ScanSettings<TransferStats>(latest,
+                TransferMetric.Factory,
+                TransferMetric.ProfileTransferCompare);
+            var eas = new EarliestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(latest,
                 stop0, stop3,
                 new DateTime(2018, 12, 04, 10, 00, 00),
                 new DateTime(2018, 12, 04, 11, 00, 00),
@@ -119,11 +119,11 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
             var latest = transitDb.Latest;
 
-            var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
-                TransferStats.Factory,
-                TransferStats.ProfileTransferCompare);
-            var eas = new EarliestConnectionScan<TransferStats>(new ScanSettings<TransferStats>(latest,
+                TransferMetric.Factory,
+                TransferMetric.ProfileTransferCompare);
+            var eas = new EarliestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(latest,
                 stop0, stop3,
                 new DateTime(2018, 12, 04, 10, 00, 00),
                 new DateTime(2018, 12, 04, 11, 00, 00),
@@ -131,7 +131,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var journey = eas.CalculateJourney();
 
             Assert.NotNull(journey);
-            Assert.Equal(Journey<TransferStats>.WALK, journey.PreviousLink.PreviousLink.Connection);
+            Assert.Equal(Journey<TransferMetric>.WALK, journey.PreviousLink.PreviousLink.Connection);
             Assert.True(journey.PreviousLink.PreviousLink.SpecialConnection);
         }
 
@@ -155,11 +155,11 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             writer.Close();
 
             var latest = transitDb.Latest;
-            var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 null,
-                TransferStats.Factory,
-                TransferStats.ProfileTransferCompare);
-            var eas = new EarliestConnectionScan<TransferStats>(new ScanSettings<TransferStats>(latest,
+                TransferMetric.Factory,
+                TransferMetric.ProfileTransferCompare);
+            var eas = new EarliestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(latest,
                 stop1, stop2, new DateTime(2018, 12, 04, 16, 00, 00),
                 new DateTime(2018, 12, 04, 19, 00, 00),
                 profile));
@@ -187,44 +187,44 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 0, 0, 0, 0);
 
             writer.Close();
-            var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 null,
-                TransferStats.Factory,
-                TransferStats.ProfileTransferCompare);
+                TransferMetric.Factory,
+                TransferMetric.ProfileTransferCompare);
 
-            var sources = new List<(LocationId, Journey<TransferStats> journey)>
+            var sources = new List<(LocationId, Journey<TransferMetric> journey)>
                 {(stop1, null)};
-            var targets = new List<(LocationId, Journey<TransferStats> journey)>
+            var targets = new List<(LocationId, Journey<TransferMetric> journey)>
             {
                 (stop2,
-                    new Journey<TransferStats>(stop2, 0, profile.StatsFactory, 42)
-                        .ChainSpecial(Journey<TransferStats>.WALK, 100, stop2, 0)
+                    new Journey<TransferMetric>(stop2, 0, profile.MetricFactory, 42)
+                        .ChainSpecial(Journey<TransferMetric>.WALK, 100, stop2, 0)
                 )
             };
 
             var latest = transitDb.Latest;
 
-            var settings = new ScanSettings<TransferStats>(
+            var settings = new ScanSettings<TransferMetric>(
                 latest,
                 new DateTime(2018, 12, 04, 16, 00, 00),
                 new DateTime(2018, 12, 04, 19, 00, 00),
-                profile.StatsFactory, profile.ProfileComparator,
+                profile.MetricFactory, profile.ProfileComparator,
                 profile.InternalTransferGenerator, profile.WalksGenerator,
                 sources, targets
             );
 
 
-            var eas = new EarliestConnectionScan<TransferStats>(settings);
+            var eas = new EarliestConnectionScan<TransferMetric>(settings);
             var journey = eas.CalculateJourney();
 
             Assert.NotNull(journey);
             Assert.Equal(3, journey.AllParts().Count);
-            Assert.Equal(Journey<TransferStats>.WALK, journey.Connection);
+            Assert.Equal(Journey<TransferMetric>.WALK, journey.Connection);
             Assert.True(journey.SpecialConnection);
             Assert.False(journey.PreviousLink.SpecialConnection);
             Assert.Equal((uint) 0, journey.PreviousLink.Connection);
-            Assert.Equal(100, journey.Stats.WalkingTime);
-            Assert.Equal((uint) (10 * 60 + 100), journey.Stats.TravelTime);
+            Assert.Equal(100, journey.Metric.WalkingTime);
+            Assert.Equal((uint) (10 * 60 + 100), journey.Metric.TravelTime);
         }
 
         [Fact]
@@ -248,48 +248,48 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var latest = transitDb.Latest;
 
 
-            var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 null,
-                TransferStats.Factory,
-                TransferStats.ProfileTransferCompare);
+                TransferMetric.Factory,
+                TransferMetric.ProfileTransferCompare);
 
 
             var startTime = new DateTime(2018, 12, 04, 16, 00, 00);
-            var sources = new List<(LocationId, Journey<TransferStats> journey)>
+            var sources = new List<(LocationId, Journey<TransferMetric> journey)>
             {
                 (stop1,
-                    new Journey<TransferStats>(stop1, startTime.ToUnixTime(), profile.StatsFactory, 42)
-                        .ChainSpecial(Journey<TransferStats>.WALK,
+                    new Journey<TransferMetric>(stop1, startTime.ToUnixTime(), profile.MetricFactory, 42)
+                        .ChainSpecial(Journey<TransferMetric>.WALK,
                             startTime.ToUnixTime() + 1000, stop1, tripId: 42)
                 )
             };
 
-            var targets = new List<(LocationId, Journey<TransferStats> journey)>
+            var targets = new List<(LocationId, Journey<TransferMetric> journey)>
                 {(stop2, null)};
 
 
-            var settings = new ScanSettings<TransferStats>(
+            var settings = new ScanSettings<TransferMetric>(
                 latest,
                 startTime,
                 new DateTime(2018, 12, 04, 19, 00, 00),
-                profile.StatsFactory, profile.ProfileComparator,
+                profile.MetricFactory, profile.ProfileComparator,
                 profile.InternalTransferGenerator, profile.WalksGenerator,
                 sources, targets);
 
 
-            var eas = new EarliestConnectionScan<TransferStats>(settings);
+            var eas = new EarliestConnectionScan<TransferMetric>(settings);
             var journey = eas.CalculateJourney();
 
             Assert.NotNull(journey);
             Assert.Equal(4, journey.AllParts().Count);
             Assert.Equal((uint) 0, journey.Connection);
             Assert.True(journey.PreviousLink.PreviousLink.SpecialConnection);
-            Assert.Equal(Journey<TransferStats>.WALK,
+            Assert.Equal(Journey<TransferMetric>.WALK,
                 journey.PreviousLink.PreviousLink.Connection);
 
-            Assert.Equal((uint) 1, journey.Stats.NumberOfTransfers);
-            Assert.Equal(1000, journey.Stats.WalkingTime);
-            Assert.Equal((uint) 30 * 60, journey.Stats.TravelTime);
+            Assert.Equal((uint) 1, journey.Metric.NumberOfTransfers);
+            Assert.Equal(1000, journey.Metric.WalkingTime);
+            Assert.Equal((uint) 30 * 60, journey.Metric.TravelTime);
         }
 
         [Fact]
@@ -319,11 +319,11 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             writer.Close();
 
             var latest = transitDb.Latest;
-            var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 null,
-                TransferStats.Factory,
-                TransferStats.ProfileTransferCompare);
-            var eas = new EarliestConnectionScan<TransferStats>(new ScanSettings<TransferStats>(
+                TransferMetric.Factory,
+                TransferMetric.ProfileTransferCompare);
+            var eas = new EarliestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(
                 latest,
                 stop1, stop2,
                 new DateTime(2018, 12, 04, 16, 00, 00),

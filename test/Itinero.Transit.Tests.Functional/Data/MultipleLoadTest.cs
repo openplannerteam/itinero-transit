@@ -56,7 +56,7 @@ namespace Itinero.Transit.Tests.Functional.Data
             }
 
             True(count > 0);
-            TripHeadsignTest.Default.Run(db);
+            new TripHeadsignTest().Run(db);
         }
     }
 }

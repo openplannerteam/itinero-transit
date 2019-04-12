@@ -9,7 +9,7 @@ namespace Itinero.Transit.Algorithms.CSA
     /// <summary>
     /// Scansettings is a small object keeping track of all common parameters to run a scan
     /// </summary>
-    internal class ScanSettings<T> where T : IJourneyStats<T>
+    internal class ScanSettings<T> where T : IJourneyMetric<T>
     {
         private IConnectionFilter _filter;
 
@@ -41,13 +41,13 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         public List<(LocationId, Journey<T>)> TargetStop { get; set; }
         /// <summary>
-        /// The statistics that are used in the journeys
+        /// The metrics that are used in the journeys
         /// </summary>
-        public T StatsFactory { get; set; }
+        public T MetricFactory { get; set; }
         /// <summary>
-        /// How to compare the statistics
+        /// How to compare the metrics
         /// </summary>
-        public ProfiledStatsComparator<T> Comparator { get; set; }
+        public ProfiledMetricComparator<T> Comparator { get; set; }
         /// <summary>
         /// How long we should at least wait between two trains
         /// </summary>
@@ -82,18 +82,18 @@ namespace Itinero.Transit.Algorithms.CSA
         public Journey<T> ExampleJourney { get; set; }
 
         public ScanSettings(TransitDb.TransitDbSnapShot transitDb, DateTime earliestDeparture, DateTime lastDeparture,
-            T statsFactory, ProfiledStatsComparator<T> comparator, IOtherModeGenerator transferPolicy,
+            T metricFactory, ProfiledMetricComparator<T> comparator, IOtherModeGenerator transferPolicy,
             IOtherModeGenerator walkPolicy, LocationId departureStop, LocationId targetStop)
-            : this(transitDb, earliestDeparture, lastDeparture, statsFactory, comparator, transferPolicy, walkPolicy,
+            : this(transitDb, earliestDeparture, lastDeparture, metricFactory, comparator, transferPolicy, walkPolicy,
                 new List<LocationId> {departureStop}, new List<LocationId> {targetStop})
         {
         }
 
         
         public ScanSettings(TransitDb.TransitDbSnapShot transitDb, DateTime earliestDeparture, DateTime lastDeparture,
-            T statsFactory, ProfiledStatsComparator<T> comparator, IOtherModeGenerator transferPolicy,
+            T metricFactory, ProfiledMetricComparator<T> comparator, IOtherModeGenerator transferPolicy,
             IOtherModeGenerator walkPolicy, List<LocationId>  departureLocations, List<LocationId>  targetLocations)
-            : this(transitDb, earliestDeparture, lastDeparture, statsFactory, comparator, transferPolicy, walkPolicy,
+            : this(transitDb, earliestDeparture, lastDeparture, metricFactory, comparator, transferPolicy, walkPolicy,
               AddNullJourneys(departureLocations), AddNullJourneys(targetLocations))
         {
         }
@@ -112,14 +112,14 @@ namespace Itinero.Transit.Algorithms.CSA
         
         public ScanSettings(TransitDb.TransitDbSnapShot transitDb, 
             DateTime earliestDeparture, DateTime lastDeparture,
-            T statsFactory, ProfiledStatsComparator<T> comparator, IOtherModeGenerator transferPolicy,
+            T metricFactory, ProfiledMetricComparator<T> comparator, IOtherModeGenerator transferPolicy,
             IOtherModeGenerator walkPolicy, List<(LocationId, Journey<T>)> departureStop, List<(LocationId, Journey<T>)> targetLocation)
         {
             Connections = transitDb.ConnectionsDb.GetDepartureEnumerator();
             StopsDbReader = transitDb.StopsDb.GetReader();
             EarliestDeparture = earliestDeparture;
             LastArrival = lastDeparture;
-            StatsFactory = statsFactory;
+            MetricFactory = metricFactory;
             Comparator = comparator;
             TransferPolicy = transferPolicy;
             WalkPolicy = walkPolicy;
@@ -132,7 +132,7 @@ namespace Itinero.Transit.Algorithms.CSA
         : this(
             snapshot,
             departureTime, arrivalTime, 
-            profile.StatsFactory, profile.ProfileComparator, 
+            profile.MetricFactory, profile.ProfileComparator, 
             profile.InternalTransferGenerator, profile.WalksGenerator, 
             departureStop, arrivalStop )
         {

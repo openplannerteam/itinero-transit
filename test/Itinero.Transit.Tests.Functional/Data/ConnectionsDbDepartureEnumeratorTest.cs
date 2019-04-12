@@ -4,11 +4,6 @@ namespace Itinero.Transit.Tests.Functional.Data
 {
     public class ConnectionsDbDepartureEnumeratorTest: FunctionalTest<int, TransitDb>
     {
-        /// <summary>
-        /// Gets the default test.
-        /// </summary>
-        public static ConnectionsDbDepartureEnumeratorTest Default => new ConnectionsDbDepartureEnumeratorTest();
-
         protected override int Execute(TransitDb input)
         {
             var latest = input.Latest;

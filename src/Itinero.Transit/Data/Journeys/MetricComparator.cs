@@ -1,7 +1,7 @@
 ﻿namespace Itinero.Transit.Journeys
 {
     /// <summary>
-    /// The interface that objects comparing statistics fullfill.
+    /// The interface that objects comparing metric fullfill.
     /// The implementation is free to compare one or more dimensions.
     /// In the case that multiple dimensions are used, certain algorithms will return a pareto-frontier or profile-frontier.
     ///
@@ -11,8 +11,8 @@
     /// Note that this will be very user-specific
     /// 
     /// </summary>
-    public abstract class StatsComparator<T>
-        where T : IJourneyStats<T>
+    public abstract class MetricComparator<T>
+        where T : IJourneyMetric<T>
     {
        
         
@@ -27,8 +27,8 @@
         /// Return 0 if they are equally optimal
         /// Return Int.MAX_VALUE if they can not be compared and are both part of the pareto frontier
         /// /// </summary>
-        /// <param name="a">The first statistics to compare</param>
-        /// <param name="b">The second statistics to compare</param>
+        /// <param name="a">The first metric to compare</param>
+        /// <param name="b">The second metric to compare</param>
         /// <returns></returns>
         public abstract int ADominatesB(Journey<T> a, Journey<T> b);
         

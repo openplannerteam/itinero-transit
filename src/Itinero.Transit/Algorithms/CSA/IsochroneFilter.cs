@@ -7,7 +7,7 @@ namespace Itinero.Transit.Algorithms.CSA
 {
     internal static class MaskFilterConstructors
     {
-        public static IsochroneFilter<T> AsFilter<T>(this EarliestConnectionScan<T> eas) where T : IJourneyStats<T>
+        public static IsochroneFilter<T> AsFilter<T>(this EarliestConnectionScan<T> eas) where T : IJourneyMetric<T>
         {
             if (eas.ScanEndTime <= 0)
             {
@@ -19,7 +19,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 eas.ScanEndTime);
         }
         
-        public static IsochroneFilter<T> AsFilter<T>(this LatestConnectionScan<T> las) where T : IJourneyStats<T>
+        public static IsochroneFilter<T> AsFilter<T>(this LatestConnectionScan<T> las) where T : IJourneyMetric<T>
         {
             if (las.ScanBeginTime == ulong.MaxValue)
             {
@@ -37,7 +37,7 @@ namespace Itinero.Transit.Algorithms.CSA
     /// The Msk-Filter takes the isochrone line of EAS/LAS and decides if a connection is useful to take based on this.
     /// </summary>
     internal class IsochroneFilter<T> : IConnectionFilter
-        where T : IJourneyStats<T>
+        where T : IJourneyMetric<T>
     {
         private readonly IReadOnlyDictionary<LocationId, Journey<T>> _isochrone;
         private readonly bool _isForward;

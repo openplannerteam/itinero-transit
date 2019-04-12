@@ -19,12 +19,12 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
             var db = tdb.Latest;
 
-            var profile = new Profile<TransferStats>(new InternalTransferGenerator(60),
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(60),
                 new CrowsFlightTransferGenerator(),
-                TransferStats.Factory, TransferStats.ProfileTransferCompare);
+                TransferMetric.Factory, TransferMetric.ProfileTransferCompare);
 
 
-            var pcs = new ProfiledConnectionScan<TransferStats>(new ScanSettings<TransferStats>(
+            var pcs = new ProfiledConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(
                 db,
                 stop0, stop3,
                 new DateTime(2018, 12, 04, 16, 00, 00),
@@ -82,12 +82,12 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
             var latest = transitDb.Latest;
 
-            var profile = new Profile<TransferStats>(new InternalTransferGenerator(60),
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(60),
                 new CrowsFlightTransferGenerator(),
-                TransferStats.Factory, TransferStats.ProfileTransferCompare);
+                TransferMetric.Factory, TransferMetric.ProfileTransferCompare);
 
-            var pcs = new ProfiledConnectionScan<TransferStats>
-            (new ScanSettings<TransferStats>(
+            var pcs = new ProfiledConnectionScan<TransferMetric>
+            (new ScanSettings<TransferMetric>(
                 latest,
                 loc0, loc1,
                 new DateTime(2018, 12, 04, 16, 00, 00),
@@ -97,7 +97,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             Assert.Single(journeys);
             foreach (var j in journeys)
             {
-                Assert.Equal(30 * 60, (int) j.Stats.TravelTime);
+                Assert.Equal(30 * 60, (int) j.Metric.TravelTime);
             }
         }
 
@@ -120,12 +120,12 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             writer.Close();
             var latest = transitDb.Latest;
 
-            var profile = new Profile<TransferStats>(new InternalTransferGenerator(),
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
-                TransferStats.Factory,
-                TransferStats.ProfileTransferCompare);
-            var pcs = new ProfiledConnectionScan<TransferStats>(
-                new ScanSettings<TransferStats>(latest,
+                TransferMetric.Factory,
+                TransferMetric.ProfileTransferCompare);
+            var pcs = new ProfiledConnectionScan<TransferMetric>(
+                new ScanSettings<TransferMetric>(latest,
                     stop1, stop2,
                     new DateTime(2018, 12, 04, 16, 00, 00),
                     new DateTime(2018, 12, 04, 19, 00, 00),

@@ -11,7 +11,7 @@ namespace Itinero.Transit.IO.LC.Json
     public static class JourneyToGeoJsonExtensions
     {
         public static string ToGeoJson<T>(this Journey<T> journey, StopsDb stopsDb)
-            where T : IJourneyStats<T>
+            where T : IJourneyMetric<T>
         {
             var stringWriter = new StringWriter();
             journey.WriteGeoJson(stopsDb, stringWriter);
@@ -24,7 +24,7 @@ namespace Itinero.Transit.IO.LC.Json
         /// </summary>
         // ReSharper disable once MemberCanBePrivate.Global
         public static void WriteGeoJson<T>(this Journey<T> journey, StopsDb stopsDb, TextWriter writer)
-            where T : IJourneyStats<T>
+            where T : IJourneyMetric<T>
         {
             if (journey == null)
             {

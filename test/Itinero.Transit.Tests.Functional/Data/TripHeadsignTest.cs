@@ -4,8 +4,6 @@ namespace Itinero.Transit.Tests.Functional.Data
 {
     public class TripHeadsignTest : FunctionalTest<uint, TransitDb>
     {
-        public static TripHeadsignTest Default = new TripHeadsignTest();
-
         protected override uint Execute(TransitDb input)
         {
             var latest = input.Latest;

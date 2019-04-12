@@ -20,7 +20,7 @@ namespace Itinero.Transit.Tests.Data
             var c1 = connDb.GetReader();
             c1.MoveTo("https://example.com/connections/1");
 
-            var root = new Journey<TransferStats>(c0.DepartureStop, c0.DepartureTime, TransferStats.Factory);
+            var root = new Journey<TransferMetric>(c0.DepartureStop, c0.DepartureTime, TransferMetric.Factory);
             var j = root.ChainForward(c0);
             var transfered = transferGen
                 .CreateDepartureTransfer(null, j, c1.DepartureTime, c1.DepartureStop);
@@ -31,7 +31,7 @@ namespace Itinero.Transit.Tests.Data
             Assert.True(transfered.PreviousLink.SpecialConnection);
             Assert.False(transfered.SpecialConnection);
             Assert.Equal(root, transfered.Root);
-            Assert.Equal((uint) 1, transfered.Stats.NumberOfTransfers);
+            Assert.Equal((uint) 1, transfered.Metric.NumberOfTransfers);
 
             // We need more time with luggage
             var transferWithLuggage = new InternalTransferGenerator(240);

@@ -5,10 +5,10 @@ using Itinero.Transit.Journeys;
 namespace Itinero.Transit.Algorithms.CSA
 {
     public class ParetoFrontier<T>
-        where T : IJourneyStats<T>
+        where T : IJourneyMetric<T>
 
     {
-        public readonly StatsComparator<T> Comparator;
+        public readonly MetricComparator<T> Comparator;
 
         /// <summary>
         /// Contains all the points on the frontier, in order
@@ -18,7 +18,7 @@ namespace Itinero.Transit.Algorithms.CSA
         public readonly List<Journey<T>> Frontier = new List<Journey<T>>();
 
 
-        public ParetoFrontier(StatsComparator<T> comparator)
+        public ParetoFrontier(MetricComparator<T> comparator)
         {
             Comparator = comparator ?? throw new ArgumentNullException(nameof(comparator),
                              "A Pareto Frontier can not operate without comparator");
@@ -26,10 +26,10 @@ namespace Itinero.Transit.Algorithms.CSA
 
 
         /// <summary>
-        /// Are the given statistics on the current frontier?
+        /// Are the given metric on the current frontier?
         /// Returns false if they are outperformed   
         /// </summary>
-        /// <param name="considered">The considered statistics</param>
+        /// <param name="considered">The considered metrics</param>
         /// <returns></returns>
         public bool OnTheFrontier(Journey<T> considered)
         {
@@ -44,7 +44,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
                 //  if (comparison == 1)
                 // The new journey defeated the guard
-                // If we were to add these stats to the frontier, the guard would be removed
+                // If we were to add these metric to the frontier, the guard would be removed
 
                 //if (comparison == int.MaxValue)
                 // Both are on the pareto front

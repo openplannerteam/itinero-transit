@@ -1,12 +1,12 @@
 ﻿namespace Itinero.Transit.Journeys
 {
-    public  class ChainedComparator<T> : StatsComparator<T>
-        where T : IJourneyStats<T>
+    public  class ChainedComparator<T> : MetricComparator<T>
+        where T : IJourneyMetric<T>
     {
 
-        private readonly StatsComparator<T> _firstComparator, _spillOver;
+        private readonly MetricComparator<T> _firstComparator, _spillOver;
 
-        public ChainedComparator(StatsComparator<T> firstComparator, StatsComparator<T> spillOver)
+        public ChainedComparator(MetricComparator<T> firstComparator, MetricComparator<T> spillOver)
         {
             _firstComparator = firstComparator;
             _spillOver = spillOver;

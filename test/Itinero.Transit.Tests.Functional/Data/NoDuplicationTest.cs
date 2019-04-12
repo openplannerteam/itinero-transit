@@ -7,7 +7,7 @@ namespace Itinero.Transit.Tests.Functional.Data
 {
     public class NoDuplicationTest : FunctionalTest<bool, bool>
     {
-        private int countConnections(DateTime now, TransitDb tdb)
+        private static int CountConnections(DateTime now, TransitDb tdb)
         {
             var latest = tdb.Latest;
             var count = 0;
@@ -31,12 +31,12 @@ namespace Itinero.Transit.Tests.Functional.Data
             var updater = new TransitDbUpdater(tdb, dataset.UpdateTimeFrame);
 
             updater.UpdateTimeFrame(now, now.AddMinutes(10));
-            var totalConnections = countConnections(now, updater.TransitDb);
+            var totalConnections = CountConnections(now, updater.TransitDb);
 
             for (var i = 0; i < 10; i++)
             {
                 updater.UpdateTimeFrame(now, now.AddMinutes(10));
-                var newCount = countConnections(now, updater.TransitDb);
+                var newCount = CountConnections(now, updater.TransitDb);
                 if (newCount > totalConnections * 1.1)
                 {
                     throw new ArgumentException("Duplicates are building in the database");

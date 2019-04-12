@@ -20,7 +20,7 @@ namespace Itinero.Transit.Algorithms.CSA
     /// 
     /// 
     /// </summary>
-    internal class ProfiledConnectionScan<T> where T : IJourneyStats<T>
+    internal class ProfiledConnectionScan<T> where T : IJourneyMetric<T>
     {
         private readonly IConnectionEnumerator _connections;
         private readonly IStopsReader _stopsReader;
@@ -28,9 +28,9 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly List<LocationId> _departureLocations;
         private readonly List<LocationId> _targetLocations;
 
-        private readonly ProfiledStatsComparator<T> _comparator;
+        private readonly ProfiledMetricComparator<T> _comparator;
 
-        private readonly T _statsFactory;
+        private readonly T _metricFactory;
 
         // Indicates if connections can not be taken due to external reasons (e.g. earlier scan)
         private readonly IConnectionFilter _filter;
@@ -136,7 +136,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             _comparator = settings.Comparator;
             _empty = new ParetoFrontier<T>(_comparator);
-            _statsFactory = settings.StatsFactory;
+            _metricFactory = settings.MetricFactory;
             _transferPolicy = settings.TransferPolicy;
             _possibleJourney = settings.ExampleJourney;
             _filter = settings.Filter;
@@ -306,7 +306,7 @@ namespace Itinero.Transit.Algorithms.CSA
                     // We are at a possible target location
                     // No real need to walk
                     var arrivingJourney = new Journey<T>
-                    (targetLocation, c.ArrivalTime, _statsFactory.EmptyStat(),
+                    (targetLocation, c.ArrivalTime, _metricFactory.Zero(),
                         Journey<T>.ProfiledScanJourney);
                     var journey = arrivingJourney.ChainBackward(c);
                     return journey;

@@ -6,8 +6,8 @@ namespace Itinero.Transit.Journeys
 {
     /// <inheritdoc />
     ///  <summary>
-    ///  (aka: The Pragmatic Statistic)
-    ///  This JourneyStatistic will attempt to optimize the journeys in the following way:
+    ///  (aka: The Pragmatic Metric)
+    ///  This JourneyMetric will attempt to optimize the journeys in the following way:
     ///  1) The total time walking is minimized
     ///  and iff the same: 
     ///  2) The total time travelling in a vehicle is minimized
@@ -16,12 +16,12 @@ namespace Itinero.Transit.Journeys
     ///  and iff the same and an importance list is given
     ///  4) The biggest stations to transfers are chosen (as bigger station often have better facilities)*
     ///     &gt; Here, the journeys are compared segment by segment. The difference between every station is taken, the one which performs best overall is taken
-    ///  This statistic is meant to be used _after_ PCS in order to weed out multiple journeys which have an equal performance on total travel time and number of transfers.
+    ///  This metric is meant to be used _after_ PCS in order to weed out multiple journeys which have an equal performance on total travel time and number of transfers.
     ///  * Once upon a time, I was testing an early implementation. That EAS implementation gave me a transfer of 1h in Angleur
     ///  (which is a small station), while I could have transfered in Liege as well (a big station with lots of facilities).
     ///  The closest food I could find at 19:00 was around one kilometer away.
     ///  </summary>
-    public class TravellingTimeMinimizer : IJourneyStats<TravellingTimeMinimizer>
+    public class TravellingTimeMinimizer : IJourneyMetric<TravellingTimeMinimizer>
     {
         private readonly uint _totalTimeWalking;
         private readonly uint _totalTimeInVehicle;
@@ -45,7 +45,7 @@ namespace Itinero.Transit.Journeys
         }
 
 
-        public TravellingTimeMinimizer EmptyStat()
+        public TravellingTimeMinimizer Zero()
         {
             return Factory;
         }
@@ -76,7 +76,7 @@ namespace Itinero.Transit.Journeys
         }
 
 
-        public class Minimizer : StatsComparator<TravellingTimeMinimizer>
+        public class Minimizer : MetricComparator<TravellingTimeMinimizer>
         {
             private readonly MaximizeStations<TravellingTimeMinimizer> _comparator;
 
@@ -93,8 +93,8 @@ namespace Itinero.Transit.Journeys
 
             public override int ADominatesB(Journey<TravellingTimeMinimizer> ja, Journey<TravellingTimeMinimizer> jb)
             {
-                var a = ja.Stats;
-                var b = jb.Stats;
+                var a = ja.Metric;
+                var b = jb.Metric;
 
                 if (a._totalTimeWalking != b._totalTimeWalking)
                 {

@@ -28,25 +28,25 @@ namespace Itinero.Transit.Tests.Data
 
 
             var time = new DateTime(2018, 12, 04, 16, 20, 00).ToUnixTime();
-            var j = new Journey<TransferStats>(loc0, time,
-                TransferStats.Factory);
+            var j = new Journey<TransferMetric>(loc0, time,
+                TransferMetric.Factory);
 
             var reader = connDb.GetReader();
             reader.MoveTo(c0);
 
             j = j.ChainForward(reader);
-            Assert.NotNull(j.Stats);
-            Assert.Equal((uint) 10 * 60, j.Stats.TravelTime);
-            Assert.Equal((uint) 0, j.Stats.NumberOfTransfers);
+            Assert.NotNull(j.Metric);
+            Assert.Equal((uint) 10 * 60, j.Metric.TravelTime);
+            Assert.Equal((uint) 0, j.Metric.NumberOfTransfers);
 
 
             reader.MoveTo(c1);
             j = j.TransferForward(reader);
 
 
-            Assert.NotNull(j.Stats);
-            Assert.Equal((uint) 23 * 60, j.Stats.TravelTime);
-            Assert.Equal((uint) 1, j.Stats.NumberOfTransfers);
+            Assert.NotNull(j.Metric);
+            Assert.Equal((uint) 23 * 60, j.Metric.TravelTime);
+            Assert.Equal((uint) 1, j.Metric.NumberOfTransfers);
 
             Assert.Equal(reader.DepartureTime, j.DepartureTime());
         }
@@ -73,15 +73,15 @@ namespace Itinero.Transit.Tests.Data
 
 
             var time = new DateTime(2018, 12, 04, 16, 43, 00).ToUnixTime();
-            var j = new Journey<TransferStats>(loc2, time,
-                TransferStats.Factory);
+            var j = new Journey<TransferMetric>(loc2, time,
+                TransferMetric.Factory);
 
             var reader = connDb.GetReader();
             reader.MoveTo(c1);
 
             j = j.ChainBackward(reader);
 
-            j = j.ChainSpecial(Journey<TransferStats>.TRANSFER,
+            j = j.ChainSpecial(Journey<TransferMetric>.TRANSFER,
                 new DateTime(2018, 12, 04, 16, 30, 00).ToUnixTime(),
                 loc1, uint.MaxValue);
 
@@ -98,7 +98,7 @@ namespace Itinero.Transit.Tests.Data
             Assert.Equal(r.Root.Time, j.Time);
             Assert.Equal(j.Root.Location, r.Location);
             Assert.Equal(r.Root.Location, j.Location);
-            Assert.Equal(j.Stats, r.Stats);
+            Assert.Equal(j.Metric, r.Metric);
         }
     }
 }

@@ -13,10 +13,10 @@ namespace Itinero.Transit.Journeys
 
     /// <inheritdoc />
     /// <summary>
-    /// A simple statistic keeping track of the number of trains taken and the total travel time.
+    /// A simple metric keeping track of the number of trains taken and the total travel time.
     /// This class uses Pareto Optimization. Use either TotalTimeMinimizer or TotalTransferMinimizer to optimize for one of those
     /// </summary>
-    public class TransferStats : IJourneyStats<TransferStats>
+    public class TransferMetric : IJourneyMetric<TransferMetric>
     {
         //------------------ ALL KINDS OF COMPARATORS -------------------
 
@@ -27,21 +27,21 @@ namespace Itinero.Transit.Journeys
         public static readonly ProfileCompare ProfileCompare = new ProfileCompare();
         public static readonly ParetoCompare ParetoCompare = new ParetoCompare();
 
-        public static readonly ChainedComparator<TransferStats> MinimizeTransfersFirst =
-            new ChainedComparator<TransferStats>(MinimizeTransfers, MinimizeTravelTimes);
+        public static readonly ChainedComparator<TransferMetric> MinimizeTransfersFirst =
+            new ChainedComparator<TransferMetric>(MinimizeTransfers, MinimizeTravelTimes);
 
         // ReSharper disable once UnusedMember.Global
-        public static readonly ChainedComparator<TransferStats> MinimizeTravelTimeFirst =
-            new ChainedComparator<TransferStats>(MinimizeTravelTimes, MinimizeTransfers);
+        public static readonly ChainedComparator<TransferMetric> MinimizeTravelTimeFirst =
+            new ChainedComparator<TransferMetric>(MinimizeTravelTimes, MinimizeTransfers);
 
 
         // ----------------- ZERO ELEMENT ------------------
 
-        public static readonly TransferStats Factory =
-            new TransferStats(0, 0, 0);
+        public static readonly TransferMetric Factory =
+            new TransferMetric(0, 0, 0);
 
 
-        // ---------------- ACTUAL STATISTICS -------------------------
+        // ---------------- ACTUAL METRICS -------------------------
 
         public readonly uint NumberOfTransfers;
 
@@ -49,7 +49,7 @@ namespace Itinero.Transit.Journeys
 
         public readonly float WalkingTime;
 
-        private TransferStats(uint numberOfTransfers,
+        private TransferMetric(uint numberOfTransfers,
             TimeSpan travelTime,
             float walkingDistance)
         {
@@ -58,16 +58,16 @@ namespace Itinero.Transit.Journeys
             WalkingTime = walkingDistance;
         }
 
-        public TransferStats EmptyStat()
+        public TransferMetric Zero()
         {
             return Factory;
         }
 
-        public TransferStats Add(Journey<TransferStats> journey)
+        public TransferMetric Add(Journey<TransferMetric> journey)
         {
             var transferred = journey.PreviousLink.LastTripId() != journey.LastTripId()
                               && !(journey.PreviousLink.SpecialConnection &&
-                                   journey.PreviousLink.Connection == Journey<TransferStats>.GENESIS);
+                                   journey.PreviousLink.Connection == Journey<TransferMetric>.GENESIS);
 
             ulong travelTime;
 
@@ -82,12 +82,12 @@ namespace Itinero.Transit.Journeys
 
 
             ulong walkingTime = 0;
-            if (journey.SpecialConnection && journey.Connection == Journey<TransferStats>.WALK)
+            if (journey.SpecialConnection && journey.Connection == Journey<TransferMetric>.WALK)
             {
                 walkingTime = travelTime;
             }
 
-            return new TransferStats((uint) (NumberOfTransfers + (transferred ? 1 : 0)),
+            return new TransferMetric((uint) (NumberOfTransfers + (transferred ? 1 : 0)),
                 (uint) (TravelTime + travelTime),
                 WalkingTime + walkingTime);
         }
@@ -101,10 +101,10 @@ namespace Itinero.Transit.Journeys
             seconds = seconds % 60;
 
             return
-                $"Stats: {NumberOfTransfers} transfers, {hours}:{minutes}:{seconds} total time), {WalkingTime} seconds to walk";
+                $"Metric: {NumberOfTransfers} transfers, {hours}:{minutes}:{seconds} total time), {WalkingTime} seconds to walk";
         }
 
-        private bool Equals(TransferStats other)
+        private bool Equals(TransferMetric other)
         {
             return NumberOfTransfers == other.NumberOfTransfers
                    && TravelTime == other.TravelTime
@@ -116,7 +116,7 @@ namespace Itinero.Transit.Journeys
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((TransferStats) obj);
+            return Equals((TransferMetric) obj);
         }
 
         public override int GetHashCode()
@@ -132,28 +132,28 @@ namespace Itinero.Transit.Journeys
     }
 
 
-    public class MinimizeTransfers : StatsComparator<TransferStats>
+    public class MinimizeTransfers : MetricComparator<TransferMetric>
     {
-        public override int ADominatesB(Journey<TransferStats> a, Journey<TransferStats> b)
+        public override int ADominatesB(Journey<TransferMetric> a, Journey<TransferMetric> b)
         {
-            return a.Stats.NumberOfTransfers.CompareTo(b.Stats.NumberOfTransfers);
+            return a.Metric.NumberOfTransfers.CompareTo(b.Metric.NumberOfTransfers);
         }
     }
 
-    public class MinimizeTravelTimes : StatsComparator<TransferStats>
+    public class MinimizeTravelTimes : MetricComparator<TransferMetric>
     {
-        public override int ADominatesB(Journey<TransferStats> a, Journey<TransferStats> b)
+        public override int ADominatesB(Journey<TransferMetric> a, Journey<TransferMetric> b)
         {
-            return (a.Stats.TravelTime).CompareTo(b.Stats.TravelTime);
+            return (a.Metric.TravelTime).CompareTo(b.Metric.TravelTime);
         }
     }
 
     /// <summary>
     /// Compares two BACKWARDS journeys with each other
     /// </summary>
-    public class ProfileTransferCompare : ProfiledStatsComparator<TransferStats>
+    public class ProfileTransferCompare : ProfiledMetricComparator<TransferMetric>
     {
-        public override int ADominatesB(Journey<TransferStats> a, Journey<TransferStats> b)
+        public override int ADominatesB(Journey<TransferMetric> a, Journey<TransferMetric> b)
         {
             var aBetterThenB = AIsBetterThenB(a, b);
             var bBetterThenA = AIsBetterThenB(b, a);
@@ -186,18 +186,18 @@ namespace Itinero.Transit.Journeys
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        private bool AIsBetterThenB(Journey<TransferStats> a, Journey<TransferStats> b)
+        private bool AIsBetterThenB(Journey<TransferMetric> a, Journey<TransferMetric> b)
         {
-            return a.Stats.NumberOfTransfers < b.Stats.NumberOfTransfers
+            return a.Metric.NumberOfTransfers < b.Metric.NumberOfTransfers
                    || a.Root.Time < b.Root.Time
                    || a.Time > b.Time;
         }
     }
 
 
-    public class ProfileCompare : ProfiledStatsComparator<TransferStats>
+    public class ProfileCompare : ProfiledMetricComparator<TransferMetric>
     {
-        public override int ADominatesB(Journey<TransferStats> a, Journey<TransferStats> b)
+        public override int ADominatesB(Journey<TransferMetric> a, Journey<TransferMetric> b)
         {
             if (a.Equals(b))
             {
@@ -235,30 +235,30 @@ namespace Itinero.Transit.Journeys
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        private bool AIsBetterThenB(Journey<TransferStats> a, Journey<TransferStats> b)
+        private bool AIsBetterThenB(Journey<TransferMetric> a, Journey<TransferMetric> b)
         {
             return a.PreviousLink.Time > b.PreviousLink.Time
                    || a.Time < b.Time;
         }
     }
 
-    public class ParetoCompare : StatsComparator<TransferStats>
+    public class ParetoCompare : MetricComparator<TransferMetric>
     {
-        public override int ADominatesB(Journey<TransferStats> a, Journey<TransferStats> b)
+        public override int ADominatesB(Journey<TransferMetric> a, Journey<TransferMetric> b)
         {
-            if (a.Stats.TravelTime.Equals(b.Stats.TravelTime) &&
-                a.Stats.NumberOfTransfers.Equals(b.Stats.NumberOfTransfers))
+            if (a.Metric.TravelTime.Equals(b.Metric.TravelTime) &&
+                a.Metric.NumberOfTransfers.Equals(b.Metric.NumberOfTransfers))
             {
                 return 0;
             }
 
-            if (S1DominatesS2(a.Stats, b.Stats))
+            if (S1DominatesS2(a.Metric, b.Metric))
             {
                 return -1;
             }
 
             // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (S1DominatesS2(b.Stats, a.Stats))
+            if (S1DominatesS2(b.Metric, a.Metric))
             {
                 return 1;
             }
@@ -266,7 +266,7 @@ namespace Itinero.Transit.Journeys
             return int.MaxValue;
         }
 
-        private bool S1DominatesS2(TransferStats s1, TransferStats s2)
+        private bool S1DominatesS2(TransferMetric s1, TransferMetric s2)
         {
             return
                 (s1.NumberOfTransfers < s2.NumberOfTransfers

@@ -9,7 +9,7 @@ namespace Itinero.Transit.Journeys
     /// A simple Journey Comparer, which walks along two journeys and takes the difference in station importance.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class MaximizeStations<T> : Comparer<Journey<T>> where T : IJourneyStats<T>
+    public class MaximizeStations<T> : Comparer<Journey<T>> where T : IJourneyMetric<T>
     {
         private readonly Dictionary<LocationId, uint> _importances;
 

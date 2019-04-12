@@ -21,7 +21,7 @@ namespace Itinero.Transit.Journeys
     /// so that users of the lib get a uniform experience
     /// </summary>
     public class Journey<T>
-        where T : IJourneyStats<T>
+        where T : IJourneyMetric<T>
     {
         public static readonly Journey<T> InfiniteJourney = new Journey<T>();
 
@@ -116,9 +116,9 @@ namespace Itinero.Transit.Journeys
 
 
         /// <summary>
-        /// Keeps some statistics about the journey
+        /// A metric about the journey up till this point
         /// </summary>
-        public readonly T Stats;
+        public readonly T Metric;
 
         /// <summary>
         /// Hashcode is calculated at the start for quick comparisons
@@ -146,7 +146,7 @@ namespace Itinero.Transit.Journeys
         /// <summary>
         /// All-exposing private constructor. All values are read-only
         /// 
-        /// Note that Stats will not be saved, but be used as constructor with 'stats.add(this)' is
+        /// Note that the metric will not be saved, but be used as constructor with 'metrics.add(this)' is
         /// </summary>
         /// <param name="root"></param>
         /// <param name="previousLink"></param>
@@ -155,9 +155,9 @@ namespace Itinero.Transit.Journeys
         /// <param name="location"></param>
         /// <param name="time"></param>
         /// <param name="tripId"></param>
-        /// <param name="stats"></param>
+        /// <param name="metric"></param>
         private Journey(Journey<T> root, Journey<T> previousLink, bool specialLink, uint connection,
-            LocationId location, UnixTime time, uint tripId, T stats)
+            LocationId location, UnixTime time, uint tripId, T metric)
         {
             Root = root;
             SpecialConnection = specialLink;
@@ -166,7 +166,7 @@ namespace Itinero.Transit.Journeys
             Location = location;
             Time = time;
             TripId = tripId;
-            Stats = stats.Add(this);
+            Metric = metric.Add(this);
             _hashCode = CalculateHashCode();
         }
 
@@ -174,7 +174,7 @@ namespace Itinero.Transit.Journeys
         /// Genesis constructor.
         /// This constructor creates a root journey
         /// </summary>
-        public Journey(LocationId location, UnixTime departureTime, T initialStats,
+        public Journey(LocationId location, UnixTime departureTime, T initialMetric,
             uint debuggingFreeformTag = 0)
         {
             Root = this;
@@ -183,7 +183,7 @@ namespace Itinero.Transit.Journeys
             SpecialConnection = true;
             Location = location;
             Time = departureTime;
-            Stats = initialStats;
+            Metric = initialMetric;
             TripId = debuggingFreeformTag;
             _hashCode = CalculateHashCode();
         }
@@ -209,7 +209,7 @@ namespace Itinero.Transit.Journeys
             SpecialConnection = true;
             Location = optionA.Location;
             Time = optionA.Time;
-            Stats = optionA.Stats;
+            Metric = optionA.Metric;
             TripId = optionA.Root.TripId;
             _hashCode = optionA._hashCode + optionB._hashCode;
         }
@@ -222,7 +222,7 @@ namespace Itinero.Transit.Journeys
             uint tripId)
         {
             return new Journey<T>(
-                Root, this, false, connection, location, time, tripId, Stats);
+                Root, this, false, connection, location, time, tripId, Metric);
         }
 
         public Journey<T> ChainForward(IConnection c)
@@ -232,7 +232,7 @@ namespace Itinero.Transit.Journeys
                 // We do something special here:
                 // We move the genesis to the departure time of the connection
                 // This is used by EAS to have a correcter departure time
-                var newGenesis = new Journey<T>(Location, c.DepartureTime, Stats.EmptyStat(), TripId);
+                var newGenesis = new Journey<T>(Location, c.DepartureTime, Metric.Zero(), TripId);
                 return newGenesis.Chain(c.Id, c.ArrivalTime, c.ArrivalStop, c.TripId);
             }
 
@@ -245,7 +245,7 @@ namespace Itinero.Transit.Journeys
             {
                 // We do something special here:
                 // We move the genesis to the departure time of the connection
-                var newGenesis = new Journey<T>(Location, c.ArrivalTime, Stats.EmptyStat(), TripId);
+                var newGenesis = new Journey<T>(Location, c.ArrivalTime, Metric.Zero(), TripId);
                 return newGenesis.Chain(c.Id, c.DepartureTime, c.DepartureStop, c.TripId);
             }
 
@@ -261,7 +261,7 @@ namespace Itinero.Transit.Journeys
             LocationId location, uint tripId)
         {
             return new Journey<T>(
-                Root, this, true, specialCode, location, time, tripId, Stats);
+                Root, this, true, specialCode, location, time, tripId, Metric);
         }
 
         /// <summary>
@@ -274,7 +274,7 @@ namespace Itinero.Transit.Journeys
             // Creating the transfer
             return new Journey<T>(
                 // ReSharper disable once ArrangeThisQualifier
-                Root, this, true, TRANSFER, this.Location, departureTime, uint.MaxValue, Stats);
+                Root, this, true, TRANSFER, this.Location, departureTime, uint.MaxValue, Metric);
         }
 
         public Journey<T> TransferForward(IConnection c)
@@ -343,7 +343,7 @@ namespace Itinero.Transit.Journeys
                     restingJourney.PreviousLink.Location,
                     j.Time + (ulong) timeDiff,
                     restingJourney.TripId,
-                    j.Stats
+                    j.Metric
                 );
                 restingJourney = restingJourney.PreviousLink;
             }
@@ -370,7 +370,7 @@ namespace Itinero.Transit.Journeys
                 previous = PreviousLink.ToString(snapshot, maxDepth - 1);
             }
 
-            return $"{previous}\n  {PartToString(snapshot?.StopsDb?.GetReader(), snapshot?.ConnectionsDb?.GetReader())}\n    {Stats} (Trip {TripId})";
+            return $"{previous}\n  {PartToString(snapshot?.StopsDb?.GetReader(), snapshot?.ConnectionsDb?.GetReader())}\n    {Metric} (Trip {TripId})";
         }
 
         private string PartToString(IStopsReader reader, ConnectionsDb.ConnectionsDbReader conn)

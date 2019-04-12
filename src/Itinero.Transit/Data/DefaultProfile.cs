@@ -8,7 +8,7 @@ namespace Itinero.Transit.Data
     /// <summary>
     /// A default profile.
     /// </summary>
-    public class DefaultProfile : Profile<TransferStats>
+    public class DefaultProfile : Profile<TransferMetric>
     {
         /// <summary>
         /// Creates a profile with default settings.
@@ -16,8 +16,8 @@ namespace Itinero.Transit.Data
         public DefaultProfile()
         : base(new InternalTransferGenerator(180), 
             new CrowsFlightTransferGenerator(maxDistance: 500 /*meter*/,  speed: 1.4f /*meter/second*/),
-            TransferStats.Factory,
-            TransferStats.ProfileTransferCompare)
+            TransferMetric.Factory,
+            TransferMetric.ProfileTransferCompare)
         {
             
         }

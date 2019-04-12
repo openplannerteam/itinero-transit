@@ -19,7 +19,7 @@ namespace Itinero.Transit.Data.Walks
         /// This might involve querying for footpaths
         /// </summary>
         Journey<T> CreateDepartureTransfer<T>(IStopsReader stopsDb, Journey<T> buildOn, ulong timeWhenLeaving,
-            LocationId otherLocation) where T : IJourneyStats<T>;
+            LocationId otherLocation) where T : IJourneyMetric<T>;
 
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Itinero.Transit.Data.Walks
         /// However, this is the method to use for journeys which are built backwards in time 
         /// </summary>
         Journey<T> CreateArrivingTransfer<T>(IStopsReader stopsDb, Journey<T> buildOn, ulong timeWhenDeparting,
-            LocationId otherLocation) where T : IJourneyStats<T>;
+            LocationId otherLocation) where T : IJourneyMetric<T>;
 
         float Range();
     }
