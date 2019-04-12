@@ -34,6 +34,7 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Running NoDuplicationTest");
             new NoDuplicationTest().Run();
             new ConnectionsDbDepartureEnumeratorTest().Run(db);
+            new DelayTest().Run(true);
         }
 
         public static void InternetTests()
@@ -55,10 +56,9 @@ namespace Itinero.Transit.Tests.Functional
 
             Log.Information("Starting the Functional Tests...");
 
-            new DelayTest().Run(true);
-          //  LocalTests();
-            // InternetTests();
-            //SlowTests();
+            LocalTests();
+            InternetTests();
+      //      SlowTests();
         }
 
         private static void TestClosestStopsAndRouting(TransitDb db)
