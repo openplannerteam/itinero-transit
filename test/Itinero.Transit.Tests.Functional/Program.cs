@@ -46,9 +46,8 @@ namespace Itinero.Transit.Tests.Functional
         {
             Log.Information("Performing the shuttlebus test");
 
-            var route = OsmRoute.LoadFromFile("CentrumShuttle-Brugge.xml");
             var tdb = new TransitDb();
-            tdb.AddOsmRoute(route[0], DateTime.Today, DateTime.Today.AddDays(1));
+            tdb.UseOsmRoute("CentrumShuttle-Brugge.xml", DateTime.Today, DateTime.Today.AddDays(1));
         }
 
         
@@ -56,9 +55,8 @@ namespace Itinero.Transit.Tests.Functional
         {
             Log.Information("Performing the shuttlebus test");
 
-            var route = OsmRoute.LoadFromOsm(9413958);
             var tdb = new TransitDb();
-            tdb.AddOsmRoute(route[0], DateTime.Today, DateTime.Today.AddDays(1));
+            tdb.UseOsmRoute(6413958, DateTime.Today, DateTime.Today.AddDays(1));
         }
 
 
