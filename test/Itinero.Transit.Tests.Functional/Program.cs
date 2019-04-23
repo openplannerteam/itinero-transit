@@ -25,6 +25,43 @@ namespace Itinero.Transit.Tests.Functional
 {
     public static class Program
     {
+        public static void Main(string[] args)
+        {
+            EnableLogging();
+
+            //*
+            ShuttleTestDload();
+
+            /*/
+            Log.Information("Starting the Functional Tests...");
+
+            LocalTests();
+            InternetTests();
+            //      SlowTests();
+            //*/
+        }
+
+
+        private static void ShuttleTest()
+        {
+            Log.Information("Performing the shuttlebus test");
+
+            var route = OsmRoute.LoadFromFile("CentrumShuttle-Brugge.xml");
+            var tdb = new TransitDb();
+            tdb.AddOsmRoute(route[0], DateTime.Today, DateTime.Today.AddDays(1));
+        }
+
+        
+        private static void ShuttleTestDload()
+        {
+            Log.Information("Performing the shuttlebus test");
+
+            var route = OsmRoute.LoadFromOsm(9413958);
+            var tdb = new TransitDb();
+            tdb.AddOsmRoute(route[0], DateTime.Today, DateTime.Today.AddDays(1));
+        }
+
+
         private static void LocalTests()
         {
             // Tests all the algorithms on multiple inputs. This step does not need internet
@@ -50,16 +87,6 @@ namespace Itinero.Transit.Tests.Functional
             new TestAutoUpdating().Run(null);
         }
 
-        public static void Main(string[] args)
-        {
-            EnableLogging();
-
-            Log.Information("Starting the Functional Tests...");
-
-            LocalTests();
-            InternetTests();
-      //      SlowTests();
-        }
 
         private static void TestClosestStopsAndRouting(TransitDb db)
         {

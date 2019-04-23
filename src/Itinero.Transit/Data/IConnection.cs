@@ -1,3 +1,5 @@
+using System;
+
 namespace Itinero.Transit.Data
 {
     /// <summary>
@@ -60,5 +62,28 @@ namespace Itinero.Transit.Data
         /// Gets the arrival stop id.
         /// </summary>
         LocationId ArrivalStop { get; }
+    }
+
+    public static class ConnectionExtensions
+    {
+        public static bool CanGetOn(this IConnection c)
+        {
+            var m = (c.Mode % 4);
+            return m == 0 || m == 1;
+        }
+
+        public static bool CanGetOff(this IConnection c)
+        {
+            var m = (c.Mode % 4);
+            return m == 0 || m == 2;
+        }
+
+
+        public const ushort ModeNormal = 0;
+        public const ushort ModeGetOnOnly = 1;
+        public const ushort ModeGetOffOnly = 2;
+        public const ushort ModeCantGetOnOff = 3;
+
+        public const ushort ModeCancelled = 4;
     }
 }

@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\src\Itinero.Transit.IO.OSM\Itinero.Transit.IO.OSM.csproj" />
       <ProjectReference Include="..\..\src\Itinero.Transit\Itinero.Transit.csproj" />
       <ProjectReference Include="..\..\src\Itinero.Transit.IO.LC\Itinero.Transit.IO.LC.csproj" />
     </ItemGroup>
@@ -19,6 +20,13 @@
     <ItemGroup>
       <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
       <PackageReference Include="Serilog.Sinks.File" Version="4.0.0" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <Reference Include="xunit.core, Version=2.4.0.4049, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c">
+        <HintPath>..\..\..\..\.nuget\packages\xunit.extensibility.core\2.4.0\lib\netstandard2.0\xunit.core.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

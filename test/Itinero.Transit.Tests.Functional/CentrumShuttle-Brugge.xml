@@ -1,0 +1,2361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="CGImap 0.6.1 (20231 thorn-01.openstreetmap.org)" copyright="OpenStreetMap and contributors" attribution="http://www.openstreetmap.org/copyright" license="http://opendatacommons.org/licenses/odbl/1-0/">
+    <node id="17407584" visible="true" version="23" changeset="65702042" timestamp="2018-12-22T20:02:43Z" user="Midgard 🗺" uid="763799" lat="51.2057628" lon="3.2168502"/>
+    <node id="17407588" visible="true" version="25" changeset="63207863" timestamp="2018-10-04T19:41:02Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2041253" lon="3.2174085">
+        <tag k="bus" v="yes"/>
+        <tag k="public_transport" v="stop_position"/>
+    </node>
+    <node id="17407762" visible="true" version="28" changeset="65702042" timestamp="2018-12-22T20:02:43Z" user="Midgard 🗺" uid="763799" lat="51.2058751" lon="3.2171865"/>
+    <node id="17421081" visible="true" version="16" changeset="56694397" timestamp="2018-02-26T15:50:21Z" user="zors1843" uid="233248" lat="51.2083532" lon="3.2211776"/>
+    <node id="17421307" visible="true" version="11" changeset="25770191" timestamp="2014-09-30T15:03:43Z" user="Bernhard W" uid="110838" lat="51.2093720" lon="3.2247182"/>
+    <node id="17421310" visible="true" version="9" changeset="28377366" timestamp="2015-01-24T16:52:44Z" user="Midgard 🗺" uid="763799" lat="51.2084168" lon="3.2250606"/>
+    <node id="17421753" visible="true" version="15" changeset="25734542" timestamp="2014-09-28T20:53:37Z" user="Bernhard W" uid="110838" lat="51.2078423" lon="3.2256796"/>
+    <node id="17421759" visible="true" version="14" changeset="9017204" timestamp="2011-08-14T15:37:21Z" user="TomDupont" uid="60878" lat="51.2074832" lon="3.2252087"/>
+    <node id="17421761" visible="true" version="15" changeset="9017204" timestamp="2011-08-14T15:42:57Z" user="TomDupont" uid="60878" lat="51.2073242" lon="3.2250727"/>
+    <node id="17421762" visible="true" version="14" changeset="7344107" timestamp="2011-02-20T16:28:27Z" user="zors1843" uid="233248" lat="51.2070685" lon="3.2248464"/>
+    <node id="17421926" visible="true" version="20" changeset="56694397" timestamp="2018-02-26T15:50:20Z" user="zors1843" uid="233248" lat="51.2092201" lon="3.2228441"/>
+    <node id="17421932" visible="true" version="8" changeset="27599624" timestamp="2014-12-21T00:13:31Z" user="Polyglot" uid="15188" lat="51.2104450" lon="3.2244492"/>
+    <node id="17421937" visible="true" version="7" changeset="7344107" timestamp="2011-02-20T16:28:27Z" user="zors1843" uid="233248" lat="51.2095690" lon="3.2246813"/>
+    <node id="17422183" visible="true" version="2" changeset="25742584" timestamp="2014-09-29T09:37:49Z" user="Bernhard W" uid="110838" lat="51.2105355" lon="3.2252583"/>
+    <node id="17422185" visible="true" version="5" changeset="25770272" timestamp="2014-09-30T15:07:31Z" user="Bernhard W" uid="110838" lat="51.2107097" lon="3.2261755"/>
+    <node id="17422567" visible="true" version="3" changeset="59431394" timestamp="2018-05-31T14:07:42Z" user="Peilscheibe" uid="35560" lat="51.2048367" lon="3.2237470"/>
+    <node id="17422570" visible="true" version="4" changeset="18283943" timestamp="2013-10-10T16:29:05Z" user="zors1843" uid="233248" lat="51.2042282" lon="3.2242076"/>
+    <node id="17422577" visible="true" version="2" changeset="6968100" timestamp="2011-01-14T15:59:45Z" user="zors1843" uid="233248" lat="51.2030882" lon="3.2251655"/>
+    <node id="17422579" visible="true" version="3" changeset="8405108" timestamp="2011-06-11T11:39:11Z" user="Headlanders" uid="401346" lat="51.2025637" lon="3.2259089"/>
+    <node id="17422582" visible="true" version="2" changeset="8405108" timestamp="2011-06-11T11:39:11Z" user="Headlanders" uid="401346" lat="51.2023917" lon="3.2261814"/>
+    <node id="17422584" visible="true" version="4" changeset="54914123" timestamp="2017-12-25T19:26:56Z" user="Midgard 🗺" uid="763799" lat="51.2020117" lon="3.2267487"/>
+    <node id="17422586" visible="true" version="5" changeset="54914123" timestamp="2017-12-25T19:26:56Z" user="Midgard 🗺" uid="763799" lat="51.2017696" lon="3.2270133"/>
+    <node id="17422588" visible="true" version="4" changeset="50890254" timestamp="2017-08-06T16:52:57Z" user="catweazle67" uid="1976209" lat="51.2014524" lon="3.2273404"/>
+    <node id="17422590" visible="true" version="3" changeset="9017204" timestamp="2011-08-14T15:37:22Z" user="TomDupont" uid="60878" lat="51.2012370" lon="3.2275543"/>
+    <node id="26343767" visible="true" version="11" changeset="7350489" timestamp="2011-02-21T06:21:38Z" user="zors1843" uid="233248" lat="51.2152159" lon="3.2288289"/>
+    <node id="26343768" visible="true" version="11" changeset="11912284" timestamp="2012-06-16T08:59:22Z" user="Toi" uid="8323" lat="51.2149474" lon="3.2288195"/>
+    <node id="26343769" visible="true" version="15" changeset="25762272" timestamp="2014-09-30T08:17:17Z" user="Bernhard W" uid="110838" lat="51.2144939" lon="3.2286653"/>
+    <node id="26343770" visible="true" version="14" changeset="25762272" timestamp="2014-09-30T08:17:17Z" user="Bernhard W" uid="110838" lat="51.2143013" lon="3.2285791"/>
+    <node id="26343771" visible="true" version="14" changeset="25762272" timestamp="2014-09-30T08:17:17Z" user="Bernhard W" uid="110838" lat="51.2140860" lon="3.2284912"/>
+    <node id="26343772" visible="true" version="10" changeset="6504568" timestamp="2010-12-01T14:52:09Z" user="wimpos" uid="378215" lat="51.2137151" lon="3.2284827"/>
+    <node id="26343774" visible="true" version="17" changeset="7350988" timestamp="2011-02-21T08:45:29Z" user="zors1843" uid="233248" lat="51.2132287" lon="3.2287150"/>
+    <node id="26343775" visible="true" version="5" changeset="25742701" timestamp="2014-09-29T09:43:55Z" user="Bernhard W" uid="110838" lat="51.2128817" lon="3.2288817"/>
+    <node id="26343776" visible="true" version="5" changeset="25742701" timestamp="2014-09-29T09:43:55Z" user="Bernhard W" uid="110838" lat="51.2127966" lon="3.2289130"/>
+    <node id="26343777" visible="true" version="4" changeset="7350988" timestamp="2011-02-21T08:45:30Z" user="zors1843" uid="233248" lat="51.2127495" lon="3.2289113"/>
+    <node id="26343778" visible="true" version="4" changeset="7350988" timestamp="2011-02-21T08:45:30Z" user="zors1843" uid="233248" lat="51.2126877" lon="3.2288359"/>
+    <node id="26343780" visible="true" version="13" changeset="9953129" timestamp="2011-11-26T09:24:09Z" user="zors1843" uid="233248" lat="51.2135451" lon="3.2285544"/>
+    <node id="26343876" visible="true" version="14" changeset="18494621" timestamp="2013-10-22T23:29:50Z" user="Jdg46" uid="1735361" lat="51.2062345" lon="3.2228963"/>
+    <node id="26343877" visible="true" version="9" changeset="18494621" timestamp="2013-10-22T23:29:50Z" user="Jdg46" uid="1735361" lat="51.2059457" lon="3.2230071"/>
+    <node id="26343884" visible="true" version="6" changeset="7350988" timestamp="2011-02-21T08:59:07Z" user="zors1843" uid="233248" lat="51.2115347" lon="3.2254830"/>
+    <node id="26343887" visible="true" version="4" changeset="50305745" timestamp="2017-07-15T13:16:35Z" user="catweazle67" uid="1976209" lat="51.2113515" lon="3.2257384"/>
+    <node id="26343923" visible="true" version="12" changeset="51656978" timestamp="2017-09-01T21:51:54Z" user="Midgard 🗺" uid="763799" lat="51.2223528" lon="3.2270808"/>
+    <node id="26343940" visible="true" version="3" changeset="9017204" timestamp="2011-08-14T15:37:24Z" user="TomDupont" uid="60878" lat="51.2002512" lon="3.2286210"/>
+    <node id="26343973" visible="true" version="18" changeset="19184569" timestamp="2013-11-29T20:31:24Z" user="meannder" uid="149496" lat="51.2219299" lon="3.2269026"/>
+    <node id="26343974" visible="true" version="10" changeset="66949348" timestamp="2019-02-06T01:06:50Z" user="Midgard 🗺" uid="763799" lat="51.2215399" lon="3.2268007"/>
+    <node id="26343976" visible="true" version="11" changeset="66949348" timestamp="2019-02-06T01:06:50Z" user="Midgard 🗺" uid="763799" lat="51.2210191" lon="3.2262502"/>
+    <node id="26347700" visible="true" version="4" changeset="7354921" timestamp="2011-02-21T15:30:35Z" user="zors1843" uid="233248" lat="51.2027593" lon="3.2256249"/>
+    <node id="26363596" visible="true" version="13" changeset="66949348" timestamp="2019-02-06T01:06:50Z" user="Midgard 🗺" uid="763799" lat="51.2212520" lon="3.2260544"/>
+    <node id="26363602" visible="true" version="12" changeset="25762253" timestamp="2014-09-30T08:15:49Z" user="Bernhard W" uid="110838" lat="51.2170301" lon="3.2283311"/>
+    <node id="26363611" visible="true" version="6" changeset="25742701" timestamp="2014-09-29T09:43:55Z" user="Bernhard W" uid="110838" lat="51.2122755" lon="3.2278509"/>
+    <node id="26363617" visible="true" version="15" changeset="18558505" timestamp="2013-10-26T22:43:10Z" user="Jdg46" uid="1735361" lat="51.2017249" lon="3.2178941"/>
+    <node id="26363656" visible="true" version="12" changeset="66949348" timestamp="2019-02-06T01:06:50Z" user="Midgard 🗺" uid="763799" lat="51.2215171" lon="3.2264779"/>
+    <node id="26363657" visible="true" version="10" changeset="6504568" timestamp="2010-12-01T14:52:06Z" user="wimpos" uid="378215" lat="51.2167665" lon="3.2283170"/>
+    <node id="26363667" visible="true" version="3" changeset="31571424" timestamp="2015-05-29T20:11:56Z" user="Midgard 🗺" uid="763799" lat="51.2105158" lon="3.2251320"/>
+    <node id="26363671" visible="true" version="6" changeset="25756739" timestamp="2014-09-29T21:48:33Z" user="Bernhard W" uid="110838" lat="51.2031307" lon="3.2176558"/>
+    <node id="26363672" visible="true" version="11" changeset="25762272" timestamp="2014-09-30T08:17:17Z" user="Bernhard W" uid="110838" lat="51.2155718" lon="3.2287346"/>
+    <node id="26363718" visible="true" version="11" changeset="66949348" timestamp="2019-02-06T01:06:50Z" user="Midgard 🗺" uid="763799" lat="51.2216112" lon="3.2265921"/>
+    <node id="26363772" visible="true" version="11" changeset="25762272" timestamp="2014-09-30T08:17:17Z" user="Bernhard W" uid="110838" lat="51.2153901" lon="3.2287958"/>
+    <node id="26363793" visible="true" version="10" changeset="28663554" timestamp="2015-02-06T22:58:31Z" user="escada" uid="436365" lat="51.2008383" lon="3.2177763"/>
+    <node id="26363815" visible="true" version="10" changeset="6504568" timestamp="2010-12-01T14:52:07Z" user="wimpos" uid="378215" lat="51.2158045" lon="3.2286506"/>
+    <node id="26363816" visible="true" version="10" changeset="28663554" timestamp="2015-02-06T22:58:31Z" user="escada" uid="436365" lat="51.2006506" lon="3.2177494">
+        <tag k="highway" v="give_way"/>
+    </node>
+    <node id="26364278" visible="true" version="7" changeset="31571378" timestamp="2015-05-29T20:09:53Z" user="Midgard 🗺" uid="763799" lat="51.2106014" lon="3.2256465"/>
+    <node id="32002195" visible="true" version="7" changeset="19027072" timestamp="2013-11-21T01:19:26Z" user="Polyglot" uid="15188" lat="51.2238337" lon="3.2272046"/>
+    <node id="32002197" visible="true" version="5" changeset="34449031" timestamp="2015-10-05T14:22:44Z" user="JanFi" uid="672253" lat="51.2234764" lon="3.2270975"/>
+    <node id="32002200" visible="true" version="8" changeset="52281461" timestamp="2017-09-22T15:58:03Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2228635" lon="3.2272512">
+        <tag k="crossing" v="traffic_signals"/>
+        <tag k="highway" v="crossing"/>
+        <tag k="tactile_paving" v="no"/>
+    </node>
+    <node id="32002202" visible="true" version="7" changeset="27660623" timestamp="2014-12-23T21:42:43Z" user="escada" uid="436365" lat="51.2227369" lon="3.2272521">
+        <tag k="highway" v="traffic_signals"/>
+    </node>
+    <node id="33824884" visible="true" version="13" changeset="50349836" timestamp="2017-07-17T12:48:02Z" user="catweazle67" uid="1976209" lat="51.2077965" lon="3.2206247"/>
+    <node id="113544201" visible="true" version="4" changeset="27808740" timestamp="2014-12-30T20:22:40Z" user="JanFi" uid="672253" lat="51.1998565" lon="3.2292394"/>
+    <node id="117331473" visible="true" version="16" changeset="27623341" timestamp="2014-12-22T05:46:35Z" user="Polyglot" uid="15188" lat="51.2005866" lon="3.2177456"/>
+    <node id="117331475" visible="true" version="16" changeset="27623341" timestamp="2014-12-22T05:46:35Z" user="Polyglot" uid="15188" lat="51.2003614" lon="3.2175740"/>
+    <node id="117331476" visible="true" version="14" changeset="27623341" timestamp="2014-12-22T05:46:35Z" user="Polyglot" uid="15188" lat="51.2001626" lon="3.2177185"/>
+    <node id="117341359" visible="true" version="15" changeset="10819479" timestamp="2012-02-28T15:05:41Z" user="Eimai" uid="6072" lat="51.1999116" lon="3.2180261"/>
+    <node id="129585073" visible="true" version="9" changeset="36746753" timestamp="2016-01-22T19:42:05Z" user="Midgard 🗺" uid="763799" lat="51.1973005" lon="3.2211899"/>
+    <node id="129585074" visible="true" version="8" changeset="36746753" timestamp="2016-01-22T19:42:05Z" user="Midgard 🗺" uid="763799" lat="51.1970988" lon="3.2218250"/>
+    <node id="144292488" visible="true" version="16" changeset="65702042" timestamp="2018-12-22T20:02:43Z" user="Midgard 🗺" uid="763799" lat="51.2044674" lon="3.2172395"/>
+    <node id="144296222" visible="true" version="19" changeset="54067156" timestamp="2017-11-25T08:27:39Z" user="zors1843" uid="233248" lat="51.2066880" lon="3.2192500"/>
+    <node id="187067651" visible="true" version="8" changeset="60429250" timestamp="2018-07-05T08:35:59Z" user="JosV" uid="170722" lat="51.1998133" lon="3.2293197">
+        <tag k="rcn_ref" v="5"/>
+        <tag k="rcn_region" v="Brugse Ommeland"/>
+    </node>
+    <node id="251009759" visible="true" version="11" changeset="66949348" timestamp="2019-02-06T01:06:50Z" user="Midgard 🗺" uid="763799" lat="51.2214032" lon="3.2263087"/>
+    <node id="251009760" visible="true" version="11" changeset="66949348" timestamp="2019-02-06T01:06:50Z" user="Midgard 🗺" uid="763799" lat="51.2212853" lon="3.2266717"/>
+    <node id="260547626" visible="true" version="6" changeset="65888885" timestamp="2018-12-30T14:38:54Z" user="Midgard 🗺" uid="763799" lat="51.2244281" lon="3.2268704"/>
+    <node id="260547628" visible="true" version="5" changeset="18710135" timestamp="2013-11-04T11:27:14Z" user="Jdg46" uid="1735361" lat="51.2239598" lon="3.2269877"/>
+    <node id="260547629" visible="true" version="4" changeset="65888885" timestamp="2018-12-30T14:38:54Z" user="Midgard 🗺" uid="763799" lat="51.2252256" lon="3.2273206"/>
+    <node id="262317626" visible="true" version="4" changeset="25756203" timestamp="2014-09-29T21:15:31Z" user="Bernhard W" uid="110838" lat="51.1966052" lon="3.2246074"/>
+    <node id="262574012" visible="true" version="10" changeset="32084943" timestamp="2015-06-19T21:34:14Z" user="Midgard 🗺" uid="763799" lat="51.2085346" lon="3.2248463"/>
+    <node id="263059975" visible="true" version="11" changeset="28719910" timestamp="2015-02-09T05:01:08Z" user="escada" uid="436365" lat="51.1968425" lon="3.2234373"/>
+    <node id="271927352" visible="true" version="8" changeset="66949348" timestamp="2019-02-06T01:06:50Z" user="Midgard 🗺" uid="763799" lat="51.2210328" lon="3.2267095"/>
+    <node id="271927353" visible="true" version="9" changeset="13206544" timestamp="2012-09-22T12:05:59Z" user="zors1843" uid="233248" lat="51.2201448" lon="3.2267080"/>
+    <node id="271929298" visible="true" version="2" changeset="398531" timestamp="2008-10-17T17:40:49Z" user="effem" uid="16437" lat="51.1999880" lon="3.2289949"/>
+    <node id="271930116" visible="true" version="4" changeset="6504568" timestamp="2010-12-01T14:52:11Z" user="wimpos" uid="378215" lat="51.2191515" lon="3.2268702"/>
+    <node id="271930118" visible="true" version="5" changeset="13206544" timestamp="2012-09-22T14:17:27Z" user="zors1843" uid="233248" lat="51.2187412" lon="3.2269482"/>
+    <node id="271930120" visible="true" version="16" changeset="55810952" timestamp="2018-01-27T18:13:19Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2174158" lon="3.2285783">
+        <tag k="traffic_calming" v="table"/>
+    </node>
+    <node id="298086769" visible="true" version="5" changeset="7356470" timestamp="2011-02-21T19:03:07Z" user="zors1843" uid="233248" lat="51.2177554" lon="3.2278756"/>
+    <node id="298086980" visible="true" version="11" changeset="11912284" timestamp="2012-06-16T08:59:23Z" user="Toi" uid="8323" lat="51.2147269" lon="3.2287639"/>
+    <node id="310384207" visible="true" version="17" changeset="25762253" timestamp="2014-09-30T08:15:49Z" user="Bernhard W" uid="110838" lat="51.2161212" lon="3.2285105"/>
+    <node id="312709083" visible="true" version="4" changeset="7356470" timestamp="2011-02-21T19:03:09Z" user="zors1843" uid="233248" lat="51.2194462" lon="3.2268149"/>
+    <node id="312709482" visible="true" version="7" changeset="11912284" timestamp="2012-06-16T08:59:26Z" user="Toi" uid="8323" lat="51.2163988" lon="3.2283951"/>
+    <node id="312711610" visible="true" version="3" changeset="9953129" timestamp="2011-11-26T09:24:09Z" user="zors1843" uid="233248" lat="51.2133786" lon="3.2286383"/>
+    <node id="312714245" visible="true" version="4" changeset="6565268" timestamp="2010-12-06T16:32:25Z" user="wimpos" uid="378215" lat="51.2131374" lon="3.2284438"/>
+    <node id="312714246" visible="true" version="5" changeset="9748264" timestamp="2011-11-05T17:49:03Z" user="zors1843" uid="233248" lat="51.2130470" lon="3.2279509"/>
+    <node id="312714247" visible="true" version="6" changeset="7350988" timestamp="2011-02-21T08:59:07Z" user="zors1843" uid="233248" lat="51.2123200" lon="3.2265087"/>
+    <node id="312714249" visible="true" version="5" changeset="7350988" timestamp="2011-02-21T08:59:07Z" user="zors1843" uid="233248" lat="51.2119299" lon="3.2261164"/>
+    <node id="312714252" visible="true" version="4" changeset="25742701" timestamp="2014-09-29T09:43:56Z" user="Bernhard W" uid="110838" lat="51.2124976" lon="3.2284197"/>
+    <node id="312714374" visible="true" version="4" changeset="7350988" timestamp="2011-02-21T08:59:07Z" user="zors1843" uid="233248" lat="51.2121466" lon="3.2263003"/>
+    <node id="312714406" visible="true" version="4" changeset="7344107" timestamp="2011-02-20T15:57:28Z" user="zors1843" uid="233248" lat="51.2114866" lon="3.2253295"/>
+    <node id="312714475" visible="true" version="16" changeset="18558521" timestamp="2013-10-26T22:28:52Z" user="It's so funny" uid="191979" lat="51.2111577" lon="3.2241343"/>
+    <node id="312714859" visible="true" version="14" changeset="18558521" timestamp="2013-10-26T22:28:52Z" user="It's so funny" uid="191979" lat="51.2111125" lon="3.2241259"/>
+    <node id="312715176" visible="true" version="11" changeset="27599624" timestamp="2014-12-21T00:13:31Z" user="Polyglot" uid="15188" lat="51.2108682" lon="3.2242202"/>
+    <node id="312715277" visible="true" version="8" changeset="27599624" timestamp="2014-12-21T00:13:31Z" user="Polyglot" uid="15188" lat="51.2105162" lon="3.2244218"/>
+    <node id="312716322" visible="true" version="7" changeset="66949348" timestamp="2019-02-06T01:06:50Z" user="Midgard 🗺" uid="763799" lat="51.2211852" lon="3.2265677"/>
+    <node id="312716323" visible="true" version="10" changeset="66949348" timestamp="2019-02-06T01:06:50Z" user="Midgard 🗺" uid="763799" lat="51.2213032" lon="3.2261658"/>
+    <node id="315741501" visible="true" version="9" changeset="56694397" timestamp="2018-02-26T15:50:20Z" user="zors1843" uid="233248" lat="51.2086919" lon="3.2217461"/>
+    <node id="315741632" visible="true" version="6" changeset="56694397" timestamp="2018-02-26T15:50:21Z" user="zors1843" uid="233248" lat="51.2085638" lon="3.2214984"/>
+    <node id="315742125" visible="true" version="13" changeset="25905281" timestamp="2014-10-06T20:23:03Z" user="Bernhard W" uid="110838" lat="51.2080585" lon="3.2208899"/>
+    <node id="315742165" visible="true" version="12" changeset="50349836" timestamp="2017-07-17T12:48:02Z" user="catweazle67" uid="1976209" lat="51.2074423" lon="3.2202280"/>
+    <node id="315742470" visible="true" version="10" changeset="10376348" timestamp="2012-01-13T08:18:06Z" user="zors1843" uid="233248" lat="51.2071289" lon="3.2198284"/>
+    <node id="315743372" visible="true" version="18" changeset="63208104" timestamp="2018-10-04T19:48:00Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2059799" lon="3.2175127"/>
+    <node id="315788683" visible="true" version="8" changeset="50349836" timestamp="2017-07-17T12:48:02Z" user="catweazle67" uid="1976209" lat="51.2073016" lon="3.2200598"/>
+    <node id="315793131" visible="true" version="4" changeset="7344107" timestamp="2011-02-20T16:28:29Z" user="zors1843" uid="233248" lat="51.2100598" lon="3.2245583"/>
+    <node id="315801320" visible="true" version="11" changeset="18494621" timestamp="2013-10-22T23:29:50Z" user="Jdg46" uid="1735361" lat="51.2066830" lon="3.2243173"/>
+    <node id="318261276" visible="true" version="9" changeset="27623341" timestamp="2014-12-22T05:46:36Z" user="Polyglot" uid="15188" lat="51.2005414" lon="3.2176720"/>
+    <node id="318261281" visible="true" version="9" changeset="27623341" timestamp="2014-12-22T05:46:36Z" user="Polyglot" uid="15188" lat="51.2002877" lon="3.2175927"/>
+    <node id="318261387" visible="true" version="8" changeset="27623341" timestamp="2014-12-22T05:46:36Z" user="Polyglot" uid="15188" lat="51.2001225" lon="3.2178096"/>
+    <node id="324419243" visible="true" version="9" changeset="63207863" timestamp="2018-10-04T19:41:02Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2035773" lon="3.2175690"/>
+    <node id="408769207" visible="true" version="7" changeset="66784911" timestamp="2019-01-30T21:54:19Z" user="Midgard 🗺" uid="763799" lat="51.1990128" lon="3.2190113"/>
+    <node id="408770059" visible="true" version="3" changeset="9700955" timestamp="2011-10-31T08:14:07Z" user="TripleBee" uid="497177" lat="51.1997374" lon="3.2182709"/>
+    <node id="408770060" visible="true" version="4" changeset="10819479" timestamp="2012-02-28T15:05:42Z" user="Eimai" uid="6072" lat="51.1995167" lon="3.2185000"/>
+    <node id="408770061" visible="true" version="9" changeset="66784911" timestamp="2019-01-30T21:54:19Z" user="Midgard 🗺" uid="763799" lat="51.1987354" lon="3.2192368"/>
+    <node id="469971172" visible="true" version="5" changeset="9017204" timestamp="2011-08-14T15:37:23Z" user="TomDupont" uid="60878" lat="51.2076626" lon="3.2254413"/>
+    <node id="469983442" visible="true" version="5" changeset="54067156" timestamp="2017-11-25T08:27:39Z" user="zors1843" uid="233248" lat="51.2068178" lon="3.2194262"/>
+    <node id="754269219" visible="true" version="5" changeset="53652898" timestamp="2017-11-09T23:07:27Z" user="Pieter Vander Vennet" uid="3818858" lat="51.1978120" lon="3.2201768">
+        <tag k="crossing" v="traffic_signals"/>
+        <tag k="highway" v="crossing"/>
+        <tag k="source" v="survey"/>
+        <tag k="tactile_paving" v="no"/>
+    </node>
+    <node id="766772545" visible="true" version="5" changeset="18494621" timestamp="2013-10-22T23:29:50Z" user="Jdg46" uid="1735361" lat="51.2038881" lon="3.2245070"/>
+    <node id="766772547" visible="true" version="5" changeset="47037213" timestamp="2017-03-21T11:21:18Z" user="zors1843" uid="233248" lat="51.2037899" lon="3.2246081"/>
+    <node id="767070493" visible="true" version="4" changeset="13457766" timestamp="2012-10-11T18:49:51Z" user="martino260" uid="655442" lat="51.1996867" lon="3.2295651"/>
+    <node id="767094363" visible="true" version="5" changeset="40999252" timestamp="2016-07-24T21:11:37Z" user="Midgard 🗺" uid="763799" lat="51.1963552" lon="3.2250048"/>
+    <node id="798842160" visible="true" version="6" changeset="50608314" timestamp="2017-07-27T05:57:05Z" user="JanFi" uid="672253" lat="51.1968256" lon="3.2237714"/>
+    <node id="894038791" visible="true" version="4" changeset="50884156" timestamp="2017-08-06T12:50:23Z" user="catweazle67" uid="1976209" lat="51.2033720" lon="3.2249336"/>
+    <node id="918248222" visible="true" version="3" changeset="28663554" timestamp="2015-02-06T22:58:31Z" user="escada" uid="436365" lat="51.1975681" lon="3.2205817"/>
+    <node id="919436069" visible="true" version="6" changeset="66784911" timestamp="2019-01-30T21:54:19Z" user="Midgard 🗺" uid="763799" lat="51.1979420" lon="3.2200032"/>
+    <node id="919478433" visible="true" version="4" changeset="32085063" timestamp="2015-06-19T21:42:14Z" user="Midgard 🗺" uid="763799" lat="51.2092802" lon="3.2247066"/>
+    <node id="927740185" visible="true" version="8" changeset="65888885" timestamp="2018-12-30T14:38:54Z" user="Midgard 🗺" uid="763799" lat="51.2242833" lon="3.2267977"/>
+    <node id="995023970" visible="true" version="3" changeset="18494621" timestamp="2013-10-22T23:29:50Z" user="Jdg46" uid="1735361" lat="51.2063652" lon="3.2232543"/>
+    <node id="1014589647" visible="true" version="2" changeset="11912284" timestamp="2012-06-16T08:59:18Z" user="Toi" uid="8323" lat="51.2139089" lon="3.2284580"/>
+    <node id="1014589649" visible="true" version="2" changeset="7356470" timestamp="2011-02-21T19:03:04Z" user="zors1843" uid="233248" lat="51.2182926" lon="3.2272143"/>
+    <node id="1014589661" visible="true" version="3" changeset="13206544" timestamp="2012-09-22T14:17:27Z" user="zors1843" uid="233248" lat="51.2185332" lon="3.2270230"/>
+    <node id="1014589663" visible="true" version="4" changeset="25762231" timestamp="2014-09-30T08:14:23Z" user="Bernhard W" uid="110838" lat="51.2172646" lon="3.2284225"/>
+    <node id="1024787371" visible="true" version="3" changeset="65888885" timestamp="2018-12-30T14:38:54Z" user="Midgard 🗺" uid="763799" lat="51.2250316" lon="3.2272405"/>
+    <node id="1024787472" visible="true" version="2" changeset="34449031" timestamp="2015-10-05T14:22:42Z" user="JanFi" uid="672253" lat="51.2254096" lon="3.2273120"/>
+    <node id="1070721179" visible="true" version="4" changeset="40999252" timestamp="2016-07-24T21:11:36Z" user="Midgard 🗺" uid="763799" lat="51.1968771" lon="3.2270296"/>
+    <node id="1070721185" visible="true" version="3" changeset="40999252" timestamp="2016-07-24T21:11:36Z" user="Midgard 🗺" uid="763799" lat="51.1966222" lon="3.2267487"/>
+    <node id="1070721192" visible="true" version="3" changeset="40999252" timestamp="2016-07-24T21:11:36Z" user="Midgard 🗺" uid="763799" lat="51.1967378" lon="3.2269121"/>
+    <node id="1082834429" visible="true" version="3" changeset="65888885" timestamp="2018-12-30T14:38:54Z" user="Midgard 🗺" uid="763799" lat="51.2247196" lon="3.2270406"/>
+    <node id="1103393322" visible="true" version="2" changeset="9017204" timestamp="2011-08-14T15:42:57Z" user="TomDupont" uid="60878" lat="51.2036976" lon="3.2246915"/>
+    <node id="1109632187" visible="true" version="4" changeset="27660623" timestamp="2014-12-23T21:42:42Z" user="escada" uid="436365" lat="51.2225975" lon="3.2271975">
+        <tag k="highway" v="traffic_signals"/>
+    </node>
+    <node id="1163648876" visible="true" version="1" changeset="7344107" timestamp="2011-02-20T16:28:21Z" user="zors1843" uid="233248" lat="51.2106992" lon="3.2235016"/>
+    <node id="1163648883" visible="true" version="2" changeset="10376348" timestamp="2012-01-13T08:18:06Z" user="zors1843" uid="233248" lat="51.2079916" lon="3.2208166"/>
+    <node id="1163822360" visible="true" version="2" changeset="20241011" timestamp="2014-01-28T04:56:39Z" user="escada" uid="436365" lat="51.2110948" lon="3.2260801"/>
+    <node id="1163822403" visible="true" version="3" changeset="9017732" timestamp="2011-08-14T16:06:46Z" user="Rastatter" uid="121389" lat="51.2116620" lon="3.2258451"/>
+    <node id="1164685077" visible="true" version="4" changeset="32085063" timestamp="2015-06-19T21:42:14Z" user="Midgard 🗺" uid="763799" lat="51.2090439" lon="3.2246767"/>
+    <node id="1164716557" visible="true" version="1" changeset="7350988" timestamp="2011-02-21T08:45:17Z" user="zors1843" uid="233248" lat="51.2119905" lon="3.2270143"/>
+    <node id="1164730104" visible="true" version="1" changeset="7350988" timestamp="2011-02-21T08:59:05Z" user="zors1843" uid="233248" lat="51.2117425" lon="3.2261441"/>
+    <node id="1164730108" visible="true" version="3" changeset="31571195" timestamp="2015-05-29T20:01:54Z" user="Midgard 🗺" uid="763799" lat="51.2111259" lon="3.2260387"/>
+    <node id="1164730109" visible="true" version="2" changeset="9017732" timestamp="2011-08-14T16:06:46Z" user="Rastatter" uid="121389" lat="51.2118514" lon="3.2260246"/>
+    <node id="1164763955" visible="true" version="4" changeset="66949348" timestamp="2019-02-06T01:06:50Z" user="Midgard 🗺" uid="763799" lat="51.2209651" lon="3.2259535"/>
+    <node id="1164764007" visible="true" version="2" changeset="18411254" timestamp="2013-10-17T22:10:32Z" user="Jdg46" uid="1735361" lat="51.2210788" lon="3.2258570"/>
+    <node id="1164764058" visible="true" version="4" changeset="66949348" timestamp="2019-02-06T01:06:50Z" user="Midgard 🗺" uid="763799" lat="51.2210627" lon="3.2263647"/>
+    <node id="1164764103" visible="true" version="4" changeset="66949348" timestamp="2019-02-06T01:06:50Z" user="Midgard 🗺" uid="763799" lat="51.2211892" lon="3.2259023"/>
+    <node id="1166233827" visible="true" version="3" changeset="25756203" timestamp="2014-09-29T21:15:30Z" user="Bernhard W" uid="110838" lat="51.1967107" lon="3.2242711"/>
+    <node id="1171090970" visible="true" version="5" changeset="27623341" timestamp="2014-12-22T05:46:34Z" user="Polyglot" uid="15188" lat="51.2004868" lon="3.2176171"/>
+    <node id="1172772387" visible="true" version="3" changeset="18511416" timestamp="2013-10-23T23:14:04Z" user="Jdg46" uid="1735361" lat="51.2021350" lon="3.2178117"/>
+    <node id="1310976005" visible="true" version="2" changeset="25756203" timestamp="2014-09-29T21:15:30Z" user="Bernhard W" uid="110838" lat="51.1966729" lon="3.2244181"/>
+    <node id="1310976014" visible="true" version="2" changeset="25756203" timestamp="2014-09-29T21:15:30Z" user="Bernhard W" uid="110838" lat="51.1967462" lon="3.2241153"/>
+    <node id="1388233266" visible="true" version="5" changeset="66784911" timestamp="2019-01-30T21:54:19Z" user="Midgard 🗺" uid="763799" lat="51.1973910" lon="3.2209650"/>
+    <node id="1388233293" visible="true" version="5" changeset="66784911" timestamp="2019-01-30T21:54:20Z" user="Midgard 🗺" uid="763799" lat="51.1984193" lon="3.2194956"/>
+    <node id="1396130099" visible="true" version="2" changeset="18504947" timestamp="2013-10-23T15:36:56Z" user="Jdg46" uid="1735361" lat="51.2084961" lon="3.2249434"/>
+    <node id="1398733693" visible="true" version="1" changeset="9017204" timestamp="2011-08-14T15:37:19Z" user="TomDupont" uid="60878" lat="51.2000843" lon="3.2288315"/>
+    <node id="1398745734" visible="true" version="3" changeset="59431394" timestamp="2018-05-31T14:07:42Z" user="Peilscheibe" uid="35560" lat="51.2048768" lon="3.2236985"/>
+    <node id="1398745763" visible="true" version="2" changeset="15083758" timestamp="2013-02-18T23:55:46Z" user="Polyglot" uid="15188" lat="51.2041235" lon="3.2243023"/>
+    <node id="1398777245" visible="true" version="3" changeset="31498887" timestamp="2015-05-27T10:33:08Z" user="Midgard 🗺" uid="763799" lat="51.2106814" lon="3.2260707"/>
+    <node id="1444397155" visible="true" version="2" changeset="25756203" timestamp="2014-09-29T21:15:30Z" user="Bernhard W" uid="110838" lat="51.1978002" lon="3.2272303"/>
+    <node id="1444397156" visible="true" version="2" changeset="40999941" timestamp="2016-07-24T22:10:31Z" user="Midgard 🗺" uid="763799" lat="51.1980383" lon="3.2275619"/>
+    <node id="1444397157" visible="true" version="3" changeset="25756203" timestamp="2014-09-29T21:15:30Z" user="Bernhard W" uid="110838" lat="51.1976496" lon="3.2273355"/>
+    <node id="1444397158" visible="true" version="3" changeset="40999941" timestamp="2016-07-24T22:10:31Z" user="Midgard 🗺" uid="763799" lat="51.1977384" lon="3.2273027"/>
+    <node id="1444397159" visible="true" version="4" changeset="40999941" timestamp="2016-07-24T22:10:31Z" user="Midgard 🗺" uid="763799" lat="51.1985863" lon="3.2281693"/>
+    <node id="1444397160" visible="true" version="3" changeset="40999941" timestamp="2016-07-24T22:10:31Z" user="Midgard 🗺" uid="763799" lat="51.1994522" lon="3.2293927"/>
+    <node id="1444397161" visible="true" version="3" changeset="25756203" timestamp="2014-09-29T21:15:30Z" user="Bernhard W" uid="110838" lat="51.1970745" lon="3.2271251"/>
+    <node id="1444397162" visible="true" version="3" changeset="25756203" timestamp="2014-09-29T21:15:30Z" user="Bernhard W" uid="110838" lat="51.1974937" lon="3.2272949"/>
+    <node id="1444397163" visible="true" version="2" changeset="40999941" timestamp="2016-07-24T22:10:31Z" user="Midgard 🗺" uid="763799" lat="51.1982884" lon="3.2278366"/>
+    <node id="1444397164" visible="true" version="3" changeset="40999941" timestamp="2016-07-24T22:10:31Z" user="Midgard 🗺" uid="763799" lat="51.1978901" lon="3.2271542">
+        <tag k="highway" v="give_way"/>
+    </node>
+    <node id="1444397166" visible="true" version="3" changeset="40999941" timestamp="2016-07-24T22:10:31Z" user="Midgard 🗺" uid="763799" lat="51.1978568" lon="3.2271089"/>
+    <node id="1444397167" visible="true" version="2" changeset="40999941" timestamp="2016-07-24T22:10:31Z" user="Midgard 🗺" uid="763799" lat="51.1979674" lon="3.2274207"/>
+    <node id="1444455215" visible="true" version="3" changeset="40999252" timestamp="2016-07-24T21:11:36Z" user="Midgard 🗺" uid="763799" lat="51.1963997" lon="3.2261807"/>
+    <node id="1444455218" visible="true" version="3" changeset="40999252" timestamp="2016-07-24T21:11:36Z" user="Midgard 🗺" uid="763799" lat="51.1965046" lon="3.2265218"/>
+    <node id="1444455219" visible="true" version="2" changeset="40999252" timestamp="2016-07-24T21:11:36Z" user="Midgard 🗺" uid="763799" lat="51.1965519" lon="3.2266207"/>
+    <node id="1485199315" visible="true" version="4" changeset="40999252" timestamp="2016-07-24T21:11:36Z" user="Midgard 🗺" uid="763799" lat="51.1967945" lon="3.2269724"/>
+    <node id="1485630114" visible="true" version="7" changeset="66784911" timestamp="2019-01-30T21:54:20Z" user="Midgard 🗺" uid="763799" lat="51.1985571" lon="3.2193766">
+        <tag k="crossing" v="traffic_signals"/>
+        <tag k="highway" v="crossing"/>
+        <tag k="tactile_paving" v="yes"/>
+    </node>
+    <node id="1486927061" visible="true" version="2" changeset="10819479" timestamp="2012-02-28T15:05:41Z" user="Eimai" uid="6072" lat="51.1991554" lon="3.2188742"/>
+    <node id="1486927068" visible="true" version="3" changeset="27623341" timestamp="2014-12-22T05:46:35Z" user="Polyglot" uid="15188" lat="51.2002198" lon="3.2176420"/>
+    <node id="1492549250" visible="true" version="1" changeset="9748264" timestamp="2011-11-05T17:41:05Z" user="zors1843" uid="233248" lat="51.2112992" lon="3.2245495"/>
+    <node id="1492558260" visible="true" version="1" changeset="9748264" timestamp="2011-11-05T17:49:03Z" user="zors1843" uid="233248" lat="51.2128952" lon="3.2275387"/>
+    <node id="1492562712" visible="true" version="1" changeset="9748264" timestamp="2011-11-05T18:00:49Z" user="zors1843" uid="233248" lat="51.2110780" lon="3.2260880"/>
+    <node id="1495145927" visible="true" version="3" changeset="19027072" timestamp="2013-11-21T01:19:21Z" user="Polyglot" uid="15188" lat="51.2239247" lon="3.2272734"/>
+    <node id="1495241222" visible="true" version="3" changeset="34449031" timestamp="2015-10-05T14:22:43Z" user="JanFi" uid="672253" lat="51.2232944" lon="3.2271305"/>
+    <node id="1495242342" visible="true" version="3" changeset="34449031" timestamp="2015-10-05T14:22:43Z" user="JanFi" uid="672253" lat="51.2236602" lon="3.2271154"/>
+    <node id="1495573938" visible="true" version="2" changeset="40999252" timestamp="2016-07-24T21:11:36Z" user="Midgard 🗺" uid="763799" lat="51.1963741" lon="3.2260164"/>
+    <node id="1495573940" visible="true" version="2" changeset="25756203" timestamp="2014-09-29T21:15:30Z" user="Bernhard W" uid="110838" lat="51.1966400" lon="3.2245165"/>
+    <node id="1495573952" visible="true" version="4" changeset="40999252" timestamp="2016-07-24T21:11:36Z" user="Midgard 🗺" uid="763799" lat="51.1963056" lon="3.2252093"/>
+    <node id="1495573953" visible="true" version="2" changeset="25756203" timestamp="2014-09-29T21:15:31Z" user="Bernhard W" uid="110838" lat="51.1965558" lon="3.2246865"/>
+    <node id="1495573957" visible="true" version="2" changeset="25756203" timestamp="2014-09-29T21:15:31Z" user="Bernhard W" uid="110838" lat="51.1963984" lon="3.2248957"/>
+    <node id="1495575142" visible="true" version="4" changeset="40999941" timestamp="2016-07-24T22:10:31Z" user="Midgard 🗺" uid="763799" lat="51.1996593" lon="3.2296153"/>
+    <node id="1495582730" visible="true" version="3" changeset="36746753" timestamp="2016-01-22T19:42:05Z" user="Midgard 🗺" uid="763799" lat="51.1971957" lon="3.2214930"/>
+    <node id="1495582747" visible="true" version="2" changeset="36746753" timestamp="2016-01-22T19:42:05Z" user="Midgard 🗺" uid="763799" lat="51.1969396" lon="3.2226500"/>
+    <node id="1495582763" visible="true" version="2" changeset="36746753" timestamp="2016-01-22T19:42:05Z" user="Midgard 🗺" uid="763799" lat="51.1968852" lon="3.2230512"/>
+    <node id="1495582767" visible="true" version="3" changeset="36746753" timestamp="2016-01-22T19:42:05Z" user="Midgard 🗺" uid="763799" lat="51.1969987" lon="3.2222425"/>
+    <node id="1517538694" visible="true" version="2" changeset="25762253" timestamp="2014-09-30T08:15:49Z" user="Bernhard W" uid="110838" lat="51.2166047" lon="3.2283344"/>
+    <node id="1588161106" visible="true" version="2" changeset="25191698" timestamp="2014-09-02T20:41:45Z" user="Bernhard W" uid="110838" lat="51.2091135" lon="3.2226306"/>
+    <node id="1588364179" visible="true" version="3" changeset="18494621" timestamp="2013-10-22T23:29:50Z" user="Jdg46" uid="1735361" lat="51.2064199" lon="3.2237579"/>
+    <node id="1588364180" visible="true" version="2" changeset="25191767" timestamp="2014-09-02T20:45:05Z" user="Bernhard W" uid="110838" lat="51.2063691" lon="3.2234267"/>
+    <node id="1588364181" visible="true" version="1" changeset="10378936" timestamp="2012-01-13T14:22:18Z" user="zors1843" uid="233248" lat="51.2069188" lon="3.2246843"/>
+    <node id="1588364182" visible="true" version="2" changeset="25191767" timestamp="2014-09-02T20:45:05Z" user="Bernhard W" uid="110838" lat="51.2063922" lon="3.2236153"/>
+    <node id="1588364183" visible="true" version="2" changeset="18494621" timestamp="2013-10-22T23:29:50Z" user="Jdg46" uid="1735361" lat="51.2062673" lon="3.2229431"/>
+    <node id="1588370817" visible="true" version="1" changeset="10378936" timestamp="2012-01-13T14:36:17Z" user="zors1843" uid="233248" lat="51.2063239" lon="3.2184041"/>
+    <node id="1594431118" visible="true" version="2" changeset="18494621" timestamp="2013-10-22T23:29:50Z" user="Jdg46" uid="1735361" lat="51.2055072" lon="3.2232482"/>
+    <node id="1594455564" visible="true" version="4" changeset="18494621" timestamp="2013-10-22T23:36:36Z" user="Jdg46" uid="1735361" lat="51.2101237" lon="3.2232858"/>
+    <node id="1594455565" visible="true" version="4" changeset="56899557" timestamp="2018-03-05T11:56:01Z" user="Patrick Bous" uid="223763" lat="51.2093677" lon="3.2231188"/>
+    <node id="1594455567" visible="true" version="3" changeset="31571424" timestamp="2015-05-29T20:11:56Z" user="Midgard 🗺" uid="763799" lat="51.2104849" lon="3.2249370"/>
+    <node id="1601407214" visible="true" version="3" changeset="40999941" timestamp="2016-07-24T22:10:31Z" user="Midgard 🗺" uid="763799" lat="51.1991498" lon="3.2289285"/>
+    <node id="1651566899" visible="true" version="1" changeset="10819479" timestamp="2012-02-28T15:05:29Z" user="Eimai" uid="6072" lat="51.1996249" lon="3.2183933"/>
+    <node id="1651566900" visible="true" version="1" changeset="10819479" timestamp="2012-02-28T15:05:29Z" user="Eimai" uid="6072" lat="51.1998486" lon="3.2181295"/>
+    <node id="1651566907" visible="true" version="2" changeset="27623341" timestamp="2014-12-22T05:46:35Z" user="Polyglot" uid="15188" lat="51.2004257" lon="3.2175838"/>
+    <node id="1651566913" visible="true" version="3" changeset="28663554" timestamp="2015-02-06T22:58:30Z" user="escada" uid="436365" lat="51.2012865" lon="3.2178676"/>
+    <node id="1651566917" visible="true" version="2" changeset="18511416" timestamp="2013-10-23T23:14:04Z" user="Jdg46" uid="1735361" lat="51.2022935" lon="3.2177866"/>
+    <node id="1708356149" visible="true" version="8" changeset="63208104" timestamp="2018-10-04T19:48:00Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2060077" lon="3.2175813"/>
+    <node id="1726450635" visible="true" version="4" changeset="18494621" timestamp="2013-10-22T23:36:36Z" user="Jdg46" uid="1735361" lat="51.2102347" lon="3.2232012"/>
+    <node id="1726452185" visible="true" version="1" changeset="11383874" timestamp="2012-04-22T12:52:02Z" user="Rastatter" uid="121389" lat="51.2121064" lon="3.2262662"/>
+    <node id="1726452192" visible="true" version="2" changeset="20443872" timestamp="2014-02-08T10:11:18Z" user="escada" uid="436365" lat="51.2123505" lon="3.2265504"/>
+    <node id="1728433556" visible="true" version="3" changeset="56694397" timestamp="2018-02-26T15:50:21Z" user="zors1843" uid="233248" lat="51.2061472" lon="3.2179408"/>
+    <node id="1752810904" visible="true" version="5" changeset="51656978" timestamp="2017-09-01T21:51:54Z" user="Midgard 🗺" uid="763799" lat="51.2220928" lon="3.2269650"/>
+    <node id="1768003174" visible="true" version="4" changeset="28061283" timestamp="2015-01-11T12:49:49Z" user="Midgard 🗺" uid="763799" lat="51.2093077" lon="3.2230756"/>
+    <node id="1789677056" visible="true" version="2" changeset="25762272" timestamp="2014-09-30T08:17:17Z" user="Bernhard W" uid="110838" lat="51.2139966" lon="3.2284647"/>
+    <node id="1789717061" visible="true" version="3" changeset="66949348" timestamp="2019-02-06T01:06:50Z" user="Midgard 🗺" uid="763799" lat="51.2213845" lon="3.2267383"/>
+    <node id="1789717062" visible="true" version="4" changeset="66949348" timestamp="2019-02-06T01:06:50Z" user="Midgard 🗺" uid="763799" lat="51.2217229" lon="3.2267043"/>
+    <node id="1789717068" visible="true" version="1" changeset="11912605" timestamp="2012-06-16T09:30:50Z" user="Toi" uid="8323" lat="51.2224707" lon="3.2271324"/>
+    <node id="1865839125" visible="true" version="2" changeset="18504947" timestamp="2013-10-23T15:36:56Z" user="Jdg46" uid="1735361" lat="51.2084608" lon="3.2250074"/>
+    <node id="1889404439" visible="true" version="2" changeset="36746572" timestamp="2016-01-22T19:31:06Z" user="Midgard 🗺" uid="763799" lat="51.1978998" lon="3.2196897"/>
+    <node id="1927150828" visible="true" version="1" changeset="13206544" timestamp="2012-09-22T12:05:58Z" user="zors1843" uid="233248" lat="51.2199554" lon="3.2267364"/>
+    <node id="1927166220" visible="true" version="1" changeset="13206544" timestamp="2012-09-22T12:16:06Z" user="zors1843" uid="233248" lat="51.2205534" lon="3.2267017"/>
+    <node id="1927246459" visible="true" version="1" changeset="13206544" timestamp="2012-09-22T13:20:12Z" user="zors1843" uid="233248" lat="51.2192237" lon="3.2268567"/>
+    <node id="1927313430" visible="true" version="1" changeset="13206544" timestamp="2012-09-22T14:17:27Z" user="zors1843" uid="233248" lat="51.2188460" lon="3.2269271"/>
+    <node id="1930837096" visible="true" version="5" changeset="60219192" timestamp="2018-06-27T13:48:33Z" user="Vincek59" uid="8403288" lat="51.2092591" lon="3.2230163">
+        <tag k="crossing" v="unmarked"/>
+        <tag k="highway" v="crossing"/>
+        <tag k="tactile_paving" v="no"/>
+    </node>
+    <node id="1930843079" visible="true" version="6" changeset="53639368" timestamp="2017-11-09T13:49:07Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2086148" lon="3.2248335">
+        <tag k="crossing" v="uncontrolled"/>
+        <tag k="highway" v="crossing"/>
+        <tag k="tactile_paving" v="no"/>
+    </node>
+    <node id="1942971314" visible="true" version="3" changeset="25762316" timestamp="2014-09-30T08:19:56Z" user="Bernhard W" uid="110838" lat="51.2096164" lon="3.2231503"/>
+    <node id="1942971323" visible="true" version="3" changeset="25762316" timestamp="2014-09-30T08:19:56Z" user="Bernhard W" uid="110838" lat="51.2105561" lon="3.2229478"/>
+    <node id="1974950239" visible="true" version="6" changeset="34449031" timestamp="2015-10-05T14:22:43Z" user="JanFi" uid="672253" lat="51.2228202" lon="3.2272602"/>
+    <node id="1976835242" visible="true" version="4" changeset="66949348" timestamp="2019-02-06T01:06:50Z" user="Midgard 🗺" uid="763799" lat="51.2210542" lon="3.2265379"/>
+    <node id="1976895746" visible="true" version="2" changeset="66949348" timestamp="2019-02-06T01:06:50Z" user="Midgard 🗺" uid="763799" lat="51.2211522" lon="3.2266411">
+        <tag k="highway" v="give_way"/>
+    </node>
+    <node id="2031821230" visible="true" version="3" changeset="28663554" timestamp="2015-02-06T22:58:30Z" user="escada" uid="436365" lat="51.1975107" lon="3.2206897"/>
+    <node id="2161919530" visible="true" version="2" changeset="50327610" timestamp="2017-07-16T14:43:18Z" user="catweazle67" uid="1976209" lat="51.2042924" lon="3.2241142"/>
+    <node id="2161919534" visible="true" version="2" changeset="50327610" timestamp="2017-07-16T14:43:18Z" user="catweazle67" uid="1976209" lat="51.2042965" lon="3.2241107"/>
+    <node id="2161919538" visible="true" version="2" changeset="18494621" timestamp="2013-10-22T23:29:50Z" user="Jdg46" uid="1735361" lat="51.2043936" lon="3.2240175"/>
+    <node id="2350591603" visible="true" version="1" changeset="16599158" timestamp="2013-06-18T06:12:36Z" user="Toi" uid="8323" lat="51.2134649" lon="3.2285948"/>
+    <node id="2463184340" visible="true" version="1" changeset="17911271" timestamp="2013-09-18T18:39:32Z" user="peeweeke" uid="494726" lat="51.2068361" lon="3.2245590"/>
+    <node id="2463184369" visible="true" version="3" changeset="50465030" timestamp="2017-07-21T17:59:05Z" user="catweazle67" uid="1976209" lat="51.2168944" lon="3.2283361"/>
+    <node id="2477670978" visible="true" version="4" changeset="53772186" timestamp="2017-11-14T13:46:07Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2106256" lon="3.2258636"/>
+    <node id="2500094100" visible="true" version="1" changeset="18411254" timestamp="2013-10-17T22:10:32Z" user="Jdg46" uid="1735361" lat="51.2210072" lon="3.2258878"/>
+    <node id="2505423144" visible="true" version="1" changeset="18494621" timestamp="2013-10-22T23:29:50Z" user="Jdg46" uid="1735361" lat="51.2051381" lon="3.2234575"/>
+    <node id="2506083555" visible="true" version="1" changeset="18504947" timestamp="2013-10-23T15:43:00Z" user="Jdg46" uid="1735361" lat="51.2081066" lon="3.2253718"/>
+    <node id="2507623892" visible="true" version="3" changeset="66784911" timestamp="2019-01-30T21:54:20Z" user="Midgard 🗺" uid="763799" lat="51.1983165" lon="3.2195897"/>
+    <node id="2508337916" visible="true" version="1" changeset="18536040" timestamp="2013-10-25T13:30:35Z" user="zors1843" uid="233248" lat="51.2046974" lon="3.2237200"/>
+    <node id="2508337924" visible="true" version="2" changeset="59431394" timestamp="2018-05-31T14:07:42Z" user="Peilscheibe" uid="35560" lat="51.2047648" lon="3.2237127"/>
+    <node id="2509830659" visible="true" version="2" changeset="27599624" timestamp="2014-12-21T00:13:31Z" user="Polyglot" uid="15188" lat="51.2109505" lon="3.2241716"/>
+    <node id="2509830660" visible="true" version="1" changeset="18558521" timestamp="2013-10-26T22:28:51Z" user="It's so funny" uid="191979" lat="51.2110126" lon="3.2241342"/>
+    <node id="2509830661" visible="true" version="1" changeset="18558521" timestamp="2013-10-26T22:28:51Z" user="It's so funny" uid="191979" lat="51.2110587" lon="3.2241217"/>
+    <node id="2509841555" visible="true" version="2" changeset="28663554" timestamp="2015-02-06T22:58:31Z" user="escada" uid="436365" lat="51.2018966" lon="3.2178388">
+        <tag k="highway" v="give_way"/>
+    </node>
+    <node id="2512224732" visible="true" version="3" changeset="19027072" timestamp="2013-11-21T01:19:24Z" user="Polyglot" uid="15188" lat="51.2238624" lon="3.2271319"/>
+    <node id="2512238864" visible="true" version="4" changeset="19027072" timestamp="2013-11-21T01:19:24Z" user="Polyglot" uid="15188" lat="51.2243376" lon="3.2268039"/>
+    <node id="2512238868" visible="true" version="5" changeset="65888885" timestamp="2018-12-30T14:38:54Z" user="Midgard 🗺" uid="763799" lat="51.2241785" lon="3.2269227"/>
+    <node id="2512238871" visible="true" version="3" changeset="18710135" timestamp="2013-11-04T11:27:14Z" user="Jdg46" uid="1735361" lat="51.2241399" lon="3.2268426"/>
+    <node id="2512238873" visible="true" version="3" changeset="19027072" timestamp="2013-11-21T01:19:24Z" user="Polyglot" uid="15188" lat="51.2238867" lon="3.2270703">
+        <tag k="highway" v="crossing"/>
+    </node>
+    <node id="2512238887" visible="true" version="3" changeset="65888885" timestamp="2018-12-30T14:38:54Z" user="Midgard 🗺" uid="763799" lat="51.2240517" lon="3.2270341"/>
+    <node id="2512238892" visible="true" version="4" changeset="65888885" timestamp="2018-12-30T14:38:54Z" user="Midgard 🗺" uid="763799" lat="51.2245330" lon="3.2269218">
+        <tag k="bicycle" v="yes"/>
+        <tag k="crossing" v="marked"/>
+        <tag k="foot" v="yes"/>
+        <tag k="highway" v="crossing"/>
+    </node>
+    <node id="2512245091" visible="true" version="4" changeset="50118841" timestamp="2017-07-07T21:23:39Z" user="Midgard 🗺" uid="763799" lat="51.2242840" lon="3.2268766"/>
+    <node id="2517460441" visible="true" version="4" changeset="63207863" timestamp="2018-10-04T19:41:02Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2037430" lon="3.2175618">
+        <tag k="bus" v="yes"/>
+        <tag k="public_transport" v="stop_position"/>
+    </node>
+    <node id="2519656106" visible="true" version="3" changeset="50118841" timestamp="2017-07-07T21:23:39Z" user="Midgard 🗺" uid="763799" lat="51.2243425" lon="3.2268695"/>
+    <node id="2521153501" visible="true" version="1" changeset="18731965" timestamp="2013-11-05T16:30:48Z" user="zors1843" uid="233248" lat="51.2078865" lon="3.2256233"/>
+    <node id="2529642125" visible="true" version="2" changeset="40999941" timestamp="2016-07-24T22:10:32Z" user="Midgard 🗺" uid="763799" lat="51.1980746" lon="3.2276009"/>
+    <node id="2541338057" visible="true" version="3" changeset="63207863" timestamp="2018-10-04T19:41:02Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2039282" lon="3.2174961">
+        <tag k="bus" v="yes"/>
+        <tag k="public_transport" v="stop_position"/>
+    </node>
+    <node id="2541338069" visible="true" version="3" changeset="63207863" timestamp="2018-10-04T19:41:02Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2043186" lon="3.2173451">
+        <tag k="bus" v="yes"/>
+        <tag k="public_transport" v="stop_position"/>
+    </node>
+    <node id="2542468560" visible="true" version="3" changeset="32085063" timestamp="2015-06-19T21:42:14Z" user="Midgard 🗺" uid="763799" lat="51.2089888" lon="3.2247112">
+        <tag k="bus" v="yes"/>
+        <tag k="public_transport" v="stop_position"/>
+    </node>
+    <node id="2542468563" visible="true" version="2" changeset="25762316" timestamp="2014-09-30T08:19:56Z" user="Bernhard W" uid="110838" lat="51.2097433" lon="3.2231878">
+        <tag k="bus" v="yes"/>
+        <tag k="public_transport" v="stop_position"/>
+    </node>
+    <node id="2542517032" visible="true" version="5" changeset="63263386" timestamp="2018-10-06T18:28:20Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2044272" lon="3.2173063"/>
+    <node id="2542517038" visible="true" version="1" changeset="19027072" timestamp="2013-11-21T01:18:12Z" user="Polyglot" uid="15188" lat="51.2239515" lon="3.2272070"/>
+    <node id="2542517039" visible="true" version="1" changeset="19027072" timestamp="2013-11-21T01:18:12Z" user="Polyglot" uid="15188" lat="51.2239755" lon="3.2271597">
+        <tag k="highway" v="crossing"/>
+    </node>
+    <node id="2640583401" visible="true" version="1" changeset="20241011" timestamp="2014-01-28T04:56:36Z" user="escada" uid="436365" lat="51.2113597" lon="3.2257269"/>
+    <node id="2640583405" visible="true" version="1" changeset="20241011" timestamp="2014-01-28T04:56:36Z" user="escada" uid="436365" lat="51.2113989" lon="3.2256748"/>
+    <node id="2640678549" visible="true" version="1" changeset="20242365" timestamp="2014-01-28T07:49:12Z" user="zors1843" uid="233248" lat="51.2115505" lon="3.2255276"/>
+    <node id="2642550680" visible="true" version="3" changeset="40999941" timestamp="2016-07-24T22:10:32Z" user="Midgard 🗺" uid="763799" lat="51.1995724" lon="3.2295372">
+        <tag k="crossing" v="uncontrolled"/>
+        <tag k="crossing_ref" v="zebra"/>
+        <tag k="highway" v="crossing"/>
+    </node>
+    <node id="2651692940" visible="true" version="2" changeset="65888885" timestamp="2018-12-30T14:38:54Z" user="Midgard 🗺" uid="763799" lat="51.2257235" lon="3.2272292"/>
+    <node id="2722116335" visible="true" version="2" changeset="27808740" timestamp="2014-12-30T20:22:41Z" user="JanFi" uid="672253" lat="51.1997970" lon="3.2293501">
+        <tag k="crossing" v="uncontrolled"/>
+        <tag k="crossing_ref" v="zebra"/>
+        <tag k="highway" v="crossing"/>
+    </node>
+    <node id="2722116452" visible="true" version="2" changeset="27599624" timestamp="2014-12-21T00:13:31Z" user="Polyglot" uid="15188" lat="51.2103998" lon="3.2244595">
+        <tag k="crossing" v="uncontrolled"/>
+        <tag k="crossing_ref" v="zebra"/>
+        <tag k="highway" v="crossing"/>
+    </node>
+    <node id="2818569049" visible="true" version="2" changeset="36746572" timestamp="2016-01-22T19:31:06Z" user="Midgard 🗺" uid="763799" lat="51.1978200" lon="3.2195378"/>
+    <node id="2818569051" visible="true" version="2" changeset="36746572" timestamp="2016-01-22T19:31:06Z" user="Midgard 🗺" uid="763799" lat="51.1978896" lon="3.2198181"/>
+    <node id="2818569776" visible="true" version="2" changeset="36746572" timestamp="2016-01-22T19:31:06Z" user="Midgard 🗺" uid="763799" lat="51.1979057" lon="3.2198756"/>
+    <node id="2818569789" visible="true" version="4" changeset="53639368" timestamp="2017-11-09T14:16:02Z" user="Pieter Vander Vennet" uid="3818858" lat="51.1989771" lon="3.2190454">
+        <tag k="crossing" v="traffic_signals"/>
+        <tag k="highway" v="crossing"/>
+        <tag k="tactile_paving" v="no"/>
+    </node>
+    <node id="3035591273" visible="true" version="2" changeset="63208104" timestamp="2018-10-04T19:48:00Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2060850" lon="3.2177935"/>
+    <node id="3056350312" visible="true" version="3" changeset="56694397" timestamp="2018-02-26T15:50:21Z" user="zors1843" uid="233248" lat="51.2084140" lon="3.2212367"/>
+    <node id="3056363838" visible="true" version="1" changeset="25191767" timestamp="2014-09-02T20:45:05Z" user="Bernhard W" uid="110838" lat="51.2065163" lon="3.2240090"/>
+    <node id="3102754997" visible="true" version="2" changeset="40999252" timestamp="2016-07-24T21:11:36Z" user="Midgard 🗺" uid="763799" lat="51.1963194" lon="3.2251092"/>
+    <node id="3102755002" visible="true" version="2" changeset="40999941" timestamp="2016-07-24T22:10:32Z" user="Midgard 🗺" uid="763799" lat="51.1979401" lon="3.2272896"/>
+    <node id="3103402429" visible="true" version="1" changeset="25762316" timestamp="2014-09-30T08:19:55Z" user="Bernhard W" uid="110838" lat="51.2100419" lon="3.2232795"/>
+    <node id="3245386102" visible="true" version="1" changeset="27599624" timestamp="2014-12-21T00:12:30Z" user="Polyglot" uid="15188" lat="51.2107948" lon="3.2242622">
+        <tag k="bus" v="yes"/>
+        <tag k="public_transport" v="stop_position"/>
+    </node>
+    <node id="3260590839" visible="true" version="2" changeset="40999252" timestamp="2016-07-24T21:11:37Z" user="Midgard 🗺" uid="763799" lat="51.1963062" lon="3.2252938"/>
+    <node id="3260590841" visible="true" version="2" changeset="40999252" timestamp="2016-07-24T21:11:37Z" user="Midgard 🗺" uid="763799" lat="51.1963427" lon="3.2256974"/>
+    <node id="3260590851" visible="true" version="2" changeset="40999252" timestamp="2016-07-24T21:11:37Z" user="Midgard 🗺" uid="763799" lat="51.1966741" lon="3.2268346"/>
+    <node id="3260590865" visible="true" version="1" changeset="27808740" timestamp="2014-12-30T20:22:33Z" user="JanFi" uid="672253" lat="51.1971112" lon="3.2271400"/>
+    <node id="3260590875" visible="true" version="1" changeset="27808740" timestamp="2014-12-30T20:22:33Z" user="JanFi" uid="672253" lat="51.1974219" lon="3.2272658"/>
+    <node id="3260590881" visible="true" version="2" changeset="40999941" timestamp="2016-07-24T22:10:32Z" user="Midgard 🗺" uid="763799" lat="51.1984881" lon="3.2280548"/>
+    <node id="3260590883" visible="true" version="2" changeset="40999941" timestamp="2016-07-24T22:10:32Z" user="Midgard 🗺" uid="763799" lat="51.1988721" lon="3.2285275"/>
+    <node id="3335138005" visible="true" version="2" changeset="66784911" timestamp="2019-01-30T21:54:20Z" user="Midgard 🗺" uid="763799" lat="51.1980816" lon="3.2198437">
+        <tag k="highway" v="traffic_signals"/>
+    </node>
+    <node id="3339157095" visible="true" version="2" changeset="36746753" timestamp="2016-01-22T19:42:05Z" user="Midgard 🗺" uid="763799" lat="51.1968547" lon="3.2232982"/>
+    <node id="3339157106" visible="true" version="2" changeset="36746753" timestamp="2016-01-22T19:42:05Z" user="Midgard 🗺" uid="763799" lat="51.1969786" lon="3.2223602"/>
+    <node id="3556881315" visible="true" version="1" changeset="31571424" timestamp="2015-05-29T20:11:56Z" user="Midgard 🗺" uid="763799" lat="51.2104679" lon="3.2247803"/>
+    <node id="3773309776" visible="true" version="1" changeset="34449031" timestamp="2015-10-05T14:22:28Z" user="JanFi" uid="672253" lat="51.2235340" lon="3.2270989"/>
+    <node id="3773309778" visible="true" version="1" changeset="34449031" timestamp="2015-10-05T14:22:28Z" user="JanFi" uid="672253" lat="51.2238014" lon="3.2271880"/>
+    <node id="3773309783" visible="true" version="1" changeset="34449031" timestamp="2015-10-05T14:22:28Z" user="JanFi" uid="672253" lat="51.2247702" lon="3.2270754"/>
+    <node id="3773309786" visible="true" version="2" changeset="65888885" timestamp="2018-12-30T14:38:54Z" user="Midgard 🗺" uid="763799" lat="51.2250879" lon="3.2272728"/>
+    <node id="3773309787" visible="true" version="2" changeset="65888885" timestamp="2018-12-30T14:38:54Z" user="Midgard 🗺" uid="763799" lat="51.2251585" lon="3.2273034"/>
+    <node id="3778750367" visible="true" version="2" changeset="40999252" timestamp="2016-07-24T21:11:37Z" user="Midgard 🗺" uid="763799" lat="51.1963180" lon="3.2254235"/>
+    <node id="3960239883" visible="true" version="1" changeset="36746572" timestamp="2016-01-22T19:31:05Z" user="Midgard 🗺" uid="763799" lat="51.1978115" lon="3.2195572"/>
+    <node id="3960239884" visible="true" version="1" changeset="36746572" timestamp="2016-01-22T19:31:05Z" user="Midgard 🗺" uid="763799" lat="51.1978123" lon="3.2195811"/>
+    <node id="4318751069" visible="true" version="1" changeset="40999252" timestamp="2016-07-24T21:11:33Z" user="Midgard 🗺" uid="763799" lat="51.1964520" lon="3.2263781"/>
+    <node id="4318751334" visible="true" version="1" changeset="40999252" timestamp="2016-07-24T21:11:33Z" user="Midgard 🗺" uid="763799" lat="51.1963586" lon="3.2258697"/>
+    <node id="4318836180" visible="true" version="1" changeset="40999941" timestamp="2016-07-24T22:10:28Z" user="Midgard 🗺" uid="763799" lat="51.1995340" lon="3.2294963"/>
+    <node id="4318836225" visible="true" version="1" changeset="40999941" timestamp="2016-07-24T22:10:28Z" user="Midgard 🗺" uid="763799" lat="51.1980014" lon="3.2275054"/>
+    <node id="4318836230" visible="true" version="1" changeset="40999941" timestamp="2016-07-24T22:10:28Z" user="Midgard 🗺" uid="763799" lat="51.1987361" lon="3.2283492"/>
+    <node id="4595144337" visible="true" version="2" changeset="54914123" timestamp="2017-12-25T19:26:56Z" user="Midgard 🗺" uid="763799" lat="51.2021073" lon="3.2266259"/>
+    <node id="4996107954" visible="true" version="1" changeset="50608314" timestamp="2017-07-27T05:57:03Z" user="JanFi" uid="672253" lat="51.1966573" lon="3.2268068"/>
+    <node id="5020472734" visible="true" version="1" changeset="50922094" timestamp="2017-08-07T16:19:21Z" user="catweazle67" uid="1976209" lat="51.2008926" lon="3.2279270"/>
+    <node id="5061727862" visible="true" version="1" changeset="51477039" timestamp="2017-08-27T09:27:29Z" user="Jakka" uid="2403313" lat="51.2115159" lon="3.2254237"/>
+    <node id="5074425607" visible="true" version="1" changeset="51656978" timestamp="2017-09-01T21:51:54Z" user="Midgard 🗺" uid="763799" lat="51.2223604" lon="3.2270838"/>
+    <node id="5221774413" visible="true" version="1" changeset="53670372" timestamp="2017-11-10T15:55:47Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2076220" lon="3.2204292"/>
+    <node id="5225534982" visible="true" version="2" changeset="66784911" timestamp="2019-01-30T21:54:20Z" user="Midgard 🗺" uid="763799" lat="51.1978990" lon="3.2198521">
+        <tag k="highway" v="traffic_signals"/>
+        <tag k="traffic_signals:direction" v="forward"/>
+    </node>
+    <node id="5226676938" visible="true" version="2" changeset="66949348" timestamp="2019-02-06T01:06:51Z" user="Midgard 🗺" uid="763799" lat="51.2214748" lon="3.2267826"/>
+    <node id="5226749874" visible="true" version="1" changeset="53746431" timestamp="2017-11-13T17:13:42Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2189373" lon="3.2269101"/>
+    <node id="5228263987" visible="true" version="1" changeset="53771892" timestamp="2017-11-14T13:35:44Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2104513" lon="3.2245401"/>
+    <node id="5228263988" visible="true" version="1" changeset="53771892" timestamp="2017-11-14T13:35:44Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2100103" lon="3.2245707"/>
+    <node id="5228279188" visible="true" version="1" changeset="53772186" timestamp="2017-11-14T13:46:07Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2104981" lon="3.2250203"/>
+    <node id="5234696547" visible="true" version="2" changeset="65780727" timestamp="2018-12-26T10:49:55Z" user="Midgard 🗺" uid="763799" lat="51.2008456" lon="3.2279780"/>
+    <node id="5235134462" visible="true" version="1" changeset="53881089" timestamp="2017-11-17T17:14:53Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2220706" lon="3.2269565"/>
+    <node id="5235154647" visible="true" version="1" changeset="53881504" timestamp="2017-11-17T17:33:36Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2238695" lon="3.2271139"/>
+    <node id="5235154648" visible="true" version="1" changeset="53881504" timestamp="2017-11-17T17:33:36Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2239592" lon="3.2271919"/>
+    <node id="5246802972" visible="true" version="1" changeset="54067156" timestamp="2017-11-25T08:27:39Z" user="zors1843" uid="233248" lat="51.2065009" lon="3.2188405"/>
+    <node id="5279380788" visible="true" version="1" changeset="54562624" timestamp="2017-12-12T10:37:06Z" user="mathijsdelbaere" uid="5007329" lat="51.1997548" lon="3.2294323"/>
+    <node id="5279641821" visible="true" version="1" changeset="54566353" timestamp="2017-12-12T13:27:12Z" user="Hans van der Maarel" uid="91664" lat="51.1998907" lon="3.2291758"/>
+    <node id="5303601061" visible="true" version="1" changeset="54914123" timestamp="2017-12-25T19:26:55Z" user="Midgard 🗺" uid="763799" lat="51.2022300" lon="3.2264463"/>
+    <node id="5303601062" visible="true" version="1" changeset="54914123" timestamp="2017-12-25T19:26:55Z" user="Midgard 🗺" uid="763799" lat="51.2018922" lon="3.2268919"/>
+    <node id="5318457077" visible="true" version="1" changeset="55129884" timestamp="2018-01-03T13:59:02Z" user="Glenn Plas" uid="497567" lat="51.2235979" lon="3.2270999"/>
+    <node id="5456564116" visible="true" version="1" changeset="56899557" timestamp="2018-03-05T11:56:01Z" user="Patrick Bous" uid="223763" lat="51.2095259" lon="3.2231203"/>
+    <node id="5602314023" visible="true" version="1" changeset="58759005" timestamp="2018-05-07T13:31:29Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2178342" lon="3.2277786"/>
+    <node id="5714054220" visible="true" version="1" changeset="60107456" timestamp="2018-06-23T19:24:19Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2036110" lon="3.2247559"/>
+    <node id="5723306795" visible="true" version="1" changeset="60219619" timestamp="2018-06-27T14:01:18Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2019528" lon="3.2268193"/>
+    <node id="5951310592" visible="true" version="1" changeset="63157626" timestamp="2018-10-03T12:10:39Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2057769" lon="3.2168927"/>
+    <node id="5955133851" visible="true" version="2" changeset="65702042" timestamp="2018-12-22T20:02:44Z" user="Midgard 🗺" uid="763799" lat="51.2045491" lon="3.2171742"/>
+    <node id="5955133852" visible="true" version="2" changeset="65702042" timestamp="2018-12-22T20:02:44Z" user="Midgard 🗺" uid="763799" lat="51.2050474" lon="3.2169744"/>
+    <node id="5955133853" visible="true" version="2" changeset="65702042" timestamp="2018-12-22T20:02:44Z" user="Midgard 🗺" uid="763799" lat="51.2052114" lon="3.2169334"/>
+    <node id="5955133855" visible="true" version="2" changeset="63207863" timestamp="2018-10-04T19:41:02Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2042716" lon="3.2173730"/>
+    <node id="5955150370" visible="true" version="2" changeset="65702042" timestamp="2018-12-22T20:02:44Z" user="Midgard 🗺" uid="763799" lat="51.2053586" lon="3.2169035"/>
+    <node id="5955337632" visible="true" version="1" changeset="63207863" timestamp="2018-10-04T19:41:02Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2036521" lon="3.2175845"/>
+    <node id="5959691743" visible="true" version="2" changeset="65702042" timestamp="2018-12-22T20:02:45Z" user="Midgard 🗺" uid="763799" lat="51.2046321" lon="3.2171218">
+        <tag k="crossing" v="zebra"/>
+        <tag k="highway" v="crossing"/>
+    </node>
+    <node id="5961021272" visible="true" version="1" changeset="63252303" timestamp="2018-10-06T10:02:03Z" user="Leo Slager" uid="6686188" lat="51.2056953" lon="3.2168739"/>
+    <node id="6154175046" visible="true" version="1" changeset="65702042" timestamp="2018-12-22T20:02:42Z" user="Midgard 🗺" uid="763799" lat="51.2056724" lon="3.2168780"/>
+    <node id="6154175047" visible="true" version="1" changeset="65702042" timestamp="2018-12-22T20:02:43Z" user="Midgard 🗺" uid="763799" lat="51.2048332" lon="3.2170402"/>
+    <node id="6172910460" visible="true" version="1" changeset="65888885" timestamp="2018-12-30T14:38:53Z" user="Midgard 🗺" uid="763799" lat="51.2240097" lon="3.2270931"/>
+    <node id="6172910461" visible="true" version="1" changeset="65888885" timestamp="2018-12-30T14:38:53Z" user="Midgard 🗺" uid="763799" lat="51.2242381" lon="3.2268892"/>
+    <node id="6172910462" visible="true" version="1" changeset="65888885" timestamp="2018-12-30T14:38:53Z" user="Midgard 🗺" uid="763799" lat="51.2242146" lon="3.2268088"/>
+    <node id="6172910463" visible="true" version="1" changeset="65888885" timestamp="2018-12-30T14:38:53Z" user="Midgard 🗺" uid="763799" lat="51.2251831" lon="3.2274547"/>
+    <node id="6172910464" visible="true" version="1" changeset="65888885" timestamp="2018-12-30T14:38:53Z" user="Midgard 🗺" uid="763799" lat="51.2254077" lon="3.2277134"/>
+    <node id="6172910465" visible="true" version="1" changeset="65888885" timestamp="2018-12-30T14:38:53Z" user="Midgard 🗺" uid="763799" lat="51.2260867" lon="3.2275379"/>
+    <node id="6172910466" visible="true" version="1" changeset="65888885" timestamp="2018-12-30T14:38:53Z" user="Midgard 🗺" uid="763799" lat="51.2260469" lon="3.2271453"/>
+    <node id="6172910468" visible="true" version="1" changeset="65888885" timestamp="2018-12-30T14:38:53Z" user="Midgard 🗺" uid="763799" lat="51.2253178" lon="3.2273224"/>
+    <node id="6248096786" visible="true" version="1" changeset="66784911" timestamp="2019-01-30T21:54:19Z" user="Midgard 🗺" uid="763799" lat="51.1990483" lon="3.2189773">
+        <tag k="highway" v="traffic_signals"/>
+    </node>
+    <node id="6260921589" visible="true" version="2" changeset="66949348" timestamp="2019-02-06T01:06:51Z" user="Midgard 🗺" uid="763799" lat="51.2216268" lon="3.2268248">
+        <tag k="highway" v="traffic_signals"/>
+        <tag k="traffic_signals" v="emergency"/>
+    </node>
+    <node id="6260943446" visible="true" version="1" changeset="66949348" timestamp="2019-02-06T01:06:48Z" user="Midgard 🗺" uid="763799" lat="51.2209876" lon="3.2261201"/>
+    <node id="6260943447" visible="true" version="1" changeset="66949348" timestamp="2019-02-06T01:06:48Z" user="Midgard 🗺" uid="763799" lat="51.2210372" lon="3.2258633"/>
+    <node id="6260943453" visible="true" version="1" changeset="66949348" timestamp="2019-02-06T01:06:48Z" user="Midgard 🗺" uid="763799" lat="51.2212362" lon="3.2266264"/>
+    <node id="6260943454" visible="true" version="1" changeset="66949348" timestamp="2019-02-06T01:06:48Z" user="Midgard 🗺" uid="763799" lat="51.2209565" lon="3.2266961"/>
+    <node id="6260943455" visible="true" version="1" changeset="66949348" timestamp="2019-02-06T01:06:48Z" user="Midgard 🗺" uid="763799" lat="51.2210947" lon="3.2267041"/>
+    <node id="6348496391" visible="true" version="4" changeset="68370870" timestamp="2019-03-21T12:08:45Z" user="Pieter Vander Vennet" uid="3818858" lat="51.1981435" lon="3.2192640">
+        <tag k="bus" v="yes"/>
+        <tag k="name" v="K&amp;R Station"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="stop_position"/>
+    </node>
+    <node id="6348496392" visible="true" version="5" changeset="68370870" timestamp="2019-03-21T12:08:45Z" user="Pieter Vander Vennet" uid="3818858" lat="51.1981271" lon="3.2191554">
+        <tag k="highway" v="bus_stop"/>
+        <tag k="name" v="K&amp;R Station"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="platform"/>
+    </node>
+    <node id="6348530258" visible="true" version="1" changeset="68315286" timestamp="2019-03-19T23:52:07Z" user="Pieter Vander Vennet" uid="3818858" lat="51.1965168" lon="3.2267855">
+        <tag k="highway" v="bus_stop"/>
+        <tag k="name" v="Barge"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="platform"/>
+    </node>
+    <node id="6348534685" visible="true" version="1" changeset="68315320" timestamp="2019-03-19T23:55:42Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2014363" lon="3.2273580">
+        <tag k="bus" v="yes"/>
+        <tag k="name" v="Katelijne"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="stop_position"/>
+    </node>
+    <node id="6348534686" visible="true" version="1" changeset="68315320" timestamp="2019-03-19T23:55:42Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2014500" lon="3.2274084">
+        <tag k="highway" v="bus_stop"/>
+        <tag k="name" v="Katelijne"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="platform"/>
+    </node>
+    <node id="6348562139" visible="true" version="1" changeset="68315737" timestamp="2019-03-20T00:31:31Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2037138" lon="3.2175712">
+        <tag k="bus" v="yes"/>
+        <tag k="name" v="Concertgebouw"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="stop_position"/>
+    </node>
+    <node id="6348562140" visible="true" version="1" changeset="68315737" timestamp="2019-03-20T00:31:31Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2037132" lon="3.2174579">
+        <tag k="highway" v="bus_stop"/>
+        <tag k="name" v="Concertgebouw"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="platform"/>
+    </node>
+    <node id="6348562142" visible="true" version="1" changeset="68315737" timestamp="2019-03-20T00:31:31Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2071224" lon="3.2198206">
+        <tag k="bus" v="yes"/>
+        <tag k="name" v="Zilverpand"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="stop_position"/>
+    </node>
+    <node id="6348562143" visible="true" version="1" changeset="68315737" timestamp="2019-03-20T00:31:31Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2071086" lon="3.2198390">
+        <tag k="highway" v="bus_stop"/>
+        <tag k="name" v="Zilverpand"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="platform"/>
+    </node>
+    <node id="6348562144" visible="true" version="1" changeset="68315737" timestamp="2019-03-20T00:31:31Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2097968" lon="3.2232065">
+        <tag k="bus" v="yes"/>
+        <tag k="name" v="Biekorf"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="stop_position"/>
+    </node>
+    <node id="6348562145" visible="true" version="1" changeset="68315737" timestamp="2019-03-20T00:31:31Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2098014" lon="3.2231482">
+        <tag k="highway" v="bus_stop"/>
+        <tag k="name" v="Biekorf"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="platform"/>
+    </node>
+    <node id="6348562146" visible="true" version="1" changeset="68315737" timestamp="2019-03-20T00:31:31Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2257718" lon="3.2277006">
+        <tag k="highway" v="bus_stop"/>
+        <tag k="name" v="Coiseaukaai"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="platform"/>
+    </node>
+    <node id="6348562147" visible="true" version="1" changeset="68315737" timestamp="2019-03-20T00:31:31Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2257634" lon="3.2276215">
+        <tag k="bus" v="yes"/>
+        <tag k="name" v="Coiseaukaai"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="stop_position"/>
+    </node>
+    <node id="6348562148" visible="true" version="1" changeset="68315737" timestamp="2019-03-20T00:31:31Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2202019" lon="3.2267051">
+        <tag k="bus" v="yes"/>
+        <tag k="name" v="Calvarie"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="stop_position"/>
+    </node>
+    <node id="6348562150" visible="true" version="1" changeset="68315737" timestamp="2019-03-20T00:31:32Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2154829" lon="3.2287643">
+        <tag k="bus" v="yes"/>
+        <tag k="name" v="Langerei"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="stop_position"/>
+    </node>
+    <node id="6348562152" visible="true" version="1" changeset="68315737" timestamp="2019-03-20T00:31:32Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2116470" lon="3.2257979">
+        <tag k="bus" v="yes"/>
+        <tag k="name" v="Jan Van Eyck"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="stop_position"/>
+    </node>
+    <node id="6348562154" visible="true" version="1" changeset="68315737" timestamp="2019-03-20T00:31:32Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2090153" lon="3.2246957">
+        <tag k="bus" v="yes"/>
+        <tag k="name" v="Markt"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="stop_position"/>
+    </node>
+    <node id="6348562155" visible="true" version="1" changeset="68315737" timestamp="2019-03-20T00:31:32Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2090522" lon="3.2248023">
+        <tag k="highway" v="bus_stop"/>
+        <tag k="name" v="Markt"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="platform"/>
+    </node>
+    <node id="6348562156" visible="true" version="1" changeset="68315737" timestamp="2019-03-20T00:31:32Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2065818" lon="3.2241387">
+        <tag k="bus" v="yes"/>
+        <tag k="name" v="Hof van Watervliet"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="stop_position"/>
+    </node>
+    <node id="6348562157" visible="true" version="1" changeset="68315737" timestamp="2019-03-20T00:31:32Z" user="Pieter Vander Vennet" uid="3818858" lat="51.2065510" lon="3.2241615">
+        <tag k="highway" v="bus_stop"/>
+        <tag k="name" v="Hof van Watervliet"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="platform"/>
+    </node>
+    <node id="6348575322" visible="true" version="1" changeset="68315980" timestamp="2019-03-20T00:52:59Z" user="Pieter Vander Vennet" uid="3818858" lat="51.1978770" lon="3.2200900"/>
+    <node id="6349587523" visible="true" version="1" changeset="68334063" timestamp="2019-03-20T12:30:07Z" user="Pieter Vander Vennet" uid="3818858" lat="51.1965835" lon="3.2266802">
+        <tag k="bus" v="yes"/>
+        <tag k="name" v="Barge"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport" v="stop_position"/>
+    </node>
+    <node id="6352117138" visible="true" version="1" changeset="68370870" timestamp="2019-03-21T12:08:45Z" user="Pieter Vander Vennet" uid="3818858" lat="51.1982238" lon="3.2192760"/>
+    <node id="6352117139" visible="true" version="1" changeset="68370870" timestamp="2019-03-21T12:08:45Z" user="Pieter Vander Vennet" uid="3818858" lat="51.1982363" lon="3.2192995"/>
+    <node id="6352117140" visible="true" version="1" changeset="68370870" timestamp="2019-03-21T12:08:45Z" user="Pieter Vander Vennet" uid="3818858" lat="51.1982126" lon="3.2194207"/>
+    <node id="6352117141" visible="true" version="1" changeset="68370870" timestamp="2019-03-21T12:08:45Z" user="Pieter Vander Vennet" uid="3818858" lat="51.1982368" lon="3.2193782"/>
+    <node id="6352117142" visible="true" version="1" changeset="68370870" timestamp="2019-03-21T12:08:45Z" user="Pieter Vander Vennet" uid="3818858" lat="51.1982411" lon="3.2193389"/>
+    <node id="6352117143" visible="true" version="1" changeset="68370870" timestamp="2019-03-21T12:08:45Z" user="Pieter Vander Vennet" uid="3818858" lat="51.1981976" lon="3.2192536"/>
+    <node id="6352117144" visible="true" version="1" changeset="68370870" timestamp="2019-03-21T12:08:45Z" user="Pieter Vander Vennet" uid="3818858" lat="51.1982282" lon="3.2194031"/>
+    <node id="6352117145" visible="true" version="1" changeset="68370870" timestamp="2019-03-21T12:08:45Z" user="Pieter Vander Vennet" uid="3818858" lat="51.1981712" lon="3.2192476"/>
+    <way id="3515535" visible="true" version="20" changeset="68334662" timestamp="2019-03-20T12:49:40Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="17421310"/>
+        <nd ref="2506083555"/>
+        <nd ref="2521153501"/>
+        <nd ref="17421753"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Wollestraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:psv" v="no"/>
+        <tag k="psv" v="yes"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="source:maxspeed" v="BE-VLG:zone30"/>
+        <tag k="surface" v="sett"/>
+        <tag k="zone:traffic" v="BE-VLG:urban"/>
+    </way>
+    <way id="4329127" visible="true" version="18" changeset="55137682" timestamp="2018-01-03T19:27:34Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="26343774"/>
+        <nd ref="312711610"/>
+        <tag k="highway" v="residential"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Langerei"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="4329218" visible="true" version="20" changeset="59431394" timestamp="2018-05-31T14:07:42Z" user="Peilscheibe" uid="35560">
+        <nd ref="17422567"/>
+        <nd ref="1398745734"/>
+        <nd ref="2505423144"/>
+        <nd ref="1594431118"/>
+        <nd ref="26343877"/>
+        <nd ref="26343876"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="residential"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Mariastraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="surface" v="sett"/>
+        <tag k="wikidata" v="Q2152814"/>
+        <tag k="wikipedia" v="nl:Mariastraat (Brugge)"/>
+    </way>
+    <way id="4329219" visible="true" version="15" changeset="55137682" timestamp="2018-01-03T19:27:35Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="766772545"/>
+        <nd ref="1398745763"/>
+        <nd ref="17422570"/>
+        <nd ref="2161919530"/>
+        <nd ref="2161919534"/>
+        <nd ref="2161919538"/>
+        <nd ref="2508337916"/>
+        <nd ref="2508337924"/>
+        <tag k="bicycle" v="yes"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="maxspeed:type" v="sign"/>
+        <tag k="name" v="Mariastraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="surface" v="sett"/>
+        <tag k="wikidata" v="Q2152814"/>
+        <tag k="wikipedia" v="nl:Mariastraat (Brugge)"/>
+    </way>
+    <way id="4329220" visible="true" version="26" changeset="68315320" timestamp="2019-03-19T23:55:42Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="187067651"/>
+        <nd ref="113544201"/>
+        <nd ref="5279641821"/>
+        <nd ref="271929298"/>
+        <nd ref="1398733693"/>
+        <nd ref="26343940"/>
+        <nd ref="5234696547"/>
+        <nd ref="5020472734"/>
+        <nd ref="17422590"/>
+        <nd ref="6348534685"/>
+        <nd ref="17422588"/>
+        <nd ref="17422586"/>
+        <nd ref="5303601062"/>
+        <nd ref="5723306795"/>
+        <nd ref="17422584"/>
+        <nd ref="4595144337"/>
+        <nd ref="5303601061"/>
+        <nd ref="17422582"/>
+        <nd ref="17422579"/>
+        <nd ref="26347700"/>
+        <nd ref="17422577"/>
+        <tag k="bicycle" v="yes"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Katelijnestraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="4332456" visible="true" version="14" changeset="53881089" timestamp="2017-11-17T17:14:53Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="26343973"/>
+        <nd ref="5235134462"/>
+        <nd ref="1752810904"/>
+        <tag k="cycleway" v="lane"/>
+        <tag k="highway" v="secondary"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Komvest"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="4332492" visible="true" version="24" changeset="68315980" timestamp="2019-03-20T00:53:00Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="17421307"/>
+        <nd ref="17421937"/>
+        <nd ref="5228263988"/>
+        <nd ref="315793131"/>
+        <tag k="cycleway:left" v="shared_lane"/>
+        <tag k="cycleway:left:width" v="1.2"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="is_in" v="Brugge,West-Vlaanderen,Belgium,Europe"/>
+        <tag k="lit" v="yes"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Vlamingstraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="source:maxspeed" v="sign"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="4332501" visible="true" version="11" changeset="53770450" timestamp="2017-11-14T12:37:04Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="2640583405"/>
+        <nd ref="2640583401"/>
+        <nd ref="26343887"/>
+        <nd ref="1164730108"/>
+        <nd ref="1163822360"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="residential"/>
+        <tag k="lit" v="yes"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Biskajersplein"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="4332512" visible="true" version="21" changeset="66949348" timestamp="2019-02-06T01:06:52Z" user="Midgard 🗺" uid="763799">
+        <nd ref="26343973"/>
+        <nd ref="1789717062"/>
+        <nd ref="26363718"/>
+        <nd ref="26363656"/>
+        <nd ref="251009759"/>
+        <nd ref="312716323"/>
+        <tag k="cycleway:right" v="lane"/>
+        <tag k="cycleway:right:width" v="1.25"/>
+        <tag k="highway" v="secondary"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Komvest"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="4332518" visible="true" version="19" changeset="63521701" timestamp="2018-10-14T22:41:30Z" user="Polyglot" uid="15188">
+        <nd ref="17407588"/>
+        <nd ref="2541338057"/>
+        <tag k="access" v="no"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="foot" v="use_sidepath"/>
+        <tag k="highway" v="service"/>
+        <tag k="name" v="Koning Albert I-laan"/>
+        <tag k="name:etymology:wikidata" v="Q12974"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bus" v="no"/>
+    </way>
+    <way id="28463353" visible="true" version="13" changeset="58759005" timestamp="2018-05-07T13:31:29Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="271927353"/>
+        <nd ref="1927150828"/>
+        <nd ref="312709083"/>
+        <nd ref="1927246459"/>
+        <nd ref="271930116"/>
+        <nd ref="5226749874"/>
+        <nd ref="1927313430"/>
+        <nd ref="271930118"/>
+        <nd ref="1014589661"/>
+        <nd ref="1014589649"/>
+        <nd ref="5602314023"/>
+        <nd ref="298086769"/>
+        <nd ref="271930120"/>
+        <tag k="highway" v="residential"/>
+        <tag k="lit" v="yes"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Julius en Maurits Sabbestraat"/>
+        <tag k="oneway" v="no"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="28464053" visible="true" version="13" changeset="55137682" timestamp="2018-01-03T19:27:50Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="26343774"/>
+        <nd ref="312714245"/>
+        <nd ref="312714246"/>
+        <nd ref="1492558260"/>
+        <nd ref="1726452192"/>
+        <nd ref="312714247"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="residential"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Genthof"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="28464087" visible="true" version="6" changeset="55137682" timestamp="2018-01-03T19:27:50Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="2640678549"/>
+        <nd ref="26343884"/>
+        <nd ref="5061727862"/>
+        <nd ref="312714406"/>
+        <tag k="highway" v="residential"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Academiestraat"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="28464181" visible="true" version="17" changeset="53769574" timestamp="2017-11-14T12:06:51Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="1942971323"/>
+        <nd ref="1726450635"/>
+        <nd ref="1594455564"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="residential"/>
+        <tag k="lit" v="yes"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Kuipersstraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="concrete"/>
+    </way>
+    <way id="28722768" visible="true" version="11" changeset="53643908" timestamp="2017-11-09T16:38:55Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="26363617"/>
+        <nd ref="1651566913"/>
+        <nd ref="26363793"/>
+        <tag k="bicycle" v="no"/>
+        <tag k="bus:lanes" v="||designated"/>
+        <tag k="highway" v="primary"/>
+        <tag k="lanes" v="3"/>
+        <tag k="lanes:bus" v="1"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Koning Albert I-laan"/>
+        <tag k="name:etymology:wikidata" v="Q12974"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="placement" v="right_of:1"/>
+        <tag k="ref" v="R30"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="29436273" visible="true" version="5" changeset="41351507" timestamp="2016-08-09T18:26:24Z" user="Midgard 🗺" uid="763799">
+        <nd ref="318261387"/>
+        <nd ref="117341359"/>
+        <tag k="bicycle" v="no"/>
+        <tag k="highway" v="service"/>
+        <tag k="oneway" v="yes"/>
+    </way>
+    <way id="34945169" visible="true" version="13" changeset="68315980" timestamp="2019-03-20T00:53:00Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="187067651"/>
+        <nd ref="2722116335"/>
+        <nd ref="5279380788"/>
+        <nd ref="767070493"/>
+        <nd ref="1495575142"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Katelijnestraat"/>
+        <tag k="oneway" v="no"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="48507974" visible="true" version="9" changeset="53643926" timestamp="2017-11-09T16:39:37Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="117341359"/>
+        <nd ref="1651566900"/>
+        <nd ref="408770059"/>
+        <nd ref="1651566899"/>
+        <nd ref="408770060"/>
+        <nd ref="1486927061"/>
+        <tag k="bicycle" v="no"/>
+        <tag k="bus:lanes" v="|designated"/>
+        <tag k="highway" v="secondary"/>
+        <tag k="lanes" v="2"/>
+        <tag k="lanes:bus" v="1"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Buiten Begijnevest"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="surface" v="asphalt"/>
+        <tag k="transit:lanes" v="new_on_right:2|continue"/>
+    </way>
+    <way id="48507975" visible="true" version="11" changeset="63390644" timestamp="2018-10-10T18:40:46Z" user="Midgard 🗺" uid="763799">
+        <nd ref="324419243"/>
+        <nd ref="26363671"/>
+        <nd ref="1651566917"/>
+        <nd ref="1172772387"/>
+        <nd ref="2509841555"/>
+        <nd ref="26363617"/>
+        <tag k="access" v="no"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="foot" v="use_sidepath"/>
+        <tag k="highway" v="service"/>
+        <tag k="name" v="Koning Albert I-laan"/>
+        <tag k="name:etymology:wikidata" v="Q12974"/>
+        <tag k="oneway" v="yes"/>
+    </way>
+    <way id="48507978" visible="true" version="10" changeset="63447656" timestamp="2018-10-12T09:16:55Z" user="mueschel" uid="616774">
+        <nd ref="17407762"/>
+        <nd ref="5951310592"/>
+        <nd ref="17407584"/>
+        <tag k="highway" v="secondary"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="'t Zand"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="surface" v="concrete"/>
+        <tag k="wikidata" v="Q4786767"/>
+        <tag k="wikipedia" v="nl:'t Zand (Brugge)"/>
+    </way>
+    <way id="58761742" visible="true" version="10" changeset="55137682" timestamp="2018-01-03T19:27:59Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="312714475"/>
+        <nd ref="1492549250"/>
+        <nd ref="312714406"/>
+        <tag k="highway" v="residential"/>
+        <tag k="lit" v="yes"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Academiestraat"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="58763155" visible="true" version="7" changeset="55137682" timestamp="2018-01-03T19:28:00Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="312714247"/>
+        <nd ref="312714374"/>
+        <nd ref="1726452185"/>
+        <nd ref="312714249"/>
+        <nd ref="1164730109"/>
+        <tag k="highway" v="residential"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Genthof"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="61412723" visible="true" version="15" changeset="60107456" timestamp="2018-06-23T19:24:22Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="17422577"/>
+        <nd ref="894038791"/>
+        <nd ref="5714054220"/>
+        <nd ref="1103393322"/>
+        <tag k="bicycle" v="yes"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="maxspeed:type" v="sign"/>
+        <tag k="name" v="Katelijnestraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="surface" v="sett"/>
+        <tag k="wikidata" v="Q2152814"/>
+        <tag k="wikipedia" v="nl:Mariastraat (Brugge)"/>
+    </way>
+    <way id="61412724" visible="true" version="10" changeset="55137682" timestamp="2018-01-03T19:28:01Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="766772547"/>
+        <nd ref="766772545"/>
+        <tag k="bicycle" v="yes"/>
+        <tag k="bridge" v="yes"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="layer" v="1"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="maxspeed:type" v="sign"/>
+        <tag k="name" v="Mariabrug"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="61413989" visible="true" version="5" changeset="53260495" timestamp="2017-10-26T11:17:11Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="312711610"/>
+        <nd ref="2350591603"/>
+        <tag k="bridge" v="yes"/>
+        <tag k="highway" v="residential"/>
+        <tag k="layer" v="1"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Gouden Handbrug"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="61413990" visible="true" version="12" changeset="68315737" timestamp="2019-03-20T00:31:32Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="26343780"/>
+        <nd ref="26343772"/>
+        <nd ref="1014589647"/>
+        <nd ref="1789677056"/>
+        <nd ref="26343771"/>
+        <nd ref="26343770"/>
+        <nd ref="26343769"/>
+        <nd ref="298086980"/>
+        <nd ref="26343768"/>
+        <nd ref="26343767"/>
+        <nd ref="26363772"/>
+        <nd ref="6348562150"/>
+        <nd ref="26363672"/>
+        <nd ref="26363815"/>
+        <nd ref="310384207"/>
+        <nd ref="312709482"/>
+        <nd ref="1517538694"/>
+        <nd ref="26363657"/>
+        <nd ref="2463184369"/>
+        <nd ref="26363602"/>
+        <nd ref="1014589663"/>
+        <nd ref="271930120"/>
+        <tag k="highway" v="residential"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Langerei"/>
+        <tag k="oneway" v="no"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="65415619" visible="true" version="7" changeset="53643954" timestamp="2017-11-09T16:40:43Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="798842160"/>
+        <nd ref="1310976014"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="highway" v="primary"/>
+        <tag k="lanes" v="1"/>
+        <tag k="name" v="Bargeweg"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="placement" v="transition"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="73226408" visible="true" version="11" changeset="66949348" timestamp="2019-02-06T01:06:52Z" user="Midgard 🗺" uid="763799">
+        <nd ref="251009760"/>
+        <nd ref="1789717061"/>
+        <nd ref="5226676938"/>
+        <nd ref="26343974"/>
+        <nd ref="6260921589"/>
+        <tag k="cycleway:right" v="lane"/>
+        <tag k="cycleway:right:width" v="1.45"/>
+        <tag k="highway" v="secondary"/>
+        <tag k="lanes" v="2"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Walweinstraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="surface" v="asphalt"/>
+        <tag k="turn:lanes" v="merge_to_right|none"/>
+    </way>
+    <way id="78306274" visible="true" version="14" changeset="68370870" timestamp="2019-03-21T12:08:46Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="6348496391"/>
+        <nd ref="2818569049"/>
+        <nd ref="3960239883"/>
+        <nd ref="3960239884"/>
+        <nd ref="2818569051"/>
+        <tag k="bus" v="yes"/>
+        <tag k="highway" v="service"/>
+        <tag k="name" v="K&amp;R Station"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="service" v="parking_aisle"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="surface" v="sett"/>
+        <tag k="vehicle" v="no"/>
+    </way>
+    <way id="78313803" visible="true" version="7" changeset="53643908" timestamp="2017-11-09T16:38:55Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="26363793"/>
+        <nd ref="26363816"/>
+        <nd ref="117331473"/>
+        <tag k="bicycle" v="no"/>
+        <tag k="bus:lanes" v="||designated"/>
+        <tag k="highway" v="primary"/>
+        <tag k="lanes" v="3"/>
+        <tag k="lanes:bus" v="1"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Koning Albert I-laan"/>
+        <tag k="name:etymology:wikidata" v="Q12974"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="placement" v="right_of:1"/>
+        <tag k="ref" v="R30"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="78313805" visible="true" version="17" changeset="68315737" timestamp="2019-03-20T00:31:32Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="17421307"/>
+        <nd ref="919478433"/>
+        <nd ref="1164685077"/>
+        <nd ref="6348562154"/>
+        <nd ref="2542468560"/>
+        <tag k="bicycle" v="yes"/>
+        <tag k="cycleway" v="no"/>
+        <tag k="highway" v="living_street"/>
+        <tag k="lit" v="yes"/>
+        <tag k="moped_a" v="yes"/>
+        <tag k="name" v="Markt"/>
+        <tag k="psv" v="yes"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="surface" v="sett"/>
+        <tag k="vehicle" v="destination"/>
+        <tag k="vehicle:conditional" v="yes @ (delivery AND (06:00-11:00,19:00-20:00))"/>
+    </way>
+    <way id="78313806" visible="true" version="8" changeset="53769574" timestamp="2017-11-14T12:06:59Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="312715176"/>
+        <nd ref="2509830659"/>
+        <nd ref="2509830660"/>
+        <nd ref="2509830661"/>
+        <nd ref="312714859"/>
+        <nd ref="312714475"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="is_in" v="Brugge,West-Vlaanderen,Belgium,Europe"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Vlamingstraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="source:maxspeed" v="sign"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="78393208" visible="true" version="19" changeset="68334662" timestamp="2019-03-20T12:49:40Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="262574012"/>
+        <nd ref="1396130099"/>
+        <nd ref="1865839125"/>
+        <nd ref="17421310"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="pedestrian"/>
+        <tag k="horse" v="destination"/>
+        <tag k="horse:conditional" v="yes @ permit_holder; yes @ destination"/>
+        <tag k="lit" v="yes"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="moped" v="destination"/>
+        <tag k="motor_vehicle" v="destination"/>
+        <tag k="name" v="Markt"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="oneway:psv" v="no"/>
+        <tag k="psv" v="yes"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="78393217" visible="true" version="13" changeset="63208104" timestamp="2018-10-04T19:48:01Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="315743372"/>
+        <nd ref="17407762"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="'t Zand"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="surface" v="sett"/>
+        <tag k="wikidata" v="Q4786767"/>
+        <tag k="wikipedia" v="nl:'t Zand (Brugge)"/>
+    </way>
+    <way id="78448136" visible="true" version="13" changeset="55129884" timestamp="2018-01-03T13:59:02Z" user="Glenn Plas" uid="497567">
+        <nd ref="32002195"/>
+        <nd ref="3773309778"/>
+        <nd ref="1495242342"/>
+        <nd ref="5318457077"/>
+        <nd ref="3773309776"/>
+        <nd ref="32002197"/>
+        <nd ref="1495241222"/>
+        <tag k="highway" v="secondary"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Havenstraat"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="78794903" visible="true" version="10" changeset="66949348" timestamp="2019-02-06T01:06:52Z" user="Midgard 🗺" uid="763799">
+        <nd ref="312716323"/>
+        <nd ref="26363596"/>
+        <nd ref="1164764103"/>
+        <tag k="cycleway:right" v="lane"/>
+        <tag k="highway" v="secondary"/>
+        <tag k="lanes" v="2"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Komvest"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="85716635" visible="true" version="9" changeset="55822841" timestamp="2018-01-28T08:04:37Z" user="JanFi" uid="672253">
+        <nd ref="26343876"/>
+        <nd ref="1588364183"/>
+        <nd ref="995023970"/>
+        <tag k="highway" v="residential"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Simon Stevinplein"/>
+        <tag k="name:etymology:wikidata" v="Q23696"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="sett"/>
+        <tag k="wikidata" v="Q2912074"/>
+        <tag k="wikipedia" v="nl:Simon Stevinplein (Brugge)"/>
+    </way>
+    <way id="100771851" visible="true" version="8" changeset="55137682" timestamp="2018-01-03T19:28:08Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="1163822360"/>
+        <nd ref="1492562712"/>
+        <nd ref="17422185"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="residential"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Wijnzakstraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="100771852" visible="true" version="9" changeset="53809220" timestamp="2017-11-15T16:47:23Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="1163822403"/>
+        <nd ref="1164730104"/>
+        <nd ref="1164716557"/>
+        <nd ref="26363611"/>
+        <nd ref="312714252"/>
+        <nd ref="26343778"/>
+        <nd ref="26343777"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="residential"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Spiegelrei"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="100771856" visible="true" version="6" changeset="55137682" timestamp="2018-01-03T19:28:09Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="1164730109"/>
+        <nd ref="1163822403"/>
+        <tag k="highway" v="residential"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Jan Van Eyckplein"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="100771858" visible="true" version="6" changeset="53770450" timestamp="2017-11-14T12:37:37Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="2640678549"/>
+        <nd ref="2640583405"/>
+        <tag k="highway" v="residential"/>
+        <tag k="lit" v="yes"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Jan Van Eyckplein"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="100774483" visible="true" version="7" changeset="66949348" timestamp="2019-02-06T01:06:53Z" user="Midgard 🗺" uid="763799">
+        <nd ref="1164764058"/>
+        <nd ref="1976835242"/>
+        <nd ref="271927352"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="name" v="Walweinstraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="source:maxspeed" v="BE:urban"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="100774487" visible="true" version="6" changeset="68315737" timestamp="2019-03-20T00:31:32Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="271927352"/>
+        <nd ref="6260943454"/>
+        <nd ref="1927166220"/>
+        <nd ref="6348562148"/>
+        <nd ref="271927353"/>
+        <tag k="highway" v="residential"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Walweinstraat"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="100774488" visible="true" version="7" changeset="66949348" timestamp="2019-02-06T01:06:53Z" user="Midgard 🗺" uid="763799">
+        <nd ref="271927352"/>
+        <nd ref="6260943455"/>
+        <nd ref="1976895746"/>
+        <nd ref="312716322"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Komvest"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="100774490" visible="true" version="7" changeset="66949348" timestamp="2019-02-06T01:06:53Z" user="Midgard 🗺" uid="763799">
+        <nd ref="1164764103"/>
+        <nd ref="1164764007"/>
+        <nd ref="6260943447"/>
+        <nd ref="2500094100"/>
+        <nd ref="1164763955"/>
+        <tag k="highway" v="secondary"/>
+        <tag k="name" v="Komvest"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="source:maxspeed" v="BE:urban"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="100954994" visible="true" version="9" changeset="52279406" timestamp="2017-09-22T15:15:21Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="32002202"/>
+        <nd ref="1109632187"/>
+        <nd ref="1789717068"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="highway" v="secondary"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Havenstraat"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="116232675" visible="true" version="6" changeset="53859681" timestamp="2017-11-16T23:12:30Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="1310976005"/>
+        <nd ref="1495573940"/>
+        <nd ref="262317626"/>
+        <nd ref="1495573953"/>
+        <nd ref="1495573957"/>
+        <nd ref="767094363"/>
+        <tag k="highway" v="primary"/>
+        <tag k="lanes" v="1"/>
+        <tag k="name" v="Bargeweg"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="116232679" visible="true" version="6" changeset="53643954" timestamp="2017-11-09T16:40:43Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="1310976014"/>
+        <nd ref="1166233827"/>
+        <nd ref="1310976005"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="bridge" v="yes"/>
+        <tag k="highway" v="primary"/>
+        <tag k="lanes" v="1"/>
+        <tag k="layer" v="1"/>
+        <tag k="name" v="Bargeweg"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="131193332" visible="true" version="13" changeset="53843952" timestamp="2017-11-16T15:22:59Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="1495575142"/>
+        <nd ref="2642550680"/>
+        <nd ref="4318836180"/>
+        <nd ref="1444397160"/>
+        <nd ref="1601407214"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="int_name" v="Bargeweg"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Bargeweg"/>
+        <tag k="oneway" v="no"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="145395609" visible="true" version="7" changeset="63049473" timestamp="2018-09-29T21:53:46Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="17421926"/>
+        <nd ref="1588161106"/>
+        <nd ref="315741501"/>
+        <nd ref="315741632"/>
+        <nd ref="3056350312"/>
+        <nd ref="17421081"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Geldmuntstraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="145395612" visible="true" version="21" changeset="68315737" timestamp="2019-03-20T00:31:33Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="17421081"/>
+        <nd ref="315742125"/>
+        <nd ref="1163648883"/>
+        <nd ref="33824884"/>
+        <nd ref="5221774413"/>
+        <nd ref="315742165"/>
+        <nd ref="315788683"/>
+        <nd ref="315742470"/>
+        <nd ref="6348562142"/>
+        <nd ref="469983442"/>
+        <nd ref="144296222"/>
+        <nd ref="5246802972"/>
+        <nd ref="1588370817"/>
+        <nd ref="1728433556"/>
+        <tag k="bicycle" v="yes"/>
+        <tag k="cycleway" v="no"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Noordzandstraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="smoothness" v="very_good"/>
+        <tag k="surface" v="sett"/>
+        <tag k="surface:material" v="marble"/>
+    </way>
+    <way id="145419675" visible="true" version="13" changeset="68315737" timestamp="2019-03-20T00:31:33Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="995023970"/>
+        <nd ref="1588364180"/>
+        <nd ref="1588364182"/>
+        <nd ref="1588364179"/>
+        <nd ref="3056363838"/>
+        <nd ref="6348562156"/>
+        <nd ref="315801320"/>
+        <nd ref="2463184340"/>
+        <nd ref="1588364181"/>
+        <nd ref="17421762"/>
+        <nd ref="17421761"/>
+        <nd ref="17421759"/>
+        <nd ref="469971172"/>
+        <nd ref="17421753"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="residential"/>
+        <tag k="lit" v="yes"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Oude Burg"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="surface" v="sett"/>
+        <tag k="wikidata" v="Q4526647"/>
+        <tag k="wikipedia" v="nl:Oude Burg"/>
+    </way>
+    <way id="146174860" visible="true" version="13" changeset="55137682" timestamp="2018-01-03T19:28:13Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="312715176"/>
+        <nd ref="1163648876"/>
+        <nd ref="1942971323"/>
+        <tag k="bus" v="opposite"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="residential"/>
+        <tag k="lit" v="yes"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Adriaan Willaertstraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="146921753" visible="true" version="9" changeset="53843952" timestamp="2017-11-16T15:18:29Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="1444397159"/>
+        <nd ref="3260590881"/>
+        <nd ref="1444397163"/>
+        <nd ref="2529642125"/>
+        <nd ref="1444397156"/>
+        <nd ref="4318836225"/>
+        <nd ref="1444397167"/>
+        <nd ref="3102755002"/>
+        <nd ref="1444397164"/>
+        <nd ref="1444397166"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="int_name" v="Bargeweg"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Bargeweg"/>
+        <tag k="oneway" v="no"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="146921759" visible="true" version="5" changeset="53843952" timestamp="2017-11-16T15:21:27Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="1601407214"/>
+        <nd ref="3260590883"/>
+        <nd ref="4318836230"/>
+        <nd ref="1444397159"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="bridge" v="yes"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="int_name" v="Bargeweg"/>
+        <tag k="layer" v="1"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Bargeweg"/>
+        <tag k="oneway" v="no"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="150523089" visible="true" version="11" changeset="66784911" timestamp="2019-01-30T21:54:21Z" user="Midgard 🗺" uid="763799">
+        <nd ref="408770061"/>
+        <nd ref="1485630114"/>
+        <nd ref="1388233293"/>
+        <nd ref="2507623892"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="highway" v="primary"/>
+        <tag k="lanes" v="2"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Buiten Begijnevest"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="ref" v="R30"/>
+        <tag k="surface" v="asphalt"/>
+        <tag k="transit:lanes" v="new_on_left|new_on_right"/>
+    </way>
+    <way id="152332518" visible="true" version="7" changeset="66784911" timestamp="2019-01-30T21:54:21Z" user="Midgard 🗺" uid="763799">
+        <nd ref="1486927061"/>
+        <nd ref="6248096786"/>
+        <nd ref="408769207"/>
+        <nd ref="2818569789"/>
+        <nd ref="408770061"/>
+        <tag k="bus:lanes" v="|||designated"/>
+        <tag k="highway" v="primary"/>
+        <tag k="lanes" v="4"/>
+        <tag k="lanes:bus" v="1"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Buiten Begijnevest"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="surface" v="asphalt"/>
+        <tag k="transit:lanes" v="leave|continue|continue|end"/>
+        <tag k="turn:lanes" v="left|none|none|none"/>
+    </way>
+    <way id="162866927" visible="true" version="13" changeset="63521701" timestamp="2018-10-14T22:41:30Z" user="Polyglot" uid="15188">
+        <nd ref="2542517032"/>
+        <nd ref="2541338069"/>
+        <tag k="access" v="no"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="foot" v="use_sidepath"/>
+        <tag k="highway" v="service"/>
+        <tag k="name" v="Vrijdagmarkt"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bus" v="no"/>
+        <tag k="wikidata" v="Q1906786"/>
+        <tag k="wikipedia" v="nl:Vrijdagmarkt (Brugge)"/>
+    </way>
+    <way id="177926429" visible="true" version="11" changeset="53881504" timestamp="2017-11-17T17:33:39Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="1495241222"/>
+        <nd ref="32002200"/>
+        <tag k="highway" v="secondary"/>
+        <tag k="lanes" v="2"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Havenstraat"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="177926430" visible="true" version="15" changeset="53881543" timestamp="2017-11-17T17:35:46Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="26343923"/>
+        <nd ref="1752810904"/>
+        <tag k="bridge" v="movable"/>
+        <tag k="bridge:movable" v="swing"/>
+        <tag k="bridge:name" v="Warandebrug"/>
+        <tag k="cycleway" v="track"/>
+        <tag k="cycleway:surface" v="paving_stones_high_grip"/>
+        <tag k="cycleway:width" v="1.15"/>
+        <tag k="highway" v="secondary"/>
+        <tag k="layer" v="1"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Warandebrug"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="177926434" visible="true" version="10" changeset="65888885" timestamp="2018-12-30T14:38:54Z" user="Midgard 🗺" uid="763799">
+        <nd ref="260547626"/>
+        <nd ref="2512238864"/>
+        <nd ref="927740185"/>
+        <nd ref="6172910462"/>
+        <nd ref="2512238871"/>
+        <nd ref="260547628"/>
+        <nd ref="2512238873"/>
+        <nd ref="5235154647"/>
+        <nd ref="2512224732"/>
+        <nd ref="32002195"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Lodewijk Coiseaukaai"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="180870499" visible="true" version="5" changeset="53643908" timestamp="2017-11-09T16:38:55Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="117331473"/>
+        <nd ref="318261276"/>
+        <nd ref="1171090970"/>
+        <nd ref="1651566907"/>
+        <nd ref="117331475"/>
+        <tag k="bicycle" v="no"/>
+        <tag k="highway" v="primary"/>
+        <tag k="junction" v="roundabout"/>
+        <tag k="lanes" v="1"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Unescorotonde"/>
+        <tag k="surface" v="asphalt"/>
+        <tag k="width" v="6"/>
+    </way>
+    <way id="180870505" visible="true" version="12" changeset="68315737" timestamp="2019-03-20T00:31:33Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="1594455564"/>
+        <nd ref="3103402429"/>
+        <nd ref="6348562144"/>
+        <nd ref="2542468563"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="residential"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Kuipersstraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="concrete"/>
+    </way>
+    <way id="180957319" visible="true" version="12" changeset="68334063" timestamp="2019-03-20T12:30:07Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="1444397166"/>
+        <nd ref="1444397155"/>
+        <nd ref="1444397158"/>
+        <nd ref="1444397157"/>
+        <nd ref="1444397162"/>
+        <nd ref="3260590875"/>
+        <nd ref="3260590865"/>
+        <nd ref="1444397161"/>
+        <nd ref="1070721179"/>
+        <nd ref="1485199315"/>
+        <nd ref="1070721192"/>
+        <nd ref="3260590851"/>
+        <nd ref="4996107954"/>
+        <nd ref="1070721185"/>
+        <nd ref="6349587523"/>
+        <nd ref="1444455219"/>
+        <nd ref="1444455218"/>
+        <nd ref="4318751069"/>
+        <nd ref="1444455215"/>
+        <nd ref="1495573938"/>
+        <nd ref="4318751334"/>
+        <nd ref="3260590841"/>
+        <nd ref="3778750367"/>
+        <nd ref="3260590839"/>
+        <nd ref="1495573952"/>
+        <nd ref="3102754997"/>
+        <nd ref="767094363"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="int_name" v="Bargeweg"/>
+        <tag k="lanes" v="2"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Bargeweg"/>
+        <tag k="oneway" v="no"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="183159044" visible="true" version="8" changeset="56899557" timestamp="2018-03-05T11:56:01Z" user="Patrick Bous" uid="223763">
+        <nd ref="1942971314"/>
+        <nd ref="5456564116"/>
+        <nd ref="1594455565"/>
+        <nd ref="1768003174"/>
+        <nd ref="1930837096"/>
+        <nd ref="17421926"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="residential"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Kuipersstraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="183159048" visible="true" version="5" changeset="53643908" timestamp="2017-11-09T16:38:56Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="117331475"/>
+        <nd ref="318261281"/>
+        <nd ref="1486927068"/>
+        <nd ref="117331476"/>
+        <tag k="bicycle" v="no"/>
+        <tag k="highway" v="primary"/>
+        <tag k="junction" v="roundabout"/>
+        <tag k="lanes" v="1"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Unescorotonde"/>
+        <tag k="surface" v="asphalt"/>
+        <tag k="width" v="6"/>
+    </way>
+    <way id="183330866" visible="true" version="6" changeset="68315737" timestamp="2019-03-20T00:31:33Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="1163822403"/>
+        <nd ref="6348562152"/>
+        <nd ref="2640678549"/>
+        <tag k="highway" v="residential"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Jan Van Eyckplein"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="185476758" visible="true" version="5" changeset="66949348" timestamp="2019-02-06T01:06:54Z" user="Midgard 🗺" uid="763799">
+        <nd ref="312716322"/>
+        <nd ref="6260943453"/>
+        <nd ref="251009760"/>
+        <tag k="cycleway:right" v="lane"/>
+        <tag k="highway" v="secondary"/>
+        <tag k="lanes" v="2"/>
+        <tag k="name" v="Komvest"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="source:maxspeed" v="BE:urban"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="185476761" visible="true" version="6" changeset="66949348" timestamp="2019-02-06T01:06:54Z" user="Midgard 🗺" uid="763799">
+        <nd ref="1164763955"/>
+        <nd ref="6260943446"/>
+        <nd ref="26343976"/>
+        <nd ref="1164764058"/>
+        <tag k="access:lanes" v="|no"/>
+        <tag k="bus:lanes" v="|yes"/>
+        <tag k="cycleway:right" v="lane"/>
+        <tag k="highway" v="secondary"/>
+        <tag k="lanes" v="2"/>
+        <tag k="name" v="Komvest"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="source:maxspeed" v="BE:urban"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="226199301" visible="true" version="4" changeset="53260495" timestamp="2017-10-26T11:17:11Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="2350591603"/>
+        <nd ref="26343780"/>
+        <tag k="highway" v="residential"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Langerei"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="230207304" visible="true" version="5" changeset="53881504" timestamp="2017-11-17T17:33:39Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="32002200"/>
+        <nd ref="1974950239"/>
+        <nd ref="32002202"/>
+        <tag k="highway" v="secondary"/>
+        <tag k="name" v="Havenstraat"/>
+        <tag k="source:maxspeed" v="BE:urban"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="230208508" visible="true" version="5" changeset="52279406" timestamp="2017-09-22T15:15:16Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="1789717068"/>
+        <nd ref="5074425607"/>
+        <nd ref="26343923"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="highway" v="secondary"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Havenstraat"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="243867043" visible="true" version="9" changeset="65888885" timestamp="2018-12-30T14:38:55Z" user="Midgard 🗺" uid="763799">
+        <nd ref="1495145927"/>
+        <nd ref="2542517038"/>
+        <nd ref="5235154648"/>
+        <nd ref="2542517039"/>
+        <nd ref="6172910460"/>
+        <nd ref="2512238887"/>
+        <nd ref="2512238868"/>
+        <nd ref="6172910461"/>
+        <nd ref="2512245091"/>
+        <nd ref="2519656106"/>
+        <nd ref="260547626"/>
+        <tag k="cycleway:right" v="lane"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Lodewijk Coiseaukaai"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="247202979" visible="true" version="8" changeset="63521701" timestamp="2018-10-14T22:41:30Z" user="Polyglot" uid="15188">
+        <nd ref="2541338057"/>
+        <nd ref="2517460441"/>
+        <tag k="access" v="no"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="foot" v="use_sidepath"/>
+        <tag k="highway" v="service"/>
+        <tag k="name" v="Koning Albert I-laan"/>
+        <tag k="name:etymology:wikidata" v="Q12974"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bus" v="no"/>
+    </way>
+    <way id="247202980" visible="true" version="11" changeset="68335834" timestamp="2019-03-20T13:24:43Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="6348562139"/>
+        <nd ref="5955337632"/>
+        <nd ref="324419243"/>
+        <tag k="access" v="no"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="foot" v="use_sidepath"/>
+        <tag k="highway" v="service"/>
+        <tag k="name" v="Koning Albert I-laan"/>
+        <tag k="name:etymology:wikidata" v="Q12974"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bus" v="no"/>
+    </way>
+    <way id="247202985" visible="true" version="9" changeset="63521701" timestamp="2018-10-14T22:41:30Z" user="Polyglot" uid="15188">
+        <nd ref="2541338069"/>
+        <nd ref="5955133855"/>
+        <nd ref="17407588"/>
+        <tag k="access" v="no"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="foot" v="use_sidepath"/>
+        <tag k="highway" v="service"/>
+        <tag k="name" v="Vrijdagmarkt"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bus" v="no"/>
+        <tag k="wikidata" v="Q1906786"/>
+        <tag k="wikipedia" v="nl:Vrijdagmarkt (Brugge)"/>
+    </way>
+    <way id="247344508" visible="true" version="5" changeset="53769574" timestamp="2017-11-14T12:07:08Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="2542468563"/>
+        <nd ref="1942971314"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="residential"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Kuipersstraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="concrete"/>
+    </way>
+    <way id="247344509" visible="true" version="9" changeset="68315737" timestamp="2019-03-20T00:31:33Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="2542468560"/>
+        <nd ref="1930843079"/>
+        <nd ref="262574012"/>
+        <tag k="bicycle" v="yes"/>
+        <tag k="cycleway" v="no"/>
+        <tag k="highway" v="living_street"/>
+        <tag k="lit" v="yes"/>
+        <tag k="moped_a" v="yes"/>
+        <tag k="name" v="Markt"/>
+        <tag k="oneway" v="no"/>
+        <tag k="psv" v="yes"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="surface" v="sett"/>
+        <tag k="vehicle" v="destination"/>
+        <tag k="vehicle:conditional" v="yes @ (delivery AND (06:00-11:00,19:00-20:00))"/>
+    </way>
+    <way id="248931859" visible="true" version="4" changeset="53643908" timestamp="2017-11-09T16:38:56Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="117331476"/>
+        <nd ref="318261387"/>
+        <tag k="bicycle" v="no"/>
+        <tag k="highway" v="primary"/>
+        <tag k="junction" v="roundabout"/>
+        <tag k="lanes" v="1"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Unescorotonde"/>
+        <tag k="surface" v="asphalt"/>
+        <tag k="width" v="6"/>
+    </way>
+    <way id="260506743" visible="true" version="7" changeset="55137682" timestamp="2018-01-03T19:28:25Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="26363667"/>
+        <nd ref="5228279188"/>
+        <nd ref="1594455567"/>
+        <nd ref="3556881315"/>
+        <nd ref="5228263987"/>
+        <nd ref="17421932"/>
+        <tag k="highway" v="residential"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Kraanplein"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="yes"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="277315446" visible="true" version="3" changeset="66784911" timestamp="2019-01-30T21:54:21Z" user="Midgard 🗺" uid="763799">
+        <nd ref="2818569051"/>
+        <nd ref="5225534982"/>
+        <nd ref="2818569776"/>
+        <nd ref="919436069"/>
+        <tag k="highway" v="service"/>
+        <tag k="service" v="driveway"/>
+    </way>
+    <way id="305627363" visible="true" version="4" changeset="53643954" timestamp="2017-11-09T16:40:45Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="263059975"/>
+        <nd ref="798842160"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="highway" v="primary"/>
+        <tag k="lanes" v="3"/>
+        <tag k="maxspeed" v="70"/>
+        <tag k="name" v="Buiten Begijnevest"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="placement" v="right_of:1"/>
+        <tag k="ref" v="R30"/>
+        <tag k="surface" v="asphalt"/>
+        <tag k="transit:lanes" v="continue|continue|leave"/>
+        <tag k="turn:lanes" v="none|none|slight_right"/>
+    </way>
+    <way id="305627364" visible="true" version="5" changeset="53788953" timestamp="2017-11-15T01:55:58Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="918248222"/>
+        <nd ref="2031821230"/>
+        <tag k="highway" v="primary"/>
+        <tag k="lanes" v="2"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Buiten Begijnevest"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="ref" v="R30"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="318154507" visible="true" version="5" changeset="60048740" timestamp="2018-06-21T16:04:59Z" user="Polyglot" uid="15188">
+        <nd ref="17421932"/>
+        <nd ref="312715277"/>
+        <nd ref="3245386102"/>
+        <tag k="access" v="yes"/>
+        <tag k="cycleway:left" v="lane"/>
+        <tag k="cycleway:left:width" v="1.3"/>
+        <tag k="cycleway:right" v="opposite"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="is_in" v="Brugge,West-Vlaanderen,Belgium,Europe"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Vlamingstraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="source:maxspeed" v="sign"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="318154508" visible="true" version="5" changeset="55137682" timestamp="2018-01-03T19:28:28Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="315793131"/>
+        <nd ref="2722116452"/>
+        <nd ref="17421932"/>
+        <tag k="access" v="yes"/>
+        <tag k="cycleway:left" v="shared_lane"/>
+        <tag k="cycleway:left:width" v="1.2"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="lit" v="yes"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Vlamingstraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="source:maxspeed" v="sign"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="326834164" visible="true" version="4" changeset="68315980" timestamp="2019-03-20T00:52:59Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="919436069"/>
+        <nd ref="6348575322"/>
+        <nd ref="754269219"/>
+        <nd ref="918248222"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="highway" v="primary"/>
+        <tag k="lanes" v="3"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Buiten Begijnevest"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="placement" v="right_of:1"/>
+        <tag k="ref" v="R30"/>
+        <tag k="surface" v="asphalt"/>
+        <tag k="transit:lanes" v="continue|continue|leave"/>
+        <tag k="turn:lanes" v="none|none|right"/>
+    </way>
+    <way id="326834166" visible="true" version="5" changeset="66784911" timestamp="2019-01-30T21:54:22Z" user="Midgard 🗺" uid="763799">
+        <nd ref="2507623892"/>
+        <nd ref="3335138005"/>
+        <nd ref="919436069"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="highway" v="primary"/>
+        <tag k="lanes" v="4"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Buiten Begijnevest"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="ref" v="R30"/>
+        <tag k="surface" v="asphalt"/>
+        <tag k="transit:lanes" v="leave|continue|continue|leave"/>
+        <tag k="turn:lanes" v="left|none|none|right"/>
+    </way>
+    <way id="326834168" visible="true" version="4" changeset="53643954" timestamp="2017-11-09T16:40:46Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="2031821230"/>
+        <nd ref="1388233266"/>
+        <nd ref="129585073"/>
+        <nd ref="1495582730"/>
+        <nd ref="129585074"/>
+        <nd ref="1495582767"/>
+        <nd ref="3339157106"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="highway" v="primary"/>
+        <tag k="lanes" v="2"/>
+        <tag k="maxspeed" v="70"/>
+        <tag k="name" v="Buiten Begijnevest"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="ref" v="R30"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="327188668" visible="true" version="3" changeset="53643954" timestamp="2017-11-09T16:40:46Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="3339157095"/>
+        <nd ref="263059975"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="highway" v="primary"/>
+        <tag k="lanes" v="2"/>
+        <tag k="maxspeed" v="70"/>
+        <tag k="name" v="Buiten Begijnevest"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="ref" v="R30"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="327188670" visible="true" version="3" changeset="53643954" timestamp="2017-11-09T16:40:46Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="3339157106"/>
+        <nd ref="1495582747"/>
+        <nd ref="1495582763"/>
+        <nd ref="3339157095"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="bridge" v="yes"/>
+        <tag k="highway" v="primary"/>
+        <tag k="lanes" v="2"/>
+        <tag k="layer" v="1"/>
+        <tag k="maxspeed" v="70"/>
+        <tag k="name" v="Buiten Begijnevest"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="ref" v="R30"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="481782082" visible="true" version="5" changeset="55137682" timestamp="2018-01-03T19:28:29Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="1103393322"/>
+        <nd ref="766772547"/>
+        <tag k="bicycle" v="yes"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="maxspeed:type" v="sign"/>
+        <tag k="name" v="Katelijnestraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="surface" v="sett"/>
+        <tag k="wikidata" v="Q2152814"/>
+        <tag k="wikipedia" v="nl:Mariastraat (Brugge)"/>
+    </way>
+    <way id="504318137" visible="true" version="12" changeset="63390644" timestamp="2018-10-10T18:40:47Z" user="Midgard 🗺" uid="763799">
+        <nd ref="2542517032"/>
+        <nd ref="144292488"/>
+        <tag k="access" v="no"/>
+        <tag k="access:psv" v="designated"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="foot" v="use_sidepath"/>
+        <tag k="highway" v="residential"/>
+        <tag k="name" v="Vrijdagmarkt"/>
+        <tag k="oneway:bus" v="no"/>
+        <tag k="oneway:psv" v="no"/>
+        <tag k="wikidata" v="Q1906786"/>
+        <tag k="wikipedia" v="nl:Vrijdagmarkt (Brugge)"/>
+    </way>
+    <way id="510520444" visible="true" version="4" changeset="65888885" timestamp="2018-12-30T14:38:55Z" user="Midgard 🗺" uid="763799">
+        <nd ref="260547626"/>
+        <nd ref="2512238892"/>
+        <tag k="bicycle:backward" v="use_sidepath"/>
+        <tag k="cycleway:right" v="lane"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Lodewijk Coiseaukaai"/>
+        <tag k="source:maxspeed" v="BE:urban"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="540421041" visible="true" version="1" changeset="53772186" timestamp="2017-11-14T13:46:07Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="17422185"/>
+        <nd ref="1398777245"/>
+        <nd ref="2477670978"/>
+        <nd ref="26364278"/>
+        <nd ref="17422183"/>
+        <nd ref="26363667"/>
+        <tag k="highway" v="residential"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Sint-Jansstraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="yes"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="540451348" visible="true" version="1" changeset="53777087" timestamp="2017-11-14T17:01:20Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="26343777"/>
+        <nd ref="26343776"/>
+        <nd ref="26343775"/>
+        <nd ref="26343774"/>
+        <tag k="cycleway" v="opposite"/>
+        <tag k="highway" v="residential"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Spiegelrei"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="source:maxspeed" v="BE:zone30"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="592381541" visible="true" version="1" changeset="59431394" timestamp="2018-05-31T14:07:42Z" user="Peilscheibe" uid="35560">
+        <nd ref="2508337924"/>
+        <nd ref="17422567"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="maxspeed:type" v="sign"/>
+        <tag k="name" v="Guido Gezelleplein"/>
+        <tag k="name:etymology:wikidata" v="Q336977"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="surface" v="sett"/>
+        <tag k="wikidata" v="Q2684442"/>
+        <tag k="wikipedia" v="nl:Guido Gezelleplein"/>
+    </way>
+    <way id="600389141" visible="true" version="1" changeset="60048740" timestamp="2018-06-21T16:04:59Z" user="Polyglot" uid="15188">
+        <nd ref="3245386102"/>
+        <nd ref="312715176"/>
+        <tag k="access" v="yes"/>
+        <tag k="cycleway:left" v="lane"/>
+        <tag k="cycleway:left:width" v="1.3"/>
+        <tag k="cycleway:right" v="opposite"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="is_in" v="Brugge,West-Vlaanderen,Belgium,Europe"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="Vlamingstraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="source:maxspeed" v="sign"/>
+        <tag k="surface" v="sett"/>
+    </way>
+    <way id="630756168" visible="true" version="1" changeset="63208104" timestamp="2018-10-04T19:48:00Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="1728433556"/>
+        <nd ref="3035591273"/>
+        <nd ref="1708356149"/>
+        <nd ref="315743372"/>
+        <tag k="bicycle" v="yes"/>
+        <tag k="cycleway" v="no"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="maxspeed" v="30"/>
+        <tag k="name" v="'t Zand"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bicycle" v="no"/>
+        <tag k="smoothness" v="very_good"/>
+        <tag k="surface" v="sett"/>
+        <tag k="surface:material" v="marble"/>
+    </way>
+    <way id="631358373" visible="true" version="5" changeset="68335501" timestamp="2019-03-20T13:16:00Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="144292488"/>
+        <nd ref="5955133851"/>
+        <nd ref="5959691743"/>
+        <nd ref="6154175047"/>
+        <nd ref="5955133852"/>
+        <nd ref="5955133853"/>
+        <nd ref="5955150370"/>
+        <nd ref="6154175046"/>
+        <nd ref="5961021272"/>
+        <nd ref="17407584"/>
+        <tag k="access" v="yes"/>
+        <tag k="bus" v="yes"/>
+        <tag k="emergency" v="yes"/>
+        <tag k="highway" v="residential"/>
+        <tag k="name" v="Vrijdagmarkt"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bus" v="no"/>
+        <tag k="oneway:emergency" v="no"/>
+        <tag k="oneway:psv" v="no"/>
+        <tag k="oneway:taxi" v="no"/>
+        <tag k="wikidata" v="Q1906786"/>
+        <tag k="wikipedia" v="nl:Vrijdagmarkt (Brugge)"/>
+    </way>
+    <way id="668577054" visible="true" version="1" changeset="66949348" timestamp="2019-02-06T01:06:49Z" user="Midgard 🗺" uid="763799">
+        <nd ref="6260921589"/>
+        <nd ref="26343973"/>
+        <tag k="cycleway:right" v="lane"/>
+        <tag k="cycleway:right:width" v="1.45"/>
+        <tag k="highway" v="secondary"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Walweinstraat"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="678031239" visible="true" version="2" changeset="68370870" timestamp="2019-03-21T12:08:46Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="2818569051"/>
+        <nd ref="1889404439"/>
+        <nd ref="6352117140"/>
+        <nd ref="6352117144"/>
+        <nd ref="6352117141"/>
+        <nd ref="6352117142"/>
+        <nd ref="6352117139"/>
+        <nd ref="6352117138"/>
+        <nd ref="6352117143"/>
+        <nd ref="6352117145"/>
+        <nd ref="6348496391"/>
+        <tag k="bus" v="yes"/>
+        <tag k="highway" v="service"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="service" v="parking_aisle"/>
+        <tag k="sett:pattern" v="arc"/>
+        <tag k="surface" v="sett"/>
+        <tag k="vehicle" v="no"/>
+    </way>
+    <way id="678031653" visible="true" version="1" changeset="68315980" timestamp="2019-03-20T00:52:59Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="1495145927"/>
+        <nd ref="32002195"/>
+        <tag k="highway" v="secondary"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Krommestraat"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="678031654" visible="true" version="2" changeset="68335501" timestamp="2019-03-20T13:16:00Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="6172910466"/>
+        <nd ref="6172910465"/>
+        <nd ref="6348562147"/>
+        <nd ref="6172910464"/>
+        <nd ref="6172910463"/>
+        <nd ref="3773309787"/>
+        <tag k="highway" v="service"/>
+        <tag k="service" v="parking_aisle"/>
+    </way>
+    <way id="678031705" visible="true" version="2" changeset="68335501" timestamp="2019-03-20T13:16:00Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="6172910466"/>
+        <nd ref="2651692940"/>
+        <nd ref="1024787472"/>
+        <nd ref="6172910468"/>
+        <nd ref="260547629"/>
+        <nd ref="3773309787"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Lodewijk Coiseaukaai"/>
+        <tag k="source:maxspeed" v="BE:urban"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="678151644" visible="true" version="1" changeset="68335501" timestamp="2019-03-20T13:16:00Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="3773309787"/>
+        <nd ref="3773309786"/>
+        <nd ref="1024787371"/>
+        <nd ref="3773309783"/>
+        <nd ref="1082834429"/>
+        <nd ref="2512238892"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="highway" v="tertiary"/>
+        <tag k="maxspeed" v="50"/>
+        <tag k="name" v="Lodewijk Coiseaukaai"/>
+        <tag k="source:maxspeed" v="BE:urban"/>
+        <tag k="surface" v="asphalt"/>
+    </way>
+    <way id="678153135" visible="true" version="1" changeset="68335834" timestamp="2019-03-20T13:24:42Z" user="Pieter Vander Vennet" uid="3818858">
+        <nd ref="2517460441"/>
+        <nd ref="6348562139"/>
+        <tag k="access" v="no"/>
+        <tag k="bicycle" v="use_sidepath"/>
+        <tag k="foot" v="use_sidepath"/>
+        <tag k="highway" v="service"/>
+        <tag k="name" v="Koning Albert I-laan"/>
+        <tag k="name:etymology:wikidata" v="Q12974"/>
+        <tag k="oneway" v="yes"/>
+        <tag k="oneway:bus" v="no"/>
+    </way>
+    <relation id="9413958" visible="true" version="9" changeset="68336307" timestamp="2019-03-20T13:37:08Z" user="Pieter Vander Vennet" uid="3818858">
+        <member type="node" ref="6348496391" role="stop"/>
+        <member type="node" ref="6348496392" role="platform"/>
+        <member type="node" ref="6349587523" role="stop"/>
+        <member type="node" ref="6348530258" role="platform"/>
+        <member type="node" ref="6348534685" role="stop"/>
+        <member type="node" ref="6348534686" role="platform"/>
+        <member type="node" ref="6348562156" role="stop"/>
+        <member type="node" ref="6348562157" role="platform"/>
+        <member type="node" ref="6348562154" role="stop"/>
+        <member type="node" ref="6348562155" role="platform"/>
+        <member type="node" ref="6348562147" role="stop"/>
+        <member type="node" ref="6348562146" role="platform"/>
+        <member type="node" ref="6348562144" role="stop"/>
+        <member type="node" ref="6348562145" role="platform"/>
+        <member type="node" ref="6348562142" role="stop"/>
+        <member type="node" ref="6348562143" role="platform"/>
+        <member type="node" ref="6348562139" role="stop"/>
+        <member type="node" ref="6348496391" role="stop"/>
+        <member type="node" ref="6348496392" role="platform"/>
+        <member type="node" ref="6348562140" role="platform"/>
+        <member type="way" ref="78306274" role=""/>
+        <member type="way" ref="277315446" role=""/>
+        <member type="way" ref="326834164" role=""/>
+        <member type="way" ref="305627364" role=""/>
+        <member type="way" ref="326834168" role=""/>
+        <member type="way" ref="327188670" role=""/>
+        <member type="way" ref="327188668" role=""/>
+        <member type="way" ref="305627363" role=""/>
+        <member type="way" ref="65415619" role=""/>
+        <member type="way" ref="116232679" role=""/>
+        <member type="way" ref="116232675" role=""/>
+        <member type="way" ref="180957319" role=""/>
+        <member type="way" ref="146921753" role=""/>
+        <member type="way" ref="146921759" role=""/>
+        <member type="way" ref="131193332" role=""/>
+        <member type="way" ref="34945169" role=""/>
+        <member type="way" ref="4329220" role=""/>
+        <member type="way" ref="61412723" role=""/>
+        <member type="way" ref="481782082" role=""/>
+        <member type="way" ref="61412724" role=""/>
+        <member type="way" ref="4329219" role=""/>
+        <member type="way" ref="592381541" role=""/>
+        <member type="way" ref="4329218" role=""/>
+        <member type="way" ref="85716635" role=""/>
+        <member type="way" ref="145419675" role=""/>
+        <member type="way" ref="3515535" role=""/>
+        <member type="way" ref="78393208" role=""/>
+        <member type="way" ref="247344509" role=""/>
+        <member type="way" ref="78313805" role=""/>
+        <member type="way" ref="4332492" role=""/>
+        <member type="way" ref="318154508" role=""/>
+        <member type="way" ref="318154507" role=""/>
+        <member type="way" ref="600389141" role=""/>
+        <member type="way" ref="78313806" role=""/>
+        <member type="way" ref="58761742" role=""/>
+        <member type="way" ref="28464087" role=""/>
+        <member type="way" ref="183330866" role=""/>
+        <member type="way" ref="100771852" role=""/>
+        <member type="way" ref="540451348" role=""/>
+        <member type="way" ref="4329127" role=""/>
+        <member type="way" ref="61413989" role=""/>
+        <member type="way" ref="226199301" role=""/>
+        <member type="way" ref="61413990" role=""/>
+        <member type="way" ref="28463353" role=""/>
+        <member type="way" ref="100774487" role=""/>
+        <member type="way" ref="100774488" role=""/>
+        <member type="way" ref="185476758" role=""/>
+        <member type="way" ref="73226408" role=""/>
+        <member type="way" ref="668577054" role=""/>
+        <member type="way" ref="4332456" role=""/>
+        <member type="way" ref="177926430" role=""/>
+        <member type="way" ref="230208508" role=""/>
+        <member type="way" ref="100954994" role=""/>
+        <member type="way" ref="230207304" role=""/>
+        <member type="way" ref="177926429" role=""/>
+        <member type="way" ref="78448136" role=""/>
+        <member type="way" ref="177926434" role=""/>
+        <member type="way" ref="510520444" role=""/>
+        <member type="way" ref="678151644" role=""/>
+        <member type="way" ref="678031705" role=""/>
+        <member type="way" ref="678031654" role=""/>
+        <member type="way" ref="678151644" role=""/>
+        <member type="way" ref="510520444" role=""/>
+        <member type="way" ref="243867043" role=""/>
+        <member type="way" ref="678031653" role=""/>
+        <member type="way" ref="78448136" role=""/>
+        <member type="way" ref="177926429" role=""/>
+        <member type="way" ref="230207304" role=""/>
+        <member type="way" ref="100954994" role=""/>
+        <member type="way" ref="230208508" role=""/>
+        <member type="way" ref="177926430" role=""/>
+        <member type="way" ref="4332456" role=""/>
+        <member type="way" ref="4332512" role=""/>
+        <member type="way" ref="78794903" role=""/>
+        <member type="way" ref="100774490" role=""/>
+        <member type="way" ref="185476761" role=""/>
+        <member type="way" ref="100774483" role=""/>
+        <member type="way" ref="100774487" role=""/>
+        <member type="way" ref="28463353" role=""/>
+        <member type="way" ref="61413990" role=""/>
+        <member type="way" ref="226199301" role=""/>
+        <member type="way" ref="61413989" role=""/>
+        <member type="way" ref="4329127" role=""/>
+        <member type="way" ref="28464053" role=""/>
+        <member type="way" ref="58763155" role=""/>
+        <member type="way" ref="100771856" role=""/>
+        <member type="way" ref="183330866" role=""/>
+        <member type="way" ref="100771858" role=""/>
+        <member type="way" ref="4332501" role=""/>
+        <member type="way" ref="100771851" role=""/>
+        <member type="way" ref="540421041" role=""/>
+        <member type="way" ref="260506743" role=""/>
+        <member type="way" ref="318154507" role=""/>
+        <member type="way" ref="600389141" role=""/>
+        <member type="way" ref="146174860" role=""/>
+        <member type="way" ref="28464181" role=""/>
+        <member type="way" ref="180870505" role=""/>
+        <member type="way" ref="247344508" role=""/>
+        <member type="way" ref="183159044" role=""/>
+        <member type="way" ref="145395609" role=""/>
+        <member type="way" ref="145395612" role=""/>
+        <member type="way" ref="630756168" role=""/>
+        <member type="way" ref="78393217" role=""/>
+        <member type="way" ref="48507978" role=""/>
+        <member type="way" ref="631358373" role=""/>
+        <member type="way" ref="504318137" role=""/>
+        <member type="way" ref="162866927" role=""/>
+        <member type="way" ref="247202985" role=""/>
+        <member type="way" ref="4332518" role=""/>
+        <member type="way" ref="247202979" role=""/>
+        <member type="way" ref="678153135" role=""/>
+        <member type="way" ref="247202980" role=""/>
+        <member type="way" ref="48507975" role=""/>
+        <member type="way" ref="28722768" role=""/>
+        <member type="way" ref="78313803" role=""/>
+        <member type="way" ref="180870499" role=""/>
+        <member type="way" ref="183159048" role=""/>
+        <member type="way" ref="248931859" role=""/>
+        <member type="way" ref="29436273" role=""/>
+        <member type="way" ref="48507974" role=""/>
+        <member type="way" ref="152332518" role=""/>
+        <member type="way" ref="150523089" role=""/>
+        <member type="way" ref="326834166" role=""/>
+        <member type="way" ref="277315446" role=""/>
+        <member type="way" ref="678031239" role=""/>
+        <tag k="bicycle" v="no"/>
+        <tag k="capacity" v="16"/>
+        <tag k="colour" v="#bc23b7"/>
+        <tag k="duration" v="00:55:00"/>
+        <tag k="fee" v="no"/>
+        <tag k="interval" v="00:20:00"/>
+        <tag k="name" v="Stad Brugge Centrumshuttle"/>
+        <tag k="network" v="local"/>
+        <tag k="opening_hours" v="Mo-Su 07:20-19:00"/>
+        <tag k="operator" v="Stad Brugge"/>
+        <tag k="public_transport:version" v="2"/>
+        <tag k="roundtrip" v="yes"/>
+        <tag k="route" v="bus"/>
+        <tag k="type" v="route"/>
+        <tag k="wheelchair" v="yes"/>
+    </relation>
+</osm>
