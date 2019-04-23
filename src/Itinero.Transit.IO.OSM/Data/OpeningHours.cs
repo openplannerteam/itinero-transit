@@ -92,6 +92,8 @@ namespace Itinero.Transit.Data
                     {
                         weekdayFlags[i] = true;
                     }
+
+                    weekdayFlags[end] = true;
                 }
                 else
                 {
