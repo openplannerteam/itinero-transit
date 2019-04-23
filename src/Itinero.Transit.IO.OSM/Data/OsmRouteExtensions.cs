@@ -10,7 +10,38 @@ namespace Itinero.Transit.Data
     /// </summary>
     public static class OsmRouteExtensions
     {
-        public static void AddOsmRoute(this TransitDb tdb, OsmRoute route, DateTime start, DateTime end)
+        public static void UseOsmRoute(this TransitDb tdb, Uri url, DateTime start, DateTime end)
+        {
+            var r = OsmRoute.LoadFromUrl(url);
+            foreach (var route in r)
+            {
+                Log.Information($"Adding route {route.Id} to the transitdb in frame {start} --> {end}");
+                tdb.UseOsmRoute(route, start, end);
+            }
+        }
+        
+        public static void UseOsmRoute(this TransitDb tdb, string filePath, DateTime start, DateTime end)
+        {
+            var r = OsmRoute.LoadFromFile(filePath);
+            foreach (var route in r)
+            {
+                Log.Information($"Adding route {route.Id} to the transitdb in frame {start} --> {end}");
+                tdb.UseOsmRoute(route, start, end);
+            }
+        }
+        
+        public static void UseOsmRoute(this TransitDb tdb, long id, DateTime start, DateTime end)
+        {
+            var r = OsmRoute.LoadFromOsm(id);
+            foreach (var route in r)
+            {
+                Log.Information($"Adding route {route.Id} to the transitdb in frame {start} --> {end}");
+                tdb.UseOsmRoute(route, start, end);
+            }
+        }
+
+
+        private static void UseOsmRoute(this TransitDb tdb, OsmRoute route, DateTime start, DateTime end)
         {
             if (route.StopPositions.Count == 0)
             {
