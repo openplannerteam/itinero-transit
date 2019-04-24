@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using Itinero.Transit.Data;
-using OsmSharp.IO.PBF;
 using Xunit;
 
 // ReSharper disable RedundantArgumentDefaultValue

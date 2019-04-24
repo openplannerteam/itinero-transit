@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Http;
 using System.Xml;
 using GeoAPI.Geometries;
-using Itinero.Transit.Logging;
 using OsmSharp;
 using OsmSharp.Complete;
 using OsmSharp.Streams;
@@ -50,14 +49,16 @@ namespace Itinero.Transit.Data
                 var el = member.Member;
                 if (member.Role.Equals("stop") && el is Node node)
                 {
+                    if (node.Latitude == null || node.Longitude == null)
+                    {
+                        throw new ArgumentNullException();
+                    }
+
                     var coor = new Coordinate((double) node.Latitude, (double) node.Longitude);
                     var nodeId = $"https://www.openstreetmap.org/node/{node.Id}";
                     StopPositions.Add((nodeId, coor, el.Tags));
                 }
             }
-
-
-          
         }
 
 

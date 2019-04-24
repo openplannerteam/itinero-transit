@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Algorithms.Search;
 using Itinero.Transit.Data.Walks;

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Itinero.Transit.Logging;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
@@ -99,7 +98,7 @@ namespace Itinero.Transit.Data
                     var tripGlobalId = $"https://openstreetmap.org/relation/{route.Id}/vehicle/{index}";
                     var tripIndex = wr.AddOrUpdateTrip(tripGlobalId);
                     allRuns.AddRange(
-                        CreateRun(route, tripGlobalId, tripIndex, index, stopIds, currentStart));
+                        CreateRun(route, tripIndex, index, stopIds, currentStart));
 
                     index = (index + 1) % modulo;
                     currentStart += route.Interval;
@@ -126,8 +125,7 @@ namespace Itinero.Transit.Data
         ///  For now, the vehicle is assumed to take the same amount of time between each stop
         ///  
         ///  </summary>
-        private static LinkedList<(uint, IConnection)> CreateRun(this OsmRoute route,
-            string tripGlobalId, uint internalTripId, uint vehicleId, List<LocationId> locations,
+        private static LinkedList<(uint, IConnection)> CreateRun(this OsmRoute route, uint internalTripId, uint vehicleId, List<LocationId> locations,
             DateTime startMoment)
         {
             var conns = new LinkedList<(uint, IConnection)>();
@@ -140,7 +138,6 @@ namespace Itinero.Transit.Data
                 var l1 = locations[i + 1];
 
                 var depTime = startMoment.AddSeconds(travelTime * i);
-                var connectionId = $"{tripGlobalId}/{depTime:s}";
 
                 ushort mode = 0;
 

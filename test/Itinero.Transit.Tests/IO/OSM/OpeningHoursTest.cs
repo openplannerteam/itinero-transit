@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 using Itinero.Transit.Data;
 using Xunit;
 
@@ -10,16 +9,13 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
         [Fact]
         public void TestOh()
         {
-            var r24_7 = TwentyFourSeven.TryParse("24/7 closed");
-
-            var hours = HoursRule.TryParse("10:00-20:00");
+            var r247 = TwentyFourSeven.TryParse("24/7 closed");
+            Assert.Equal("closed", r247.StateAt(DateTime.Now, "x"));
 
             var weekday = DaysOfWeekRule.TryParse("mo-fr 09:00-12:00 13:00-17:00");
 
-            string state;
-            
             // Mo
-            state = weekday.StateAt(new DateTime(2019, 04, 22, 16, 00, 00), "closed");
+            var state = weekday.StateAt(new DateTime(2019, 04, 22, 16, 00, 00), "closed");
             Assert.Equal("open", state);
             
             state = weekday.StateAt(new DateTime(2019, 04, 22, 17, 01, 00), "closed");
