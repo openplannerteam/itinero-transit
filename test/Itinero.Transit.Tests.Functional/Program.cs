@@ -56,7 +56,7 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Performing the shuttlebus test");
 
             var tdb = new TransitDb();
-            tdb.UseOsmRoute(6413958, DateTime.Today, DateTime.Today.AddDays(1));
+            tdb.UseOsmRoute(9413958, DateTime.Today, DateTime.Today.AddDays(1));
         }
 
 

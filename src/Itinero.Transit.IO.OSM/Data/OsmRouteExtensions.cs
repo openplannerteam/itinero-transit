@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Itinero.Transit.Logging;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
@@ -15,27 +16,24 @@ namespace Itinero.Transit.Data
             var r = OsmRoute.LoadFromUrl(url);
             foreach (var route in r)
             {
-                Log.Information($"Adding route {route.Id} to the transitdb in frame {start} --> {end}");
                 tdb.UseOsmRoute(route, start, end);
             }
         }
-        
+
         public static void UseOsmRoute(this TransitDb tdb, string filePath, DateTime start, DateTime end)
         {
             var r = OsmRoute.LoadFromFile(filePath);
             foreach (var route in r)
             {
-                Log.Information($"Adding route {route.Id} to the transitdb in frame {start} --> {end}");
                 tdb.UseOsmRoute(route, start, end);
             }
         }
-        
+
         public static void UseOsmRoute(this TransitDb tdb, long id, DateTime start, DateTime end)
         {
             var r = OsmRoute.LoadFromOsm(id);
             foreach (var route in r)
             {
-                Log.Information($"Adding route {route.Id} to the transitdb in frame {start} --> {end}");
                 tdb.UseOsmRoute(route, start, end);
             }
         }
@@ -43,6 +41,8 @@ namespace Itinero.Transit.Data
 
         private static void UseOsmRoute(this TransitDb tdb, OsmRoute route, DateTime start, DateTime end)
         {
+            
+            Log.Information($"Adding route {route.Id} to the transitdb in frame {start} --> {end}");
             if (route.StopPositions.Count == 0)
             {
                 throw new ArgumentException("No stop positions in OSM route");
@@ -100,6 +100,8 @@ namespace Itinero.Transit.Data
                 index = (index + 1) % modulo;
                 currentStart += route.Interval;
             }
+            
+            wr.Close();
         }
 
 

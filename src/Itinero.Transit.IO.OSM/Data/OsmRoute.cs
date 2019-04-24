@@ -57,10 +57,7 @@ namespace Itinero.Transit.Data
             }
 
 
-            foreach (var t in ts)
-            {
-                Log.Information(t.Key + "=" + t.Value);
-            }
+          
         }
 
 
