@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Itinero.Transit.Logging;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
@@ -41,16 +42,11 @@ namespace Itinero.Transit.Data
 
         private static void UseOsmRoute(this TransitDb tdb, OsmRoute route, DateTime start, DateTime end)
         {
-            
             Log.Information($"Adding route {route.Id} to the transitdb in frame {start} --> {end}");
-            if (route.StopPositions.Count == 0)
-            {
-                throw new ArgumentException("No stop positions in OSM route");
-            }
 
-            if (route.StopPositions.Count == 1)
+            if (route.StopPositions.Count <= 1)
             {
-                throw new ArgumentException("Only one stop positions in OSM route");
+                throw new ArgumentException("No or only one stop positions in OSM route");
             }
 
             var wr = tdb.GetWriter();
@@ -68,61 +64,73 @@ namespace Itinero.Transit.Data
                 stopIds.Add(wr.AddOrUpdateStop(id, coordinate.X, coordinate.Y, attr));
             }
 
-            /*
-             * The idea is: we simulate the buses driving over this route
-             * We start simulating during 'opening-hours' and run the shuttles as needed.
-             * We create shuttles as needed (every 'interval' length).
-             * If round trip is specified, we reuse the shuttle indexes
-             */
-
-            var currentStart = start;
-            var index = 0;
-            var modulo = int.MaxValue;
-
-            if (route.RoundTrip)
+           
+            // TODO this might not scale
+            var allRuns = new List<(uint, IConnection)>();
+            
             {
-                modulo = (int) Math.Ceiling(route.Duration.TotalSeconds / route.Interval.TotalSeconds);
-                Log.Verbose($"There will be {modulo} vehicles");
-            }
+                
+                // Simulate the buses running.
+                // Every 'interval' time, we create a shuttle doing the entire route
+                // If the route roundtrips, then index numbers (and thus tripIDs) are recycled - allowing someone to drive 'over' the first stop
+                
+                // When a single trip is simulated, all the connections are collected
+                // They are sorted afterwards and added to the tdb
+                
+                var currentStart = start;
+                uint index = 0;
+                var modulo = uint.MaxValue;
 
-
-            while (currentStart <= end)
-            {
-                if (!route.OpeningTimes.StateAt(currentStart, "closed").Equals("open"))
+                if (route.RoundTrip)
                 {
-                    currentStart = route.OpeningTimes.NextChange(currentStart);
-                    continue;
+                    modulo = (uint) Math.Ceiling(route.Duration.TotalSeconds / route.Interval.TotalSeconds);
+                    Log.Verbose($"There will be {modulo} vehicles");
                 }
 
 
-                AddRun(wr, stopIds, route, index.ToString(), currentStart);
+                while (currentStart <= end)
+                {
+                    if (!route.OpeningTimes.StateAt(currentStart, "closed").Equals("open"))
+                    {
+                        currentStart = route.OpeningTimes.NextChange(currentStart);
+                        continue;
+                    }
 
-                index = (index + 1) % modulo;
-                currentStart += route.Interval;
+                    var tripGlobalId = $"https://openstreetmap.org/relation/{route.Id}/vehicle/{index}";
+                    var tripIndex = wr.AddOrUpdateTrip(tripGlobalId);
+                    allRuns.AddRange(
+                        CreateRun(route, tripGlobalId, tripIndex, index, stopIds, currentStart));
+
+                    index = (index + 1) % modulo;
+                    currentStart += route.Interval;
+                }
             }
-            
+
+
+            foreach (var (vehicle, connection) in allRuns.OrderBy(c => c.Item2.DepartureTime))
+            {
+                var connGlobalId = $"https://openstreetmap.org/relation/{route.Id}/vehicle/{vehicle}/" +
+                                   $"{(connection.DepartureTime - connection.DepartureDelay).FromUnixTime():s}";
+
+                wr.AddOrUpdateConnection(connGlobalId, connection);
+            }
+
+
             wr.Close();
         }
 
 
-        /// <summary>
-        /// Adds a single run, from the first stop in the relation till the last.
-        ///
-        /// For now, the vehicle is assumed to take the same amount of time between each stop
+        ///  <summary>
+        ///  Creates all connections of a single run
         /// 
-        /// </summary>
-        /// <param name="writer">Add the run to this transitdb</param>
-        /// <param name="route">The route with all the stops</param>
-        /// <param name="tripIndex">The index of the trip. If the route does do roundtrips, this tripIndex might be reused</param>
-        /// <param name="stopDurationSeconds">How long the vehicle waits at a stop</param>
-        private static void AddRun(this TransitDb.TransitDbWriter writer, List<LocationId> locations, OsmRoute route,
-            string tripIndex,
-            DateTime startMoment,
-            int stopDurationSeconds = 60)
+        ///  For now, the vehicle is assumed to take the same amount of time between each stop
+        ///  
+        ///  </summary>
+        private static LinkedList<(uint, IConnection)> CreateRun(this OsmRoute route,
+            string tripGlobalId, uint internalTripId, uint vehicleId, List<LocationId> locations,
+            DateTime startMoment)
         {
-            var tripGlobalId = $"https://openstreetmap.org/relation/{route.Id}/vehicle/{tripIndex}";
-            Log.Verbose($"Creating vehicle run {tripGlobalId} starting at {startMoment}");
-            var tripId = writer.AddOrUpdateTrip(tripGlobalId);
+            var conns = new LinkedList<(uint, IConnection)>();
 
             var travelTime = (ushort) (route.Duration.TotalSeconds / route.StopPositions.Count);
 
@@ -151,8 +159,11 @@ namespace Itinero.Transit.Data
                 }
 
 
-                writer.AddOrUpdateConnection(l0, l1, connectionId, depTime, travelTime, 0, 0, tripId, mode);
+                var con = new SimpleConnection(0, l0, l1, depTime.ToUnixTime(), travelTime, 0, 0, mode, internalTripId);
+                conns.AddLast((vehicleId, con));
             }
+
+            return conns;
         }
     }
 }

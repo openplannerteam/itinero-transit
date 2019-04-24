@@ -5,18 +5,6 @@ namespace Itinero.Transit.Data
     internal static class ConnectionsDbExtensions
     {
         /// <summary>
-        /// Gets a reader() which is loaded on the connection.
-        /// Use this for testing only, it is slow
-        /// </summary>
-        /// <returns></returns>
-        public static IConnection LoadConnection(this ConnectionsDb db, uint id)
-        {
-            var reader = db.GetReader();
-            reader.MoveTo(id);
-            return reader;
-        }
-
-        /// <summary>
         /// Moves the enumerator backwards in time until the specified time is reached
         /// </summary>
         /// <param name="enumerator">The enumerator.</param>

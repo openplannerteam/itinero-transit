@@ -150,7 +150,8 @@ namespace Itinero.Transit.Data
             /// <param name="latitude">The latitude.</param>
             /// <param name="attributes">The attributes.</param>
             /// <returns>The stop id.</returns>
-            public LocationId AddOrUpdateStop(string globalId, double longitude, double latitude, IEnumerable<Attribute> attributes = null)
+            public LocationId AddOrUpdateStop(string globalId, double longitude, double latitude,
+                IEnumerable<Attribute> attributes = null)
             {
                 var stopsDbReader = _stopsDb.GetReader();
                 if (stopsDbReader.MoveTo(globalId))
@@ -196,7 +197,14 @@ namespace Itinero.Transit.Data
                 LocationId stop2, string globalId, DateTime departureTime, ushort travelTime,
                 ushort departureDelay, ushort arrivalDelay, uint tripId, ushort mode)
             {
-                return _connectionsDb.AddOrUpdate(stop1, stop2, globalId, departureTime, travelTime, departureDelay, arrivalDelay, tripId, mode);
+                return _connectionsDb.AddOrUpdate(stop1, stop2, globalId, departureTime.ToUnixTime(), travelTime, departureDelay,
+                    arrivalDelay, tripId, mode);
+            }
+
+            public uint AddOrUpdateConnection(string globalId, IConnection c)
+            {
+                return _connectionsDb.AddOrUpdate(c.DepartureStop, c.ArrivalStop, globalId, c.DepartureTime, c.TravelTime,
+                    c.DepartureDelay, c.ArrivalDelay, c.TripId, c.Mode);
             }
 
             /// <summary>

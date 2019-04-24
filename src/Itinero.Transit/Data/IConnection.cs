@@ -86,4 +86,51 @@ namespace Itinero.Transit.Data
 
         public const ushort ModeCancelled = 4;
     }
+
+    public class SimpleConnection : IConnection
+    {
+        public SimpleConnection(
+            uint id, 
+            LocationId departureStop,
+            LocationId arrivalStop,
+            ulong departureTime, 
+            ushort travelTime, 
+            ushort arrivalDelay,
+            ushort departureDelay,
+            ushort mode,
+            uint tripId
+            )
+        {
+            Id = id;
+            DepartureTime = departureTime;
+            TravelTime = travelTime;
+            ArrivalDelay = arrivalDelay;
+            DepartureDelay = departureDelay;
+            Mode = mode;
+            TripId = tripId;
+            DepartureStop = departureStop;
+            ArrivalStop = arrivalStop;
+            ArrivalTime = departureTime + travelTime;
+        }
+
+        public uint Id { get; }
+
+        public ulong ArrivalTime { get; }
+
+        public ulong DepartureTime { get; }
+
+        public ushort TravelTime { get; }
+
+        public ushort ArrivalDelay { get; }
+
+        public ushort DepartureDelay { get; }
+
+        public ushort Mode { get; }
+
+        public uint TripId { get; }
+
+        public LocationId DepartureStop { get; }
+
+        public LocationId ArrivalStop { get; }
+    }
 }

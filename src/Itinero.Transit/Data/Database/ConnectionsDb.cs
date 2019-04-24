@@ -174,7 +174,7 @@ namespace Itinero.Transit.Data
         /// <param name="mode">The mode, indicates if getting on or off is supported</param>
         /// <returns>An internal id representing the connection in this transit db.</returns>
         internal uint AddOrUpdate(LocationId stop1,
-            LocationId stop2, string globalId, DateTime departureTime, ushort travelTime,
+            LocationId stop2, string globalId, ulong departureTime, ushort travelTime,
             ushort departureDelay, ushort arrivalDelay, uint tripId, ushort mode)
         {
             var reader = GetReader();
@@ -205,8 +205,8 @@ namespace Itinero.Transit.Data
                 SetTrip(internalId, tripId);
             }
 
-            var departureSeconds = (uint) departureTime.ToUnixTime();
-            var arrivalSeconds = (uint) (departureTime.ToUnixTime() + travelTime);
+            var departureSeconds = (uint) departureTime;
+            var arrivalSeconds = (uint) (departureTime + travelTime);
 
 
             if (currentDepartureTime == departureSeconds && currentArrivalTime == arrivalSeconds &&
@@ -281,7 +281,7 @@ namespace Itinero.Transit.Data
         /// <param name="mode">The trip mode</param>
         /// <returns>An internal id representing the connection in this transit db.</returns>
         private uint Add(LocationId stop1,
-            LocationId stop2, string globalId, DateTime departureTime, ushort travelTime,
+            LocationId stop2, string globalId, ulong departureTime, ushort travelTime,
             ushort departureDelay,
             ushort arrivalDelay, uint tripId, ushort mode)
         {
@@ -290,7 +290,7 @@ namespace Itinero.Transit.Data
             _nextInternalId++;
 
             // set this connection info int the data array.
-            var departureSeconds = (uint) departureTime.ToUnixTime();
+            var departureSeconds = (uint) departureTime;
             SetConnection(internalId, stop1, stop2, departureSeconds, travelTime, departureDelay, arrivalDelay, mode);
 
             // check if this connections is the 'earliest' or 'latest' date-wise.
