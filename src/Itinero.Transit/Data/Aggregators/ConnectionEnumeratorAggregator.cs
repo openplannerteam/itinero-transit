@@ -18,7 +18,7 @@ namespace Itinero.Transit.Data.Aggregators
                 throw new Exception("No enumerators found");
             }
 
-            if (enumerators.Count == 0)
+            if (enumerators.Count == 1)
             {
                 return enumerators[0];
             }

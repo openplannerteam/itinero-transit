@@ -125,6 +125,8 @@ namespace Itinero.Transit.Algorithms.CSA
             if (bestJourney.Time == Time.MaxValue)
             {
                 // Sadly, we didn't find a route within the required time
+                // This could be intentional, e.g. isochrone searching
+                ScanEndTime = lastDeparture;
                 return null;
             }
 
