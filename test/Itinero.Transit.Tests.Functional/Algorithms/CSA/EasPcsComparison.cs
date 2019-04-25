@@ -33,13 +33,13 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 
             var eas = new EarliestConnectionScan<TransferMetric>
             (new ScanSettings<TransferMetric>(
-                latest,
+                latest.Lst(),
                 departure, arrival, input.departureTime, input.arrivalTime, profile));
 
             var easJ = eas.CalculateJourney();
             var pcs = new ProfiledConnectionScan<TransferMetric>(
                 new ScanSettings<TransferMetric>(
-                    latest,
+                    latest.Lst(),
                     departure, arrival, input.departureTime, input.arrivalTime, profile));
 
             var pcsJs = pcs.CalculateJourneys();

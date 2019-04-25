@@ -31,7 +31,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var arrival = reader.Id;
 
             var settings = new ScanSettings<TransferMetric>(
-                latest,
+                latest.Lst(),
                 departure, arrival,
                 input.departureTime-TimeSpan.FromMinutes(1),
                 input.arrivalTime+TimeSpan.FromMinutes(1),
@@ -44,7 +44,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             Information(easJ.ToString(latest));
             
 
-            var las = new LatestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(latest,
+            var las = new LatestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(latest.Lst(),
                 departure, arrival, input.departureTime-TimeSpan.FromMinutes(1),
                 easJ.ArrivalTime().FromUnixTime(), profile));
 

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Algorithms.Search;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Journeys;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -15,384 +17,18 @@ namespace Itinero.Transit
     /// </summary>
     public static class TransitDbExtensions
     {
-        // -------------------------- EAS / LAS ----------------------
-
-
-        ///  <summary>
-        ///  Calculates the earliest arriving journey which depart at 'from' at the given departure time and arrives at 'to'.
-        /// 
-        ///  Performs an Earliest Arrival Scan
-        ///
-        /// </summary>
-        /// <param name="snapshot">The transit DB containing the PT-data</param>
-        /// <param name="profile">The travellers' preferences</param>
-        /// <param name="from">Where the traveller starts</param>
-        /// <param name="to">WHere the traveller wishes to go to</param>
-        /// <param name="departure">When the traveller would like to depart</param>
-        /// <param name="lastArrival">When the traveller would like to arrive</param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns>A journey which is guaranteed to arrive as early as possible (or null if none was found)</returns>
-        // ReSharper disable once UnusedMember.Global
-        public static Journey<T> CalculateEarliestArrival<T>
-        (this TransitDb.TransitDbSnapShot snapshot,
-            Profile<T> profile,
-            string from, string to,
-            DateTime departure, DateTime lastArrival)
+        public static WithProfile<T> SelectProfile<T>(this List<TransitDb.TransitDbSnapShot> tdb, Profile<T> profile)
             where T : IJourneyMetric<T>
         {
-            return snapshot.CalculateEarliestArrival(profile, from, to, departure, lastArrival, out var _);
+            return new WithProfile<T>(tdb, profile);
         }
 
-        ///  <summary>
-        ///  Calculates the earliest arriving journey which depart at 'from' at the given departure time and arrives at 'to'.
-        /// 
-        ///  Performs an Earliest Arrival Scan
-        ///
-        /// </summary>
-        /// <param name="snapshot">The transit DB containing the PT-data</param>
-        /// <param name="profile">The travellers' preferences</param>
-        /// <param name="from">Where the traveller starts</param>
-        /// <param name="to">WHere the traveller wishes to go to</param>
-        /// <param name="departure">When the traveller would like to depart</param>
-        /// <param name="lastArrival">When the traveller would like to arrive</param>
-        /// <param name="filter">Each EAS calculates an isochroneline. This isochroneline can be reused by PCS to optimize the runtime. This 'out'-param allows to get this filter</param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns>A journey which is guaranteed to arrive as early as possible (or null if none was found)</returns>
-        // ReSharper disable once UnusedMember.Global
-        public static Journey<T> CalculateEarliestArrival<T>
-        (this TransitDb.TransitDbSnapShot snapshot,
-            Profile<T> profile,
-            string from, string to,
-            DateTime departure, DateTime lastArrival,
-            out IConnectionFilter filter)
+        public static WithProfile<T> SelectProfile<T>(this TransitDb.TransitDbSnapShot tdb, Profile<T> profile)
             where T : IJourneyMetric<T>
         {
-            var reader = snapshot.StopsDb.GetReader();
-            var fromId = reader.FindStop(from, $"Departure location {from} was not found");
-            var toId = reader.FindStop(to, $"Departure location {to} was not found");
-            if (fromId.Equals(toId))
-            {
-                throw new ArgumentException($"The departure and arrival arguments are the same ({from})");
-            }
-
-            return snapshot.CalculateEarliestArrival(profile, fromId, toId, departure, lastArrival, out filter);
+            return SelectProfile(new List<TransitDb.TransitDbSnapShot> {tdb}, profile);
         }
 
-        ///  <summary>
-        ///  Calculates the earliest arriving journey which depart at 'from' at the given departure time and arrives at 'to'.
-        /// 
-        ///  Performs an Earliest Arrival Scan
-        ///
-        /// </summary>
-        /// <param name="snapshot">The transit DB containing the PT-data</param>
-        /// <param name="profile">The travellers' preferences</param>
-        /// <param name="fromId">Where the traveller starts</param>
-        /// <param name="toId">WHere the traveller wishes to go to</param>
-        /// <param name="departure">When the traveller would like to depart</param>
-        /// <param name="lastArrival">When the traveller would like to arrive</param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns>A journey which is guaranteed to arrive as early as possible (or null if none was found)</returns>
-        // ReSharper disable once UnusedMember.Global
-        public static Journey<T> CalculateEarliestArrival<T>
-        (this TransitDb.TransitDbSnapShot snapshot,
-            Profile<T> profile,
-            LocationId fromId, LocationId toId,
-            DateTime departure, DateTime lastArrival)
-            where T : IJourneyMetric<T>
-        {
-            return snapshot.CalculateEarliestArrival(profile, fromId, toId, departure, lastArrival, out _);
-        }
-
-        ///   <summary>
-        ///   Calculates the earliest arriving journey which depart at 'from' at the given departure time and arrives at 'to'.
-        ///  
-        ///   Performs an Earliest Arrival Scan
-        /// 
-        ///  </summary>
-        ///  <param name="snapshot">The transit DB containing the PT-data</param>
-        ///  <param name="profile">The travellers' preferences</param>
-        ///  <param name="fromId">Where the traveller starts</param>
-        ///  <param name="toId">WHere the traveller wishes to go to</param>
-        ///  <param name="departure">When the traveller would like to depart</param>
-        ///  <param name="lastArrival">When the traveller would like to arrive</param>
-        /// <param name="filter">Each EAS calculates an isochroneline. This isochroneline can be reused by PCS to optimize the runtime. This 'out'-param allows to get this filter</param>
-        /// <typeparam name="T"></typeparam>
-        ///  <returns>A journey which is guaranteed to arrive as early as possible (or null if none was found)</returns>
-        // ReSharper disable once UnusedMember.Global
-        public static Journey<T> CalculateEarliestArrival<T>
-        (this TransitDb.TransitDbSnapShot snapshot,
-            Profile<T> profile,
-            LocationId fromId, LocationId toId,
-            DateTime departure, DateTime lastArrival,
-            out IConnectionFilter filter)
-            where T : IJourneyMetric<T>
-        {
-            if (fromId.Equals(toId))
-            {
-                throw new ArgumentException($"The departure and arrival arguments are the same ({fromId})");
-            }
-
-            var settings = new ScanSettings<T>(
-                snapshot, departure, lastArrival, profile.MetricFactory,
-                profile.ProfileComparator, profile.InternalTransferGenerator, profile.WalksGenerator, fromId, toId
-            );
-
-            var eas = new EarliestConnectionScan<T>(settings);
-            var journey = eas.CalculateJourney();
-            filter = eas.AsFilter();
-            return journey;
-        }
-
-
-        ///   <summary>
-        ///   Calculates the earliest arriving journey which depart at 'from' at the given departure time and arrives at 'to'.
-        ///  
-        ///   Performs an Earliest Arrival Scan
-        /// 
-        ///  </summary>
-        ///  <param name="snapshot">The transit DB containing the PT-data</param>
-        ///  <param name="profile">The travellers' preferences</param>
-        ///  <param name="fromId">Where the traveller starts</param>
-        ///  <param name="toId">WHere the traveller wishes to go to</param>
-        /// <param name="filter">Out parameter containing the possible earliest arrival times, useful to speed up PCS</param>
-        /// <param name="departureTime">When the traveller would like to depart</param>$
-        ///         <param name="arrivalTime">The last moment that the traveller would like to arrive. This acts as an timeout in the case no routes can be found </param>
-        ///  <param name="stopCalculatingAt">An optional function which indicates how long the algo should keep scanning</param>
-        ///  <typeparam name="T"></typeparam>
-        ///  <returns>A journey which is guaranteed to arrive as early as possible (or null if none was found)</returns>
-        // ReSharper disable once UnusedMember.Global
-        public static Journey<T> CalculateEarliestArrival<T>
-        (this TransitDb.TransitDbSnapShot snapshot,
-            Profile<T> profile,
-            LocationId fromId, LocationId toId,
-            DateTime departureTime, DateTime arrivalTime,
-            out IConnectionFilter filter,
-            Func<DateTime, DateTime, DateTime> stopCalculatingAt
-        )
-            where T : IJourneyMetric<T>
-        {
-            if (fromId.Equals(toId))
-            {
-                throw new ArgumentException($"The departure and arrival arguments are the same ({fromId})");
-            }
-
-            var settings = new ScanSettings<T>(
-                snapshot, departureTime, arrivalTime, profile.MetricFactory,
-                profile.ProfileComparator, profile.InternalTransferGenerator, profile.WalksGenerator, fromId, toId
-            );
-
-            var eas = new EarliestConnectionScan<T>(settings);
-            var journey = eas.CalculateJourney((start, end) =>
-                stopCalculatingAt(start.FromUnixTime(), end.FromUnixTime()).ToUnixTime());
-            filter = eas.AsFilter();
-            return journey;
-        }
-
-
-        /// <summary>
-        /// Calculates all journeys which arrive at 'to' at last at the given arrival time.
-        ///
-        /// Performs a Latest Arrival Scan till as long as 'lastArrival' is not passed.
-        ///
-        /// </summary>
-        /// <returns></returns>
-        public static Journey<T> CalculateLatestDeparture<T>
-        (this TransitDb.TransitDbSnapShot snapshot,
-            Profile<T> profile, string from, string to, DateTime departure, DateTime lastArrival)
-            where T : IJourneyMetric<T>
-        {
-            var reader = snapshot.StopsDb.GetReader();
-            var fromId = reader.FindStop(from);
-            var toId = reader.FindStop(to);
-
-            if (fromId.Equals(toId))
-            {
-                throw new ArgumentException($"The departure and arrival arguments are the same ({from})");
-            }
-
-            var settings = new ScanSettings<T>(
-                snapshot, departure, lastArrival, profile.MetricFactory,
-                profile.ProfileComparator, profile.InternalTransferGenerator, profile.WalksGenerator, fromId, toId
-            );
-            var las = new LatestConnectionScan<T>(settings);
-            return las.CalculateJourney();
-        }
-
-        // -------------------------- ISOCHRONES ----------------------
-
-        ///  <summary>
-        ///  Calculates all journeys which depart at 'from' at the given departure time.
-        /// 
-        ///  Performs an Earliest Arrival Scan till as long as 'lastArrival' is not passed.
-        /// 
-        ///  the Journey will contain a 'Choice'-element
-        ///  
-        ///  </summary>
-        public static IReadOnlyDictionary<LocationId, Journey<T>> CalculateIsochrone<T>
-        (this TransitDb.TransitDbSnapShot snapshot,
-            Profile<T> profile,
-            string from, DateTime departure, DateTime lastArrival)
-            where T : IJourneyMetric<T>
-        {
-            var fromId = snapshot.FindStop(from, $"Departure location {from} was not found");
-
-            /*
-             * We construct an Earliest Connection Scan.
-             * A bit peculiar: there is _no_ arrival station specified.
-             * This will cause EAS to scan all connections until 'lastArrival' has been reached;
-             * to conclude that 'no journey to any of the specified arrival stations was found'.
-             *
-             * EAS.calculateJourneys will thus be null - but meanwhile every reachable station will be marked.
-             * And it is exactly that which we need!
-             */
-            var settings = new ScanSettings<T>(
-                snapshot, departure, lastArrival, profile.MetricFactory,
-                profile.ProfileComparator, profile.InternalTransferGenerator, profile.WalksGenerator,
-                new List<LocationId> {fromId},
-                new List<LocationId>() // EMPTY LIST
-            );
-            var eas = new EarliestConnectionScan<T>(settings);
-            eas.CalculateJourney();
-
-            return eas.Isochrone();
-        }
-
-        /// <summary>
-        /// Calculates all journeys which arrive at 'to' at last at the given arrival time.
-        ///
-        /// Performs a Latest Arrival Scan till as long as 'lastArrival' is not passed.
-        ///
-        /// </summary>
-        /// <returns></returns>
-        public static Dictionary<LocationId, Journey<T>> CalculateIsochroneLatestArrival<T>
-        (this TransitDb.TransitDbSnapShot snapshot,
-            Profile<T> profile, string to, DateTime departure, DateTime lastArrival)
-            where T : IJourneyMetric<T>
-        {
-            var reader = snapshot.StopsDb.GetReader();
-            if (!reader.MoveTo(to)) throw new ArgumentException($"Departure location {to} was not found");
-            var toId = reader.Id;
-
-
-            /*
-             * Same principle as the other IsochroneFunction
-             */
-            var settings = new ScanSettings<T>(
-                snapshot, departure, lastArrival, profile.MetricFactory,
-                profile.ProfileComparator, profile.InternalTransferGenerator, profile.WalksGenerator,
-                new List<LocationId>(), // EMPTY LIST
-                new List<LocationId> {toId}
-            );
-            var las = new LatestConnectionScan<T>(settings);
-            las.CalculateJourney();
-
-            var allJourneys = las.Isochrone();
-
-
-            var reversedJourneys = new Dictionary<LocationId, Journey<T>>();
-            foreach (var pair in allJourneys)
-            {
-                // Due to the nature of LAS, there can be no choices in the journeys; reversal will only return one value
-                var prototype = pair.Value.Reversed()[0];
-                reversedJourneys.Add(pair.Key, prototype);
-            }
-
-            return reversedJourneys;
-        }
-
-
-        // -------------------------- PROFILED ----------------------
-
-
-        /// <summary>
-        /// Calculates all journeys between departure and arrival stop, for the given departure and arrival time.
-        /// Some post processing might be needed, e.g. in the form of 'PruneInAlternatives'
-        /// </summary>
-        /// <param name="snapshot">The transit db snapshot.</param>
-        /// <param name="profile">The profile.</param>
-        /// <param name="departureStop">The departure stop.</param>
-        /// <param name="arrivalStop">The arrival stop.</param>
-        /// <param name="departure">The departure time.</param>
-        /// <param name="arrival">The arrival time.</param>
-        /// <param name="filter">Optionally, a filter which indicates which connections don't have to be scanned</param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static List<Journey<T>> CalculateJourneys<T>(this TransitDb.TransitDbSnapShot snapshot,
-            Profile<T> profile,
-            IStop departureStop, IStop arrivalStop,
-            DateTime departure,
-            DateTime arrival,
-            IConnectionFilter filter = null)
-            where T : IJourneyMetric<T>
-        {
-            return snapshot.CalculateJourneys(profile, departureStop.Id, arrivalStop.Id, departure, arrival, filter);
-        }
-
-        /// <summary>
-        /// Calculates all journeys between departure and arrival stop, for the given departure and arrival time.
-        /// Some post processing might be needed, e.g. in the form of 'PruneInAlternatives'
-        /// </summary>
-        /// <param name="snapshot">The transit db snapshot.</param>
-        /// <param name="profile">The profile.</param>
-        /// <param name="departureStop">The departure stop.</param>
-        /// <param name="arrivalStop">The arrival stop.</param>
-        /// <param name="departure">The departure time.</param>
-        /// <param name="arrival">The arrival time.</param>
-        /// <param name="filter">Optionally, a filter which indicates which connections don't have to be scanned</param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static List<Journey<T>> CalculateJourneys<T>(this TransitDb.TransitDbSnapShot snapshot,
-            Profile<T> profile,
-            string departureStop, string arrivalStop,
-            DateTime departure,
-            DateTime arrival,
-            IConnectionFilter filter = null)
-            where T : IJourneyMetric<T>
-        {
-            var stopsReader = snapshot.StopsDb.GetReader();
-            stopsReader.MoveTo(departureStop);
-            var departureId = stopsReader.Id;
-            stopsReader.MoveTo(arrivalStop);
-            var arrivalId = stopsReader.Id;
-            return snapshot.CalculateJourneys(profile, departureId, arrivalId, departure, arrival, filter);
-        }
-
-        /// <summary>
-        /// Calculates all journeys between departure and arrival stop, for the given departure and arrival time.
-        /// Some post processing might be needed, e.g. in the form of 'PruneInAlternatives'
-        /// </summary>
-        /// <param name="snapshot">The transit db snapshot.</param>
-        /// <param name="profile">The profile.</param>
-        /// <param name="departureStop">The departure stop.</param>
-        /// <param name="arrivalStop">The arrival stop.</param>
-        /// <param name="departure">The departure time.</param>
-        /// <param name="arrival">The arrival time.</param>
-        /// <param name="filter">Optionally, a filter which indicates which connections don't have to be scanned</param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static List<Journey<T>> CalculateJourneys<T>(this TransitDb.TransitDbSnapShot snapshot,
-            Profile<T> profile,
-            LocationId departureStop, LocationId arrivalStop,
-            DateTime departure,
-            DateTime arrival,
-            IConnectionFilter filter = null)
-            where T : IJourneyMetric<T>
-        {
-            var settings = new ScanSettings<T>(
-                snapshot,
-                departureStop, arrivalStop,
-                departure, arrival, profile
-            )
-            {
-                Filter = filter
-            };
-
-            var pcs = new ProfiledConnectionScan<T>(settings);
-            return pcs.CalculateJourneys();
-        }
-
-
-        // -------------------------- MISC ----------------------
         /// <summary>
         /// Finds the closest stop.
         /// </summary>
@@ -408,12 +44,43 @@ namespace Itinero.Transit
             return snapShot.StopsDb.GetReader().SearchClosest(longitude, latitude, maxDistanceInMeters);
         }
 
+        /// <summary>
+        /// Finds the closest stop.
+        /// </summary>
+        /// <param name="snapShot">The snapshot.</param>
+        /// <param name="longitude">The longitude.</param>
+        /// <param name="latitude">The latitude.</param>
+        /// <param name="maxDistanceInMeters">The maximum distance in meters.</param>
+        /// <returns>The closest stop.</returns>
+        public static IStop FindClosestStop(this IEnumerable<TransitDb.TransitDbSnapShot> snapShot, double longitude,
+            double latitude,
+            double maxDistanceInMeters = 1000)
+        {
+            return StopsReaderAggregator.CreateFrom(snapShot).SearchClosest(longitude, latitude, maxDistanceInMeters);
+        }
+
         public static LocationId FindStop(this TransitDb.TransitDbSnapShot snapshot, string locationId,
             string errMsg = null)
         {
             return snapshot.StopsDb.GetReader().FindStop(locationId, errMsg);
         }
 
+        public static LocationId FindStop(this IEnumerable<TransitDb.TransitDbSnapShot> snapshot, string locationId,
+            string errMsg = null)
+        {
+            return StopsReaderAggregator.CreateFrom(snapshot).FindStop(locationId, errMsg);
+        }
+
+        public static IEnumerable<LocationId> FindStops(this IEnumerable<TransitDb.TransitDbSnapShot> snapshot,
+            IEnumerable<string> locationIds,
+            Func<string, string> errMsg = null)
+        {
+            var reader = StopsReaderAggregator.CreateFrom(snapshot);
+            foreach (var id in locationIds)
+            {
+                yield return reader.FindStop(id, errMsg?.Invoke(id));
+            }
+        }
 
         /// <summary>
         /// When running PCS with CalculateJourneys, sometimes 'families' of journeys pop up.
@@ -487,6 +154,348 @@ namespace Itinero.Transit
 
 
             return result;
+        }
+    }
+
+    public class WithProfile<T> where T : IJourneyMetric<T>
+    {
+        private readonly IEnumerable<TransitDb.TransitDbSnapShot> _tdbs;
+        private readonly Profile<T> _profile;
+
+        internal WithProfile(IEnumerable<TransitDb.TransitDbSnapShot> tdbs, Profile<T> profile)
+        {
+            _tdbs = tdbs;
+            _profile = profile;
+        }
+
+        public WithLocation<T> SelectStops(IEnumerable<LocationId> from, IEnumerable<LocationId> to)
+        {
+            return new WithLocation<T>(_tdbs, _profile, from, to);
+        }
+
+        public WithLocation<T> SelectStops(IEnumerable<string> from, IEnumerable<string> to)
+        {
+            return SelectStops(
+                _tdbs.FindStops(from, f => $"Departure stop {f} was not found"),
+                _tdbs.FindStops(to, t => $"Arrival stop {t} was not found")
+            );
+        }
+
+        public WithLocation<T> SelectStops(IEnumerable<IStop> from, IEnumerable<IStop> to)
+        {
+            return SelectStops(
+                from.Select(f => f.Id),
+                to.Select(t => t.Id)
+            );
+        }
+
+        public WithLocation<T> SelectStops(LocationId from, LocationId to)
+        {
+            return SelectStops(new List<LocationId> {from}, new List<LocationId> {to});
+        }
+
+        public WithLocation<T> SelectStops(IStop from, IStop to)
+        {
+            return SelectStops(from.Id, to.Id);
+        }
+
+        public WithLocation<T> SelectStops(string from, string to)
+        {
+            return SelectStops(
+                _tdbs.FindStop(from, $"Departure stop {from} was not found"),
+                _tdbs.FindStop(to, $"Arrival stop {to} was not found")
+            );
+        }
+    }
+
+    public class WithLocation<T> where T : IJourneyMetric<T>
+    {
+        private readonly IEnumerable<TransitDb.TransitDbSnapShot> _tdbs;
+        private readonly Profile<T> _profile;
+
+        private readonly List<LocationId> _from;
+        private readonly List<LocationId> _to;
+
+
+        internal WithLocation(
+            IEnumerable<TransitDb.TransitDbSnapShot> tdbs,
+            Profile<T> profile,
+            IEnumerable<LocationId> from, IEnumerable<LocationId> to)
+        {
+            _from = from.ToList();
+            _to = to.ToList();
+            _profile = profile;
+            _tdbs = tdbs;
+        }
+
+
+        public WithTime<T> SelectTimeFrame(
+            DateTime start,
+            DateTime end)
+        {
+            return new WithTime<T>(_tdbs, _profile, _from, _to, start, end);
+        }
+    }
+
+    public class WithTime<T> where T : IJourneyMetric<T>
+    {
+        private readonly IEnumerable<TransitDb.TransitDbSnapShot> _tdbs;
+        private readonly Profile<T> _profile;
+        private readonly List<LocationId> _from;
+        private readonly List<LocationId> _to;
+
+        private DateTime _start;
+        private DateTime _end;
+
+        private IConnectionFilter _filter;
+
+        internal WithTime(IEnumerable<TransitDb.TransitDbSnapShot> tdbs,
+            Profile<T> profile,
+            List<LocationId> from,
+            List<LocationId> to,
+            DateTime start,
+            DateTime end)
+        {
+            _tdbs = tdbs;
+            _profile = profile;
+            _from = from;
+            _to = to;
+            _start = start;
+            _end = end;
+        }
+
+
+        ///  <summary>
+        ///  Calculates all journeys which depart at 'from' at the given departure time and arrive before the specified 'end'-time of the timeframe.
+        /// This ignores the given 'to'-location
+        ///  </summary>
+        public IReadOnlyDictionary<LocationId, Journey<T>> IsochroneFrom()
+        {
+            CheckHasFrom();
+            /*
+           * We construct an Earliest Connection Scan.
+           * A bit peculiar: there is _no_ arrival station specified.
+           * This will cause EAS to scan all connections until 'lastArrival' has been reached;
+           * to conclude that 'no journey to any of the specified arrival stations was found'.
+           *
+           * EAS.calculateJourneys will thus be null - but meanwhile every reachable station will be marked.
+           * And it is exactly that which we need!
+           */
+            var settings = new ScanSettings<T>(
+                _tdbs,
+                _start, _end,
+                _profile.MetricFactory,
+                _profile.ProfileComparator,
+                _profile.InternalTransferGenerator,
+                _profile.WalksGenerator,
+                _from,
+                new List<LocationId>() // EMPTY LIST
+            );
+            var eas = new EarliestConnectionScan<T>(settings);
+            eas.CalculateJourney();
+            UseFilter(eas.AsFilter());
+            return eas.Isochrone();
+        }
+
+
+        public IReadOnlyDictionary<LocationId, Journey<T>> IsochroneTo()
+        {
+            CheckHasTo();
+            /*
+             * Same principle as the other IsochroneFunction
+             */
+            var settings = new ScanSettings<T>(
+                _tdbs,
+                _start,
+                _end,
+                _profile.MetricFactory,
+                _profile.ProfileComparator,
+                _profile.InternalTransferGenerator,
+                _profile.WalksGenerator,
+                new List<LocationId>(), // EMPTY LIST
+                _to
+            );
+            var las = new LatestConnectionScan<T>(settings);
+            las.CalculateJourney();
+
+            var allJourneys = las.Isochrone();
+
+
+            var reversedJourneys = new Dictionary<LocationId, Journey<T>>();
+            foreach (var pair in allJourneys)
+            {
+                // Due to the nature of LAS, there can be no choices in the journeys; reversal will only return one value
+                var prototype = pair.Value.Reversed()[0];
+                reversedJourneys.Add(pair.Key, prototype);
+            }
+
+            return reversedJourneys;
+        }
+
+        ///  <summary>
+        ///  Calculates the journey which departs at 'from' and arrives at 'to' as early as possible.
+        ///  </summary>
+        ///  <param name="from">Where the traveller starts</param>
+        ///  <param name="to">WHere the traveller wishes to go to</param>
+        /// <param name="expandSearch">
+        /// EAS can be used to speed up PCS later on. However, PCS is often given a bigger timerange to search.
+        /// This function indicates a new timeframe-end to calculate PCS with later on.</param>
+        /// <returns>A journey which is guaranteed to arrive as early as possible (or null if none was found)</returns>
+        // ReSharper disable once UnusedMember.Global
+        public Journey<T> EarliestArrivalJourney(
+            Func<(DateTime journeyStart, DateTime journeyEnd), DateTime> expandSearch = null)
+        {
+            CheckAll();
+
+            var settings = new ScanSettings<T>(
+                _tdbs,
+                _start,
+                _end,
+                _profile.MetricFactory,
+                _profile.ProfileComparator,
+                _profile.InternalTransferGenerator,
+                _profile.WalksGenerator,
+                _from, _to
+            );
+
+            Func<ulong, ulong, ulong> expandSearchLong = null;
+
+            if (expandSearch != null)
+            {
+                expandSearchLong = (start, end) =>
+                    expandSearch((start.FromUnixTime(), end.FromUnixTime())).ToUnixTime();
+            }
+
+            var eas = new EarliestConnectionScan<T>(settings);
+            var journey = eas.CalculateJourney(expandSearchLong);
+            UseFilter(eas.AsFilter());
+            if (journey != null && expandSearch != null)
+            {
+                _end = expandSearch((journey.Root.Time.FromUnixTime(), journey.Time.FromUnixTime()));
+            }
+
+            return journey;
+        }
+
+
+        ///  <summary>
+        ///  Calculates the journey which arrives at 'to' and departs at 'from' as late as possible.
+        ///  </summary>
+        ///  <param name="from">Where the traveller starts</param>
+        ///  <param name="to">WHere the traveller wishes to go to</param>
+        /// <param name="expandSearch">
+        /// LAS can be used to speed up PCS later on. However, PCS is often given a bigger timerange to search.
+        /// This function indicates a new timeframe-start to calculate PCS with later on.
+        /// </param>
+        /// <returns>A journey which is guaranteed to arrive as early as possible (or null if none was found)</returns>
+        // ReSharper disable once UnusedMember.Global
+        public Journey<T> LatestDepartureJourney(
+            Func<(DateTime journeyStart, DateTime journeyEnd), DateTime> expandSearch = null)
+        {
+            CheckAll();
+            var settings = new ScanSettings<T>(
+                _tdbs,
+                _start,
+                _end,
+                _profile.MetricFactory,
+                _profile.ProfileComparator,
+                _profile.InternalTransferGenerator,
+                _profile.WalksGenerator,
+                _from, _to
+            );
+
+            Func<ulong, ulong, ulong> expandSearchLong = null;
+
+            if (expandSearch != null)
+            {
+                expandSearchLong = (start, end) =>
+                    expandSearch((start.FromUnixTime(), end.FromUnixTime())).ToUnixTime();
+            }
+
+            var las = new LatestConnectionScan<T>(settings);
+            var journey = las.CalculateJourney(expandSearchLong);
+            UseFilter(las.AsFilter());
+            if (journey != null && expandSearch != null)
+            {
+                _start = expandSearch((journey.Root.Time.FromUnixTime(), journey.Time.FromUnixTime()));
+            }
+
+            return journey;
+        }
+
+        /// <summary>
+        /// Calculates all journeys between departure and arrival stop during this timeframe.
+        ///
+        /// Note that this list might contain families of very similar journeys, e.g. journeys which differ only in the transfer station taken.
+        /// To prune them, use `PruneInAlternatives`
+        /// </summary>
+        public List<Journey<T>> AllJourneys()
+        {
+            CheckAll();
+            var settings = new ScanSettings<T>(
+                _tdbs,
+                _start,
+                _end,
+                _profile.MetricFactory,
+                _profile.ProfileComparator,
+                _profile.InternalTransferGenerator,
+                _profile.WalksGenerator,
+                _from, _to
+            )
+            {
+                Filter = _filter
+            };
+            var pcs = new ProfiledConnectionScan<T>(settings);
+            return pcs.CalculateJourneys();
+        }
+
+
+        /// <summary>
+        /// Use the given filter.
+        /// Note that some methods (Isochrone, EAS) might install a filter automatically too
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        private void UseFilter(IConnectionFilter filter)
+        {
+            _filter = filter;
+        }
+
+        private void CheckNoOverlap()
+        {
+            if (_from == null || _from.Count == 0 || _to == null || _to.Count == 0)
+            {
+                return;
+            }
+
+            var overlap = _from.FindAll(f => _to.Contains(f));
+            if (overlap.Any())
+            {
+                throw new Exception($"A departure stop is also used as arrival stop: {string.Join(", ", overlap)}");
+            }
+        }
+
+        private void CheckHasFrom()
+        {
+            if (_from == null || _from.Count == 0)
+            {
+                throw new Exception($"No departure stop(s) are given");
+            }
+        }
+
+        private void CheckHasTo()
+        {
+            if (_to == null || _to.Count == 0)
+            {
+                throw new Exception($"No arrival stop(s) are given");
+            }
+        }
+
+        private void CheckAll()
+        {
+            CheckHasFrom();
+            CheckHasTo();
+            CheckNoOverlap();
         }
     }
 }

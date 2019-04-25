@@ -24,11 +24,10 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
                 TransferMetric.Factory, TransferMetric.ProfileTransferCompare);
 
 
-            var journeys = latest.CalculateJourneys(
-                p,
-                input.departureStopId, input.arrivalStopId,
-                input.departureTime, input.arrivalTime
-                );
+            var journeys = latest.SelectProfile(p)
+                .SelectStops(input.departureStopId, input.arrivalStopId)
+                .SelectTimeFrame(input.departureTime, input.arrivalTime)
+                .AllJourneys();
             // verify result.
             NotNull(journeys);
             True(journeys.Any());

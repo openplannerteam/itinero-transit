@@ -11,6 +11,11 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 {
     public class EarliestConnectionScanTests
     {
+        private static List<T> Lst<T>(T t)
+        {
+            return new List<T> {t};
+        }
+
         [Fact]
         public void SimpleEasTest()
         {
@@ -25,7 +30,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
             var eas = new EarliestConnectionScan<TransferMetric>(
                 new ScanSettings<TransferMetric>(
-                    db,
+                    Lst(db),
                     stop0, stop1,
                     db.GetConn(0).DepartureTime.FromUnixTime(),
                     (db.GetConn(0).DepartureTime + 60 * 60 * 6).FromUnixTime(),
@@ -39,7 +44,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             Assert.Equal((uint) 0, j.Connection);
 
 
-            eas = new EarliestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(db,
+            eas = new EarliestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(Lst(db),
                 stop0, stop2, db.GetConn(0).DepartureTime.FromUnixTime(),
                 (db.GetConn(0).DepartureTime + 60 * 60 * 2).FromUnixTime(),
                 profile
@@ -81,7 +86,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
                 TransferMetric.ProfileTransferCompare);
-            var eas = new EarliestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(latest,
+            var eas = new EarliestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(Lst(latest),
                 stop0, stop3,
                 new DateTime(2018, 12, 04, 10, 00, 00),
                 new DateTime(2018, 12, 04, 11, 00, 00),
@@ -123,7 +128,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
                 TransferMetric.ProfileTransferCompare);
-            var eas = new EarliestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(latest,
+            var eas = new EarliestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(Lst(latest),
                 stop0, stop3,
                 new DateTime(2018, 12, 04, 10, 00, 00),
                 new DateTime(2018, 12, 04, 11, 00, 00),
@@ -159,7 +164,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 null,
                 TransferMetric.Factory,
                 TransferMetric.ProfileTransferCompare);
-            var eas = new EarliestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(latest,
+            var eas = new EarliestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(Lst(latest),
                 stop1, stop2, new DateTime(2018, 12, 04, 16, 00, 00),
                 new DateTime(2018, 12, 04, 19, 00, 00),
                 profile));
@@ -205,7 +210,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var latest = transitDb.Latest;
 
             var settings = new ScanSettings<TransferMetric>(
-                latest,
+                Lst(latest),
                 new DateTime(2018, 12, 04, 16, 00, 00),
                 new DateTime(2018, 12, 04, 19, 00, 00),
                 profile.MetricFactory, profile.ProfileComparator,
@@ -269,7 +274,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
 
             var settings = new ScanSettings<TransferMetric>(
-                latest,
+                Lst(latest),
                 startTime,
                 new DateTime(2018, 12, 04, 19, 00, 00),
                 profile.MetricFactory, profile.ProfileComparator,
@@ -324,7 +329,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 TransferMetric.Factory,
                 TransferMetric.ProfileTransferCompare);
             var eas = new EarliestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(
-                latest,
+                Lst(latest),
                 stop1, stop2,
                 new DateTime(2018, 12, 04, 16, 00, 00),
                 new DateTime(2018, 12, 04, 19, 00, 00),

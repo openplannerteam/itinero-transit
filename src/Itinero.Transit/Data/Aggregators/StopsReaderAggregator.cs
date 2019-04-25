@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data.Attributes;
 
@@ -8,8 +9,34 @@ namespace Itinero.Transit.Data.Aggregators
         private IStopsReader _currentStop;
 
         public List<IStopsReader> UnderlyingDatabases { get; }
+        
+        public static IStopsReader CreateFrom(IEnumerable<TransitDb.TransitDbSnapShot> snapShot)
+        {
+            var enumerators = new List<IStopsReader>(); 
 
-        public StopsReaderAggregator(List<IStopsReader> stops)
+            foreach (var dbSnapShot in snapShot)
+            {
+                enumerators.Add(dbSnapShot.StopsDb.GetReader());
+            }
+            
+            return CreateFrom(enumerators);
+        }
+        
+        public static IStopsReader CreateFrom(List<IStopsReader> enumerators)
+        {
+            if (enumerators.Count == 0)
+            {
+                throw new Exception("No enumerators found");
+            }
+
+            if (enumerators.Count == 0)
+            {
+                return enumerators[0];
+            }
+            return new StopsReaderAggregator(enumerators);
+        }
+        
+        private StopsReaderAggregator(List<IStopsReader> stops)
         {
             UnderlyingDatabases = stops;
         }
@@ -55,5 +82,7 @@ namespace Itinero.Transit.Data.Aggregators
         public IAttributeCollection Attributes => _currentStop.Attributes;
 
         public StopsDb StopsDb => _currentStop.StopsDb;
+
+       
     }
 }

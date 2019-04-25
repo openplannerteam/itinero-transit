@@ -16,4 +16,13 @@
     <ProjectReference Include="..\..\src\Itinero.Transit.IO.OSM\Itinero.Transit.IO.OSM.csproj" />
     <ProjectReference Include="..\..\src\Itinero.Transit\Itinero.Transit.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Data\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="Data\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Data\**" />
+  </ItemGroup>
 </Project>

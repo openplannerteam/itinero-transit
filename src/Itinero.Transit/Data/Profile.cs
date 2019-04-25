@@ -7,6 +7,8 @@ namespace Itinero.Transit.Data
     public class Profile<T>
         where T : IJourneyMetric<T>
     {
+        
+        
         public readonly T MetricFactory;
         public readonly ProfiledMetricComparator<T> ProfileComparator;
         

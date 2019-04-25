@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
@@ -25,7 +26,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
 
             var pcs = new ProfiledConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(
-                db,
+                new List<TransitDb.TransitDbSnapShot> {db},
                 stop0, stop3,
                 new DateTime(2018, 12, 04, 16, 00, 00),
                 new DateTime(2018, 12, 04, 18, 00, 00),
@@ -88,7 +89,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
             var pcs = new ProfiledConnectionScan<TransferMetric>
             (new ScanSettings<TransferMetric>(
-                latest,
+                new List<TransitDb.TransitDbSnapShot> {latest},
                 loc0, loc1,
                 new DateTime(2018, 12, 04, 16, 00, 00),
                 new DateTime(2018, 12, 04, 18, 00, 00),
@@ -125,7 +126,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 TransferMetric.Factory,
                 TransferMetric.ProfileTransferCompare);
             var pcs = new ProfiledConnectionScan<TransferMetric>(
-                new ScanSettings<TransferMetric>(latest,
+                new ScanSettings<TransferMetric>(new List<TransitDb.TransitDbSnapShot> {latest},
                     stop1, stop2,
                     new DateTime(2018, 12, 04, 16, 00, 00),
                     new DateTime(2018, 12, 04, 19, 00, 00),

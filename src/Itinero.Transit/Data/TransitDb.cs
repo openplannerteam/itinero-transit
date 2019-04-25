@@ -218,5 +218,8 @@ namespace Itinero.Transit.Data
                 _parent._writer = null;
             }
         }
+        
+        
+        
     }
 }

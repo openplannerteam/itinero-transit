@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Itinero.Transit.Tests.Functional.Performance;
 
 // ReSharper disable UnusedMember.Global
@@ -111,7 +112,7 @@ namespace Itinero.Transit.Tests.Functional
             
             throw new Exception($"Element {o} was not found");
         }
-
+        
         /// <summary>
         /// Write a log event with the Informational level.
         /// </summary>
@@ -120,6 +121,14 @@ namespace Itinero.Transit.Tests.Functional
         {
             if (!Log) return;
             Serilog.Log.Information(message);
+        }
+    }
+
+    public static class Helpers
+    {
+        public static List<T> Lst<T>(this T t)
+        {
+            return new List<T> {t};
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 
             
             var settings = new ScanSettings<TransferMetric>(
-                latest, depTime
+                latest.Lst(), depTime
                 , depTime.AddHours(24), p.MetricFactory, p.ProfileComparator,
                 p.InternalTransferGenerator, p.WalksGenerator,
                 departure, arrival
@@ -54,4 +54,5 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             return true;
         }
     }
+    
 }

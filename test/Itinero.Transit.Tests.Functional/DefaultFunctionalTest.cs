@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Tests.Functional
@@ -10,4 +11,5 @@ namespace Itinero.Transit.Tests.Functional
     {
         
     }
+
 }

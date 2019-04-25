@@ -28,8 +28,12 @@ namespace Sample.SNCB
 
             Console.WriteLine("Calculating journeys...");
 
-            var journeys = snapshot.CalculateJourneys(p, departureStop, arrivalStop,
-                DateTime.Now, DateTime.Now.Add(TimeSpan.FromHours(3)));
+            var journeys = snapshot
+                    .SelectProfile(new DefaultProfile())
+                .SelectStops(departureStop, arrivalStop)
+                .SelectTimeFrame(DateTime.Now, DateTime.Now.AddHours(3))
+                .AllJourneys();
+                
             if (journeys == null || journeys.Count == 0)
             {
                 Console.WriteLine("No journeys found.");

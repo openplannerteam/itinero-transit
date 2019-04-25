@@ -4,6 +4,7 @@ using System.IO;
 using Itinero.Transit.Data;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms;
+using Itinero.Transit.Tests.Functional.Algorithms.CSA;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
 using Itinero.Transit.Tests.Functional.Data;
 using Itinero.Transit.Tests.Functional.IO.LC;
@@ -27,12 +28,11 @@ namespace Itinero.Transit.Tests.Functional
         {
             EnableLogging();
 
-            //*
-            ShuttleTestDload();
-
-            /*/
             Log.Information("Starting the Functional Tests...");
 
+
+            new MultiTransitDbTest().Run(new object());
+            /*
             LocalTests();
             InternetTests();
             //      SlowTests();
@@ -40,22 +40,7 @@ namespace Itinero.Transit.Tests.Functional
         }
 
 
-        private static void ShuttleTest()
-        {
-            Log.Information("Performing the shuttlebus test");
 
-            var tdb = new TransitDb();
-            tdb.UseOsmRoute("CentrumShuttle-Brugge.xml", DateTime.Today, DateTime.Today.AddDays(1));
-        }
-
-        
-        private static void ShuttleTestDload()
-        {
-            Log.Information("Performing the shuttlebus test");
-
-            var tdb = new TransitDb();
-            tdb.UseOsmRoute(9413958, DateTime.Today, DateTime.Today.AddDays(1));
-        }
 
 
         private static void LocalTests()
@@ -68,11 +53,18 @@ namespace Itinero.Transit.Tests.Functional
             new NoDuplicationTest().Run();
             new ConnectionsDbDepartureEnumeratorTest().Run(db);
             new DelayTest().Run(true);
+            
+            
+            var tdb = new TransitDb();
+            tdb.UseOsmRoute("CentrumShuttle-Brugge.xml", DateTime.Today, DateTime.Today.AddDays(1));
         }
 
         public static void InternetTests()
         {
             new CachingTest().Run(true);
+            var tdb = new TransitDb();
+            tdb.UseOsmRoute(9413958, DateTime.Today, DateTime.Today.AddDays(1));
+
         }
 
         public static void SlowTests()

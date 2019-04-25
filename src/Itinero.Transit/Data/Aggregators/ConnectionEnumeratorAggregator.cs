@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Itinero.Transit.Data.Aggregators
 {
@@ -10,7 +11,21 @@ namespace Itinero.Transit.Data.Aggregators
         private IConnectionEnumerator _a, _b;
 
 
-        public ConnectionEnumeratorAggregator(List<IConnectionEnumerator> enumerators)
+        public static IConnectionEnumerator CreateFrom(List<IConnectionEnumerator> enumerators)
+        {
+            if (enumerators.Count == 0)
+            {
+                throw new Exception("No enumerators found");
+            }
+
+            if (enumerators.Count == 0)
+            {
+                return enumerators[0];
+            }
+            return new ConnectionEnumeratorAggregator(enumerators);
+        }
+
+        private ConnectionEnumeratorAggregator(List<IConnectionEnumerator> enumerators)
         {
             switch (enumerators.Count)
             {
@@ -30,16 +45,17 @@ namespace Itinero.Transit.Data.Aggregators
                 default:
                     var halfway = enumerators.Count / 2;
                     _a = new ConnectionEnumeratorAggregator(enumerators.GetRange(0, halfway));
-                    _b = new ConnectionEnumeratorAggregator(enumerators.GetRange(halfway, enumerators.Count-halfway));
+                    _b = new ConnectionEnumeratorAggregator(enumerators.GetRange(halfway, enumerators.Count - halfway));
                     break;
             }
         }
 
-        public ConnectionEnumeratorAggregator(IConnectionEnumerator a, IConnectionEnumerator b)
+        private ConnectionEnumeratorAggregator(IConnectionEnumerator a, IConnectionEnumerator b)
         {
             _a = a;
             _b = b;
         }
+
 
         private void MoveNextA(DateTime? dateTime = null)
         {
