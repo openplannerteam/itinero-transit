@@ -82,6 +82,11 @@ namespace Itinero.Transit
             }
         }
 
+        public static string ToString<T>(this TransitDb.TransitDbSnapShot tdb, Journey<T> journey) where T : IJourneyMetric<T>
+        {
+            return journey.ToString(tdb);
+        }
+
         /// <summary>
         /// When running PCS with CalculateJourneys, sometimes 'families' of journeys pop up.
         ///
@@ -167,6 +172,48 @@ namespace Itinero.Transit
             _tdbs = tdbs;
             _profile = profile;
         }
+        
+        
+        
+        public WithSingleLocation<T> SelectSingleStop(IEnumerable<LocationId> stop)
+        {
+            return new WithSingleLocation<T>( new WithLocation<T>(_tdbs, _profile, stop, stop));
+        }
+
+        public WithSingleLocation<T> SelectSingleStop(IEnumerable<string> stop)
+        {
+            return SelectSingleStop(
+                _tdbs.FindStops(stop, f => $"Stop {f} was not found")
+            );
+        }
+
+        public WithSingleLocation<T> SelectSingleStop(IEnumerable<IStop> stop)
+        {
+            return SelectSingleStop(
+                stop.Select(f => f.Id)
+            );
+        }
+
+        public WithSingleLocation<T> SelectSingleStop(LocationId stop)
+        {
+            return SelectSingleStop(new List<LocationId> {stop});
+        }
+
+        public WithSingleLocation<T> SelectSingleStop(IStop stop)
+        {
+            return SelectSingleStop(stop.Id);
+        }
+
+        public WithSingleLocation<T> SelectSingleStop(string stop)
+        {
+            return SelectSingleStop(
+                _tdbs.FindStop(stop, $"Stop {stop} was not found")
+            );
+        }
+        
+        
+        
+        
 
         public WithLocation<T> SelectStops(IEnumerable<LocationId> from, IEnumerable<LocationId> to)
         {
@@ -208,7 +255,25 @@ namespace Itinero.Transit
         }
     }
 
-    public class WithLocation<T> where T : IJourneyMetric<T>
+    public class WithSingleLocation<T> where T : IJourneyMetric<T>
+    {
+        private readonly WithLocation<T> _location;
+
+        public WithSingleLocation(WithLocation<T> location)
+        {
+            _location = location;
+        }
+
+        public IWithTimeSingleLocation<T> SelectTimeFrame(
+            DateTime start,
+            DateTime end)
+        {
+            return _location.SelectTimeFrame(start, end);
+        }
+    }
+
+    public class WithLocation<T>
+        where T : IJourneyMetric<T>
     {
         private readonly IEnumerable<TransitDb.TransitDbSnapShot> _tdbs;
         private readonly Profile<T> _profile;
@@ -237,7 +302,21 @@ namespace Itinero.Transit
         }
     }
 
-    public class WithTime<T> where T : IJourneyMetric<T>
+    public interface IWithTimeSingleLocation<T> where T : IJourneyMetric<T>
+    {
+        ///  <summary>
+        ///  Calculates all journeys which depart at 'from' at the given departure time and arrive before the specified 'end'-time of the timeframe.
+        ///  </summary>
+        IReadOnlyDictionary<LocationId, Journey<T>> IsochroneFrom();
+
+        ///  <summary>
+        ///  Calculates all journeys which arrive at 'to' at the given arrival time and departarter the specified 'start'-time of the timeframe.
+        ///  </summary>
+        IReadOnlyDictionary<LocationId, Journey<T>> IsochroneTo();
+    }
+
+    public class WithTime<T> : IWithTimeSingleLocation<T>
+        where T : IJourneyMetric<T>
     {
         private readonly IEnumerable<TransitDb.TransitDbSnapShot> _tdbs;
         private readonly Profile<T> _profile;
@@ -297,7 +376,10 @@ namespace Itinero.Transit
             return eas.Isochrone();
         }
 
-
+        ///  <summary>
+        ///  Calculates all journeys which arrive at 'to' at the given arrival time and departarter the specified 'start'-time of the timeframe.
+        /// This ignores the given 'from'-location
+        ///  </summary>
         public IReadOnlyDictionary<LocationId, Journey<T>> IsochroneTo()
         {
             CheckHasTo();

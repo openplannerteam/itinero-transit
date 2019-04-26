@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Itinero.Transit.Data;
 
 // ReSharper disable BuiltInTypeReferenceStyle
@@ -354,10 +355,16 @@ namespace Itinero.Transit.Journeys
 
         public override string ToString()
         {
-            return ToString(null);
+            return ToString(new List<TransitDb.TransitDbSnapShot>());
         }
 
         public string ToString(TransitDb.TransitDbSnapShot snapshot, int maxDepth = 50)
+        {
+            return ToString(new List<TransitDb.TransitDbSnapShot> {snapshot}, maxDepth);
+        }
+
+
+        public string ToString(List<TransitDb.TransitDbSnapShot> snapshot, int maxDepth = 50)
         {
             if (maxDepth == 0)
             {
@@ -370,7 +377,9 @@ namespace Itinero.Transit.Journeys
                 previous = PreviousLink.ToString(snapshot, maxDepth - 1);
             }
 
-            return $"{previous}\n  {PartToString(snapshot?.StopsDb?.GetReader(), snapshot?.ConnectionsDb?.GetReader())}\n    {Metric} (Trip {TripId})";
+            var dbId = (int) Location.DatabaseId;
+
+            return $"{previous}\n  {PartToString(snapshot[dbId].StopsDb?.GetReader(), snapshot[dbId].ConnectionsDb?.GetReader())}\n    {Metric} (Trip {TripId})";
         }
 
         private string PartToString(IStopsReader reader, ConnectionsDb.ConnectionsDbReader conn)
