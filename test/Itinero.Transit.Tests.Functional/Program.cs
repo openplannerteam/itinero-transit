@@ -31,17 +31,13 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Starting the Functional Tests...");
 
 
-           //*
-            new MultiTransitDbTest().Run(new object());
+            /*
             /*/
             LocalTests();
             InternetTests();
             //      SlowTests();
             //*/
         }
-
-
-
 
 
         private static void LocalTests()
@@ -53,9 +49,10 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Running NoDuplicationTest");
             new NoDuplicationTest().Run();
             new ConnectionsDbDepartureEnumeratorTest().Run(db);
+            new MultiTransitDbTest().Run(null);
             new DelayTest().Run(true);
-            
-            
+
+
             var tdb = new TransitDb();
             tdb.UseOsmRoute("CentrumShuttle-Brugge.xml", DateTime.Today, DateTime.Today.AddDays(1));
         }
@@ -65,7 +62,6 @@ namespace Itinero.Transit.Tests.Functional
             new CachingTest().Run(true);
             var tdb = new TransitDb();
             tdb.UseOsmRoute(9413958, DateTime.Today, DateTime.Today.AddDays(1));
-
         }
 
         public static void SlowTests()
