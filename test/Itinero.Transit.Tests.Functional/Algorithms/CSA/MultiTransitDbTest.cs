@@ -43,6 +43,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
                 var eas = new EarliestConnectionScan<TransferMetric>(settings);
                 var journey = eas.CalculateJourney();
                 NotNull(journey);
+                Serilog.Log.Information(journey.ToString(tdbs));
             }
 
             var end = DateTime.Now;

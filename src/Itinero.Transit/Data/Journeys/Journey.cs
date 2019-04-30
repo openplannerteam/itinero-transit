@@ -109,12 +109,11 @@ namespace Itinero.Transit.Journeys
         /// The trip id of the connection
         /// This is used as a freeform debugging tag in the Genesis Element
         /// </summary>
-        public readonly uint TripId;
+        public readonly TripId TripId;
 
-        public const int EarliestArrivalScanJourney = 1;
-        public const int LatestArrivalScanJourney = 2;
-        public const int ProfiledScanJourney = 3;
-
+        public static readonly TripId EarliestArrivalScanJourney = new TripId(1, 1);
+        public static readonly TripId LatestArrivalScanJourney = new TripId(2, 2);
+        public static readonly TripId ProfiledScanJourney = new TripId(3, 3);
 
         /// <summary>
         /// A metric about the journey up till this point
@@ -140,7 +139,7 @@ namespace Itinero.Transit.Journeys
             Location = LocationId.Invalid;
             Time = time;
             SpecialConnection = true;
-            TripId = uint.MaxValue;
+            TripId = new TripId(uint.MaxValue, uint.MaxValue);
             _hashCode = CalculateHashCode();
         }
 
@@ -158,7 +157,7 @@ namespace Itinero.Transit.Journeys
         /// <param name="tripId"></param>
         /// <param name="metric"></param>
         private Journey(Journey<T> root, Journey<T> previousLink, bool specialLink, uint connection,
-            LocationId location, UnixTime time, uint tripId, T metric)
+            LocationId location, UnixTime time, TripId tripId, T metric)
         {
             Root = root;
             SpecialConnection = specialLink;
@@ -171,12 +170,22 @@ namespace Itinero.Transit.Journeys
             _hashCode = CalculateHashCode();
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Genesis constructor.
+        /// This constructor creates a root journey
+        /// </summary>
+        public Journey(LocationId location, UnixTime departureTime, T initialMetric)
+            : this(location, departureTime, initialMetric, new TripId(uint.MaxValue, uint.MaxValue))
+        {
+        }
+
         /// <summary>
         /// Genesis constructor.
         /// This constructor creates a root journey
         /// </summary>
         public Journey(LocationId location, UnixTime departureTime, T initialMetric,
-            uint debuggingFreeformTag = 0)
+            TripId debuggingFreeformTag)
         {
             Root = this;
             PreviousLink = null;
@@ -220,7 +229,7 @@ namespace Itinero.Transit.Journeys
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
         internal Journey<T> Chain(uint connection, UnixTime time, LocationId location,
-            uint tripId)
+            TripId tripId)
         {
             return new Journey<T>(
                 Root, this, false, connection, location, time, tripId, Metric);
@@ -259,7 +268,7 @@ namespace Itinero.Transit.Journeys
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
         public Journey<T> ChainSpecial(uint specialCode, UnixTime time,
-            LocationId location, uint tripId)
+            LocationId location, TripId tripId)
         {
             return new Journey<T>(
                 Root, this, true, specialCode, location, time, tripId, Metric);
@@ -275,7 +284,8 @@ namespace Itinero.Transit.Journeys
             // Creating the transfer
             return new Journey<T>(
                 // ReSharper disable once ArrangeThisQualifier
-                Root, this, true, TRANSFER, this.Location, departureTime, uint.MaxValue, Metric);
+                Root, this, true, TRANSFER, this.Location, departureTime, new TripId(uint.MaxValue, uint.MaxValue),
+                Metric);
         }
 
         public Journey<T> TransferForward(IConnection c)
@@ -294,7 +304,7 @@ namespace Itinero.Transit.Journeys
         /// <summary>
         /// Returns the trip id of the most recent connection which has a valid trip.
         /// </summary>
-        public uint? LastTripId()
+        public TripId? LastTripId()
         {
             return SpecialConnection ? PreviousLink?.LastTripId() : TripId;
         }
@@ -379,7 +389,8 @@ namespace Itinero.Transit.Journeys
 
             var dbId = (int) Location.DatabaseId;
 
-            return $"{previous}\n  {PartToString(snapshot[dbId].StopsDb?.GetReader(), snapshot[dbId].ConnectionsDb?.GetReader())}\n    {Metric} (Trip {TripId})";
+            return
+                $"{previous}\n  {PartToString(snapshot[dbId].StopsDb?.GetReader(), snapshot[dbId].ConnectionsDb?.GetReader())}\n    {Metric} (Trip {TripId})";
         }
 
         private string PartToString(IStopsReader reader, ConnectionsDb.ConnectionsDbReader conn)
@@ -401,7 +412,7 @@ namespace Itinero.Transit.Journeys
             {
                 mode = $", mode is {conn.Mode}";
             }
-            
+
             if (!SpecialConnection)
                 return
                     $"Connection {Connection} to {location}, arriving at {DateTimeExtensions.FromUnixTime(Time):yyyy-MM-dd HH:mm}{mode}";
@@ -410,26 +421,23 @@ namespace Itinero.Transit.Journeys
             {
                 case GENESIS:
                     var freeForm = ", debugging free form tag is ";
-                    switch (TripId)
+
+                    if (TripId.Equals(EarliestArrivalScanJourney))
                     {
-                        case EarliestArrivalScanJourney:
-                            freeForm += "EAS";
-                            break;
-                        case LatestArrivalScanJourney:
-                            freeForm += "LAS";
-                            break;
-                        case ProfiledScanJourney:
-                            freeForm += "PCS";
-                            break;
-                        case uint.MaxValue:
-                            freeForm = "";
-                            break;
-                        default:
-                            freeForm += $"{TripId}";
-                            break;
+                        freeForm += "EAS";
                     }
-
-
+                    else if (TripId.Equals(LatestArrivalScanJourney))
+                    {
+                        freeForm += "LAS";
+                    }
+                    else if (TripId.Equals(ProfiledScanJourney))
+                    {
+                        freeForm += "PCS";
+                    }
+                    else
+                    {
+                        freeForm = TripId.ToString();
+                    }
                     return
                         $"Genesis at {location}, time is {Time.FromUnixTime():HH:mm}{freeForm}";
                 case WALK:
@@ -477,7 +485,7 @@ namespace Itinero.Transit.Journeys
                 hashCode = (hashCode * 397) ^ (int) Connection;
                 hashCode = (hashCode * 397) ^ Location.GetHashCode();
                 hashCode = (hashCode * 397) ^ Time.GetHashCode();
-                hashCode = (hashCode * 397) ^ (int) TripId;
+                hashCode = (hashCode * 397) ^ TripId.GetHashCode();
                 return hashCode;
             }
         }

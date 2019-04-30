@@ -9,6 +9,7 @@ using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
+
 namespace Itinero.Transit.Data
 {
     /// <summary>
@@ -24,11 +25,11 @@ namespace Itinero.Transit.Data
         private readonly ArrayBase<uint> _tripIdPointersPerHash;
         private uint _tripIdLinkedListPointer;
         private readonly ArrayBase<uint> _tripIdLinkedList;
-        
+
         private readonly AttributesIndex _attributes;
         private uint _nextId;
         private uint _dbId;
-        
+
         /// <summary>
         /// Creates a new trips database.
         /// </summary>
@@ -42,6 +43,7 @@ namespace Itinero.Transit.Data
             {
                 _tripIdPointersPerHash[h] = _noData;
             }
+
             _tripIdLinkedList = new MemoryArray<uint>(0);
             _attributes = new AttributesIndex();
         }
@@ -49,7 +51,8 @@ namespace Itinero.Transit.Data
         private TripsDb(
             uint dbId,
             ArrayBase<string> tripIds, ArrayBase<uint> tripAttributeIds, ArrayBase<uint> tripIdPointersPerHash,
-            ArrayBase<uint> tripIdLinkedList, AttributesIndex attributes, uint tripIdLinkedListPointer, uint nextId, int tripIdHashSize)
+            ArrayBase<uint> tripIdLinkedList, AttributesIndex attributes, uint tripIdLinkedListPointer, uint nextId,
+            int tripIdHashSize)
         {
             _tripIdHashSize = tripIdHashSize;
             _dbId = dbId;
@@ -68,7 +71,7 @@ namespace Itinero.Transit.Data
         /// <param name="globalId">The global id.</param>
         /// <param name="attributes">The attributes.</param>
         /// <returns>The trip id.</returns>
-        internal (uint dbId, uint localId) Add(string globalId, IEnumerable<Attribute> attributes = null)
+        internal TripId Add(string globalId, IEnumerable<Attribute> attributes = null)
         {
             var tripId = _nextId;
             _nextId++;
@@ -87,16 +90,18 @@ namespace Itinero.Transit.Data
             {
                 _tripIdLinkedList.Resize(_tripIdLinkedList.Length + 1024);
             }
+
             var hash = Hash(globalId);
             _tripIdLinkedList[_tripIdLinkedListPointer - 2] = tripId;
             _tripIdLinkedList[_tripIdLinkedListPointer - 1] = _tripIdPointersPerHash[hash];
             _tripIdPointersPerHash[hash] = _tripIdLinkedListPointer - 2;
 
-            return (_dbId, tripId);
+            return new TripId(_dbId, tripId);
         }
 
         private uint Hash(string id)
-        { // https://stackoverflow.com/questions/5154970/how-do-i-create-a-hashcode-in-net-c-for-a-string-that-is-safe-to-store-in-a
+        {
+            // https://stackoverflow.com/questions/5154970/how-do-i-create-a-hashcode-in-net-c-for-a-string-that-is-safe-to-store-in-a
             unchecked
             {
                 var hash = (uint) 23;
@@ -105,24 +110,24 @@ namespace Itinero.Transit.Data
                     hash = hash * 31 + c;
                 }
 
-                return  (uint) (hash % _tripIdHashSize);
+                return (uint) (hash % _tripIdHashSize);
             }
         }
-        
+
         internal long WriteTo(Stream stream)
         {
             var length = 0L;
-            
+
             // write version #.
             stream.WriteByte(1);
             length++;
-            
+
             // write data.
             length += _tripIds.CopyToWithSize(stream);
             length += _tripAttributeIds.CopyToWithSize(stream);
             length += _tripIdPointersPerHash.CopyToWithSize(stream);
             length += _tripIdLinkedList.CopyToWithSize(stream);
-            
+
             // write pointers.
             var bytes = BitConverter.GetBytes(_tripIdHashSize);
             length += bytes.Length;
@@ -133,7 +138,7 @@ namespace Itinero.Transit.Data
             bytes = BitConverter.GetBytes(_nextId);
             length += bytes.Length;
             stream.Write(bytes, 0, bytes.Length);
-            
+
             // write attributes.
             length += _attributes.Serialize(stream);
 
@@ -143,27 +148,28 @@ namespace Itinero.Transit.Data
         internal static TripsDb ReadFrom(Stream stream, uint id)
         {
             var buffer = new byte[4];
-            
+
             var version = stream.ReadByte();
             if (version != 1) throw new InvalidDataException($"Cannot read {nameof(TripsDb)}, invalid version #.");
-            
+
             // read data.
             var tripIds = MemoryArray<string>.CopyFromWithSize(stream);
             var tripAttributeIds = MemoryArray<uint>.CopyFromWithSize(stream);
             var tripIdPointersPerHash = MemoryArray<uint>.CopyFromWithSize(stream);
             var tripIdLinkedList = MemoryArray<uint>.CopyFromWithSize(stream);
-            
+
             stream.Read(buffer, 0, 4);
             var tripIdHashSize = BitConverter.ToInt32(buffer, 0);
             stream.Read(buffer, 0, 4);
             var tripIdLinkedListPointer = BitConverter.ToUInt32(buffer, 0);
             stream.Read(buffer, 0, 4);
             var nextId = BitConverter.ToUInt32(buffer, 0);
-            
+
             // read attributes.
             var attributes = AttributesIndex.Deserialize(stream, true);
-            
-            return new TripsDb(id, tripIds, tripAttributeIds, tripIdPointersPerHash, tripIdLinkedList, attributes, tripIdLinkedListPointer, nextId, tripIdHashSize);
+
+            return new TripsDb(id, tripIds, tripAttributeIds, tripIdPointersPerHash, tripIdLinkedList, attributes,
+                tripIdLinkedListPointer, nextId, tripIdHashSize);
         }
 
         /// <summary>
@@ -181,7 +187,7 @@ namespace Itinero.Transit.Data
             tripIdPointersPerHash.CopyFrom(_tripIdPointersPerHash, _tripIdPointersPerHash.Length);
             var tripIdLinkedList = new MemoryArray<uint>(_tripIdLinkedList.Length);
             tripIdLinkedList.CopyFrom(_tripIdLinkedList, _tripIdLinkedList.Length);
-            
+
             // don't clone the attributes, it's supposed to be add-only anyway.
             // it's up to the user not to write to it from multiple threads.
             return new TripsDb(_dbId,
@@ -205,7 +211,7 @@ namespace Itinero.Transit.Data
         {
             private readonly uint _dbId;
             private readonly TripsDb _tripsDb;
-            
+
             internal TripsDbReader(uint dbId, TripsDb tripsDb)
             {
                 _dbId = dbId;
@@ -225,6 +231,22 @@ namespace Itinero.Transit.Data
 
                 _tripId = trip;
                 return true;
+            }
+
+            /// <summary>
+            /// Moves this enumerator to the given trip.
+            /// </summary>
+            /// <param name="trip">The trip.</param>
+            /// <returns>True if there is more data.</returns>
+            public bool MoveTo(TripId trip)
+            {
+                if (trip.DatabaseId != _dbId)
+                {
+                    throw new ArgumentException(
+                        "You came to the wrong database bro... (Database ID does not match the one in the tripID)");
+                }
+
+                return MoveTo(trip.InternalId);
             }
 
             /// <summary>
@@ -256,19 +278,13 @@ namespace Itinero.Transit.Data
                 return false;
             }
 
-            /// <summary>
-            /// Gets the attributes.
-            /// </summary>
+            /// <inheritdoc />
             public IAttributeCollection Attributes => _tripsDb._attributes.Get(_tripsDb._tripAttributeIds[_tripId]);
 
-            /// <summary>
-            /// Gets the id.
-            /// </summary>
-            public (uint dbId, uint localId) Id => (_dbId, _tripId);
+            /// <inheritdoc />
+            public TripId Id => new TripId(_dbId, _tripId);
 
-            /// <summary>
-            /// Gets the global id.
-            /// </summary>
+            /// <inheritdoc />
             public string GlobalId => _tripsDb._tripIds[_tripId];
         }
     }

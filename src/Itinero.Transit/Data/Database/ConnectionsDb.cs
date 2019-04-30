@@ -175,15 +175,15 @@ namespace Itinero.Transit.Data
         /// <returns>An internal id representing the connection in this transit db.</returns>
         internal uint AddOrUpdate(LocationId stop1,
             LocationId stop2, string globalId, ulong departureTime, ushort travelTime,
-            ushort departureDelay, ushort arrivalDelay, uint tripId, ushort mode)
+            ushort departureDelay, ushort arrivalDelay, TripId tripId, ushort mode)
         {
-            
             var reader = GetReader();
             if (!reader.MoveTo(globalId))
             {
                 // The connection is not yet added
                 // We add the connection fresh
-                return Add(stop1, stop2, globalId, departureTime, travelTime, departureDelay, arrivalDelay, tripId,
+                return Add(stop1, stop2, globalId, departureTime, travelTime, departureDelay, arrivalDelay, 
+                    tripId,
                     mode);
             }
 
@@ -200,10 +200,10 @@ namespace Itinero.Transit.Data
             var internalId = reader.Id;
             reader = null; // don't use the reader, we will start modifying the data from this point on.
 
-            if (currentTripId != tripId)
+            if (currentTripId.InternalId != tripId.InternalId)
             {
                 // trip has changed, update it.
-                SetTrip(internalId, tripId);
+                SetTrip(internalId, tripId.InternalId);
             }
 
             var departureSeconds = (uint) departureTime;
@@ -284,7 +284,7 @@ namespace Itinero.Transit.Data
         private uint Add(LocationId stop1,
             LocationId stop2, string globalId, ulong departureTime, ushort travelTime,
             ushort departureDelay,
-            ushort arrivalDelay, uint tripId, ushort mode)
+            ushort arrivalDelay, TripId tripId, ushort mode)
         {
             // get the next internal id.
             var internalId = _nextInternalId;
@@ -307,7 +307,7 @@ namespace Itinero.Transit.Data
             }
 
             // set trip and global ids.
-            SetTrip(internalId, tripId);
+            SetTrip(internalId, tripId.InternalId);
             SetGlobalId(internalId, globalId);
 
             // update departure time index.
@@ -334,11 +334,11 @@ namespace Itinero.Transit.Data
                 }
             }
 
-            
+
             // Start saving the data
             var offset = 0;
 
-            
+
             // Note that the database id of the location is _not_ saved
             var bytes = BitConverter.GetBytes(stop1.LocalTileId);
             for (var b = 0; b < 4; b++)
@@ -459,7 +459,8 @@ namespace Itinero.Transit.Data
             offset += 2;
             var mode = BitConverter.ToUInt16(bytes, offset);
             offset += 2;
-            return (new LocationId(DatabaseId, stop1.Item1, stop1.Item2), new LocationId(DatabaseId, stop2.Item1, stop2.Item2),
+            return (new LocationId(DatabaseId, stop1.Item1, stop1.Item2),
+                new LocationId(DatabaseId, stop2.Item1, stop2.Item2),
                 departureTime, travelTime, departureDelay, arrivalDelay, mode);
         }
 
@@ -927,54 +928,34 @@ namespace Itinero.Transit.Data
             /// </summary>
             public string GlobalId => _db._globalIds[_internalId];
 
-            /// <summary>
-            /// Gets the trip id.
-            /// </summary>
-            public uint TripId => _db._tripIds[_internalId];
+            /// <inheritdoc />
+            public TripId TripId => new TripId(_db.DatabaseId, _db._tripIds[_internalId]);
 
-            /// <summary>
-            /// Gets the first stop.
-            /// </summary>
+            /// <inheritdoc />
             public LocationId DepartureStop => _departureStop;
 
-            /// <summary>
-            /// Gets the second stop.
-            /// </summary>
+            /// <inheritdoc />
             public LocationId ArrivalStop => _arrivalStop;
 
-            /// <summary>
-            /// Gets the departure time.
-            /// </summary>
+            /// <inheritdoc />
             public Time DepartureTime => _departureTime;
 
-            /// <summary>
-            /// Gets the travel time.
-            /// </summary>
+            /// <inheritdoc />
             public ushort TravelTime => _travelTime;
 
-            /// <summary>
-            /// Gets the departure delay.
-            /// </summary>
+            /// <inheritdoc />
             public ushort DepartureDelay => _departureDelay;
 
-            /// <summary>
-            /// Gets the arrival delay.
-            /// </summary>
+            /// <inheritdoc />
             public ushort ArrivalDelay => _arrivalDelay;
 
-            /// <summary>
-            /// Gets the arrival time.
-            /// </summary>
+            /// <inheritdoc />
             public Time ArrivalTime => _arrivalTime;
 
-            /// <summary>
-            /// Gets the id.
-            /// </summary>
+            /// <inheritdoc />
             public uint Id => _internalId;
 
-            /// <summary>
-            /// Gets the mode
-            /// </summary>
+            /// <inheritdoc />
             public ushort Mode => _mode;
 
             /// <summary>
@@ -1417,10 +1398,8 @@ namespace Itinero.Transit.Data
             /// </summary>
             public string GlobalId => _reader.GlobalId;
 
-            /// <summary>
-            /// Gets the trip id.
-            /// </summary>
-            public uint TripId => _reader.TripId;
+            /// <inheritdoc />
+            public TripId TripId => _reader.TripId;
 
             /// <inheritdoc />
             public ushort Mode => _reader.Mode;
@@ -1606,7 +1585,7 @@ namespace Itinero.Transit.Data
             /// <summary>
             /// Gets the trip id.
             /// </summary>
-            public uint TripId => _reader.TripId;
+            public TripId TripId => _reader.TripId;
 
             /// <summary>
             /// The internal ID within the DB

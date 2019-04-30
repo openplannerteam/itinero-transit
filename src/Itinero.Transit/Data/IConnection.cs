@@ -49,7 +49,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// Gets the trip id.
         /// </summary>
-        uint TripId { get; }
+        TripId TripId { get; }
 
         /// <summary>
         /// Gets the departure stop id.
@@ -96,7 +96,7 @@ namespace Itinero.Transit.Data
             ushort arrivalDelay,
             ushort departureDelay,
             ushort mode,
-            uint tripId
+            TripId tripId
             )
         {
             Id = id;
@@ -125,7 +125,7 @@ namespace Itinero.Transit.Data
 
         public ushort Mode { get; }
 
-        public uint TripId { get; }
+        public TripId TripId { get; }
 
         public LocationId DepartureStop { get; }
 

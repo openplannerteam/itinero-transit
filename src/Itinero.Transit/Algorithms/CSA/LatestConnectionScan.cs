@@ -42,7 +42,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <summary>
         /// Keeps track of where we are on each trip, thus if we wouldn't leave a bus once we're on it
         /// </summary>
-        private readonly Dictionary<uint, Journey<T>> _trips = new Dictionary<uint, Journey<T>>();
+        private readonly Dictionary<TripId, Journey<T>> _trips = new Dictionary<TripId, Journey<T>>();
 
 
         public LatestConnectionScan(ScanSettings<T> settings)

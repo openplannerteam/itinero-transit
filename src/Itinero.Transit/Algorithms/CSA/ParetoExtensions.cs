@@ -37,7 +37,8 @@ namespace Itinero.Transit.Algorithms.CSA
                 }
 
                 Journey<T> extendedJourney;
-                if (journey.LastTripId() == c.TripId)
+                var lastTripId = journey.LastTripId();
+                if (lastTripId.HasValue && lastTripId.Value.Equals(c.TripId))
                 {
                     extendedJourney = journey.ChainBackward(c);
                 }

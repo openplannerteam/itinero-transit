@@ -14,7 +14,7 @@ namespace Itinero.Transit.Data
         /// <param name="globalId">The global id.</param>
         /// <param name="attributes">The attributes.</param>
         /// <returns>An internal id representing the trip in this transit db.</returns>
-        public static (uint dbId, uint localId) Add(this TripsDb tripsDb, string globalId, params Attribute[] attributes)
+        public static TripId Add(this TripsDb tripsDb, string globalId, params Attribute[] attributes)
         {
             return tripsDb.Add(globalId, attributes);
         }

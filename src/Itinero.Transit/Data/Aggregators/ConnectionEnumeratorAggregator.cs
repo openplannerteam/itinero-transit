@@ -233,7 +233,7 @@ namespace Itinero.Transit.Data.Aggregators
 
         public ushort Mode => _currentConnection.Mode;
 
-        public uint TripId => _currentConnection.TripId;
+        public TripId TripId => _currentConnection.TripId;
 
         public LocationId DepartureStop => _currentConnection.DepartureStop;
 

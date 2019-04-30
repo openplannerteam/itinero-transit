@@ -122,7 +122,8 @@ namespace Itinero.Transit
             }
 
             return buildOn.ChainSpecial(
-                Journey<T>.WALK, (uint) (buildOn.Time + route.TotalDistance), otherLocation, uint.MaxValue);
+                Journey<T>.WALK, (uint) (buildOn.Time + route.TotalDistance), otherLocation, 
+                TripId.Walk);
         }
 
         public Journey<T> CreateArrivingTransfer<T>(IStopsReader _, Journey<T> buildOn, ulong timeWhenArriving, LocationId otherLocation) where T : IJourneyMetric<T>
@@ -149,7 +150,7 @@ namespace Itinero.Transit
 
 
             return buildOn.ChainSpecial(
-                Journey<T>.WALK, (uint) (timeWhenArriving + route.TotalTime), otherLocation, uint.MaxValue);
+                Journey<T>.WALK, (uint) (timeWhenArriving + route.TotalTime), otherLocation, TripId.Walk);
         }
 
         public float Range()

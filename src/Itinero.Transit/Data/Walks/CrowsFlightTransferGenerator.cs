@@ -1,4 +1,3 @@
-using System;
 using Itinero.Transit.Journeys;
 
 namespace Itinero.Transit.Data.Walks
@@ -55,7 +54,7 @@ namespace Itinero.Transit.Data.Walks
             }
 
             return buildOn.ChainSpecial(
-                Journey<T>.WALK, (ulong) arrivalTime, otherLocation, UInt32.MaxValue);
+                Journey<T>.WALK, (ulong) arrivalTime, otherLocation, TripId.Walk);
         }
 
 
@@ -78,7 +77,7 @@ namespace Itinero.Transit.Data.Walks
             }
 
             return buildOn.ChainSpecial(
-                Journey<T>.WALK, (ulong) arrivalTime, otherLocation, UInt32.MaxValue);
+                Journey<T>.WALK, (ulong) arrivalTime, otherLocation, TripId.Walk);
         }
 
         public float Range()

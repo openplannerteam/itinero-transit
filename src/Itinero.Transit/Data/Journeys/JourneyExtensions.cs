@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Journeys
 {
@@ -98,7 +99,7 @@ namespace Itinero.Transit.Journeys
         }
 
 
-        public static Journey<T> SetTag<T>(this Journey<T> j, uint tag) where T : IJourneyMetric<T>
+        public static Journey<T> SetTag<T>(this Journey<T> j, TripId tag) where T : IJourneyMetric<T>
         {
             if (j.SpecialConnection && j.Connection == Journey<T>.GENESIS)
             {

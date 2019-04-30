@@ -169,7 +169,7 @@ namespace Itinero.Transit.Data
             /// <param name="globalId">The global id.</param>
             /// <param name="attributes">The attributes.</param>
             /// <returns>The trip id.</returns>
-            public (uint dbId, uint localId) AddOrUpdateTrip(string globalId, IEnumerable<Attribute> attributes = null)
+            public TripId AddOrUpdateTrip(string globalId, IEnumerable<Attribute> attributes = null)
             {
                 var tripsDbReader = _tripsDb.GetReader();
                 if (tripsDbReader.MoveTo(globalId))
@@ -195,7 +195,7 @@ namespace Itinero.Transit.Data
             /// <returns></returns>
             public uint AddOrUpdateConnection(LocationId stop1,
                 LocationId stop2, string globalId, DateTime departureTime, ushort travelTime,
-                ushort departureDelay, ushort arrivalDelay, uint tripId, ushort mode)
+                ushort departureDelay, ushort arrivalDelay, TripId tripId, ushort mode)
             {
                 return _connectionsDb.AddOrUpdate(stop1, stop2, globalId, departureTime.ToUnixTime(), travelTime,
                     departureDelay,
@@ -218,14 +218,6 @@ namespace Itinero.Transit.Data
 
                 _parent._latestSnapshot = latest;
                 _parent._writer = null;
-            }
-
-            public void AddOrUpdateConnection(LocationId globalId, LocationId stop2Id, string connectionUri,
-                DateTime departureTime, ushort totalSeconds, ushort connectionDepartureDelay,
-                ushort connectionArrivalDelay, (uint dbId, uint localId) tripId, ushort mode)
-            {
-                AddOrUpdateConnection(globalId, stop2Id, connectionUri, departureTime, totalSeconds,
-                    connectionDepartureDelay, connectionArrivalDelay, tripId.localId, mode);
             }
         }
     }

@@ -65,7 +65,7 @@ namespace Itinero.Transit.Journeys
 
         public TransferMetric Add(Journey<TransferMetric> journey)
         {
-            var transferred = journey.PreviousLink.LastTripId() != journey.LastTripId()
+            var transferred = !journey.PreviousLink.LastTripId().Equals(journey.LastTripId())
                               && !(journey.PreviousLink.SpecialConnection &&
                                    journey.PreviousLink.Connection == Journey<TransferMetric>.GENESIS);
 

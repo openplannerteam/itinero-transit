@@ -94,8 +94,8 @@ namespace Itinero.Transit.Algorithms.CSA
         /// (Note that I thought it was not needed at first and all could be modelled with just the station journeys.
         /// I've spent a few days figuring out why certain routes where omitted)
         /// </summary>
-        private readonly Dictionary<ulong, ParetoFrontier<T>> _tripJourneys =
-            new Dictionary<ulong, ParetoFrontier<T>>();
+        private readonly Dictionary<TripId, ParetoFrontier<T>> _tripJourneys =
+            new Dictionary<TripId, ParetoFrontier<T>>();
 
 
         ///  <summary>

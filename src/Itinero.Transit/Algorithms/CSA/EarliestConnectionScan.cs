@@ -43,7 +43,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <summary>
         /// Keeps track of where we are on each trip, thus if we wouldn't leave a bus once we're on it
         /// </summary>
-        private readonly Dictionary<uint, Journey<T>> _trips = new Dictionary<uint, Journey<T>>();
+        private readonly Dictionary<TripId, Journey<T>> _trips = new Dictionary<TripId, Journey<T>>();
 
         public EarliestConnectionScan(
             ScanSettings<T> settings)
@@ -62,7 +62,9 @@ namespace Itinero.Transit.Algorithms.CSA
             foreach (var (loc, j) in settings.DepartureStop)
             {
                 var journey = j
-                              ?? new Journey<T>(loc, settings.EarliestDeparture.ToUnixTime(), settings.MetricFactory);
+                              ?? new Journey<T>(
+                                  loc, settings.EarliestDeparture.ToUnixTime(), settings.MetricFactory,
+                                  Journey<T>.EarliestArrivalScanJourney);
 
                 _s.Add(loc, journey);
             }
