@@ -30,28 +30,20 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             True(reader.MoveTo(input.arrivalStopId));
             var arrival = reader.Id;
 
-            var settings = new ScanSettings<TransferMetric>(
-                latest.Lst(),
-                departure, arrival,
-                input.departureTime-TimeSpan.FromMinutes(1),
-                input.arrivalTime+TimeSpan.FromMinutes(1),
-                profile);
+            var easJ = latest.SelectProfile(profile)
+                    .SelectStops(departure, arrival)
+                    .SelectTimeFrame(input.departureTime - TimeSpan.FromMinutes(1),
+                        input.arrivalTime + TimeSpan.FromMinutes(1))
+                    .EarliestArrivalJourney();
             
-            var eas = new EarliestConnectionScan<TransferMetric>(settings);
-
-            var easJ = eas.CalculateJourney();
             NotNull(easJ);
             Information(easJ.ToString(latest));
-            
 
-            var las = new LatestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(latest.Lst(),
-                departure, arrival, input.departureTime-TimeSpan.FromMinutes(1),
-                easJ.ArrivalTime().FromUnixTime(), profile));
-
-
-            
-            
-            var lasJ = las.CalculateJourney();
+            var lasJ = latest.SelectProfile(profile)
+                .SelectStops(departure, arrival)
+                .SelectTimeFrame(input.departureTime-TimeSpan.FromMinutes(1), easJ.ArrivalTime().FromUnixTime())
+                .LatestDepartureJourney()
+                ;
             NotNull(lasJ);
             Information(lasJ.ToString(
                 latest));

@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
@@ -23,30 +21,23 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 TransferMetric.ProfileTransferCompare
             );
 
-            var las = new LatestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(
-                new List<TransitDb.TransitDbSnapShot> {db},
-                stop0, stop1,
-                new DateTime(2018, 12, 04, 16, 00, 00),
-                new DateTime(2018, 12, 04, 18, 00, 00),
-                profile
-            ));
-
-            var j = las.CalculateJourney();
-
+            var j =
+                db.SelectProfile(profile)
+                    .SelectStops(stop0, stop1)
+                    .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00),
+                        new DateTime(2018, 12, 04, 18, 00, 00))
+                    .LatestDepartureJourney();
+                
             Assert.NotNull(j);
             Assert.Equal((uint) 0, j.Connection);
 
-            las = new LatestConnectionScan<TransferMetric>(
-                new ScanSettings<TransferMetric>(
-                    new List<TransitDb.TransitDbSnapShot> {db},
-                    stop0, stop2,
-                    db.GetConn(0).DepartureTime.FromUnixTime(),
-                    (db.GetConn(0).DepartureTime + 60 * 60 * 2).FromUnixTime(),
-                    profile
-                ));
-
-            j = las.CalculateJourney();
-
+            j = db.SelectProfile(profile)
+                .SelectStops(stop0, stop2)
+                .SelectTimeFrame(db.GetConn(0).DepartureTime.FromUnixTime(),
+                    (db.GetConn(0).DepartureTime + 60 * 60 * 2).FromUnixTime())
+                .LatestDepartureJourney();
+                
+                
             Assert.NotNull(j);
             Assert.Equal(j.Root.Location, stop0);
             Assert.Equal(j.Location, stop2);
@@ -76,13 +67,11 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
                 TransferMetric.ProfileTransferCompare);
-            var las = new LatestConnectionScan<TransferMetric>(
-                new ScanSettings<TransferMetric>(new List<TransitDb.TransitDbSnapShot> {latest},
-                    stop1, stop2,
-                    new DateTime(2018, 12, 04, 16, 00, 00),
-                    new DateTime(2018, 12, 04, 19, 00, 00),
-                    profile));
-            var journey = las.CalculateJourney();
+            var journey = latest.SelectProfile(profile)
+                .SelectStops(stop1, stop2)
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00),
+                    new DateTime(2018, 12, 04, 19, 00, 00))
+                .LatestDepartureJourney();
 
             Assert.Null(journey);
         }
@@ -110,13 +99,11 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
                 TransferMetric.ProfileTransferCompare);
-            var las = new LatestConnectionScan<TransferMetric>(
-                new ScanSettings<TransferMetric>(new List<TransitDb.TransitDbSnapShot> {latest},
-                    stop1, stop2,
-                    new DateTime(2018, 12, 04, 16, 00, 00),
-                    new DateTime(2018, 12, 04, 19, 00, 00),
-                    profile));
-            var journey = las.CalculateJourney();
+            var journey = latest.SelectProfile(profile)
+                .SelectStops(stop1, stop2)
+                .SelectTimeFrame(        new DateTime(2018, 12, 04, 16, 00, 00),
+                    new DateTime(2018, 12, 04, 19, 00, 00))
+                .LatestDepartureJourney();
 
             Assert.NotNull(journey);
             Assert.Equal(2, journey.AllParts().Count());

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
@@ -11,11 +10,6 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 {
     public class EarliestConnectionScanTests
     {
-        private static List<T> Lst<T>(T t)
-        {
-            return new List<T> {t};
-        }
-
         [Fact]
         public void SimpleEasTest()
         {
@@ -28,29 +22,23 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 TransferMetric.ProfileTransferCompare
             );
 
-            var eas = new EarliestConnectionScan<TransferMetric>(
-                new ScanSettings<TransferMetric>(
-                    Lst(db),
-                    stop0, stop1,
-                    db.GetConn(0).DepartureTime.FromUnixTime(),
-                    (db.GetConn(0).DepartureTime + 60 * 60 * 6).FromUnixTime(),
-                    profile
-                )
-            );
 
-            var j = eas.CalculateJourney();
+            var j = db.SelectProfile(profile).SelectStops(stop0, stop1)
+                .SelectTimeFrame(db.GetConn(0).DepartureTime.FromUnixTime(),
+                    (db.GetConn(0).DepartureTime + 60 * 60 * 6).FromUnixTime())
+                .EarliestArrivalJourney();
 
             Assert.NotNull(j);
             Assert.Equal((uint) 0, j.Connection);
 
 
-            eas = new EarliestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(Lst(db),
-                stop0, stop2, db.GetConn(0).DepartureTime.FromUnixTime(),
-                (db.GetConn(0).DepartureTime + 60 * 60 * 2).FromUnixTime(),
-                profile
-            ));
-
-            j = eas.CalculateJourney();
+            j = db.SelectProfile(profile)
+                    .SelectStops(stop0, stop2)
+                    .SelectTimeFrame(
+                        db.GetConn(0).DepartureTime.FromUnixTime(),
+                        (db.GetConn(0).DepartureTime + 60 * 60 * 2).FromUnixTime())
+                    .EarliestArrivalJourney()
+                ;
 
             Assert.NotNull(j);
             Assert.Equal((uint) 1, j.Connection);
@@ -86,12 +74,12 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
                 TransferMetric.ProfileTransferCompare);
-            var eas = new EarliestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(Lst(latest),
-                stop0, stop3,
-                new DateTime(2018, 12, 04, 10, 00, 00),
-                new DateTime(2018, 12, 04, 11, 00, 00),
-                profile));
-            var journey = eas.CalculateJourney();
+
+            var journey = latest.SelectProfile(profile)
+                .SelectStops(stop0, stop3)
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 10, 00, 00),
+                    new DateTime(2018, 12, 04, 11, 00, 00))
+                .EarliestArrivalJourney();
 
             // It is not possible to get on or off any connection
             // So we should not find anything
@@ -128,13 +116,11 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
                 TransferMetric.ProfileTransferCompare);
-            var eas = new EarliestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(Lst(latest),
-                stop0, stop3,
-                new DateTime(2018, 12, 04, 10, 00, 00),
-                new DateTime(2018, 12, 04, 11, 00, 00),
-                profile));
-            var journey = eas.CalculateJourney();
-
+            var journey = latest.SelectProfile(profile)
+                .SelectStops(stop0, stop3)
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 10, 00, 00),
+                    new DateTime(2018, 12, 04, 11, 00, 00))
+                .EarliestArrivalJourney();
             Assert.NotNull(journey);
             Assert.Equal(Journey<TransferMetric>.WALK, journey.PreviousLink.PreviousLink.Connection);
             Assert.True(journey.PreviousLink.PreviousLink.SpecialConnection);
@@ -164,11 +150,13 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 null,
                 TransferMetric.Factory,
                 TransferMetric.ProfileTransferCompare);
-            var eas = new EarliestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(Lst(latest),
-                stop1, stop2, new DateTime(2018, 12, 04, 16, 00, 00),
-                new DateTime(2018, 12, 04, 19, 00, 00),
-                profile));
-            var journey = eas.CalculateJourney();
+
+
+            var journey = latest.SelectProfile(profile)
+                .SelectStops(stop1, stop2)
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00),
+                    new DateTime(2018, 12, 04, 19, 00, 00))
+                .EarliestArrivalJourney();
 
             Assert.NotNull(journey);
             Assert.Equal(2, journey.AllParts().Count());
@@ -209,18 +197,13 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
             var latest = transitDb.Latest;
 
-            var settings = new ScanSettings<TransferMetric>(
-                Lst(latest),
-                new DateTime(2018, 12, 04, 16, 00, 00),
-                new DateTime(2018, 12, 04, 19, 00, 00),
-                profile.MetricFactory, profile.ProfileComparator,
-                profile.InternalTransferGenerator, profile.WalksGenerator,
-                sources, targets
-            );
-
-
-            var eas = new EarliestConnectionScan<TransferMetric>(settings);
-            var journey = eas.CalculateJourney();
+            var journey = latest
+                    .SelectProfile(profile)
+                    .SelectStops(sources, targets)
+                    .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00),
+                        new DateTime(2018, 12, 04, 19, 00, 00))
+                    .EarliestArrivalJourney()
+                ;
 
             Assert.NotNull(journey);
             Assert.Equal(3, journey.AllParts().Count);
@@ -273,17 +256,11 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 {(stop2, null)};
 
 
-            var settings = new ScanSettings<TransferMetric>(
-                Lst(latest),
-                startTime,
-                new DateTime(2018, 12, 04, 19, 00, 00),
-                profile.MetricFactory, profile.ProfileComparator,
-                profile.InternalTransferGenerator, profile.WalksGenerator,
-                sources, targets);
-
-
-            var eas = new EarliestConnectionScan<TransferMetric>(settings);
-            var journey = eas.CalculateJourney();
+            var journey = latest.SelectProfile(profile)
+                    .SelectStops(sources, targets)
+                    .SelectTimeFrame(startTime, new DateTime(2018, 12, 04, 19, 00, 00))
+                    .EarliestArrivalJourney()
+                ;
 
             Assert.NotNull(journey);
             Assert.Equal(4, journey.AllParts().Count);
@@ -328,17 +305,15 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 null,
                 TransferMetric.Factory,
                 TransferMetric.ProfileTransferCompare);
-            var eas = new EarliestConnectionScan<TransferMetric>(new ScanSettings<TransferMetric>(
-                Lst(latest),
-                stop1, stop2,
-                new DateTime(2018, 12, 04, 16, 00, 00),
-                new DateTime(2018, 12, 04, 19, 00, 00),
-                profile));
-            var journey = eas.CalculateJourney();
 
+            var journey = latest.SelectProfile(profile)
+                .SelectStops(stop1, stop2)
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00),
+                    new DateTime(2018, 12, 04, 19, 00, 00))
+                .EarliestArrivalJourney();
             Assert.NotNull(journey);
             Assert.Equal(2, journey.AllParts().Count);
-            Assert.Equal(new DateTime(2018, 12, 04, 16, 30, 00).ToUnixTime(), eas.ScanEndTime);
+            // TODO  Assert.Equal(new DateTime(2018, 12, 04, 16, 30, 00).ToUnixTime(), eas.ScanEndTime);
         }
     }
 }

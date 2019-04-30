@@ -24,6 +24,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         private const string _bruggeNmbs = "http://irail.be/stations/NMBS/008891009";
         private const string _stationBruggeOsm = "https://www.openstreetmap.org/node/6348496391";
 
+        private const string _gentZwijnaardeDeLijn = "https://data.delijn.be/stops/201657";
         private void MultiModalWithOsm(List<TransitDb.TransitDbSnapShot> tdbs, string dep, string arr, DateTime date,
             int iterations = 1)
         {
@@ -76,7 +77,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             }
 
 
-            MultiModalWithOsm(tdbs, _coiseauKaaiOsm, _gentNmbs,
+            MultiModalWithOsm(tdbs, _coiseauKaaiOsm, _gentZwijnaardeDeLijn,
                 new DateTime(2019, 04, 29), 1);
 
             return null;

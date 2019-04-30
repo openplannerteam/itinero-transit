@@ -48,11 +48,10 @@ namespace Itinero.Transit.Algorithms.CSA
         public EarliestConnectionScan(
             ScanSettings<T> settings)
         {
-            settings.SanityCheck();
             ScanBeginTime = settings.EarliestDeparture.ToUnixTime();
             _lastArrival = settings.LastArrival.ToUnixTime();
-            _connections = settings.Connections;
-            _stopsReader = settings.StopsDbReader;
+            _connections = settings.ConnectionsEnumerator;
+            _stopsReader = settings.StopsReader;
 
             _transferPolicy = settings.TransferPolicy;
             _walkPolicy = settings.WalkPolicy;

@@ -1,5 +1,4 @@
 using System;
-using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
@@ -19,7 +18,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var p = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory, TransferMetric.ProfileTransferCompare
-                );
+            );
 
             var depTime = input.departureTime;
 
@@ -30,16 +29,12 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             True(reader.MoveTo(input.arrivalStopId));
             var arrival = reader.Id;
 
-            
-            var settings = new ScanSettings<TransferMetric>(
-                latest.Lst(), depTime
-                , depTime.AddHours(24), p.MetricFactory, p.ProfileComparator,
-                p.InternalTransferGenerator, p.WalksGenerator,
-                departure, arrival
-                );
-            // instantiate and run EAS.
-            var eas = new EarliestConnectionScan<TransferMetric>(settings);
-            var journey = eas.CalculateJourney();
+            var journey =
+                latest.SelectProfile(p)
+                    .SelectStops(departure, arrival)
+                    .SelectTimeFrame(depTime, depTime.AddHours(24))
+                    .EarliestArrivalJourney();
+
 
             if (journey == null)
             {
@@ -54,5 +49,4 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             return true;
         }
     }
-    
 }

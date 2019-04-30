@@ -47,11 +47,10 @@ namespace Itinero.Transit.Algorithms.CSA
 
         public LatestConnectionScan(ScanSettings<T> settings)
         {
-            settings.SanityCheck();
-            _stopsReader = settings.StopsDbReader;
+            _stopsReader = settings.StopsReader;
             _earliestDeparture = settings.EarliestDeparture.ToUnixTime();
             ScanEndTime = settings.LastArrival.ToUnixTime();
-            _connections = settings.Connections;
+            _connections = settings.ConnectionsEnumerator;
             _transferPolicy = settings.TransferPolicy;
             _userDepartureLocation = settings.DepartureStop;
             foreach (var (loc, j) in settings.TargetStop)
@@ -110,7 +109,7 @@ namespace Itinero.Transit.Algorithms.CSA
                  * The above pseudo code is summarized with:
                  */
                 bestJourney = GetBestJourney();
-                earliestAllowedDeparture = Math.Max(bestJourney.Time, _earliestDeparture);
+                earliestAllowedDeparture = Math.Max(bestJourney.Time, earliestAllowedDeparture);
             }
 
             // If we en up here, normally we should have found a route.
@@ -119,6 +118,7 @@ namespace Itinero.Transit.Algorithms.CSA
             if (bestJourney.Time == Time.MinValue)
             {
                 // Sadly, we didn't find a route within the required time
+                ScanBeginTime = earliestAllowedDeparture;
                 return null;
             }
 

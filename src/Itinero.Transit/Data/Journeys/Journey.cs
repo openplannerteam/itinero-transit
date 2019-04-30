@@ -414,8 +414,11 @@ namespace Itinero.Transit.Journeys
             }
 
             if (!SpecialConnection)
+            {
+                var dbOperator = conn.ArrivalStop.DatabaseId;
                 return
-                    $"Connection {Connection} to {location}, arriving at {DateTimeExtensions.FromUnixTime(Time):yyyy-MM-dd HH:mm}{mode}";
+                    $"Connection {Connection} to {location}, arriving at {DateTimeExtensions.FromUnixTime(Time):yyyy-MM-dd HH:mm}{mode}; operator is {dbOperator}";
+            }
 
             switch (Connection)
             {

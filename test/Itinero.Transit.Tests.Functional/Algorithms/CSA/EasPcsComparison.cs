@@ -31,18 +31,14 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             True(reader.MoveTo(input.arrivalStopId));
             var arrival = reader.Id;
 
-            var eas = new EarliestConnectionScan<TransferMetric>
-            (new ScanSettings<TransferMetric>(
-                latest.Lst(),
-                departure, arrival, input.departureTime, input.arrivalTime, profile));
+            var easJ = latest.SelectProfile(profile).SelectStops(departure, arrival)
+                .SelectTimeFrame(input.departureTime, input.arrivalTime).EarliestArrivalJourney();
 
-            var easJ = eas.CalculateJourney();
-            var pcs = new ProfiledConnectionScan<TransferMetric>(
-                new ScanSettings<TransferMetric>(
-                    latest.Lst(),
-                    departure, arrival, input.departureTime, input.arrivalTime, profile));
-
-            var pcsJs = pcs.CalculateJourneys();
+            var pcsJs =
+                latest.SelectProfile(profile)
+                    .SelectStops(departure, arrival)
+                    .SelectTimeFrame(input.departureTime, input.arrivalTime)
+                    .AllJourneys();
             var pcsJ = pcsJs.Last();
 
             Information(easJ.ToString(latest));

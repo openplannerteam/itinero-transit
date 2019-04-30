@@ -35,8 +35,6 @@ namespace Itinero.Transit.Algorithms.CSA
         // Indicates if connections can not be taken due to external reasons (e.g. earlier scan)
         private readonly IConnectionFilter _filter;
 
-        private readonly Journey<T> _possibleJourney;
-
         /// <summary>
         /// Rules how much penalty is given to go from one connection to another
         /// </summary>
@@ -103,8 +101,6 @@ namespace Itinero.Transit.Algorithms.CSA
         ///  </summary>
         public ProfiledConnectionScan(ScanSettings<T> settings)
         {
-            settings.SanityCheck();
-
             _targetLocations = new List<LocationId>();
             foreach (var (target, journey) in settings.TargetStop)
             {
@@ -131,14 +127,13 @@ namespace Itinero.Transit.Algorithms.CSA
             _earliestDeparture = settings.EarliestDeparture.ToUnixTime();
             _lastArrival = settings.LastArrival.ToUnixTime();
 
-            _connections = settings.Connections;
-            _stopsReader = settings.StopsDbReader;
+            _connections = settings.ConnectionsEnumerator;
+            _stopsReader = settings.StopsReader;
 
             _comparator = settings.Comparator;
             _empty = new ParetoFrontier<T>(_comparator);
             _metricFactory = settings.MetricFactory;
             _transferPolicy = settings.TransferPolicy;
-            _possibleJourney = settings.ExampleJourney;
             _filter = settings.Filter;
             _filter?.CheckWindow(_earliestDeparture, _lastArrival);
         }
@@ -158,20 +153,19 @@ namespace Itinero.Transit.Algorithms.CSA
                     break;
                 }
             }
-            
+
             // The main algorithm is done
             // Time to gather the results
             // To do this, we collect all journeys from every possible departure location
             var revJourneys = new List<Journey<T>>();
             foreach (var location in _departureLocations)
             {
-
                 if (!_stationJourneys.ContainsKey(location))
                 {
                     // Seemed it wasn't possible to reach the destination from this departure location
                     continue;
                 }
-                
+
                 var journeys = _stationJourneys[location].Frontier;
 
                 foreach (var j in journeys)
@@ -220,7 +214,6 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <param name="c"></param>
         private void IntegrateConnection(IConnection c)
         {
-
             if (c.ArrivalTime > _lastArrival)
             {
                 return;
@@ -258,8 +251,8 @@ namespace Itinero.Transit.Algorithms.CSA
              Again, we don't check whether we can get on or off
              */
             _tripJourneys[c.TripId] = journeys;
-            
-            
+
+
             // Now, we update the journeys from the departure station to the arrival station
             // However, we can only do this if we _can get on_ the connection
             if (!c.CanGetOn())
@@ -291,13 +284,12 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <returns></returns>
         private Journey<T> WalkToTargetFrom(IConnection c)
         {
-
             if (!c.CanGetOff())
             {
                 // We can't get off c and thus can't walk to the destination
                 return Journey<T>.InfiniteJourney;
             }
-            
+
             foreach (var targetLocation in _targetLocations)
             {
                 // ReSharper disable once InvertIf
@@ -329,23 +321,14 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 return _empty;
             }
-            
+
             // If we already are on the trip, we can stay seated. We don't have to check if we can get on or off
 
             var pareto = _tripJourneys[key];
             var frontier = pareto.Frontier;
             for (var i = 0; i < frontier.Count; i++)
             {
-                var newFrontier = frontier[i].ChainBackward(c);
-                if (FilterJourney(newFrontier))
-                {
-                    frontier[i] = newFrontier;
-                }
-                else
-                {
-                    frontier.RemoveAt(i);
-                    i--;
-                }
+                frontier[i] = frontier[i].ChainBackward(c);
             }
 
             return pareto;
@@ -370,7 +353,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 // No! We can not get out of this connection;
                 return _empty;
             }
-            
+
             // We get all possible, pareto optimal journeys departing here...
             var pareto = _stationJourneys[c.ArrivalStop];
             // .. and we extend them with c. What is non-dominated, we return
@@ -408,24 +391,6 @@ namespace Itinero.Transit.Algorithms.CSA
             frontier.AddToFrontier(j);
 
             return frontier;
-        }
-
-        /// <summary>
-        /// Sometimes, we know that a journey will never be taken.
-        ///
-        /// For example, if one journey is already known to work,
-        /// we know that it has no use to keep track of a journey which performs worse, as it'll be pruned later on anyway
-        ///
-        /// This helps in limiting the growth of the trees
-        ///
-        /// Returns false if no need to add the journey
-        /// </summary>
-        /// <returns></returns>
-        private bool FilterJourney(Journey<T> j)
-        {
-            if (_possibleJourney == null) return true;
-            var duel = _comparator.ADominatesB(_possibleJourney, j);
-            return duel >= 0;
         }
     }
 }

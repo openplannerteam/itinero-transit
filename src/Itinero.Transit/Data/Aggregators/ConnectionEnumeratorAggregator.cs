@@ -10,6 +10,12 @@ namespace Itinero.Transit.Data.Aggregators
 
         private IConnectionEnumerator _a, _b;
 
+        public static IConnectionEnumerator CreateFrom(IEnumerable<TransitDb.TransitDbSnapShot> enumerators)
+        {
+            var depEnumerators = 
+                enumerators.Select(tdb => (IConnectionEnumerator) tdb.ConnectionsDb.GetDepartureEnumerator()).ToList();
+            return CreateFrom(depEnumerators);
+        }
 
         public static IConnectionEnumerator CreateFrom(List<IConnectionEnumerator> enumerators)
         {
@@ -22,6 +28,7 @@ namespace Itinero.Transit.Data.Aggregators
             {
                 return enumerators[0];
             }
+
             return new ConnectionEnumeratorAggregator(enumerators);
         }
 
