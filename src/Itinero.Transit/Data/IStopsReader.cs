@@ -14,6 +14,11 @@ namespace Itinero.Transit.Data
         bool MoveTo(string globalId);
         void Reset();
 
+        IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box);
+
+        IStop SearchClosest(double lon, double lat, double maxDistanceInMeters = 1000);
+        
+        
         List<IStopsReader> UnderlyingDatabases { get; }
 
         /// <summary>

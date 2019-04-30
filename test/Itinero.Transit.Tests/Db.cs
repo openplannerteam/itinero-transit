@@ -26,34 +26,33 @@ namespace Itinero.Transit.Tests
             writer.AddOrUpdateConnection(stop0, stop1,
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 20, 00),
-                10 * 60, 0, 0, 0, 0);
+                10 * 60, 0, 0, (0, 0), 0);
 
             writer.AddOrUpdateConnection(stop1, stop2,
                 "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 16, 33, 00),
-                10 * 60, 0, 0, 1, 0);
+                10 * 60, 0, 0, (0, 1), 0);
 
             writer.AddOrUpdateConnection(stop2, stop3,
                 "https://example.com/connections/3",
                 new DateTime(2018, 12, 04, 16, 46, 00),
-                10 * 60, 0, 0, 1, 0);
-
+                10 * 60, 0, 0, (0, 1), 0);
             // Continues trip 0
             writer.AddOrUpdateConnection(stop1, stop3,
                 "https://example.com/connections/2",
                 new DateTime(2018, 12, 04, 16, 35, 00),
-                40 * 60, 0, 0, 0, 0);
+                40 * 60, 0, 0, (0, 0), 0);
 
             // We add a very early and late connection in order to be able to run the algos and not run out of connections
             writer.AddOrUpdateConnection(stop10, stop11,
                 "https://example.com/connections/100",
                 new DateTime(2018, 12, 04, 23, 30, 00),
-                120, 0, 0, 100, 0);
+                120, 0, 0, (0, 100), 0);
 
             writer.AddOrUpdateConnection(stop11, stop10,
                 "AddOrUpdateConnection://example.com/connections/101",
                 new DateTime(2018, 12, 04, 00, 30, 00),
-                120, 0, 0, 100, 0);
+                120, 0, 0, (0, 100), 0);
 
             writer.Close();
 

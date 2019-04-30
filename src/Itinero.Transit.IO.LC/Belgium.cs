@@ -26,6 +26,8 @@ namespace Itinero.Transit.IO.LC
             {"delijn-antwerpen", ("https://openplanner.ilabt.imec.be/delijn/Antwerpen/connections", "https://openplanner.ilabt.imec.be/delijn/Antwerpen/stops")},
         };
 
+        
+        
 
         public const string SncbConnections = "https://graph.irail.be/sncb/connections";
         public const string SncbLocations = "https://irail.be/stations";

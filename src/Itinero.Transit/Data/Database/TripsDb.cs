@@ -27,12 +27,14 @@ namespace Itinero.Transit.Data
         
         private readonly AttributesIndex _attributes;
         private uint _nextId;
+        private uint _dbId;
         
         /// <summary>
         /// Creates a new trips database.
         /// </summary>
-        internal TripsDb()
+        internal TripsDb(uint dbId)
         {
+            _dbId = dbId;
             _tripIds = new MemoryArray<string>(0);
             _tripAttributeIds = new MemoryArray<uint>(0);
             _tripIdPointersPerHash = new MemoryArray<uint>(_tripIdHashSize);
@@ -44,10 +46,13 @@ namespace Itinero.Transit.Data
             _attributes = new AttributesIndex();
         }
 
-        private TripsDb(ArrayBase<string> tripIds, ArrayBase<uint> tripAttributeIds, ArrayBase<uint> tripIdPointersPerHash,
+        private TripsDb(
+            uint dbId,
+            ArrayBase<string> tripIds, ArrayBase<uint> tripAttributeIds, ArrayBase<uint> tripIdPointersPerHash,
             ArrayBase<uint> tripIdLinkedList, AttributesIndex attributes, uint tripIdLinkedListPointer, uint nextId, int tripIdHashSize)
         {
             _tripIdHashSize = tripIdHashSize;
+            _dbId = dbId;
             _tripIds = tripIds;
             _tripAttributeIds = tripAttributeIds;
             _tripIdPointersPerHash = tripIdPointersPerHash;
@@ -63,7 +68,7 @@ namespace Itinero.Transit.Data
         /// <param name="globalId">The global id.</param>
         /// <param name="attributes">The attributes.</param>
         /// <returns>The trip id.</returns>
-        internal uint Add(string globalId, IEnumerable<Attribute> attributes = null)
+        internal (uint dbId, uint localId) Add(string globalId, IEnumerable<Attribute> attributes = null)
         {
             var tripId = _nextId;
             _nextId++;
@@ -87,7 +92,7 @@ namespace Itinero.Transit.Data
             _tripIdLinkedList[_tripIdLinkedListPointer - 1] = _tripIdPointersPerHash[hash];
             _tripIdPointersPerHash[hash] = _tripIdLinkedListPointer - 2;
 
-            return tripId;
+            return (_dbId, tripId);
         }
 
         private uint Hash(string id)
@@ -135,7 +140,7 @@ namespace Itinero.Transit.Data
             return length;
         }
 
-        internal static TripsDb ReadFrom(Stream stream)
+        internal static TripsDb ReadFrom(Stream stream, uint id)
         {
             var buffer = new byte[4];
             
@@ -158,7 +163,7 @@ namespace Itinero.Transit.Data
             // read attributes.
             var attributes = AttributesIndex.Deserialize(stream, true);
             
-            return new TripsDb(tripIds, tripAttributeIds, tripIdPointersPerHash, tripIdLinkedList, attributes, tripIdLinkedListPointer, nextId, tripIdHashSize);
+            return new TripsDb(id, tripIds, tripAttributeIds, tripIdPointersPerHash, tripIdLinkedList, attributes, tripIdLinkedListPointer, nextId, tripIdHashSize);
         }
 
         /// <summary>
@@ -179,7 +184,8 @@ namespace Itinero.Transit.Data
             
             // don't clone the attributes, it's supposed to be add-only anyway.
             // it's up to the user not to write to it from multiple threads.
-            return new TripsDb(tripIds, tripAttributeIds, tripIdPointersPerHash, tripIdLinkedList, _attributes,
+            return new TripsDb(_dbId,
+                tripIds, tripAttributeIds, tripIdPointersPerHash, tripIdLinkedList, _attributes,
                 _tripIdLinkedListPointer, _nextId, _tripIdHashSize);
         }
 
@@ -189,7 +195,7 @@ namespace Itinero.Transit.Data
         /// <returns>The reader.</returns>
         public TripsDbReader GetReader()
         {
-            return new TripsDbReader(this);
+            return new TripsDbReader(_dbId, this);
         }
 
         /// <summary>
@@ -197,10 +203,12 @@ namespace Itinero.Transit.Data
         /// </summary>
         public class TripsDbReader : ITrip
         {
+            private readonly uint _dbId;
             private readonly TripsDb _tripsDb;
             
-            internal TripsDbReader(TripsDb tripsDb)
+            internal TripsDbReader(uint dbId, TripsDb tripsDb)
             {
+                _dbId = dbId;
                 _tripsDb = tripsDb;
             }
 
@@ -256,7 +264,7 @@ namespace Itinero.Transit.Data
             /// <summary>
             /// Gets the id.
             /// </summary>
-            public uint Id => _tripId;
+            public (uint dbId, uint localId) Id => (_dbId, _tripId);
 
             /// <summary>
             /// Gets the global id.

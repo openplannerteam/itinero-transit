@@ -60,24 +60,24 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var loc2 = writer.AddOrUpdateStop("https://example.com/stops/1", 2.1, 0.1);
             var loc3 = writer.AddOrUpdateStop("https://example.com/stops/1", 3.1, 0.1);
 
-          writer.AddOrUpdateConnection(loc0, loc1,
+            writer.AddOrUpdateConnection(loc0, loc1,
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 00, 00),
-                30 * 60, 0, 0, 0, 0);
+                30 * 60, 0, 0, (0, 0), 0);
 
 
             writer.AddOrUpdateConnection(loc0, loc1,
                 "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 16, 00, 00),
-                40 * 60, 0, 0, 1, 0);
+                40 * 60, 0, 0, (0, 1), 0);
 
-            writer.AddOrUpdateConnection(loc2,loc3, "https//example.com/connections/2",
+            writer.AddOrUpdateConnection(loc2, loc3, "https//example.com/connections/2",
                 new DateTime(2018, 12, 04, 20, 00, 00),
-                40 * 60, 0, 0, 2, 0);
+                40 * 60, 0, 0, (0, 2), 0);
 
-            writer.AddOrUpdateConnection(loc2,loc3, "https//example.com/connections/4",
+            writer.AddOrUpdateConnection(loc2, loc3, "https//example.com/connections/4",
                 new DateTime(2018, 12, 04, 2, 00, 00),
-                40 * 60, 0, 0, 3, 0);
+                40 * 60, 0, 0, (0, 3), 0);
 
             writer.Close();
 
@@ -113,11 +113,11 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var stop2 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
 
             writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 16, 20, 00), 10 * 60, 0, 0, 0, 3); // MODE 3 - cant get on or off
+                new DateTime(2018, 12, 04, 16, 20, 00), 10 * 60, 0, 0, (0, 0), 3); // MODE 3 - cant get on or off
 
             // Prevent depletion of the DB
             writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 0, 0, 0, 3);
+                new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 0, 0, (0, 0), 3);
             writer.Close();
             var latest = transitDb.Latest;
 

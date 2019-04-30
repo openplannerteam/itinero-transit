@@ -8,14 +8,14 @@ namespace Itinero.Transit.Data
     public interface ITrip
     {
         /// <summary>
-        /// Gets the global id.
+        /// Gets the global id, probably an URI representing this trip.
         /// </summary>
         string GlobalId { get; }
         
         /// <summary>
-        /// Gets the id.
+        /// Gets the local id in this database.
         /// </summary>
-        uint Id { get; }
+        (uint dbId, uint localId) Id { get; }
         
         /// <summary>
         /// Gets the attributes.

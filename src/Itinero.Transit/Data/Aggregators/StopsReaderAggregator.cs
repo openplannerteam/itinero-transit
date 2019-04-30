@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Itinero.Transit.Algorithms.Search;
 using Itinero.Transit.Data.Attributes;
 
 namespace Itinero.Transit.Data.Aggregators
@@ -8,20 +9,21 @@ namespace Itinero.Transit.Data.Aggregators
     {
         private IStopsReader _currentStop;
 
+     
         public List<IStopsReader> UnderlyingDatabases { get; }
-        
+
         public static IStopsReader CreateFrom(IEnumerable<TransitDb.TransitDbSnapShot> snapShot)
         {
-            var enumerators = new List<IStopsReader>(); 
+            var enumerators = new List<IStopsReader>();
 
             foreach (var dbSnapShot in snapShot)
             {
                 enumerators.Add(dbSnapShot.StopsDb.GetReader());
             }
-            
+
             return CreateFrom(enumerators);
         }
-        
+
         public static IStopsReader CreateFrom(List<IStopsReader> enumerators)
         {
             if (enumerators.Count == 0)
@@ -33,9 +35,10 @@ namespace Itinero.Transit.Data.Aggregators
             {
                 return enumerators[0];
             }
+
             return new StopsReaderAggregator(enumerators);
         }
-        
+
         private StopsReaderAggregator(List<IStopsReader> stops)
         {
             UnderlyingDatabases = stops;
@@ -45,7 +48,6 @@ namespace Itinero.Transit.Data.Aggregators
         {
             _currentStop = UnderlyingDatabases[(int) stop.DatabaseId];
             return _currentStop.MoveTo(stop);
-
         }
 
         public bool MoveTo(string globalId)
@@ -59,6 +61,7 @@ namespace Itinero.Transit.Data.Aggregators
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -69,6 +72,17 @@ namespace Itinero.Transit.Data.Aggregators
                 reader.Reset();
             }
         }
+
+        public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
+        {
+            return StopSearch.SearchInBox(this, box);
+        }
+        
+        public IStop SearchClosest(double lon, double lat, double maxDistanceInMeters = 1000)
+        {
+            return StopSearch.SearchClosest(this, lon, lat, maxDistanceInMeters);
+        }
+
 
 
         public string GlobalId => _currentStop.GlobalId;
@@ -82,7 +96,5 @@ namespace Itinero.Transit.Data.Aggregators
         public IAttributeCollection Attributes => _currentStop.Attributes;
 
         public StopsDb StopsDb => _currentStop.StopsDb;
-
-       
     }
 }

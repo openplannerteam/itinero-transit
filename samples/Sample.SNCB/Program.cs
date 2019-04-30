@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Itinero.Transit;
 using Itinero.Transit.Data;
 using Itinero.Transit.IO.LC;
@@ -29,16 +30,16 @@ namespace Sample.SNCB
             Console.WriteLine("Calculating journeys...");
 
             var journeys = snapshot
-                    .SelectProfile(new DefaultProfile())
+                .SelectProfile(new DefaultProfile())
                 .SelectStops(departureStop, arrivalStop)
                 .SelectTimeFrame(DateTime.Now, DateTime.Now.AddHours(3))
                 .AllJourneys();
-                
             if (journeys == null || journeys.Count == 0)
             {
                 Console.WriteLine("No journeys found.");
             }
             else
+
             {
                 foreach (var journey in journeys)
                 {

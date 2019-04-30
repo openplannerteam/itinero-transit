@@ -137,7 +137,7 @@ namespace Itinero.Transit.Algorithms.CSA
             }
 
             Connections = ConnectionEnumeratorAggregator.CreateFrom(cons);
-            StopsDbReader = StopsReaderAggregator.CreateFrom(transitDbs);
+            StopsDbReader = StopsReaderAggregator.CreateFrom(stops).UseCache();
             EarliestDeparture = earliestDeparture;
             LastArrival = lastDeparture;
             MetricFactory = metricFactory;

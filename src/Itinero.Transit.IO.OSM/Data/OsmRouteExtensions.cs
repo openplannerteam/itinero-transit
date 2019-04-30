@@ -98,7 +98,7 @@ namespace Itinero.Transit.Data
                     var tripGlobalId = $"https://openstreetmap.org/relation/{route.Id}/vehicle/{index}";
                     var tripIndex = wr.AddOrUpdateTrip(tripGlobalId);
                     allRuns.AddRange(
-                        CreateRun(route, tripIndex, index, stopIds, currentStart));
+                        CreateRun(route, tripIndex.localId, index, stopIds, currentStart));
 
                     index = (index + 1) % modulo;
                     currentStart += route.Interval;

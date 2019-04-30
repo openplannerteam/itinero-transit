@@ -48,10 +48,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
         ///  Tests all algorithms, with the default test data on the default test date
         /// </summary>
         /// <returns></returns>
-        public TransitDb ExecuteDefault()
+        public TransitDb ExecuteDefault(DateTime date)
         {
-            var date = new DateTime(2019, 04, 09);
-            var path = "fixed-test-cases-2019-04-09.transitdb";
+            var path = $"fixed-test-cases-{date:yyyy-MM-dd}.transitdb";
             var db = TransitDb.ReadFrom(path, 0);
             Execute((db, date));
             return db;

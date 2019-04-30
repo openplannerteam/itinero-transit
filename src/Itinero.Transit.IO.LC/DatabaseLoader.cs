@@ -209,7 +209,7 @@ namespace Itinero.Transit.IO.LC
         /// </summary>
         /// <param name="connection"></param>
         /// <returns></returns>
-        private uint AddTrip(Connection connection)
+        private (uint dbId, uint localId) AddTrip(Connection connection)
         {
             var tripUri = connection.Trip().ToString();
 

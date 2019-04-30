@@ -31,7 +31,8 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Starting the Functional Tests...");
 
 
-            /*
+            //*
+            new MultiTransitDbTest().Run();
             /*/
             LocalTests();
             InternetTests();
@@ -43,7 +44,8 @@ namespace Itinero.Transit.Tests.Functional
         private static void LocalTests()
         {
             // Tests all the algorithms on multiple inputs. This step does not need internet
-            var db = new TestAllAlgorithms().ExecuteDefault();
+            var date = new DateTime(2019,04,29);
+            var db = new TestAllAlgorithms().ExecuteDefault(date);
             new TripHeadsignTest().Run(db);
             TestClosestStopsAndRouting(db);
             Log.Information("Running NoDuplicationTest");

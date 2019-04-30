@@ -177,6 +177,7 @@ namespace Itinero.Transit.Data
             LocationId stop2, string globalId, ulong departureTime, ushort travelTime,
             ushort departureDelay, ushort arrivalDelay, uint tripId, ushort mode)
         {
+            
             var reader = GetReader();
             if (!reader.MoveTo(globalId))
             {

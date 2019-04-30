@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using Itinero.Transit.Algorithms.Search;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data.Tiles;
 using Reminiscence;
@@ -51,7 +52,8 @@ namespace Itinero.Transit.Data
             _attributes = new AttributesIndex(AttributesIndexMode.ReverseStringIndexKeysOnly);
         }
 
-        private StopsDb( uint databaseId, TiledLocationIndex stopLocations, ArrayBase<string> stopIds, ArrayBase<uint> stopAttributeIds,
+        private StopsDb(uint databaseId, TiledLocationIndex stopLocations, ArrayBase<string> stopIds,
+            ArrayBase<uint> stopAttributeIds,
             ArrayBase<uint> stopIdPointsPerHash, ArrayBase<uint> stopIdLinkedList, AttributesIndex attributes,
             uint stopIdLinkedListPointer)
         {
@@ -95,7 +97,7 @@ namespace Itinero.Transit.Data
         /// <param name="latitude">The stop latitude.</param>
         /// <param name="attributes">The stop attributes.</param>
         /// <returns>An internal id representing the stop in this transit db.</returns>
-        internal LocationId Add(string globalId, double longitude, double latitude, 
+        internal LocationId Add(string globalId, double longitude, double latitude,
             IEnumerable<Attribute> attributes = null)
         {
             // store location.
@@ -194,7 +196,8 @@ namespace Itinero.Transit.Data
             // read attributes.
             var attributes = AttributesIndex.Deserialize(stream, true);
 
-            return new StopsDb(databaseId, stopLocations, stopIds, stopAttributeIds, stopIdPointsPerHash, stopIdLinkedList,
+            return new StopsDb(databaseId, stopLocations, stopIds, stopAttributeIds, stopIdPointsPerHash,
+                stopIdLinkedList,
                 attributes, stopIdLinkedListPointer);
         }
 
@@ -256,6 +259,16 @@ namespace Itinero.Transit.Data
             public void Reset()
             {
                 _locationEnumerator.Reset();
+            }
+
+            public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
+            {
+                return StopSearch.SearchInBox(this, box);
+            }
+
+            public IStop SearchClosest(double lon, double lat, double maxDistanceInMeters = 1000)
+            {
+                return StopSearch.SearchClosest(this, lon, lat, maxDistanceInMeters);
             }
 
             /// <summary>
@@ -340,7 +353,6 @@ namespace Itinero.Transit.Data
             public StopsDb StopsDb => _stopsDb;
 
             public List<IStopsReader> UnderlyingDatabases => null;
-
         }
     }
 }

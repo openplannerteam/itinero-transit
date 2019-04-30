@@ -82,7 +82,8 @@ namespace Itinero.Transit
             }
         }
 
-        public static string ToString<T>(this TransitDb.TransitDbSnapShot tdb, Journey<T> journey) where T : IJourneyMetric<T>
+        public static string ToString<T>(this TransitDb.TransitDbSnapShot tdb, Journey<T> journey)
+            where T : IJourneyMetric<T>
         {
             return journey.ToString(tdb);
         }
@@ -172,12 +173,11 @@ namespace Itinero.Transit
             _tdbs = tdbs;
             _profile = profile;
         }
-        
-        
-        
+
+
         public WithSingleLocation<T> SelectSingleStop(IEnumerable<LocationId> stop)
         {
-            return new WithSingleLocation<T>( new WithLocation<T>(_tdbs, _profile, stop, stop));
+            return new WithSingleLocation<T>(new WithLocation<T>(_tdbs, _profile, stop, stop));
         }
 
         public WithSingleLocation<T> SelectSingleStop(IEnumerable<string> stop)
@@ -210,10 +210,7 @@ namespace Itinero.Transit
                 _tdbs.FindStop(stop, $"Stop {stop} was not found")
             );
         }
-        
-        
-        
-        
+
 
         public WithLocation<T> SelectStops(IEnumerable<LocationId> from, IEnumerable<LocationId> to)
         {
@@ -341,6 +338,30 @@ namespace Itinero.Transit
             _to = to;
             _start = start;
             _end = end;
+
+            if (_start > _end)
+            {
+                throw new ArgumentException(
+                    "Scan begin time (departure time) falls behind scan end time (arrival time)");
+            }
+
+            if (_start == _end)
+            {
+                throw new ArgumentException(
+                    "Scan begin time (departure time) is the same as scan end time (arrival time)");
+            }
+
+            if (_start == DateTime.MinValue)
+            {
+                throw new ArgumentException(
+                    "Scan begin time (departure time) is DateTime.MinValue. Don't do this, this can cause (near)-infinite loops. Pick a sensible default instead (such as one day) in advance");
+            }
+
+            if (_end == DateTime.MaxValue)
+            {
+                throw new ArgumentException(
+                    "Scan end time (arrival time) is DateTime.MaxValue. Don't do this, this can cause (near)-infinite loops. Pick a sensible default instead (such as one day) after the start date");
+            }
         }
 
 
@@ -412,6 +433,20 @@ namespace Itinero.Transit
             }
 
             return reversedJourneys;
+        }
+
+        internal ScanSettings<T> GetScanSettings()
+        {
+            return new ScanSettings<T>(
+                _tdbs,
+                _start,
+                _end,
+                _profile.MetricFactory,
+                _profile.ProfileComparator,
+                _profile.InternalTransferGenerator,
+                _profile.WalksGenerator,
+                _from, _to
+            );
         }
 
         ///  <summary>

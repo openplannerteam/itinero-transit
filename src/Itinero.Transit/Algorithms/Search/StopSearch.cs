@@ -4,7 +4,7 @@ using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Algorithms.Search
 {
-    public static class StopSearch
+    internal static class StopSearch
     {
         /// <summary>
         /// Enumerates all stops in the given bounding box.
@@ -12,7 +12,7 @@ namespace Itinero.Transit.Algorithms.Search
         /// <param name="stopsDb">The stops db.</param>
         /// <param name="box">The box to enumerate in.</param>
         /// <returns>An enumerator with all the stops.</returns>
-        public static IEnumerable<IStop> SearchInBox(this IStopsReader stopsDb,
+        public static IEnumerable<IStop> SearchInBox(IStopsReader stopsDb,
             (double minLon, double minLat, double maxLon, double maxLat) box)
         {
             var rangeStops = new TileRangeStopEnumerable(stopsDb, box);
@@ -26,7 +26,7 @@ namespace Itinero.Transit.Algorithms.Search
                     {
                         continue;
                     }
-                    
+
                     if (box.minLat > location.Latitude ||
                         box.minLon > location.Longitude ||
                         box.maxLat < location.Latitude ||
@@ -48,7 +48,7 @@ namespace Itinero.Transit.Algorithms.Search
         /// <param name="lat">The latitude.</param>
         /// <param name="maxDistanceInMeters">The maximum distance in meters.</param>
         /// <returns>An enumerator with all the stops.</returns>
-        public static IStop SearchClosest(this IStopsReader stopsDb,
+        public static IStop SearchClosest(IStopsReader stopsDb,
             double lon, double lat, double maxDistanceInMeters = 1000)
         {
             var bestDistance = maxDistanceInMeters;
