@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Journeys
@@ -70,35 +71,78 @@ namespace Itinero.Transit.Journeys
             j.PreviousLink.Reversed(buildOn, addTo);
         }
 
-
-        public static Journey<T> Pruned<T>(this Journey<T> j) where T : IJourneyMetric<T>
+        /// <summary>
+        /// Creates a new journey, which gives an overview of the journey.
+        /// (Thus: only one segment per vehicle, walk or transfer).
+        /// Journeys should be built in a forward fashion and be deduplicated.
+        /// </summary>
+        /// <param name="j"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        [Pure]
+        public static Journey<T> Summarized<T>(this Journey<T> j) where T : IJourneyMetric<T>
         {
-            var restOfTheJourney = j.PreviousLink.PrunedWithoutLast();
-            return restOfTheJourney.Chain(j.Connection, j.Time, j.Location, j.TripId);
+            var parts = j.ToList();
+            var summarized =
+                new Journey<T>(parts[0].Location, parts[0].Time, parts[0].Metric);
+
+            int i = 1;
+            while (i < parts.Count)
+            {
+                // We search something that should be summarized
+                // The 'segment to summarize' will be between (and including) pDep and pEnd
+                var pDep = parts[i];
+
+                if (pDep.SpecialConnection)
+                {
+                    summarized = summarized.ChainSpecial(pDep.Connection, pDep.Time, pDep.Location, pDep.TripId);
+                    i++;
+                    continue;
+                }
+
+                do
+                {
+                    i++;
+                } while (i < parts.Count && !parts[i].SpecialConnection);
+
+                var pEnd = parts[i - 1];
+                // pDep --> pEnd are just all part of the same trip
+                // We summarize it as a single connection
+                var connection = new SimpleConnection(pDep.Connection,
+                    pDep.Location, pEnd.Location,
+                    pDep.PreviousLink.Time, (ushort) (pEnd.Time - pDep.PreviousLink.Time),
+                    0, 0, 0, pDep.TripId);
+
+                summarized = summarized.ChainForward(connection);
+            }
+
+            return summarized;
         }
+
 
         /// <summary>
-        /// Creates a new journey, where only important stops are retained. The intermediate stops are scrapped
+        /// Generates a list with all the segments of the journey, for easy indexing.
+        /// Element [0] is the root
         /// </summary>
         /// <returns></returns>
-        private static Journey<T> PrunedWithoutLast<T>(this Journey<T> j) where T : IJourneyMetric<T>
+        [Pure]
+        public static List<Journey<T>> ToList<T>(this Journey<T> j) where T : IJourneyMetric<T>
         {
-            if (j.SpecialConnection && j.Connection == Journey<T>.GENESIS)
+            var allElements = new List<Journey<T>>();
+
+            while (j != null)
             {
-                return j;
+                allElements.Add(j);
+                j = j.PreviousLink;
             }
 
-            if (j.SpecialConnection)
-            {
-                var restOfTheJourney = j.PreviousLink.Pruned();
-                return restOfTheJourney.ChainSpecial(
-                    j.Connection, j.Time, j.Location, j.PreviousLink.TripId);
-            }
+            allElements.Reverse();
 
-            return j.PreviousLink.PrunedWithoutLast();
+            return allElements;
         }
 
 
+        [Pure]
         public static Journey<T> SetTag<T>(this Journey<T> j, TripId tag) where T : IJourneyMetric<T>
         {
             if (j.SpecialConnection && j.Connection == Journey<T>.GENESIS)

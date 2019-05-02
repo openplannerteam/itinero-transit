@@ -5,6 +5,7 @@ using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Journeys;
+using Itinero.Transit.Logging;
 
 // ReSharper disable UnusedMember.Global
 
@@ -184,15 +185,41 @@ namespace Itinero.Transit
 
     public class WithProfile<T> where T : IJourneyMetric<T>
     {
-        private readonly IStopsReader _stopsReader;
-        private readonly IConnectionEnumerator _connectionEnumerator;
-        private readonly Profile<T> _profile;
+        internal readonly IStopsReader _stopsReader;
+        internal readonly IConnectionEnumerator _connectionEnumerator;
+        internal readonly Profile<T> _profile;
 
         internal WithProfile(IEnumerable<TransitDb.TransitDbSnapShot> tdbs, Profile<T> profile)
         {
-            _stopsReader = StopsReaderAggregator.CreateFrom(tdbs);
+            _stopsReader = StopsReaderAggregator.CreateFrom(tdbs).UseCache();
             _connectionEnumerator = ConnectionEnumeratorAggregator.CreateFrom(tdbs);
             _profile = profile;
+        }
+
+
+        /// <summary>
+        /// Runs the 'closest stops' search as specified by the profile for every stop in the dataset.
+        /// Might speed up actual calculations.
+        ///
+        /// This method is run synchronously, but could be parallelized
+        /// </summary>
+        /// <returns></returns>
+        public WithProfile<T> PrecalculateClosestStops()
+        {
+            Log.Information("Caching reachable locations");
+            var start = DateTime.Now;
+            _stopsReader.Reset();
+            while (_stopsReader.MoveNext())
+            {
+                var current = (IStop) _stopsReader;
+                _stopsReader.LocationsInRange(
+                    current.Latitude, current.Longitude,
+                    _profile.WalksGenerator.Range());
+            }
+
+            var end = DateTime.Now;
+            Log.Information($"Caching reachable locations took {(end - start).TotalMilliseconds}ms");
+            return this;
         }
 
 

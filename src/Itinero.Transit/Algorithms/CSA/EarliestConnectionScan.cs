@@ -296,7 +296,7 @@ namespace Itinero.Transit.Algorithms.CSA
             }
 
             var reachableLocations =
-                _stopsReader.LocationsInRange(_stopsReader, _walkPolicy.Range());
+                _stopsReader.LocationsInRange(_stopsReader.Latitude, _stopsReader.Longitude, _walkPolicy.Range());
 
             var journey = _s[location];
 

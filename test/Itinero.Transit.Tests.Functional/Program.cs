@@ -31,7 +31,7 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Starting the Functional Tests...");
 
 
-           /*
+           //*
             new MultiTransitDbTest().Run();
             /*/
             LocalTests();

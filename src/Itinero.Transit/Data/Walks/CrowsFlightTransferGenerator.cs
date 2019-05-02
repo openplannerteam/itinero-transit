@@ -1,3 +1,4 @@
+using Itinero.Transit.Algorithms.Search;
 using Itinero.Transit.Journeys;
 
 namespace Itinero.Transit.Data.Walks

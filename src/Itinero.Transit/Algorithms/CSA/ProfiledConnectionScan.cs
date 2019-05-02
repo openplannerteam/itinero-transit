@@ -36,9 +36,15 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly IConnectionFilter _filter;
 
         /// <summary>
-        /// Rules how much penalty is given to go from one connection to another
+        /// Rules how much penalty is given to go from one connection to another, without changing stations
         /// </summary>
         private readonly IOtherModeGenerator _transferPolicy;
+
+
+        /// <summary>
+        /// Rules how the traveller walks from one stop to another
+        /// </summary>
+        private readonly IOtherModeGenerator _walkPolicy;
 
         // Placeholder empty frontier; used when a frontier is needed but not present.
         private readonly ParetoFrontier<T> _empty;
@@ -134,6 +140,7 @@ namespace Itinero.Transit.Algorithms.CSA
             _empty = new ParetoFrontier<T>(_comparator);
             _metricFactory = settings.MetricFactory;
             _transferPolicy = settings.TransferPolicy;
+            _walkPolicy = settings.WalkPolicy;
             _filter = settings.Filter;
             _filter?.CheckWindow(_earliestDeparture, _lastArrival);
         }
@@ -269,9 +276,10 @@ namespace Itinero.Transit.Algorithms.CSA
             _stationJourneys[c.DepartureStop].AddAllToFrontier(journeys.Frontier);
 
 
-            /*We can arrive here quite optimally.
-             This means that we can walk from other locations to here*/
-            // Adds foohpats for each non-dominated journey 
+            /*We can depart at c.DepartureStop quite optimally.
+             This means that we can walk from other locations to here to take an optimal journey to the destination
+             UpdateFootpaths calculates all those walks and adds them to the _stationJourneys
+             */
             UpdateFootpaths(journeys, c.DepartureStop);
         }
 
@@ -369,7 +377,39 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <param name="cDepartureStop"></param>
         private void UpdateFootpaths(ParetoFrontier<T> journeys, LocationId cDepartureStop)
         {
-            // TODO incorporate intermodality
+            if (_walkPolicy.Range() <= 0f)
+            {
+                return;
+            }
+
+            _stopsReader.MoveTo(cDepartureStop);
+            var nearbyStops = _stopsReader.LocationsInRange
+                (_stopsReader.Latitude, _stopsReader.Longitude, _walkPolicy.Range());
+
+
+            foreach (var possibleStartingStop in nearbyStops)
+            {
+                var stopId = possibleStartingStop.Id;
+                if (stopId.Equals(cDepartureStop))
+                {
+                    continue;
+                }
+
+                foreach (var journey in journeys.Frontier)
+                {
+                    // Create a walk from 'possibleStartingStop' to 'cDepartureStop', where an optimal journey is taken to the destination
+                    var journeyWithWalk = _walkPolicy.CreateArrivingTransfer(
+                        _stopsReader, journey, ulong.MinValue, stopId);
+
+                    // And add this journey with walk to the pareto frontier
+                    if (!_stationJourneys.ContainsKey(stopId))
+                    {
+                        _stationJourneys[stopId] = new ParetoFrontier<T>(_comparator);
+                    }
+
+                    _stationJourneys[stopId].AddToFrontier(journeyWithWalk);
+                }
+            }
         }
 
 

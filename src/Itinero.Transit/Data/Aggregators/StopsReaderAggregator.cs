@@ -9,8 +9,10 @@ namespace Itinero.Transit.Data.Aggregators
     {
         private IStopsReader _currentStop;
 
-     
+
         public List<IStopsReader> UnderlyingDatabases { get; }
+        private int _currentIndex;
+
 
         public static IStopsReader CreateFrom(IEnumerable<TransitDb.TransitDbSnapShot> snapShot)
         {
@@ -42,6 +44,25 @@ namespace Itinero.Transit.Data.Aggregators
         private StopsReaderAggregator(List<IStopsReader> stops)
         {
             UnderlyingDatabases = stops;
+            _currentStop = stops[_currentIndex];
+        }
+
+        public bool MoveNext()
+        {
+            if (_currentStop.MoveNext())
+            {
+                return true;
+            }
+
+            _currentIndex++;
+
+            if (_currentIndex == UnderlyingDatabases.Count)
+            {
+                return false;
+            }
+
+            _currentStop = UnderlyingDatabases[_currentIndex];
+            return true;
         }
 
         public bool MoveTo(LocationId stop)
@@ -67,22 +88,28 @@ namespace Itinero.Transit.Data.Aggregators
 
         public void Reset()
         {
+            _currentIndex = 0;
             foreach (var reader in UnderlyingDatabases)
             {
                 reader.Reset();
             }
         }
 
+
+        public IEnumerable<IStop> LocationsInRange(double lat, double lon, double range)
+        {
+            return StopSearch.LocationsInRange(this, lat, lon, range);
+        }
+        
         public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
         {
             return StopSearch.SearchInBox(this, box);
         }
-        
+
         public IStop SearchClosest(double lon, double lat, double maxDistanceInMeters = 1000)
         {
             return StopSearch.SearchClosest(this, lon, lat, maxDistanceInMeters);
         }
-
 
 
         public string GlobalId => _currentStop.GlobalId;

@@ -6,7 +6,7 @@ using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.Data.Aggregators
 {
-    public static class IStopReaderExtensions
+    public static class StopReaderExtensions
     {
         public static IStopsReader UseCache(this IStopsReader stopsReader)
         {
@@ -25,6 +25,7 @@ namespace Itinero.Transit.Data.Aggregators
     {
         private readonly IStopsReader _stopsReader;
 
+        private uint _miss, _hit;
 
         private Dictionary<(double, double, double, double), IEnumerable<IStop>>
             cache = new Dictionary<(double, double, double, double), IEnumerable<IStop>>();
@@ -32,9 +33,26 @@ namespace Itinero.Transit.Data.Aggregators
         private Dictionary<(double lon, double lat, double maxDistance), IStop>
             cacheClosest = new Dictionary<(double, double, double), IStop>();
 
+        private Dictionary<(double lat, double lon, double range), IEnumerable<IStop>>
+            cacheInRange = new Dictionary<(double lat, double lon, double range), IEnumerable<IStop>>();
+
         public StopSearchCaching(IStopsReader stopsReader)
         {
             _stopsReader = stopsReader;
+        }
+
+
+        public IEnumerable<IStop> LocationsInRange(double lat, double lon, double range)
+        {
+            var key = (lat, lon, range);
+            if (cacheInRange.ContainsKey(key))
+            {
+                _hit++;
+                return cacheInRange[key];
+            }
+
+            _miss++;
+            return cacheInRange[key] = StopSearch.LocationsInRange(this, lat, lon, range);
         }
 
 
@@ -42,12 +60,25 @@ namespace Itinero.Transit.Data.Aggregators
         {
             if (cache.ContainsKey(box))
             {
+                _hit++;
                 return cache[box];
             }
 
+            _miss++;
             var v = _stopsReader.SearchInBox(box).ToList();
             cache[box] = v;
             return v;
+        }
+
+        internal void ResetCounters()
+        {
+            _miss = 0;
+            _hit = 0;
+        }
+
+        internal void DumpCacheTotals()
+        {
+            Log.Information($"Caching information: {_miss} miss, {_hit} hit, {_miss + _hit} total");
         }
 
         public IStop SearchClosest(double lon, double lat, double maxDistanceInMeters = 1000)
@@ -86,6 +117,11 @@ namespace Itinero.Transit.Data.Aggregators
         public bool MoveTo(string globalId)
         {
             return _stopsReader.MoveTo(globalId);
+        }
+
+        public bool MoveNext()
+        {
+            return _stopsReader.MoveNext();
         }
 
         public void Reset()

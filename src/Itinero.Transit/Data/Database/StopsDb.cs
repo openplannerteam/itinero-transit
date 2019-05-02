@@ -261,6 +261,12 @@ namespace Itinero.Transit.Data
                 _locationEnumerator.Reset();
             }
 
+
+            public IEnumerable<IStop> LocationsInRange(double lat, double lon, double range)
+            {
+                return StopSearch.LocationsInRange(this, lat, lon, range);
+            }
+            
             public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
             {
                 return StopSearch.SearchInBox(this, box);

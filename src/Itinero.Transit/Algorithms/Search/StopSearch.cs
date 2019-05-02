@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Walks;
 
 namespace Itinero.Transit.Algorithms.Search
 {
@@ -150,6 +151,50 @@ namespace Itinero.Transit.Algorithms.Search
         private static double ToDegrees(this double radians)
         {
             return (radians / Math.PI) * 180d;
+        }
+        
+        public static IEnumerable<IStop> LocationsInRange(
+            this IStopsReader stopsDb, double lat, double lon, double maxDistance)
+        {
+            if (maxDistance <= 0.1)
+            {
+                throw new ArgumentException("Oops, distance is zero or very small");
+            }
+
+            if (double.IsNaN(maxDistance) || double.IsInfinity(maxDistance) ||
+                double.IsNaN(lat) || double.IsInfinity(lat) ||
+                double.IsNaN(lon) || double.IsInfinity(lon)
+            )
+            {
+                throw new ArgumentException(
+                    "Oops, either lat, lon or maxDistance are invalid (such as NaN or Infinite)");
+            }
+
+            var box = (
+                DistanceEstimate.MoveEast(lat, lon, -maxDistance), // minLon
+                DistanceEstimate.MoveNorth(lat, lon, +maxDistance), // MinLat
+                DistanceEstimate.MoveEast(lat, lon, +maxDistance), // MaxLon
+                DistanceEstimate.MoveNorth(lat, lon, -maxDistance) //maxLat
+            );
+
+            return stopsDb.SearchInBox(box);
+        }
+
+
+        public static float CalculateDistanceBetween
+            (this IStopsReader reader, LocationId departureLocation, LocationId targetLocation)
+        {
+            reader.MoveTo(departureLocation);
+            var lat0 = reader.Latitude;
+            var lon0 = reader.Longitude;
+
+            reader.MoveTo(targetLocation);
+            var lat1 = reader.Latitude;
+            var lon1 = reader.Longitude;
+
+            var distance = DistanceEstimate.DistanceEstimateInMeter(
+                lat0, lon0, lat1, lon1);
+            return distance;
         }
     }
 }

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Journeys;
+
+// ReSharper disable UnusedMember.Local
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
@@ -24,7 +26,8 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         private const string _bruggeNmbs = "http://irail.be/stations/NMBS/008891009";
         private const string _stationBruggeOsm = "https://www.openstreetmap.org/node/6348496391";
 
-        private const string _gentZwijnaardeDeLijn = "https://data.delijn.be/stops/201657";
+        private const string _gentZwijnaardeDeLijn = "https://data.delijn.be/stops/200657";
+
         private void MultiModalWithOsm(List<TransitDb.TransitDbSnapShot> tdbs, string dep, string arr, DateTime date,
             int iterations = 1)
         {
@@ -32,25 +35,61 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             // We should take the centrum shuttle for that
 
 
-          
-            var settings = tdbs.SelectProfile(new DefaultProfile())
+            var profiled = tdbs.SelectProfile(new DefaultProfile());
+            var cacher = (StopSearchCaching) profiled._stopsReader;
+
+            var settings = profiled
+                .PrecalculateClosestStops()
                 .SelectStops(dep, arr)
-                .SelectTimeFrame(date.AddHours(10), date.AddHours(16))
-                .GetScanSettings();
+                .SelectTimeFrame(date.AddHours(10), date.AddHours(13));
+
+            cacher.DumpCacheTotals();
+            cacher.ResetCounters();
 
             var start = DateTime.Now;
-            for (int i = 0; i < iterations; i++)
-            {
-                var eas = new EarliestConnectionScan<TransferMetric>(settings);
-                var journey = eas.CalculateJourney();
-                NotNull(journey);
-                Serilog.Log.Information(journey.ToString(tdbs));
-            }
+            var journey = settings.IsochroneFrom();
+
+            cacher.DumpCacheTotals();
+            cacher.ResetCounters();
 
             var end = DateTime.Now;
             var totalSeconds = (end - start).TotalMilliseconds;
-            Serilog.Log.Information($"Calculating route too {totalSeconds}ms for {iterations} iterations, {totalSeconds/iterations}ms on average");
-            //   Serilog.Log.Information(journey.ToString(tdbs));
+            Serilog.Log.Information(
+                $"Calculating route took {totalSeconds}ms for {iterations} iterations, {totalSeconds / iterations}ms on average");
+
+
+            List<Journey<TransferMetric>> journeys = new List<Journey<TransferMetric>>();
+            start = DateTime.Now;
+            for (var i = 0; i < iterations; i++)
+            {
+
+                var strt = DateTime.Now;
+                journeys = settings.AllJourneys();
+                var nd = DateTime.Now;
+                Serilog.Log.Information($"Iteration took {(nd - strt).TotalMilliseconds}");
+                cacher.DumpCacheTotals();
+                cacher.ResetCounters();
+            }
+
+            end = DateTime.Now;
+            totalSeconds = (end - start).TotalSeconds;
+
+            Serilog.Log.Information(
+                $"Calculating all routes took {totalSeconds}ms for {iterations} iterations, {totalSeconds / iterations}ms on average");
+
+/*    
+            foreach (var j in journeys)
+            {
+                Serilog.Log.Information(
+                    $"Journey option: {j.Root.Time.FromUnixTime():hh:mm:ss} --> {j.Time.FromUnixTime():hh:mm:ss}, {j.Metric}");
+            }
+
+            foreach (var j in journeys)
+            {
+                Serilog.Log.Information($"Journey: {j.Summarized().ToString(tdbs)}");
+            }
+//*/
+            Serilog.Log.Information($"Found {journeys.Count} options");
         }
 
         protected override object Execute(object input)
@@ -78,7 +117,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 
 
             MultiModalWithOsm(tdbs, _coiseauKaaiOsm, _gentZwijnaardeDeLijn,
-                new DateTime(2019, 04, 29), 1);
+                new DateTime(2019, 04, 29), 50);
 
             return null;
         }

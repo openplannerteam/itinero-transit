@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using Itinero.Transit.Data;
 
 // ReSharper disable BuiltInTypeReferenceStyle
@@ -98,7 +99,7 @@ namespace Itinero.Transit.Journeys
 
         /// <summary>
         /// Keep track of Time.
-        /// In normal circumstances, this is the time when the journey arrives
+        /// In normal circumstances (forward built journeys), this is the time when the journey arrives
         /// (also in the cases for transfers, walks, ...)
         /// 
         /// Only for the genesis connection, this is the departure time.
@@ -228,6 +229,7 @@ namespace Itinero.Transit.Journeys
         /// Chaining constructor
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
+        [Pure]
         internal Journey<T> Chain(uint connection, UnixTime time, LocationId location,
             TripId tripId)
         {
@@ -235,6 +237,7 @@ namespace Itinero.Transit.Journeys
                 Root, this, false, connection, location, time, tripId, Metric);
         }
 
+        [Pure]
         public Journey<T> ChainForward(IConnection c)
         {
             if (SpecialConnection && Connection == GENESIS)
@@ -249,6 +252,7 @@ namespace Itinero.Transit.Journeys
             return Chain(c.Id, c.ArrivalTime, c.ArrivalStop, c.TripId);
         }
 
+        [Pure]
         public Journey<T> ChainBackward(IConnection c)
         {
             if (SpecialConnection && Connection == GENESIS)
@@ -267,6 +271,7 @@ namespace Itinero.Transit.Journeys
         /// Chaining constructorChain
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
+        [Pure]
         public Journey<T> ChainSpecial(uint specialCode, UnixTime time,
             LocationId location, TripId tripId)
         {
@@ -279,6 +284,7 @@ namespace Itinero.Transit.Journeys
         /// a 'Transfer' link is included.
         /// Transfer links _should not_ be used to calculate the number of transfers, the differences in trip-ids should be used for this! 
         /// </summary>
+        [Pure]
         public Journey<T> Transfer(UnixTime departureTime)
         {
             // Creating the transfer
@@ -288,6 +294,7 @@ namespace Itinero.Transit.Journeys
                 Metric);
         }
 
+        [Pure]
         public Journey<T> TransferForward(IConnection c)
         {
             if (Time == c.DepartureTime)
@@ -304,6 +311,7 @@ namespace Itinero.Transit.Journeys
         /// <summary>
         /// Returns the trip id of the most recent connection which has a valid trip.
         /// </summary>
+        [Pure]
         public TripId? LastTripId()
         {
             return SpecialConnection ? PreviousLink?.LastTripId() : TripId;
@@ -313,6 +321,7 @@ namespace Itinero.Transit.Journeys
         /// Departure time of this journey part
         /// </summary>
         /// <returns></returns>
+        [Pure]
         public UnixTime DepartureTime()
         {
             if (SpecialConnection && Connection == GENESIS)
@@ -327,6 +336,7 @@ namespace Itinero.Transit.Journeys
         /// Arrival time of this journey part
         /// </summary>
         /// <returns></returns>
+        [Pure]
         public UnixTime ArrivalTime()
         {
             return Time;
@@ -336,6 +346,7 @@ namespace Itinero.Transit.Journeys
         /// <summary>
         /// Given a journey and a reversed journey, append the reversed journey to the journey
         /// </summary>
+        [Pure]
         public Journey<T> Append(Journey<T> restingJourney)
         {
             var j = this;
@@ -363,17 +374,20 @@ namespace Itinero.Transit.Journeys
         }
 
 
+        [Pure]
         public override string ToString()
         {
             return ToString(new List<TransitDb.TransitDbSnapShot>());
         }
 
+        [Pure]
         public string ToString(TransitDb.TransitDbSnapShot snapshot, int maxDepth = 50)
         {
             return ToString(new List<TransitDb.TransitDbSnapShot> {snapshot}, maxDepth);
         }
 
 
+        [Pure]
         public string ToString(List<TransitDb.TransitDbSnapShot> snapshot, int maxDepth = 50)
         {
             if (maxDepth == 0)
@@ -390,9 +404,10 @@ namespace Itinero.Transit.Journeys
             var dbId = (int) Location.DatabaseId;
 
             return
-                $"{previous}\n  {PartToString(snapshot[dbId].StopsDb?.GetReader(), snapshot[dbId].ConnectionsDb?.GetReader())}\n    {Metric} (Trip {TripId})";
+                $"{previous}\n  {PartToString(snapshot?[dbId]?.StopsDb?.GetReader(), snapshot[dbId].ConnectionsDb?.GetReader())}\n    {Metric} (Trip {TripId})";
         }
 
+        [Pure]
         private string PartToString(IStopsReader reader, ConnectionsDb.ConnectionsDbReader conn)
         {
             reader?.MoveTo(Location);
@@ -441,6 +456,7 @@ namespace Itinero.Transit.Journeys
                     {
                         freeForm = TripId.ToString();
                     }
+
                     return
                         $"Genesis at {location}, time is {Time.FromUnixTime():HH:mm}{freeForm}";
                 case WALK:
@@ -461,11 +477,13 @@ namespace Itinero.Transit.Journeys
         }
 
 
+        [Pure]
         protected bool Equals(Journey<T> other)
         {
             return _hashCode == other._hashCode;
         }
 
+        [Pure]
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -474,11 +492,13 @@ namespace Itinero.Transit.Journeys
             return Equals((Journey<T>) obj);
         }
 
+        [Pure]
         public override int GetHashCode()
         {
             return _hashCode;
         }
 
+        [Pure]
         private int CalculateHashCode()
         {
             unchecked

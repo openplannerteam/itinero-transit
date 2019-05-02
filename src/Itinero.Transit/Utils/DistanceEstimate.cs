@@ -11,8 +11,8 @@ namespace Itinero.Transit.Data.Walks
         /// Stolen from https://github.com/itinero/routing/blob/1764afc75db43a1459789592de175283f642123f/src/Itinero/LocalGeo/Coordinate.cs
         /// </summary>
         /// <remarks>Accuracy decreases with distance.</remarks>
-        public static float DistanceEstimateInMeter(float latitude1, float longitude1, float latitude2,
-            float longitude2)
+        public static float DistanceEstimateInMeter(double latitude1, double longitude1, double latitude2,
+            double longitude2)
         {
             var lat1Rad = (latitude1 / 180d) * Math.PI;
             var lon1Rad = (longitude1 / 180d) * Math.PI;
@@ -34,7 +34,7 @@ namespace Itinero.Transit.Data.Walks
         /// <param name="lon"></param>
         /// <param name="meters"></param>
         /// <returns></returns>
-        public static double MoveNorth(float lat, float lon, float meters)
+        public static double MoveNorth(double lat, double lon, double meters)
         {
             var dLat = -meters / _radiusOfEarth;
             return lat + dLat * 180 / Math.PI;
@@ -47,7 +47,7 @@ namespace Itinero.Transit.Data.Walks
         /// <param name="lon"></param>
         /// <param name="meters"></param>
         /// <returns></returns>
-        public static double MoveEast(float lat, float lon, float meters)
+        public static double MoveEast(double lat, double lon, double meters)
         {
             var dLon = meters/(_radiusOfEarth*Math.Cos(Math.PI*lat/180));
             return lon + dLon * 180 / Math.PI;
