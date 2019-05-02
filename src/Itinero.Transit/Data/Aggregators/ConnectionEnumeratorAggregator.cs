@@ -36,11 +36,9 @@ namespace Itinero.Transit.Data.Aggregators
         {
             switch (enumerators.Count)
             {
-                case 0: throw new ArgumentException("At least one enumerator is needed to fuse them");
+                case 0: 
                 case 1:
-                    _a = enumerators[0];
-                    _b = null;
-                    break;
+                    throw new ArgumentException("At least two enumerators are needed to fuse them");
                 case 2:
                     _a = enumerators[0];
                     _b = enumerators[1];
@@ -51,8 +49,8 @@ namespace Itinero.Transit.Data.Aggregators
                     break;
                 default:
                     var halfway = enumerators.Count / 2;
-                    _a = new ConnectionEnumeratorAggregator(enumerators.GetRange(0, halfway));
-                    _b = new ConnectionEnumeratorAggregator(enumerators.GetRange(halfway, enumerators.Count - halfway));
+                    _a = CreateFrom(enumerators.GetRange(0, halfway));
+                    _b = CreateFrom(enumerators.GetRange(halfway, enumerators.Count - halfway));
                     break;
             }
         }

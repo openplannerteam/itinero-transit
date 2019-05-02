@@ -31,12 +31,12 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Starting the Functional Tests...");
 
 
-           //*
-            new MultiTransitDbTest().Run();
-            /*/
+            /*
+             new TestAllAlgorithms().ExecuteMultiModal();
+             /*/
             LocalTests();
-        //    InternetTests();
-            //      SlowTests();
+            InternetTests();
+            SlowTests();
             //*/
         }
 
@@ -44,19 +44,21 @@ namespace Itinero.Transit.Tests.Functional
         private static void LocalTests()
         {
             // Tests all the algorithms on multiple inputs. This step does not need internet
-            var date = new DateTime(2019,04,29);
-            var db = new TestAllAlgorithms().ExecuteDefault(date);
+
+            var db = new TestAllAlgorithms().ExecuteDefault();
             new TripHeadsignTest().Run(db);
+
             TestClosestStopsAndRouting(db);
             Log.Information("Running NoDuplicationTest");
+
             new NoDuplicationTest().Run();
             new ConnectionsDbDepartureEnumeratorTest().Run(db);
-            new MultiTransitDbTest().Run(null);
             new DelayTest().Run(true);
 
 
             var tdb = new TransitDb();
             tdb.UseOsmRoute("CentrumShuttle-Brugge.xml", DateTime.Today, DateTime.Today.AddDays(1));
+            new TestAllAlgorithms().ExecuteMultiModal();
         }
 
         public static void InternetTests()

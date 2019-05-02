@@ -19,10 +19,24 @@ namespace Itinero.Transit
     /// </summary>
     public static class TransitDbExtensions
     {
-        public static WithProfile<T> SelectProfile<T>(this List<TransitDb.TransitDbSnapShot> tdb, Profile<T> profile)
+        public static WithProfile<T> SelectProfile<T>(this IEnumerable<TransitDb.TransitDbSnapShot> tdbs,
+            Profile<T> profile)
             where T : IJourneyMetric<T>
         {
-            return new WithProfile<T>(tdb, profile);
+            return new WithProfile<T>(tdbs, profile);
+        }
+
+        public static WithProfile<T> SelectProfile<T>(this IEnumerable<TransitDb> tdbs, Profile<T> profile)
+            where T : IJourneyMetric<T>
+        {
+            return tdbs.Select(tdb => tdb.Latest).SelectProfile(profile);
+        }
+
+
+        public static WithProfile<T> SelectProfile<T>(this TransitDb tdb, Profile<T> profile)
+            where T : IJourneyMetric<T>
+        {
+            return tdb.Latest.SelectProfile(profile);
         }
 
         public static WithProfile<T> SelectProfile<T>(this TransitDb.TransitDbSnapShot tdb, Profile<T> profile)
@@ -399,9 +413,9 @@ namespace Itinero.Transit
         private readonly List<(LocationId, Journey<T>)> _from;
         private readonly List<(LocationId, Journey<T>)> _to;
 
-        private DateTime _start;
-        private DateTime _end;
-
+        public DateTime Start;
+        public DateTime End;
+        
         private IConnectionFilter _filter;
 
         internal WithTime(IStopsReader stopsReader,
@@ -417,34 +431,53 @@ namespace Itinero.Transit
             _profile = profile;
             _from = from;
             _to = to;
-            _start = start;
-            _end = end;
+            Start = start;
+            End = end;
 
-            if (_start > _end)
+            if (Start > End)
             {
                 throw new ArgumentException(
                     "Scan begin time (departure time) falls behind scan end time (arrival time)");
             }
 
-            if (_start == _end)
+            if (Start == End)
             {
                 throw new ArgumentException(
                     "Scan begin time (departure time) is the same as scan end time (arrival time)");
             }
 
-            if (_start == DateTime.MinValue)
+            if (Start == DateTime.MinValue)
             {
                 throw new ArgumentException(
                     "Scan begin time (departure time) is DateTime.MinValue. Don't do this, this can cause (near)-infinite loops. Pick a sensible default instead (such as one day) in advance");
             }
 
-            if (_end == DateTime.MaxValue)
+            if (End == DateTime.MaxValue)
             {
                 throw new ArgumentException(
                     "Scan end time (arrival time) is DateTime.MaxValue. Don't do this, this can cause (near)-infinite loops. Pick a sensible default instead (such as one day) after the start date");
             }
         }
 
+
+        /// <summary>
+        /// Creates a copy of this withTime-object, but with different times.
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public WithTime<T> DifferentTimes(DateTime start, DateTime end)
+        {
+            return new WithTime<T>(
+                _stopsReader,
+                _connectionEnumerator,
+                _profile,
+                _from,
+                _to,
+                start,
+                end
+                );
+        }
 
         ///  <summary>
         ///  Calculates all journeys which depart at 'from' at the given departure time and arrive before the specified 'end'-time of the timeframe.
@@ -465,7 +498,7 @@ namespace Itinero.Transit
             var settings = new ScanSettings<T>(
                 _stopsReader,
                 _connectionEnumerator,
-                _start, _end,
+                Start, End,
                 _profile.MetricFactory,
                 _profile.ProfileComparator,
                 _profile.InternalTransferGenerator,
@@ -493,8 +526,8 @@ namespace Itinero.Transit
             var settings = new ScanSettings<T>(
                 _stopsReader,
                 _connectionEnumerator,
-                _start,
-                _end,
+                Start,
+                End,
                 _profile.MetricFactory,
                 _profile.ProfileComparator,
                 _profile.InternalTransferGenerator,
@@ -524,8 +557,8 @@ namespace Itinero.Transit
             return new ScanSettings<T>(
                 _stopsReader,
                 _connectionEnumerator,
-                _start,
-                _end,
+                Start,
+                End,
                 _profile.MetricFactory,
                 _profile.ProfileComparator,
                 _profile.InternalTransferGenerator,
@@ -550,8 +583,8 @@ namespace Itinero.Transit
             var settings = new ScanSettings<T>(
                 _stopsReader,
                 _connectionEnumerator,
-                _start,
-                _end,
+                Start,
+                End,
                 _profile.MetricFactory,
                 _profile.ProfileComparator,
                 _profile.InternalTransferGenerator,
@@ -572,7 +605,7 @@ namespace Itinero.Transit
             UseFilter(eas.AsFilter());
             if (journey != null && expandSearch != null)
             {
-                _end = expandSearch((journey.Root.Time.FromUnixTime(), journey.Time.FromUnixTime()));
+                End = expandSearch((journey.Root.Time.FromUnixTime(), journey.Time.FromUnixTime()));
             }
 
             return journey;
@@ -595,8 +628,8 @@ namespace Itinero.Transit
             var settings = new ScanSettings<T>(
                 _stopsReader,
                 _connectionEnumerator,
-                _start,
-                _end,
+                Start,
+                End,
                 _profile.MetricFactory,
                 _profile.ProfileComparator,
                 _profile.InternalTransferGenerator,
@@ -617,7 +650,7 @@ namespace Itinero.Transit
             UseFilter(las.AsFilter());
             if (journey != null && expandSearch != null)
             {
-                _start = expandSearch((journey.Root.Time.FromUnixTime(), journey.Time.FromUnixTime()));
+                Start = expandSearch((journey.Root.Time.FromUnixTime(), journey.Time.FromUnixTime()));
             }
 
             return journey;
@@ -635,8 +668,8 @@ namespace Itinero.Transit
             var settings = new ScanSettings<T>(
                 _stopsReader,
                 _connectionEnumerator,
-                _start,
-                _end,
+                Start,
+                End,
                 _profile.MetricFactory,
                 _profile.ProfileComparator,
                 _profile.InternalTransferGenerator,
@@ -697,6 +730,11 @@ namespace Itinero.Transit
             CheckHasFrom();
             CheckHasTo();
             CheckNoOverlap();
+        }
+
+        internal void ResetFilter()
+        {
+            _filter = null;
         }
     }
 }

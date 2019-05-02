@@ -1,7 +1,4 @@
-using System;
 using System.Linq;
-using Itinero.Transit.Data;
-using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
 
 // ReSharper disable PossibleMultipleEnumeration
@@ -9,30 +6,17 @@ using Itinero.Transit.Journeys;
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
     public class ProfiledConnectionScanTest :
-        DefaultFunctionalTest
+        DefaultFunctionalTest<TransferMetric>
     {
-        public static ProfiledConnectionScanTest Default => new ProfiledConnectionScanTest();
-
-        protected override bool Execute(
-            (TransitDb transitDb, string departureStopId, string arrivalStopId, DateTime
-                departureTime, DateTime arrivalTime) input)
+        protected override bool Execute(WithTime<TransferMetric> input)
         {
-            var tbd = input.transitDb;
-            var latest = tbd.Latest;
-            var p = new Profile<TransferMetric>(new InternalTransferGenerator(),
-                new CrowsFlightTransferGenerator(),
-                TransferMetric.Factory, TransferMetric.ProfileTransferCompare);
-
-
-            var journeys = latest.SelectProfile(p)
-                .SelectStops(input.departureStopId, input.arrivalStopId)
-                .SelectTimeFrame(input.departureTime, input.arrivalTime)
-                .AllJourneys();
+            input.IsochroneFrom(); // Calculating the isochrone lines makes sure this is reused as filter - in some cases, testing goes from ~26 seconds to ~6
+            var journeys = input.AllJourneys();
             // verify result.
             NotNull(journeys);
             True(journeys.Any());
 
-            Information($"Found {journeys.Count()} profiles");
+            Information($"Found {journeys.Count} profiles");
 
             return true;
         }

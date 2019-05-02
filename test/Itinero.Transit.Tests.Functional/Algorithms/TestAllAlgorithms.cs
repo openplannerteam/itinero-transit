@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Walks;
+using Itinero.Transit.Journeys;
 using Itinero.Transit.Tests.Functional.Algorithms.CSA;
-using Itinero.Transit.Tests.Functional.IO.LC;
-using Itinero.Transit.Tests.Functional.IO.LC.Synchronization;
+using OsmSharp.Osm.Xml.v0_6;
+using Serilog;
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Local
@@ -16,18 +17,56 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
     /// Tests a bunch of algorithms and cross-properties which should be honored
     /// All tests are performed against a fixed dataset
     /// </summary>
-    public class TestAllAlgorithms : FunctionalTest<bool, (TransitDb, DateTime)>
+    public class TestAllAlgorithms
     {
-        private static readonly Dictionary<string, DefaultFunctionalTest> AllTestsNamed =
-            new Dictionary<string, DefaultFunctionalTest>
+        private Profile<TransferMetric> Profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
+            new CrowsFlightTransferGenerator(),
+            TransferMetric.Factory, TransferMetric.ProfileTransferCompare
+        );
+
+
+        private static readonly List<DefaultFunctionalTest<TransferMetric>> AllTests =
+            new List<DefaultFunctionalTest<TransferMetric>>
             {
-                {"eas", EarliestConnectionScanTest.Default},
-                {"las", LatestConnectionScanTest.Default},
-                {"pcs", ProfiledConnectionScanTest.Default},
-                {"easpcs", EasPcsComparison.Default},
-                {"easlas", EasLasComparison.Default},
-                {"isochrone", IsochroneTest.Default}
+                new EarliestConnectionScanTest(),
+                new LatestConnectionScanTest(),
+                new ProfiledConnectionScanTest(),
+                new EasPcsComparison(),
+                new EasLasComparison(),
+                new IsochroneTest(),
+                new MultiTransitDbTest()
             };
+
+        private static readonly List<DefaultFunctionalTest<TransferMetric>> MultiModalTests =
+            new List<DefaultFunctionalTest<TransferMetric>>
+            {
+                new MultiTransitDbTest()
+            };
+
+
+        private readonly IReadOnlyList<string> testDbs0409 = new[] {_osmCentrumShuttle0409, _nmbs0429};
+
+        private readonly IReadOnlyList<string> testDbs0429 = new[]
+        {
+            _osmCentrumShuttle0429, _nmbs0429,
+            _delijnWvl0429,
+            _delijnOVl0429,
+            _delijnVlB0429,
+            _delijnLim0429,
+            _delijnAnt0429,
+        };
+
+        private const string _osmCentrumShuttle0409 = "CentrumbusBrugge2019-04-09.transitdb";
+        private const string _nmbs0409 = "fixed-test-cases-2019-04-09.transitdb";
+
+        private const string _osmCentrumShuttle0429 = "CentrumbusBrugge2019-04-29.transitdb";
+        private const string _nmbs0429 = "fixed-test-cases-2019-04-29.transitdb";
+        private const string _delijnWvl0429 = "fixed-test-cases-de-lijn-wvl-2019-04-29.transitdb";
+        private const string _delijnOVl0429 = "fixed-test-cases-de-lijn-ovl-2019-04-29.transitdb";
+        private const string _delijnVlB0429 = "fixed-test-cases-de-lijn-vlb-2019-04-29.transitdb";
+        private const string _delijnLim0429 = "fixed-test-cases-de-lijn-lim-2019-04-29.transitdb";
+        private const string _delijnAnt0429 = "fixed-test-cases-de-lijn-ant-2019-04-29.transitdb";
+
 
         private const string Gent = "http://irail.be/stations/NMBS/008892007";
         private const string Brugge = "http://irail.be/stations/NMBS/008891009";
@@ -43,50 +82,51 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
         private const string ZandStraat = "https://data.delijn.be/stops/500562";
         private const string AzSintJan = "https://data.delijn.be/stops/502083";
 
+        private const string GentZwijnaardeDeLijn = "https://data.delijn.be/stops/200657";
+
+        private const string StationBruggeOsm = "https://www.openstreetmap.org/node/6348496391";
+        private const string CoiseauKaaiOsm = "https://www.openstreetmap.org/node/6348562147";
+
 
         /// <summary>
         ///  Tests all algorithms, with the default test data on the default test date
         /// </summary>
         /// <returns></returns>
-        public TransitDb ExecuteDefault(DateTime date)
+        public TransitDb ExecuteDefault()
         {
-            var path = $"fixed-test-cases-{date:yyyy-MM-dd}.transitdb";
-            var db = TransitDb.ReadFrom(path, 0);
-            Execute((db, date));
-            return db;
+            var date = new DateTime(2019, 04, 29);
+            Execute(new List<string> {_nmbs0429}, date, CreateInputs, AllTests);
+            return tdbCache[_nmbs0429];
         }
 
-        /// <summary>
-        /// Test the algos with data from today.
-        /// Might download the data, might reuse a cached version
-        /// </summary>
-        public void TestLive()
+       
+        public void ExecuteMultiModal()
         {
-            var date = DateTime.Now;
-
-            TransitDb db;
-            var fileN = $"{date:yyyy-MM-dd}";
-            var path = $"test-write-to-disk-{fileN}.transitdb";
-            try
-            {
-                db = TransitDb.ReadFrom(path, 0);
-                Serilog.Log.Information("Reused already existing tdb for testing");
-            }
-            catch (Exception e)
-            {
-                Serilog.Log.Error(e.ToString());
-                db = LoadTransitDbTest.Default.Run((date.Date, new TimeSpan(1, 0, 0, 0)));
-                new TestWriteToDisk().Run((db, fileN));
-            }
-
-            Execute((db, date));
+            Execute(testDbs0429, new DateTime(2019, 04, 29), CreateInputs, AllTests);
+            Execute(testDbs0429, new DateTime(2019, 04, 29), CreateInputsMultiModal, MultiModalTests);
         }
 
 
-        protected override bool Execute((TransitDb, DateTime) inputData)
+        private Dictionary<string, TransitDb> tdbCache = new Dictionary<string, TransitDb>();
+
+        private void Execute(IReadOnlyList<string> dbs, DateTime date,
+            Func<(IEnumerable<TransitDb.TransitDbSnapShot>, DateTime), List<WithTime<TransferMetric>>> createInputs,
+            IReadOnlyCollection<DefaultFunctionalTest<TransferMetric>> tests
+        )
         {
-            var inputs = CreateInputs(inputData.Item1, inputData.Item2);
-            var tests = AllTestsNamed.Select(kv => kv.Value);
+            var tdbs = new List<TransitDb.TransitDbSnapShot>();
+            for (uint i = 0; i < dbs.Count; i++)
+            {
+                var path = dbs[(int) i];
+                if (!tdbCache.ContainsKey(path))
+                {
+                    tdbCache[path] = TransitDb.ReadFrom(path, i);
+                }
+
+                tdbs.Add(tdbCache[path].Latest);
+            }
+
+            var inputs = createInputs((tdbs, date));
 
 
             var failed = 0;
@@ -95,7 +135,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
 
             void RegisterFail<T>(string name, T input, int i)
             {
-                Serilog.Log.Error($"{name} failed on input #{i} {input}");
+                Log.Error($"{name} failed on input #{i} {input}");
                 failed++;
             }
 
@@ -107,6 +147,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
                 results[name] = new List<int>();
                 foreach (var input in inputs)
                 {
+                    input.ResetFilter();
                     try
                     {
                         if (!t.RunPerformance(input))
@@ -120,7 +161,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
                     }
                     catch (Exception e)
                     {
-                        Serilog.Log.Error(e.ToString());
+                        Log.Error(e.ToString());
                         RegisterFail(name, input, i);
                     }
 
@@ -145,66 +186,97 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
                     fails = "Failed: " + fails;
                 }
 
-                Serilog.Log.Information($"{name}: {results[name].Count}/{inputs.Count} {fails}");
+                Log.Information($"{name}: {results[name].Count}/{inputs.Count} {fails}");
             }
 
             if (failed > 0)
             {
                 throw new Exception("Some tests failed");
             }
+        }
 
-            return true;
+        private static List<WithTime<TransferMetric>> CreateInputs((IEnumerable<TransitDb.TransitDbSnapShot>,
+            DateTime) arg)
+        {
+            var db = arg.Item1;
+            var date = arg.Item2;
+            var withProfile = db.SelectProfile(new DefaultProfile()).PrecalculateClosestStops();
+
+
+            return new List<WithTime<TransferMetric>>
+            {
+                withProfile.SelectStops(Brugge,
+                    Gent).SelectTimeFrame(
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(12)),
+                withProfile.SelectStops(Poperinge, Brugge).SelectTimeFrame(
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(12)),
+                withProfile.SelectStops(Brugge, Poperinge).SelectTimeFrame(
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(12)),
+                withProfile.SelectStops(
+                    Oostende,
+                    Brugge).SelectTimeFrame(
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(11)),
+                withProfile.SelectStops(
+                    Brugge,
+                    Oostende).SelectTimeFrame(
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(11)),
+                withProfile.SelectStops(
+                    BrusselZuid,
+                    Leuven).SelectTimeFrame(
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(14)),
+                withProfile.SelectStops(
+                    Leuven,
+                    SintJorisWeert).SelectTimeFrame(
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(14)),
+                withProfile.SelectStops(
+                    BrusselZuid,
+                    SintJorisWeert).SelectTimeFrame(
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(14)),
+                withProfile.SelectStops(
+                    Brugge,
+                    Kortrijk).SelectTimeFrame(
+                    date.Date.AddHours(6),
+                    date.Date.AddHours(20)),
+                withProfile.SelectStops(Kortrijk,
+                    Vielsalm).SelectTimeFrame(
+                    date.Date.AddHours(9),
+                    date.Date.AddHours(18))
+            };
         }
 
 
-        private List<(TransitDb, string, string, DateTime, DateTime)> CreateInputs(TransitDb db, DateTime date)
+        /// <summary>
+        ///  Test cases over multiple operators
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        private static List<WithTime<TransferMetric>> CreateInputsMultiModal(
+            ( IEnumerable<TransitDb.TransitDbSnapShot> db,
+                DateTime date) arg)
         {
-            return new List<(TransitDb, string, string, DateTime, DateTime)>
+            var db = arg.db;
+            var date = arg.date;
+            var withProfile = db.SelectProfile(new DefaultProfile()).PrecalculateClosestStops();
+
+            return new List<WithTime<TransferMetric>>
             {
-                (db, Brugge,
-                    Gent,
-                    date.Date.AddHours(9),
-                    date.Date.AddHours(12)), //*/
-                (db, Poperinge, Brugge,
-                    date.Date.AddHours(9),
-                    date.Date.AddHours(12)), //*/
-                (db, Brugge, Poperinge,
+                withProfile.SelectStops(CoiseauKaaiOsm,
+                    Gent).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(12)),
-                (db,
-                    Oostende,
-                    Brugge,
+                withProfile.SelectStops(CoiseauKaaiOsm,
+                    GentZwijnaardeDeLijn).SelectTimeFrame(
                     date.Date.AddHours(9),
-                    date.Date.AddHours(11)),
-                (db,
-                    Brugge,
-                    Oostende,
-                    date.Date.AddHours(9),
-                    date.Date.AddHours(11)),
-                (db,
-                    BrusselZuid,
-                    Leuven,
-                    date.Date.AddHours(9),
-                    date.Date.AddHours(14)),
-                (db,
-                    Leuven,
-                    SintJorisWeert,
-                    date.Date.AddHours(9),
-                    date.Date.AddHours(14)),
-                (db,
-                    BrusselZuid,
-                    SintJorisWeert,
-                    date.Date.AddHours(9),
-                    date.Date.AddHours(14)),
-                (db,
-                    Brugge,
-                    Kortrijk,
-                    date.Date.AddHours(6),
-                    date.Date.AddHours(20)),
-                (db, Kortrijk,
-                    Vielsalm,
-                    date.Date.AddHours(9),
-                    date.Date.AddHours(18))
+                    date.Date.AddHours(12)),
             };
         }
     }

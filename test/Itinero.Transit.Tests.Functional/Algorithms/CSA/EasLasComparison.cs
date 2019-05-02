@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
@@ -10,48 +11,25 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
     /// When running PCS (without pruning), the earliest route should equal the one calculated by EAS.
     /// If not  something is wrong
     /// </summary>
-    public class EasLasComparison : DefaultFunctionalTest
+    public class EasLasComparison : DefaultFunctionalTest<TransferMetric>
     {
-        public static readonly EasLasComparison Default = new EasLasComparison();
-
-        protected override bool Execute(
-            (TransitDb transitDb, string departureStopId, string arrivalStopId, DateTime
-                departureTime, DateTime arrivalTime) input)
+        protected override bool Execute(WithTime<TransferMetric> input)
         {
-            var latest = input.transitDb.Latest;
-            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(1),
-                new CrowsFlightTransferGenerator(),
-                TransferMetric.Factory, TransferMetric.ProfileTransferCompare);
+            var easJ =
+                input.EarliestArrivalJourney();
 
-            // get departure and arrival stop ids.
-            var reader = latest.StopsDb.GetReader();
-            True(reader.MoveTo(input.departureStopId));
-            var departure = reader.Id;
-            True(reader.MoveTo(input.arrivalStopId));
-            var arrival = reader.Id;
-
-            var easJ = latest.SelectProfile(profile)
-                    .SelectStops(departure, arrival)
-                    .SelectTimeFrame(input.departureTime - TimeSpan.FromMinutes(1),
-                        input.arrivalTime + TimeSpan.FromMinutes(1))
-                    .EarliestArrivalJourney();
-            
             NotNull(easJ);
-            Information(easJ.ToString(latest));
 
-            var lasJ = latest.SelectProfile(profile)
-                .SelectStops(departure, arrival)
-                .SelectTimeFrame(input.departureTime-TimeSpan.FromMinutes(1), easJ.ArrivalTime().FromUnixTime())
-                .LatestDepartureJourney()
-                ;
+            var lasJ =
+                input.DifferentTimes(input.Start, easJ.ArrivalTime().FromUnixTime())
+                    .LatestDepartureJourney();
+
             NotNull(lasJ);
-            Information(lasJ.ToString(
-                latest));
-            
 
             // Eas is bound by the first departing train, while las is not
             True(easJ.Root.DepartureTime() <= lasJ.Root.DepartureTime());
             True(easJ.ArrivalTime() >= lasJ.ArrivalTime());
+
 
             return true;
         }

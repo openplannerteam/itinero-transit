@@ -385,6 +385,12 @@ namespace Itinero.Transit.Journeys
         {
             return ToString(new List<TransitDb.TransitDbSnapShot> {snapshot}, maxDepth);
         }
+        
+        [Pure]
+        public string ToString(TransitDb snapshot, int maxDepth = 50)
+        {
+            return ToString(new List<TransitDb.TransitDbSnapShot> {snapshot.Latest}, maxDepth);
+        }
 
 
         [Pure]
