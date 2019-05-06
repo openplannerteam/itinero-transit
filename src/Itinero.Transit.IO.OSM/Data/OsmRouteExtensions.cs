@@ -63,19 +63,18 @@ namespace Itinero.Transit.Data
                 stopIds.Add(wr.AddOrUpdateStop(id, coordinate.Y, coordinate.X, attr));
             }
 
-           
+
             // TODO this might not scale
             var allRuns = new List<(uint, IConnection)>();
-            
+
             {
-                
                 // Simulate the buses running.
                 // Every 'interval' time, we create a shuttle doing the entire route
                 // If the route roundtrips, then index numbers (and thus tripIDs) are recycled - allowing someone to drive 'over' the first stop
-                
+
                 // When a single trip is simulated, all the connections are collected
                 // They are sorted afterwards and added to the tdb
-                
+
                 var currentStart = start;
                 uint index = 0;
                 var modulo = uint.MaxValue;
@@ -125,7 +124,9 @@ namespace Itinero.Transit.Data
         ///  For now, the vehicle is assumed to take the same amount of time between each stop
         ///  
         ///  </summary>
-        private static LinkedList<(uint, IConnection)> CreateRun(this OsmRoute route, TripId tripId, uint vehicleId, List<LocationId> locations,
+        private static LinkedList<(uint, IConnection)> CreateRun(this OsmRoute route,
+            TripId tripId, uint vehicleId,
+            List<LocationId> locations,
             DateTime startMoment)
         {
             var conns = new LinkedList<(uint, IConnection)>();
@@ -135,7 +136,11 @@ namespace Itinero.Transit.Data
             for (var i = 0; i < locations.Count - 1; i++)
             {
                 var l0 = locations[i];
+                var l0Coor = route.StopPositions[i].Item2;
+                var l0Id =Uri.EscapeDataString(route.StopPositions[i].Item1);
                 var l1 = locations[i + 1];
+                var l1Coor = route.StopPositions[i+1].Item2;
+                var l1Id = Uri.EscapeDataString(route.StopPositions[i + 1].Item1);
 
                 var depTime = startMoment.AddSeconds(travelTime * i);
 
@@ -156,7 +161,10 @@ namespace Itinero.Transit.Data
                 }
 
 
-                var con = new SimpleConnection(0, l0, l1, depTime.ToUnixTime(), travelTime, 0, 0, mode, tripId);
+                var con = new SimpleConnection(0,
+                    $"https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route={l0Coor.Y}%2C{l0Coor.X}%3B{l1Coor.Y}%2C{l1Coor.X}" +
+                    $"&from={l0Id}&to={l1Id}",
+                    l0, l1, depTime.ToUnixTime(), travelTime, 0, 0, mode, tripId);
                 conns.AddLast((vehicleId, con));
             }
 

@@ -10,6 +10,12 @@ namespace Itinero.Transit.Data
         /// </summary>
         uint Id { get; }
 
+
+        /// <summary>
+        /// Gets the global id, often an Uri
+        /// </summary>
+        string GlobalId { get; }
+
         /// <summary>
         /// Gets the arrival time.
         /// </summary>
@@ -88,14 +94,16 @@ namespace Itinero.Transit.Data
     public class SimpleConnection : IConnection
     {
         public SimpleConnection(IConnection clone)
-            : this(clone.Id, clone.DepartureStop, clone.ArrivalStop, clone.DepartureTime, clone.TravelTime,
+            : this(clone.Id,
+                clone.GlobalId,
+                clone.DepartureStop, clone.ArrivalStop, clone.DepartureTime, clone.TravelTime,
                 clone.ArrivalDelay, clone.DepartureDelay, clone.Mode, clone.TripId)
         {
         }
 
 
         public SimpleConnection(
-            uint id,
+            uint id, string globalId,
             LocationId departureStop,
             LocationId arrivalStop,
             ulong departureTime,
@@ -113,12 +121,15 @@ namespace Itinero.Transit.Data
             DepartureDelay = departureDelay;
             Mode = mode;
             TripId = tripId;
+            GlobalId = globalId;
             DepartureStop = departureStop;
             ArrivalStop = arrivalStop;
             ArrivalTime = departureTime + travelTime;
         }
 
         public uint Id { get; }
+
+        public string GlobalId { get; }
 
         public ulong ArrivalTime { get; }
 
@@ -132,7 +143,7 @@ namespace Itinero.Transit.Data
 
         public ushort Mode { get; }
 
-        public TripId TripId { get; }
+         public TripId TripId { get; }
 
         public LocationId DepartureStop { get; }
 

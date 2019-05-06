@@ -24,6 +24,8 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly Time _earliestDeparture;
 
         private readonly IOtherModeGenerator _transferPolicy;
+        private IOtherModeGenerator _walkPolicy;
+
 
         public ulong ScanBeginTime { get; private set; } = Time.MaxValue;
 
@@ -44,6 +46,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         private readonly Dictionary<TripId, Journey<T>> _trips = new Dictionary<TripId, Journey<T>>();
 
+      
 
         public LatestConnectionScan(ScanSettings<T> settings)
         {
@@ -52,6 +55,7 @@ namespace Itinero.Transit.Algorithms.CSA
             ScanEndTime = settings.LastArrival.ToUnixTime();
             _connections = settings.ConnectionsEnumerator;
             _transferPolicy = settings.TransferPolicy;
+            _walkPolicy = settings.WalkPolicy;
             _userDepartureLocation = settings.DepartureStop;
             foreach (var (loc, j) in settings.TargetStop)
             {
@@ -151,10 +155,20 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <param name="enumerator"></param>
         private bool IntegrateBatch(IConnectionEnumerator enumerator)
         {
+            
+            var improvedLocations = new List<LocationId>();
+            
             var lastDepartureTime = enumerator.DepartureTime;
+            
             do
             {
-                IntegrateConnection(enumerator);
+                var connection = (IConnection) enumerator;
+                var departureImproved = IntegrateConnection(connection);
+
+                if (departureImproved)
+                {
+                    improvedLocations.Add(connection.DepartureStop);
+                }
 
                 if (!enumerator.MovePrevious())
                 {
@@ -162,6 +176,13 @@ namespace Itinero.Transit.Algorithms.CSA
                 }
             } while (lastDepartureTime == enumerator.DepartureTime);
 
+
+            foreach (var improvedLocation in improvedLocations)
+            {
+                WalkTowards(improvedLocation);
+            }
+            
+            
             return true;
         }
 
@@ -169,12 +190,11 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <summary>
         /// Handle a single connection, update the stop positions with new times if possible.
         ///
-        /// Returns connection.ArrivalLocation iff this an improvement has been made to reach this location.
-        /// If not, MinValue is returned
+        /// Returns true if an improvement if to c.DepartureLocation is made
         /// 
         /// </summary>
         /// <param name="c">A DepartureEnumeration, which is used here as if it were a single connection object</param>
-        private void IntegrateConnection(
+        private bool IntegrateConnection(
             IConnection c)
         {
             // The connection describes a random connection somewhere
@@ -187,7 +207,7 @@ namespace Itinero.Transit.Algorithms.CSA
             if (c.ArrivalTime > journeyFromArrival.Time && !_trips.ContainsKey(trip))
             {
                 // This connection has already left before we can make it to the stop
-                return;
+                return false;
             }
 
 
@@ -203,7 +223,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 // We are not on the connection already
                 // And we can't get off
                 // No use to continue scanning
-                return;
+                return false;
             }
 
             else
@@ -229,7 +249,7 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 // There is no way to get to the destination from this connection
                 // Neither by staying seated or getting off at the destination
-                return;
+                return false;
             }
 
             // Below this point, we only add it to the journey table...
@@ -237,22 +257,71 @@ namespace Itinero.Transit.Algorithms.CSA
 
             if (!c.CanGetOn())
             {
-                return;
+                return false;
             }
 
             if (!_s.ContainsKey(c.DepartureStop))
             {
                 _s[c.DepartureStop] = journeyFromDeparture;
-                return;
+                return true;
             }
 
             var oldJourney = _s[c.DepartureStop];
 
-            if (journeyFromDeparture.Time <= oldJourney.Time) return;
+            if (journeyFromDeparture.Time <= oldJourney.Time)
+            {
+                return false;
+            }
 
-            if (!c.CanGetOn()) return;
             _s[c.DepartureStop] = journeyFromDeparture;
+            return true;
         }
+        
+        
+        private void WalkTowards(LocationId location)
+        {
+            if (_walkPolicy == null || _walkPolicy.Range() <= 0f)
+            {
+                return;
+            }
+
+            if (!_stopsReader.MoveTo(location))
+            {
+                throw new ArgumentException($"Location {location} not found, could not move to it");
+            }
+
+            var reachableLocations =
+                _stopsReader.LocationsInRange(_stopsReader.Latitude, _stopsReader.Longitude, _walkPolicy.Range());
+
+            var journey = _s[location];
+
+            foreach (var reachableLocation in reachableLocations)
+            {
+                var id = reachableLocation.Id;
+                if (id.Equals(location))
+                {
+                    continue;
+                }
+
+                var walkingJourney = _walkPolicy.CreateArrivingTransfer
+                    (_stopsReader, journey, ulong.MinValue, id);
+                if (walkingJourney == null)
+                {
+                    continue;
+                }
+
+                if (!_s.ContainsKey(id))
+                {
+                    _s[id] = walkingJourney;
+                }
+                else if (_s[id].Time > walkingJourney.Time)
+                {
+                    _s[id] = walkingJourney;
+                }
+            }
+        }
+        
+        
 
         /// <summary>
         /// Iterates all the target locations.

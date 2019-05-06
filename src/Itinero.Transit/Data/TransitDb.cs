@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
+using System.Linq;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
 namespace Itinero.Transit.Data
@@ -32,6 +34,7 @@ namespace Itinero.Transit.Data
         /// </summary>
         /// <returns>A writer.</returns>
         /// <exception cref="InvalidOperationException">Throws if there is already a writer active.</exception>
+        [Pure]
         public TransitDbWriter GetWriter()
         {
             lock (_writerLock)
@@ -48,8 +51,23 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// Gets the latest transit db snapshot.
         /// </summary>
+        [Pure]
         public TransitDbSnapShot Latest => _latestSnapshot;
 
+
+        [Pure]
+        public static IEnumerable<TransitDb> ReadFrom(IReadOnlyList<string> paths)
+        {
+            var tdbs = new List<TransitDb>();
+            for (var i = 0; i < paths.Count; i++)
+            {
+                tdbs.Add(ReadFrom(paths[i], (uint) i));
+            }
+
+            return tdbs;
+        }
+        
+        [Pure]
         public static TransitDb ReadFrom(string path, uint databaseId)
         {
             using (var stream = File.OpenRead(path))
@@ -64,6 +82,7 @@ namespace Itinero.Transit.Data
         /// <param name="stream">The stream.</param>
         /// <param name="databaseId"></param>
         /// <returns>The transit db.</returns>
+        [Pure]
         public static TransitDb ReadFrom(Stream stream, uint databaseId)
         {
             var version = stream.ReadByte();

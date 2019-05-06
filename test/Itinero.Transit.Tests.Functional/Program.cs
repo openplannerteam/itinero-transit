@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms;
@@ -31,13 +32,20 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Starting the Functional Tests...");
 
 
+            //*
+
+
             /*
-             new TestAllAlgorithms().ExecuteMultiModal();
-             /*/
-            LocalTests();
-            InternetTests();
-            SlowTests();
-            //*/
+            new ConnectionEnumeratorAggregatorTest().Run((
+                TransitDb.ReadFrom(TestAllAlgorithms.testDbs0429),
+                new DateTime(2019,04,29)
+                ));//*/
+              new TestAllAlgorithms().ExecuteMultiModal();
+            /*/
+           LocalTests();
+           InternetTests();
+           //SlowTests();
+           //*/
         }
 
 

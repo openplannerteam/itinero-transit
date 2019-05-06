@@ -98,6 +98,14 @@ namespace Itinero.Transit.Tests.Functional
                 throw new ArgumentNullException(nameof(o));
             }
         }
+        
+        public void NotNull(object o, string message)
+        {
+            if (o == null)
+            {
+                throw new ArgumentException("Null detected: "+message);
+            }
+        }
 
 
         public void AssertContains( object o, IEnumerable xs)

@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using Itinero.Transit.Data;
 
 // ReSharper disable BuiltInTypeReferenceStyle
@@ -372,75 +372,67 @@ namespace Itinero.Transit.Journeys
 
             return j;
         }
-
-
         [Pure]
-        public override string ToString()
+        public string ToString(TransitDb tdb)
         {
-            return ToString(new List<TransitDb.TransitDbSnapShot>());
+            return ToString(tdb.Latest);
         }
-
         [Pure]
-        public string ToString(TransitDb.TransitDbSnapShot snapshot, int maxDepth = 50)
+        public string ToString(TransitDb.TransitDbSnapShot snapshot)
         {
-            return ToString(new List<TransitDb.TransitDbSnapShot> {snapshot}, maxDepth);
+            return ToString(snapshot.StopsDb.GetReader(), snapshot.ConnectionsDb.GetDepartureEnumerator());
         }
-        
         [Pure]
-        public string ToString(TransitDb snapshot, int maxDepth = 50)
+        public string ToString(IStopsReader stops = null, IConnectionEnumerator connections = null,
+            uint truncateAt = 15)
         {
-            return ToString(new List<TransitDb.TransitDbSnapShot> {snapshot.Latest}, maxDepth);
-        }
+            var asList = this.ToList();
 
-
-        [Pure]
-        public string ToString(List<TransitDb.TransitDbSnapShot> snapshot, int maxDepth = 50)
-        {
-            if (maxDepth == 0)
+            if (asList.Count > truncateAt)
             {
-                return "... More connections omitted, journey maxDepth has been reached ...";
+                asList = this.Summarized().ToList();
             }
 
-            var previous = "";
-            if (PreviousLink != null && !ReferenceEquals(PreviousLink, this))
+            var snippets = asList.Select(j => j.PartToString(stops, connections)).ToList();
+
+            if (snippets.Count > truncateAt)
             {
-                previous = PreviousLink.ToString(snapshot, maxDepth - 1);
+                var allSnippets = snippets;
+                snippets = allSnippets.GetRange(0, (int) truncateAt / 2);
+                snippets.Add("... journey truncated ...");
+                snippets.AddRange(allSnippets.GetRange(
+                    allSnippets.Count - (int) truncateAt / 2, allSnippets.Count));
             }
 
-            var dbId = (int) Location.DatabaseId;
+            var totals = Metric.ToString();
 
-            return
-                $"{previous}\n  {PartToString(snapshot?[dbId]?.StopsDb?.GetReader(), snapshot[dbId].ConnectionsDb?.GetReader())}\n    {Metric} (Trip {TripId})";
+
+            return string.Join("\n", snippets) + totals;
         }
 
         [Pure]
-        private string PartToString(IStopsReader reader, ConnectionsDb.ConnectionsDbReader conn)
+        public string PartToString(IStopsReader stops, IConnectionEnumerator connections)
         {
-            reader?.MoveTo(Location);
             var location = Location.ToString();
-            if (reader?.Attributes != null)
+            if (stops != null)
             {
-                location = reader.Attributes.ToString();
-                if (string.IsNullOrEmpty(location))
-                {
-                    location = reader.GlobalId;
-                }
+                stops.MoveTo(Location);
+                location = stops.GlobalId + " " + stops.Attributes;
             }
 
-            conn?.MoveTo(Connection);
-            var mode = "";
-            if (conn != null)
+            if (SpecialConnection)
             {
-                mode = $", mode is {conn.Mode}";
+                return SpecialPartToString(location);
             }
 
-            if (!SpecialConnection)
-            {
-                var dbOperator = conn.ArrivalStop.DatabaseId;
-                return
-                    $"Connection {Connection} to {location}, arriving at {DateTimeExtensions.FromUnixTime(Time):yyyy-MM-dd HH:mm}{mode}; operator is {dbOperator}";
-            }
 
+            var dbOperator = connections.ArrivalStop.DatabaseId;
+            return
+                $"Connection {Connection} to {location}, arriving at {Time.FromUnixTime():s}; operator is {dbOperator}";
+        }
+
+        public string SpecialPartToString(string location)
+        {
             switch (Connection)
             {
                 case GENESIS:
@@ -518,5 +510,7 @@ namespace Itinero.Transit.Journeys
                 return hashCode;
             }
         }
+
+        
     }
 }

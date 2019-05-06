@@ -108,7 +108,7 @@ namespace Itinero.Transit.Journeys
                 var pEnd = parts[i - 1];
                 // pDep --> pEnd are just all part of the same trip
                 // We summarize it as a single connection
-                var connection = new SimpleConnection(pDep.Connection,
+                var connection = new SimpleConnection(pDep.Connection, "summarized-connection",
                     pDep.Location, pEnd.Location,
                     pDep.PreviousLink.Time, (ushort) (pEnd.Time - pDep.PreviousLink.Time),
                     0, 0, 0, pDep.TripId);

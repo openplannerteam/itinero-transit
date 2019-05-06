@@ -8,11 +8,12 @@ namespace Itinero.Transit.Data.Aggregators
     {
         private IConnectionEnumerator _currentConnection;
 
-        private IConnectionEnumerator _a, _b;
+        private readonly IConnectionEnumerator _a, _b;
+        private bool _aDepleted, _bDepleted;
 
         public static IConnectionEnumerator CreateFrom(IEnumerable<TransitDb.TransitDbSnapShot> enumerators)
         {
-            var depEnumerators = 
+            var depEnumerators =
                 enumerators.Select(tdb => (IConnectionEnumerator) tdb.ConnectionsDb.GetDepartureEnumerator()).ToList();
             return CreateFrom(depEnumerators);
         }
@@ -36,7 +37,7 @@ namespace Itinero.Transit.Data.Aggregators
         {
             switch (enumerators.Count)
             {
-                case 0: 
+                case 0:
                 case 1:
                     throw new ArgumentException("At least two enumerators are needed to fuse them");
                 case 2:
@@ -66,7 +67,7 @@ namespace Itinero.Transit.Data.Aggregators
         {
             if (!_a.MoveNext(dateTime))
             {
-                _a = null;
+                _aDepleted = true;
             }
         }
 
@@ -74,7 +75,7 @@ namespace Itinero.Transit.Data.Aggregators
         {
             if (!_b.MoveNext(dateTime))
             {
-                _b = null;
+                _bDepleted = true;
             }
         }
 
@@ -82,7 +83,8 @@ namespace Itinero.Transit.Data.Aggregators
         {
             if (_currentConnection == null)
             {
-                throw new InvalidOperationException("Initialize the enumerator by");
+                throw new InvalidOperationException(
+                    "Initialize the enumerator first with 'movePrevious(DateTime)' or 'moveNext(DateTime)'");
             }
 
             if (_currentConnection.MoveNext())
@@ -91,14 +93,14 @@ namespace Itinero.Transit.Data.Aggregators
             }
 
             // The enumerator has depleted
-            // We figure out which one and null it
+            // We figure out which one and mark it as used
             if (_currentConnection == _a)
             {
-                _a = null;
+                _aDepleted = true;
             }
             else
             {
-                _b = null;
+                _bDepleted = true;
             }
         }
 
@@ -116,20 +118,20 @@ namespace Itinero.Transit.Data.Aggregators
                 MoveNextCurrent();
             }
 
-            if (_a == null && _b == null)
+            if (_aDepleted && _bDepleted)
             {
                 // Both are depleted
                 return false;
             }
 
-            if (_b == null)
+            if (_bDepleted)
             {
                 // _a is still loaded
                 _currentConnection = _a;
                 return true;
             }
 
-            if (_a == null)
+            if (_aDepleted)
             {
                 // _b is still loaded
                 _currentConnection = _b;
@@ -147,7 +149,7 @@ namespace Itinero.Transit.Data.Aggregators
         {
             if (!_a.MovePrevious(dateTime))
             {
-                _a = null;
+                _aDepleted = true;
             }
         }
 
@@ -155,7 +157,7 @@ namespace Itinero.Transit.Data.Aggregators
         {
             if (!_b.MovePrevious(dateTime))
             {
-                _b = null;
+                _bDepleted = true;
             }
         }
 
@@ -175,11 +177,11 @@ namespace Itinero.Transit.Data.Aggregators
             // We figure out which one and null it
             if (_currentConnection == _a)
             {
-                _a = null;
+                _aDepleted = true;
             }
             else
             {
-                _b = null;
+                _bDepleted = true;
             }
         }
 
@@ -197,20 +199,20 @@ namespace Itinero.Transit.Data.Aggregators
                 MovePreviousCurrent();
             }
 
-            if (_a == null && _b == null)
+            if (_aDepleted && _bDepleted)
             {
                 // Both are depleted
                 return false;
             }
 
-            if (_b == null)
+            if (_bDepleted)
             {
                 // _a is still loaded
                 _currentConnection = _a;
                 return true;
             }
 
-            if (_a == null)
+            if (_aDepleted)
             {
                 // _b is still loaded
                 _currentConnection = _b;
@@ -225,6 +227,7 @@ namespace Itinero.Transit.Data.Aggregators
 
 
         public uint Id => _currentConnection.Id;
+        public string GlobalId => _currentConnection.GlobalId;
 
         public ulong ArrivalTime => _currentConnection.ArrivalTime;
 

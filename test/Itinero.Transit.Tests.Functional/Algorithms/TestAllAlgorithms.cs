@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
 using Itinero.Transit.Tests.Functional.Algorithms.CSA;
-using OsmSharp.Osm.Xml.v0_6;
 using Serilog;
 
 // ReSharper disable InconsistentNaming
@@ -28,25 +28,25 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
         private static readonly List<DefaultFunctionalTest<TransferMetric>> AllTests =
             new List<DefaultFunctionalTest<TransferMetric>>
             {
-                new EarliestConnectionScanTest(),
+                /*new EarliestConnectionScanTest(),
                 new LatestConnectionScanTest(),
                 new ProfiledConnectionScanTest(),
-                new EasPcsComparison(),
+                new EasPcsComparison(),//*/
                 new EasLasComparison(),
-                new IsochroneTest(),
-                new MultiTransitDbTest()
+                /* new IsochroneTest(),
+                 new MultiTransitDbTest() //*/
             };
 
         private static readonly List<DefaultFunctionalTest<TransferMetric>> MultiModalTests =
             new List<DefaultFunctionalTest<TransferMetric>>
             {
-                new MultiTransitDbTest()
+                //       new MultiTransitDbTest()
             };
 
 
         private readonly IReadOnlyList<string> testDbs0409 = new[] {_osmCentrumShuttle0409, _nmbs0429};
 
-        private readonly IReadOnlyList<string> testDbs0429 = new[]
+        public static readonly IReadOnlyList<string> testDbs0429 = new[]
         {
             _osmCentrumShuttle0429, _nmbs0429,
             _delijnWvl0429,
@@ -99,11 +99,12 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
             return tdbCache[_nmbs0429];
         }
 
-       
+
         public void ExecuteMultiModal()
         {
-            Execute(testDbs0429, new DateTime(2019, 04, 29), CreateInputs, AllTests);
-            Execute(testDbs0429, new DateTime(2019, 04, 29), CreateInputsMultiModal, MultiModalTests);
+            Execute(testDbs0429, new DateTime(2019, 04, 29),
+                a => CreateInputs(a), // .Concat(CreateInputsMultiModal(a)).ToList(),
+                AllTests.Concat(MultiModalTests));
         }
 
 
@@ -111,7 +112,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
 
         private void Execute(IReadOnlyList<string> dbs, DateTime date,
             Func<(IEnumerable<TransitDb.TransitDbSnapShot>, DateTime), List<WithTime<TransferMetric>>> createInputs,
-            IReadOnlyCollection<DefaultFunctionalTest<TransferMetric>> tests
+            IEnumerable<DefaultFunctionalTest<TransferMetric>> tests
         )
         {
             var tdbs = new List<TransitDb.TransitDbSnapShot>();
@@ -142,11 +143,13 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
 
             foreach (var t in tests)
             {
-                var i = 0;
                 var name = t.GetType().Name;
                 results[name] = new List<int>();
+
+
                 foreach (var input in inputs)
                 {
+                    var i = inputs.IndexOf(input);
                     input.ResetFilter();
                     try
                     {
@@ -164,8 +167,6 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
                         Log.Error(e.ToString());
                         RegisterFail(name, input, i);
                     }
-
-                    i++;
                 }
             }
 
@@ -204,17 +205,18 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
 
 
             return new List<WithTime<TransferMetric>>
-            {
-                withProfile.SelectStops(Brugge,
-                    Gent).SelectTimeFrame(
+            {/*
+                withProfile.SelectStops(Brugge,Gent).SelectTimeFrame(
                     date.Date.AddHours(9),
-                    date.Date.AddHours(12)),
+                    date.Date.AddHours(12)),//*/
+                
                 withProfile.SelectStops(Poperinge, Brugge).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(12)),
                 withProfile.SelectStops(Brugge, Poperinge).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(12)),
+                /*
                 withProfile.SelectStops(
                     Oostende,
                     Brugge).SelectTimeFrame(
@@ -243,12 +245,12 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
                 withProfile.SelectStops(
                     Brugge,
                     Kortrijk).SelectTimeFrame(
-                    date.Date.AddHours(6),
-                    date.Date.AddHours(20)),
+                    date.Date.AddHours(10),
+                    date.Date.AddHours(12)),
                 withProfile.SelectStops(Kortrijk,
                     Vielsalm).SelectTimeFrame(
                     date.Date.AddHours(9),
-                    date.Date.AddHours(18))
+                    date.Date.AddHours(18))//*/
             };
         }
 
@@ -256,8 +258,6 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
         /// <summary>
         ///  Test cases over multiple operators
         /// </summary>
-        /// <param name="db"></param>
-        /// <param name="date"></param>
         /// <returns></returns>
         private static List<WithTime<TransferMetric>> CreateInputsMultiModal(
             ( IEnumerable<TransitDb.TransitDbSnapShot> db,

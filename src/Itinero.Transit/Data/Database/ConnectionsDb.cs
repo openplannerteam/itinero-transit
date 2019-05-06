@@ -182,7 +182,7 @@ namespace Itinero.Transit.Data
             {
                 // The connection is not yet added
                 // We add the connection fresh
-                return Add(stop1, stop2, globalId, departureTime, travelTime, departureDelay, arrivalDelay, 
+                return Add(stop1, stop2, globalId, departureTime, travelTime, departureDelay, arrivalDelay,
                     tripId,
                     mode);
             }
@@ -1192,23 +1192,23 @@ namespace Itinero.Transit.Data
                     }
                     else
                     {
-// move to the next connection.
+                        // move to the next connection.
                         _windowPosition++;
                     }
                 }
 
-// move the reader to the correct location.
+                // move the reader to the correct location.
                 _reader.MoveTo(_db._departurePointers[_windowPointer + _windowPosition]);
                 if (dateTime != null)
                 {
-// keep move next until we reach a departure time after the given date time.
+                    // keep move next until we reach a departure time after the given date time.
                     var unixTime = dateTime.Value.ToUnixTime();
                     while (unixTime > _reader.DepartureTime)
                     {
-// move next.
+                        // move next.
                         if (!MoveNextIgnoreDate())
                         {
-// connection after this departure time doesn't exist.
+                            // connection after this departure time doesn't exist.
                             return false;
                         }
                     }
@@ -1226,7 +1226,7 @@ namespace Itinero.Transit.Data
             {
                 if (dateTime != null)
                 {
-// move to the given date.
+                    // move to the given date.
                     _date = (uint) DateTimeExtensions.ExtractDate(dateTime.Value.ToUnixTime());
                 }
 
@@ -1240,14 +1240,14 @@ namespace Itinero.Transit.Data
                 {
                     if (!MovePreviousIgnoreDate(dateTime))
                     {
-// move to next date. 
+                        // move to next date. 
                         _date = (uint) DateTimeExtensions.RemoveDay(_date);
                         if (_date < _db._earliestDate)
                         {
                             return false;
                         }
 
-// reset enumerator.
+                        // reset enumerator.
                         ResetIgnoreDate();
                     }
                     else
