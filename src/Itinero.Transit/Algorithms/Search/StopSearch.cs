@@ -182,7 +182,7 @@ namespace Itinero.Transit.Algorithms.Search
 
 
         public static float CalculateDistanceBetween
-            (this IStopsReader reader, LocationId departureLocation, LocationId targetLocation)
+            (IStopsReader reader, LocationId departureLocation, LocationId targetLocation)
         {
             reader.MoveTo(departureLocation);
             var lat0 = reader.Latitude;

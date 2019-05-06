@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
+
 namespace Itinero.Transit.Data
 {
     public interface IStopsReader : IStop
@@ -12,14 +13,21 @@ namespace Itinero.Transit.Data
         bool MoveTo(string globalId);
         void Reset();
 
-        
-        
+
+        /// <summary>
+        /// Calculates the walking distance between two stops.
+        /// Might _not_ be symmetrical due to oneways
+        /// </summary>
+        /// <param name="departureLocation"></param>
+        /// <param name="targetLocation"></param>
+        /// <returns></returns>
+        float CalculateDistanceBetween(LocationId departureLocation, LocationId targetLocation);
         IEnumerable<IStop> LocationsInRange(double lat, double lon, double range);
-        
+
         IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box);
         IStop SearchClosest(double lon, double lat, double maxDistanceInMeters = 1000);
-        
-        
+
+
         List<IStopsReader> UnderlyingDatabases { get; }
 
         /// <summary>
@@ -30,8 +38,7 @@ namespace Itinero.Transit.Data
         StopsDb StopsDb { get; }
     }
 
-    
-    
+
     public static class StopsReaderExtensions
     {
         public static List<IStopsReader> FlattenedUnderlyingDatabases(this IStopsReader stopsReader)
@@ -73,6 +80,5 @@ namespace Itinero.Transit.Data
 
             return reader.Id;
         }
-
     }
 }

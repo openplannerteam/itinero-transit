@@ -95,6 +95,11 @@ namespace Itinero.Transit.Data.Aggregators
             }
         }
 
+        public float CalculateDistanceBetween(LocationId departureLocation, LocationId targetLocation)
+        {
+            return StopSearch.CalculateDistanceBetween(this, departureLocation, targetLocation);
+        }
+
 
         public IEnumerable<IStop> LocationsInRange(double lat, double lon, double range)
         {

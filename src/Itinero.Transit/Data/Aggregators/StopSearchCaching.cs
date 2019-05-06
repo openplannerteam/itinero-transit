@@ -36,11 +36,25 @@ namespace Itinero.Transit.Data.Aggregators
         private Dictionary<(double lat, double lon, double range), IEnumerable<IStop>>
             cacheInRange = new Dictionary<(double lat, double lon, double range), IEnumerable<IStop>>();
 
+        private Dictionary<(LocationId, LocationId), float> distanceCache
+            = new Dictionary<(LocationId, LocationId), float>();
+
         public StopSearchCaching(IStopsReader stopsReader)
         {
             _stopsReader = stopsReader;
         }
 
+
+        public float CalculateDistanceBetween(LocationId departureLocation, LocationId targetLocation)
+        {
+            var key = (departureLocation, targetLocation);
+            if (distanceCache.ContainsKey(key))
+            {
+                return distanceCache[key];
+            }
+
+            return distanceCache[key] = _stopsReader.CalculateDistanceBetween(departureLocation, targetLocation);
+        }
 
         public IEnumerable<IStop> LocationsInRange(double lat, double lon, double range)
         {
