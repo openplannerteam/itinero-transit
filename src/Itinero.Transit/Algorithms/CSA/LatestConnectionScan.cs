@@ -46,7 +46,6 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         private readonly Dictionary<TripId, Journey<T>> _trips = new Dictionary<TripId, Journey<T>>();
 
-      
 
         public LatestConnectionScan(ScanSettings<T> settings)
         {
@@ -155,11 +154,10 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <param name="enumerator"></param>
         private bool IntegrateBatch(IConnectionEnumerator enumerator)
         {
-            
             var improvedLocations = new List<LocationId>();
-            
+
             var lastDepartureTime = enumerator.DepartureTime;
-            
+
             do
             {
                 var connection = (IConnection) enumerator;
@@ -181,8 +179,8 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 WalkTowards(improvedLocation);
             }
-            
-            
+
+
             return true;
         }
 
@@ -212,9 +210,10 @@ namespace Itinero.Transit.Algorithms.CSA
 
 
             Journey<T> journeyFromDeparture;
-            // Extend trip journey
             if (_trips.ContainsKey(trip))
             {
+                // Staying on this trip will take us to our destination
+                // We extend the trip journey
                 _trips[trip] = _trips[trip].ChainBackward(c);
                 journeyFromDeparture = _trips[trip];
             }
@@ -225,7 +224,6 @@ namespace Itinero.Transit.Algorithms.CSA
                 // No use to continue scanning
                 return false;
             }
-
             else
             {
                 if (journeyFromArrival.SpecialConnection && journeyFromArrival.Connection == Journey<T>.GENESIS)
@@ -234,6 +232,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 }
                 else
                 {
+                    // internal transfer
                     journeyFromDeparture = _transferPolicy
                         .CreateArrivingTransfer(_stopsReader, journeyFromArrival, c.ArrivalTime, c.ArrivalStop)
                         ?.ChainBackward(c);
@@ -260,6 +259,9 @@ namespace Itinero.Transit.Algorithms.CSA
                 return false;
             }
 
+            // At this point, we know that we can take this connection and end up at our destination
+            // Only thing left to do: figuring out if this improves the journey from the departure location
+
             if (!_s.ContainsKey(c.DepartureStop))
             {
                 _s[c.DepartureStop] = journeyFromDeparture;
@@ -267,7 +269,7 @@ namespace Itinero.Transit.Algorithms.CSA
             }
 
             var oldJourney = _s[c.DepartureStop];
-
+            // If the departure is earlier, we bail
             if (journeyFromDeparture.Time <= oldJourney.Time)
             {
                 return false;
@@ -276,8 +278,8 @@ namespace Itinero.Transit.Algorithms.CSA
             _s[c.DepartureStop] = journeyFromDeparture;
             return true;
         }
-        
-        
+
+
         private void WalkTowards(LocationId location)
         {
             if (_walkPolicy == null || _walkPolicy.Range() <= 0f)
@@ -314,14 +316,14 @@ namespace Itinero.Transit.Algorithms.CSA
                 {
                     _s[id] = walkingJourney;
                 }
-                else if (_s[id].Time > walkingJourney.Time)
+                else if (_s[id].Time < walkingJourney.Time)
                 {
+                    // The new journey departs later -> we swap
                     _s[id] = walkingJourney;
                 }
             }
         }
-        
-        
+
 
         /// <summary>
         /// Iterates all the target locations.

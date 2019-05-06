@@ -382,6 +382,15 @@ namespace Itinero.Transit.Journeys
         {
             return ToString(snapshot.StopsDb.GetReader(), snapshot.ConnectionsDb.GetDepartureEnumerator());
         }
+        
+        [Pure]
+        public string ToString(WithTime<T> withTime)
+        {
+            return ToString(withTime.StopsReader, withTime.ConnectionEnumerator);
+        }
+
+        
+        
         [Pure]
         public string ToString(IStopsReader stops = null, IConnectionEnumerator connections = null,
             uint truncateAt = 15)
@@ -404,7 +413,7 @@ namespace Itinero.Transit.Journeys
                     allSnippets.Count - (int) truncateAt / 2, allSnippets.Count));
             }
 
-            var totals = Metric.ToString();
+            var totals = $" ({Metric})";
 
 
             return string.Join("\n", snippets) + totals;

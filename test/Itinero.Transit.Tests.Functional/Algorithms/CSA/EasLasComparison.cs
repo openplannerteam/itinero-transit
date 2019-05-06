@@ -20,19 +20,19 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var id0 = stop.GlobalId;
             stop.MoveTo(input.To[0].Item1);
             var id1 = stop.GlobalId;
-            
+
             var lasJ =
-                input.DifferentTimes(input.Start, easJ.ArrivalTime().FromUnixTime().AddMinutes(1))
+                input
+                    .DifferentTimes(easJ.Root.DepartureTime().FromUnixTime(), easJ.ArrivalTime().FromUnixTime())
                     .LatestDepartureJourney();
 
-            
-            
+
             NotNull(lasJ,
-                $"No latest journey found for {id0} {input.Start:s} --> {id1}, {input.End:s},\n{easJ}");
+                $"No latest journey found for {id0} {input.Start:s} --> {id1}, {easJ.ArrivalTime().FromUnixTime():s},\n{easJ}");
 
             // Eas is bound by the first departing train, while las is not
             True(easJ.Root.DepartureTime() <= lasJ.Root.DepartureTime());
-            True(easJ.ArrivalTime() >= lasJ.ArrivalTime());
+            True(easJ.ArrivalTime() == lasJ.ArrivalTime());
 
 
             return true;

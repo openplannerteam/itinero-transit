@@ -28,19 +28,19 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
         private static readonly List<DefaultFunctionalTest<TransferMetric>> AllTests =
             new List<DefaultFunctionalTest<TransferMetric>>
             {
-                /*new EarliestConnectionScanTest(),
+                new EarliestConnectionScanTest(),
                 new LatestConnectionScanTest(),
                 new ProfiledConnectionScanTest(),
-                new EasPcsComparison(),//*/
+                new EasPcsComparison(), //*/
                 new EasLasComparison(),
-                /* new IsochroneTest(),
-                 new MultiTransitDbTest() //*/
+                new IsochroneTest(),
+                new MultiTransitDbTest() //*/
             };
 
         private static readonly List<DefaultFunctionalTest<TransferMetric>> MultiModalTests =
             new List<DefaultFunctionalTest<TransferMetric>>
             {
-                //       new MultiTransitDbTest()
+                new MultiTransitDbTest()
             };
 
 
@@ -48,10 +48,11 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
 
         public static readonly IReadOnlyList<string> testDbs0429 = new[]
         {
-            _osmCentrumShuttle0429, _nmbs0429,
+            _nmbs0429,
+            _osmCentrumShuttle0429,
+            _delijnVlB0429,
             _delijnWvl0429,
             _delijnOVl0429,
-            _delijnVlB0429,
             _delijnLim0429,
             _delijnAnt0429,
         };
@@ -103,7 +104,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
         public void ExecuteMultiModal()
         {
             Execute(testDbs0429, new DateTime(2019, 04, 29),
-                a => CreateInputs(a), // .Concat(CreateInputsMultiModal(a)).ToList(),
+                a => CreateInputs(a).Concat(CreateInputsMultiModal(a)).ToList(),
                 AllTests.Concat(MultiModalTests));
         }
 
@@ -205,18 +206,16 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
 
 
             return new List<WithTime<TransferMetric>>
-            {/*
-                withProfile.SelectStops(Brugge,Gent).SelectTimeFrame(
+            {
+                withProfile.SelectStops(Brugge, Gent).SelectTimeFrame(
                     date.Date.AddHours(9),
-                    date.Date.AddHours(12)),//*/
-                
+                    date.Date.AddHours(12)), //*/
                 withProfile.SelectStops(Poperinge, Brugge).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(12)),
                 withProfile.SelectStops(Brugge, Poperinge).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(12)),
-                /*
                 withProfile.SelectStops(
                     Oostende,
                     Brugge).SelectTimeFrame(
@@ -250,7 +249,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
                 withProfile.SelectStops(Kortrijk,
                     Vielsalm).SelectTimeFrame(
                     date.Date.AddHours(9),
-                    date.Date.AddHours(18))//*/
+                    date.Date.AddHours(18)) //*/
             };
         }
 
