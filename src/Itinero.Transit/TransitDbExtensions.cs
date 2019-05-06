@@ -347,6 +347,13 @@ namespace Itinero.Transit
         {
             return _location.SelectTimeFrame(start, end);
         }
+        
+        public IWithTimeSingleLocation<T> SelectTimeFrame(
+            ulong start,
+            ulong end)
+        {
+            return SelectTimeFrame(start.FromUnixTime(), end.FromUnixTime());
+        }
     }
 
     public class WithLocation<T>
@@ -381,6 +388,13 @@ namespace Itinero.Transit
             DateTime end)
         {
             return new WithTime<T>(_stopsReader, _connectionEnumerator, _profile, _from, _to, start, end);
+        }
+        
+        public WithTime<T> SelectTimeFrame(
+            ulong start,
+            ulong end)
+        {
+            return SelectTimeFrame(start.FromUnixTime(), end.FromUnixTime());
         }
     }
 
