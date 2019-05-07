@@ -207,7 +207,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// A trips reader.
         /// </summary>
-        public class TripsDbReader : ITrip
+        public class TripsDbReader : ITripReader
         {
             private readonly uint _dbId;
             private readonly TripsDb _tripsDb;
@@ -240,10 +240,10 @@ namespace Itinero.Transit.Data
             /// <returns>True if there is more data.</returns>
             public bool MoveTo(TripId trip)
             {
+                // ReSharper disable once ConvertIfStatementToReturnStatement
                 if (trip.DatabaseId != _dbId)
                 {
-                    throw new ArgumentException(
-                        "You came to the wrong database bro... (Database ID does not match the one in the tripID)");
+                    return false;
                 }
 
                 return MoveTo(trip.InternalId);

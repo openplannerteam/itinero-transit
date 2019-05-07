@@ -34,14 +34,6 @@ namespace Itinero.Transit.Tests.Functional
 
             //*
 
-
-            /*
-            new ConnectionEnumeratorAggregatorTest().Run((
-                TransitDb.ReadFrom(TestAllAlgorithms.testDbs0429),
-                new DateTime(2019,04,29)
-                ));//*/
-              new TestAllAlgorithms().ExecuteMultiModal();
-            /*/
            LocalTests();
            InternetTests();
            //SlowTests();
@@ -51,8 +43,10 @@ namespace Itinero.Transit.Tests.Functional
 
         private static void LocalTests()
         {
-            // Tests all the algorithms on multiple inputs. This step does not need internet
-
+           // new ConnectionEnumeratorAggregatorTest().Run((
+           //     TransitDb.ReadFrom(TestAllAlgorithms.testDbs0429),
+           //     new DateTime(2019, 04, 29)));
+                
             var db = new TestAllAlgorithms().ExecuteDefault();
             new TripHeadsignTest().Run(db);
 
