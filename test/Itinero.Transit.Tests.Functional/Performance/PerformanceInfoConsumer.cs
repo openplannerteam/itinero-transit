@@ -136,6 +136,8 @@ namespace Itinero.Transit.Tests.Functional.Performance
 
                 GC.Collect();
                 var p = Process.GetCurrentProcess();
+
+                Debug.Assert(_memory != null, nameof(_memory) + " != null");
                 var memoryDiff = Math.Round((p.PrivateMemorySize64 - _memory.Value) / 1024.0 / 1024.0, 4);
 
                 if (!string.IsNullOrWhiteSpace(message))

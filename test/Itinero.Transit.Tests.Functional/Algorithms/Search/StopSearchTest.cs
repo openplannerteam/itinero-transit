@@ -1,4 +1,3 @@
-using Itinero.Transit.Algorithms.Search;
 using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.Search

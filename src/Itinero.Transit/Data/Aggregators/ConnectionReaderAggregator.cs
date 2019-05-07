@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+// ReSharper disable PossibleMultipleEnumeration
 
 namespace Itinero.Transit.Data.Aggregators
 {
+    // ReSharper disable once UnusedMember.Global
     public class ConnectionReaderAggregator : IConnectionReader
     {
         private readonly IEnumerable<IConnectionReader> _readers;

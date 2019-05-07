@@ -2,7 +2,7 @@ using System.Diagnostics.Contracts;
 
 namespace Itinero.Transit.Data
 {
-    using Itinero.Transit.Data.Attributes;
+    using Attributes;
 
     public struct TripId
     {

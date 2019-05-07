@@ -6,6 +6,7 @@ using Itinero.Transit.Data;
 using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Journeys;
 using Itinero.Transit.Logging;
+// ReSharper disable PossibleMultipleEnumeration
 
 // ReSharper disable UnusedMember.Global
 

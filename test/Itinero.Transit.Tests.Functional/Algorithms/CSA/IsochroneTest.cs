@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Itinero.Transit.Data;
-using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA

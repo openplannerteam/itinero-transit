@@ -145,14 +145,14 @@ namespace Itinero.Transit.Data
             return new DaysOfWeekRule(weekdayRange, contained);
         }
 
-        private bool inRange(DateTime moment)
+        private bool InRange(DateTime moment)
         {
             return _weekdayMask[(int) moment.DayOfWeek];
         }
 
         public DateTime NextChange(DateTime @from)
         {
-            while (!inRange(from))
+            while (!InRange(from))
             {
                 from = from.Date.AddDays(1);
             }
@@ -162,7 +162,7 @@ namespace Itinero.Transit.Data
 
         public DateTime PreviousChange(DateTime @from)
         {
-            while (!inRange(from))
+            while (!InRange(from))
             {
                 from = from.Date.AddDays(-1);
             }
@@ -172,7 +172,7 @@ namespace Itinero.Transit.Data
 
         public string StateAt(DateTime moment)
         {
-            if (inRange(moment))
+            if (InRange(moment))
             {
                 return _containedRule.StateAt(moment);
             }
@@ -187,7 +187,6 @@ namespace Itinero.Transit.Data
         private readonly TimeSpan _start;
         private readonly TimeSpan _stop;
         private readonly string _state;
-        private const bool _nextDay = false;
 
         public HoursRule(TimeSpan start, TimeSpan stop, string state = OpeningHours.Open)
         {

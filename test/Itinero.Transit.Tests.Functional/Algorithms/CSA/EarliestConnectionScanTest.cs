@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using Itinero.Transit.Data;
-using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
-using NetTopologySuite.Utilities;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {

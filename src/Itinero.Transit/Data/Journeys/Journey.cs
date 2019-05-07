@@ -2,6 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Itinero.Transit.Data;
+// ReSharper disable StaticMemberInGenericType
 
 // ReSharper disable BuiltInTypeReferenceStyle
 

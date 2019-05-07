@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Data.Attributes;
+// ReSharper disable UnusedMember.Global
 
 namespace Itinero.Transit.Data.Aggregators
 {

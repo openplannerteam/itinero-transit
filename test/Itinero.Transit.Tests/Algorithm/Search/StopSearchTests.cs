@@ -1,5 +1,4 @@
 using System.Linq;
-using Itinero.Transit.Algorithms.Search;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Aggregators;
 using Xunit;

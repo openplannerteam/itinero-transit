@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Itinero.Transit;
 using Itinero.Transit.Data;
 using Itinero.Transit.IO.LC;
@@ -24,13 +23,13 @@ namespace Sample.SNCB
             var departureStop = snapshot.FindClosestStop(4.9376678466796875, 51.322734170650484);
             var arrivalStop = snapshot.FindClosestStop(4.715280532836914, 50.88132251839807);
             // Create a traveller profile
-            var p = new DefaultProfile();
+            var profile = new DefaultProfile();
 
 
             Console.WriteLine("Calculating journeys...");
 
             var journeys = snapshot
-                .SelectProfile(new DefaultProfile())
+                .SelectProfile(profile)
                 .SelectStops(departureStop, arrivalStop)
                 .SelectTimeFrame(DateTime.Now, DateTime.Now.AddHours(3))
                 .AllJourneys();
