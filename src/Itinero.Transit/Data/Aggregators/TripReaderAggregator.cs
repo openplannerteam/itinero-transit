@@ -42,7 +42,7 @@ namespace Itinero.Transit.Data.Aggregators
             
         }
 
-        public TripReaderAggregator(IEnumerable<ITripReader> readers)
+        private TripReaderAggregator(IEnumerable<ITripReader> readers)
         {
             _readers = readers;
         }
