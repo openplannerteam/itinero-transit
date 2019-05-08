@@ -28,9 +28,17 @@ namespace Itinero.Transit.Tests.Functional
             EnableLogging();
 
             Log.Information("Starting the Functional Tests...");
+            
+            
+            var nmbs = TransitDb.ReadFrom(TestAllAlgorithms._nmbs0429, 0);
+            var wvl = TransitDb.ReadFrom(TestAllAlgorithms._delijnWvl0429, 1);
 
+            new StopEnumerationTest().Run(new List<TransitDb>()
+            {
+                nmbs, wvl
+            });
 
-            //*
+            /*
 
            LocalTests();
            InternetTests();

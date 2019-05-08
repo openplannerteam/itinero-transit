@@ -57,16 +57,16 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
             _delijnAnt0429,
         };
 
-        private const string _osmCentrumShuttle0409 = "CentrumbusBrugge2019-04-09.transitdb";
-        private const string _nmbs0409 = "fixed-test-cases-2019-04-09.transitdb";
+        public const string _osmCentrumShuttle0409 = "CentrumbusBrugge2019-04-09.transitdb";
+        public const string _nmbs0409 = "fixed-test-cases-2019-04-09.transitdb";
 
-        private const string _osmCentrumShuttle0429 = "CentrumbusBrugge2019-04-29.transitdb";
-        private const string _nmbs0429 = "fixed-test-cases-2019-04-29.transitdb";
-        private const string _delijnWvl0429 = "fixed-test-cases-de-lijn-wvl-2019-04-29.transitdb";
-        private const string _delijnOVl0429 = "fixed-test-cases-de-lijn-ovl-2019-04-29.transitdb";
-        private const string _delijnVlB0429 = "fixed-test-cases-de-lijn-vlb-2019-04-29.transitdb";
-        private const string _delijnLim0429 = "fixed-test-cases-de-lijn-lim-2019-04-29.transitdb";
-        private const string _delijnAnt0429 = "fixed-test-cases-de-lijn-ant-2019-04-29.transitdb";
+        public const string _osmCentrumShuttle0429 = "CentrumbusBrugge2019-04-29.transitdb";
+        public const string _nmbs0429 = "fixed-test-cases-2019-04-29.transitdb";
+        public const string _delijnWvl0429 = "fixed-test-cases-de-lijn-wvl-2019-04-29.transitdb";
+        public const string _delijnOVl0429 = "fixed-test-cases-de-lijn-ovl-2019-04-29.transitdb";
+        public const string _delijnVlB0429 = "fixed-test-cases-de-lijn-vlb-2019-04-29.transitdb";
+        public const string _delijnLim0429 = "fixed-test-cases-de-lijn-lim-2019-04-29.transitdb";
+        public const string _delijnAnt0429 = "fixed-test-cases-de-lijn-ant-2019-04-29.transitdb";
 
 
         private const string Gent = "http://irail.be/stations/NMBS/008892007";

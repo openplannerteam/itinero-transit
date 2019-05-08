@@ -67,8 +67,18 @@ namespace Itinero.Transit.Data.Aggregators
 
         public bool MoveTo(LocationId stop)
         {
-            _currentStop = UnderlyingDatabases[(int) stop.DatabaseId];
-            return _currentStop.MoveTo(stop);
+
+            foreach (var stopsReader in UnderlyingDatabases)
+            {
+                // ReSharper disable once InvertIf
+                if (stopsReader.MoveTo(stop))
+                {
+                    _currentStop = stopsReader;
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public bool MoveTo(string globalId)
