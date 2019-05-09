@@ -71,7 +71,11 @@ namespace Itinero.Transit.Data
                     }
 
                     var tripGlobalId = $"https://openstreetmap.org/relation/{route.Id}/vehicle/{index}";
-                    var tripIndex = wr.AddOrUpdateTrip(tripGlobalId);
+                    var tripIndex = wr.AddOrUpdateTrip(tripGlobalId, new[]
+                    {
+                        new Attribute("route", "http://openstreetmap.org/relation/" + route.Id),
+                        new Attribute("headsign", route.Name)
+                    });
                     allRuns.AddRange(
                         CreateRun(route, tripIndex, index, stopIds, currentStart));
 

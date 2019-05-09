@@ -23,8 +23,9 @@ namespace Itinero.Transit.Data
         public TimeSpan Interval;
         public IOpeningHoursRule OpeningTimes;
         public long Id;
+        public string Name;
 
-        public OsmRoute(CompleteRelation relation)
+        private OsmRoute(CompleteRelation relation)
         {
             var ts = relation.Tags;
             Id = relation.Id;
@@ -61,6 +62,7 @@ namespace Itinero.Transit.Data
             }
         }
 
+       
         /// <summary>
         ///  Tries to figure out where the relation is located.
         /// </summary>
