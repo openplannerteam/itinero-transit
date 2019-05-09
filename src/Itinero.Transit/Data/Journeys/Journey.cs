@@ -436,7 +436,7 @@ namespace Itinero.Transit.Journeys
             }
 
 
-            var dbOperator = connections.ArrivalStop.DatabaseId;
+            var dbOperator = connections?.ArrivalStop.DatabaseId ?? uint.MaxValue;
             return
                 $"Connection {Connection} to {location}, arriving at {Time.FromUnixTime():s}; operator is {dbOperator}";
         }
