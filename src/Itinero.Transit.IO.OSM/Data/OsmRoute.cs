@@ -68,10 +68,8 @@ namespace Itinero.Transit.Data
         /// <returns></returns>
         public static List<OsmRoute> LoadFrom(string path)
         {
-            if (long.TryParse(path, out var _))
-            {
-                path = "https://www.openstreetmap.org/relation/" + path;
-            }
+            // We strip of everyting until we only keep the number identifying the relation
+            // That, we pass onto the API of OSM
 
             if (path.StartsWith("https://www.openstreetmap.org/relation/"))
             {
@@ -83,6 +81,12 @@ namespace Itinero.Transit.Data
             {
                 path = path.Substring("http://www.openstreetmap.org/relation/".Length)
                     .Split('?')[0];
+            }
+
+            if (long.TryParse(path, out _))
+            {
+                path =
+                    $"https://openstreetmap.org/api/0.6/relation/{path}/full";
             }
 
             // Uri can parse a local file too
