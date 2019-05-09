@@ -6,6 +6,7 @@ using Itinero.Transit.Data;
 using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Journeys;
 using Itinero.Transit.Logging;
+
 // ReSharper disable PossibleMultipleEnumeration
 
 // ReSharper disable UnusedMember.Global
@@ -232,42 +233,42 @@ namespace Itinero.Transit
         }
 
 
-        public WithSingleLocation<T> SelectSingleStop(IEnumerable<(LocationId, Journey<T>)> stop)
+        public IWithSingleLocation<T> SelectSingleStop(IEnumerable<(LocationId, Journey<T>)> stop)
         {
-            return new WithSingleLocation<T>(new WithLocation<T>(StopsReader, ConnectionEnumerator, Profile, stop,
-                stop));
+            return new WithLocation<T>(StopsReader, ConnectionEnumerator, Profile, stop,
+                stop);
         }
 
-        public WithSingleLocation<T> SelectSingleStop(IEnumerable<LocationId> stop)
+        public IWithSingleLocation<T> SelectSingleStop(IEnumerable<LocationId> stop)
         {
             return SelectSingleStop(AddNullJourneys(stop));
         }
 
-        public WithSingleLocation<T> SelectSingleStop(IEnumerable<string> stop)
+        public IWithSingleLocation<T> SelectSingleStop(IEnumerable<string> stop)
         {
             return SelectSingleStop(
                 StopsReader.FindStops(stop, f => $"Stop {f} was not found")
             );
         }
 
-        public WithSingleLocation<T> SelectSingleStop(IEnumerable<IStop> stop)
+        public IWithSingleLocation<T> SelectSingleStop(IEnumerable<IStop> stop)
         {
             return SelectSingleStop(
                 stop.Select(f => f.Id)
             );
         }
 
-        public WithSingleLocation<T> SelectSingleStop(LocationId stop)
+        public IWithSingleLocation<T> SelectSingleStop(LocationId stop)
         {
             return SelectSingleStop(new List<LocationId> {stop});
         }
 
-        public WithSingleLocation<T> SelectSingleStop(IStop stop)
+        public IWithSingleLocation<T> SelectSingleStop(IStop stop)
         {
             return SelectSingleStop(stop.Id);
         }
 
-        public WithSingleLocation<T> SelectSingleStop(string stop)
+        public IWithSingleLocation<T> SelectSingleStop(string stop)
         {
             return SelectSingleStop(
                 StopsReader.FindStop(stop, $"Stop {stop} was not found")
@@ -333,31 +334,18 @@ namespace Itinero.Transit
         }
     }
 
-    public class WithSingleLocation<T> where T : IJourneyMetric<T>
+    public interface IWithSingleLocation<T> where T : IJourneyMetric<T>
     {
-        private readonly WithLocation<T> _location;
-
-        public WithSingleLocation(WithLocation<T> location)
-        {
-            _location = location;
-        }
-
-        public IWithTimeSingleLocation<T> SelectTimeFrame(
+        IWithTimeSingleLocation<T> SelectTimeFrame(
             DateTime start,
-            DateTime end)
-        {
-            return _location.SelectTimeFrame(start, end);
-        }
-        
-        public IWithTimeSingleLocation<T> SelectTimeFrame(
+            DateTime end);
+
+        IWithTimeSingleLocation<T> SelectTimeFrame(
             ulong start,
-            ulong end)
-        {
-            return SelectTimeFrame(start.FromUnixTime(), end.FromUnixTime());
-        }
+            ulong end);
     }
 
-    public class WithLocation<T>
+    public class WithLocation<T> : IWithSingleLocation<T>
         where T : IJourneyMetric<T>
     {
         private readonly IStopsReader _stopsReader;
@@ -390,12 +378,23 @@ namespace Itinero.Transit
         {
             return new WithTime<T>(_stopsReader, _connectionEnumerator, _profile, _from, _to, start, end);
         }
-        
+
+        IWithTimeSingleLocation<T> IWithSingleLocation<T>.SelectTimeFrame(DateTime start, DateTime end)
+        {
+            return SelectTimeFrame(start, end);
+        }
+
         public WithTime<T> SelectTimeFrame(
             ulong start,
             ulong end)
         {
             return SelectTimeFrame(start.FromUnixTime(), end.FromUnixTime());
+        }
+
+
+        IWithTimeSingleLocation<T> IWithSingleLocation<T>.SelectTimeFrame(ulong start, ulong end)
+        {
+            return SelectTimeFrame(start, end);
         }
     }
 
@@ -424,7 +423,7 @@ namespace Itinero.Transit
 
         internal DateTime Start;
         internal DateTime End;
-        
+
         private IConnectionFilter _filter;
 
         internal WithTime(IStopsReader stopsReader,
@@ -485,7 +484,7 @@ namespace Itinero.Transit
                 To,
                 start,
                 end
-                );
+            );
         }
 
         ///  <summary>

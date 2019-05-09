@@ -52,10 +52,10 @@ namespace Itinero.Transit.IO.LC.Synchronization
             var attempts = 0;
             while (attempts <= _retries)
             {
+                attempts++;
                 try
                 {
                     toUpdate.UpdateTimeFrame(start, end, _forceUpdate);
-                    attempts++;
                 }
                 catch (Exception e)
                 {
@@ -70,7 +70,7 @@ namespace Itinero.Transit.IO.LC.Synchronization
 
         public override string ToString()
         {
-            var updates = _forceUpdate ? "forces updating" : "no overwrite" ;
+            var updates = _forceUpdate ? "forces updating" : "no overwrite";
             var retr = _retries == 0
                 ? "No retries on failing"
                 : (_retries == 1 ? "Single retry on failing" : $"{_retries} retries when failing");
