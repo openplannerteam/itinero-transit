@@ -73,7 +73,7 @@ namespace Itinero.Transit.Tests.Functional
         {
             new CachingTest().Run(true);
             var tdb = new TransitDb();
-            tdb.UseOsmRoute(9413958, DateTime.Today, DateTime.Today.AddDays(1));
+            tdb.UseOsmRoute("9413958", DateTime.Today, DateTime.Today.AddDays(1));
         }
 
         public static void SlowTests()

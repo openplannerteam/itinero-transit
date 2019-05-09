@@ -61,18 +61,32 @@ namespace Itinero.Transit.Data
             }
         }
 
-
-        public static List<OsmRoute> LoadFromFile(string filePath)
+        /// <summary>
+        ///  Tries to figure out where the relation is located.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static List<OsmRoute> LoadFrom(string path)
         {
-            using (var fileStream = File.OpenRead(filePath))
+            if (long.TryParse(path, out var _))
             {
-                return OsmRouteFromStream(fileStream);
+                path = "https://www.openstreetmap.org/relation/" + path;
             }
-        }
 
-        public static List<OsmRoute> LoadFromOsm(long relationId)
-        {
-            return LoadFromUrl(new Uri($"https://www.openstreetmap.org/api/0.6/relation/{relationId}/full"));
+            if (path.StartsWith("https://www.openstreetmap.org/relation/"))
+            {
+                path = path.Substring("https://www.openstreetmap.org/relation/".Length)
+                    .Split('?')[0];
+            }
+
+            if (path.StartsWith("http://www.openstreetmap.org/relation/"))
+            {
+                path = path.Substring("http://www.openstreetmap.org/relation/".Length)
+                    .Split('?')[0];
+            }
+
+            // Uri can parse a local file too
+            return LoadFromUrl(new Uri(path));
         }
 
         public static List<OsmRoute> LoadFromUrl(Uri path)

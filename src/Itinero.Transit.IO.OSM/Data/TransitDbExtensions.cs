@@ -1,42 +1,27 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Itinero.Transit.IO.LC.Synchronization;
 
 namespace Itinero.Transit.Data
 {
     public static class TransitDbExtensions
     {
-        public static void UseOsmRoute(this TransitDb tdb, Uri url, DateTime start, DateTime end)
+        
+        public static void UseOsmRoute(this TransitDb tdb, string url, DateTime start, DateTime end)
         {
-            var r = OsmRoute.LoadFromUrl(url);
+            var r = OsmRoute.LoadFrom(url);
             foreach (var route in r)
             {
                 tdb.UseOsmRoute(route, start, end);
             }
         }
 
-        public static void UseOsmRoute(this TransitDb tdb, string filePath, DateTime start, DateTime end)
-        {
-            var r = OsmRoute.LoadFromFile(filePath);
-            foreach (var route in r)
-            {
-                tdb.UseOsmRoute(route, start, end);
-            }
-        }
 
-        public static void UseOsmRoute(this TransitDb tdb, long id, DateTime start, DateTime end)
-        {
-            var r = OsmRoute.LoadFromOsm(id);
-            foreach (var route in r)
-            {
-                tdb.UseOsmRoute(route, start, end);
-            }
-        }
-
-        public static Synchronizer UseOsmRoute(this TransitDb tdb, Uri url,
+        public static Synchronizer UseOsmRoute(this TransitDb tdb, string path,
             List<ISynchronizationPolicy> synchronizations)
         {
-            var route = OsmRoute.LoadFromUrl(url);
+            var route = OsmRoute.LoadFrom(path);
 
             void Update(TransitDb.TransitDbWriter transitDbWriter,
                 DateTime start, DateTime end)
