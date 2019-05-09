@@ -441,7 +441,7 @@ namespace Itinero.Transit.Journeys
                 $"Connection {Connection} to {location}, arriving at {Time.FromUnixTime():s}; operator is {dbOperator}";
         }
 
-        public string SpecialPartToString(string location)
+        private string SpecialPartToString(string location)
         {
             switch (Connection)
             {
