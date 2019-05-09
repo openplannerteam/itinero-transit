@@ -15,7 +15,7 @@ namespace Itinero.Transit.Data
     /// <summary>
     /// Loads a PTv2-route relation from OSM, and adds it to a transitDB (for a given timerange)
     /// </summary>
-    public class OsmRoute
+    internal class OsmRoute
     {
         public List<(string, Coordinate, TagsCollectionBase)> StopPositions;
         public bool RoundTrip;

@@ -9,46 +9,22 @@ namespace Itinero.Transit.Data
     /// <summary>
     /// Adds a OsmRoute to a transitDb
     /// </summary>
-    public static class OsmRouteExtensions
+    internal static class OsmRouteExtensions
     {
-        public static void UseOsmRoute(this TransitDb tdb, Uri url, DateTime start, DateTime end)
+        internal static void UseOsmRoute(this TransitDb tdb, OsmRoute route, DateTime start, DateTime end)
         {
-            var r = OsmRoute.LoadFromUrl(url);
-            foreach (var route in r)
-            {
-                tdb.UseOsmRoute(route, start, end);
-            }
+            tdb.GetWriter().UseOsmRoute(route, start, end);
         }
 
-        public static void UseOsmRoute(this TransitDb tdb, string filePath, DateTime start, DateTime end)
-        {
-            var r = OsmRoute.LoadFromFile(filePath);
-            foreach (var route in r)
-            {
-                tdb.UseOsmRoute(route, start, end);
-            }
-        }
-
-        public static void UseOsmRoute(this TransitDb tdb, long id, DateTime start, DateTime end)
-        {
-            var r = OsmRoute.LoadFromOsm(id);
-            foreach (var route in r)
-            {
-                tdb.UseOsmRoute(route, start, end);
-            }
-        }
-
-
-        private static void UseOsmRoute(this TransitDb tdb, OsmRoute route, DateTime start, DateTime end)
+        internal static void UseOsmRoute(this TransitDb.TransitDbWriter wr, OsmRoute route, DateTime start,
+            DateTime end)
         {
             Log.Information($"Adding route {route.Id} to the transitdb in frame {start} --> {end}");
-
             if (route.StopPositions.Count <= 1)
             {
                 throw new ArgumentException("No or only one stop positions in OSM route");
             }
 
-            var wr = tdb.GetWriter();
             var stopIds = new List<LocationId>();
 
             foreach (var (id, coordinate, tags) in route.StopPositions)
@@ -137,9 +113,9 @@ namespace Itinero.Transit.Data
             {
                 var l0 = locations[i];
                 var l0Coor = route.StopPositions[i].Item2;
-                var l0Id =Uri.EscapeDataString(route.StopPositions[i].Item1);
+                var l0Id = Uri.EscapeDataString(route.StopPositions[i].Item1);
                 var l1 = locations[i + 1];
-                var l1Coor = route.StopPositions[i+1].Item2;
+                var l1Coor = route.StopPositions[i + 1].Item2;
                 var l1Id = Uri.EscapeDataString(route.StopPositions[i + 1].Item1);
 
                 var depTime = startMoment.AddSeconds(travelTime * i);
