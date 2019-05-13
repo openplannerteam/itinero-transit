@@ -40,6 +40,8 @@ namespace Itinero.Transit.Journeys
         private static void Reversed<T>(this Journey<T> j, Journey<T> buildOn, List<Journey<T>> addTo)
             where T : IJourneyMetric<T>
         {
+            
+            
             if (j.SpecialConnection && j.Connection == Journey<T>.GENESIS)
             {
                 // We have arrived at the end of the journey, all information should be added already

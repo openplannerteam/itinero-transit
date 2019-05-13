@@ -5,6 +5,8 @@ using System.Net;
 using System.Net.Http;
 using System.Xml;
 using GeoAPI.Geometries;
+using GeoTimeZone;
+using Itinero.Transit.Logging;
 using OsmSharp;
 using OsmSharp.Complete;
 using OsmSharp.Streams;
@@ -33,17 +35,8 @@ namespace Itinero.Transit.Data
 
             Duration = TimeSpan.ParseExact(ts["duration"], "hh\\:mm\\:ss", null);
             Interval = TimeSpan.ParseExact(ts["interval"], "hh\\:mm\\:ss", null);
-
-            if (ts.ContainsKey("opening_hours"))
-            {
-                OpeningTimes = OpeningHours.Parse(ts["opening_hours"]) ?? new TwentyFourSeven();
-            }
-            else
-            {
-                OpeningTimes = new TwentyFourSeven();
-            }
-
             StopPositions = new List<(string, Coordinate, TagsCollectionBase)>();
+
 
             foreach (var member in relation.Members)
             {
@@ -60,6 +53,28 @@ namespace Itinero.Transit.Data
                     StopPositions.Add((nodeId, coor, el.Tags));
                 }
             }
+            
+            if (ts.ContainsKey("opening_hours"))
+            {
+                OpeningTimes = OpeningHours.Parse(ts["opening_hours"], GetTimeZone()) ?? new TwentyFourSeven();
+            }
+            else
+            {
+                OpeningTimes = new TwentyFourSeven();
+            }
+        }
+
+
+        /// <summary>
+        /// Gets the timezone of this route.
+        /// This is based on the lat/lon of the first stop, which is in turn passed into the GeoTimeZone-package.
+        /// This packages uses the OSM-boundaries to determine country and thus timezone
+        /// </summary>
+        public string GetTimeZone()
+        {
+            var coor = this.StopPositions[0].Item2;
+            return TimeZoneLookup.GetTimeZone(coor.X, coor.Y).Result;
+
         }
 
        

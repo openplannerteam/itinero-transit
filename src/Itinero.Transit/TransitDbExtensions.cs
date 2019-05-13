@@ -204,6 +204,19 @@ namespace Itinero.Transit
             StopsReader = StopsReaderAggregator.CreateFrom(tdbs).UseCache();
             ConnectionEnumerator = ConnectionEnumeratorAggregator.CreateFrom(tdbs);
             Profile = profile;
+            
+            
+            var alreadyUsedIds = new HashSet<uint>();
+            foreach (var tdb in tdbs)
+            {
+                if (alreadyUsedIds.Contains(tdb.Id))
+                {
+                    throw new ArgumentException("Duplicate identifiers");
+                }
+                
+                alreadyUsedIds.Add(tdb.Id);
+            }
+            
         }
 
 

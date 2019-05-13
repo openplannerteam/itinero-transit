@@ -9,12 +9,13 @@ namespace Itinero.Transit.Data
         public const string Open = "open";
         public const string Closed = "closed";
 
-        public static IOpeningHoursRule Parse(string value)
+        public static IOpeningHoursRule Parse(string value, string timezone)
         {
             value = value.ToLower();
-            return ((IOpeningHoursRule) TwentyFourSeven.TryParse(value) ??
-                   DaysOfWeekRule.TryParse(value)) ??
-                   HoursRule.TryParse(value);
+            var rule = ((IOpeningHoursRule) TwentyFourSeven.TryParse(value) ??
+                        DaysOfWeekRule.TryParse(value)) ??
+                       HoursRule.TryParse(value);
+            return new TimeZoneRewriter(rule, timezone);
         }
     }
 
@@ -45,6 +46,40 @@ namespace Itinero.Transit.Data
         public static string StateAt(this IOpeningHoursRule rule, DateTime moment, string fallback)
         {
             return rule.StateAt(moment) ?? fallback;
+        }
+    }
+
+    public class TimeZoneRewriter : IOpeningHoursRule
+    {
+        private IOpeningHoursRule _openingHoursRuleImplementation;
+        private readonly TimeZoneInfo _timezone;
+
+        public TimeZoneRewriter(IOpeningHoursRule openingHoursRuleImplementation, string timezone)
+        {
+            _openingHoursRuleImplementation = openingHoursRuleImplementation;
+            _timezone = TimeZoneInfo.FindSystemTimeZoneById(timezone);
+        }
+
+        private DateTime ApplyTimeZone(DateTime dt)
+        {
+            return TimeZoneInfo.ConvertTime(dt, _timezone);
+        }
+
+        public DateTime NextChange(DateTime from)
+        {
+            return _openingHoursRuleImplementation.NextChange(ApplyTimeZone(from))
+                .ToUniversalTime();
+        }
+
+        public DateTime PreviousChange(DateTime from)
+        {
+            return _openingHoursRuleImplementation.PreviousChange(ApplyTimeZone(from))
+                .ToUniversalTime();
+        }
+
+        public string StateAt(DateTime moment)
+        {
+            return _openingHoursRuleImplementation.StateAt(ApplyTimeZone(moment));
         }
     }
 

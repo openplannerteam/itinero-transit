@@ -65,7 +65,7 @@ namespace Itinero.Transit.Data
 
             return tdbs;
         }
-        
+
         [Pure]
         public static TransitDb ReadFrom(string path, uint databaseId)
         {
@@ -104,7 +104,10 @@ namespace Itinero.Transit.Data
                 StopsDb = stopsDb;
                 TripsDb = tripsDb;
                 ConnectionsDb = connectionsDb;
+                Id = stopsDb.DatabaseId;
             }
+
+            public uint Id { get; }
 
             /// <summary>
             /// Gets the stops db.

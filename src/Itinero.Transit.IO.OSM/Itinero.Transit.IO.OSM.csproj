@@ -14,6 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="GeoTimeZone" Version="3.2.0" />
         <PackageReference Include="Itinero" Version="1.4.0-pre91" />
         <PackageReference Include="Itinero.IO.Osm" Version="1.4.0-pre91" />
         <PackageReference Include="NetTopologySuite" Version="1.15.2" />

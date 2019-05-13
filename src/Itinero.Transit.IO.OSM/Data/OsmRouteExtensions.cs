@@ -19,7 +19,9 @@ namespace Itinero.Transit.Data
         internal static void UseOsmRoute(this TransitDb.TransitDbWriter wr, OsmRoute route, DateTime start,
             DateTime end)
         {
-            Log.Information($"Adding route {route.Id} to the transitdb in frame {start} --> {end}");
+            Log.Information($"Adding route {route.Id} to the transitdb in frame {start} --> {end}. " +
+                            $"The route {(route.RoundTrip ? "loops" : "does not loop")}, has {route.StopPositions.Count} stops, " +
+                            $"is based in timezone {route.GetTimeZone()} ");
             if (route.StopPositions.Count <= 1)
             {
                 throw new ArgumentException("No or only one stop positions in OSM route");
@@ -58,7 +60,6 @@ namespace Itinero.Transit.Data
                 if (route.RoundTrip)
                 {
                     modulo = (uint) Math.Ceiling(route.Duration.TotalSeconds / route.Interval.TotalSeconds);
-                    Log.Verbose($"There will be {modulo} vehicles");
                 }
 
 
@@ -71,11 +72,13 @@ namespace Itinero.Transit.Data
                     }
 
                     var tripGlobalId = $"https://openstreetmap.org/relation/{route.Id}/vehicle/{index}";
+
+
                     var tripIndex = wr.AddOrUpdateTrip(tripGlobalId, new[]
                     {
                         new Attribute("route", "http://openstreetmap.org/relation/" + route.Id),
-                        new Attribute("headsign", route.Name)
-                    });
+                        new Attribute("headsign", route.Name ?? "")
+                    });    
                     allRuns.AddRange(
                         CreateRun(route, tripIndex, index, stopIds, currentStart));
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Itinero.Transit.Algorithms.Search;
 using Itinero.Transit.Data.Attributes;
 
@@ -37,7 +38,7 @@ namespace Itinero.Transit.Data.Aggregators
             {
                 return enumerators[0];
             }
-
+            
             return new StopsReaderAggregator(enumerators);
         }
 
