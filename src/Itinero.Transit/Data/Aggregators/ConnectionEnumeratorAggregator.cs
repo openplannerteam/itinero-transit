@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Itinero.Transit.Data.Aggregators
@@ -258,25 +259,19 @@ namespace Itinero.Transit.Data.Aggregators
         }
 
 
-        public uint Id => _currentConnection.Id;
-        public string GlobalId => _currentConnection.GlobalId;
+        [Pure] public uint Id => _currentConnection.Id;
+        [Pure] public string GlobalId => _currentConnection.GlobalId;
+        [Pure] public ulong ArrivalTime => _currentConnection.ArrivalTime;
 
-        public ulong ArrivalTime => _currentConnection.ArrivalTime;
+        [Pure] public ulong DepartureTime => _currentConnection.DepartureTime;
+        [Pure] public ushort TravelTime => _currentConnection.TravelTime;
+        [Pure] public ushort ArrivalDelay => _currentConnection.ArrivalDelay;
+        [Pure] public ushort DepartureDelay => _currentConnection.DepartureDelay;
+        [Pure] public ushort Mode => _currentConnection.Mode;
 
-        public ulong DepartureTime => _currentConnection.DepartureTime;
+        [Pure] public TripId TripId => _currentConnection.TripId;
+        [Pure] public LocationId DepartureStop => _currentConnection.DepartureStop;
 
-        public ushort TravelTime => _currentConnection.TravelTime;
-
-        public ushort ArrivalDelay => _currentConnection.ArrivalDelay;
-
-        public ushort DepartureDelay => _currentConnection.DepartureDelay;
-
-        public ushort Mode => _currentConnection.Mode;
-
-        public TripId TripId => _currentConnection.TripId;
-
-        public LocationId DepartureStop => _currentConnection.DepartureStop;
-
-        public LocationId ArrivalStop => _currentConnection.ArrivalStop;
+        [Pure] public LocationId ArrivalStop => _currentConnection.ArrivalStop;
     }
 }
