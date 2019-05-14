@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Xml;
 using GeoAPI.Geometries;
 using GeoTimeZone;
-using Itinero.Transit.Logging;
 using OsmSharp;
 using OsmSharp.Complete;
 using OsmSharp.Streams;
@@ -15,21 +14,22 @@ using OsmSharp.Tags;
 namespace Itinero.Transit.Data
 {
     /// <summary>
-    /// Loads a PTv2-route relation from OSM, and adds it to a transitDB (for a given timerange)
+    /// Loads a PTv2-route relation from OSM, and adds it to a transitDB (for a given time range)
     /// </summary>
     internal class OsmRoute
     {
-        public List<(string, Coordinate, TagsCollectionBase)> StopPositions;
-        public bool RoundTrip;
+        public readonly List<(string, Coordinate, TagsCollectionBase)> StopPositions;
+        public readonly bool RoundTrip;
         public TimeSpan Duration;
         public TimeSpan Interval;
-        public IOpeningHoursRule OpeningTimes;
-        public long Id;
-        public string Name;
+        public readonly IOpeningHoursRule OpeningTimes;
+        public readonly long Id;
+        public readonly string Name;
 
         private OsmRoute(CompleteRelation relation)
         {
             var ts = relation.Tags;
+            Name = relation.Tags.GetValue("name");
             Id = relation.Id;
             RoundTrip = ts.ContainsKey("roundtrip") && ts["roundtrip"].Equals("yes");
 
@@ -48,12 +48,12 @@ namespace Itinero.Transit.Data
                         throw new ArgumentNullException();
                     }
 
-                    var coor = new Coordinate((double) node.Latitude, (double) node.Longitude);
+                    var coordinate = new Coordinate((double) node.Latitude, (double) node.Longitude);
                     var nodeId = $"https://www.openstreetmap.org/node/{node.Id}";
-                    StopPositions.Add((nodeId, coor, el.Tags));
+                    StopPositions.Add((nodeId, coordinate, el.Tags));
                 }
             }
-            
+
             if (ts.ContainsKey("opening_hours"))
             {
                 OpeningTimes = OpeningHours.Parse(ts["opening_hours"], GetTimeZone()) ?? new TwentyFourSeven();
@@ -72,12 +72,11 @@ namespace Itinero.Transit.Data
         /// </summary>
         public string GetTimeZone()
         {
-            var coor = this.StopPositions[0].Item2;
-            return TimeZoneLookup.GetTimeZone(coor.X, coor.Y).Result;
-
+            var coordinate = StopPositions[0].Item2;
+            return TimeZoneLookup.GetTimeZone(coordinate.X, coordinate.Y).Result;
         }
 
-       
+
         /// <summary>
         ///  Tries to figure out where the relation is located.
         /// </summary>
@@ -85,7 +84,7 @@ namespace Itinero.Transit.Data
         /// <returns></returns>
         public static List<OsmRoute> LoadFrom(string path)
         {
-            // We strip of everyting until we only keep the number identifying the relation
+            // We strip of everything until we only keep the number identifying the relation
             // That, we pass onto the API of OSM
 
             if (path.StartsWith("https://www.openstreetmap.org/relation/"))
@@ -106,11 +105,22 @@ namespace Itinero.Transit.Data
                     $"https://openstreetmap.org/api/0.6/relation/{path}/full";
             }
 
-            // Uri can parse a local file too
-            return LoadFromUrl(new Uri(path));
+            // ReSharper disable once ConvertIfStatementToReturnStatement
+            if (path.StartsWith("http"))
+            {
+                return LoadFromUrl(new Uri(path));
+            }
+            else
+            {
+                // We are probably dealing with a path
+                using (var stream = File.OpenRead(path))
+                {
+                    return OsmRouteFromStream(stream);
+                }
+            }
         }
 
-        public static List<OsmRoute> LoadFromUrl(Uri path)
+        private static List<OsmRoute> LoadFromUrl(Uri path)
         {
             var httpClient = new HttpClient();
 
