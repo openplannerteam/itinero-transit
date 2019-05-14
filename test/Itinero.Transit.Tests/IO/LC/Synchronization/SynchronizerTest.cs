@@ -25,7 +25,7 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
 
             var synchronizer = new Synchronizer(tdb, Update, 5,
                 new SynchronizedWindow(1, TimeSpan.FromSeconds(-1), TimeSpan.FromSeconds(2)));
-
+            synchronizer.Start();
             Thread.Sleep(1200);
             Assert.True(triggered);
             synchronizer.Stop();
@@ -57,7 +57,7 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
             var sync = new Synchronizer(tdb, Update,
                 new SynchronizedWindow(5, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(5)),
                 new SynchronizedWindow(10, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(10)));
-
+            sync.Start();
 
             Thread.Sleep(11000);
 

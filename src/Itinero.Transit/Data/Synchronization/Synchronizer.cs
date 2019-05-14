@@ -50,6 +50,10 @@ namespace Itinero.Transit.IO.LC.Synchronization
             _timer = new Timer(Math.Min(initialDelaySeconds, clockRate) *
                                1000); // Clockrate is in seconds, timer expects millis
             _timer.Elapsed += RunAll;
+        }
+
+        public void Start()
+        {
             _timer.Start();
 
             var txt = "";
@@ -59,7 +63,7 @@ namespace Itinero.Transit.IO.LC.Synchronization
             }
 
             Log.Information(
-                $"Started an automated task timer with clockrate {_clockRate} sec. Initial delay is {initialDelaySeconds} Included policies are:\n{txt}");
+                $"Started an automated task timer with clockrate {_clockRate} sec. Included policies are:\n{txt}");
         }
 
         public Synchronizer(TransitDb db, Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb,
@@ -101,7 +105,7 @@ namespace Itinero.Transit.IO.LC.Synchronization
         {
             _timer.Interval = _clockRate * 1000;
 
-            
+
             var unixNow = DateTime.Now.ToUnixTime();
             var date = unixNow - unixNow % _clockRate;
             var triggerDate = date.FromUnixTime();

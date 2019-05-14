@@ -2,6 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Itinero.Transit.Data;
+
 // ReSharper disable StaticMemberInGenericType
 
 // ReSharper disable BuiltInTypeReferenceStyle
@@ -69,15 +70,15 @@ namespace Itinero.Transit.Journeys
         /// <summary>
         /// Constant indicating that the journey starts here
         /// </summary>
-// ReSharper disable once InconsistentNaming
+        // ReSharper disable once InconsistentNaming
         public const uint GENESIS = 1;
 
         /// <summary>
         /// Constant indicating that the traveller doesn't move, but waits or changes platform
         /// Also used as filler between the genesis and first departure
         /// </summary>
-// ReSharper disable once MemberCanBePrivate.Global
-// ReSharper disable once InconsistentNaming
+        // ReSharper disable once MemberCanBePrivate.Global
+        // ReSharper disable once InconsistentNaming
         public const uint TRANSFER = 2;
 
         // ReSharper disable once InconsistentNaming
@@ -373,25 +374,26 @@ namespace Itinero.Transit.Journeys
 
             return j;
         }
+
         [Pure]
         public string ToString(TransitDb tdb)
         {
             return ToString(tdb.Latest);
         }
+
         [Pure]
         public string ToString(TransitDb.TransitDbSnapShot snapshot)
         {
             return ToString(snapshot.StopsDb.GetReader(), snapshot.ConnectionsDb.GetDepartureEnumerator());
         }
-        
+
         [Pure]
         public string ToString(WithTime<T> withTime)
         {
             return ToString(withTime.StopsReader, withTime.ConnectionEnumerator);
         }
 
-        
-        
+
         [Pure]
         public string ToString(IStopsReader stops = null, IConnectionEnumerator connections = null,
             uint truncateAt = 15)
@@ -520,7 +522,5 @@ namespace Itinero.Transit.Journeys
                 return hashCode;
             }
         }
-
-        
     }
 }

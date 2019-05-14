@@ -40,8 +40,6 @@ namespace Itinero.Transit.Journeys
         private static void Reversed<T>(this Journey<T> j, Journey<T> buildOn, List<Journey<T>> addTo)
             where T : IJourneyMetric<T>
         {
-            
-            
             if (j.SpecialConnection && j.Connection == Journey<T>.GENESIS)
             {
                 // We have arrived at the end of the journey, all information should be added already
@@ -160,6 +158,7 @@ namespace Itinero.Transit.Journeys
         /// The structure of the journey will be kept
         /// </summary>
         // ReSharper disable once InconsistentNaming
+        [Pure]
         public static Journey<S> MeasureWith<T, S>(this Journey<T> j, S newMetricFactory)
             where S : IJourneyMetric<S>
             where T : IJourneyMetric<T>
