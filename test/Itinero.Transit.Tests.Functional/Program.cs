@@ -49,7 +49,7 @@ namespace Itinero.Transit.Tests.Functional
             
             new MultiTransitDbTest().Run(input);
 
-            /*
+            //*
 
            LocalTests();
            InternetTests();
