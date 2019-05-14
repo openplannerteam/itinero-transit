@@ -65,7 +65,14 @@ namespace Itinero.Transit.Data.Aggregators
 
         private void MoveNextA(DateTime? dateTime = null)
         {
-            if (!_a.MoveNext(dateTime))
+            try
+            {
+                if (!_a.MoveNext(dateTime))
+                {
+                    _aDepleted = true;
+                }
+            }
+            catch
             {
                 _aDepleted = true;
             }
@@ -73,7 +80,14 @@ namespace Itinero.Transit.Data.Aggregators
 
         private void MoveNextB(DateTime? dateTime = null)
         {
-            if (!_b.MoveNext(dateTime))
+            try
+            {
+                if (!_b.MoveNext(dateTime))
+                {
+                    _bDepleted = true;
+                }
+            }
+            catch
             {
                 _bDepleted = true;
             }
@@ -109,6 +123,8 @@ namespace Itinero.Transit.Data.Aggregators
         {
             if (dateTime != null)
             {
+                _aDepleted = false;
+                _bDepleted = false;
                 // We have to initialize
                 MoveNextA(dateTime);
                 MoveNextB(dateTime);
@@ -147,7 +163,14 @@ namespace Itinero.Transit.Data.Aggregators
 
         private void MovePreviousA(DateTime? dateTime = null)
         {
-            if (!_a.MovePrevious(dateTime))
+            try
+            {
+                if (!_a.MovePrevious(dateTime))
+                {
+                    _aDepleted = true;
+                }
+            }
+            catch
             {
                 _aDepleted = true;
             }
@@ -155,7 +178,14 @@ namespace Itinero.Transit.Data.Aggregators
 
         private void MovePreviousB(DateTime? dateTime = null)
         {
-            if (!_b.MovePrevious(dateTime))
+            try
+            {
+                if (!_b.MovePrevious(dateTime))
+                {
+                    _bDepleted = true;
+                }
+            }
+            catch
             {
                 _bDepleted = true;
             }
@@ -190,6 +220,8 @@ namespace Itinero.Transit.Data.Aggregators
         {
             if (dateTime != null)
             {
+                _aDepleted = false;
+                _bDepleted = false;
                 // We have to initialize
                 MovePreviousA(dateTime);
                 MovePreviousB(dateTime);
