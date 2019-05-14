@@ -29,6 +29,7 @@ namespace Itinero.Transit.IO.LC.Synchronization
         {
             _db = new TransitDbUpdater(db, updateDb);
             // Highest frequency should be run often and thus has priority
+            // Note that Frequency is actually (and confusingly) the delay between two runs, so lower = more often
             _policies = policies.OrderBy(p => p.Frequency).ToList();
             if (policies.Count == 0)
             {
@@ -83,6 +84,7 @@ namespace Itinero.Transit.IO.LC.Synchronization
         /// This method triggers all the update policies.
         /// This can be used for an initial prefetch
         /// </summary>
+        // ReSharper disable once UnusedMember.Global
         public void InitialRun()
         {
             foreach (var policy in _policies)
@@ -116,34 +118,31 @@ namespace Itinero.Transit.IO.LC.Synchronization
                 return;
             }
 
-            try
+            foreach (var policy in _policies)
             {
-                foreach (var policy in _policies)
+                if (date % policy.Frequency != 0 && !_firstRun)
                 {
-                    if (date % policy.Frequency != 0 && !_firstRun)
-                    {
-                        // This one does not have to be triggered this cycle
-                        continue;
-                    }
-
-                    try
-                    {
-                        CurrentlyRunning = policy;
-                        Log.Information($"Currently running automated task:{policy}");
-                        policy.Run(triggerDate, _db);
-                        Log.Information($"Done running automated task:{policy}");
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error($"Running automated task {policy} failed:\n" + e);
-                    }
+                    // This one does not have to be triggered this cycle
+                    continue;
                 }
-            }
-            finally
-            {
+
+                try
+                {
+                    CurrentlyRunning = policy;
+                    Log.Information($"Currently running automated task:{policy}");
+                    policy.Run(triggerDate, _db);
+                    Log.Information($"Done running automated task:{policy}");
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Running automated task {policy} failed:\n" + e);
+                }
+
                 CurrentlyRunning = null;
-                _firstRun = false;
             }
+
+            CurrentlyRunning = null;
+            _firstRun = false;
         }
 
 
