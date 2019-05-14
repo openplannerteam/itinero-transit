@@ -19,6 +19,7 @@ namespace Itinero.Transit.IO.LC.Synchronization
         private readonly Timer _timer;
 
         public ISynchronizationPolicy CurrentlyRunning { get; private set; }
+
         // ReSharper disable once UnusedMember.Global
         public IReadOnlyList<(DateTime start, DateTime end)> LoadedTimeWindows => _db.LoadedTimeWindows;
 
@@ -100,6 +101,7 @@ namespace Itinero.Transit.IO.LC.Synchronization
                 Log.Information($"Done running automated task (via initialRun) :{policy}");
             }
 
+            CurrentlyRunning = null;
             _firstRun = false;
         }
 
