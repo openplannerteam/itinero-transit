@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Itinero.Transit.Logging;
+using NodaTime;
 
 namespace Itinero.Transit.Data
 {
@@ -10,6 +12,7 @@ namespace Itinero.Transit.Data
         public const string Open = "open";
         public const string Closed = "closed";
 
+        [Pure]
         public static IOpeningHoursRule Parse(string value, string timezone)
         {
             value = value.ToLower();
@@ -29,8 +32,10 @@ namespace Itinero.Transit.Data
         /// </summary>
         /// <param name="from"></param>
         /// <returns></returns>
+        [Pure]
         DateTime NextChange(DateTime from);
 
+        [Pure]
         DateTime PreviousChange(DateTime from);
 
         /// <summary>
@@ -39,6 +44,7 @@ namespace Itinero.Transit.Data
         /// </summary>
         /// <param name="moment"></param>
         /// <returns></returns>
+        [Pure]
         string StateAt(DateTime moment);
     }
 
@@ -53,26 +59,23 @@ namespace Itinero.Transit.Data
     public class TimeZoneRewriter : IOpeningHoursRule
     {
         private IOpeningHoursRule _openingHoursRuleImplementation;
-        private readonly TimeZoneInfo _timezone;
+        private readonly DateTimeZone _timezone;
 
         public TimeZoneRewriter(IOpeningHoursRule openingHoursRuleImplementation, string timezone)
         {
             _openingHoursRuleImplementation = openingHoursRuleImplementation;
-            try
+            _timezone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(timezone);
+            if (_timezone == null)
             {
-
-                _timezone = TimeZoneInfo.FindSystemTimeZoneById(timezone);
-            }
-            catch
-            {
-                Log.Error($"Timezone info for {timezone} not found. Gonna UTC instead... THIS IS PROBABLY WRONG.");
-                _timezone = TimeZoneInfo.Utc;
+                Log.Error("Could not find the timezone with NodaTime");
             }
         }
 
         private DateTime ApplyTimeZone(DateTime dt)
         {
-            return TimeZoneInfo.ConvertTime(dt, _timezone);
+            var instant = Instant.FromDateTimeUtc(dt.ToUniversalTime());
+            var zonedInstant = instant.InZone(_timezone);
+            return zonedInstant.ToDateTimeUnspecified();
         }
 
         public DateTime NextChange(DateTime from)
@@ -185,6 +188,12 @@ namespace Itinero.Transit.Data
         public static DaysOfWeekRule TryParse(string value)
         {
             var splitted = value.Split(' ');
+            if (splitted.Length < 2)
+            {
+                // Not a valid weekday
+                return null;
+            }
+
             var weekdayRange = ParseWeekdays(splitted[0]);
             var contained = ContainedRule(splitted);
             return new DaysOfWeekRule(weekdayRange, contained);

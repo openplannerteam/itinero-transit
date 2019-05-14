@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Xml;
 using GeoAPI.Geometries;
 using GeoTimeZone;
+using Itinero.Transit.Logging;
 using OsmSharp;
 using OsmSharp.Complete;
 using OsmSharp.Streams;
@@ -29,7 +30,15 @@ namespace Itinero.Transit.Data
         private OsmRoute(CompleteRelation relation)
         {
             var ts = relation.Tags;
-            Name = relation.Tags.GetValue("name");
+            try
+            {
+
+                Name = relation.Tags.GetValue("name");
+            }
+            catch(Exception e)
+            {
+                Log.Error(e.ToString());
+            }
             Id = relation.Id;
             RoundTrip = ts.ContainsKey("roundtrip") && ts["roundtrip"].Equals("yes");
 
