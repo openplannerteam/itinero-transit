@@ -20,9 +20,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
             
             dt = new DateTime(2019, 05, 14, 19, 00, 00, DateTimeKind.Utc); // 21:00 in brussels -> Closed
             Assert.Equal("closed", oh.StateAt(dt, "closed"));
-            
-            dt = new DateTime(2019, 05, 14, 19, 00, 00, DateTimeKind.Unspecified); // 21:00 in brussels -> Closed
-            Assert.Equal("open", oh.StateAt(dt));
+       
         }
 
         [Fact]
