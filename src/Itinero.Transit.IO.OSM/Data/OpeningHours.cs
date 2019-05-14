@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.Data
 {
@@ -57,7 +58,16 @@ namespace Itinero.Transit.Data
         public TimeZoneRewriter(IOpeningHoursRule openingHoursRuleImplementation, string timezone)
         {
             _openingHoursRuleImplementation = openingHoursRuleImplementation;
-            _timezone = TimeZoneInfo.FindSystemTimeZoneById(timezone);
+            try
+            {
+
+                _timezone = TimeZoneInfo.FindSystemTimeZoneById(timezone);
+            }
+            catch
+            {
+                Log.Error($"Timezone info for {timezone} not found. Gonna UTC instead... THIS IS PROBABLY WRONG.");
+                _timezone = TimeZoneInfo.Utc;
+            }
         }
 
         private DateTime ApplyTimeZone(DateTime dt)
