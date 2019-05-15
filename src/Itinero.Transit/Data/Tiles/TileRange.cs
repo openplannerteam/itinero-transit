@@ -8,14 +8,21 @@ namespace Itinero.Transit.Data.Tiles
     {
         public TileRange((double minLon, double minLat, double maxLon, double maxLat) box, int zoom)
         {
-            var topLeft = Tile.WorldToTile(box.minLon, box.maxLat, zoom);
-            var bottomRight = Tile.WorldToTile(box.maxLon, box.minLat, zoom);
+            try
+            {
+                var topLeft = Tile.WorldToTile(box.minLon, box.maxLat, zoom);
+                var bottomRight = Tile.WorldToTile(box.maxLon, box.minLat, zoom);
+                Left = topLeft.X;
+                Top = topLeft.Y;
+                Right = bottomRight.X;
+                Bottom = bottomRight.Y;
+                Zoom = zoom;
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                throw new Exception($"Invalid tile range: box to big or out of range: {box}\n{e}");
+            }
 
-            Left = topLeft.X;
-            Top = topLeft.Y;
-            Right = bottomRight.X;
-            Bottom = bottomRight.Y;
-            Zoom = zoom;
 
             if (Top > Bottom)
             {
@@ -102,7 +109,6 @@ namespace Itinero.Transit.Data.Tiles
 
             public void Dispose()
             {
-
             }
         }
     }

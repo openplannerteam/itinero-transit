@@ -13,7 +13,7 @@ namespace Itinero.Transit.Algorithms.Search
         /// <param name="stopsDb">The stops db.</param>
         /// <param name="box">The box to enumerate in.</param>
         /// <returns>An enumerator with all the stops.</returns>
-        public static IEnumerable<IStop> SearchInBox(IStopsReader stopsDb,
+        public static IEnumerable<IStop> SearchInBox(StopsDb stopsDb,
             (double minLon, double minLat, double maxLon, double maxLat) box)
         {
             var rangeStops = new TileRangeStopEnumerable(stopsDb, box);
@@ -152,7 +152,7 @@ namespace Itinero.Transit.Algorithms.Search
         {
             return (radians / Math.PI) * 180d;
         }
-        
+
         public static IEnumerable<IStop> LocationsInRange(
             this IStopsReader stopsDb, double lat, double lon, double maxDistance)
         {
@@ -163,7 +163,11 @@ namespace Itinero.Transit.Algorithms.Search
 
             if (double.IsNaN(maxDistance) || double.IsInfinity(maxDistance) ||
                 double.IsNaN(lat) || double.IsInfinity(lat) ||
-                double.IsNaN(lon) || double.IsInfinity(lon)
+                double.IsNaN(lon) || double.IsInfinity(lon) ||
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                lat == double.MaxValue ||
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                lon == double.MaxValue
             )
             {
                 throw new ArgumentException(
@@ -176,6 +180,19 @@ namespace Itinero.Transit.Algorithms.Search
                 DistanceEstimate.MoveEast(lat, lon, +maxDistance), // MaxLon
                 DistanceEstimate.MoveNorth(lat, lon, -maxDistance) //maxLat
             );
+
+            if (double.IsNaN(box.Item1) ||
+                double.IsNaN(box.Item2) ||
+                double.IsNaN(box.Item3) ||
+                double.IsNaN(box.Item4) ||
+                box.Item1 > 180 || box.Item1 < -180 ||
+                box.Item3 > 180 || box.Item3 < -180 ||
+                box.Item2 > 90 || box.Item2 < -90 ||
+                box.Item4 > 90 || box.Item4 < -90
+            )
+            {
+                throw new Exception("Bounding box has NaN or is out of range");
+            }
 
             return stopsDb.SearchInBox(box);
         }

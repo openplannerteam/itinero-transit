@@ -242,6 +242,7 @@ namespace Itinero.Transit.Journeys
         [Pure]
         public Journey<T> ChainForward(IConnection c)
         {
+            // ReSharper disable once InvertIf
             if (SpecialConnection && Connection == GENESIS)
             {
                 // We do something special here:
@@ -257,6 +258,7 @@ namespace Itinero.Transit.Journeys
         [Pure]
         public Journey<T> ChainBackward(IConnection c)
         {
+            // ReSharper disable once InvertIf
             if (SpecialConnection && Connection == GENESIS)
             {
                 // We do something special here:
@@ -423,7 +425,7 @@ namespace Itinero.Transit.Journeys
         }
 
         [Pure]
-        public string PartToString(IStopsReader stops, IConnectionEnumerator connections)
+        private string PartToString(IStopsReader stops, IConnectionEnumerator connections)
         {
             var location = Location.ToString();
             if (stops != null)
@@ -438,7 +440,7 @@ namespace Itinero.Transit.Journeys
             }
 
 
-            var dbOperator = connections?.ArrivalStop.DatabaseId ?? uint.MaxValue;
+            var dbOperator = stops.Id.DatabaseId;
             return
                 $"Connection {Connection} to {location}, arriving at {Time.FromUnixTime():s}; operator is {dbOperator}";
         }

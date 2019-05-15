@@ -274,7 +274,7 @@ namespace Itinero.Transit.Data
             
             public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
             {
-                return StopSearch.SearchInBox(this, box);
+                return StopSearch.SearchInBox(_stopsDb, box);
             }
 
             public IStop SearchClosest(double lon, double lat, double maxDistanceInMeters = 1000)
@@ -300,7 +300,12 @@ namespace Itinero.Transit.Data
             /// <returns>True if there is more data.</returns>
             public bool MoveTo(LocationId stop)
             {
-                // That's right, we ignore the databaseTag completely here
+                // ReSharper disable once ConvertIfStatementToReturnStatement
+                if (_stopsDb.DatabaseId != stop.DatabaseId)
+                {
+                    return false;
+                }
+                
                 return MoveTo(stop.LocalTileId, stop.LocalId);
             }
 

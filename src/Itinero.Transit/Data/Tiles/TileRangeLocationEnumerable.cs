@@ -47,9 +47,7 @@ namespace Itinero.Transit.Data.Tiles
             
             private uint _currentTile = uint.MaxValue;
             private uint _currentLocal = uint.MaxValue;
-            private double _currentLatitude;
-            private double _currentLongitude;
-            
+
             public bool MoveNext()
             {
                 if (_currentTile == uint.MaxValue)
@@ -62,9 +60,6 @@ namespace Itinero.Transit.Data.Tiles
                         // ReSharper disable once InvertIf
                         if (_locationEnumerator.MoveTo(_currentTile, _currentLocal))
                         {
-                            _currentLatitude = _locationEnumerator.Latitude;
-                            _currentLongitude = _locationEnumerator.Longitude;
-
                             return true;
                         }
                     }
@@ -77,9 +72,6 @@ namespace Itinero.Transit.Data.Tiles
                     _currentLocal++;
                     if (_locationEnumerator.MoveTo(_currentTile, _currentLocal))
                     {
-                        _currentLatitude = _locationEnumerator.Latitude;
-                        _currentLongitude = _locationEnumerator.Longitude;
-
                         return true;
                     }
 
@@ -91,9 +83,6 @@ namespace Itinero.Transit.Data.Tiles
                     _currentTile = _tileEnumerator.Current.LocalId;
                     if (_locationEnumerator.MoveTo(_currentTile, _currentLocal))
                     {
-                        _currentLatitude = _locationEnumerator.Latitude;
-                        _currentLongitude = _locationEnumerator.Longitude;
-
                         return true;
                     }
                 }
@@ -107,10 +96,6 @@ namespace Itinero.Transit.Data.Tiles
             public (uint tileId, uint localId, uint dataPointer) Current => (_currentTile, _currentLocal, _locationEnumerator.DataPointer);
 
             object IEnumerator.Current => Current;
-
-            public double Longitude => _currentLongitude;
-
-            public double Latitude => _currentLatitude;
 
             public void Dispose()
             {

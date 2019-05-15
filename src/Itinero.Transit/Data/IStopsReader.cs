@@ -27,9 +27,6 @@ namespace Itinero.Transit.Data
         IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box);
         IStop SearchClosest(double lon, double lat, double maxDistanceInMeters = 1000);
 
-
-        List<IStopsReader> UnderlyingDatabases { get; }
-
         /// <summary>
         /// Gives the internal StopsDb.
         /// Escapes the abstraction, should only be used for internal operations
@@ -41,37 +38,11 @@ namespace Itinero.Transit.Data
 
     public static class StopsReaderExtensions
     {
-        public static List<IStopsReader> FlattenedUnderlyingDatabases(this IStopsReader stopsReader)
-        {
-            if (stopsReader.UnderlyingDatabases == null)
-            {
-                return new List<IStopsReader> {stopsReader};
-            }
-
-
-            var list = new List<IStopsReader>();
-            list.AddUnderlyingFlattened(stopsReader);
-            return list;
-        }
-
-        private static void AddUnderlyingFlattened(this List<IStopsReader> flattened, IStopsReader stopsReader)
-        {
-            foreach (var underlying in stopsReader.UnderlyingDatabases)
-            {
-                if (underlying.UnderlyingDatabases == null)
-                {
-                    flattened.Add(underlying);
-                }
-                else
-                {
-                    flattened.AddUnderlyingFlattened(underlying);
-                }
-            }
-        }
 
         public static LocationId FindStop(this IStopsReader reader, string locationId,
             string errorMessage = null)
         {
+            // ReSharper disable once InvertIf
             if (!reader.MoveTo(locationId))
             {
                 errorMessage = errorMessage ?? $"Departure location {locationId} was not found";

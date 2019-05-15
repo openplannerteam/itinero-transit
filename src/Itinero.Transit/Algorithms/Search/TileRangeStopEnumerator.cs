@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Data.Tiles;
 
 namespace Itinero.Transit.Algorithms.Search
@@ -11,26 +10,19 @@ namespace Itinero.Transit.Algorithms.Search
     /// </summary>
     internal class TileRangeStopEnumerable : IEnumerable<IStop>
     {
-        private readonly List<IStopsReader> _stopsDb;
+        private readonly StopsDb _stopsDb;
         private readonly (double minLon, double minLat, double maxLon, double maxLat) _box;
 
-        public TileRangeStopEnumerable(IStopsReader stopsDb,
+        public TileRangeStopEnumerable(StopsDb stopsDb,
             (double minLon, double minLat, double maxLon, double maxLat) box)
         {
-            _stopsDb = stopsDb.FlattenedUnderlyingDatabases();
+            _stopsDb = stopsDb;
             _box = box;
         }
 
         public IEnumerator<IStop> GetEnumerator()
         {
-            var enumerators = new List<IEnumerator<IStop>>();
-            foreach (var stopsReader in _stopsDb)
-            {
-                var enumerator = new TileRangeStopEnumerator(stopsReader, _box);
-                enumerators.Add(enumerator);
-            }
-
-            return new EnumeratorAggregator<IStop>(enumerators.GetEnumerator());
+            return new TileRangeStopEnumerator(_stopsDb, _box);
         }
 
         IEnumerator<IStop> IEnumerable<IStop>.GetEnumerator()
@@ -44,17 +36,17 @@ namespace Itinero.Transit.Algorithms.Search
         }
 
 
-        internal class TileRangeStopEnumerator : IEnumerator<IStop>
+        private class TileRangeStopEnumerator : IEnumerator<IStop>
         {
-            private readonly IStopsReader _stopsDbReader;
+            private readonly StopsDb.StopsDbReader _stopsDbReader;
             private readonly TileRangeLocationEnumerable.TileRangeLocationEnumerator _tileRangeLocationEnumerator;
 
-            public TileRangeStopEnumerator(IStopsReader stopsDbReader,
+            public TileRangeStopEnumerator(StopsDb stopsDb,
                 (double minLon, double minLat, double maxLon, double maxLat) box)
             {
-                _stopsDbReader = stopsDbReader;
-                var range = new TileRange(box, stopsDbReader.StopsDb.StopLocations.Zoom);
-                var tileRangeLocationEnumerable = stopsDbReader.StopsDb.StopLocations.GetTileRangeEnumerator(range);
+                _stopsDbReader = stopsDb.GetReader();
+                var range = new TileRange(box, stopsDb.StopLocations.Zoom);
+                var tileRangeLocationEnumerable = stopsDb.StopLocations.GetTileRangeEnumerator(range);
 
                 _tileRangeLocationEnumerator = tileRangeLocationEnumerable.GetEnumerator();
             }
@@ -64,7 +56,7 @@ namespace Itinero.Transit.Algorithms.Search
                 if (!_tileRangeLocationEnumerator.MoveNext()) return false;
                 var current = _tileRangeLocationEnumerator.Current;
 
-                return _stopsDbReader.MoveTo(new LocationId(0, current.tileId, current.localId));
+                return _stopsDbReader.MoveTo(new LocationId(_stopsDbReader.StopsDb.DatabaseId, current.tileId, current.localId));
             }
 
             public void Reset()
@@ -72,9 +64,6 @@ namespace Itinero.Transit.Algorithms.Search
                 _tileRangeLocationEnumerator.Reset();
                 _stopsDbReader.Reset();
             }
-
-            public TileRangeLocationEnumerable.TileRangeLocationEnumerator TileRangeLocationEnumerator =>
-                _tileRangeLocationEnumerator;
 
             public IStop Current => new Stop(_stopsDbReader); // enumerator and enumerable expect unique clones.
 

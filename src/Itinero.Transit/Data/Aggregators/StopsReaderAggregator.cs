@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Itinero.Transit.Algorithms.Search;
 using Itinero.Transit.Data.Attributes;
 
@@ -38,7 +37,7 @@ namespace Itinero.Transit.Data.Aggregators
             {
                 return enumerators[0];
             }
-            
+
             return new StopsReaderAggregator(enumerators);
         }
 
@@ -50,25 +49,25 @@ namespace Itinero.Transit.Data.Aggregators
 
         public bool MoveNext()
         {
-            if (_currentStop.MoveNext())
+            while (_currentIndex < UnderlyingDatabases.Count)
             {
-                return true;
+                if (_currentStop.MoveNext())
+                {
+                    return true;
+                }
+                _currentIndex++;
+                if (_currentIndex == UnderlyingDatabases.Count)
+                {
+                    return false;
+                }
+                _currentStop = UnderlyingDatabases[_currentIndex];
             }
 
-            _currentIndex++;
-
-            if (_currentIndex == UnderlyingDatabases.Count)
-            {
-                return false;
-            }
-
-            _currentStop = UnderlyingDatabases[_currentIndex];
-            return true;
+            return false;
         }
 
         public bool MoveTo(LocationId stop)
         {
-
             foreach (var stopsReader in UnderlyingDatabases)
             {
                 // ReSharper disable once InvertIf
@@ -116,10 +115,15 @@ namespace Itinero.Transit.Data.Aggregators
         {
             return StopSearch.LocationsInRange(this, lat, lon, range);
         }
-        
+
         public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
         {
-            return StopSearch.SearchInBox(this, box);
+            var stops = new List<IStop>();
+            foreach (var db in UnderlyingDatabases)
+            {
+                stops.AddRange(db.SearchInBox(box));
+            }
+            return stops;
         }
 
         public IStop SearchClosest(double lon, double lat, double maxDistanceInMeters = 1000)
