@@ -434,9 +434,9 @@ namespace Itinero.Transit
         internal readonly List<(LocationId, Journey<T>)> From;
         internal readonly List<(LocationId, Journey<T>)> To;
 
-        internal DateTime Start;
-        internal DateTime End;
-
+        public DateTime Start { get; private set; }
+        public DateTime End { get; private set; }
+        
         private IConnectionFilter _filter;
 
         internal WithTime(IStopsReader stopsReader,
