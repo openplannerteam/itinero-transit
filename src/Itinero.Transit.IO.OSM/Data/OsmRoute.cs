@@ -47,15 +47,18 @@ namespace Itinero.Transit.Data
             Interval = interval?.TryParseTimespan() ?? throw new ArgumentException("Expected a value for interval");
 
             ts.TryGetValue("opening_hours", out var openingHours);
-            OpeningTimes = openingHours?.ParseOpeningHoursRule(GetTimeZone()) ?? new TwentyFourSeven();
-
 
             StopPositions = ExtractStopPositions(relation);
-
+            
             if (StopPositions.Count == 0)
             {
                 throw new ArgumentException("This route does not contain stop positions");
             }
+            
+            // Opening hours should be calculated AFTER the assignation of StopPositions, as it depends on it
+            OpeningTimes = openingHours?.ParseOpeningHoursRule(GetTimeZone()) ?? new TwentyFourSeven();
+
+
         }
         
 
@@ -110,7 +113,7 @@ namespace Itinero.Transit.Data
                 }
 
 
-                var coordinate = new Coordinate((double) lat, (double) lon);
+                var coordinate = new Coordinate(lat, lon);
                 var nodeId = $"https://www.openstreetmap.org/{id}";
 
                 // We make sure that there is no stop closeby
