@@ -13,7 +13,6 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
 using Log = Serilog.Log;
-QueryStart
 // ReSharper disable InconsistentNaming
 
 // ReSharper disable UnusedMember.Local
