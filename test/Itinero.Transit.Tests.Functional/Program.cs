@@ -29,10 +29,8 @@ namespace Itinero.Transit.Tests.Functional
         {
             EnableLogging();
 
-            Log.Information("Starting the Functional Tests...");
-            new OsmTest().Run(OsmTest.ShuttleBrugge);
 
-            /*
+            //*
 
             LocalTests();
             InternetTests();
