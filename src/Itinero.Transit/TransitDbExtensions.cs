@@ -452,8 +452,8 @@ namespace Itinero.Transit
             Profile = profile;
             From = from;
             To = to;
-            Start = start;
-            End = end;
+            Start = start.ToUniversalTime();
+            End = end.ToUniversalTime();
 
             if (Start > End)
             {
