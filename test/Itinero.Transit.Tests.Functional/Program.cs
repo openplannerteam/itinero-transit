@@ -31,9 +31,8 @@ namespace Itinero.Transit.Tests.Functional
 
             Log.Information("Starting the Functional Tests...");
 
-            new OsmTest().Run(OsmTest.PRGent);
-
-            /*
+           
+            //*
 
             LocalTests();
             InternetTests();
