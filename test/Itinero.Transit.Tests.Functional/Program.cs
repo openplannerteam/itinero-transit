@@ -7,12 +7,14 @@ using Itinero.Transit.Tests.Functional.Algorithms;
 using Itinero.Transit.Tests.Functional.Algorithms.CSA;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
 using Itinero.Transit.Tests.Functional.Data;
+using Itinero.Transit.Tests.Functional.IO;
 using Itinero.Transit.Tests.Functional.IO.LC;
 using Itinero.Transit.Tests.Functional.IO.LC.Synchronization;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
 using Log = Serilog.Log;
+
 // ReSharper disable InconsistentNaming
 
 // ReSharper disable UnusedMember.Local
@@ -29,31 +31,14 @@ namespace Itinero.Transit.Tests.Functional
 
             Log.Information("Starting the Functional Tests...");
 
+            new OsmTest().Run(OsmTest.PRGent);
 
-            var nmbs = TransitDb.ReadFrom(TestAllAlgorithms._nmbs0429, 0);
-            var wvl = TransitDb.ReadFrom(TestAllAlgorithms._delijnWvl0429, 1);
-            var osm = new TransitDb(3);
-                osm.UseOsmRoute("9413958", new DateTime(2019, 04, 29, 00, 00, 00),
-                new DateTime(2019, 04, 29, 23, 59, 00));
+            /*
 
-
-            var input = new List<TransitDb>
-                {
-                    nmbs, wvl, osm
-                }.SelectProfile(new DefaultProfile())
-                .SelectStops("https://www.openstreetmap.org/node/6348562147",
-                    "http://irail.be/stations/NMBS/008891009")
-                .SelectTimeFrame(new DateTime(2019, 04, 29, 00, 10, 20),
-                    new DateTime(2019, 04, 29, 12, 00, 00));
-            
-            new MultiTransitDbTest().Run(input);
-
-            //*
-
-           LocalTests();
-           InternetTests();
-           //SlowTests();
-           //*/
+            LocalTests();
+            InternetTests();
+            //SlowTests();
+            //*/
         }
 
 
@@ -92,6 +77,12 @@ namespace Itinero.Transit.Tests.Functional
             new CachingTest().Run(true);
             var tdb = new TransitDb();
             tdb.UseOsmRoute("9413958", DateTime.Today, DateTime.Today.AddDays(1));
+
+            foreach (var r in OsmTest.TestRelations)
+            {
+                var t = new OsmTest();
+                t.Run(r);
+            }
         }
 
         public static void SlowTests()

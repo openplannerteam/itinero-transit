@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Xml;
 using GeoAPI.Geometries;
 using GeoTimeZone;
-using Itinero.Transit.Logging;
+using Itinero.Transit.Data.Walks;
 using OsmSharp;
 using OsmSharp.Complete;
 using OsmSharp.Streams;
@@ -29,48 +29,113 @@ namespace Itinero.Transit.Data
 
         private OsmRoute(CompleteRelation relation)
         {
-            var ts = relation.Tags;
-            try
-            {
-
-                Name = relation.Tags.GetValue("name");
-            }
-            catch(Exception e)
-            {
-                Log.Error(e.ToString());
-            }
             Id = relation.Id;
-            RoundTrip = ts.ContainsKey("roundtrip") && ts["roundtrip"].Equals("yes");
-
-            Duration = TimeSpan.ParseExact(ts["duration"], "hh\\:mm\\:ss", null);
-            Interval = TimeSpan.ParseExact(ts["interval"], "hh\\:mm\\:ss", null);
-            StopPositions = new List<(string, Coordinate, TagsCollectionBase)>();
 
 
+            var ts = relation.Tags;
+
+
+            ts.TryGetValue("name", out Name);
+            Name = Name ?? "";
+            ts.TryGetValue("roundtrip", out var rt);
+            RoundTrip = (rt ?? "").Equals("yes");
+
+            ts.TryGetValue("duration", out var duration);
+            Duration = duration?.TryParseTimespan() ?? throw new ArgumentException("Expected a value for duration");
+
+            ts.TryGetValue("interval", out var interval);
+            Interval = interval?.TryParseTimespan() ?? throw new ArgumentException("Expected a value for interval");
+
+            ts.TryGetValue("opening_hours", out var openingHours);
+            OpeningTimes = openingHours?.ParseOpeningHoursRule(GetTimeZone()) ?? new TwentyFourSeven();
+
+
+            StopPositions = ExtractStopPositions(relation);
+
+            if (StopPositions.Count == 0)
+            {
+                throw new ArgumentException("This route does not contain stop positions");
+            }
+        }
+        
+
+        private static List<(string, Coordinate, TagsCollectionBase)> ExtractStopPositions(CompleteRelation relation)
+        {
+            var stopPositions = new List<(string, Coordinate, TagsCollectionBase)>();
+            // First pass: explicitly located stop positions
             foreach (var member in relation.Members)
             {
                 var el = member.Member;
-                if (member.Role.Equals("stop") && el is Node node)
-                {
-                    if (node.Latitude == null || node.Longitude == null)
-                    {
-                        throw new ArgumentNullException();
-                    }
 
-                    var coordinate = new Coordinate((double) node.Latitude, (double) node.Longitude);
-                    var nodeId = $"https://www.openstreetmap.org/node/{node.Id}";
-                    StopPositions.Add((nodeId, coordinate, el.Tags));
+                if (!member.Role.Equals("stop") || !(el is Node node)) continue;
+
+
+                if (node.Latitude == null || node.Longitude == null)
+                {
+                    throw new ArgumentNullException();
+                }
+
+                var coordinate = new Coordinate((double) node.Latitude, (double) node.Longitude);
+                var nodeId = $"https://www.openstreetmap.org/node/{node.Id}";
+                stopPositions.Add((nodeId, coordinate, el.Tags));
+            }
+
+
+            // Second pass: platforms close to the route
+            foreach (var member in relation.Members)
+            {
+                var el = member.Member;
+
+                el.Tags.TryGetValue("public_transport", out var pt);
+                if (!member.Role.Equals("platform") && !"platform".Equals(pt)) continue;
+                // This is a public transport object - there might be a stop position here
+
+                double lat, lon;
+                var id = "";
+
+
+                switch (el.Type)
+                {
+                    case OsmGeoType.Node:
+                        var node = el as Node;
+                        lat = node.Latitude.Value;
+                        lon = node.Longitude.Value;
+                        id = "node/" + node.Id;
+                        break;
+                    case OsmGeoType.Way:
+                        throw new ArgumentException("Can not process ways which are a platform yet");
+                    case OsmGeoType.Relation:
+                        throw new ArgumentException("Can not process relations which are a platform");
+                    default: throw new ArgumentOutOfRangeException("Unkown geometry type");
+                }
+
+
+                var coordinate = new Coordinate((double) lat, (double) lon);
+                var nodeId = $"https://www.openstreetmap.org/{id}";
+
+                // We make sure that there is no stop closeby
+
+                var inRange = false;
+                foreach (var stopPosition in stopPositions)
+                {
+                    var lat0 = stopPosition.Item2.Y;
+                    var lon0 = stopPosition.Item2.X;
+
+                    // ReSharper disable once InvertIf
+                    if (DistanceEstimate.DistanceEstimateInMeter(lat, lon, lat0, lon0) < 25)
+                    {
+                        inRange = true;
+                        break;
+                    }
+                }
+
+                if (!inRange)
+                {
+                    stopPositions.Add((nodeId, coordinate, el.Tags));
                 }
             }
 
-            if (ts.ContainsKey("opening_hours"))
-            {
-                OpeningTimes = OpeningHours.Parse(ts["opening_hours"], GetTimeZone()) ?? new TwentyFourSeven();
-            }
-            else
-            {
-                OpeningTimes = new TwentyFourSeven();
-            }
+            return stopPositions;
         }
 
 
@@ -177,6 +242,7 @@ namespace Itinero.Transit.Data
                     routes.Add(new OsmRoute(rel));
                 }
             }
+
 
             return routes;
         }

@@ -7,19 +7,63 @@ using NodaTime;
 
 namespace Itinero.Transit.Data
 {
-    public class OpeningHours
+    public static class OpeningHours
     {
         public const string Open = "open";
         public const string Closed = "closed";
 
         [Pure]
-        public static IOpeningHoursRule Parse(string value, string timezone)
+        public static IOpeningHoursRule ParseOpeningHoursRule(this string value, string timezone)
         {
             value = value.ToLower();
             var rule = ((IOpeningHoursRule) TwentyFourSeven.TryParse(value) ??
                         DaysOfWeekRule.TryParse(value)) ??
                        HoursRule.TryParse(value);
             return new TimeZoneRewriter(rule, timezone);
+        }
+
+        /// <summary>
+        /// Attempts to parse:
+        /// hh:mm:ss
+        /// hh:mm
+        /// mm
+        /// and formats such as
+        /// 15min, 15minutes, 15 min, 15 sec, 15h, 15u, ...
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static TimeSpan TryParseTimespan(this string value)
+        {
+            value = value.ToLower().Replace(" ", "");
+            var formats = new[]
+            {
+                "hh\\:mm\\:ss",
+                "hh\\:mm",
+                "mm",
+                "hh\\h",
+                "hh\\hour",
+                "hh\\hours",
+                "hh\\u",
+                "mm\\m",
+                "mm\\min",
+                "mm\\minute",
+                "mm\\minutes",
+                "ss\\s",
+                "ss\\sec",
+                "ss\\second",
+                "ss\\seconds",
+            };
+            foreach (var format in formats)
+            {
+                TimeSpan.TryParseExact(value, format, null, out var ts);
+                if (ts != default(TimeSpan))
+                {
+                    return ts;
+                }
+            }
+
+            throw new ArgumentException("Could not parse with any format" + value);
         }
     }
 

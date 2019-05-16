@@ -9,7 +9,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
         [Fact]
         public void TestTimeZones()
         {
-            var oh = OpeningHours.Parse("10:00-20:00", "Europe/Brussels");
+            var oh = "10:00-20:00".ParseOpeningHoursRule("Europe/Brussels");
 
             var dt = new DateTime(2019, 05, 14, 11, 00, 00, DateTimeKind.Unspecified);
             Assert.Equal("open", oh.StateAt(dt));
