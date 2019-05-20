@@ -4,7 +4,6 @@ using System.IO;
 using Itinero.Transit.Data;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms;
-using Itinero.Transit.Tests.Functional.Algorithms.CSA;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
 using Itinero.Transit.Tests.Functional.Data;
 using Itinero.Transit.Tests.Functional.IO;
@@ -29,13 +28,27 @@ namespace Itinero.Transit.Tests.Functional
         {
             EnableLogging();
 
+            // ReSharper disable once InvertIf
+            if (args.Length > 0 && args[0].Equals("--full-test-suite"))
+            {
+                // These are all the tests, and will be run in full on the build server
+                // Tests for devving are below
+                LocalTests();
+                InternetTests();
+                SlowTests();
+                // ReSharper disable once RedundantJumpStatement
+                return;
+            }
+            
+            // Tests for the developer
+            
+            foreach (var r in OsmTest.TestRelations)
+            {
+                var t = new OsmTest();
+                t.Run(r);
+            }
 
-            //*
-
-            LocalTests();
-            InternetTests();
-            //SlowTests();
-            //*/
+            
         }
 
 
@@ -71,15 +84,14 @@ namespace Itinero.Transit.Tests.Functional
 
         public static void InternetTests()
         {
-            new CachingTest().Run(true);
-            var tdb = new TransitDb();
-            tdb.UseOsmRoute("9413958", DateTime.Today, DateTime.Today.AddDays(1));
-
             foreach (var r in OsmTest.TestRelations)
             {
                 var t = new OsmTest();
                 t.Run(r);
             }
+            new CachingTest().Run(true);
+            var tdb = new TransitDb();
+
         }
 
         public static void SlowTests()
