@@ -56,7 +56,7 @@ namespace Itinero.Transit.Data
             }
             
             // Opening hours should be calculated AFTER the assignation of StopPositions, as it depends on it
-            OpeningTimes = openingHours?.ParseOpeningHoursRule(GetTimeZone()) ?? new TwentyFourSeven();
+            OpeningTimes = openingHours?.ParseOpeningHoursRule(GetTimeZone()) ?? new OsmState("open");
 
 
         }

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
+using Itinero.Transit.Data.OpeningHoursRDParser;
 using Itinero.Transit.Logging;
 using NodaTime;
 
@@ -9,18 +9,49 @@ namespace Itinero.Transit.Data
 {
     public static class OpeningHours
     {
-        public const string Open = "open";
-        public const string Closed = "closed";
-
+        /// <summary>
+        /// Parse an opening hours rule.
+        ///
+        /// Supported:
+        /// Month[-Month] Weekday[-Weekday] [hh:mm-hh:mm] state
+        /// 
+        /// NOT SUPPORTED ATM:
+        /// PH (Abbreviation for public holiday)
+        /// SH (Abbreviation for School holiday)
+        /// Weekday[index] (indexing of weekdays, e.g. the first sunday of the month)
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="timezone"></param>
+        /// <returns></returns>
+        /// <exception cref="FormatException"></exception>
         [Pure]
         public static IOpeningHoursRule ParseOpeningHoursRule(this string value, string timezone)
         {
-            value = value.ToLower();
-            var rule = ((IOpeningHoursRule) TwentyFourSeven.TryParse(value) ??
-                        DaysOfWeekRule.TryParse(value)) ??
-                       HoursRule.TryParse(value);
-            return new TimeZoneRewriter(rule, timezone);
+            var parser =
+                (RdParsers.MultipleRules() |
+                 RdParsers.WeekdayRule() |
+                 RdParsers.HoursRule() |
+                 RdParsers.TwentyFourSeven() |
+                 RdParsers.OSMStatus()) + !RdParsers.WS();
+
+
+            var raw = parser.Parse(value);
+            if (raw == null)
+            {
+                throw new FormatException("Could not parse " + value);
+            }
+
+            var (parsed, rest) = raw.Value;
+
+            if (!string.IsNullOrEmpty(rest))
+            {
+                throw new FormatException(
+                    $"Could not parse {value}, could not parse a part of the input. Rest is{rest}");
+            }
+
+            return new TimeZoneRewriter(parsed, timezone);
         }
+
 
         /// <summary>
         /// Attempts to parse:
@@ -92,6 +123,7 @@ namespace Itinero.Transit.Data
         string StateAt(DateTime moment);
     }
 
+
     public static class OpeningHoursRule
     {
         public static string StateAt(this IOpeningHoursRule rule, DateTime moment, string fallback)
@@ -102,7 +134,7 @@ namespace Itinero.Transit.Data
 
     public class TimeZoneRewriter : IOpeningHoursRule
     {
-        private IOpeningHoursRule _openingHoursRuleImplementation;
+        private readonly IOpeningHoursRule _openingHoursRuleImplementation;
         private readonly DateTimeZone _timezone;
 
         public TimeZoneRewriter(IOpeningHoursRule openingHoursRuleImplementation, string timezone)
@@ -117,9 +149,17 @@ namespace Itinero.Transit.Data
 
         private DateTime ApplyTimeZone(DateTime dt)
         {
-            var instant = Instant.FromDateTimeUtc(dt.ToUniversalTime());
-            var zonedInstant = instant.InZone(_timezone);
-            return zonedInstant.ToDateTimeUnspecified();
+            try
+            {
+                var instant = Instant.FromDateTimeUtc(dt.ToUniversalTime());
+                var zonedInstant = instant.InZone(_timezone);
+                return zonedInstant.ToDateTimeUnspecified();
+            }
+            catch
+            {
+                Log.Error("Nodatime did not find the timezone " + _timezone);
+                return dt;
+            }
         }
 
         public DateTime NextChange(DateTime from)
@@ -138,117 +178,51 @@ namespace Itinero.Transit.Data
         {
             return _openingHoursRuleImplementation.StateAt(ApplyTimeZone(moment));
         }
+
+        public override string ToString()
+        {
+            return _openingHoursRuleImplementation.ToString();
+        }
     }
 
 
     public class DaysOfWeekRule : IOpeningHoursRule
     {
         private static readonly List<string> _weekdays =
-            new List<string> {"su", "mo", "tu", "we", "th", "fr", "sa"};
+            new List<string> {"mo", "tu", "we", "th", "fr", "sa", "su"};
 
-        private bool[] _weekdayMask;
-        private IOpeningHoursRule _containedRule;
+        private readonly bool[] _weekdayMask;
+        private readonly IOpeningHoursRule _containedRule;
 
-        public DaysOfWeekRule(bool[] weekdayMask, IOpeningHoursRule containedRule)
+        public DaysOfWeekRule(bool[] weekdayMask,
+            IOpeningHoursRule containedRule)
         {
             _weekdayMask = weekdayMask;
             _containedRule = containedRule;
         }
 
-        private static bool[] ParseWeekdays(string value)
+        public override string ToString()
         {
-            var weekdayFlags = new bool[7];
-            for (var i = 0; i < weekdayFlags.Length; i++)
+            var selectedWeekdays = new List<string>();
+            for (var i = 0; i < _weekdays.Count; i++)
             {
-                weekdayFlags[i] = false;
-            }
-
-            foreach (var weekdayRange in value.Split(','))
-            {
-                if (weekdayRange.Contains("-"))
+                if (_weekdayMask[i])
                 {
-                    var split = weekdayRange.Split('-');
-                    if (split.Length > 2)
-                    {
-                        throw new ArgumentException("To many dashes in weekday-window");
-                    }
-
-                    var start = _weekdays.IndexOf(split[0]);
-                    var end = _weekdays.IndexOf(split[1]);
-                    if (start < 0 || end < 0)
-                    {
-                        throw new ArgumentException("Unknown weekday: " + weekdayRange);
-                    }
-
-                    for (var i = start; (i % 7) != end; i++)
-                    {
-                        weekdayFlags[i] = true;
-                    }
-
-                    weekdayFlags[end] = true;
-                }
-                else
-                {
-                    var i = _weekdays.IndexOf(weekdayRange);
-
-                    if (i < 0)
-                    {
-                        throw new ArgumentException("Unknown weekday: " + weekdayRange);
-                    }
-
-                    weekdayFlags[i] = true;
+                    selectedWeekdays.Add(_weekdays[i]);
                 }
             }
 
-            return weekdayFlags;
-        }
-
-        private static IOpeningHoursRule ContainedRule(string[] splitted)
-        {
-            var state = OpeningHours.Open;
-            // An eventual state can be found in the last part, if it can not be parsed
-            var last = HoursRule.TryParse(splitted.Last());
-            if (last == null)
-            {
-                state = splitted.Last();
-            }
-
-
-            var subrules = splitted.SubArray(1, splitted.Length - 2); // Minus 2 - the last one is special too
-            var parsed = new List<IOpeningHoursRule>();
-            foreach (var subrule in subrules)
-            {
-                parsed.Add(HoursRule.TryParse(subrule, state));
-            }
-
-            if (last != null)
-            {
-                parsed.Add(last);
-            }
-
-            return new PriorityRules(parsed);
-        }
-
-        public static DaysOfWeekRule TryParse(string value)
-        {
-            var splitted = value.Split(' ');
-            if (splitted.Length < 2)
-            {
-                // Not a valid weekday
-                return null;
-            }
-
-            var weekdayRange = ParseWeekdays(splitted[0]);
-            var contained = ContainedRule(splitted);
-            return new DaysOfWeekRule(weekdayRange, contained);
+            return $"{string.Join(",", selectedWeekdays)} {_containedRule}";
         }
 
         private bool InRange(DateTime moment)
         {
-            return _weekdayMask[(int) moment.DayOfWeek];
+            return _weekdayMask[(6 + (int) moment.DayOfWeek) % 7];
+            // Monday == 1, sunday == 0 according to dateTime;
+            // whereas monday = 0 is the logical approach of course!
         }
 
-        public DateTime NextChange(DateTime @from)
+        public DateTime NextChange(DateTime from)
         {
             while (!InRange(from))
             {
@@ -258,7 +232,74 @@ namespace Itinero.Transit.Data
             return _containedRule.NextChange(from);
         }
 
-        public DateTime PreviousChange(DateTime @from)
+        public DateTime PreviousChange(DateTime from)
+        {
+            while (!InRange(from))
+            {
+                from = from.Date.AddDays(-1);
+            }
+
+            return _containedRule.PreviousChange(from);
+        }
+
+        public string StateAt(DateTime moment)
+        {
+            if (InRange(moment))
+            {
+                return _containedRule.StateAt(moment);
+            }
+
+            return null;
+        }
+    }
+
+    public class MonthOfYearRule : IOpeningHoursRule
+    {
+        private static readonly List<string> _months =
+            new List<string> {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"};
+
+        // Why did the programmer confuse halloween and christmas?
+        // Because oct 31 = dec 25
+
+        private readonly bool[] _mask;
+        private readonly IOpeningHoursRule _containedRule;
+
+        public MonthOfYearRule(bool[] monthMask, IOpeningHoursRule containedRule)
+        {
+            _mask = monthMask;
+            _containedRule = containedRule;
+        }
+
+        public override string ToString()
+        {
+            var selected = new List<string>();
+            for (var i = 0; i < _months.Count; i++)
+            {
+                if (_mask[i])
+                {
+                    selected.Add(_months[i]);
+                }
+            }
+
+            return $"{string.Join(",", selected)} {_containedRule}";
+        }
+
+        private bool InRange(DateTime moment)
+        {
+            return _mask[moment.Month - 1];
+        }
+
+        public DateTime NextChange(DateTime from)
+        {
+            while (!InRange(from))
+            {
+                from = from.Date.AddDays(1);
+            }
+
+            return _containedRule.NextChange(from);
+        }
+
+        public DateTime PreviousChange(DateTime from)
         {
             while (!InRange(from))
             {
@@ -284,9 +325,9 @@ namespace Itinero.Transit.Data
     {
         private readonly TimeSpan _start;
         private readonly TimeSpan _stop;
-        private readonly string _state;
+        private readonly IOpeningHoursRule _state;
 
-        public HoursRule(TimeSpan start, TimeSpan stop, string state = OpeningHours.Open)
+        public HoursRule(TimeSpan start, TimeSpan stop, IOpeningHoursRule state)
         {
             _start = start;
             _stop = stop;
@@ -299,35 +340,10 @@ namespace Itinero.Transit.Data
             _state = state;
         }
 
-        public static HoursRule TryParse(string value, string state = OpeningHours.Open)
+
+        public override string ToString()
         {
-            if (TimeSpan.TryParseExact(value, "HH\\:mm", null, out var moment))
-            {
-                return new HoursRule(moment, moment, state);
-            }
-
-            if (!value.Contains("-")) return null;
-
-
-            var split = value.Split('-');
-            if (split.Length > 2)
-            {
-                throw new ArgumentException("To many dashes in hour-window");
-            }
-
-            var start = split[0];
-            var end = split[1];
-            if (!TimeSpan.TryParseExact(start, "hh\\:mm", null, out var startMoment))
-            {
-                return null;
-            }
-
-            if (!TimeSpan.TryParseExact(end, "hh\\:mm", null, out var endMoment))
-            {
-                return null;
-            }
-
-            return new HoursRule(startMoment, endMoment, state);
+            return $"{_start.Hours}:{_start.Minutes}-{_stop.Hours}:{_stop.Minutes} {_state}";
         }
 
         public DateTime NextChange(DateTime from)
@@ -369,17 +385,25 @@ namespace Itinero.Transit.Data
 
         public string StateAt(DateTime moment)
         {
-            return moment.TimeOfDay >= _start && moment.TimeOfDay < _stop ? _state : null;
+            return moment.TimeOfDay >= _start && moment.TimeOfDay < _stop
+                ? _state.StateAt(moment)
+                : null;
         }
     }
 
     public class PriorityRules : IOpeningHoursRule
     {
-        private readonly List<IOpeningHoursRule> _rules;
+        public readonly List<IOpeningHoursRule> _rules;
 
         public PriorityRules(List<IOpeningHoursRule> rules)
         {
             _rules = rules;
+        }
+
+
+        public override string ToString()
+        {
+            return string.Join("; ", _rules);
         }
 
         public DateTime NextChange(DateTime from)
@@ -427,28 +451,19 @@ namespace Itinero.Transit.Data
         }
     }
 
-    public class TwentyFourSeven : IOpeningHoursRule
+    public class OsmState : IOpeningHoursRule
     {
         private readonly string _state;
 
-        public TwentyFourSeven(string state = OpeningHours.Open)
+        public OsmState(string state)
         {
             _state = state;
         }
 
-        public static TwentyFourSeven TryParse(string input)
+
+        public override string ToString()
         {
-            if (input.Equals("24/7") || input.Equals("24/7 open"))
-            {
-                return new TwentyFourSeven();
-            }
-
-            if (input.Equals("24/7 closed") || input.Equals("24/7 off"))
-            {
-                return new TwentyFourSeven(OpeningHours.Closed);
-            }
-
-            return null;
+            return "<osmstate: >" + _state;
         }
 
         public DateTime NextChange(DateTime from)
