@@ -12,19 +12,19 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
         [Fact]
         public void ParserBasics()
         {
-            var (a, rest0) = RdParsers.Regex("[a-zA-Z]*").Parse("abc def").Value;
+            var (a, rest0) = OpeningHoursRdParsers.Regex("[a-zA-Z]*").Parse("abc def").Value;
             Assert.Equal("abc", a);
             Assert.Equal(" def", rest0);
 
-            (a, rest0) = RdParsers.LitCI("open").Parse("Open").Value;
+            (a, rest0) = OpeningHoursRdParsers.LitCI("open").Parse("Open").Value;
             Assert.Equal("Open", a);
             Assert.Equal("", rest0);
 
-            var ( r, rest1) = RdParsers.OSMStatus().Parse("open").Value;
+            var ( r, rest1) = OpeningHoursRdParsers.OSMStatus().Parse("open").Value;
             Assert.Equal("<osmstate: >open", r.ToString());
             Assert.Equal("", rest1);
 
-            var test = RdParsers.TwentyFourSeven().Parse("24/7 open");
+            var test = OpeningHoursRdParsers.TwentyFourSeven().Parse("24/7 open");
             Assert.NotNull(test);
             var (rule, rest) = test.Value;
 
@@ -35,11 +35,11 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
         [Fact]
         public void PeriodParserTest()
         {
-            var (i, rest0) = RdParsers.DayOfWeek().Parse("Mo").Value;
+            var (i, rest0) = OpeningHoursRdParsers.DayOfWeek().Parse("Mo").Value;
             Assert.Equal(0, i);
             Assert.Equal("", rest0);
 
-            var (dayOfWeek, _) = RdParsers.DayOfWeekRange().Parse("Mo-Fr").Value;
+            var (dayOfWeek, _) = OpeningHoursRdParsers.DayOfWeekRange().Parse("Mo-Fr").Value;
             Assert.True(dayOfWeek[0]);
             Assert.True(dayOfWeek[1]);
             Assert.True(dayOfWeek[2]);
@@ -48,7 +48,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
             Assert.False(dayOfWeek[5]);
             Assert.False(dayOfWeek[6]);
 
-            var (moy, _) = RdParsers.MonthOfYearRange().Parse("Jan,Mar,Jun-Sep").Value;
+            var (moy, _) = OpeningHoursRdParsers.MonthOfYearRange().Parse("Jan,Mar,Jun-Sep").Value;
             Assert.True(
                 // BEWARE! 0-indexed months
                 moy[0] & moy[2] & moy[5] & moy[6] & moy[7] & moy[8]);

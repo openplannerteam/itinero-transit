@@ -99,6 +99,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var stop2 = writer.AddOrUpdateStop("https://example.com/stops/2", 0.001, 0.001); // very walkable distance
             var stop3 = writer.AddOrUpdateStop("https://example.com/stops/3", 60.1, 60.1);
 
+            
             writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 10, 00, 00), 10 * 60, 0, 0, new TripId(0, 0), 0);
             writer.AddOrUpdateConnection(stop2, stop3, "https://example.com/connections/1",
