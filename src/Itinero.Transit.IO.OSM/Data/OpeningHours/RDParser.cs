@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 // ReSharper disable InconsistentNaming
@@ -103,7 +104,19 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
                     return null;
                 }, regex);
         }
+
+
+
+        [Pure]
+        public static RDParser<T> Fail<T>()
+        {
+            return new RDParser<T>(
+                str => null, ""
+                );
+        }
+        
   }
+    
     /// <summary>
     /// This is a basic, Recursive Descent parser.
     /// This uses a lot of functional magic.
@@ -289,7 +302,6 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
             }, "");
         }
 
-
         /// <summary>
         /// Apply the given function f onto the parsed value
         /// </summary>
@@ -313,5 +325,15 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
                 }, _bnf
             );
         }
+        
+        
+        [Pure]
+        public RDParser<T> Assert(Predicate<T> predicate)
+        {
+            return this.Bind(t => predicate(t) ? new RDParser<T>(t) :
+                DefaultRdParsers.Fail<T>()
+            );
+        }
+
     }
 }
