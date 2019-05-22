@@ -7,6 +7,7 @@ using System.Xml;
 using GeoAPI.Geometries;
 using GeoTimeZone;
 using Itinero.Transit.Data.Walks;
+using Itinero.Transit.Logging;
 using OsmSharp;
 using OsmSharp.Complete;
 using OsmSharp.Streams;
@@ -44,23 +45,29 @@ namespace Itinero.Transit.Data
             Duration = duration?.TryParseTimespan() ?? throw new ArgumentException("Expected a value for duration");
 
             ts.TryGetValue("interval", out var interval);
-            Interval = interval?.TryParseTimespan() ?? throw new ArgumentException("Expected a value for interval");
+            Interval = interval?.TryParseTimespan() ??TimeSpan.FromHours(1); // TODO Fix this
 
             ts.TryGetValue("opening_hours", out var openingHours);
 
             StopPositions = ExtractStopPositions(relation);
-            
+
             if (StopPositions.Count == 0)
             {
                 throw new ArgumentException("This route does not contain stop positions");
             }
-            
+
             // Opening hours should be calculated AFTER the assignation of StopPositions, as it depends on it
-            OpeningTimes = openingHours?.ParseOpeningHoursRule(GetTimeZone()) ?? new OsmState("open");
-
-
+            OpeningTimes = new OsmState("open");
+            try
+            {
+                OpeningTimes = openingHours?.ParseOpeningHoursRule(GetTimeZone()) ?? new OsmState("open");
+            }
+            catch (Exception e)
+            {
+                Log.Error("These opening hours are to difficult to parse: " + openingHours);
+            }
         }
-        
+
 
         private static List<(string, Coordinate, TagsCollectionBase)> ExtractStopPositions(CompleteRelation relation)
         {

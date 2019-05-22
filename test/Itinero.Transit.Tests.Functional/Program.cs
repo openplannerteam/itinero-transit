@@ -40,6 +40,10 @@ namespace Itinero.Transit.Tests.Functional
                 return;
             }
             
+            LocalTests();
+            InternetTests();
+            SlowTests();
+            
             // Tests for the developer
             
             foreach (var r in OsmTest.TestRelations)

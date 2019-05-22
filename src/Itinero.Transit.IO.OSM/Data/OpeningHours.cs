@@ -28,11 +28,11 @@ namespace Itinero.Transit.Data
         public static IOpeningHoursRule ParseOpeningHoursRule(this string value, string timezone)
         {
             var parser =
-                (RdParsers.MultipleRules() |
-                 RdParsers.WeekdayRule() |
-                 RdParsers.HoursRule() |
-                 RdParsers.TwentyFourSeven() |
-                 RdParsers.OSMStatus()) + !RdParsers.WS();
+                (OpeningHoursRdParsers.MultipleRules() |
+                 OpeningHoursRdParsers.WeekdayRule() |
+                 OpeningHoursRdParsers.HoursRule() |
+                 OpeningHoursRdParsers.TwentyFourSeven() |
+                 OpeningHoursRdParsers.OSMStatus()) + !OpeningHoursRdParsers.WS();
 
 
             var raw = parser.Parse(value);
