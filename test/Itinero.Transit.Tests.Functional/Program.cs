@@ -78,7 +78,7 @@ namespace Itinero.Transit.Tests.Functional
 
 
             var tdb = new TransitDb();
-            tdb.UseOsmRoute("CentrumShuttle-Brugge.xml", DateTime.Today, DateTime.Today.AddDays(1));
+            tdb.UseOsmRoute("testdata/CentrumShuttle-Brugge.xml", DateTime.Today, DateTime.Today.AddDays(1));
             new TestAllAlgorithms().ExecuteMultiModal();
         }
 
