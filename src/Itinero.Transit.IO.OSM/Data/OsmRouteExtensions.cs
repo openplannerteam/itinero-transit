@@ -65,12 +65,7 @@ namespace Itinero.Transit.Data
 
                 while (currentStart <= end)
                 {
-                    if (!route.OpeningTimes.StateAt(currentStart, "closed").Equals("open"))
-                    {
-                        currentStart = route.OpeningTimes.NextChange(currentStart);
-                        continue;
-                    }
-
+                   
                     var tripGlobalId = $"https://openstreetmap.org/relation/{route.Id}/vehicle/{index}";
 
 

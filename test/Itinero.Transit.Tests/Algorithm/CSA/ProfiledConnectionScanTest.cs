@@ -26,8 +26,8 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var journeys = db.SelectProfile(profile)
                 .SelectStops(stop0, stop3)
                 .SelectTimeFrame(
-                    new DateTime(2018, 12, 04, 16, 00, 00),
-                    new DateTime(2018, 12, 04, 18, 00, 00)
+                    new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
+                    new DateTime(2018, 12, 04, 18, 00, 00, DateTimeKind.Utc)
                 ).AllJourneys();
 
             //Pr("---------------- DONE ----------------");

@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Xml;
 using GeoAPI.Geometries;
 using GeoTimeZone;
+using Itinero.Transit.Data.OpeningHoursRDParser;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Logging;
 using OsmSharp;
@@ -24,7 +25,6 @@ namespace Itinero.Transit.Data
         public readonly bool RoundTrip;
         public TimeSpan Duration;
         public TimeSpan Interval;
-        public readonly IOpeningHoursRule OpeningTimes;
         public readonly long Id;
         public readonly string Name;
 
@@ -42,12 +42,11 @@ namespace Itinero.Transit.Data
             RoundTrip = (rt ?? "").Equals("yes");
 
             ts.TryGetValue("duration", out var duration);
-            Duration = duration?.TryParseTimespan() ?? throw new ArgumentException("Expected a value for duration");
+            Duration = DefaultRdParsers.Duration().ParseFull(duration, "No or incorrect value for duration");
+                
 
             ts.TryGetValue("interval", out var interval);
-            Interval = interval?.TryParseTimespan() ??TimeSpan.FromHours(1); // TODO Fix this
-
-            ts.TryGetValue("opening_hours", out var openingHours);
+            Interval = DefaultRdParsers.Duration().ParseFull(duration, "No or incorrect value for interval");
 
             StopPositions = ExtractStopPositions(relation);
 
@@ -56,16 +55,7 @@ namespace Itinero.Transit.Data
                 throw new ArgumentException("This route does not contain stop positions");
             }
 
-            // Opening hours should be calculated AFTER the assignation of StopPositions, as it depends on it
-            OpeningTimes = new OsmState("open");
-            try
-            {
-                OpeningTimes = openingHours?.ParseOpeningHoursRule(GetTimeZone()) ?? new OsmState("open");
-            }
-            catch (Exception e)
-            {
-                Log.Error("These opening hours are to difficult to parse: " + openingHours);
-            }
+            
         }
 
 

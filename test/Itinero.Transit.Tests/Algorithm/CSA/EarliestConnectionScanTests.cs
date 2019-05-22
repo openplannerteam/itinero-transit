@@ -96,18 +96,20 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
             var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0, 0.0);
-            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/2", 0.001, 0.001); // very walkable distance
+            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/2", 0.000001, 0.00001); // very walkable distance
             var stop3 = writer.AddOrUpdateStop("https://example.com/stops/3", 60.1, 60.1);
 
-            
             writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 10, 00, 00), 10 * 60, 0, 0, new TripId(0, 0), 0);
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+
+            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 10, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
             writer.AddOrUpdateConnection(stop2, stop3, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 10, 30, 00), 10 * 60, 0, 0, new TripId(0, 1), 0);
+                new DateTime(2018, 12, 04, 10, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 1), 0);
 
             // Prevent depletion of the DB
             writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/2",
-                new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 0, 0, new TripId(0, 2), 0);
+                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 2), 0);
 
             writer.Close();
 
@@ -119,8 +121,8 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 TransferMetric.ProfileTransferCompare);
             var journey = latest.SelectProfile(profile)
                 .SelectStops(stop0, stop3)
-                .SelectTimeFrame(new DateTime(2018, 12, 04, 10, 00, 00),
-                    new DateTime(2018, 12, 04, 11, 00, 00))
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
+                    new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
                 .EarliestArrivalJourney();
             Assert.NotNull(journey);
             Assert.Equal(Journey<TransferMetric>.WALK, journey.PreviousLink.PreviousLink.Connection);

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 // ReSharper disable InconsistentNaming
@@ -15,7 +14,23 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
     /// <summary>
     /// A collection of generally useful small parsers, such as 'regex', 'literal', 'number', ...
     /// </summary>
-    public class DefaultRdParsers {
+    public class DefaultRdParsers
+    {
+        [Pure]
+        public static RDParser<TimeSpan> Duration()
+        {
+            return
+                RDParser<TimeSpan>.X(
+                    (h, m, s) => new TimeSpan(h, m, s),
+                    Int() + !Lit(":"), Int() + !Lit(":"), Int())
+                | RDParser<TimeSpan>.X(
+                    (h, m) => new TimeSpan(h, m, 0),
+                    Int() + !Lit(":"), Int())
+                | (Int() + !(Lit("hours") | Lit("hour") | Lit("h"))).Map(m => TimeSpan.FromHours(m))
+                | (Int() + !(Lit("minutes") | Lit("min") | Lit("m"))).Map(m => TimeSpan.FromMinutes(m));
+        }
+
+
         /// <summary>
         /// Parse exactly the given string - case sensitive
         /// </summary>
@@ -106,17 +121,15 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
         }
 
 
-
         [Pure]
         public static RDParser<T> Fail<T>()
         {
             return new RDParser<T>(
                 str => null, ""
-                );
+            );
         }
-        
-  }
-    
+    }
+
     /// <summary>
     /// This is a basic, Recursive Descent parser.
     /// This uses a lot of functional magic.
@@ -253,6 +266,39 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public T ParseFull(string value, string errormsg = null)
+        {
+            if (value == null)
+            {
+                if (errormsg != null)
+                {
+                    throw new FormatException(errormsg + ": input is null");
+                }
+
+                return default(T);
+            }
+
+            var raw = Parse(value);
+            if (raw == null)
+            {
+                throw new FormatException(errormsg + ": could not parse");
+            }
+
+            var (t, rest) = raw.Value;
+
+            if (!string.IsNullOrEmpty(rest))
+            {
+                throw new FormatException($"{errormsg}: did not parse completely (input: {value}, rest: {rest})");
+            }
+
+            return t;
+        }
+
+        /// <summary>
         /// RECURSE
         /// Repeats the parser as much as possible.
         /// Important: make sure the parser consumes at least on character or fails.
@@ -325,15 +371,13 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
                 }, _bnf
             );
         }
-        
-        
+
+
         [Pure]
         public RDParser<T> Assert(Predicate<T> predicate)
         {
-            return this.Bind(t => predicate(t) ? new RDParser<T>(t) :
-                DefaultRdParsers.Fail<T>()
+            return this.Bind(t => predicate(t) ? new RDParser<T>(t) : DefaultRdParsers.Fail<T>()
             );
         }
-
     }
 }

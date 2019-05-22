@@ -386,28 +386,33 @@ namespace Itinero.Transit.Journeys
         [Pure]
         public string ToString(TransitDb.TransitDbSnapShot snapshot)
         {
-            return ToString(snapshot.StopsDb.GetReader(), snapshot.ConnectionsDb.GetDepartureEnumerator());
+            return ToString(15, snapshot.StopsDb.GetReader());
         }
 
         [Pure]
         public string ToString(WithTime<T> withTime)
         {
-            return ToString(withTime.StopsReader, withTime.ConnectionEnumerator);
+            return ToString(15, withTime.StopsReader);
         }
 
 
-        [Pure]
-        public string ToString(IStopsReader stops = null, IConnectionEnumerator connections = null,
-            uint truncateAt = 15)
+        public override string ToString()
         {
-            var asList = this.ToList();
+            return ToString(15);
+        }
 
-            if (asList.Count > truncateAt)
+        [Pure]
+        private string ToString(uint truncateAt, IStopsReader stops = null)
+        {
+            if (this.Equals(InfiniteJourney))
             {
-                asList = this.Summarized().ToList();
+                return "Journey impossible/infinite";
             }
 
-            var snippets = asList.Select(j => j.PartToString(stops, connections)).ToList();
+            var asList = this.ToList();
+
+
+            var snippets = asList.Select(j => j.PartToString(stops)).ToList();
 
             if (snippets.Count > truncateAt)
             {
@@ -425,13 +430,16 @@ namespace Itinero.Transit.Journeys
         }
 
         [Pure]
-        private string PartToString(IStopsReader stops, IConnectionEnumerator connections)
+        private string PartToString(IStopsReader stops)
         {
             var location = Location.ToString();
+            var dbOperator = uint.MaxValue;
+
             if (stops != null)
             {
                 stops.MoveTo(Location);
                 location = stops.GlobalId + " " + stops.Attributes;
+                dbOperator = stops.Id.DatabaseId;
             }
 
             if (SpecialConnection)
@@ -440,7 +448,6 @@ namespace Itinero.Transit.Journeys
             }
 
 
-            var dbOperator = stops.Id.DatabaseId;
             return
                 $"Connection {Connection} to {location}, arriving at {Time.FromUnixTime():s}; operator is {dbOperator}";
         }

@@ -14,7 +14,7 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
     {
         protected override bool Execute(bool input)
         {
-            var contents = File.ReadAllText("connections0.json");
+            var contents = File.ReadAllText("testdata/connections0.json");
 
             var dloader = new Downloader();
             dloader.AlwaysReturn = contents;
