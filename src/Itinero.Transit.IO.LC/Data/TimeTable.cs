@@ -70,7 +70,7 @@ namespace Itinero.Transit.IO.LC.Data
 
             var start = ind + "departureTime=".Length;
             var time = raw.Substring(start, raw.Length - start - 2);
-            return DateTime.Parse(time);
+            return DateTime.Parse(time).ToUniversalTime();
         }
 
         public override string ToString()

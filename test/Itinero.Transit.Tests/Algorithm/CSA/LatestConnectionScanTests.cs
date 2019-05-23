@@ -55,11 +55,11 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var stop2 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
 
             writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 16, 20, 00), 10 * 60, 0, 0, new TripId(0, 0), 3); // MODE 3 - cant get on or off
+                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 3); // MODE 3 - cant get on or off
 
             // Prevent depletion of the DB
             writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 0, 0, new TripId(0, 0), 3);
+                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 3);
             writer.Close();
             var latest = transitDb.Latest;
 
@@ -69,8 +69,8 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 TransferMetric.ProfileTransferCompare);
             var journey = latest.SelectProfile(profile)
                 .SelectStops(stop1, stop2)
-                .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00),
-                    new DateTime(2018, 12, 04, 19, 00, 00))
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
+                    new DateTime(2018, 12, 04, 19, 00, 00, DateTimeKind.Utc))
                 .LatestDepartureJourney();
 
             Assert.Null(journey);
@@ -87,11 +87,11 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var stop2 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
 
             writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 16, 20, 00), 10 * 60, 0, 0, new TripId(0, 0), 0);
+                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
 
             // Prevent depletion of the DB
             writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 20, 00, 00), 10 * 60, 0, 0, new TripId(0, 0), 0);
+                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
             writer.Close();
             var latest = transitDb.Latest;
 
@@ -101,8 +101,8 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 TransferMetric.ProfileTransferCompare);
             var journey = latest.SelectProfile(profile)
                 .SelectStops(stop1, stop2)
-                .SelectTimeFrame(        new DateTime(2018, 12, 04, 16, 00, 00),
-                    new DateTime(2018, 12, 04, 19, 00, 00))
+                .SelectTimeFrame(        new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
+                    new DateTime(2018, 12, 04, 19, 00, 00, DateTimeKind.Utc))
                 .LatestDepartureJourney();
 
             Assert.NotNull(journey);

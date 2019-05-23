@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
+using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
@@ -199,6 +200,7 @@ namespace Itinero.Transit.Algorithms.CSA
         private bool IntegrateConnection(
             IConnection c)
         {
+
             // The connection describes a random connection somewhere
             // Lets check if we can take it
 
@@ -269,14 +271,16 @@ namespace Itinero.Transit.Algorithms.CSA
                 _s[c.ArrivalStop] = journeyToArrival;
                 return true;
             }
+            
+            
 
             var oldJourney = _s[c.ArrivalStop];
             if (journeyToArrival.Time >= oldJourney.Time)
             {
+                // No improvement - do not change anything
                 return false;
             }
 
-            if (!c.CanGetOff()) return false;
             _s[c.ArrivalStop] = journeyToArrival;
 
             return true;

@@ -54,6 +54,11 @@ namespace Itinero.Transit.IO.LC
 
         public (int loaded, int reused) AddAllConnections(LinkedConnectionDataset p, DateTime startDate, DateTime endDate)
         {
+            if (startDate.Kind != DateTimeKind.Utc || endDate.Kind != DateTimeKind.Utc)
+            {
+                throw new ArgumentException("Please provide all dates in UTC");
+            }
+            
             var loaded = 0;
             var reused = 0;
             for (var i = 0; i < p.ConnectionsProvider.Count; i++)

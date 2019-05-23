@@ -24,7 +24,7 @@ namespace Itinero.Transit.Tests.Functional.IO
         protected override bool Execute(string input)
         {
             var tdb = new TransitDb();
-            tdb.UseOsmRoute(input, DateTime.Now.Date, DateTime.Now.Date.AddDays(1));
+            tdb.UseOsmRoute(input, DateTime.Now.Date.ToUniversalTime(), DateTime.Now.Date.AddDays(1).ToUniversalTime());
             return true;
         }
     }

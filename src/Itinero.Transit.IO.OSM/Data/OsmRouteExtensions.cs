@@ -42,7 +42,6 @@ namespace Itinero.Transit.Data
             }
 
 
-            // TODO this might not scale
             var allRuns = new List<(uint, IConnection)>();
 
             {
@@ -107,6 +106,11 @@ namespace Itinero.Transit.Data
             List<LocationId> locations,
             DateTime startMoment)
         {
+            if (startMoment.Kind != DateTimeKind.Utc)
+            {
+                throw new ArgumentException("startMoment: DateTimes should be UTC");
+            }
+            
             var conns = new LinkedList<(uint, IConnection)>();
 
             var travelTime = (ushort) (route.Duration.TotalSeconds / route.StopPositions.Count);

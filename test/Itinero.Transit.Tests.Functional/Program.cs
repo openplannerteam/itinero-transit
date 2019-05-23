@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Itinero.Transit.Data;
+using Itinero.Transit.Journeys;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms;
+using Itinero.Transit.Tests.Functional.Algorithms.CSA;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
 using Itinero.Transit.Tests.Functional.Data;
 using Itinero.Transit.Tests.Functional.IO;
@@ -28,8 +31,10 @@ namespace Itinero.Transit.Tests.Functional
         {
             EnableLogging();
 
-            // ReSharper disable once InvertIf
-            if (args.Length > 0 && args[0].Equals("--full-test-suite"))
+            var testAll = args.Length > 0 && args[0].Equals("--full-test-suite");
+            testAll = true;
+            
+            if (testAll)
             {
                 // These are all the tests, and will be run in full on the build server
                 // Tests for devving are below
@@ -39,20 +44,8 @@ namespace Itinero.Transit.Tests.Functional
                 // ReSharper disable once RedundantJumpStatement
                 return;
             }
-            
-            LocalTests();
-            InternetTests();
-            SlowTests();
-            
-            // Tests for the developer
-            
-            foreach (var r in OsmTest.TestRelations)
-            {
-                var t = new OsmTest();
-                t.Run(r);
-            }
+               
 
-            
         }
 
 
@@ -62,8 +55,8 @@ namespace Itinero.Transit.Tests.Functional
             //     TransitDb.ReadFrom(TestAllAlgorithms.testDbs0429),
             //     new DateTime(2019, 04, 29)));
 
-            var nmbs = TransitDb.ReadFrom(TestAllAlgorithms._nmbs0429, 0);
-            var wvl = TransitDb.ReadFrom(TestAllAlgorithms._delijnWvl0429, 1);
+            var nmbs = TransitDb.ReadFrom(TestAllAlgorithms._nmbs, 0);
+            var wvl = TransitDb.ReadFrom(TestAllAlgorithms._delijnWvl, 1);
 
             new StopEnumerationTest().Run(new List<TransitDb>()
             {
@@ -82,7 +75,7 @@ namespace Itinero.Transit.Tests.Functional
 
 
             var tdb = new TransitDb();
-            tdb.UseOsmRoute("testdata/CentrumShuttle-Brugge.xml", DateTime.Today, DateTime.Today.AddDays(1));
+            tdb.UseOsmRoute("testdata/CentrumShuttle-Brugge.xml", DateTime.Today.ToUniversalTime(), DateTime.Today.AddDays(1).ToUniversalTime());
             new TestAllAlgorithms().ExecuteMultiModal();
         }
 
@@ -93,9 +86,9 @@ namespace Itinero.Transit.Tests.Functional
                 var t = new OsmTest();
                 t.Run(r);
             }
+
             new CachingTest().Run(true);
             var tdb = new TransitDb();
-
         }
 
         public static void SlowTests()

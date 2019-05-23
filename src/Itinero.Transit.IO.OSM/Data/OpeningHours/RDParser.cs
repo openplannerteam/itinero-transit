@@ -27,7 +27,7 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
                     (h, m) => new TimeSpan(h, m, 0),
                     Int() + !Lit(":"), Int())
                 | (Int() + !(Lit("hours") | Lit("hour") | Lit("h"))).Map(m => TimeSpan.FromHours(m))
-                | (Int() + !(Lit("minutes") | Lit("min") | Lit("m"))).Map(m => TimeSpan.FromMinutes(m));
+                | (Int() + !(Lit("minutes") | Lit("min") | Lit("m") | Lit(""))).Map(m => TimeSpan.FromMinutes(m));
         }
 
 
@@ -268,7 +268,6 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="value"></param>
         /// <returns></returns>
         public T ParseFull(string value, string errormsg = null)
         {
@@ -285,7 +284,7 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
             var raw = Parse(value);
             if (raw == null)
             {
-                throw new FormatException(errormsg + ": could not parse");
+                throw new FormatException($"{errormsg}: could not parse {value}");
             }
 
             var (t, rest) = raw.Value;

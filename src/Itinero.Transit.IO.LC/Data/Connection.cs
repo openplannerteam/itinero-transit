@@ -98,7 +98,7 @@ namespace Itinero.Transit.IO.LC.Data
         private static DateTime GetDateFixed(JToken json, string uriKey)
         {
             var value = json.GetLDValue(uriKey);
-            return DateTime.Parse(value);
+            return DateTime.Parse(value).ToUniversalTime();
         }
 
         protected sealed override void FromJson(JObject json)

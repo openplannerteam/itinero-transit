@@ -14,6 +14,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
                 input.EarliestArrivalJourney();
 
             NotNull(easJ);
+            NoLoops(easJ, input.StopsReader);
 
             var stop = input.StopsReader;
             stop.MoveTo(input.From[0].Item1);
@@ -29,6 +30,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 
             NotNull(lasJ,
                 $"No latest journey found for {id0} {input.Start:s} --> {id1}, {easJ.ArrivalTime().FromUnixTime():s},\n{easJ}");
+            NoLoops(lasJ, input.StopsReader);
 
             // Eas is bound by the first departing train, while las is not
             True(easJ.Root.DepartureTime() <= lasJ.Root.DepartureTime());

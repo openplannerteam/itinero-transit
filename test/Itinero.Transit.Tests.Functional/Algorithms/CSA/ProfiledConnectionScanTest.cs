@@ -14,6 +14,11 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var journeys = input.AllJourneys();
             // verify result.
             NotNull(journeys);
+            foreach (var journey in journeys)
+            {
+                NoLoops(journey, input.StopsReader);
+            }
+            
             True(journeys.Any());
 
             Information($"Found {journeys.Count} profiles");

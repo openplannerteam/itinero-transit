@@ -23,7 +23,7 @@ namespace Itinero.Transit.Tests.Functional.Data
 
         protected override bool Execute(bool _)
         {
-            var now = DateTime.Now;
+            var now = DateTime.Now.ToUniversalTime();
 
             var tdb = new TransitDb();
             var dataset = tdb.UseLinkedConnections(Belgium.SncbConnections, Belgium.SncbLocations,

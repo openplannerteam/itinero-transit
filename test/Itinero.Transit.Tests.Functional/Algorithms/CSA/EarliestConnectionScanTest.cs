@@ -10,6 +10,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         {
             var journey = input.EarliestArrivalJourney();
             NotNull(journey);
+            NoLoops(journey, input);
             return true;
         }
     }

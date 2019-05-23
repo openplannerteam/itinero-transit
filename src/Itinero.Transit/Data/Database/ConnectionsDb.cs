@@ -14,12 +14,6 @@ using Reminiscence.Arrays;
 
 namespace Itinero.Transit.Data
 {
-    // TODO: consider removing these aliases, this is very unusual in C# to use.
-    using TimeSpan = UInt16;
-    using Time = UInt64;
-    using LocId = UInt64;
-    using Id = UInt32;
-
     public class ConnectionsDb
     {
         // this is a connections database, it needs to support:
@@ -414,10 +408,11 @@ namespace Itinero.Transit.Data
         [Pure]
         private (LocationId departureLocation,
             LocationId arrivalLocation,
-            Time departureTime, TimeSpan travelTime,
+            ulong departureTime, ushort travelTime,
             ushort departureDelay, ushort arrivalDelay, ushort mode)
             GetConnection(uint internalId)
         {
+            
             var dataPointer = internalId * _connectionSizeInBytes;
             if (_data.Length <= dataPointer + _connectionSizeInBytes)
             {
@@ -520,7 +515,6 @@ namespace Itinero.Transit.Data
                 _globalIds.Resize(_globalIds.Length + 1024);
             }
 
-            var existingId = _globalIds[internalId];
             _globalIds[internalId] = globalId;
 
             // add stop id to the index.
@@ -561,6 +555,7 @@ namespace Itinero.Transit.Data
                                      _windowSizeInSeconds);
         }
 
+        // ReSharper disable once UnusedMethodReturnValue.Local
         private bool RemoveDepartureIndex(uint internalId, uint window)
         {
             var windowPointer = _departureWindowPointers[window * 2 + 0];
@@ -666,6 +661,7 @@ namespace Itinero.Transit.Data
                 }, windowPointer, windowPointer + windowSize - 1);
         }
 
+        // ReSharper disable once UnusedMethodReturnValue.Local
         private bool RemoveArrivalIndex(uint internalId, uint window)
         {
             var windowPointer = _arrivalWindowPointers[window * 2 + 0];
@@ -845,6 +841,7 @@ namespace Itinero.Transit.Data
             length += 4;
             return length;
         }
+
         [Pure]
         internal static ConnectionsDb ReadFrom(Stream stream, uint databaseId)
         {
@@ -888,8 +885,7 @@ namespace Itinero.Transit.Data
         /// Gets a reader.
         /// </summary>
         /// <returns></returns>
-         [Pure]
-
+        [Pure]
         public ConnectionsDbReader GetReader()
         {
             return new ConnectionsDbReader(this);
@@ -910,7 +906,7 @@ namespace Itinero.Transit.Data
             private uint _internalId;
             private LocationId _departureStop;
             private LocationId _arrivalStop;
-            private Time _departureTime, _arrivalTime;
+            private ulong _departureTime, _arrivalTime;
             private ushort _travelTime, _departureDelay, _arrivalDelay, _mode;
 
             /// <summary>
@@ -933,7 +929,7 @@ namespace Itinero.Transit.Data
 
             /// <inheritdoc />
             [Pure]
-            public Time DepartureTime => _departureTime;
+            public ulong DepartureTime => _departureTime;
 
             /// <inheritdoc />
             [Pure]
@@ -949,7 +945,7 @@ namespace Itinero.Transit.Data
 
             /// <inheritdoc />
             [Pure]
-            public Time ArrivalTime => _arrivalTime;
+            public ulong ArrivalTime => _arrivalTime;
 
             /// <inheritdoc />
             [Pure]
@@ -983,6 +979,16 @@ namespace Itinero.Transit.Data
                 _arrivalDelay = details.arrivalDelay;
                 _mode = details.mode;
                 return true;
+            }
+
+            public bool MoveNext()
+            {
+                return MoveTo(_internalId + 1);
+            }
+
+            public void Reset()
+            {
+                MoveTo(0);
             }
 
             public bool MoveTo(uint dbId, uint connectionId)
@@ -1377,30 +1383,37 @@ namespace Itinero.Transit.Data
             // ReSharper disable once UnusedMember.Global
             [Pure]
             public LocationId ArrivalStop => _reader.ArrivalStop;
+
             /// <inheritdoc />
 
             [Pure]
-            public Time DepartureTime => _reader.DepartureTime;
+            public ulong DepartureTime => _reader.DepartureTime;
+
             /// <inheritdoc />
 
             [Pure]
-            public Time ArrivalTime => _reader.ArrivalTime;
+            public ulong ArrivalTime => _reader.ArrivalTime;
+
             /// <inheritdoc />
 
             [Pure]
             public ushort TravelTime => _reader.TravelTime;
+
             /// <inheritdoc />
 
             [Pure]
             public ushort DepartureDelay => _reader.DepartureDelay;
+
             /// <inheritdoc />
 
             [Pure]
             public ushort ArrivalDelay => _reader.ArrivalDelay;
+
             /// <inheritdoc />
 
             [Pure]
             public uint Id => _reader.Id;
+
             /// <inheritdoc />
 
             [Pure]

@@ -31,10 +31,10 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
                 new EarliestConnectionScanTest(),
                 new LatestConnectionScanTest(),
                 new ProfiledConnectionScanTest(),
-                new EasPcsComparison(), //*/
+                new EasPcsComparison(),
                 new EasLasComparison(),
                 new IsochroneTest(),
-                new MultiTransitDbTest() //*/
+                new MultiTransitDbTest() 
             };
 
         private static readonly List<DefaultFunctionalTest<TransferMetric>> MultiModalTests =
@@ -44,44 +44,40 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
             };
 
 
-        private readonly IReadOnlyList<string> testDbs0409 = new[] {_osmCentrumShuttle0409, _nmbs0429};
-
-        public static readonly IReadOnlyList<string> testDbs0429 = new[]
+        public static readonly IReadOnlyList<string> testDbs = new[]
         {
-            _nmbs0429,
-            _osmCentrumShuttle0429,
-            _delijnVlB0429,
-            _delijnWvl0429,
-            _delijnOVl0429,
-            _delijnLim0429,
-            _delijnAnt0429,
+            _nmbs,
+            _osmCentrumShuttle,
+            _delijnVlB,
+            _delijnWvl,
+            _delijnOVl,
+            _delijnLim,
+            _delijnAnt,
         };
 
-        public const string _osmCentrumShuttle0409 = "testdata/CentrumbusBrugge2019-04-09.transitdb";
-        public const string _nmbs0409 = "testdata/fixed-test-cases-2019-04-09.transitdb";
 
-        public const string _osmCentrumShuttle0429 = "testdata/CentrumbusBrugge2019-04-29.transitdb";
-        public const string _nmbs0429 =      "testdata/fixed-test-cases-2019-04-29.transitdb";
-        public const string _delijnWvl0429 = "testdata/fixed-test-cases-de-lijn-wvl-2019-04-29.transitdb";
-        public const string _delijnOVl0429 = "testdata/fixed-test-cases-de-lijn-ovl-2019-04-29.transitdb";
-        public const string _delijnVlB0429 = "testdata/fixed-test-cases-de-lijn-vlb-2019-04-29.transitdb";
-        public const string _delijnLim0429 = "testdata/fixed-test-cases-de-lijn-lim-2019-04-29.transitdb";
-        public const string _delijnAnt0429 = "testdata/fixed-test-cases-de-lijn-ant-2019-04-29.transitdb";
+        public const string _osmCentrumShuttle = "testdata/fixed-test-cases-osm-CentrumbusBrugge2019-05-22.transitdb";
+        public const string _nmbs =      "testdata/fixed-test-cases-sncb-2019-05-22.transitdb";
+        public const string _delijnWvl = "testdata/fixed-test-cases-de-lijn-wvl-2019-05-22.transitdb";
+        public const string _delijnOVl = "testdata/fixed-test-cases-de-lijn-ovl-2019-05-22.transitdb";
+        public const string _delijnVlB = "testdata/fixed-test-cases-de-lijn-vlb-2019-05-22.transitdb";
+        public const string _delijnLim = "testdata/fixed-test-cases-de-lijn-lim-2019-05-22.transitdb";
+        public const string _delijnAnt = "testdata/fixed-test-cases-de-lijn-ant-2019-05-22.transitdb";
 
 
-        private const string Gent = "http://irail.be/stations/NMBS/008892007";
-        private const string Brugge = "http://irail.be/stations/NMBS/008891009";
-        private const string Poperinge = "http://irail.be/stations/NMBS/008896735";
-        private const string Vielsalm = "http://irail.be/stations/NMBS/008845146";
-        private const string BrusselZuid = "http://irail.be/stations/NMBS/008814001";
-        private const string Kortrijk = "http://irail.be/stations/NMBS/008896008";
-        private const string Oostende = "http://irail.be/stations/NMBS/008891702";
-        private const string Antwerpen = "http://irail.be/stations/NMBS/008821006"; // Antwerpen centraal
-        private const string SintJorisWeert = "http://irail.be/stations/NMBS/008833159"; // Antwerpen centraal
-        private const string Leuven = "http://irail.be/stations/NMBS/008833001"; // Antwerpen centraal
-        private const string Howest = "https://data.delijn.be/stops/502132";
-        private const string ZandStraat = "https://data.delijn.be/stops/500562";
-        private const string AzSintJan = "https://data.delijn.be/stops/502083";
+        public const string Gent = "http://irail.be/stations/NMBS/008892007";
+        public const string Brugge = "http://irail.be/stations/NMBS/008891009";
+        public const string Poperinge = "http://irail.be/stations/NMBS/008896735";
+        public const string Vielsalm = "http://irail.be/stations/NMBS/008845146";
+        public const string BrusselZuid = "http://irail.be/stations/NMBS/008814001";
+        public const string Kortrijk = "http://irail.be/stations/NMBS/008896008";
+        public const string Oostende = "http://irail.be/stations/NMBS/008891702";
+        public const string Antwerpen = "http://irail.be/stations/NMBS/008821006"; // Antwerpen centraal
+        public const string SintJorisWeert = "http://irail.be/stations/NMBS/008833159"; // Antwerpen centraal
+        public const string Leuven = "http://irail.be/stations/NMBS/008833001"; // Antwerpen centraal
+        public const string Howest = "https://data.delijn.be/stops/502132";
+        public const string ZandStraat = "https://data.delijn.be/stops/500562";
+        public const string AzSintJan = "https://data.delijn.be/stops/502083";
 
         private const string GentZwijnaardeDeLijn = "https://data.delijn.be/stops/200657";
 
@@ -95,15 +91,15 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
         /// <returns></returns>
         public TransitDb ExecuteDefault()
         {
-            var date = new DateTime(2019, 04, 29);
-            Execute(new List<string> {_nmbs0429}, date, CreateInputs, AllTests);
-            return tdbCache[_nmbs0429];
+            var date = new DateTime(2019, 05, 22);
+            Execute(new List<string> {_nmbs}, date, CreateInputs, AllTests);
+            return tdbCache[_nmbs];
         }
 
 
         public void ExecuteMultiModal()
         {
-            Execute(testDbs0429, new DateTime(2019, 04, 29),
+            Execute(testDbs, new DateTime(2019, 05, 22),
                 a => CreateInputs(a).Concat(CreateInputsMultiModal(a)).ToList(),
                 AllTests.Concat(MultiModalTests));
         }

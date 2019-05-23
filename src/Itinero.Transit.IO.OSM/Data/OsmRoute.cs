@@ -8,7 +8,6 @@ using GeoAPI.Geometries;
 using GeoTimeZone;
 using Itinero.Transit.Data.OpeningHoursRDParser;
 using Itinero.Transit.Data.Walks;
-using Itinero.Transit.Logging;
 using OsmSharp;
 using OsmSharp.Complete;
 using OsmSharp.Streams;
@@ -46,7 +45,8 @@ namespace Itinero.Transit.Data
                 
 
             ts.TryGetValue("interval", out var interval);
-            Interval = DefaultRdParsers.Duration().ParseFull(duration, "No or incorrect value for interval");
+            Interval = interval == null ? Duration // Assume one shuttle bus
+                :DefaultRdParsers.Duration().ParseFull(interval, "No or incorrect value for interval");
 
             StopPositions = ExtractStopPositions(relation);
 

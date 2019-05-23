@@ -6,7 +6,6 @@ using Itinero.Transit.Tests.Functional.Performance;
 // ReSharper disable UnusedMember.Global
 namespace Itinero.Transit.Tests.Functional
 {
-    
     /// <summary>
     /// Abstract definition of a functional test.
     /// </summary>
@@ -47,7 +46,6 @@ namespace Itinero.Transit.Tests.Functional
         {
             try
             {
-
                 return TrackPerformance ? RunPerformance(input) : Execute(input);
             }
             catch (Exception)
@@ -98,17 +96,17 @@ namespace Itinero.Transit.Tests.Functional
                 throw new ArgumentNullException(nameof(o));
             }
         }
-        
+
         public void NotNull(object o, string message)
         {
             if (o == null)
             {
-                throw new ArgumentException("Null detected: "+message);
+                throw new ArgumentException("Null detected: " + message);
             }
         }
 
 
-        public void AssertContains( object o, IEnumerable xs)
+        public void AssertContains(object o, IEnumerable xs)
         {
             foreach (var x in xs)
             {
@@ -117,10 +115,10 @@ namespace Itinero.Transit.Tests.Functional
                     return;
                 }
             }
-            
+
             throw new Exception($"Element {o} was not found");
         }
-        
+
         /// <summary>
         /// Write a log event with the Informational level.
         /// </summary>

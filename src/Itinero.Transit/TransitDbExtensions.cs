@@ -191,6 +191,8 @@ namespace Itinero.Transit
 
             return result;
         }
+
+
     }
 
     public class WithProfile<T> where T : IJourneyMetric<T>
@@ -436,7 +438,8 @@ namespace Itinero.Transit
 
         public DateTime Start { get; private set; }
         public DateTime End { get; private set; }
-        
+
+
         private IConnectionFilter _filter;
 
         internal WithTime(IStopsReader stopsReader,

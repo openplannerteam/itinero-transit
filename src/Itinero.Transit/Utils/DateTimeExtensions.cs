@@ -28,6 +28,10 @@ namespace Itinero.Transit
         /// </summary>
         public static ulong ToUnixTime(this DateTime date)
         {
+            if (date.Kind != DateTimeKind.Utc)
+            {
+                throw new FormatException("Please, only provide DateTimes in UTC format");
+            }
             return (ulong) (date - _epoch).TotalSeconds; // from a multiple of 100 nanosec or ticks to milliseconds.
         }
 

@@ -398,13 +398,13 @@ namespace Itinero.Transit.Journeys
 
         public override string ToString()
         {
-            return ToString(15);
+            return ToString(75);
         }
 
         [Pure]
-        private string ToString(uint truncateAt, IStopsReader stops = null)
+        public string ToString(uint truncateAt, IStopsReader stops = null, IConnectionReader connection = null)
         {
-            if (this.Equals(InfiniteJourney))
+            if (Equals(InfiniteJourney))
             {
                 return "Journey impossible/infinite";
             }
@@ -412,15 +412,17 @@ namespace Itinero.Transit.Journeys
             var asList = this.ToList();
 
 
-            var snippets = asList.Select(j => j.PartToString(stops)).ToList();
+            var snippets = asList.Select(j => j.PartToString(stops, connection)).ToList();
 
             if (snippets.Count > truncateAt)
             {
                 var allSnippets = snippets;
-                snippets = allSnippets.GetRange(0, (int) truncateAt / 2);
+                var partL = (int) truncateAt / 2;
+                snippets = allSnippets.GetRange(0, partL);
                 snippets.Add("... journey truncated ...");
-                snippets.AddRange(allSnippets.GetRange(
-                    allSnippets.Count - (int) truncateAt / 2, allSnippets.Count));
+                snippets.AddRange(
+                    allSnippets.GetRange(
+                        allSnippets.Count - partL, partL));
             }
 
             var totals = $" ({Metric})";
@@ -430,7 +432,7 @@ namespace Itinero.Transit.Journeys
         }
 
         [Pure]
-        private string PartToString(IStopsReader stops)
+        private string PartToString(IStopsReader stops, IConnectionReader connection)
         {
             var location = Location.ToString();
             var dbOperator = uint.MaxValue;
@@ -442,14 +444,33 @@ namespace Itinero.Transit.Journeys
                 dbOperator = stops.Id.DatabaseId;
             }
 
+            string md = "";
+            if (connection != null)
+            {
+                connection.MoveTo(dbOperator, Connection);
+                switch (connection.Mode)
+                {
+                    case 1:
+                        md = "; Only getting on";
+                        break;
+                    case 2:
+                        md = "; Only getting off";
+                        break;
+                    case 3:
+                        md = "; No getting off/getting on";
+                        break;
+                    default: md = "; normal connection";
+                        break;
+                }
+            }
+
             if (SpecialConnection)
             {
                 return SpecialPartToString(location);
             }
 
-
             return
-                $"Connection {Connection} to {location}, arriving at {Time.FromUnixTime():s}; operator is {dbOperator}";
+                $"Connection {Connection} to {location}, arriving at {Time.FromUnixTime():s}; operator is {dbOperator}{md}";
         }
 
         private string SpecialPartToString(string location)
