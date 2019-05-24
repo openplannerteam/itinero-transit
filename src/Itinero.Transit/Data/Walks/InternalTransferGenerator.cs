@@ -84,6 +84,16 @@ namespace Itinero.Transit.Data.Walks
             return CreateInternalTransfer(buildOn, timeWhenArriving);
         }
 
+        public float TimeBetween(IStopsReader _, LocationId from, LocationId to)
+        {
+            if (!from.Equals(to))
+            {
+                return float.NaN;
+            }
+
+            return _internalTransferTime;
+        }
+
         public float Range()
         {
             return 0.0f;

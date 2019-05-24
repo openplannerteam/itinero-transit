@@ -32,6 +32,18 @@ namespace Itinero.Transit.Data.Walks
             _speed = speed;
         }
 
+
+        public float TimeBetween(IStopsReader reader, LocationId from, LocationId to)
+        {
+            var distance = reader.CalculateDistanceBetween(from, to);
+            if (distance > _maxDistance)
+            {
+                return float.NaN;
+            }
+
+            return distance * _speed;
+        }
+
         /// <summary>
         /// Adds a walk to 'targetLocation' at the end of the journey 'buildOn'
         /// </summary>
@@ -39,14 +51,13 @@ namespace Itinero.Transit.Data.Walks
             ulong timeWhenLeaving,
             LocationId otherLocation) where T : IJourneyMetric<T>
         {
-            var distance = reader.CalculateDistanceBetween(buildOn.Location, otherLocation);
-            if (distance > _maxDistance)
+            var time = TimeBetween(reader, buildOn.Location, otherLocation);
+            if (float.IsNaN(time))
             {
                 return null;
             }
 
-            var walkingTimeInSec = distance * _speed;
-            var arrivalTime = buildOn.Time + walkingTimeInSec;
+            var arrivalTime = buildOn.Time + time;
 
             if (arrivalTime > timeWhenLeaving)
             {
@@ -62,14 +73,13 @@ namespace Itinero.Transit.Data.Walks
             ulong timeWhenDeparting,
             LocationId otherLocation) where T : IJourneyMetric<T>
         {
-            var distance = reader.CalculateDistanceBetween(buildOn.Location, otherLocation);
-            if (distance > _maxDistance)
+            var time = TimeBetween(reader, buildOn.Location, otherLocation);
+            if (float.IsNaN(time))
             {
                 return null;
             }
 
-            var walkingTimeInSec = distance * _speed;
-            var arrivalTime = buildOn.Time - walkingTimeInSec;
+            var arrivalTime = buildOn.Time - time;
 
             if (arrivalTime < timeWhenDeparting)
             {

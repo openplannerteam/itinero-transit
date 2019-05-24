@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Itinero.Transit.Data;
-using Itinero.Transit.Journeys;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms;
 using Itinero.Transit.Tests.Functional.Algorithms.CSA;
@@ -12,7 +10,6 @@ using Itinero.Transit.Tests.Functional.Data;
 using Itinero.Transit.Tests.Functional.IO;
 using Itinero.Transit.Tests.Functional.IO.LC;
 using Itinero.Transit.Tests.Functional.IO.LC.Synchronization;
-using OsmSharp.IO.Zip.Streams;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;

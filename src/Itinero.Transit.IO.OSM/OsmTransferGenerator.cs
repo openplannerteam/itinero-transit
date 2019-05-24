@@ -24,7 +24,7 @@ namespace Itinero.Transit
     {
         private readonly Router _router;
         private readonly Profile _walkingProfile;
-        
+
         private const float _searchDistance = 50f;
         private readonly StopsDb.StopsDbReader _stopsDb;
 
@@ -74,7 +74,7 @@ namespace Itinero.Transit
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <returns></returns>
-        private Route CreateRouteBetween(LocationId start, 
+        private Route CreateRouteBetween(LocationId start,
             LocationId end)
         {
             _stopsDb.MoveTo(start);
@@ -99,7 +99,8 @@ namespace Itinero.Transit
             return route.IsError ? null : route.Value;
         }
 
-        public Journey<T> CreateDepartureTransfer<T>(IStopsReader _, Journey<T> buildOn, ulong timeWhenDeparting,LocationId otherLocation) where T : IJourneyMetric<T>
+        public Journey<T> CreateDepartureTransfer<T>(IStopsReader _, Journey<T> buildOn, ulong timeWhenDeparting,
+            LocationId otherLocation) where T : IJourneyMetric<T>
         {
             if (timeWhenDeparting < buildOn.Time)
             {
@@ -122,11 +123,12 @@ namespace Itinero.Transit
             }
 
             return buildOn.ChainSpecial(
-                Journey<T>.WALK, (uint) (buildOn.Time + route.TotalDistance), otherLocation, 
+                Journey<T>.WALK, (uint) (buildOn.Time + route.TotalDistance), otherLocation,
                 TripId.Walk);
         }
 
-        public Journey<T> CreateArrivingTransfer<T>(IStopsReader _, Journey<T> buildOn, ulong timeWhenArriving, LocationId otherLocation) where T : IJourneyMetric<T>
+        public Journey<T> CreateArrivingTransfer<T>(IStopsReader _, Journey<T> buildOn, ulong timeWhenArriving,
+            LocationId otherLocation) where T : IJourneyMetric<T>
         {
             if (timeWhenArriving > buildOn.Time)
             {
@@ -151,6 +153,17 @@ namespace Itinero.Transit
 
             return buildOn.ChainSpecial(
                 Journey<T>.WALK, (uint) (timeWhenArriving + route.TotalTime), otherLocation, TripId.Walk);
+        }
+
+        public float TimeBetween(IStopsReader reader, LocationId @from, LocationId to)
+        {
+            if (Equals(from, to))
+            {
+                return float.NaN;
+            }
+
+            var route = CreateRouteBetween(from, to);
+            return route.TotalTime;
         }
 
         public float Range()

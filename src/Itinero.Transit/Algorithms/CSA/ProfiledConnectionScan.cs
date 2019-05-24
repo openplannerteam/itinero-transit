@@ -298,9 +298,11 @@ namespace Itinero.Transit.Algorithms.CSA
                 return Journey<T>.InfiniteJourney;
             }
 
+
+            Journey<T> journeyWithWalk = null;
+
             foreach (var targetLocation in _targetLocations)
             {
-                // ReSharper disable once InvertIf
                 if (Equals(c.ArrivalStop, targetLocation))
                 {
                     // We are at a possible target location
@@ -311,11 +313,51 @@ namespace Itinero.Transit.Algorithms.CSA
                     var journey = arrivingJourney.ChainBackward(c);
                     return journey;
                 }
+
+                // We walk from the connection to the target location...
+
+                if (_walkPolicy == null)
+                {
+                    // We are not able to walk - no such policy given
+                    continue;
+                }
+
+                // The journey which walks towards the stop
+                // We start by calculating the time needed
+
+                var timeNeeded = _walkPolicy.TimeBetween(_stopsReader, c.ArrivalStop, targetLocation);
+
+                if (float.IsNaN(timeNeeded))
+                {
+                    continue;
+                }
+                // We can walk to the target destination!
+                // When would be arriving...?
+                var arrivalTime = c.ArrivalTime + (uint) timeNeeded;
+                
+                // And more importantly, is it faster then an earlier found walking journey?
+
+                if (journeyWithWalk != null && journeyWithWalk.Time < arrivalTime)
+                {
+                    // NO! The already found journey with walk is faster
+                    continue;
+                }
+
+                var genesisEnd = new Journey<T>
+                (targetLocation,arrivalTime,
+                    _metricFactory.Zero(),
+                    Journey<T>.ProfiledScanJourney);
+
+
+                journeyWithWalk = _walkPolicy.CreateArrivingTransfer(
+                    _stopsReader,
+                    genesisEnd,
+                    c.ArrivalTime,
+                    targetLocation);
+
             }
 
-
-            // TODO Incorporate intermodality
-            return Journey<T>.InfiniteJourney;
+            return journeyWithWalk;
         }
 
         /// <summary>

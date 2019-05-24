@@ -29,6 +29,18 @@ namespace Itinero.Transit.Data.Walks
         Journey<T> CreateArrivingTransfer<T>(IStopsReader stopsDb, Journey<T> buildOn, ulong timeWhenDeparting,
             LocationId otherLocation) where T : IJourneyMetric<T>;
 
+
+        /// <summary>
+        /// Gives the time needed to travel from this stop to the next.
+        /// This can be used to do time estimations.
+        ///
+        /// Returns Max_Value if not possible
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        float TimeBetween(IStopsReader reader, LocationId from, LocationId to);
+
         float Range();
     }
 }

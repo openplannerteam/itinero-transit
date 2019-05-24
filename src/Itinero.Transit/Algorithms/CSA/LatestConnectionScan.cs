@@ -24,7 +24,7 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly Time _earliestDeparture;
 
         private readonly IOtherModeGenerator _transferPolicy;
-        private IOtherModeGenerator _walkPolicy;
+        private readonly IOtherModeGenerator _walkPolicy;
 
 
         public ulong ScanBeginTime { get; private set; } = Time.MaxValue;
