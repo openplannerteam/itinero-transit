@@ -47,11 +47,12 @@ namespace Itinero.Transit.Tests.Functional
             }
 
             var date = new DateTime(2019, 05, 22, 0, 0, 0, DateTimeKind.Utc);
-            var tdb = TransitDb.ReadFrom(TestAllAlgorithms._nmbs, 0);
+            var tdb = TransitDb.ReadFrom(new [] { TestAllAlgorithms._nmbs, TestAllAlgorithms._delijnAnt });
             var input = tdb.SelectProfile(new DefaultProfile())
-                .SelectStops(TestAllAlgorithms.Poperinge, TestAllAlgorithms.Vielsalm)
+                .SelectStops(TestAllAlgorithms.Moereind, TestAllAlgorithms.Antwerpen)
                 .SelectTimeFrame(date.AddHours(10), date.AddHours(18));
-            new EarliestConnectionScanTest().Run(input);
+            new ProfiledConnectionScanTest().Run(input);
+            
         }
 
 

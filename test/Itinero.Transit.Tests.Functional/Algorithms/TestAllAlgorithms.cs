@@ -78,6 +78,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
         public const string Howest = "https://data.delijn.be/stops/502132";
         public const string ZandStraat = "https://data.delijn.be/stops/500562";
         public const string AzSintJan = "https://data.delijn.be/stops/502083";
+        public const string Moereind = "https://data.delijn.be/stops/107455";
 
         private const string GentZwijnaardeDeLijn = "https://data.delijn.be/stops/200657";
 
