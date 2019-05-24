@@ -29,9 +29,4 @@
       </Reference>
     </ItemGroup>
 
-
-    <ItemGroup>
-      <Folder Include="testdata\regression" />
-    </ItemGroup>
-
 </Project>
