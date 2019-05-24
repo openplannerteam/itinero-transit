@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics.Contracts;
-using OsmSharp.Osm.Xml.v0_6;
 
 namespace Itinero.Transit.Data.OpeningHoursRDParser
 {
