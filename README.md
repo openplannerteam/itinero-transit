@@ -26,3 +26,13 @@ A high-level overview of how these things tie together:
 ![transit-db-diagram](images/transit-db-lc-io-diagram.png)
 
 A transit db can request new data from its connection source and a connection source can notify the transit db if it there is new data available.
+
+
+
+RM:
+Fix bugs
+Toevoegen API voor multiple departure/arrival points
+Toevoegen API voor reverse dijkstra PCS
+
+Add hard cap on number of transfers
+Do performance optimizations

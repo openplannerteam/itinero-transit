@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using GeoAPI.Geometries;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journeys;
 
@@ -19,17 +20,20 @@ namespace Itinero.Transit.Tests.Functional
 
             var curStop = journey.Location;
 
-            return;
+            var seen = new HashSet<LocationId>();
+            
             while (journey != null)
             {
                 if (!curStop.Equals(journey.Location))
                 {
-                    curStop = journey.Location;
-                    if (curStop.Equals(fullJourney.Location))
+                    if (seen.Contains(journey.Location))
                     {
-                        // We already were at the destination, but are there again?
-                        throw new Exception("WUT? "+fullJourney.ToString(50, stops));
+                        stops.MoveTo(journey.Location);
+                        throw new Exception($"Already been to this stop: {stops.GlobalId}.\n Journey was "+fullJourney.ToString(100, stops));
                     }
+
+                    seen.Add(curStop);
+                    curStop = journey.Location;
                 }
 
                 journey = journey.PreviousLink;

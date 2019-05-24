@@ -91,7 +91,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
         /// <returns></returns>
         public TransitDb ExecuteDefault()
         {
-            var date = new DateTime(2019, 05, 22);
+            var date = new DateTime(2019, 05, 22).ToUniversalTime();
             Execute(new List<string> {_nmbs}, date, CreateInputs, AllTests);
             return tdbCache[_nmbs];
         }
@@ -99,7 +99,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
 
         public void ExecuteMultiModal()
         {
-            Execute(testDbs, new DateTime(2019, 05, 22),
+            Execute(testDbs, new DateTime(2019, 05, 22).ToUniversalTime(),
                 a => CreateInputs(a).Concat(CreateInputsMultiModal(a)).ToList(),
                 AllTests.Concat(MultiModalTests));
         }

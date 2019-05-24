@@ -12,6 +12,7 @@ using Itinero.Transit.Tests.Functional.Data;
 using Itinero.Transit.Tests.Functional.IO;
 using Itinero.Transit.Tests.Functional.IO.LC;
 using Itinero.Transit.Tests.Functional.IO.LC.Synchronization;
+using OsmSharp.IO.Zip.Streams;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
@@ -32,8 +33,8 @@ namespace Itinero.Transit.Tests.Functional
             EnableLogging();
 
             var testAll = args.Length > 0 && args[0].Equals("--full-test-suite");
-            testAll = true;
-            
+            // testAll = true;
+
             if (testAll)
             {
                 // These are all the tests, and will be run in full on the build server
@@ -44,8 +45,13 @@ namespace Itinero.Transit.Tests.Functional
                 // ReSharper disable once RedundantJumpStatement
                 return;
             }
-               
 
+            var date = new DateTime(2019, 05, 22, 0, 0, 0, DateTimeKind.Utc);
+            var tdb = TransitDb.ReadFrom(TestAllAlgorithms._nmbs, 0);
+            var input = tdb.SelectProfile(new DefaultProfile())
+                .SelectStops(TestAllAlgorithms.Poperinge, TestAllAlgorithms.Vielsalm)
+                .SelectTimeFrame(date.AddHours(10), date.AddHours(18));
+            new EarliestConnectionScanTest().Run(input);
         }
 
 
@@ -75,7 +81,8 @@ namespace Itinero.Transit.Tests.Functional
 
 
             var tdb = new TransitDb();
-            tdb.UseOsmRoute("testdata/CentrumShuttle-Brugge.xml", DateTime.Today.ToUniversalTime(), DateTime.Today.AddDays(1).ToUniversalTime());
+            tdb.UseOsmRoute("testdata/CentrumShuttle-Brugge.xml", DateTime.Today.ToUniversalTime(),
+                DateTime.Today.AddDays(1).ToUniversalTime());
             new TestAllAlgorithms().ExecuteMultiModal();
         }
 
