@@ -108,5 +108,119 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             Assert.NotNull(journey);
             Assert.Equal(2, journey.AllParts().Count());
         }
+        
+        [Fact]
+        public void Latest_ConnectionScan_WithBeginWalk()
+        {
+            // build a one-connection db.
+            var transitDb = new TransitDb();
+            var writer = transitDb.GetWriter();
+
+            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
+            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.000001,0.00001); // very walkable distance
+
+
+            var w0 = writer.AddOrUpdateStop("https://example.com/stops/2", 50.00001, 50.00001);
+            var w1 = writer.AddOrUpdateStop("https://example.com/stops/3", 0.00002, 0.00002);
+
+            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+
+
+            writer.Close();
+
+            var latest = transitDb.Latest;
+
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
+                new CrowsFlightTransferGenerator(),
+                TransferMetric.Factory,
+                TransferMetric.ProfileTransferCompare);
+
+
+            // Walk from start
+            var journey = latest.SelectProfile(profile)
+                .SelectStops(w0, stop1)
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
+                    new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
+                .LatestDepartureJourney();
+            Assert.NotNull(journey);
+        }
+        
+        [Fact]
+        public void Latest_ConnectionScan_WithEndWalk()
+        {
+            // build a one-connection db.
+            var transitDb = new TransitDb();
+            var writer = transitDb.GetWriter();
+
+            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
+            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.000001,0.00001); // very walkable distance
+
+
+            var w0 = writer.AddOrUpdateStop("https://example.com/stops/2", 50.00001, 50.00001);
+            var w1 = writer.AddOrUpdateStop("https://example.com/stops/3", 0.00002, 0.00002);
+
+            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+
+
+            writer.Close();
+
+            var latest = transitDb.Latest;
+
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
+                new CrowsFlightTransferGenerator(),
+                TransferMetric.Factory,
+                TransferMetric.ProfileTransferCompare);
+
+
+            // Walk from start
+            var journey = latest.SelectProfile(profile)
+                .SelectStops(stop0, w1)
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
+                    new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
+                .LatestDepartureJourney();
+            Assert.NotNull(journey);
+        }
+        
+        [Fact]
+        public void Latest_ConnectionScan_WithBeginEndWalk()
+        {
+            // build a one-connection db.
+            var transitDb = new TransitDb();
+            var writer = transitDb.GetWriter();
+
+            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
+            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.000001,0.00001); // very walkable distance
+
+
+            var w0 = writer.AddOrUpdateStop("https://example.com/stops/2", 50.00001, 50.00001);
+            var w1 = writer.AddOrUpdateStop("https://example.com/stops/3", 0.00002, 0.00002);
+
+            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+
+
+            writer.Close();
+
+            var latest = transitDb.Latest;
+
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
+                new CrowsFlightTransferGenerator(),
+                TransferMetric.Factory,
+                TransferMetric.ProfileTransferCompare);
+
+
+            // Walk from start
+            var journey = latest.SelectProfile(profile)
+                .SelectStops(w0, w1)
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
+                    new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
+                .LatestDepartureJourney();
+            Assert.NotNull(journey);
+        }
+        
+        
+        
     }
 }

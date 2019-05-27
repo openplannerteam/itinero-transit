@@ -349,11 +349,17 @@ namespace Itinero.Transit.Algorithms.CSA
                     Journey<T>.ProfiledScanJourney);
 
 
-                journeyWithWalk = _walkPolicy.CreateArrivingTransfer(
+                var journeyWithWalkOnly = _walkPolicy.CreateArrivingTransfer(
                     _stopsReader,
                     genesisEnd,
-                    c.ArrivalTime,
-                    targetLocation);
+                    ulong.MinValue, 
+                    c.ArrivalStop);
+
+                if (journeyWithWalkOnly == null)
+                {
+                    continue;
+                }
+                journeyWithWalk = journeyWithWalkOnly.ChainBackward(c);
 
             }
 

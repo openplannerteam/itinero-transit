@@ -25,7 +25,7 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
 
             var synchronizer = new Synchronizer(tdb, Update, 
                 1,
-                new SynchronizedWindow(1, TimeSpan.FromSeconds(-1), TimeSpan.FromSeconds(2)));
+                new SynchronizedWindow(1, TimeSpan.FromSeconds(-1),TimeSpan.FromSeconds(2), forceUpdate:true ));
             synchronizer.Start();
             Thread.Sleep(4200);
             Assert.True(triggered);

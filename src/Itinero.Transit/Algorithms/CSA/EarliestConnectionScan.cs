@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
-using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
@@ -67,6 +66,8 @@ namespace Itinero.Transit.Algorithms.CSA
                                   Journey<T>.EarliestArrivalScanJourney);
 
                 _s.Add(loc, journey);
+                // Walk away from this departure location, to have some more departure locations
+                WalkAwayFrom(loc);
             }
         }
 
@@ -92,7 +93,7 @@ namespace Itinero.Transit.Algorithms.CSA
             var enumerator = _connections;
 
             enumerator.MoveNext(ScanBeginTime);
-
+            
             var lastDeparture = _lastArrival;
             Journey<T> bestJourney = null;
             while (enumerator.DepartureTime <= lastDeparture)
@@ -124,7 +125,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             // If we en up here, normally we should have found a route.
             bestJourney = bestJourney ?? GetBestJourney();
-            if (bestJourney.Time == Time.MaxValue)
+            if (bestJourney.Time == ulong.MaxValue)
             {
                 // Sadly, we didn't find a route within the required time
                 // This could be intentional, e.g. isochrone searching
@@ -163,6 +164,7 @@ namespace Itinero.Transit.Algorithms.CSA
         {
             var improvedLocations = new HashSet<LocationId>();
             var lastDepartureTime = enumerator.DepartureTime;
+            var hasNext = true;
             do
             {
                 if (IntegrateConnection(enumerator))
@@ -170,11 +172,11 @@ namespace Itinero.Transit.Algorithms.CSA
                     improvedLocations.Add(enumerator.ArrivalStop);
                 }
 
-                if (!enumerator.MoveNext())
-                {
-                    return false;
-                }
-            } while (lastDepartureTime == enumerator.DepartureTime);
+                hasNext = enumerator.MoveNext();
+                
+            } while (
+                hasNext &&
+                lastDepartureTime == enumerator.DepartureTime);
 
 
             // Add footpath transfers to improved stations
@@ -183,7 +185,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 WalkAwayFrom(location);
             }
 
-            return true;
+            return hasNext;
         }
 
 

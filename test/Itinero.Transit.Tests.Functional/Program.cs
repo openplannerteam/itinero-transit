@@ -87,6 +87,7 @@ namespace Itinero.Transit.Tests.Functional
         public static void InternetTests()
         {
             foreach (var r in OsmTest.TestRelations)
+                
             {
                 var t = new OsmTest();
                 t.Run(r);

@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journeys;
+
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 
 namespace Itinero.Transit.Algorithms.CSA
 {
@@ -18,7 +21,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 eas.ScanBeginTime,
                 eas.ScanEndTime);
         }
-        
+
         public static IsochroneFilter<T> AsFilter<T>(this LatestConnectionScan<T> las) where T : IJourneyMetric<T>
         {
             if (las.ScanBeginTime == ulong.MaxValue)
@@ -56,27 +59,37 @@ namespace Itinero.Transit.Algorithms.CSA
 
         public bool CanBeTaken(IConnection c)
         {
-            var stop = _isForward ? c.DepartureStop : c.ArrivalStop;
-
-            _isochrone.TryGetValue(stop, out var journey);
-            if (journey == null)
-            {
-                // The isochrone indicates that this stop can never be reached within the given time
-                return false;
-            }
-
-            var time = journey.Time;
-
             if (_isForward)
             {
-                // Is the moment we can realistically arrive at the station before this connection?
-                // If not, it is no use to take the train    
-                return time <= c.DepartureTime;
+                // The normal, forward case
+
+                // Can we take the train here at c.DepartureTime?
+                // Only if we could already be here according to the isochrone
+                _isochrone.TryGetValue(c.DepartureStop, out var journey);
+                if (journey == null)
+                {
+                    // The isochrone indicates that this stop can never be reached within the given time
+                    return false;
+                }
+
+                // At what time does this journey arrive here?
+                return journey.ArrivalTime() <= c.DepartureTime;
             }
-            // ReSharper disable once RedundantIfElseBlock
             else
             {
-                return time >= c.ArrivalTime;
+                // The reverse logic. The isochrone descripts when we should have departed at a certain location
+                // to still be able to arrive at the given timeframe
+
+                // In other words: is the arrival in 'ArrivalStop' at 'ArrivalTime'
+                // before the departure the journey towards the final destination
+                _isochrone.TryGetValue(c.ArrivalStop, out var journey);
+
+                if (journey == null)
+                {
+                    return false;
+                }
+
+                return journey.Root.DepartureTime() >= c.ArrivalTime;
             }
         }
 

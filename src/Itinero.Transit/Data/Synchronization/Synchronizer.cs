@@ -111,7 +111,7 @@ namespace Itinero.Transit.IO.LC.Synchronization
             _timer.Interval = _clockRate * 1000;
 
 
-            var unixNow = DateTime.Now.ToUnixTime();
+            var unixNow = DateTime.Now.ToUniversalTime().ToUnixTime();
             var date = unixNow - unixNow % _clockRate;
             var triggerDate = date.FromUnixTime();
 

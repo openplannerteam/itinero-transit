@@ -191,8 +191,6 @@ namespace Itinero.Transit
 
             return result;
         }
-
-
     }
 
     public class WithProfile<T> where T : IJourneyMetric<T>
@@ -206,8 +204,8 @@ namespace Itinero.Transit
             StopsReader = StopsReaderAggregator.CreateFrom(tdbs).UseCache();
             ConnectionEnumerator = ConnectionEnumeratorAggregator.CreateFrom(tdbs);
             Profile = profile;
-            
-            
+
+
             var alreadyUsedIds = new HashSet<uint>();
             foreach (var tdb in tdbs)
             {
@@ -215,10 +213,9 @@ namespace Itinero.Transit
                 {
                     throw new ArgumentException("Duplicate identifiers");
                 }
-                
+
                 alreadyUsedIds.Add(tdb.Id);
             }
-            
         }
 
 
@@ -561,19 +558,8 @@ namespace Itinero.Transit
             );
             var las = new LatestConnectionScan<T>(settings);
             las.CalculateJourney();
-
-            var allJourneys = las.Isochrone();
-
-
-            var reversedJourneys = new Dictionary<LocationId, Journey<T>>();
-            foreach (var pair in allJourneys)
-            {
-                // Due to the nature of LAS, there can be no choices in the journeys; reversal will only return one value
-                var prototype = pair.Value.Reversed()[0];
-                reversedJourneys.Add(pair.Key, prototype);
-            }
-
-            return reversedJourneys;
+            UseFilter(las.AsFilter());
+            return las.Isochrone();
         }
 
         internal ScanSettings<T> GetScanSettings()

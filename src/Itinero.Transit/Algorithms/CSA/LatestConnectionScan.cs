@@ -31,7 +31,24 @@ namespace Itinero.Transit.Algorithms.CSA
 
         public ulong ScanEndTime { get; }
 
-        public IReadOnlyDictionary<LocationId, Journey<T>> Isochrone() => _s;
+        /// <summary>
+        /// Returns the isochrone for this location.
+        /// Note that journeys in the isochrone will already be structured in a forward way
+        /// (thus: genesis = root, arrival = leaf)
+        /// </summary>
+        /// <returns></returns>
+        public IReadOnlyDictionary<LocationId, Journey<T>> Isochrone()
+        {
+            var reversedJourneys = new Dictionary<LocationId, Journey<T>>();
+            foreach (var pair in _s)
+            {
+                // Due to the nature of LAS, there can be no choices in the journeys; reversal will only return one value
+                var prototype = pair.Value.Reversed()[0];
+                reversedJourneys.Add(pair.Key, prototype);
+            }
+
+            return reversedJourneys;
+        }
 
 
         /// <summary>
@@ -63,6 +80,8 @@ namespace Itinero.Transit.Algorithms.CSA
                                   settings.MetricFactory,
                                   Journey<T>.LatestArrivalScanJourney);
                 _s.Add(loc, journey);
+                // Allow an walk to end
+                WalkTowards(loc);
             }
         }
 
@@ -157,7 +176,7 @@ namespace Itinero.Transit.Algorithms.CSA
             var improvedLocations = new List<LocationId>();
 
             var lastDepartureTime = enumerator.DepartureTime;
-
+            var hasNext = true;
             do
             {
                 var connection = (IConnection) enumerator;
@@ -168,20 +187,15 @@ namespace Itinero.Transit.Algorithms.CSA
                     improvedLocations.Add(connection.DepartureStop);
                 }
 
-                if (!enumerator.MovePrevious())
-                {
-                    return false;
-                }
-            } while (lastDepartureTime == enumerator.DepartureTime);
-
+                hasNext = enumerator.MovePrevious();
+            } while (hasNext && lastDepartureTime == enumerator.DepartureTime);
 
             foreach (var improvedLocation in improvedLocations)
             {
                 WalkTowards(improvedLocation);
             }
 
-
-            return true;
+            return hasNext;
         }
 
 

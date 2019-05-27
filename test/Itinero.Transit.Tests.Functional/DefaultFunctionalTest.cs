@@ -14,22 +14,18 @@ namespace Itinero.Transit.Tests.Functional
             NoLoops(journey, info.StopsReader);
         }
 
-        public void NoLoops(Journey<T> journey, IStopsReader stops)
-        {
-            var fullJourney = journey;
-
+        public bool ContainsLoop(Journey<T> journey)
+        { 
+            var seen = new HashSet<LocationId>();
             var curStop = journey.Location;
 
-            var seen = new HashSet<LocationId>();
-            
             while (journey != null)
             {
                 if (!curStop.Equals(journey.Location))
                 {
                     if (seen.Contains(journey.Location))
                     {
-                        stops.MoveTo(journey.Location);
-                        throw new Exception($"Already been to this stop: {stops.GlobalId}.\n Journey was "+fullJourney.ToString(100, stops));
+                        return true;
                     }
 
                     seen.Add(curStop);
@@ -38,6 +34,18 @@ namespace Itinero.Transit.Tests.Functional
 
                 journey = journey.PreviousLink;
             }
+
+            return false;   
+        }
+
+        public void NoLoops(Journey<T> journey, IStopsReader stops)
+        {
+            if (ContainsLoop(journey))
+            {
+                throw new Exception("Loop detected: "+journey.ToString(50, stops));
+            }
+
+
         }
     }
 }
