@@ -98,8 +98,8 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
             var frontier = ParetoExtensions.Combine(frontier0, frontier1);
 
-            Assert.Contains(direct, frontier.Frontier);
-            Assert.Contains(transferedFast, frontier.Frontier);
+            Assert.Equal(direct, frontier.Frontier[0]);
+            Assert.Equal(transferedFast, frontier.Frontier[1]);
             Assert.DoesNotContain(transferedSlow, frontier.Frontier);
         }
     }

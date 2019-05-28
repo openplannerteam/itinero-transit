@@ -26,38 +26,6 @@ namespace Itinero.Transit.Algorithms.CSA
 
 
         /// <summary>
-        /// Are the given metric on the current frontier?
-        /// Returns false if they are outperformed   
-        /// </summary>
-        /// <param name="considered">The considered metrics</param>
-        /// <returns></returns>
-        public bool OnTheFrontier(Journey<T> considered)
-        {
-            foreach (var guard in Frontier)
-            {
-                var comparison = Comparator.ADominatesB(guard, considered);
-                if (comparison < 0)
-                {
-                    // The new journey didn't make the cut
-                    return false;
-                }
-
-                //  if (comparison == 1)
-                // The new journey defeated the guard
-                // If we were to add these metric to the frontier, the guard would be removed
-
-                //if (comparison == int.MaxValue)
-                // Both are on the pareto front
-
-                //if (comparison == 0)
-                // Both are equally good
-                // As both might leave at different hours, we add the new journey as well
-            }
-
-            return true;
-        }
-
-        /// <summary>
         /// If the given journey is pareto-optimal in respect to the current frontier,
         /// the journey is added.
         /// If this journey outperforms some other point on the frontier, that point is removed
@@ -85,8 +53,8 @@ namespace Itinero.Transit.Algorithms.CSA
                         // The new journey defeated the guard
                         Frontier.RemoveAt(i);
                         i--;
-                        break;
-                    case 0:
+                        continue; // We continue the loop to remove other, possible sub-optimal entries further ahead in the list
+                    case 0: // Both have exactly the same stats...
                         // Both are equally good
                         // They might be the same. We don't care about duplicates, so...
                         if (considered.Equals(guard))
@@ -105,14 +73,20 @@ namespace Itinero.Transit.Algorithms.CSA
                         Frontier[i] = new Journey<T>(guard, considered);
 
                         return true;
+                    case int.MaxValue: // Both are better then the other on some different statistic
+                        // So: 1) The guard can not eliminate the candidate
+                        // 2) The candidate can not eliminate the guard 
+                        // We just have to continue scanning - if no guard defeats the candidate, it owned its place
+                        continue;
+                    default:
+                        throw new Exception("Comparison of two journeys in metric did not return -1,1 or 0 but " +
+                                            duel);
                 }
             }
 
-            /* TODO as soon as we know that we can add the journey (e.g. by defeating or being just as good as another journey)
-              we only need to check the remaining frontier to remove now obsolete values
-            */
+
             //if (comparison == int.MaxValue)
-            // Both are on the pareto front
+            // The new journey is on the pareto front and can be added
             Frontier.Add(considered);
             return true;
         }
@@ -127,7 +101,6 @@ namespace Itinero.Transit.Algorithms.CSA
                 AddToFrontier(journey);
             }
         }
-
 
 
         public override string ToString()

@@ -398,7 +398,6 @@ namespace Itinero.Transit.Journeys
 
         public override string ToString()
         {
-            return "ToString disabled"; 
             return ToString(75);
         }
 

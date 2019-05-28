@@ -7,6 +7,11 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 {
     public class ParetoFrontierTest
     {
+        
+        
+        
+        
+        
         [Fact]
         public void SimpleFrontierTest()
         {
