@@ -176,7 +176,7 @@ namespace Itinero.Transit.Algorithms.CSA
             var improvedLocations = new List<LocationId>();
 
             var lastDepartureTime = enumerator.DepartureTime;
-            var hasNext = true;
+            bool hasNext;
             do
             {
                 var connection = (IConnection) enumerator;

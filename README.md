@@ -30,6 +30,7 @@ A transit db can request new data from its connection source and a connection so
 
 
 RM:
+Fix tests
 Fix bugs
 Toevoegen API voor multiple departure/arrival points
 Toevoegen API voor reverse dijkstra PCS

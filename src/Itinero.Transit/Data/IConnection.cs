@@ -93,15 +93,6 @@ namespace Itinero.Transit.Data
 
     public class SimpleConnection : IConnection
     {
-        public SimpleConnection(IConnection clone)
-            : this(clone.Id,
-                clone.GlobalId,
-                clone.DepartureStop, clone.ArrivalStop, clone.DepartureTime, clone.TravelTime,
-                clone.ArrivalDelay, clone.DepartureDelay, clone.Mode, clone.TripId)
-        {
-        }
-
-
         public SimpleConnection(
             uint id, string globalId,
             LocationId departureStop,

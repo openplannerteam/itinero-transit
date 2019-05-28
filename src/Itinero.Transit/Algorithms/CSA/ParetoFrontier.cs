@@ -129,6 +129,7 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
+
         public override string ToString()
         {
             var result = $"Pareto frontier with {Frontier.Count} entries";

@@ -20,7 +20,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <param name="transferPolicy"></param>
         /// <typeparam name="T"></typeparam>
         ///  <returns></returns>
-        public static ParetoFrontier<T> ExtendFrontier<T>(this ParetoFrontier<T> pareto,
+        public static ParetoFrontier<T> ExtendFrontierBackwards<T>(this ParetoFrontier<T> pareto,
             IStopsReader stopsReader,
             IConnection c, IOtherModeGenerator transferPolicy) where T : IJourneyMetric<T>
         {
@@ -56,9 +56,6 @@ namespace Itinero.Transit.Algorithms.CSA
                     newFrontier.AddToFrontier(extendedJourney);
                 }
 
-                // TODO optimize this
-                // At a certain point, all additions will fail: the traveltime will grow to long and the journey won't have something extra to offer
-                // We must be able to detect this and break the loop
             }
 
             return newFrontier;

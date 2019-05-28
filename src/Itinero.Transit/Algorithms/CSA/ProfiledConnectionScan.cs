@@ -413,7 +413,7 @@ namespace Itinero.Transit.Algorithms.CSA
             // We get all possible, pareto optimal journeys departing here...
             var pareto = _stationJourneys[c.ArrivalStop];
             // .. and we extend them with c. What is non-dominated, we return
-            return pareto.ExtendFrontier(_stopsReader, c, _transferPolicy);
+            return pareto.ExtendFrontierBackwards(_stopsReader, c, _transferPolicy);
         }
 
 
