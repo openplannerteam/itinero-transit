@@ -251,11 +251,33 @@ namespace Itinero.Transit
                 stop);
         }
 
+        /// <summary>
+        /// In some cases the traveller has multiple options to depart or arrive,
+        /// and only wants to know the fastest route between any two of them.
+        ///
+        /// This constructor allows to perform such queries.
+        ///
+        /// E.g. Departures are {A, B, C}, arrivals are {X, Y, Z}.
+        /// The earliest arrival scan at a certain time could be for example some journey from A to Y,
+        /// whereas the 'AllJourneys' (profiled search) could give one option C to X and another option B to Y, ignoring A and Z altogether.
+        /// 
+        /// </summary>
         public IWithSingleLocation<T> SelectSingleStop(IEnumerable<LocationId> stop)
         {
             return SelectSingleStop(AddNullJourneys(stop));
         }
 
+        /// <summary>
+        /// In some cases the traveller has multiple options to depart or arrive,
+        /// and only wants to know the fastest route between any two of them.
+        ///
+        /// This constructor allows to perform such queries.
+        ///
+        /// E.g. Departures are {A, B, C}, arrivals are {X, Y, Z}.
+        /// The earliest arrival scan at a certain time could be for example some journey from A to Y,
+        /// whereas the 'AllJourneys' (profiled search) could give one option C to X and another option B to Y, ignoring A and Z altogether.
+        /// 
+        /// </summary>
         public IWithSingleLocation<T> SelectSingleStop(IEnumerable<string> stop)
         {
             return SelectSingleStop(
@@ -263,6 +285,17 @@ namespace Itinero.Transit
             );
         }
 
+        /// <summary>
+        /// In some cases the traveller has multiple options to depart or arrive,
+        /// and only wants to know the fastest route between any two of them.
+        ///
+        /// This constructor allows to perform such queries.
+        ///
+        /// E.g. Departures are {A, B, C}, arrivals are {X, Y, Z}.
+        /// The earliest arrival scan at a certain time could be for example some journey from A to Y,
+        /// whereas the 'AllJourneys' (profiled search) could give one option C to X and another option B to Y, ignoring A and Z altogether.
+        /// 
+        /// </summary>
         public IWithSingleLocation<T> SelectSingleStop(IEnumerable<IStop> stop)
         {
             return SelectSingleStop(
@@ -333,6 +366,7 @@ namespace Itinero.Transit
                 StopsReader.FindStop(to, $"Arrival stop {to} was not found")
             );
         }
+
 
         private static List<(LocationId, Journey<T>)> AddNullJourneys(IEnumerable<LocationId> locs)
         {
@@ -694,6 +728,32 @@ namespace Itinero.Transit
         }
 
 
+        /// <summary>
+        /// Calculates all journeys which are optimal for their given timeframe and which go to the destination stop.
+        /// </summary>
+        public Dictionary<LocationId, List<Journey<T>>> AllJourneysProfileTo()
+        {
+            CheckAll();
+            var settings = new ScanSettings<T>(
+                StopsReader,
+                ConnectionEnumerator,
+                Start,
+                End,
+                Profile.MetricFactory,
+                Profile.ProfileComparator,
+                Profile.InternalTransferGenerator,
+                Profile.WalksGenerator,
+                new List<(LocationId, Journey<T>)>(), // We don't pass any departure stop, as we want them all
+                To
+            )
+            {
+                Filter = _filter
+            };
+            var pcs = new ProfiledConnectionScan<T>(settings);
+            pcs.CalculateJourneys();
+            return pcs.Isochrone();
+        }
+        
         /// <summary>
         /// Use the given filter.
         /// Note that some methods (Isochrone, EAS) might install a filter automatically too

@@ -480,5 +480,25 @@ namespace Itinero.Transit.Algorithms.CSA
 
             return frontier;
         }
+
+        public Dictionary<LocationId, List<Journey<T>>> Isochrone()
+        {
+            var isochrone = new Dictionary<LocationId, List<Journey<T>>>();
+
+            foreach (var option in _stationJourneys)
+            {
+                var location = option.Key;
+                var frontier = option.Value;
+                
+                var journeys = new List<Journey<T>>();
+
+                foreach (var j in frontier.Frontier)
+                {
+                    j.ReverseAndAddTo(journeys);
+                }
+                isochrone.Add(location, journeys);
+            }
+            return isochrone;
+        }
     }
 }
