@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Reminiscence;
 using Reminiscence.Arrays;
 using Reminiscence.Indexes;
 using Reminiscence.IO;

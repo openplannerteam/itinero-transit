@@ -9,17 +9,14 @@ namespace Itinero.Transit.Tests.Algorithm.Data
     {
         private void Test(IStop source)
         {
-            source.Attributes.TryGetValue("name", out _);
+            source.Attributes.TryGetValue("name", out var name);
             foreach (var attr in source.Attributes)
             {
-                if (!attr.Key.StartsWith("name:")) continue;
-                
-                
-                var v = attr.Value;
-                var k = attr.Key;
-                Assert.StartsWith("name:", k);
-                Assert.NotNull(v);
-                Assert.NotEmpty(v);
+                if (attr.Key.StartsWith("name:"))
+                {
+                    var v = attr.Value;
+                    var k = attr.Key;
+                }
             }
         }
 
@@ -29,7 +26,7 @@ namespace Itinero.Transit.Tests.Algorithm.Data
             var tdb = new TransitDb();
             var wr = tdb.GetWriter();
 
-            var a = wr.AddOrUpdateStop("a", 1, 1);
+            var a = wr.AddOrUpdateStop("a", 1, 1, null);
             var b = wr.AddOrUpdateStop("b", 1, 1, new List<Attribute>());
             var c = wr.AddOrUpdateStop("c", 1, 1, new List<Attribute>
             {

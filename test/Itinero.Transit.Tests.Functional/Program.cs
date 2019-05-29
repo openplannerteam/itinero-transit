@@ -29,11 +29,9 @@ namespace Itinero.Transit.Tests.Functional
         {
             EnableLogging();
 
-            // ReSharper disable once RedundantAssignment
             var testAll = args.Length > 0 && args[0].Equals("--full-test-suite");
             testAll = true;
 
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (testAll)
             {
                 // These are all the tests, and will be run in full on the build server
@@ -56,6 +54,9 @@ namespace Itinero.Transit.Tests.Functional
 
         private static void LocalTests()
         {
+            // new ConnectionEnumeratorAggregatorTest().Run((
+            //     TransitDb.ReadFrom(TestAllAlgorithms.testDbs0429),
+            //     new DateTime(2019, 04, 29)));
 
             var nmbs = TransitDb.ReadFrom(TestAllAlgorithms._nmbs, 0);
             var wvl = TransitDb.ReadFrom(TestAllAlgorithms._delijnWvl, 1);

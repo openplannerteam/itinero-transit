@@ -17,10 +17,6 @@
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/AutoDetectedNamingRules/=StaticReadonly/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="AaBb" /&gt;</s:String>
 	
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/AutoDetectedNamingRules/=TypesAndNamespaces/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="AaBb" /&gt;</s:String>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=04512b92_002Df3bb_002D42c7_002D8880_002D673e01253c69_0023Itinero_002ETransit_002ETests_002EFunctional/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=4b1ccedd_002Dbef2_002D47ad_002Da167_002Df2f43b51aec8_0023Itinero_002ETransit_002EIO_002EOSM/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=782e9e90_002D8577_002D4cc5_002D86c7_002D26abbf42ba76_0023Itinero_002ETransit_002EIO_002ELC/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=a931125d_002Dd9b4_002D4ad2_002Dbeed_002D6a61ffcae937_0023Itinero_002ETransit_002ETests/@EntryIndexedValue">True</s:Boolean>
 	
 	
 	

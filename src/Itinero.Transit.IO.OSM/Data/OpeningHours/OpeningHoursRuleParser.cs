@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.Contracts;
 
 namespace Itinero.Transit.Data.OpeningHoursRDParser
@@ -14,17 +15,17 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
 
 
         [Pure]
-        public static RDParser<ITimedElement> Date()
+        public static RDParser<TimedElement> Date()
         {
             return
                 // THe very good 'Sep 01'
-                RDParser<ITimedElement>.X(
+                RDParser<TimedElement>.X(
                     (m, d) => TimedElements.Date(m, (int) d),
                     Month(), DayNum()
                 ) 
                 |
                 // The somewhat naughthy 'Sep Su [1]' and friends 'Oct Sa [-1]', 'Nov Mo [2,4]'
-                RDParser<ITimedElement>.X(
+                RDParser<TimedElement>.X(
                     (m, wd) => TimedElements.MonthOfYear(m).Chain(
                         new DayOfWeekEvent(wd)),
                     Month(), Wday())
@@ -39,7 +40,7 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
         /// </summary>
         /// <returns></returns>
         [Pure]
-        public static RDParser<ITimedElement> VariableDate()
+        public static RDParser<TimedElement> VariableDate()
         {
             return LitCI("easter").Map(
                 _ => TimedElements.Easter()

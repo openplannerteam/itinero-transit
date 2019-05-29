@@ -28,9 +28,9 @@ namespace Itinero.Transit.Data
 
         private readonly AttributesIndex _attributes;
         private uint _nextId;
-        private readonly uint _dbId;
+        private uint _dbId;
 
-        /// <summary>d
+        /// <summary>
         /// Creates a new trips database.
         /// </summary>
         internal TripsDb(uint dbId)
