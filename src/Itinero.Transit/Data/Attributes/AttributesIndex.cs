@@ -5,6 +5,7 @@ using Reminiscence.Arrays;
 using Reminiscence.Indexes;
 using Reminiscence.IO;
 using Reminiscence.IO.Streams;
+using Itinero.Attributes;
 
 namespace Itinero.Transit.Data.Attributes
 {
