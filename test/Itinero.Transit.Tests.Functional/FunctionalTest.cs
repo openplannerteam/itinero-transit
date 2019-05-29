@@ -16,7 +16,7 @@ namespace Itinero.Transit.Tests.Functional
         /// <summary>
         /// Gets the name of this test.
         /// </summary>
-        protected virtual string Name => GetType().Name;
+        private string Name => GetType().Name;
 
         /// <summary>
         /// Gets or sets the track performance track.
