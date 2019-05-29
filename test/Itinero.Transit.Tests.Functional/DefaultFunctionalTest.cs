@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using GeoAPI.Geometries;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journeys;
 

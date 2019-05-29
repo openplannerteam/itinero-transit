@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 
 namespace Itinero.Transit.IO.LC.Json
@@ -18,15 +17,12 @@ namespace Itinero.Transit.IO.LC.Json
                 return "";
             }
 
-            char c = '\0';
-            int i;
-            int len = s.Length;
+            var len = s.Length;
             var sb = new StringBuilder(len + 4);
-            String t;
 
-            for (i = 0; i < len; i += 1)
+            for (var i = 0; i < len; i += 1)
             {
-                c = s[i];
+                var c = s[i];
                 switch (c)
                 {
                     case '\\':
@@ -56,7 +52,7 @@ namespace Itinero.Transit.IO.LC.Json
                     default:
                         if (c < ' ')
                         {
-                            t = "000" + string.Format("X", c);
+                            var t = "000" + string.Format("X", c);
                             sb.Append("\\u" + t.Substring(t.Length - 4));
                         }
                         else {

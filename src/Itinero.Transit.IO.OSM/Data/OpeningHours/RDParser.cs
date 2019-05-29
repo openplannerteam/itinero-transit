@@ -312,7 +312,7 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
 
         private RDParser<List<T>> Recurse(List<T> builtTillNow)
         {
-            return this.Bind(t =>
+            return Bind(t =>
                    {
                        var l = new List<T>();
                        l.AddRange(builtTillNow);
@@ -375,7 +375,7 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
         [Pure]
         public RDParser<T> Assert(Predicate<T> predicate)
         {
-            return this.Bind(t => predicate(t) ? new RDParser<T>(t) : DefaultRdParsers.Fail<T>()
+            return Bind(t => predicate(t) ? new RDParser<T>(t) : DefaultRdParsers.Fail<T>()
             );
         }
     }

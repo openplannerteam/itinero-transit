@@ -1259,7 +1259,13 @@ namespace Itinero.Transit.Data
                 {
                     if (!MovePreviousIgnoreDate(dateTime))
                     {
-                        // move to next date. 
+                        if (_date <= _db._earliestDate)
+                        {
+                            // In the very corner case that we are on the start-of epoch day
+                            return false;
+                        }
+                        
+                        // move to previous date. 
                         _date = (uint) DateTimeExtensions.RemoveDay(_date);
                         if (_date < _db._earliestDate)
                         {
@@ -1319,7 +1325,7 @@ namespace Itinero.Transit.Data
                     if (_windowPosition <= 0 ||
                         _windowPointer == uint.MaxValue)
                     {
-                        // move to next window.
+                        // move to previous window.
                         var w = (long) _window - 1;
                         _window = uint.MaxValue;
                         for (; w >= 0; w--)

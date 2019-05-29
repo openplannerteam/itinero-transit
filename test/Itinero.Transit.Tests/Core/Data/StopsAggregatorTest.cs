@@ -1,8 +1,8 @@
 using System.Linq;
-using Itinero.Attributes;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Aggregators;
 using Xunit;
+// ReSharper disable RedundantArgumentDefaultValue
 
 namespace Itinero.Transit.Tests.Algorithm.Data
 {
