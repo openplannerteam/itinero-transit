@@ -15,7 +15,7 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
     /// To make working with the timed elements practical, they all offer a method to determine the next and previous trigger dates, allowing to enumerate
     /// 
     /// </summary>
-    public interface TimedElement
+    public interface ITimedElement
     {
         DateTime Next(DateTime dt);
         DateTime Prev(DateTime dt);
@@ -23,43 +23,43 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
 
     public static class TimedElements
     {
-        public static TimedElement MomentOfDay(int hours, int minutes)
+        public static ITimedElement MomentOfDay(int hours, int minutes)
         {
             return
                 new HourOfDayEvent(hours).Chain(new MinuteOfDayEvent(minutes));
         }
 
-        public static TimedElement MonthOfYear(int month)
+        public static ITimedElement MonthOfYear(int month)
         {
             return new MonthOfYearEvent(month);
         }
 
-        public static TimedElement Offset(this TimedElement el, TimeSpan offset)
+        public static ITimedElement Offset(this ITimedElement el, TimeSpan offset)
         {
             return new TimedOffset(el, offset);
         }
 
-        public static TimedElement Easter()
+        public static ITimedElement Easter()
         {
             return new Easter();
         }
 
-        public static TimedElement Chain(this TimedElement biggest, TimedElement el)
+        public static ITimedElement Chain(this ITimedElement biggest, ITimedElement el)
         {
             return new Chain(biggest, el);
         }
 
-        public static TimedElement DayOfMonth(int d)
+        public static ITimedElement DayOfMonth(int d)
         {
             return new DayOfMonthEvent(d);
         }
 
-        public static TimedElement DayOfWeek(int d)
+        public static ITimedElement DayOfWeek(int d)
         {
             return new DayOfWeekEvent(d);
         }
 
-        public static TimedElement Date(int m, int d)
+        public static ITimedElement Date(int m, int d)
         {
             return TimedElements.MonthOfYear(m)
                 .Chain(TimedElements.DayOfMonth(d));
@@ -67,12 +67,12 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
     }
 
 
-    public class TimedOffset : TimedElement
+    public class TimedOffset : ITimedElement
     {
-        private readonly TimedElement _timedElementImplementation;
+        private readonly ITimedElement _timedElementImplementation;
         private readonly TimeSpan _offset;
 
-        public TimedOffset(TimedElement timedElementImplementation, TimeSpan offset)
+        public TimedOffset(ITimedElement timedElementImplementation, TimeSpan offset)
         {
             _timedElementImplementation = timedElementImplementation;
             _offset = offset;
@@ -90,12 +90,12 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
         }
     }
 
-    public class Skip : TimedElement
+    public class Skip : ITimedElement
     {
-        private readonly TimedElement _bigTick, _smallTick;
+        private readonly ITimedElement _bigTick, _smallTick;
         private readonly int _skip;
 
-        public Skip(TimedElement bigTick, TimedElement smallTick, int skip)
+        public Skip(ITimedElement bigTick, ITimedElement smallTick, int skip)
         {
             _bigTick = bigTick;
             _smallTick = smallTick;
@@ -126,10 +126,10 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
         }
     }
 
-    public class Chain : TimedElement
+    public class Chain : ITimedElement
     {
-        private readonly TimedElement _a;
-        private readonly TimedElement _b;
+        private readonly ITimedElement _a;
+        private readonly ITimedElement _b;
 
         /// <summary>
         /// The cycle of 'a' should encompass at least the cycle of 'b'
@@ -137,7 +137,7 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
-        public Chain(TimedElement a, TimedElement b)
+        public Chain(ITimedElement a, ITimedElement b)
         {
             _a = a;
             _b = b;
@@ -169,7 +169,7 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
         }
     }
 
-    public class WeekOfYear : TimedElement
+    public class WeekOfYear : ITimedElement
     {
         private readonly int _week;
 
@@ -226,7 +226,7 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
         }
     }
 
-    public class MonthOfYearEvent : TimedElement
+    public class MonthOfYearEvent : ITimedElement
     {
         private readonly int _month;
 
@@ -264,7 +264,7 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
         }
     }
 
-    public class DayOfMonthEvent : TimedElement
+    public class DayOfMonthEvent : ITimedElement
     {
         private readonly int _day;
 
@@ -298,7 +298,7 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
     }
 
 
-    public class HourOfDayEvent : TimedElement
+    public class HourOfDayEvent : ITimedElement
     {
         private readonly int _hour;
 
@@ -331,7 +331,7 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
         }
     }
 
-    public class DayOfWeekEvent : TimedElement
+    public class DayOfWeekEvent : ITimedElement
     {
         private readonly int _weekday;
 
@@ -366,7 +366,7 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
         }
     }
 
-    public class MinuteOfDayEvent : TimedElement
+    public class MinuteOfDayEvent : ITimedElement
     {
         private readonly int _minute;
 
@@ -399,7 +399,7 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
         }
     }
 
-    public class Easter : TimedElement
+    public class Easter : ITimedElement
     {
         private static DateTime EasterOfYear(int year)
         {
