@@ -91,7 +91,7 @@ namespace Itinero.Transit.Data
                 // This is a public transport object - there might be a stop position here
 
                 double lat, lon;
-                var id = "";
+                string id;
 
 
                 switch (el.Type)

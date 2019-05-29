@@ -61,8 +61,8 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
 
         public static ITimedElement Date(int m, int d)
         {
-            return TimedElements.MonthOfYear(m)
-                .Chain(TimedElements.DayOfMonth(d));
+            return MonthOfYear(m)
+                .Chain(DayOfMonth(d));
         }
     }
 
@@ -404,17 +404,16 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
         private static DateTime EasterOfYear(int year)
         {
             // https://stackoverflow.com/questions/2510383/how-can-i-calculate-what-date-good-friday-falls-on-given-a-year
-            var day = 0;
-            var month = 0;
 
             var g = year % 19;
             var c = year / 100;
             var h = (c - c / 4 - (8 * c + 13) / 25 + 19 * g + 15) % 30;
             var i = h - h / 28 * (1 - h / 28 * (29 / (h + 1)) * ((21 - g) / 11));
 
-            day = i - ((year + year / 4 + i + 2 - c + c / 4) % 7) + 28;
-            month = 3;
+            var day = i - ((year + year / 4 + i + 2 - c + c / 4) % 7) + 28;
+            var month = 3;
 
+            // ReSharper disable once InvertIf
             if (day > 31)
             {
                 month++;
