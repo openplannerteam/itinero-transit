@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 namespace Itinero.Transit.Algorithms.Search
 {
     internal static class StopSearch
@@ -74,7 +76,7 @@ namespace Itinero.Transit.Algorithms.Search
         /// Returns an estimate of the distance between the two given coordinates.
         /// </summary>
         /// <remarks>Accuracy decreases with distance.</remarks>
-        private static double DistanceEstimateInMeter(double longitude1, double latitude1, double longitude2,
+        internal static double DistanceEstimateInMeter(double longitude1, double latitude1, double longitude2,
             double latitude2)
         {
             var lat1Rad = (latitude1 / 180d) * Math.PI;

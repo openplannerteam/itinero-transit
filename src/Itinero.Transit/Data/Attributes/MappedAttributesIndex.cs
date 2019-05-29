@@ -2,19 +2,22 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Itinero.Attributes;
+using Itinero.Transit.Algorithms.Sorting;
 using Reminiscence.Arrays;
 using Reminiscence.IO;
 using Reminiscence.IO.Streams;
 
 namespace Itinero.Transit.Data.Attributes
 {
+    /// <inheritdoc />
     /// <summary>
     /// A collection that contains meta-data per unique id, can be used to map meta-data to vertices or edges by their id's.
     /// </summary>
     public class MappedAttributesIndex : IEnumerable<uint>
     {
-        private const int _BLOCK_SIZE = 1024;
-        private const uint _NO_DATA = uint.MaxValue;
+        private const int _blockSize = 1024;
+        private const uint _noData = uint.MaxValue;
         private readonly ArrayBase<uint> _data; // holds pairs of id's and a pointer to the attribute collection for that id.
         private readonly AttributesIndex _attributes;
 
@@ -30,7 +33,7 @@ namespace Itinero.Transit.Data.Attributes
 
             for (var p = 0; p < _data.Length; p++)
             {
-                _data[p] = _NO_DATA;
+                _data[p] = _noData;
             }
         }
 
@@ -47,7 +50,7 @@ namespace Itinero.Transit.Data.Attributes
 
             for (var p = 0; p < _data.Length; p++)
             {
-                _data[p] = _NO_DATA;
+                _data[p] = _noData;
             }
         }
         
@@ -74,7 +77,7 @@ namespace Itinero.Transit.Data.Attributes
             get
             {
                 var p = Search(id, out _);
-                if (p == _NO_DATA)
+                if (p == _noData)
                 {
                     return null;
                 }
@@ -83,7 +86,7 @@ namespace Itinero.Transit.Data.Attributes
             set
             {
                 var p = Search(id, out var idx);
-                if (p == _NO_DATA)
+                if (p == _noData)
                 {
                     Add(id, _attributes.Add(value));
                     return;
@@ -124,7 +127,7 @@ namespace Itinero.Transit.Data.Attributes
         public void Optimize()
         {
             // sort array.
-            Algorithms.Sorting.QuickSort.Sort(i => _data[i * 2], (i, j) =>
+            QuickSort.Sort(i => _data[i * 2], (i, j) =>
             {
                 var t1 = _data[i * 2 + 0];
                 var t2 = _data[i * 2 + 1];
@@ -150,7 +153,7 @@ namespace Itinero.Transit.Data.Attributes
             _reverseIndex = new Dictionary<uint, int>();
             for (var p = 0; p < _data.Length; p += 2)
             {
-                if (_data[p + 0] == _NO_DATA)
+                if (_data[p + 0] == _noData)
                 {
                     continue;
                 }
@@ -275,14 +278,14 @@ namespace Itinero.Transit.Data.Attributes
                 {
                     return _data[idx + 1];
                 }
-                return _NO_DATA;
+                return _noData;
             }
 
             if (_data == null ||
                 _data.Length == 0)
             {
                 idx = -1;
-                return _NO_DATA;
+                return _noData;
             }
 
             // do binary search.
@@ -309,14 +312,6 @@ namespace Itinero.Transit.Data.Attributes
 
                 if (right - left == 1)
                 {
-                    if (_data[left * 2] == id)
-                    {
-                        right = left;
-                    }
-                    else if (_data[right * 2] == id)
-                    {
-                        left = right;
-                    }
                     break; // id doesn't exist.
                 }
                 if (id < middleData)
@@ -335,7 +330,7 @@ namespace Itinero.Transit.Data.Attributes
             }
 
             idx = -1;
-            return _NO_DATA;
+            return _noData;
         }
 
         /// <summary>
@@ -352,7 +347,7 @@ namespace Itinero.Transit.Data.Attributes
             {
                 if (_data.Length <= _pointer + 2)
                 {
-                    _data.Resize(_data.Length + _BLOCK_SIZE);
+                    _data.Resize(_data.Length + _blockSize);
                 }
 
                 _reverseIndex[id] = _pointer + 0;

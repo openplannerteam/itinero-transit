@@ -33,7 +33,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var atDestA =
                 atLocA.ChainForward(new SimpleConnection(2, "2", locA, locDest, 10, 10, 0, 0, 0, new TripId(0, 2)));
             var atDestB =
-                atLocA.ChainForward(new SimpleConnection(3, "3", locA, locDest, 10, 10, 0, 0, 0, new TripId(0, 3)));
+                atLocB.ChainForward(new SimpleConnection(3, "3", locA, locDest, 10, 10, 0, 0, 0, new TripId(0, 3)));
 
             var frontier = new ParetoFrontier<TransferMetric>(TransferMetric.ProfileTransferCompare);
 

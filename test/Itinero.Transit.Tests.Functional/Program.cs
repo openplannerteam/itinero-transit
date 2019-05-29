@@ -30,7 +30,7 @@ namespace Itinero.Transit.Tests.Functional
             EnableLogging();
 
             var testAll = args.Length > 0 && args[0].Equals("--full-test-suite");
-            // testAll = true;
+            testAll = true;
 
             if (testAll)
             {
@@ -44,12 +44,11 @@ namespace Itinero.Transit.Tests.Functional
             }
 
             var date = new DateTime(2019, 05, 22, 0, 0, 0, DateTimeKind.Utc);
-            var tdb = TransitDb.ReadFrom(new [] { TestAllAlgorithms._nmbs, TestAllAlgorithms._delijnAnt });
+            var tdb = TransitDb.ReadFrom(new[] {TestAllAlgorithms._nmbs, TestAllAlgorithms._delijnAnt});
             var input = tdb.SelectProfile(new DefaultProfile())
                 .SelectStops(TestAllAlgorithms.Moereind, TestAllAlgorithms.Antwerpen)
                 .SelectTimeFrame(date.AddHours(10), date.AddHours(18));
             new ProfiledConnectionScanTest().Run(input);
-            
         }
 
 
@@ -87,7 +86,7 @@ namespace Itinero.Transit.Tests.Functional
         public static void InternetTests()
         {
             foreach (var r in OsmTest.TestRelations)
-                
+
             {
                 var t = new OsmTest();
                 t.Run(r);

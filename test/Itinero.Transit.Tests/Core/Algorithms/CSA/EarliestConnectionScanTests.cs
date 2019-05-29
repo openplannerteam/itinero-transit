@@ -11,7 +11,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
     public class EarliestConnectionScanTests
     {
         [Fact]
-        public void EarliestConnectionScan_WithBeginWalk()
+        public void WithBeginWalk()
         {
             // build a one-connection db.
             var transitDb = new TransitDb();
@@ -49,7 +49,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
 
         [Fact]
-        public void EarliestConnectionScan_WithEndWalk()
+        public void WithEndWalk()
         {
             // build a one-connection db.
             var transitDb = new TransitDb();
@@ -84,7 +84,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             Assert.NotNull(journey);
         }
         [Fact]
-        public void EarliestConnectionScan_WithStartEndWalk()
+        public void WithStartEndWalk()
         {
             // build a one-connection db.
             var transitDb = new TransitDb();
@@ -198,7 +198,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
 
         [Fact]
-        public void EarliestConnectionScan_WithIntermediateWalk()
+        public void WithIntermediateWalk()
         {
             // build a one-connection db.
             var transitDb = new TransitDb();
@@ -241,7 +241,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         }
 
         [Fact]
-        public void EarliestConnectionScan_ShouldFindOneConnectionJourney()
+        public void ShouldFindOneConnectionJourney()
         {
             // build a one-connection db.
             var transitDb = new TransitDb();
@@ -277,7 +277,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         }
 
         [Fact]
-        public void EarliestConnectionScan_ShouldFindOneConnectionJourneyWithArrivalTravelTime()
+        public void ShouldFindOneConnectionJourneyWithArrivalTravelTime()
         {
             // build a one-connection db.
             var transitDb = new TransitDb();
@@ -330,7 +330,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
         }
 
         [Fact]
-        public void EarliestConnectionScan_ShouldFindOneConnectionJourneyWithDepartureTravelTime()
+        public void ShouldFindOneConnectionJourneyWithDepartureTravelTime()
         {
             // build a one-connection db.
             var transitDb = new TransitDb();

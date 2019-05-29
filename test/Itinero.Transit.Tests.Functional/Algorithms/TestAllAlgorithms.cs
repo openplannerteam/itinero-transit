@@ -120,7 +120,6 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
                 if (!tdbCache.ContainsKey(path))
                 {
                     tdbCache[path] = TransitDb.ReadFrom(path, i);
-                    tdbCache[path].Latest.CheckTripContinuity(date, date.AddDays(1));
                 }
 
                 tdbs.Add(tdbCache[path].Latest);
