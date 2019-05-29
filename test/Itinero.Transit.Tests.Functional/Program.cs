@@ -31,7 +31,7 @@ namespace Itinero.Transit.Tests.Functional
 
             // ReSharper disable once RedundantAssignment
             var testAll = args.Length > 0 && args[0].Equals("--full-test-suite");
-            testAll = false;
+            testAll = true;
 
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (testAll)
