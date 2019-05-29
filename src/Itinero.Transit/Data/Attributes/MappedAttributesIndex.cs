@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using Itinero.Attributes;
 using Itinero.Transit.Algorithms.Sorting;
 using Reminiscence.Arrays;
 using Reminiscence.IO;
