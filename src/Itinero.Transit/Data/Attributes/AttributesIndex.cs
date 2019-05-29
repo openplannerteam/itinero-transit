@@ -10,7 +10,7 @@ using Reminiscence.IO.Streams;
 namespace Itinero.Transit.Data.Attributes
 {
     /// <summary>
-    /// An index for attribute collections.
+    /// An index for attribute collwections.
     /// </summary>
     public class AttributesIndex
     {

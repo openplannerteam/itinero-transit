@@ -1259,6 +1259,11 @@ namespace Itinero.Transit.Data
                 {
                     if (!MovePreviousIgnoreDate(dateTime))
                     {
+                        if (_date <= _db._earliestDate)
+                        {
+                            // Already in front of the earliest date, we can already skip
+                            return false;
+                        }
                         // move to next date. 
                         _date = (uint) DateTimeExtensions.RemoveDay(_date);
                         if (_date < _db._earliestDate)
