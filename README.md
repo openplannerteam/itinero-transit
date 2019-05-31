@@ -28,15 +28,3 @@ A high-level overview of how these things tie together:
 A transit db can request new data from its connection source and a connection source can notify the transit db if it there is new data available.
 
 
-
-RM:
-Fix tests
-Fix bugs
-Toevoegen API voor reverse dijkstra PCS
-
-
-Add One-To-Many routing to IOtherMode
-How to handle floating locations (Lat/lon) with stopsDB
-LocationInRangeCaching => doet niet aan routeplanning
-Add hard cap on number of transfers
-Do performance optimizations
