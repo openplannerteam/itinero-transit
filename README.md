@@ -34,5 +34,8 @@ Fix tests
 Fix bugs
 Toevoegen API voor reverse dijkstra PCS
 
+
+Add One-To-Many routing to IOtherMode
+LocationInRangeCaching => doet niet aan routeplanning
 Add hard cap on number of transfers
 Do performance optimizations

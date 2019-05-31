@@ -30,7 +30,7 @@ namespace Itinero.Transit.Tests.Functional
             EnableLogging();
 
             var testAll = args.Length > 0 && args[0].Equals("--full-test-suite");
-            testAll = false;
+            testAll = true;
 
             if (testAll)
             {
