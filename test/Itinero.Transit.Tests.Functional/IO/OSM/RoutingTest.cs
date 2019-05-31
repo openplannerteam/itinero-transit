@@ -21,7 +21,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
                 new OsmTransferGenerator(null), // This will probably change
                 TransferMetric.Factory, TransferMetric.ProfileTransferCompare
                 );
-            
+
             tdb.SelectProfile(profile)
                 .SelectStops(TestAllAlgorithms.Brugge, TestAllAlgorithms.Vielsalm);
             

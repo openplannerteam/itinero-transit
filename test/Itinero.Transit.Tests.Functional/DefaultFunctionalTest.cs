@@ -42,7 +42,7 @@ namespace Itinero.Transit.Tests.Functional
         {
             if (ContainsLoop(journey))
             {
-                throw new Exception("Loop detected: "+journey.ToString(50, stops));
+                throw new Exception("Loop detected in the journey: "+journey.ToString(50, stops));
             }
 
 

@@ -15,8 +15,8 @@ namespace Itinero.Transit.Tests.Functional.Data
             reader.MovePrevious(input.date.Date.AddHours(3));
             //while (reader.DepartureTime.FromUnixTime() < input.date.Date.AddHours(1))
             var alreadySeen = new HashSet<string>();
-            int timeout = 10;
-            while(true)
+            var timeout = 10;
+            while(reader.MovePrevious())
             {
                 Information($"{reader.DepartureTime.FromUnixTime():s}");
                 var id = reader.GlobalId;
@@ -32,7 +32,7 @@ namespace Itinero.Transit.Tests.Functional.Data
                     timeout--;
                 }
                 alreadySeen.Add(id);
-                reader.MovePrevious();
+                
             }
 
             return true;

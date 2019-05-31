@@ -31,7 +31,7 @@ namespace Itinero.Transit.Tests.Functional
             EnableLogging();
 
             var testAll = args.Length > 0 && args[0].Equals("--full-test-suite");
-
+            testAll = true;
             if (testAll)
             {
                 // These are all the tests, and will be run in full on the build server
@@ -43,16 +43,14 @@ namespace Itinero.Transit.Tests.Functional
                 return;
             }
 
-            new RoutingTest().Run();
+           
         }
 
 
         private static void LocalTests()
         {
-            // new ConnectionEnumeratorAggregatorTest().Run((
-            //     TransitDb.ReadFrom(TestAllAlgorithms.testDbs0429),
-            //     new DateTime(2019, 04, 29)));
 
+            var db = new TestAllAlgorithms().ExecuteDefault();
             var nmbs = TransitDb.ReadFrom(TestAllAlgorithms._nmbs, 0);
             var wvl = TransitDb.ReadFrom(TestAllAlgorithms._delijnWvl, 1);
 
@@ -61,7 +59,6 @@ namespace Itinero.Transit.Tests.Functional
                 nmbs, wvl
             });
 
-            var db = new TestAllAlgorithms().ExecuteDefault();
             new TripHeadsignTest().Run(db);
 
             TestClosestStopsAndRouting(db);
@@ -80,8 +77,8 @@ namespace Itinero.Transit.Tests.Functional
 
         public static void InternetTests()
         {
-            foreach (var r in OsmTest.TestRelations)
 
+            foreach (var r in OsmTest.TestRelations)
             {
                 var t = new OsmTest();
                 t.Run(r);

@@ -62,7 +62,7 @@ namespace Itinero.Transit.Tests.Functional
         /// <param name="input">The input.</param>
         /// <param name="count">The # of times to repeat the test.</param>
         /// <returns>The output.</returns>
-        public virtual TOut RunPerformance(TIn input, int count = 1)
+        public TOut RunPerformance(TIn input, int count = 1)
         {
             Func<TIn, PerformanceTestResult<TOut>>
                 executeFunc = (i) => new PerformanceTestResult<TOut>(Execute(i));
