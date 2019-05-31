@@ -19,10 +19,10 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             // PCS could find a route which arrives at the same time, but departs later
             True(easJ.Root.DepartureTime() <= pcsJ.Root.DepartureTime());
             True(easJ.ArrivalTime() <= pcsJ.ArrivalTime());
-            NoLoops(easJ, input.StopsReader);
+            NoLoops(easJ, input);
             foreach (var j in pcsJs)
             {
-                NoLoops(j, input.StopsReader);
+                NoLoops(j, input);
             }
 
             return true;

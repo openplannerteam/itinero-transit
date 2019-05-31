@@ -6,8 +6,6 @@ using Itinero.Transit.Journeys;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
-    //using LocId = UInt64;
-    using Time = UInt64;
 
     /// <summary>
     /// Calculates the fastest journey from A to B arriving at a given time; using CSA (backward A*).
@@ -21,13 +19,13 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly IConnectionEnumerator _connections;
         private readonly IStopsReader _stopsReader;
 
-        private readonly Time _earliestDeparture;
+        private readonly ulong _earliestDeparture;
 
         private readonly IOtherModeGenerator _transferPolicy;
         private readonly IOtherModeGenerator _walkPolicy;
 
 
-        public ulong ScanBeginTime { get; private set; } = Time.MaxValue;
+        public ulong ScanBeginTime { get; private set; } = ulong.MaxValue;
 
         public ulong ScanEndTime { get; }
 
@@ -102,7 +100,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public Journey<T> CalculateJourney(Func<Time, Time, Time> depArrivalToTimeout = null)
+        public Journey<T> CalculateJourney(Func<ulong, ulong, ulong> depArrivalToTimeout = null)
         {
             var enumerator = _connections;
             enumerator.MovePrevious(ScanEndTime);
@@ -137,7 +135,7 @@ namespace Itinero.Transit.Algorithms.CSA
             // If we en up here, normally we should have found a route.
 
             bestJourney = bestJourney ?? GetBestJourney();
-            if (bestJourney.Time == Time.MinValue)
+            if (bestJourney.Time == ulong.MinValue)
             {
                 // Sadly, we didn't find a route within the required time
                 ScanBeginTime = earliestAllowedDeparture;

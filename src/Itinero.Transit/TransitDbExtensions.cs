@@ -197,12 +197,14 @@ namespace Itinero.Transit
     {
         internal readonly IStopsReader StopsReader;
         internal readonly IConnectionEnumerator ConnectionEnumerator;
+        internal readonly IConnectionReader ConnectionReader;
         internal readonly Profile<T> Profile;
 
         internal WithProfile(IEnumerable<TransitDb.TransitDbSnapShot> tdbs, Profile<T> profile)
         {
             StopsReader = StopsReaderAggregator.CreateFrom(tdbs).UseCache();
             ConnectionEnumerator = ConnectionEnumeratorAggregator.CreateFrom(tdbs);
+            ConnectionReader = ConnectionReaderAggregator.CreateFrom(tdbs);
             Profile = profile;
 
 
@@ -247,7 +249,7 @@ namespace Itinero.Transit
 
         public IWithSingleLocation<T> SelectSingleStop(IEnumerable<(LocationId, Journey<T>)> stop)
         {
-            return new WithLocation<T>(StopsReader, ConnectionEnumerator, Profile, stop,
+            return new WithLocation<T>(StopsReader, ConnectionEnumerator, ConnectionReader, Profile, stop,
                 stop);
         }
 
@@ -324,7 +326,7 @@ namespace Itinero.Transit
         public WithLocation<T> SelectStops(IEnumerable<(LocationId, Journey<T>)> from,
             IEnumerable<(LocationId, Journey<T>)> to)
         {
-            return new WithLocation<T>(StopsReader, ConnectionEnumerator, Profile, from, to);
+            return new WithLocation<T>(StopsReader, ConnectionEnumerator, ConnectionReader, Profile, @from, to);
         }
 
         public WithLocation<T> SelectStops(IEnumerable<LocationId> from,
@@ -394,8 +396,9 @@ namespace Itinero.Transit
     public class WithLocation<T> : IWithSingleLocation<T>
         where T : IJourneyMetric<T>
     {
-        private readonly IStopsReader _stopsReader;
-        private readonly IConnectionEnumerator _connectionEnumerator;
+        internal readonly IStopsReader StopsReader;
+        internal readonly IConnectionEnumerator ConnectionEnumerator;
+        internal readonly IConnectionReader ConnectionReader;
 
 
         private readonly Profile<T> _profile;
@@ -404,17 +407,18 @@ namespace Itinero.Transit
         private readonly List<(LocationId, Journey<T>)> _to;
 
 
-        internal WithLocation(
-            IStopsReader stopsReader,
+        internal WithLocation(IStopsReader stopsReader,
             IConnectionEnumerator connectionEnumerator,
+            IConnectionReader connectionReader,
             Profile<T> profile,
-            IEnumerable<(LocationId, Journey<T>)> from, IEnumerable<(LocationId, Journey<T>)> to)
+            IEnumerable<(LocationId, Journey<T>)> @from, IEnumerable<(LocationId, Journey<T>)> to)
         {
+            _profile = profile;
+            ConnectionEnumerator = connectionEnumerator;
+            ConnectionReader = connectionReader;
+            StopsReader = stopsReader;
             _from = from.ToList();
             _to = to.ToList();
-            _stopsReader = stopsReader;
-            _connectionEnumerator = connectionEnumerator;
-            _profile = profile;
         }
 
 
@@ -422,7 +426,7 @@ namespace Itinero.Transit
             DateTime start,
             DateTime end)
         {
-            return new WithTime<T>(_stopsReader, _connectionEnumerator, _profile, _from, _to, start, end);
+            return new WithTime<T>(StopsReader, ConnectionEnumerator, ConnectionReader,_profile, _from, _to, start, end);
         }
 
         IWithTimeSingleLocation<T> IWithSingleLocation<T>.SelectTimeFrame(DateTime start, DateTime end)
@@ -461,6 +465,7 @@ namespace Itinero.Transit
         where T : IJourneyMetric<T>
     {
         internal readonly IStopsReader StopsReader;
+        internal readonly IConnectionReader ConnectionReader;
         internal readonly IConnectionEnumerator ConnectionEnumerator;
 
         internal readonly Profile<T> Profile;
@@ -475,6 +480,7 @@ namespace Itinero.Transit
 
         internal WithTime(IStopsReader stopsReader,
             IConnectionEnumerator connectionEnumerator,
+            IConnectionReader connectionReader,
             Profile<T> profile,
             List<(LocationId, Journey<T>)> from,
             List<(LocationId, Journey<T>)> to,
@@ -483,6 +489,7 @@ namespace Itinero.Transit
         {
             StopsReader = stopsReader;
             ConnectionEnumerator = connectionEnumerator;
+            ConnectionReader = connectionReader;
             Profile = profile;
             From = from;
             To = to;
@@ -526,6 +533,7 @@ namespace Itinero.Transit
             return new WithTime<T>(
                 StopsReader,
                 ConnectionEnumerator,
+                ConnectionReader,
                 Profile,
                 From,
                 To,
@@ -753,7 +761,7 @@ namespace Itinero.Transit
             pcs.CalculateJourneys();
             return pcs.Isochrone();
         }
-        
+
         /// <summary>
         /// Use the given filter.
         /// Note that some methods (Isochrone, EAS) might install a filter automatically too

@@ -11,7 +11,9 @@ namespace Itinero.Transit.Tests.Functional
     {
         public void NoLoops(Journey<T> journey, WithTime<TransferMetric> info)
         {
-            NoLoops(journey, info.StopsReader);
+            
+            
+            NoLoops(journey, info.StopsReader, info.ConnectionReader);
         }
 
         public bool ContainsLoop(Journey<T> journey)
@@ -38,11 +40,11 @@ namespace Itinero.Transit.Tests.Functional
             return false;   
         }
 
-        public void NoLoops(Journey<T> journey, IStopsReader stops)
+        public void NoLoops(Journey<T> journey, IStopsReader stops, IConnectionReader conn)
         {
             if (ContainsLoop(journey))
             {
-                throw new Exception("Loop detected in the journey: "+journey.ToString(50, stops));
+                throw new Exception("Loop detected in the journey: "+journey.ToString(50, stops, conn));
             }
 
 

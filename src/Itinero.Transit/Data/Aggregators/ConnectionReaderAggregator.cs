@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace Itinero.Transit.Data.Aggregators
@@ -11,6 +12,10 @@ namespace Itinero.Transit.Data.Aggregators
         private readonly IEnumerable<IConnectionReader> _readers;
         private IConnection _currentConnection;
 
+        public static IConnectionReader CreateFrom(IEnumerable<TransitDb.TransitDbSnapShot> tdbs)
+        {
+            return CreateFrom(tdbs.Select(tdb => tdb.ConnectionsDb.GetReader()));
+        }
 
         public static IConnectionReader CreateFrom(IEnumerable<IConnectionReader> readers)
         {
@@ -70,6 +75,5 @@ namespace Itinero.Transit.Data.Aggregators
         public LocationId ArrivalStop => _currentConnection.ArrivalStop;
 
         public uint Id => _currentConnection.Id;
-
     }
 }

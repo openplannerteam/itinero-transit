@@ -15,7 +15,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             NotNull(journeys);
             foreach (var journey in journeys)
             {
-                NoLoops(journey, input.StopsReader);
+                NoLoops(journey, input);
             }
             True(journeys.Count > 0);
             return true;

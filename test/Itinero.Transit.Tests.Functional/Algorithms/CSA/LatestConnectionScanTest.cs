@@ -10,7 +10,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         {
             var lasJ = input.LatestDepartureJourney();
             NotNull(lasJ);
-            NoLoops(lasJ, input.StopsReader);
+            NoLoops(lasJ, input);
             return true;
         }
     }
