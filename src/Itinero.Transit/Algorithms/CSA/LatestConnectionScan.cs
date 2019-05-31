@@ -6,7 +6,6 @@ using Itinero.Transit.Journeys;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
-
     /// <summary>
     /// Calculates the fastest journey from A to B arriving at a given time; using CSA (backward A*).
     /// It does _not_ use footpath interlinks (yet)
@@ -228,6 +227,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 // We extend the trip journey
                 _trips[trip] = _trips[trip].ChainBackward(c);
                 journeyFromDeparture = _trips[trip];
+                
             }
             else if (!c.CanGetOff())
             {
@@ -281,7 +281,7 @@ namespace Itinero.Transit.Algorithms.CSA
             }
 
             var oldJourney = _s[c.DepartureStop];
-            // If the departure is earlier, we bail
+            // If the old journey departs later, it is better and we don't overwrite it
             if (journeyFromDeparture.Time <= oldJourney.Time)
             {
                 return false;
