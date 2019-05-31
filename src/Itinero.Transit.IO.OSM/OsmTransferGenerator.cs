@@ -25,11 +25,11 @@ namespace Itinero.Transit
         private readonly Router _router;
         private readonly Profile _walkingProfile;
 
-        private const float _searchDistance = 50f;
-        private readonly StopsDb.StopsDbReader _stopsDb;
+        private const float SearchDistance = 50f;
+     
 
         // When  router db is loaded, it is saved into this dict to avoid reloading it
-        private static readonly Dictionary<string, Router> _knownRouters
+        private static readonly Dictionary<string, Router> KnownRouters
             = new Dictionary<string, Router>();
 
 
@@ -40,16 +40,14 @@ namespace Itinero.Transit
         ///  Footpaths are generated using an Osm-based router database
         ///  </summary>
         ///  <param name="routerdbPath">To create paths</param>
-        /// <param name="stopsReader">The database containing all the stops</param>
-        /// <param name="walkingProfile">How does the user transport himself over the OSM graph? Default is pedestrian</param>
-        public OsmTransferGenerator(string routerdbPath, StopsDb.StopsDbReader stopsReader,
+        ///  <param name="walkingProfile">How does the user transport himself over the OSM graph? Default is pedestrian</param>
+        public OsmTransferGenerator(string routerdbPath,
             Profile walkingProfile = null)
         {
-            _stopsDb = stopsReader;
-
+            
             _walkingProfile = walkingProfile ?? Pedestrian.Fastest();
             routerdbPath = Path.GetFullPath(routerdbPath);
-            if (!_knownRouters.ContainsKey(routerdbPath))
+            if (!KnownRouters.ContainsKey(routerdbPath))
             {
                 using (var fs = new FileStream(routerdbPath, FileMode.Open, FileAccess.Read))
                 {
@@ -59,11 +57,11 @@ namespace Itinero.Transit
                         throw new NullReferenceException("Could not load the routerDb");
                     }
 
-                    _knownRouters[routerdbPath] = new Router(routerDb);
+                    KnownRouters[routerdbPath] = new Router(routerDb);
                 }
             }
 
-            _router = _knownRouters[routerdbPath];
+            _router = KnownRouters[routerdbPath];
         }
 
 
@@ -71,24 +69,22 @@ namespace Itinero.Transit
         /// Tries to calculate a route between the two given point.
         /// Can be null if no route could be determined
         /// </summary>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
         /// <returns></returns>
-        private Route CreateRouteBetween(LocationId start,
+        private Route CreateRouteBetween(IStopsReader stopsDb, LocationId start,
             LocationId end)
         {
-            _stopsDb.MoveTo(start);
-            var lat = (float) _stopsDb.Latitude;
-            var lon = (float) _stopsDb.Longitude;
+            stopsDb.MoveTo(start);
+            var lat = (float) stopsDb.Latitude;
+            var lon = (float) stopsDb.Longitude;
 
-            _stopsDb.MoveTo(end);
-            var latE = (float) _stopsDb.Latitude;
-            var lonE = (float) _stopsDb.Longitude;
+            stopsDb.MoveTo(end);
+            var latE = (float) stopsDb.Latitude;
+            var lonE = (float) stopsDb.Longitude;
 
             // ReSharper disable once RedundantArgumentDefaultValue
-            var startPoint = _router.TryResolve(_walkingProfile, lat, lon, _searchDistance);
+            var startPoint = _router.TryResolve(_walkingProfile, lat, lon, SearchDistance);
             // ReSharper disable once RedundantArgumentDefaultValue
-            var endPoint = _router.TryResolve(_walkingProfile, latE, lonE, _searchDistance);
+            var endPoint = _router.TryResolve(_walkingProfile, latE, lonE, SearchDistance);
 
             if (startPoint.IsError || endPoint.IsError)
             {
@@ -99,7 +95,7 @@ namespace Itinero.Transit
             return route.IsError ? null : route.Value;
         }
 
-        public Journey<T> CreateDepartureTransfer<T>(IStopsReader _, Journey<T> buildOn, ulong timeWhenDeparting,
+        public Journey<T> CreateDepartureTransfer<T>(IStopsReader stops, Journey<T> buildOn, ulong timeWhenDeparting,
             LocationId otherLocation) where T : IJourneyMetric<T>
         {
             if (timeWhenDeparting < buildOn.Time)
@@ -113,7 +109,7 @@ namespace Itinero.Transit
                 return null;
             }
 
-            var route = CreateRouteBetween(buildOn.Location, otherLocation);
+            var route = CreateRouteBetween(stops, buildOn.Location, otherLocation);
 
             var timeAvailable = timeWhenDeparting - buildOn.Time;
             if (timeAvailable < route.TotalTime)
@@ -127,7 +123,7 @@ namespace Itinero.Transit
                 TripId.Walk);
         }
 
-        public Journey<T> CreateArrivingTransfer<T>(IStopsReader _, Journey<T> buildOn, ulong timeWhenArriving,
+        public Journey<T> CreateArrivingTransfer<T>(IStopsReader stops, Journey<T> buildOn, ulong timeWhenArriving,
             LocationId otherLocation) where T : IJourneyMetric<T>
         {
             if (timeWhenArriving > buildOn.Time)
@@ -141,7 +137,7 @@ namespace Itinero.Transit
                 return null;
             }
 
-            var route = CreateRouteBetween(buildOn.Location, otherLocation);
+            var route = CreateRouteBetween(stops, buildOn.Location, otherLocation);
 
             var timeAvailable = buildOn.Time - timeWhenArriving;
             if (timeAvailable < route.TotalTime)
@@ -162,13 +158,13 @@ namespace Itinero.Transit
                 return float.NaN;
             }
 
-            var route = CreateRouteBetween(from, to);
+            var route = CreateRouteBetween(reader, from, to);
             return route.TotalTime;
         }
 
         public float Range()
         {
-            return _searchDistance;
+            return SearchDistance;
         }
     }
 }

@@ -36,6 +36,7 @@ Toevoegen API voor reverse dijkstra PCS
 
 
 Add One-To-Many routing to IOtherMode
+How to handle floating locations (Lat/lon) with stopsDB
 LocationInRangeCaching => doet niet aan routeplanning
 Add hard cap on number of transfers
 Do performance optimizations
