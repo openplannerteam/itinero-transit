@@ -10,6 +10,7 @@ using Itinero.Transit.Tests.Functional.Data;
 using Itinero.Transit.Tests.Functional.IO;
 using Itinero.Transit.Tests.Functional.IO.LC;
 using Itinero.Transit.Tests.Functional.IO.LC.Synchronization;
+using Itinero.Transit.Tests.Functional.IO.OSM;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
@@ -30,7 +31,6 @@ namespace Itinero.Transit.Tests.Functional
             EnableLogging();
 
             var testAll = args.Length > 0 && args[0].Equals("--full-test-suite");
-            testAll = true;
 
             if (testAll)
             {
@@ -43,12 +43,7 @@ namespace Itinero.Transit.Tests.Functional
                 return;
             }
 
-            var date = new DateTime(2019, 05, 22, 0, 0, 0, DateTimeKind.Utc);
-            var tdb = TransitDb.ReadFrom(new[] {TestAllAlgorithms._nmbs, TestAllAlgorithms._delijnAnt});
-            var input = tdb.SelectProfile(new DefaultProfile())
-                .SelectStops(TestAllAlgorithms.Moereind, TestAllAlgorithms.Antwerpen)
-                .SelectTimeFrame(date.AddHours(10), date.AddHours(18));
-            new ProfiledConnectionScanTest().Run(input);
+            new RoutingTest().Run();
         }
 
 
@@ -92,6 +87,7 @@ namespace Itinero.Transit.Tests.Functional
                 t.Run(r);
             }
 
+            new RoutingTest().Run();
             new CachingTest().Run(true);
             var tdb = new TransitDb();
         }
