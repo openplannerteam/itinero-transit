@@ -61,11 +61,6 @@ namespace Itinero.Transit.Tests.Functional
                 return;
             }
 
-
-            var tdb = new TransitDb();
-            tdb.UseOsmRoute("https://www.openstreetmap.org/relation/9413958",
-                DateTime.Now.ToUniversalTime(), DateTime.Now.AddHours(1).ToUniversalTime());
-
             /*
             var input = TransitDb.ReadFrom(
                         new List<string>
@@ -98,6 +93,7 @@ namespace Itinero.Transit.Tests.Functional
             });
 
             new TripHeadsignTest().Run(db);
+            new OsmRouteTest().Run();
 
             TestClosestStopsAndRouting(db);
             Log.Information("Running NoDuplicationTest");

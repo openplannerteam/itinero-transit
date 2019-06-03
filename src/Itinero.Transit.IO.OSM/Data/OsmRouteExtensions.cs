@@ -117,6 +117,9 @@ namespace Itinero.Transit.Data
 
             for (var i = 0; i < locations.Count - 1; i++)
             {
+                // There are (n-1) connections between n stops; hence the 'count - 1' in the loop above
+                // This implies that, if the route does do a loop (`roundtrip=yes`) the first and last element in the osmRoute should be the same
+                
                 var l0 = locations[i];
                 var l0Coor = route.StopPositions[i].Item2;
                 var l0Id = Uri.EscapeDataString(route.StopPositions[i].Item1);

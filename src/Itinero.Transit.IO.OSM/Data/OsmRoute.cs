@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Xml;
 using GeoAPI.Geometries;
 using GeoTimeZone;
@@ -13,6 +14,7 @@ using OsmSharp.Complete;
 using OsmSharp.Streams;
 using OsmSharp.Tags;
 
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests.Functional")]
 namespace Itinero.Transit.Data
 {
     /// <summary>
@@ -75,7 +77,7 @@ namespace Itinero.Transit.Data
                     throw new ArgumentNullException();
                 }
 
-                var coordinate = new Coordinate((double) node.Latitude, (double) node.Longitude);
+                var coordinate = new Coordinate((double) node.Longitude, (double) node.Latitude);
                 var nodeId = $"https://www.openstreetmap.org/node/{node.Id}";
                 stopPositions.Add((nodeId, coordinate, el.Tags));
             }
