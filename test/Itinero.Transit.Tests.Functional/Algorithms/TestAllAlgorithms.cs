@@ -37,11 +37,6 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
                 new MultiTransitDbTest() 
             };
 
-        private static readonly List<DefaultFunctionalTest<TransferMetric>> MultiModalTests =
-            new List<DefaultFunctionalTest<TransferMetric>>
-            {
-                new MultiTransitDbTest()
-            };
 
 
         public static readonly IReadOnlyList<string> testDbs = new[]
@@ -52,7 +47,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
             _delijnWvl,
             _delijnOVl,
             _delijnLim,
-            _delijnAnt,
+            _delijnAnt
         };
 
 
@@ -65,7 +60,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
         public const string _delijnAnt = "testdata/fixed-test-cases-de-lijn-ant-2019-05-30.transitdb";
 
         
-        public DateTime TestDate = new DateTime(2019,05,30, 09,00,00).ToUniversalTime().Date;
+        public static DateTime TestDate = new DateTime(2019,05,30, 09,00,00).ToUniversalTime().Date;
 
         public const string Gent = "http://irail.be/stations/NMBS/008892007";
         public const string Brugge = "http://irail.be/stations/NMBS/008891009";
@@ -82,10 +77,10 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
         public const string AzSintJan = "https://data.delijn.be/stops/502083";
         public const string Moereind = "https://data.delijn.be/stops/107455";
 
-        private const string GentZwijnaardeDeLijn = "https://data.delijn.be/stops/200657";
+        public const string GentZwijnaardeDeLijn = "https://data.delijn.be/stops/200657";
 
-        private const string StationBruggeOsm = "https://www.openstreetmap.org/node/6348496391";
-        private const string CoiseauKaaiOsm = "https://www.openstreetmap.org/node/6348562147";
+       public const string StationBruggeOsm = "https://www.openstreetmap.org/node/6348496391";
+       public const string CoiseauKaaiOsm = "https://www.openstreetmap.org/node/6348562147";
 
 
         /// <summary>
@@ -94,8 +89,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
         /// <returns></returns>
         public TransitDb ExecuteDefault()
         {
-            var date = TestDate;
-            Execute(new List<string> {_nmbs}, date, CreateInputs, AllTests);
+            Execute(new List<string> {_nmbs}, TestDate, CreateInputs, AllTests);
             return tdbCache[_nmbs];
         }
 
@@ -104,11 +98,11 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
         {
             Execute(testDbs, TestDate,
                 a => CreateInputs(a).Concat(CreateInputsMultiModal(a)).ToList(),
-                AllTests.Concat(MultiModalTests));
+                AllTests);
         }
 
 
-        private Dictionary<string, TransitDb> tdbCache = new Dictionary<string, TransitDb>();
+        private readonly Dictionary<string, TransitDb> tdbCache = new Dictionary<string, TransitDb>();
 
         private void Execute(IReadOnlyList<string> dbs, DateTime date,
             Func<(IEnumerable<TransitDb.TransitDbSnapShot>, DateTime), List<WithTime<TransferMetric>>> createInputs,

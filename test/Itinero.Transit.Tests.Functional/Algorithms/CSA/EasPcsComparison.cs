@@ -13,6 +13,8 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         {
             var easJ = input.EarliestArrivalJourney();
             input.ResetFilter();
+            
+            
             var pcsJs = input.AllJourneys();
             var pcsJ = pcsJs.Last();
 

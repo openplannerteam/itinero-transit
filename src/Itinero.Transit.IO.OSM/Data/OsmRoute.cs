@@ -110,16 +110,16 @@ namespace Itinero.Transit.Data
                 }
 
 
-                var coordinate = new Coordinate(lat, lon);
+                var coordinate = new Coordinate(lon, lat);
                 var nodeId = $"https://www.openstreetmap.org/{id}";
 
                 // We make sure that there is no stop closeby
 
                 var inRange = false;
-                foreach (var stopPosition in stopPositions)
+                foreach (var (_, coor0, _) in stopPositions)
                 {
-                    var lat0 = stopPosition.Item2.Y;
-                    var lon0 = stopPosition.Item2.X;
+                    var lat0 = coor0.Y;
+                    var lon0 = coor0.X;
 
                     // ReSharper disable once InvertIf
                     if (DistanceEstimate.DistanceEstimateInMeter(lat, lon, lat0, lon0) < 25)

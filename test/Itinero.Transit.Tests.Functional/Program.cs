@@ -31,7 +31,7 @@ namespace Itinero.Transit.Tests.Functional
             EnableLogging();
 
             var testAll = args.Length > 0 && args[0].Equals("--full-test-suite");
-            testAll = true;
+            // testAll = true;
             if (testAll)
             {
                 // These are all the tests, and will be run in full on the build server
@@ -43,13 +43,33 @@ namespace Itinero.Transit.Tests.Functional
                 return;
             }
 
-           
+
+            
+            var tdb = new TransitDb();
+            tdb.UseOsmRoute("https://www.openstreetmap.org/relation/9413958", DateTime.Now, DateTime.Now.AddHours(1));
+            
+            /*
+            var input = TransitDb.ReadFrom(
+                        new List<string>
+                        {
+                            TestAllAlgorithms._nmbs,
+                            TestAllAlgorithms._osmCentrumShuttle,
+                            TestAllAlgorithms._delijnOVl
+                        }
+                    ).SelectProfile(new DefaultProfile())
+                    .SelectStops(TestAllAlgorithms.CoiseauKaaiOsm, TestAllAlgorithms.GentZwijnaardeDeLijn)
+                    .SelectTimeFrame(TestAllAlgorithms.TestDate.AddHours(09),
+                        TestAllAlgorithms.TestDate.AddHours(12))
+                ;
+
+
+            new EasLasComparison().Run(input);
+            //*/
         }
 
 
         private static void LocalTests()
         {
-
             var db = new TestAllAlgorithms().ExecuteDefault();
             var nmbs = TransitDb.ReadFrom(TestAllAlgorithms._nmbs, 0);
             var wvl = TransitDb.ReadFrom(TestAllAlgorithms._delijnWvl, 1);
@@ -68,16 +88,15 @@ namespace Itinero.Transit.Tests.Functional
             new ConnectionsDbDepartureEnumeratorTest().Run(db);
             new DelayTest().Run(true);
 
+            Log.Information("Running single TransitDb tests");
+            new TestAllAlgorithms().ExecuteDefault();
+            Log.Information("Running multi TransitDb tests");
 
-            var tdb = new TransitDb();
-            tdb.UseOsmRoute("testdata/CentrumShuttle-Brugge.xml", DateTime.Today.ToUniversalTime(),
-                DateTime.Today.AddDays(1).ToUniversalTime());
             new TestAllAlgorithms().ExecuteMultiModal();
         }
 
         public static void InternetTests()
         {
-
             foreach (var r in OsmTest.TestRelations)
             {
                 var t = new OsmTest();

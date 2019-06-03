@@ -10,7 +10,8 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var lasJ = input.LatestDepartureJourney();
             NotNull(lasJ);
             // NoLoops(lasJ, input);
-            // LAS can possible create a transfer which could have been taken sooner, but that is just how LAS works
+            // LAS can possible create a transfer which could have been taken sooner,
+            // but that is just how LAS works
             return true;
         }
     }

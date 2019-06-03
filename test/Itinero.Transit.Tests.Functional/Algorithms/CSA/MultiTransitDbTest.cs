@@ -9,15 +9,15 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         protected override bool Execute(WithTime<TransferMetric> input)
         {
            
-            input.IsochroneFrom();
+            // input.IsochroneFrom();
 
             var journeys = input.AllJourneys();
             NotNull(journeys);
+            True(journeys.Count > 0);
             foreach (var journey in journeys)
             {
                 NoLoops(journey, input);
             }
-            True(journeys.Count > 0);
             return true;
         }
 
