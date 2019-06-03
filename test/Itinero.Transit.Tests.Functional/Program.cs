@@ -93,7 +93,6 @@ namespace Itinero.Transit.Tests.Functional
             TestClosestStopsAndRouting(db);
             Log.Information("Running NoDuplicationTest");
 
-            new NoDuplicationTest().Run();
             new ConnectionsDbDepartureEnumeratorTest().Run(db);
             new DelayTest().Run(true);
 
@@ -111,10 +110,10 @@ namespace Itinero.Transit.Tests.Functional
                 var t = new OsmTest();
                 t.Run(r);
             }
+            new NoDuplicationTest().Run();
 
             new RoutingTest().Run();
             new CachingTest().Run(true);
-            var tdb = new TransitDb();
         }
 
         public static void SlowTests()
