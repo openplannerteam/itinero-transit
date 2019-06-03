@@ -32,7 +32,7 @@ namespace Itinero.Transit.Tests.Functional
             EnableLogging();
 
             var testAll = args.Length > 0 && args[0].Equals("--full-test-suite");
-            // testAll = true;
+             testAll = false;
             if (testAll)
             {
                 // These are all the tests, and will be run in full on the build server
