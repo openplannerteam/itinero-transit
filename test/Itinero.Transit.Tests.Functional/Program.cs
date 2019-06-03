@@ -37,26 +37,34 @@ namespace Itinero.Transit.Tests.Functional
             {
                 // These are all the tests, and will be run in full on the build server
                 // Tests for devving are below this block
-                LocalTests();
+                //  LocalTests();
                 try
                 {
-
                     InternetTests();
                 }
                 catch (OperationCanceledException)
                 {
                     Log.Warning("Some website is down... Skipping internet tests");
                 }
+                catch (ArgumentException e)
+                {
+                    if (!(e.InnerException is OperationCanceledException))
+                    {
+                        throw;
+                    }
+
+                    Log.Warning("Some website is down... Skipping internet tests");
+                }
+
                 SlowTests();
                 // ReSharper disable once RedundantJumpStatement
                 return;
             }
 
 
-            
             var tdb = new TransitDb();
             tdb.UseOsmRoute("https://www.openstreetmap.org/relation/9413958", DateTime.Now, DateTime.Now.AddHours(1));
-            
+
             /*
             var input = TransitDb.ReadFrom(
                         new List<string>
@@ -110,6 +118,7 @@ namespace Itinero.Transit.Tests.Functional
                 var t = new OsmTest();
                 t.Run(r);
             }
+
             new NoDuplicationTest().Run();
 
             new RoutingTest().Run();

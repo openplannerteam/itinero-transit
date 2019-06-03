@@ -18,11 +18,11 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             NoLoops(easJ, input);
 
             input.ResetFilter();
-            
+
             var lasJ =
                 input
-                    .DifferentTimes((easJ.Root.DepartureTime()-600).FromUnixTime(),
-                        (easJ.ArrivalTime()+600).FromUnixTime())
+                    .DifferentTimes((easJ.Root.DepartureTime() - 600).FromUnixTime(),
+                        (easJ.ArrivalTime() + 600).FromUnixTime())
                     .LatestDepartureJourney();
 
 
@@ -38,8 +38,8 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             NoLoops(lasJ, input);
 
             // Eas is bound by the first departing train, while las is not
-        // TODO Reenable    True(easJ.Root.DepartureTime() <= lasJ.Root.DepartureTime());
-        // TODO renable    True(easJ.ArrivalTime() == lasJ.ArrivalTime());
+            True(easJ.Root.DepartureTime() <= lasJ.Root.DepartureTime());
+            True(easJ.ArrivalTime() == lasJ.ArrivalTime());
 
 
             return true;
