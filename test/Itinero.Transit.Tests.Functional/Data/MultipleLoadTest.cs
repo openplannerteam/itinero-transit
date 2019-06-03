@@ -25,13 +25,13 @@ namespace Itinero.Transit.Tests.Functional.Data
 
             var hours = 24;
 
-            dbUpdater.UpdateTimeFrame(DateTime.Today, DateTime.Today.AddHours(hours));
+            dbUpdater.UpdateTimeFrame(DateTime.Today.ToUniversalTime(), DateTime.Today.AddHours(hours).ToUniversalTime());
             Test(db);
 
-            dbUpdater.UpdateTimeFrame(DateTime.Today.AddDays(1), DateTime.Today.AddDays(1).AddHours(hours));
+            dbUpdater.UpdateTimeFrame(DateTime.Today.AddDays(1).ToUniversalTime(), DateTime.Today.AddDays(1).AddHours(hours).ToUniversalTime());
             Test(db);
 
-            dbUpdater.UpdateTimeFrame(DateTime.Today.AddHours(-hours), DateTime.Today.AddHours(0));
+            dbUpdater.UpdateTimeFrame(DateTime.Today.AddHours(-hours).ToUniversalTime(), DateTime.Today.AddHours(0).ToUniversalTime());
             Test(db);
 
             return 1;
@@ -44,8 +44,8 @@ namespace Itinero.Transit.Tests.Functional.Data
             var enumerator = conns.GetDepartureEnumerator();
             var count = 0;
 
-            enumerator.MoveNext(DateTime.Today.AddHours(10));
-            var endTime = DateTime.Today.AddHours(11).ToUnixTime();
+            enumerator.MoveNext(DateTime.Today.AddHours(10).ToUniversalTime());
+            var endTime = DateTime.Today.AddHours(11).ToUniversalTime().ToUnixTime();
             while (enumerator.DepartureTime < endTime)
             {
                 count++;

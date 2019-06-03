@@ -32,7 +32,7 @@ namespace Itinero.Transit.Tests.Functional
             EnableLogging();
 
             var testAll = args.Length > 0 && args[0].Equals("--full-test-suite");
-             testAll = true;
+            // testAll = true;
             if (testAll)
             {
                 // These are all the tests, and will be run in full on the build server
@@ -41,6 +41,7 @@ namespace Itinero.Transit.Tests.Functional
                 try
                 {
                     InternetTests();
+                    SlowTests();
                 }
                 catch (OperationCanceledException)
                 {
@@ -56,14 +57,13 @@ namespace Itinero.Transit.Tests.Functional
                     Log.Warning("Some website is down... Skipping internet tests");
                 }
 
-                SlowTests();
                 // ReSharper disable once RedundantJumpStatement
                 return;
             }
 
 
             var tdb = new TransitDb();
-            tdb.UseOsmRoute("https://www.openstreetmap.org/relation/9413958", 
+            tdb.UseOsmRoute("https://www.openstreetmap.org/relation/9413958",
                 DateTime.Now.ToUniversalTime(), DateTime.Now.AddHours(1).ToUniversalTime());
 
             /*
