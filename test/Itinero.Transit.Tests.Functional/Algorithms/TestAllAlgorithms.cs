@@ -94,10 +94,19 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
         }
 
 
-        public void ExecuteMultiModal()
+        public void ExecuteMultiModal(int input = -1)
         {
             Execute(testDbs, TestDate,
-                a => CreateInputs(a).Concat(CreateInputsMultiModal(a)).ToList(),
+                a =>
+                {
+                    var list =  CreateInputs(a).Concat(CreateInputsMultiModal(a)).ToList();
+                    if (input >= 0)
+                    {
+                        list = new List<WithTime<TransferMetric>>(){list[input]};
+                    }
+
+                    return list;
+                },
                 AllTests);
         }
 

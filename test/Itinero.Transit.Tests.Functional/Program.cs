@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using Itinero.Transit.Data;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms;
-using Itinero.Transit.Tests.Functional.Algorithms.CSA;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
 using Itinero.Transit.Tests.Functional.Data;
 using Itinero.Transit.Tests.Functional.IO;
@@ -31,53 +29,57 @@ namespace Itinero.Transit.Tests.Functional
         {
             EnableLogging();
 
-            var testAll = args.Length > 0 && args[0].Equals("--full-test-suite");
-             testAll = false;
-            if (testAll)
+            var devTestsOnly = args.Length == 0 || !args[0].Equals("--full-test-suite");
+            devTestsOnly = true;
+
+
+            if (devTestsOnly)
             {
-                // These are all the tests, and will be run in full on the build server
-                // Tests for devving are below this block
-                LocalTests();
-                try
-                {
-                    InternetTests();
-                    SlowTests();
-                }
-                catch (OperationCanceledException)
-                {
-                    Log.Warning("Some website is down... Skipping internet tests");
-                }
-                catch (ArgumentException e)
-                {
-                    if (!(e.InnerException is OperationCanceledException))
-                    {
-                        throw;
-                    }
+             //   new TestAllAlgorithms().ExecuteMultiModal(10);
+                new OsmRouteTest().Run();
+                /*
+              var input = TransitDb.ReadFrom(
+                          new List<string>
+                          {
+                              TestAllAlgorithms._nmbs,
+                              TestAllAlgorithms._osmCentrumShuttle,
+                              TestAllAlgorithms._delijnOVl
+                          }
+                      ).SelectProfile(new DefaultProfile())
+                      .SelectStops(TestAllAlgorithms.CoiseauKaaiOsm, TestAllAlgorithms.GentZwijnaardeDeLijn)
+                      .SelectTimeFrame(TestAllAlgorithms.TestDate.AddHours(09),
+                          TestAllAlgorithms.TestDate.AddHours(12))
+                  ;
+  
+  
+              new EasLasComparison().Run(input);
+              //*/
 
-                    Log.Warning("Some website is down... Skipping internet tests");
-                }
-
-                // ReSharper disable once RedundantJumpStatement
                 return;
             }
 
-            /*
-            var input = TransitDb.ReadFrom(
-                        new List<string>
-                        {
-                            TestAllAlgorithms._nmbs,
-                            TestAllAlgorithms._osmCentrumShuttle,
-                            TestAllAlgorithms._delijnOVl
-                        }
-                    ).SelectProfile(new DefaultProfile())
-                    .SelectStops(TestAllAlgorithms.CoiseauKaaiOsm, TestAllAlgorithms.GentZwijnaardeDeLijn)
-                    .SelectTimeFrame(TestAllAlgorithms.TestDate.AddHours(09),
-                        TestAllAlgorithms.TestDate.AddHours(12))
-                ;
 
+            // These are all the tests, and will be run in full on the build server
+            // Tests for devving are below this block
+            LocalTests();
+            try
+            {
+                InternetTests();
+                SlowTests();
+            }
+            catch (OperationCanceledException)
+            {
+                Log.Warning("Some website is down... Skipping internet tests");
+            }
+            catch (ArgumentException e)
+            {
+                if (!(e.InnerException is OperationCanceledException))
+                {
+                    throw;
+                }
 
-            new EasLasComparison().Run(input);
-            //*/
+                Log.Warning("Some website is down... Skipping internet tests");
+            }
         }
 
 
@@ -93,7 +95,6 @@ namespace Itinero.Transit.Tests.Functional
             });
 
             new TripHeadsignTest().Run(db);
-            new OsmRouteTest().Run();
 
             TestClosestStopsAndRouting(db);
             Log.Information("Running NoDuplicationTest");
@@ -115,6 +116,9 @@ namespace Itinero.Transit.Tests.Functional
                 var t = new OsmTest();
                 t.Run(r);
             }
+
+            new OsmRouteTest().Run();
+
 
             new NoDuplicationTest().Run();
 

@@ -38,7 +38,7 @@ namespace Itinero.Transit.Data
                     attr.Add(new Attribute(tag.Key, tag.Value));
                 }
 
-                stopIds.Add(wr.AddOrUpdateStop(id, coordinate.Y, coordinate.X, attr));
+                stopIds.Add(wr.AddOrUpdateStop(id, coordinate.X, coordinate.Y, attr));
             }
 
 

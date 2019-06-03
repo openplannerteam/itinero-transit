@@ -15,6 +15,7 @@ using OsmSharp.Streams;
 using OsmSharp.Tags;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Functional")]
+
 namespace Itinero.Transit.Data
 {
     /// <summary>
@@ -44,11 +45,12 @@ namespace Itinero.Transit.Data
 
             ts.TryGetValue("duration", out var duration);
             Duration = DefaultRdParsers.Duration().ParseFull(duration, "No or incorrect value for duration");
-                
+
 
             ts.TryGetValue("interval", out var interval);
-            Interval = interval == null ? Duration // Assume one shuttle bus
-                :DefaultRdParsers.Duration().ParseFull(interval, "No or incorrect value for interval");
+            Interval = interval == null
+                ? Duration // Assume one shuttle bus
+                : DefaultRdParsers.Duration().ParseFull(interval, "No or incorrect value for interval");
 
             StopPositions = ExtractStopPositions(relation);
 
@@ -56,8 +58,6 @@ namespace Itinero.Transit.Data
             {
                 throw new ArgumentException("This route does not contain stop positions");
             }
-
-            
         }
 
 
@@ -166,13 +166,13 @@ namespace Itinero.Transit.Data
             if (path.StartsWith("https://www.openstreetmap.org/relation/"))
             {
                 path = path.Substring("https://www.openstreetmap.org/relation/".Length)
-                    .Split('?')[0];
+                    .Split('?')[0].Split('#')[0];
             }
 
             if (path.StartsWith("http://www.openstreetmap.org/relation/"))
             {
                 path = path.Substring("http://www.openstreetmap.org/relation/".Length)
-                    .Split('?')[0];
+                    .Split('?')[0].Split('#')[0];
             }
 
             if (long.TryParse(path, out _))
