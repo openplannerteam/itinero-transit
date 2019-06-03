@@ -32,12 +32,12 @@ namespace Itinero.Transit.Tests.Functional
             EnableLogging();
 
             var testAll = args.Length > 0 && args[0].Equals("--full-test-suite");
-            // testAll = true;
+             testAll = true;
             if (testAll)
             {
                 // These are all the tests, and will be run in full on the build server
                 // Tests for devving are below this block
-                //  LocalTests();
+                LocalTests();
                 try
                 {
                     InternetTests();
@@ -63,7 +63,8 @@ namespace Itinero.Transit.Tests.Functional
 
 
             var tdb = new TransitDb();
-            tdb.UseOsmRoute("https://www.openstreetmap.org/relation/9413958", DateTime.Now, DateTime.Now.AddHours(1));
+            tdb.UseOsmRoute("https://www.openstreetmap.org/relation/9413958", 
+                DateTime.Now.ToUniversalTime(), DateTime.Now.AddHours(1).ToUniversalTime());
 
             /*
             var input = TransitDb.ReadFrom(
@@ -121,7 +122,6 @@ namespace Itinero.Transit.Tests.Functional
 
             new NoDuplicationTest().Run();
 
-            new RoutingTest().Run();
             new CachingTest().Run(true);
         }
 
