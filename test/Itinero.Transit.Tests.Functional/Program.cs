@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using Itinero.Transit.Data;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms;
@@ -37,7 +38,15 @@ namespace Itinero.Transit.Tests.Functional
                 // These are all the tests, and will be run in full on the build server
                 // Tests for devving are below this block
                 LocalTests();
-                InternetTests();
+                try
+                {
+
+                    InternetTests();
+                }
+                catch (OperationCanceledException)
+                {
+                    Log.Warning("Some website is down... Skipping internet tests");
+                }
                 SlowTests();
                 // ReSharper disable once RedundantJumpStatement
                 return;
