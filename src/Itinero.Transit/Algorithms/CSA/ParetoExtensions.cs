@@ -45,7 +45,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 else
                 {
                     extendedJourney = transferPolicy
-                        .CreateArrivingTransfer(stopsReader, journey, c.ArrivalTime, c.ArrivalStop)
+                        .CreateArrivingTransfer(stopsReader, journey, c.ArrivalStop)
                         ?.ChainBackward(c);
                 }
 

@@ -10,7 +10,6 @@ using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
-
     /// <summary>
     /// Calculates the fastest journey from A to B starting at a given time; using CSA (forward A*).
     /// It does _not_ use footpath interlinks (yet)
@@ -240,11 +239,22 @@ namespace Itinero.Transit.Algorithms.CSA
                 }
                 else
                 {
-                    journeyToArrival =
-                        _transferPolicy
-                            .CreateDepartureTransfer(_stopsReader, journeyTillDeparture, c.DepartureTime,
-                                c.DepartureStop)
-                            ?.ChainForward(c);
+                    // The total time needed to transfer
+                    var timeNeeded =
+                        _transferPolicy.TimeBetween(_stopsReader, journeyTillDeparture.Location, c.DepartureStop);
+
+                    if (journeyTillDeparture.Time + timeNeeded <= c.DepartureTime)
+                    {
+                        journeyToArrival =
+                            _transferPolicy
+                                .CreateDepartureTransfer(_stopsReader, journeyTillDeparture,
+                                    c.DepartureStop)
+                                ?.ChainForward(c);
+                    }
+                    else
+                    {
+                        journeyToArrival = null;
+                    }
                 }
 
                 if (journeyToArrival != null && c.CanGetOn())
@@ -324,7 +334,7 @@ namespace Itinero.Transit.Algorithms.CSA
                     continue;
                 }
 
-                var walkingJourney = _walkPolicy.CreateDepartureTransfer(_stopsReader, journey, ulong.MaxValue, id);
+                var walkingJourney = _walkPolicy.CreateDepartureTransfer(_stopsReader, journey, id);
                 if (walkingJourney == null)
                 {
                     continue;

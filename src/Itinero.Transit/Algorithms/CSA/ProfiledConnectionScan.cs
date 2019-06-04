@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journey;
+using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Utils;
@@ -354,7 +355,6 @@ namespace Itinero.Transit.Algorithms.CSA
                 var journeyWithWalkOnly = _walkPolicy.CreateArrivingTransfer(
                     _stopsReader,
                     genesisEnd,
-                    ulong.MinValue, 
                     c.ArrivalStop);
 
                 if (journeyWithWalkOnly == null)
@@ -449,7 +449,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 {
                     // Create a walk from 'possibleStartingStop' to 'cDepartureStop', where an optimal journey is taken to the destination
                     var journeyWithWalk = _walkPolicy.CreateArrivingTransfer(
-                        _stopsReader, journey, ulong.MinValue, stopId);
+                        _stopsReader, journey, stopId);
 
                     // And add this journey with walk to the pareto frontier
                     if (!_stationJourneys.ContainsKey(stopId))

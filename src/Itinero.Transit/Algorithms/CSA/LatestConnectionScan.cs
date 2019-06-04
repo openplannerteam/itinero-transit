@@ -6,7 +6,8 @@ using Itinero.Transit.Journey;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Utils;
 
-[assembly:InternalsVisibleTo("Itinero.Transit.Tests")]
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
+
 namespace Itinero.Transit.Algorithms.CSA
 {
     /// <summary>
@@ -209,7 +210,6 @@ namespace Itinero.Transit.Algorithms.CSA
         private bool IntegrateConnection(
             IConnection c)
         {
-
             // The connection describes a random connection somewhere
             // Lets check if we can take it
 
@@ -231,7 +231,6 @@ namespace Itinero.Transit.Algorithms.CSA
                 // We extend the trip journey
                 _trips[trip] = _trips[trip].ChainBackward(c);
                 journeyFromDeparture = _trips[trip];
-                
             }
             else if (!c.CanGetOff())
             {
@@ -242,7 +241,7 @@ namespace Itinero.Transit.Algorithms.CSA
             }
             else
             {
-                if (journeyFromArrival.SpecialConnection )
+                if (journeyFromArrival.SpecialConnection)
                 {
                     // We only insert a transfer before a 'normal' connection
                     journeyFromDeparture = journeyFromArrival.ChainBackward(c);
@@ -250,9 +249,19 @@ namespace Itinero.Transit.Algorithms.CSA
                 else
                 {
                     // internal transfer
-                    journeyFromDeparture = _transferPolicy
-                        .CreateArrivingTransfer(_stopsReader, journeyFromArrival, c.ArrivalTime, c.ArrivalStop)
-                        ?.ChainBackward(c);
+                    var timeNeeded =
+                        _transferPolicy.TimeBetween(_stopsReader, c.ArrivalStop, journeyFromArrival.Location);
+
+                    if (journeyFromArrival.Time - timeNeeded >= c.ArrivalTime)
+                    {
+                        journeyFromDeparture = _transferPolicy
+                            .CreateArrivingTransfer(_stopsReader, journeyFromArrival, c.ArrivalStop)
+                            ?.ChainBackward(c);
+                    }
+                    else
+                    {
+                        journeyFromDeparture = null;
+                    }
                 }
 
                 if (journeyFromDeparture != null && c.CanGetOff())
@@ -323,7 +332,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 }
 
                 var walkingJourney = _walkPolicy.CreateArrivingTransfer
-                    (_stopsReader, journey, ulong.MinValue, id);
+                    (_stopsReader, journey, id);
                 if (walkingJourney == null)
                 {
                     continue;

@@ -23,7 +23,7 @@ namespace Itinero.Transit.IO.OSM
         private readonly Profile _walkingProfile;
 
         private const float _searchDistance = 50f;
-     
+
 
         // When  router db is loaded, it is saved into this dict to avoid reloading it
         private static readonly Dictionary<string, Router> _knownRouters
@@ -41,7 +41,6 @@ namespace Itinero.Transit.IO.OSM
         public OsmTransferGenerator(string routerdbPath,
             Profile walkingProfile = null)
         {
-            
             _walkingProfile = walkingProfile ?? Vehicle.Pedestrian.Fastest();
             routerdbPath = Path.GetFullPath(routerdbPath);
             if (!_knownRouters.ContainsKey(routerdbPath))
@@ -62,21 +61,60 @@ namespace Itinero.Transit.IO.OSM
         }
 
 
-        /// <summary>
-        /// Tries to calculate a route between the two given point.
-        /// Can be null if no route could be determined
-        /// </summary>
-        /// <returns></returns>
-        private Route CreateRouteBetween(IStopsReader stopsDb, LocationId start,
-            LocationId end)
+        public Journey<T> CreateDepartureTransfer<T>(IStopsReader stops, Journey<T> buildOn,
+            LocationId otherLocation) where T : IJourneyMetric<T>
         {
-            stopsDb.MoveTo(start);
-            var lat = (float) stopsDb.Latitude;
-            var lon = (float) stopsDb.Longitude;
+            if (Equals(otherLocation, buildOn.Location))
+            {
+                return null;
+            }
 
-            stopsDb.MoveTo(end);
-            var latE = (float) stopsDb.Latitude;
-            var lonE = (float) stopsDb.Longitude;
+
+            var totalTime = TimeBetween(stops, buildOn.Location, otherLocation);
+            if (totalTime == uint.MaxValue)
+            {
+                return null;
+            }
+
+            return buildOn.ChainSpecial(
+                Journey<T>.WALK, buildOn.Time + totalTime, otherLocation,
+                TripId.Walk);
+        }
+
+        public Journey<T> CreateArrivingTransfer<T>(IStopsReader stops, Journey<T> buildOn,
+            LocationId otherLocation) where T : IJourneyMetric<T>
+        {
+            if (Equals(otherLocation, buildOn.Location))
+            {
+                return null;
+            }
+
+            var totalTime = TimeBetween(stops, buildOn.Location, otherLocation);
+
+
+            if (totalTime == uint.MaxValue)
+            {
+                return null;
+            }
+
+            return buildOn.ChainSpecial(
+                Journey<T>.WALK, buildOn.Time - totalTime, otherLocation, TripId.Walk);
+        }
+
+        public uint TimeBetween(IStopsReader reader, LocationId from, LocationId to)
+        {
+            if (Equals(from, to))
+            {
+                return uint.MaxValue;
+            }
+
+            reader.MoveTo(from);
+            var lat = (float) reader.Latitude;
+            var lon = (float) reader.Longitude;
+
+            reader.MoveTo(to);
+            var latE = (float) reader.Latitude;
+            var lonE = (float) reader.Longitude;
 
             // ReSharper disable once RedundantArgumentDefaultValue
             var startPoint = _router.TryResolve(_walkingProfile, lat, lon, _searchDistance);
@@ -85,78 +123,17 @@ namespace Itinero.Transit.IO.OSM
 
             if (startPoint.IsError || endPoint.IsError)
             {
-                return null;
+                return uint.MaxValue;
             }
 
             var route = _router.TryCalculate(_walkingProfile, startPoint.Value, endPoint.Value);
-            return route.IsError ? null : route.Value;
-        }
 
-        public Journey<T> CreateDepartureTransfer<T>(IStopsReader stops, Journey<T> buildOn, ulong timeWhenDeparting,
-            LocationId otherLocation) where T : IJourneyMetric<T>
-        {
-            if (timeWhenDeparting < buildOn.Time)
-            {
-                throw new ArgumentException(
-                    "Seems like the connection you gave departs before the journey arrives. Are you building backward routes? Use the other method (CreateArrivingTransfer)");
-            }
-
-            if (Equals(otherLocation, buildOn.Location))
-            {
-                return null;
-            }
-
-            var route = CreateRouteBetween(stops, buildOn.Location, otherLocation);
-
-            var timeAvailable = timeWhenDeparting - buildOn.Time;
-            if (timeAvailable < route.TotalTime)
-            {
-                // Not enough time to walk
-                return null;
-            }
-
-            return buildOn.ChainSpecial(
-                Journey<T>.WALK, (uint) (buildOn.Time + route.TotalDistance), otherLocation,
-                TripId.Walk);
-        }
-
-        public Journey<T> CreateArrivingTransfer<T>(IStopsReader stops, Journey<T> buildOn, ulong timeWhenArriving,
-            LocationId otherLocation) where T : IJourneyMetric<T>
-        {
-            if (timeWhenArriving > buildOn.Time)
-            {
-                throw new ArgumentException(
-                    "Seems like the connection you gave arrives after the rest journey departs. Are you building forward routes? Use the other method (CreateDepartingTransfer)");
-            }
-
-            if (Equals(otherLocation, buildOn.Location))
-            {
-                return null;
-            }
-
-            var route = CreateRouteBetween(stops, buildOn.Location, otherLocation);
-
-            var timeAvailable = buildOn.Time - timeWhenArriving;
-            if (timeAvailable < route.TotalTime)
-            {
-                // Not enough time to walk
-                return null;
-            }
-
-
-            return buildOn.ChainSpecial(
-                Journey<T>.WALK, (uint) (timeWhenArriving + route.TotalTime), otherLocation, TripId.Walk);
-        }
-
-        public uint TimeBetween(IStopsReader reader, LocationId @from, LocationId to)
-        {
-            if (Equals(from, to))
+            if (route.IsError)
             {
                 return uint.MaxValue;
             }
 
-            var route = CreateRouteBetween(reader, from, to);
-            return (uint) route.TotalTime;
+            return (uint) route.Value.TotalTime;
         }
 
         public float Range()

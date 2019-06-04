@@ -5,6 +5,7 @@ using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Journey;
+using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Utils;
 

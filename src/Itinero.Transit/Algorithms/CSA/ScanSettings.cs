@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journey;
+using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
 
