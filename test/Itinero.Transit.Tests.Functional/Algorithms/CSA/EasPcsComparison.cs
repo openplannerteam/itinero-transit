@@ -11,9 +11,8 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
     {
         protected override bool Execute(WithTime<TransferMetric> input)
         {
-            var easJ = input.EarliestArrivalJourney();
-            input.ResetFilter();
-            
+            var easJ = input.EarliestArrivalJourney(
+                (tuple => input.End));
             
             var pcsJs = input.AllJourneys();
             var pcsJ = pcsJs.Last();

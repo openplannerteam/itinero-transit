@@ -478,7 +478,7 @@ namespace Itinero.Transit
         public DateTime End { get; private set; }
 
 
-        private IConnectionFilter _filter;
+        internal IConnectionFilter _filter;
 
         internal WithTime(IStopsReader stopsReader,
             IConnectionEnumerator connectionEnumerator,

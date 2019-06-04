@@ -10,8 +10,6 @@ using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
-    using UnixTime = UInt64;
-
 
     /// <summary>
     /// The ProfiledConnectionScan is a CSA that applies A* backward and builds profiles on how to reach a target stop.
@@ -27,7 +25,7 @@ namespace Itinero.Transit.Algorithms.CSA
     {
         private readonly IConnectionEnumerator _connections;
         private readonly IStopsReader _stopsReader;
-        private readonly UnixTime _earliestDeparture, _lastArrival;
+        private readonly ulong _earliestDeparture, _lastArrival;
         private readonly List<LocationId> _departureLocations;
         private readonly List<LocationId> _targetLocations;
 
@@ -229,8 +227,14 @@ namespace Itinero.Transit.Algorithms.CSA
                 return;
             }
 
-            if (_filter != null && !_filter.CanBeTaken(c))
+            if (_filter != null
+                && !_filter.CanBeTaken(c)
+                && !_tripJourneys.ContainsKey(c.TripId) 
+                && !_targetLocations.Contains(c.ArrivalStop)
+                && !_departureLocations.Contains(c.DepartureStop)
+                )
             {
+                // Why all those conditions? See https://github.com/openplannerteam/itinero-transit/issues/63
                 return;
             }
 

@@ -114,6 +114,7 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 if (!IntegrateBatch(enumerator))
                 {
+                    bestJourney = null;
                     break;
                 }
 

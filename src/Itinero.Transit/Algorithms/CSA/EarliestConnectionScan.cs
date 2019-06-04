@@ -102,6 +102,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 if (!IntegrateBatch(enumerator))
                 {
                     // Only happens if database is exhausted
+                    bestJourney = null;
                     break;
                 }
 
