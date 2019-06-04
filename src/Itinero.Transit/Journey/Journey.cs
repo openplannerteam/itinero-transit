@@ -295,6 +295,10 @@ namespace Itinero.Transit.Journey
                 Metric);
         }
 
+        
+        
+        
+        
 
         /// <summary>
         /// Returns the trip id of the most recent connection which has a valid trip.

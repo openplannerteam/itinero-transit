@@ -5,8 +5,8 @@ using System.Net;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Xml;
-using GeoAPI.Geometries;
 using GeoTimeZone;
+using Itinero.LocalGeo;
 using Itinero.Transit.IO.OSM.Data.OpeningHours;
 using Itinero.Transit.Utils;
 using OsmSharp;
@@ -77,7 +77,7 @@ namespace Itinero.Transit.IO.OSM.Data
                     throw new ArgumentNullException();
                 }
 
-                var coordinate = new Coordinate((double) node.Longitude, (double) node.Latitude);
+                var coordinate = new Coordinate((float) node.Latitude, (float) node.Longitude);
                 var nodeId = $"https://www.openstreetmap.org/node/{node.Id}";
                 stopPositions.Add((nodeId, coordinate, el.Tags));
             }
@@ -102,7 +102,7 @@ namespace Itinero.Transit.IO.OSM.Data
                     {
                         throw new ArgumentException("Got a node without latitude or longitude");
                     }
-                    
+
                     lat = node.Latitude.Value;
                     lon = node.Longitude.Value;
                     id = "node/" + node.Id;
@@ -113,7 +113,7 @@ namespace Itinero.Transit.IO.OSM.Data
                 }
 
 
-                var coordinate = new Coordinate(lon, lat);
+                var coordinate = new Coordinate((float) lat, (float) lon);
                 var nodeId = $"https://www.openstreetmap.org/{id}";
 
                 // We make sure that there is no stop closeby
@@ -121,8 +121,8 @@ namespace Itinero.Transit.IO.OSM.Data
                 var inRange = false;
                 foreach (var (_, coor0, _) in stopPositions)
                 {
-                    var lat0 = coor0.Y;
-                    var lon0 = coor0.X;
+                    var lat0 = coor0.Latitude;
+                    var lon0 = coor0.Longitude;
 
                     // ReSharper disable once InvertIf
                     if (DistanceEstimate.DistanceEstimateInMeter(lat, lon, lat0, lon0) < 25)
@@ -150,7 +150,7 @@ namespace Itinero.Transit.IO.OSM.Data
         public string GetTimeZone()
         {
             var coordinate = StopPositions[0].Item2;
-            return TimeZoneLookup.GetTimeZone(coordinate.X, coordinate.Y).Result;
+            return TimeZoneLookup.GetTimeZone(coordinate.Latitude, coordinate.Longitude).Result;
         }
 
 
