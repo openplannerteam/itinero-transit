@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
+
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 
 namespace Itinero.Transit.Algorithms.CSA
 {
@@ -37,7 +40,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as early as possible
         /// </summary>
-        private readonly Dictionary<LocationId, Journey<T>> _s =
+        internal readonly Dictionary<LocationId, Journey<T>> _s =
             new Dictionary<LocationId, Journey<T>>();
 
         /// <summary>
@@ -93,7 +96,7 @@ namespace Itinero.Transit.Algorithms.CSA
             var enumerator = _connections;
 
             enumerator.MoveNext(ScanBeginTime);
-            
+
             var lastDeparture = _lastArrival;
             Journey<T> bestJourney = null;
             while (enumerator.DepartureTime <= lastDeparture)
@@ -173,7 +176,6 @@ namespace Itinero.Transit.Algorithms.CSA
                 }
 
                 hasNext = enumerator.MoveNext();
-                
             } while (
                 hasNext &&
                 lastDepartureTime == enumerator.DepartureTime);
@@ -202,7 +204,6 @@ namespace Itinero.Transit.Algorithms.CSA
         private bool IntegrateConnection(
             IConnection c)
         {
-
             // The connection describes a random connection somewhere
             // Lets check if we can take it
 
@@ -233,8 +234,9 @@ namespace Itinero.Transit.Algorithms.CSA
             }
             else
             {
-                if (journeyTillDeparture.SpecialConnection && journeyTillDeparture.Connection == Journey<T>.GENESIS)
+                if (journeyTillDeparture.SpecialConnection)
                 {
+                    // We only insert a transfer after a 'normal' segment
                     journeyToArrival = journeyTillDeparture.ChainForward(c);
                 }
                 else
@@ -273,8 +275,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 _s[c.ArrivalStop] = journeyToArrival;
                 return true;
             }
-            
-            
+
 
             var oldJourney = _s[c.ArrivalStop];
             if (journeyToArrival.Time >= oldJourney.Time)
@@ -289,6 +290,16 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
+        /// <summary>
+        /// If the traveller arrives at a certain stop which has improved, this method:
+        /// - Clones the traveller
+        /// - Each of the clones walks towards a close enough stop
+        /// - Each of the clones checks if it arrives at his stop earlier then previously possible. If so, this is saved into the journey table `_s`
+        ///
+        /// This method is very unpure
+        /// </summary>
+        /// <param name="location"></param>
+        /// <exception cref="ArgumentException"></exception>
         private void WalkAwayFrom(LocationId location)
         {
             if (_walkPolicy == null || _walkPolicy.Range() <= 0f)

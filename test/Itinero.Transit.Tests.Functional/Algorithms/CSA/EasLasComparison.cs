@@ -21,8 +21,8 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 
             var lasJ =
                 input
-                    .DifferentTimes((easJ.Root.DepartureTime()).FromUnixTime(),
-                        (easJ.ArrivalTime()).FromUnixTime())
+                    .DifferentTimes(easJ.Root.DepartureTime().FromUnixTime(),
+                       easJ.ArrivalTime().FromUnixTime())
                     .LatestDepartureJourney();
 
 

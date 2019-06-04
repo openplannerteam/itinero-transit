@@ -236,8 +236,8 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
                 .EarliestArrivalJourney();
             Assert.NotNull(journey);
-            Assert.Equal(Journey<TransferMetric>.WALK, journey.PreviousLink.PreviousLink.Connection);
-            Assert.True(journey.PreviousLink.PreviousLink.SpecialConnection);
+            Assert.Equal(Journey<TransferMetric>.WALK, journey.PreviousLink.Connection);
+            Assert.True(journey.PreviousLink.SpecialConnection);
         }
 
         [Fact]
@@ -377,11 +377,11 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 ;
 
             Assert.NotNull(journey);
-            Assert.Equal(4, journey.AllParts().Count);
+            Assert.Equal(3, journey.AllParts().Count);
             Assert.Equal((uint) 0, journey.Connection);
             Assert.True(journey.PreviousLink.PreviousLink.SpecialConnection);
             Assert.Equal(Journey<TransferMetric>.WALK,
-                journey.PreviousLink.PreviousLink.Connection);
+                journey.PreviousLink.Connection);
 
             Assert.Equal((uint) 1, journey.Metric.NumberOfTransfers);
             Assert.Equal(1000, journey.Metric.WalkingTime);

@@ -1,17 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Itinero.Profiles;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
-using static Itinero.Osm.Vehicles.Vehicle;
-using Profile = Itinero.Profiles.Profile;
+using Vehicle = Itinero.Osm.Vehicles.Vehicle;
 
-namespace Itinero.Transit
+namespace Itinero.Transit.IO.OSM
 {
-    using UnixTime = UInt32;
-
-
     /// <inheritdoc />
     /// <summary>
     /// The transfer generator has the responsibility of creating
@@ -45,7 +42,7 @@ namespace Itinero.Transit
             Profile walkingProfile = null)
         {
             
-            _walkingProfile = walkingProfile ?? Pedestrian.Fastest();
+            _walkingProfile = walkingProfile ?? Vehicle.Pedestrian.Fastest();
             routerdbPath = Path.GetFullPath(routerdbPath);
             if (!KnownRouters.ContainsKey(routerdbPath))
             {
@@ -151,15 +148,15 @@ namespace Itinero.Transit
                 Journey<T>.WALK, (uint) (timeWhenArriving + route.TotalTime), otherLocation, TripId.Walk);
         }
 
-        public float TimeBetween(IStopsReader reader, LocationId @from, LocationId to)
+        public uint TimeBetween(IStopsReader reader, LocationId @from, LocationId to)
         {
             if (Equals(from, to))
             {
-                return float.NaN;
+                return uint.MaxValue;
             }
 
             var route = CreateRouteBetween(reader, from, to);
-            return route.TotalTime;
+            return (uint) route.TotalTime;
         }
 
         public float Range()

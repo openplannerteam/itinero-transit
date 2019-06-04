@@ -1,6 +1,7 @@
 using System;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
+using Itinero.Transit.IO.OSM;
 using Itinero.Transit.Journeys;
 using Itinero.Transit.Tests.Functional.Algorithms;
 

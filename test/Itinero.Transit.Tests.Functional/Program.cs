@@ -30,31 +30,11 @@ namespace Itinero.Transit.Tests.Functional
             EnableLogging();
 
             var devTestsOnly = args.Length == 0 || !args[0].Equals("--full-test-suite");
-            devTestsOnly = true;
+            devTestsOnly = false;
 
 
             if (devTestsOnly)
             {
-             //   new TestAllAlgorithms().ExecuteMultiModal(10);
-                new OsmRouteTest().Run();
-                /*
-              var input = TransitDb.ReadFrom(
-                          new List<string>
-                          {
-                              TestAllAlgorithms._nmbs,
-                              TestAllAlgorithms._osmCentrumShuttle,
-                              TestAllAlgorithms._delijnOVl
-                          }
-                      ).SelectProfile(new DefaultProfile())
-                      .SelectStops(TestAllAlgorithms.CoiseauKaaiOsm, TestAllAlgorithms.GentZwijnaardeDeLijn)
-                      .SelectTimeFrame(TestAllAlgorithms.TestDate.AddHours(09),
-                          TestAllAlgorithms.TestDate.AddHours(12))
-                  ;
-  
-  
-              new EasLasComparison().Run(input);
-              //*/
-
                 return;
             }
 

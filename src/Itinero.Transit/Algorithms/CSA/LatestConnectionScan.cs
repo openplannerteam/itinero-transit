@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Walks;
 using Itinero.Transit.Journeys;
+using Itinero.Transit.Logging;
 
+[assembly:InternalsVisibleTo("Itinero.Transit.Tests")]
 namespace Itinero.Transit.Algorithms.CSA
 {
     /// <summary>
@@ -51,7 +54,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as late as possible
         /// </summary>
-        private readonly Dictionary<LocationId, Journey<T>> _s =
+        internal readonly Dictionary<LocationId, Journey<T>> _s =
             new Dictionary<LocationId, Journey<T>>();
 
 
@@ -206,6 +209,7 @@ namespace Itinero.Transit.Algorithms.CSA
         private bool IntegrateConnection(
             IConnection c)
         {
+
             // The connection describes a random connection somewhere
             // Lets check if we can take it
 
@@ -238,8 +242,9 @@ namespace Itinero.Transit.Algorithms.CSA
             }
             else
             {
-                if (journeyFromArrival.SpecialConnection && journeyFromArrival.Connection == Journey<T>.GENESIS)
+                if (journeyFromArrival.SpecialConnection )
                 {
+                    // We only insert a transfer before a 'normal' connection
                     journeyFromDeparture = journeyFromArrival.ChainBackward(c);
                 }
                 else

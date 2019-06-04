@@ -604,6 +604,12 @@ namespace Itinero.Transit
             return las.Isochrone();
         }
 
+        /// <summary>
+        /// These are the scanSettings with all data.
+        /// They can be used e.g. for EAS, LAS and PCS not for others.
+        /// The main usage is testing though
+        /// </summary>
+        /// <returns></returns>
         internal ScanSettings<T> GetScanSettings()
         {
             return new ScanSettings<T>(
@@ -616,7 +622,10 @@ namespace Itinero.Transit
                 Profile.InternalTransferGenerator,
                 Profile.WalksGenerator,
                 From, To
-            );
+            )
+            {
+                Filter =  _filter
+            };
         }
 
         ///  <summary>
@@ -632,17 +641,7 @@ namespace Itinero.Transit
         {
             CheckAll();
 
-            var settings = new ScanSettings<T>(
-                StopsReader,
-                ConnectionEnumerator,
-                Start,
-                End,
-                Profile.MetricFactory,
-                Profile.ProfileComparator,
-                Profile.InternalTransferGenerator,
-                Profile.WalksGenerator,
-                From, To
-            );
+            var settings = GetScanSettings();
 
             Func<ulong, ulong, ulong> expandSearchLong = null;
 
@@ -677,17 +676,7 @@ namespace Itinero.Transit
             Func<(DateTime journeyStart, DateTime journeyEnd), DateTime> expandSearch = null)
         {
             CheckAll();
-            var settings = new ScanSettings<T>(
-                StopsReader,
-                ConnectionEnumerator,
-                Start,
-                End,
-                Profile.MetricFactory,
-                Profile.ProfileComparator,
-                Profile.InternalTransferGenerator,
-                Profile.WalksGenerator,
-                From, To
-            );
+            var settings = GetScanSettings();
 
             Func<ulong, ulong, ulong> expandSearchLong = null;
 
@@ -717,20 +706,7 @@ namespace Itinero.Transit
         public List<Journey<T>> AllJourneys()
         {
             CheckAll();
-            var settings = new ScanSettings<T>(
-                StopsReader,
-                ConnectionEnumerator,
-                Start,
-                End,
-                Profile.MetricFactory,
-                Profile.ProfileComparator,
-                Profile.InternalTransferGenerator,
-                Profile.WalksGenerator,
-                From, To
-            )
-            {
-                Filter = _filter
-            };
+            var settings = GetScanSettings();
             var pcs = new ProfiledConnectionScan<T>(settings);
             return pcs.CalculateJourneys();
         }

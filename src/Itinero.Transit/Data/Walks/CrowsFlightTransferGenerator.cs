@@ -33,15 +33,15 @@ namespace Itinero.Transit.Data.Walks
         }
 
 
-        public float TimeBetween(IStopsReader reader, LocationId from, LocationId to)
+        public uint TimeBetween(IStopsReader reader, LocationId from, LocationId to)
         {
             var distance = reader.CalculateDistanceBetween(from, to);
             if (distance > _maxDistance)
             {
-                return float.NaN;
+                return uint.MaxValue;
             }
 
-            return distance * _speed;
+            return (uint) (distance * _speed);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Itinero.Transit.Data.Walks
             LocationId otherLocation) where T : IJourneyMetric<T>
         {
             var time = TimeBetween(reader, buildOn.Location, otherLocation);
-            if (float.IsNaN(time))
+            if (uint.MaxValue == time)
             {
                 return null;
             }
@@ -65,7 +65,7 @@ namespace Itinero.Transit.Data.Walks
             }
 
             return buildOn.ChainSpecial(
-                Journey<T>.WALK, (ulong) arrivalTime, otherLocation, TripId.Walk);
+                Journey<T>.WALK, arrivalTime, otherLocation, TripId.Walk);
         }
 
 
@@ -74,7 +74,7 @@ namespace Itinero.Transit.Data.Walks
             LocationId otherLocation) where T : IJourneyMetric<T>
         {
             var time = TimeBetween(reader, buildOn.Location, otherLocation);
-            if (float.IsNaN(time))
+            if (uint.MaxValue == time)
             {
                 return null;
             }
@@ -87,7 +87,7 @@ namespace Itinero.Transit.Data.Walks
             }
 
             return buildOn.ChainSpecial(
-                Journey<T>.WALK, (ulong) arrivalTime, otherLocation, TripId.Walk);
+                Journey<T>.WALK, arrivalTime, otherLocation, TripId.Walk);
         }
 
         public float Range()

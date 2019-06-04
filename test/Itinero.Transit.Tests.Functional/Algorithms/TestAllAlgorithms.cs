@@ -34,9 +34,8 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
                 new EasPcsComparison(),
                 new EasLasComparison(),
                 new IsochroneTest(),
-                new MultiTransitDbTest() 
+                new MultiTransitDbTest()
             };
-
 
 
         public static readonly IReadOnlyList<string> testDbs = new[]
@@ -52,15 +51,15 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
 
 
         public const string _osmCentrumShuttle = "testdata/fixed-test-cases-osm-CentrumbusBrugge2019-05-30.transitdb";
-        public const string _nmbs =      "testdata/fixed-test-cases-sncb-2019-05-30.transitdb";
+        public const string _nmbs = "testdata/fixed-test-cases-sncb-2019-05-30.transitdb";
         public const string _delijnWvl = "testdata/fixed-test-cases-de-lijn-wvl-2019-05-30.transitdb";
         public const string _delijnOVl = "testdata/fixed-test-cases-de-lijn-ovl-2019-05-30.transitdb";
         public const string _delijnVlB = "testdata/fixed-test-cases-de-lijn-vlb-2019-05-30.transitdb";
         public const string _delijnLim = "testdata/fixed-test-cases-de-lijn-lim-2019-05-30.transitdb";
         public const string _delijnAnt = "testdata/fixed-test-cases-de-lijn-ant-2019-05-30.transitdb";
 
-        
-        public static DateTime TestDate = new DateTime(2019,05,30, 09,00,00).ToUniversalTime().Date;
+
+        public static DateTime TestDate = new DateTime(2019, 05, 30, 09, 00, 00).ToUniversalTime().Date;
 
         public const string Gent = "http://irail.be/stations/NMBS/008892007";
         public const string Brugge = "http://irail.be/stations/NMBS/008891009";
@@ -79,8 +78,8 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
 
         public const string GentZwijnaardeDeLijn = "https://data.delijn.be/stops/200657";
 
-       public const string StationBruggeOsm = "https://www.openstreetmap.org/node/6348496391";
-       public const string CoiseauKaaiOsm = "https://www.openstreetmap.org/node/6348562147";
+        public const string StationBruggeOsm = "https://www.openstreetmap.org/node/6348496391";
+        public const string CoiseauKaaiOsm = "https://www.openstreetmap.org/node/6348562147";
 
 
         /// <summary>
@@ -99,10 +98,10 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
             Execute(testDbs, TestDate,
                 a =>
                 {
-                    var list =  CreateInputs(a).Concat(CreateInputsMultiModal(a)).ToList();
+                    var list = CreateInputs(a).Concat(CreateInputsMultiModal(a)).ToList();
                     if (input >= 0)
                     {
-                        list = new List<WithTime<TransferMetric>>(){list[input]};
+                        list = new List<WithTime<TransferMetric>>() {list[input]};
                     }
 
                     return list;
@@ -205,7 +204,6 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
             var db = arg.Item1;
             var date = arg.Item2;
             var withProfile = db.SelectProfile(new DefaultProfile()).PrecalculateClosestStops();
-
 
             return new List<WithTime<TransferMetric>>
             {

@@ -39,8 +39,15 @@ namespace Itinero.Transit.Data.Walks
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        float TimeBetween(IStopsReader reader, LocationId from, LocationId to);
+        uint TimeBetween(IStopsReader reader, LocationId from, LocationId to);
 
+        /// <summary>
+        /// The maximum range of this IOtherModeGenerator, in meters.
+        /// This generator will only be asked to generate transfers within this range.
+        /// If an stop out of this range is given to create a transfer,
+        /// the implementation can choose to either return a valid transfer or to return null
+        /// </summary>
+        /// <returns></returns>
         float Range();
     }
 }
