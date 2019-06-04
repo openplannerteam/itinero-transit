@@ -1,4 +1,3 @@
-using System;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Metric;
