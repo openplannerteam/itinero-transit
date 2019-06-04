@@ -1,6 +1,6 @@
 using System.Diagnostics.Contracts;
 
-namespace Itinero.Transit.Data.OpeningHoursRDParser
+namespace Itinero.Transit.IO.OSM.Data.OpeningHours
 {
     /// <summary>
     /// This class implements Opening Hours Rules parsing, as declared by

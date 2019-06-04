@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using Itinero.Profiles;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Walks;
-using Itinero.Transit.Journeys;
+using Itinero.Transit.Journey;
+using Itinero.Transit.OtherMode;
 using Vehicle = Itinero.Osm.Vehicles.Vehicle;
 
 namespace Itinero.Transit.IO.OSM
@@ -22,11 +22,11 @@ namespace Itinero.Transit.IO.OSM
         private readonly Router _router;
         private readonly Profile _walkingProfile;
 
-        private const float SearchDistance = 50f;
+        private const float _searchDistance = 50f;
      
 
         // When  router db is loaded, it is saved into this dict to avoid reloading it
-        private static readonly Dictionary<string, Router> KnownRouters
+        private static readonly Dictionary<string, Router> _knownRouters
             = new Dictionary<string, Router>();
 
 
@@ -44,7 +44,7 @@ namespace Itinero.Transit.IO.OSM
             
             _walkingProfile = walkingProfile ?? Vehicle.Pedestrian.Fastest();
             routerdbPath = Path.GetFullPath(routerdbPath);
-            if (!KnownRouters.ContainsKey(routerdbPath))
+            if (!_knownRouters.ContainsKey(routerdbPath))
             {
                 using (var fs = new FileStream(routerdbPath, FileMode.Open, FileAccess.Read))
                 {
@@ -54,11 +54,11 @@ namespace Itinero.Transit.IO.OSM
                         throw new NullReferenceException("Could not load the routerDb");
                     }
 
-                    KnownRouters[routerdbPath] = new Router(routerDb);
+                    _knownRouters[routerdbPath] = new Router(routerDb);
                 }
             }
 
-            _router = KnownRouters[routerdbPath];
+            _router = _knownRouters[routerdbPath];
         }
 
 
@@ -79,9 +79,9 @@ namespace Itinero.Transit.IO.OSM
             var lonE = (float) stopsDb.Longitude;
 
             // ReSharper disable once RedundantArgumentDefaultValue
-            var startPoint = _router.TryResolve(_walkingProfile, lat, lon, SearchDistance);
+            var startPoint = _router.TryResolve(_walkingProfile, lat, lon, _searchDistance);
             // ReSharper disable once RedundantArgumentDefaultValue
-            var endPoint = _router.TryResolve(_walkingProfile, latE, lonE, SearchDistance);
+            var endPoint = _router.TryResolve(_walkingProfile, latE, lonE, _searchDistance);
 
             if (startPoint.IsError || endPoint.IsError)
             {
@@ -161,7 +161,7 @@ namespace Itinero.Transit.IO.OSM
 
         public float Range()
         {
-            return SearchDistance;
+            return _searchDistance;
         }
     }
 }

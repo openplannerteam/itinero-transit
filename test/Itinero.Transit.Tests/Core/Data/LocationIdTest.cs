@@ -1,9 +1,8 @@
-
 using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Xunit;
 
-namespace Itinero.Transit.Tests.Algorithm.Data
+namespace Itinero.Transit.Tests.Core.Data
 {
     public class LocationIdTest
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace Itinero.Transit.Data.Walks
+namespace Itinero.Transit.Utils
 {
     public static class DistanceEstimate
     {

@@ -1,6 +1,6 @@
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Walks;
-using Itinero.Transit.Journeys;
+using Itinero.Transit.Journey;
+using Itinero.Transit.OtherMode;
 
 namespace Itinero.Transit.Algorithms.CSA
 {

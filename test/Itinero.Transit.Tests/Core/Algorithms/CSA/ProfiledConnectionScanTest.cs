@@ -1,13 +1,13 @@
 using System;
 using System.Linq;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Walks;
-using Itinero.Transit.Journeys;
+using Itinero.Transit.Journey.Metric;
+using Itinero.Transit.OtherMode;
 using Xunit;
 
 // ReSharper disable PossibleMultipleEnumeration
 
-namespace Itinero.Transit.Tests.Algorithm.CSA
+namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 {
     public class ProfiledConnectionScanTest
     {

@@ -1,5 +1,5 @@
 using System.Linq;
-using Itinero.Transit.Journeys;
+using Itinero.Transit.Journey.Metric;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {

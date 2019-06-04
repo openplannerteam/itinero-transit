@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Itinero.Transit.IO.LC.Synchronization
+namespace Itinero.Transit.Data.Synchronization
 {
     /// <summary>
     /// Saves the database to the disk every now and then

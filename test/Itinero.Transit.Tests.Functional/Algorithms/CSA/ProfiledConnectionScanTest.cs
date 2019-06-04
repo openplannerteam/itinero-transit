@@ -1,5 +1,6 @@
 using System.Linq;
-using Itinero.Transit.Journeys;
+using Itinero.Transit.Journey;
+using Itinero.Transit.Journey.Metric;
 using Reminiscence.Collections;
 
 // ReSharper disable PossibleMultipleEnumeration

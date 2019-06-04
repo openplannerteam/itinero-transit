@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Walks;
-using Itinero.Transit.Journeys;
+using Itinero.Transit.Journey;
+using Itinero.Transit.Journey.Metric;
+using Itinero.Transit.OtherMode;
+using Itinero.Transit.Utils;
 using Xunit;
-namespace Itinero.Transit.Tests.Algorithm.CSA
+
+namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 {
     public class EarliestConnectionScanTests
     {

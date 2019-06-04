@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Walks;
-using Itinero.Transit.Journeys;
+using Itinero.Transit.Journey.Metric;
+using Itinero.Transit.OtherMode;
 using Itinero.Transit.Tests.Functional.Algorithms.CSA;
 using Serilog;
 

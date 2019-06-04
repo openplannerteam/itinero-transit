@@ -1,17 +1,16 @@
 using System.Linq;
-using Itinero.Attributes;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Aggregators;
 using Xunit;
 
-namespace Itinero.Transit.Tests.Algorithm.Data
+namespace Itinero.Transit.Tests.Core.Data
 {
     public class StopsAggregatorTest
     {
         [Fact]
         public void TestAggregator()
         {
-            var tdb0 = new TransitDb(0);
+            var tdb0 = new TransitDb();
             var wr0 = tdb0.GetWriter();
             wr0.AddOrUpdateStop("b", 4.2, 4.100001);
             wr0.Close();

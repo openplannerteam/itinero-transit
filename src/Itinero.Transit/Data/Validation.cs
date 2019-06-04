@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Data
 {

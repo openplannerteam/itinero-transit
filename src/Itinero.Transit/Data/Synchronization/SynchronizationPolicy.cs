@@ -1,6 +1,6 @@
 using System;
 
-namespace Itinero.Transit.IO.LC.Synchronization
+namespace Itinero.Transit.Data.Synchronization
 {
     public interface ISynchronizationPolicy
     {

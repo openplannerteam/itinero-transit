@@ -274,7 +274,7 @@ namespace Itinero.Transit.Data.Tiles
         
         private (double longitude, double latitude, bool hasData) GetEncodedLocation(uint pointer, Tile tile)
         {
-            const int TileResolutionInBits = _coordinateSizeInBytes * 8 / 2;
+            const int tileResolutionInBits = _coordinateSizeInBytes * 8 / 2;
             var locationPointer = pointer * (long)_coordinateSizeInBytes;
 
             if (locationPointer + 4 > _locations.Length)
@@ -293,10 +293,10 @@ namespace Itinero.Transit.Data.Tiles
             {
                 return (0, 0, false);
             }
-            var y = (int)localCoordinatesEncoded % (1 << TileResolutionInBits);
-            var x = (int)localCoordinatesEncoded >> TileResolutionInBits;
+            var y = (int)localCoordinatesEncoded % (1 << tileResolutionInBits);
+            var x = (int)localCoordinatesEncoded >> tileResolutionInBits;
 
-            var (longitude, latitude) = tile.FromLocalCoordinates(x, y, 1 << TileResolutionInBits);
+            var (longitude, latitude) = tile.FromLocalCoordinates(x, y, 1 << tileResolutionInBits);
 
             return (longitude, latitude, true);
         }

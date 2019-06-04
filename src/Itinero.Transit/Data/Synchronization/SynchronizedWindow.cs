@@ -1,7 +1,7 @@
 using System;
 using Itinero.Transit.Logging;
 
-namespace Itinero.Transit.IO.LC.Synchronization
+namespace Itinero.Transit.Data.Synchronization
 {
     /// <summary>
     /// A 'synchronizedWindow' represents a time window that should be (re)loaded regularly.

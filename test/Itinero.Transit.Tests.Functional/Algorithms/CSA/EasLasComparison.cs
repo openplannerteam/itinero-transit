@@ -1,5 +1,5 @@
-using Itinero.Transit.Journeys;
-using Reminiscence.Arrays;
+using Itinero.Transit.Journey.Metric;
+using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {

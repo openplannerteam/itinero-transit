@@ -3,6 +3,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Algorithms.Sorting;
+using Itinero.Transit.Utils;
 using Reminiscence;
 using Reminiscence.Arrays;
 

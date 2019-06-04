@@ -1,7 +1,8 @@
 using System;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Synchronization;
 using Itinero.Transit.IO.LC;
-using Itinero.Transit.IO.LC.Synchronization;
+using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Data
 {

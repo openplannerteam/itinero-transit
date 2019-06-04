@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using Itinero.Transit.Data;
-using Itinero.Transit.IO.LC.Synchronization;
+using Itinero.Transit.Data.Synchronization;
 using Xunit;
 
 namespace Itinero.Transit.Tests.IO.LC.Synchronization

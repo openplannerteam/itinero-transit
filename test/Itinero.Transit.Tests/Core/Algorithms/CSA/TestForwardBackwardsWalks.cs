@@ -1,11 +1,12 @@
 using System;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Walks;
-using Itinero.Transit.Journeys;
+using Itinero.Transit.Journey.Metric;
+using Itinero.Transit.OtherMode;
+using Itinero.Transit.Utils;
 using Xunit;
 
-namespace Itinero.Transit.Tests.Algorithm.CSA
+namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 {
     public class TestForwardBackwardsWalks
     {
@@ -49,20 +50,20 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             
             var eas = new EarliestConnectionScan<TransferMetric>(input.GetScanSettings());
             
-            Assert.True(eas._s.ContainsKey(stop0));
-            Assert.True(eas._s.ContainsKey(stop1));
+            Assert.True(eas.JourneyFromDepartureTable.ContainsKey(stop0));
+            Assert.True(eas.JourneyFromDepartureTable.ContainsKey(stop1));
 
-            Assert.Equal(tStart, eas._s[stop0].Time);
-            Assert.Equal((ulong) (tStart+d), eas._s[stop1].Time);
+            Assert.Equal(tStart, eas.JourneyFromDepartureTable[stop0].Time);
+            Assert.Equal(tStart+d, eas.JourneyFromDepartureTable[stop1].Time);
 
             
             var las = new LatestConnectionScan<TransferMetric>(input.GetScanSettings());
-            Assert.True(las._s.ContainsKey(stop0));
-            Assert.True(las._s.ContainsKey(stop1));
+            Assert.True(las.JourneysToArrivalStopTable.ContainsKey(stop0));
+            Assert.True(las.JourneysToArrivalStopTable.ContainsKey(stop1));
 
             // LAS is backwards and thus uses the latest arrival time and arrival stop
-            Assert.Equal(tStart+1000, las._s[stop1].Time);
-            Assert.Equal((ulong) (tStart+1000-d), las._s[stop0].Time);
+            Assert.Equal(tStart+1000, las.JourneysToArrivalStopTable[stop1].Time);
+            Assert.Equal(tStart+1000-d, las.JourneysToArrivalStopTable[stop0].Time);
 
 
             

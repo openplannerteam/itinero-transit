@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Data;
+using Itinero.Transit.IO.OSM.Data;
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Itinero.Transit.Tests.Functional.IO
 {
@@ -10,14 +12,14 @@ namespace Itinero.Transit.Tests.Functional.IO
     /// </summary>
     public class OsmTest : FunctionalTest<bool, string>
     {
-        public const string PRGentWeba = "https://www.openstreetmap.org/relation/9508548";
-        public const string PRGentWatersport = "https://www.openstreetmap.org/relation/9594575?xhr=1&map=6513";
+        public const string PrGentWeba = "https://www.openstreetmap.org/relation/9508548";
+        public const string PrGentWatersport = "https://www.openstreetmap.org/relation/9594575?xhr=1&map=6513";
         public const string ShuttleBrugge = "9413958";
 
         public static List<string> TestRelations = new[]
         {
-            PRGentWeba,
-            PRGentWatersport,
+            PrGentWeba,
+            PrGentWatersport,
             ShuttleBrugge
         }.ToList();
 

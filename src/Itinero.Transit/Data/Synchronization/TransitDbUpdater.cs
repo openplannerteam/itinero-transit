@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Itinero.Transit.Data;
-using Itinero.Transit.Data.Walks;
+using Itinero.Transit.Utils;
 
-namespace Itinero.Transit.IO.LC.Synchronization
+namespace Itinero.Transit.Data.Synchronization
 {
     
     /// <summary>

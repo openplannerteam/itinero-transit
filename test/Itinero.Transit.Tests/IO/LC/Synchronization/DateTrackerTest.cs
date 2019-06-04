@@ -1,8 +1,8 @@
 using System;
-using Itinero.Transit.Data.Walks;
+using Itinero.Transit.Utils;
 using Xunit;
 
-namespace Itinero.Transit.Tests.utils
+namespace Itinero.Transit.Tests.IO.LC.Synchronization
 {
     public class DateTrackerTest
     {

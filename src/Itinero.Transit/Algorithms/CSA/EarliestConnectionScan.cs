@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Walks;
-using Itinero.Transit.Journeys;
+using Itinero.Transit.Journey;
+using Itinero.Transit.OtherMode;
+using Itinero.Transit.Utils;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 
 namespace Itinero.Transit.Algorithms.CSA
 {
-    //using LocId = UInt64;
-    using Time = UInt64;
 
     /// <summary>
     /// Calculates the fastest journey from A to B starting at a given time; using CSA (forward A*).
@@ -27,9 +26,9 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <summary>
         /// The last allowed departure time. Note that scanning could continue after it, if a scan-overshoot is given
         /// </summary>
-        private readonly Time _lastArrival;
+        private readonly ulong _lastArrival;
 
-        public IReadOnlyDictionary<LocationId, Journey<T>> Isochrone() => _s;
+        internal IReadOnlyDictionary<LocationId, Journey<T>> Isochrone() => JourneyFromDepartureTable;
 
         public ulong ScanEndTime { get; private set; } = ulong.MinValue;
 
@@ -40,7 +39,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as early as possible
         /// </summary>
-        internal readonly Dictionary<LocationId, Journey<T>> _s =
+        internal readonly Dictionary<LocationId, Journey<T>> JourneyFromDepartureTable =
             new Dictionary<LocationId, Journey<T>>();
 
         /// <summary>
@@ -68,7 +67,7 @@ namespace Itinero.Transit.Algorithms.CSA
                                   loc, settings.EarliestDeparture.ToUnixTime(), settings.MetricFactory,
                                   Journey<T>.EarliestArrivalScanJourney);
 
-                _s.Add(loc, journey);
+                JourneyFromDepartureTable.Add(loc, journey);
                 // Walk away from this departure location, to have some more departure locations
                 WalkAwayFrom(loc);
             }
@@ -91,7 +90,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public Journey<T> CalculateJourney(Func<Time, Time, Time> depArrivalToTimeout = null)
+        public Journey<T> CalculateJourney(Func<ulong, ulong, ulong> depArrivalToTimeout = null)
         {
             var enumerator = _connections;
 
@@ -167,7 +166,7 @@ namespace Itinero.Transit.Algorithms.CSA
         {
             var improvedLocations = new HashSet<LocationId>();
             var lastDepartureTime = enumerator.DepartureTime;
-            var hasNext = true;
+            bool hasNext;
             do
             {
                 if (IntegrateConnection(enumerator))
@@ -270,21 +269,21 @@ namespace Itinero.Transit.Algorithms.CSA
                 return false;
             }
 
-            if (!_s.ContainsKey(c.ArrivalStop))
+            if (!JourneyFromDepartureTable.ContainsKey(c.ArrivalStop))
             {
-                _s[c.ArrivalStop] = journeyToArrival;
+                JourneyFromDepartureTable[c.ArrivalStop] = journeyToArrival;
                 return true;
             }
 
 
-            var oldJourney = _s[c.ArrivalStop];
+            var oldJourney = JourneyFromDepartureTable[c.ArrivalStop];
             if (journeyToArrival.Time >= oldJourney.Time)
             {
                 // No improvement - do not change anything
                 return false;
             }
 
-            _s[c.ArrivalStop] = journeyToArrival;
+            JourneyFromDepartureTable[c.ArrivalStop] = journeyToArrival;
 
             return true;
         }
@@ -315,7 +314,7 @@ namespace Itinero.Transit.Algorithms.CSA
             var reachableLocations =
                 _stopsReader.LocationsInRange(_stopsReader.Latitude, _stopsReader.Longitude, _walkPolicy.Range());
 
-            var journey = _s[location];
+            var journey = JourneyFromDepartureTable[location];
 
             foreach (var reachableLocation in reachableLocations)
             {
@@ -331,13 +330,13 @@ namespace Itinero.Transit.Algorithms.CSA
                     continue;
                 }
 
-                if (!_s.ContainsKey(id))
+                if (!JourneyFromDepartureTable.ContainsKey(id))
                 {
-                    _s[id] = walkingJourney;
+                    JourneyFromDepartureTable[id] = walkingJourney;
                 }
-                else if (_s[id].Time > walkingJourney.Time)
+                else if (JourneyFromDepartureTable[id].Time > walkingJourney.Time)
                 {
-                    _s[id] = walkingJourney;
+                    JourneyFromDepartureTable[id] = walkingJourney;
                 }
             }
         }
@@ -353,13 +352,13 @@ namespace Itinero.Transit.Algorithms.CSA
             var currentBestJourney = Journey<T>.InfiniteJourney;
             foreach (var (targetLoc, restingJourney) in _userTargetLocations)
             {
-                if (!_s.ContainsKey(targetLoc))
+                if (!JourneyFromDepartureTable.ContainsKey(targetLoc))
                 {
                     continue;
                 }
 
                 // The journey to 'targetLoc' according to the algorithm + the resting journey to 'go home'
-                var journey = _s[targetLoc].Append(restingJourney);
+                var journey = JourneyFromDepartureTable[targetLoc].Append(restingJourney);
 
                 if (journey.Time > _lastArrival)
                 {
@@ -383,8 +382,8 @@ namespace Itinero.Transit.Algorithms.CSA
         private Journey<T>
             GetJourneyTo(LocationId stop)
         {
-            return _s.ContainsKey(stop)
-                ? _s[stop]
+            return JourneyFromDepartureTable.ContainsKey(stop)
+                ? JourneyFromDepartureTable[stop]
                 : Journey<T>.InfiniteJourney;
         }
     }

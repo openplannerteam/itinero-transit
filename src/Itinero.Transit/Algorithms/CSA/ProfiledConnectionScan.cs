@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Walks;
-using Itinero.Transit.Journeys;
+using Itinero.Transit.Journey;
+using Itinero.Transit.Journey.Metric;
+using Itinero.Transit.OtherMode;
+using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
@@ -327,13 +329,13 @@ namespace Itinero.Transit.Algorithms.CSA
 
                 var timeNeeded = _walkPolicy.TimeBetween(_stopsReader, c.ArrivalStop, targetLocation);
 
-                if (float.IsNaN(timeNeeded))
+                if (uint.MaxValue == timeNeeded)
                 {
                     continue;
                 }
                 // We can walk to the target destination!
                 // When would be arriving...?
-                var arrivalTime = c.ArrivalTime + (uint) timeNeeded;
+                var arrivalTime = c.ArrivalTime + timeNeeded;
                 
                 // And more importantly, is it faster then an earlier found walking journey?
 

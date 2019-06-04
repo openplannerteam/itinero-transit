@@ -1,4 +1,5 @@
 using System;
+using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Data
 {

@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Functional")]
-namespace Itinero.Transit
+namespace Itinero.Transit.Utils
 {
     /// <summary>
     /// Contains extension methods to handle unix time.

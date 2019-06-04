@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Walks;
-using Itinero.Transit.Journeys;
-using Itinero.Transit.Logging;
+using Itinero.Transit.Journey;
+using Itinero.Transit.OtherMode;
+using Itinero.Transit.Utils;
 
 [assembly:InternalsVisibleTo("Itinero.Transit.Tests")]
 namespace Itinero.Transit.Algorithms.CSA
@@ -40,7 +40,7 @@ namespace Itinero.Transit.Algorithms.CSA
         public IReadOnlyDictionary<LocationId, Journey<T>> Isochrone()
         {
             var reversedJourneys = new Dictionary<LocationId, Journey<T>>();
-            foreach (var pair in _s)
+            foreach (var pair in JourneysToArrivalStopTable)
             {
                 // Due to the nature of LAS, there can be no choices in the journeys; reversal will only return one value
                 var prototype = pair.Value.Reversed()[0];
@@ -54,7 +54,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as late as possible
         /// </summary>
-        internal readonly Dictionary<LocationId, Journey<T>> _s =
+        internal readonly Dictionary<LocationId, Journey<T>> JourneysToArrivalStopTable =
             new Dictionary<LocationId, Journey<T>>();
 
 
@@ -79,7 +79,7 @@ namespace Itinero.Transit.Algorithms.CSA
                               ?? new Journey<T>(loc, settings.LastArrival.ToUnixTime(),
                                   settings.MetricFactory,
                                   Journey<T>.LatestArrivalScanJourney);
-                _s.Add(loc, journey);
+                JourneysToArrivalStopTable.Add(loc, journey);
                 // Allow an walk to end
                 WalkTowards(loc);
             }
@@ -279,20 +279,20 @@ namespace Itinero.Transit.Algorithms.CSA
             // At this point, we know that we can take this connection and end up at our destination
             // Only thing left to do: figuring out if this improves the journey from the departure location
 
-            if (!_s.ContainsKey(c.DepartureStop))
+            if (!JourneysToArrivalStopTable.ContainsKey(c.DepartureStop))
             {
-                _s[c.DepartureStop] = journeyFromDeparture;
+                JourneysToArrivalStopTable[c.DepartureStop] = journeyFromDeparture;
                 return true;
             }
 
-            var oldJourney = _s[c.DepartureStop];
+            var oldJourney = JourneysToArrivalStopTable[c.DepartureStop];
             // If the old journey departs later, it is better and we don't overwrite it
             if (journeyFromDeparture.Time <= oldJourney.Time)
             {
                 return false;
             }
 
-            _s[c.DepartureStop] = journeyFromDeparture;
+            JourneysToArrivalStopTable[c.DepartureStop] = journeyFromDeparture;
             return true;
         }
 
@@ -312,7 +312,7 @@ namespace Itinero.Transit.Algorithms.CSA
             var reachableLocations =
                 _stopsReader.LocationsInRange(_stopsReader.Latitude, _stopsReader.Longitude, _walkPolicy.Range());
 
-            var journey = _s[location];
+            var journey = JourneysToArrivalStopTable[location];
 
             foreach (var reachableLocation in reachableLocations)
             {
@@ -329,14 +329,14 @@ namespace Itinero.Transit.Algorithms.CSA
                     continue;
                 }
 
-                if (!_s.ContainsKey(id))
+                if (!JourneysToArrivalStopTable.ContainsKey(id))
                 {
-                    _s[id] = walkingJourney;
+                    JourneysToArrivalStopTable[id] = walkingJourney;
                 }
-                else if (_s[id].Time < walkingJourney.Time)
+                else if (JourneysToArrivalStopTable[id].Time < walkingJourney.Time)
                 {
                     // The new journey departs later -> we swap
-                    _s[id] = walkingJourney;
+                    JourneysToArrivalStopTable[id] = walkingJourney;
                 }
             }
         }
@@ -353,12 +353,12 @@ namespace Itinero.Transit.Algorithms.CSA
             var currentBestJourney = Journey<T>.NegativeInfiniteJourney;
             foreach (var (targetLoc, restingJourney) in _userDepartureLocation)
             {
-                if (!_s.ContainsKey(targetLoc))
+                if (!JourneysToArrivalStopTable.ContainsKey(targetLoc))
                 {
                     continue;
                 }
 
-                var journey = _s[targetLoc].Append(restingJourney);
+                var journey = JourneysToArrivalStopTable[targetLoc].Append(restingJourney);
 
                 if (journey.Time < _earliestDeparture)
                 {
@@ -379,8 +379,8 @@ namespace Itinero.Transit.Algorithms.CSA
         private Journey<T>
             GetJourneyFrom(LocationId location)
         {
-            return _s.ContainsKey(location)
-                ? _s[location]
+            return JourneysToArrivalStopTable.ContainsKey(location)
+                ? JourneysToArrivalStopTable[location]
                 : Journey<T>.NegativeInfiniteJourney;
         }
     }

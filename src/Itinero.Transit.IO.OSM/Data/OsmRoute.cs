@@ -7,8 +7,8 @@ using System.Runtime.CompilerServices;
 using System.Xml;
 using GeoAPI.Geometries;
 using GeoTimeZone;
-using Itinero.Transit.Data.OpeningHoursRDParser;
-using Itinero.Transit.Data.Walks;
+using Itinero.Transit.IO.OSM.Data.OpeningHours;
+using Itinero.Transit.Utils;
 using OsmSharp;
 using OsmSharp.Complete;
 using OsmSharp.Streams;
@@ -16,7 +16,7 @@ using OsmSharp.Tags;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Functional")]
 
-namespace Itinero.Transit.Data
+namespace Itinero.Transit.IO.OSM.Data
 {
     /// <summary>
     /// Loads a PTv2-route relation from OSM, and adds it to a transitDB (for a given time range)
@@ -96,19 +96,20 @@ namespace Itinero.Transit.Data
                 string id;
 
 
-                switch (el.Type)
+                if (el is Node node)
                 {
-                    case OsmGeoType.Node:
-                        var node = el as Node;
-                        lat = node.Latitude.Value;
-                        lon = node.Longitude.Value;
-                        id = "node/" + node.Id;
-                        break;
-                    case OsmGeoType.Way:
-                        throw new ArgumentException("Can not process ways which are a platform yet");
-                    case OsmGeoType.Relation:
-                        throw new ArgumentException("Can not process relations which are a platform");
-                    default: throw new ArgumentOutOfRangeException("Unkown geometry type");
+                    if (node.Latitude == null || node.Longitude == null)
+                    {
+                        throw new ArgumentException("Got a node without latitude or longitude");
+                    }
+                    
+                    lat = node.Latitude.Value;
+                    lon = node.Longitude.Value;
+                    id = "node/" + node.Id;
+                }
+                else
+                {
+                    throw new ArgumentException("Can not process ways and relations which are a platform yet");
                 }
 
 

@@ -1,6 +1,4 @@
-using System;
-using CacheCow.Common.Helpers;
-using Itinero.Transit.Data;
+using Itinero.Transit.IO.OSM.Data;
 
 namespace Itinero.Transit.Tests.Functional.IO.OSM
 {

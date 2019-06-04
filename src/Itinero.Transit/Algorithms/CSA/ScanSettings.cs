@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Walks;
-using Itinero.Transit.Journeys;
+using Itinero.Transit.Journey;
+using Itinero.Transit.Journey.Metric;
+using Itinero.Transit.OtherMode;
 
 namespace Itinero.Transit.Algorithms.CSA
 {

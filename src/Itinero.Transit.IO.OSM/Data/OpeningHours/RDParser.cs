@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 // ReSharper disable InconsistentNaming
 
 
-namespace Itinero.Transit.Data.OpeningHoursRDParser
+namespace Itinero.Transit.IO.OSM.Data.OpeningHours
 {
     // I had a major headache while writing this code. Make sure you don't get one too
 

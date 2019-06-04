@@ -3,19 +3,23 @@ using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
 using Xunit;
 
-namespace Itinero.Transit.Tests.Algorithm.Data
+namespace Itinero.Transit.Tests.Core.Data
 {
     public class SingleAttributeEnumeratorTest
     {
         private void Test(IStop source)
         {
             source.Attributes.TryGetValue("name", out var name);
+            Assert.NotNull(name);
+            Assert.NotEmpty(name);
             foreach (var attr in source.Attributes)
             {
                 if (attr.Key.StartsWith("name:"))
                 {
                     var v = attr.Value;
                     var k = attr.Key;
+                    Assert.StartsWith("name:",k);
+                    Assert.NotEmpty(v);
                 }
             }
         }
@@ -26,7 +30,7 @@ namespace Itinero.Transit.Tests.Algorithm.Data
             var tdb = new TransitDb();
             var wr = tdb.GetWriter();
 
-            var a = wr.AddOrUpdateStop("a", 1, 1, null);
+            var a = wr.AddOrUpdateStop("a", 1, 1);
             var b = wr.AddOrUpdateStop("b", 1, 1, new List<Attribute>());
             var c = wr.AddOrUpdateStop("c", 1, 1, new List<Attribute>
             {

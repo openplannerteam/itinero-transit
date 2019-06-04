@@ -1,11 +1,11 @@
-using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Walks;
-using Itinero.Transit.Journeys;
+using Itinero.Transit.Journey;
+using Itinero.Transit.Journey.Metric;
+using Itinero.Transit.OtherMode;
 using Xunit;
 
-namespace Itinero.Transit.Tests.Algorithm.CSA
+namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 {
     public class ParetoExtensionsTest
     {
@@ -42,7 +42,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
                 new InternalTransferGenerator());
             
             Assert.Equal(transfered, extended.Frontier[0].PreviousLink);
-            Assert.Equal(1,extended.Frontier.Count());
+            Assert.Single(extended.Frontier);
             
             extended = loc0Frontier.ExtendFrontierBackwards(
                 // Arrives at loc0 at 45 => both direct and transfered can be taken

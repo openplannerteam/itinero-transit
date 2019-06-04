@@ -1,4 +1,4 @@
-using Itinero.Transit.Journeys;
+using Itinero.Transit.Journey.Metric;
 
 // ReSharper disable UnusedMember.Local
 

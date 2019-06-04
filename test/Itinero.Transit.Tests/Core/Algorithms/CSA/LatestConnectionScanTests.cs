@@ -1,11 +1,13 @@
 using System;
 using System.Linq;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Walks;
-using Itinero.Transit.Journeys;
+using Itinero.Transit.Journey;
+using Itinero.Transit.Journey.Metric;
+using Itinero.Transit.OtherMode;
+using Itinero.Transit.Utils;
 using Xunit;
 
-namespace Itinero.Transit.Tests.Algorithm.CSA
+namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 {
     public class LatestConnectionScanTests
     {
@@ -121,7 +123,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
 
 
             var w0 = writer.AddOrUpdateStop("https://example.com/stops/2", 50.00001, 50.00001);
-            var w1 = writer.AddOrUpdateStop("https://example.com/stops/3", 0.00002, 0.00002);
+            writer.AddOrUpdateStop("https://example.com/stops/3", 0.00002, 0.00002);
 
             writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
@@ -157,7 +159,7 @@ namespace Itinero.Transit.Tests.Algorithm.CSA
             var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.000001,0.00001); // very walkable distance
 
 
-            var w0 = writer.AddOrUpdateStop("https://example.com/stops/2", 50.00001, 50.00001);
+            writer.AddOrUpdateStop("https://example.com/stops/2", 50.00001, 50.00001);
             var w1 = writer.AddOrUpdateStop("https://example.com/stops/3", 0.00002, 0.00002);
 
             writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",

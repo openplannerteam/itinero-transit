@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
-using Itinero.Transit.IO.LC.Synchronization;
+using Itinero.Transit.Data.Synchronization;
 
 namespace Itinero.Transit.IO.LC
 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Aggregators;
+using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Data
 {

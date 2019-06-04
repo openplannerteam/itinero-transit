@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Itinero.Transit.Journeys;
+using Itinero.Transit.Journey;
 
 namespace Itinero.Transit.Algorithms.CSA
 {

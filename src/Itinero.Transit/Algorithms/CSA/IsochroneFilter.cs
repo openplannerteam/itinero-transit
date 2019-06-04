@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Data;
-using Itinero.Transit.Journeys;
+using Itinero.Transit.Journey;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 

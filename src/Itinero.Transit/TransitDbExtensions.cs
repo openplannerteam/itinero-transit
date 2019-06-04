@@ -4,8 +4,9 @@ using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Aggregators;
-using Itinero.Transit.Journeys;
+using Itinero.Transit.Journey;
 using Itinero.Transit.Logging;
+using Itinero.Transit.Utils;
 
 // ReSharper disable PossibleMultipleEnumeration
 

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Aggregators;
-using OsmSharp.IO.PBF;
 
 namespace Itinero.Transit.Tests.Functional.Data
 {
@@ -16,11 +15,15 @@ namespace Itinero.Transit.Tests.Functional.Data
 
             Information(reader.GlobalId);
             var n = reader.Attributes;
-            
+            n.TryGetValue("name", out var name);
+
+            NotNull(name);
             True(reader.MoveTo("http://irail.be/stations/NMBS/008892007"));
 
             n = reader.Attributes;
-            
+            n.TryGetValue("name", out name);
+            NotNull(name);
+
             return true;
         }
     }

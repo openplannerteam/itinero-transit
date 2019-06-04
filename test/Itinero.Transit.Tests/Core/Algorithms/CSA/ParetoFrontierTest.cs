@@ -1,10 +1,10 @@
-using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
-using Itinero.Transit.Journeys;
+using Itinero.Transit.Journey;
+using Itinero.Transit.Journey.Metric;
 using Xunit;
 
-namespace Itinero.Transit.Tests.Algorithm.CSA
+namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 {
     public class ParetoFrontierTest
     {

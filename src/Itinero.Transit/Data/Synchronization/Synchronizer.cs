@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
-using Itinero.Transit.Data;
 using Itinero.Transit.Logging;
+using Itinero.Transit.Utils;
 
-namespace Itinero.Transit.IO.LC.Synchronization
+namespace Itinero.Transit.Data.Synchronization
 {
     /// <summary>
     /// This class keeps track of the 'SynchronizerPolicies' which are in use and triggers them every now and then to load them

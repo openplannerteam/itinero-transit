@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Itinero.Transit.Data;
 using Itinero.Transit.Logging;
+using Itinero.Transit.Utils;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
-namespace Itinero.Transit.Data
+namespace Itinero.Transit.IO.OSM.Data
 {
     /// <summary>
     /// Adds a OsmRoute to a transitDb

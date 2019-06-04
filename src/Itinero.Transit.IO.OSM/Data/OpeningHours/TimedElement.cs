@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 
-namespace Itinero.Transit.Data.OpeningHoursRDParser
+namespace Itinero.Transit.IO.OSM.Data.OpeningHours
 {
     /// <summary>
     /// A timed element is a cyclical element (in time) which is used to describe time patterns (esp. opening hours).
@@ -180,7 +180,7 @@ namespace Itinero.Transit.Data.OpeningHoursRDParser
 
         private int CurrentWeek(DateTime dt)
         {
-            return (dt.DayOfYear - (((int) dt.DayOfWeek + 6) % 7) + 11) / 7;
+            return (dt.DayOfYear - ((int) dt.DayOfWeek + 6) % 7 + 11) / 7;
         }
 
         private static DateTime DateFromWeekNumber(int year, int weekNumber, int dayOfWeek = 0)

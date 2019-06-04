@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Itinero.Transit.Data.Walks
+namespace Itinero.Transit.Utils
 {
     /// <summary>
     /// Basically a list of time windows.

@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using Itinero.Transit.Data;
-using Itinero.Transit.Journeys;
+using Itinero.Transit.Journey;
 
 // ReSharper disable UnusedMember.Global
 
