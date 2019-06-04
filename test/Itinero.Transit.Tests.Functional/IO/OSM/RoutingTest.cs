@@ -17,6 +17,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
 
             var tdb = TransitDb.ReadFrom(TestAllAlgorithms._nmbs, 0);
 
+            throw new NotImplementedException("IMPLEMENT ME BEN");
             var profile = new Profile<TransferMetric>(
                 new InternalTransferGenerator(),
                 new OsmTransferGenerator(null), // This will probably change
@@ -26,7 +27,6 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
             tdb.SelectProfile(profile)
                 .SelectStops(TestAllAlgorithms.Brugge, TestAllAlgorithms.Vielsalm);
             
-            throw new NotImplementedException("IMPLEMENT ME BEN");
             
             
         }
