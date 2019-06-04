@@ -1,5 +1,4 @@
 using Itinero.Transit.Data;
-using Itinero.Transit.Journey;
 
 namespace Itinero.Transit.OtherMode
 {
@@ -9,23 +8,7 @@ namespace Itinero.Transit.OtherMode
     /// </summary>
     public interface IOtherModeGenerator
     {
-        /// <summary>
-        /// Create a new journey, which extends 'buildOn' with 'nextConnection'
-        /// This might return null if the transfer time is too short.
-        /// This might involve querying for footpaths
-        /// </summary>
-        Journey<T> CreateDepartureTransfer<T>(IStopsReader stopsDb, Journey<T> buildOn,
-            LocationId otherLocation) where T : IJourneyMetric<T>;
-
-
-        /// <summary>
-        /// Reverse add connection. Chains the transfer and connection to the given journey.
-        /// However, this is the method to use for journeys which are built backwards in time 
-        /// </summary>
-        Journey<T> CreateArrivingTransfer<T>(IStopsReader stopsDb, Journey<T> buildOn,
-            LocationId otherLocation) where T : IJourneyMetric<T>;
-
-
+    
         /// <summary>
         /// Gives the time needed to travel from this stop to the next.
         /// This can be used to do time estimations.

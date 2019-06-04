@@ -247,9 +247,8 @@ namespace Itinero.Transit.Algorithms.CSA
                     if (journeyTillDeparture.Time + timeNeeded <= c.DepartureTime)
                     {
                         journeyToArrival =
-                            _transferPolicy
-                                .CreateDepartureTransfer(_stopsReader, journeyTillDeparture,
-                                    c.DepartureStop)
+                            journeyTillDeparture
+                                .ChainForwardWith(_stopsReader, _transferPolicy, c.DepartureStop)
                                 ?.ChainForward(c);
                     }
                     else
@@ -335,7 +334,8 @@ namespace Itinero.Transit.Algorithms.CSA
                     continue;
                 }
 
-                var walkingJourney = _walkPolicy.CreateDepartureTransfer(_stopsReader, journey, id);
+                var walkingJourney =
+                    journey.ChainForwardWith(_stopsReader, _walkPolicy, id);
                 if (walkingJourney == null)
                 {
                     continue;

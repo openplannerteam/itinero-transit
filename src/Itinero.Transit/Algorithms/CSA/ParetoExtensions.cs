@@ -44,9 +44,10 @@ namespace Itinero.Transit.Algorithms.CSA
                 }
                 else
                 {
-                    extendedJourney = transferPolicy
-                        .CreateArrivingTransfer(stopsReader, journey, c.ArrivalStop)
-                        ?.ChainBackward(c);
+                    extendedJourney =
+                        journey
+                            .ChainBackwardWith(stopsReader, transferPolicy, c.ArrivalStop)
+                            ?.ChainBackward(c);
                 }
 
                 if (extendedJourney != null)
@@ -55,7 +56,6 @@ namespace Itinero.Transit.Algorithms.CSA
                     // when the journey departs before we arrive in the station
                     newFrontier.AddToFrontier(extendedJourney);
                 }
-
             }
 
             return newFrontier;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using Itinero.Profiles;
 using Itinero.Transit.Data;
-using Itinero.Transit.Journey;
 using Itinero.Transit.OtherMode;
 using Vehicle = Itinero.Osm.Vehicles.Vehicle;
 
@@ -60,46 +59,6 @@ namespace Itinero.Transit.IO.OSM
             _router = _knownRouters[routerdbPath];
         }
 
-
-        public Journey<T> CreateDepartureTransfer<T>(IStopsReader stops, Journey<T> buildOn,
-            LocationId otherLocation) where T : IJourneyMetric<T>
-        {
-            if (Equals(otherLocation, buildOn.Location))
-            {
-                return null;
-            }
-
-
-            var totalTime = TimeBetween(stops, buildOn.Location, otherLocation);
-            if (totalTime == uint.MaxValue)
-            {
-                return null;
-            }
-
-            return buildOn.ChainSpecial(
-                Journey<T>.WALK, buildOn.Time + totalTime, otherLocation,
-                TripId.Walk);
-        }
-
-        public Journey<T> CreateArrivingTransfer<T>(IStopsReader stops, Journey<T> buildOn,
-            LocationId otherLocation) where T : IJourneyMetric<T>
-        {
-            if (Equals(otherLocation, buildOn.Location))
-            {
-                return null;
-            }
-
-            var totalTime = TimeBetween(stops, buildOn.Location, otherLocation);
-
-
-            if (totalTime == uint.MaxValue)
-            {
-                return null;
-            }
-
-            return buildOn.ChainSpecial(
-                Journey<T>.WALK, buildOn.Time - totalTime, otherLocation, TripId.Walk);
-        }
 
         public uint TimeBetween(IStopsReader reader, LocationId from, LocationId to)
         {

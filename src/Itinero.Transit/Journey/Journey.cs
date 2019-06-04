@@ -2,6 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Itinero.Transit.Data;
+using Itinero.Transit.OtherMode;
 using Itinero.Transit.Utils;
 
 // ReSharper disable StaticMemberInGenericType
@@ -295,10 +296,31 @@ namespace Itinero.Transit.Journey
                 Metric);
         }
 
-        
-        
-        
-        
+
+        public Journey<T> ChainForwardWith(IStopsReader reader, IOtherModeGenerator otherModeGenerator, LocationId otherLocation)
+        {
+            var time = otherModeGenerator.TimeBetween(reader, Location, otherLocation);
+            // ReSharper disable once ConvertIfStatementToReturnStatement
+            if (uint.MaxValue == time)
+            {
+                return null;
+            }
+
+            return ChainSpecial(WALK, Time + time, otherLocation, TripId.Walk);
+        }
+        public Journey<T> ChainBackwardWith(IStopsReader reader, IOtherModeGenerator otherModeGenerator, LocationId otherLocation)
+        {
+            var time = otherModeGenerator.TimeBetween(reader, Location, otherLocation);
+            // ReSharper disable once ConvertIfStatementToReturnStatement
+            if (uint.MaxValue == time)
+            {
+                return null;
+            }
+
+            // Pretty much the only difference is the '-' here instead of a '+' with the forward method
+            return ChainSpecial(WALK, Time - time, otherLocation, TripId.Walk);
+        }
+
 
         /// <summary>
         /// Returns the trip id of the most recent connection which has a valid trip.

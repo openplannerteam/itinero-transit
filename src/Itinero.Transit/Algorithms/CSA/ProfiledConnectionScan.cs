@@ -356,10 +356,9 @@ namespace Itinero.Transit.Algorithms.CSA
                     Journey<T>.ProfiledScanJourney);
 
 
-                var journeyWithWalkOnly = _walkPolicy.CreateArrivingTransfer(
-                    _stopsReader,
-                    genesisEnd,
-                    c.ArrivalStop);
+                var journeyWithWalkOnly =
+
+                    genesisEnd.ChainBackwardWith(_stopsReader, _walkPolicy, c.ArrivalStop);
 
                 if (journeyWithWalkOnly == null)
                 {
@@ -452,8 +451,8 @@ namespace Itinero.Transit.Algorithms.CSA
                 foreach (var journey in journeys.Frontier)
                 {
                     // Create a walk from 'possibleStartingStop' to 'cDepartureStop', where an optimal journey is taken to the destination
-                    var journeyWithWalk = _walkPolicy.CreateArrivingTransfer(
-                        _stopsReader, journey, stopId);
+                    var journeyWithWalk =
+                        journey.ChainBackwardWith(_stopsReader, _walkPolicy, stopId);
 
                     // And add this journey with walk to the pareto frontier
                     if (!_stationJourneys.ContainsKey(stopId))
