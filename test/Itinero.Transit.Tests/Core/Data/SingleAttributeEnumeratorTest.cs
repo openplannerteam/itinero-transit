@@ -10,15 +10,18 @@ namespace Itinero.Transit.Tests.Core.Data
         private void Test(IStop source)
         {
             source.Attributes.TryGetValue("name", out var name);
-            Assert.NotNull(name);
-            Assert.NotEmpty(name);
+            if (name != null)
+            {
+                Assert.NotEmpty(name);
+            }
+
             foreach (var attr in source.Attributes)
             {
                 if (attr.Key.StartsWith("name:"))
                 {
                     var v = attr.Value;
                     var k = attr.Key;
-                    Assert.StartsWith("name:",k);
+                    Assert.StartsWith("name:", k);
                     Assert.NotEmpty(v);
                 }
             }
