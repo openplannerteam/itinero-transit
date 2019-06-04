@@ -80,7 +80,7 @@ namespace Itinero.Transit.Journey.Metric
 
 
             ulong walkingTime = 0;
-            if (journey.SpecialConnection && journey.Connection == Journey<TransferMetric>.WALK)
+            if (journey.SpecialConnection && journey.Connection == Journey<TransferMetric>.OTHERMODE)
             {
                 walkingTime = travelTime;
             }

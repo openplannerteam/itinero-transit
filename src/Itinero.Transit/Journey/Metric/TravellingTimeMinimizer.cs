@@ -58,11 +58,11 @@ namespace Itinero.Transit.Journey.Metric
 
             var journeyTime = (uint) (journey.ArrivalTime() - journey.DepartureTime());
 
-            if (journey.SpecialConnection && journey.Connection == Journey<TravellingTimeMinimizer>.WALK)
+            if (journey.SpecialConnection && journey.Connection == Journey<TravellingTimeMinimizer>.OTHERMODE)
             {
                 totalTimeWalking += journeyTime;
             }
-            else if (journey.SpecialConnection && journey.Connection == Journey<TravellingTimeMinimizer>.TRANSFER)
+            else if (journey.SpecialConnection && journey.Connection == Journey<TravellingTimeMinimizer>.OTHERMODE)
             {
                 smallestTransfer = Math.Min(smallestTransfer, journeyTime);
             }
