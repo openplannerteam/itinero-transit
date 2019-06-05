@@ -15,14 +15,9 @@
 
     <ItemGroup>
         <PackageReference Include="GeoTimeZone" Version="3.2.0" />
-        <PackageReference Include="Itinero" Version="1.4.0-pre91" />
-        <PackageReference Include="Itinero.IO.Osm" Version="1.4.0-pre91" />
-        <PackageReference Include="NetTopologySuite" Version="1.15.2" />
-        <PackageReference Include="NetTopologySuite.Core" Version="1.15.2" />
-        <PackageReference Include="NetTopologySuite.Features" Version="1.15.0" />
-        <PackageReference Include="NodaTime" Version="3.0.0-alpha01" />
-        <PackageReference Include="OsmSharp" Version="6.1.0" />
-        <PackageReference Include="OsmSharp.Geo" Version="6.1.0" />
+        <PackageReference Include="Itinero" Version="1.4.0-pre99" />
+        <PackageReference Include="Itinero.IO.OSM" Version="1.4.0-pre99" />
+        <PackageReference Include="NodaTime" Version="2.4.5" />
     </ItemGroup>
 
     <ItemGroup>

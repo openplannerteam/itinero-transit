@@ -1,3 +1,4 @@
+using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journey;
 using Itinero.Transit.OtherMode;
@@ -44,9 +45,10 @@ namespace Itinero.Transit.Algorithms.CSA
                 }
                 else
                 {
-                    extendedJourney = transferPolicy
-                        .CreateArrivingTransfer(stopsReader, journey, c.ArrivalStop)
-                        ?.ChainBackward(c);
+                    extendedJourney =
+                        journey
+                            .ChainBackwardWith(stopsReader, transferPolicy, c.ArrivalStop)
+                            ?.ChainBackward(c);
                 }
 
                 if (extendedJourney != null)
@@ -55,7 +57,6 @@ namespace Itinero.Transit.Algorithms.CSA
                     // when the journey departs before we arrive in the station
                     newFrontier.AddToFrontier(extendedJourney);
                 }
-
             }
 
             return newFrontier;
@@ -84,7 +85,10 @@ namespace Itinero.Transit.Algorithms.CSA
                 smallest = b;
             }
 
-            biggest.AddAllToFrontier(smallest.Frontier);
+
+            // AddAllToFrontier uses 'yield return'.
+            // Consuming the enumerator with 'toList' makes sure every yield is executed and thus that every journey is added
+            biggest.AddAllToFrontier(smallest.Frontier) .ToList();
 
             return biggest;
         }

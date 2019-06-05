@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
-using Itinero.Transit.Journey;
-using Itinero.Transit.Journey.Filter;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 
-namespace Itinero.Transit.Algorithms.CSA
+namespace Itinero.Transit.Journey.Filter
 {
     internal static class MaskFilterConstructors
     {

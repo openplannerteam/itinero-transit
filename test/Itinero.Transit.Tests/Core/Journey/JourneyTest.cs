@@ -1,4 +1,3 @@
-using System;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Metric;
@@ -29,7 +28,7 @@ namespace Itinero.Transit.Tests.Core.Journey
 
             Assert.True(j0.SpecialConnection);
             Assert.Equal(j, j0.PreviousLink);
-            Assert.Equal(Journey<TransferMetric>.TRANSFER, j0.Connection);
+            Assert.Equal(Journey<TransferMetric>.OTHERMODE, j0.Connection);
             Assert.Equal((ulong) 10, j0.Time);
         }
     }

@@ -247,9 +247,8 @@ namespace Itinero.Transit.Algorithms.CSA
                     if (journeyTillDeparture.Time + timeNeeded <= c.DepartureTime)
                     {
                         journeyToArrival =
-                            _transferPolicy
-                                .CreateDepartureTransfer(_stopsReader, journeyTillDeparture,
-                                    c.DepartureStop)
+                            journeyTillDeparture
+                                .ChainForwardWith(_stopsReader, _transferPolicy, c.DepartureStop)
                                 ?.ChainForward(c);
                     }
                     else
@@ -317,29 +316,11 @@ namespace Itinero.Transit.Algorithms.CSA
                 return;
             }
 
-            if (!_stopsReader.MoveTo(location))
-            {
-                throw new ArgumentException($"Location {location} not found, could not move to it");
-            }
-
-            var reachableLocations =
-                _stopsReader.LocationsInRange(_stopsReader.Latitude, _stopsReader.Longitude, _walkPolicy.Range());
-
             var journey = JourneyFromDepartureTable[location];
 
-            foreach (var reachableLocation in reachableLocations)
+            foreach (var walkingJourney in journey.WalkAwayFrom(_walkPolicy, _stopsReader))
             {
-                var id = reachableLocation.Id;
-                if (id.Equals(location))
-                {
-                    continue;
-                }
-
-                var walkingJourney = _walkPolicy.CreateDepartureTransfer(_stopsReader, journey, id);
-                if (walkingJourney == null)
-                {
-                    continue;
-                }
+                var id = walkingJourney.Location;
 
                 if (!JourneyFromDepartureTable.ContainsKey(id))
                 {

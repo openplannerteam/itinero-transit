@@ -1,7 +1,6 @@
 using System;
-using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
-using Itinero.Transit.IO.LC.Data;
+using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Utils;
@@ -114,7 +113,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
         }
 
         [Fact]
-        public void IsochroneFilterWithPCSTest()
+        public void IsochroneFilterWithPcsTest()
         {
             // A small regression test
             // Build an isochronefilter, then calculate all journeys via PCS
@@ -127,7 +126,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.0,
                 0.0); 
 
-            var connId = writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
+            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
 
             writer.Close();
@@ -147,8 +146,8 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
                         new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
                 ;
             input.IsochroneFrom();
-            Assert.NotNull(input._filter);
-            Assert.True(input._filter is IsochroneFilter<TransferMetric>);
+            Assert.NotNull(input.Filter);
+            Assert.True(input.Filter is IsochroneFilter<TransferMetric>);
 
             var journeys = input.AllJourneys();
             Assert.NotNull(journeys);
@@ -202,8 +201,8 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             input.ResetFilter();
             
             input.IsochroneFrom();
-            Assert.NotNull(input._filter);
-            Assert.True(input._filter is IsochroneFilter<TransferMetric>);
+            Assert.NotNull(input.Filter);
+            Assert.True(input.Filter is IsochroneFilter<TransferMetric>);
 
             var journeys = input.AllJourneys();
             Assert.NotNull(journeys);

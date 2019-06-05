@@ -1,5 +1,5 @@
+using System.Collections.Generic;
 using Itinero.Transit.Data;
-using Itinero.Transit.Journey;
 
 namespace Itinero.Transit.OtherMode
 {
@@ -17,37 +17,18 @@ namespace Itinero.Transit.OtherMode
         }
 
 
-        public Journey<T> CreateDepartureTransfer<T>(IStopsReader _, Journey<T> buildOn,
-            LocationId otherLocation) where T : IJourneyMetric<T>
-        {
-            // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (!otherLocation.Equals(buildOn.Location))
-            {
-                // Internal transfer policy does not take care of different locations
-                return null;
-            }
-
-            return buildOn.Transfer(buildOn.Time + _internalTransferTime);
-        }
-
-        public Journey<T> CreateArrivingTransfer<T>(IStopsReader _, Journey<T> buildOn,
-            LocationId otherLocation) where T : IJourneyMetric<T>
-        {
-
-            // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (!otherLocation.Equals(buildOn.Location))
-            {
-                return null;
-            }
-
-            return buildOn.Transfer(buildOn.Time - _internalTransferTime);
-        }
-
         public uint TimeBetween(IStopsReader _, LocationId from, LocationId to)
         {
             return !from.Equals(to) ? 
                 uint.MaxValue : 
                 _internalTransferTime;
+        }
+
+        public Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, LocationId @from, IEnumerable<LocationId> to)
+        {
+            // It is a tad weird to have this method implemented, as this one only works when from == to...
+            // But well, here we go anyway
+            return this.DefaultTimesBetween(reader, from, to);
         }
 
         public float Range()

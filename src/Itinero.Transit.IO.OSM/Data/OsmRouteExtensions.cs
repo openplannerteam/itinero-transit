@@ -40,7 +40,7 @@ namespace Itinero.Transit.IO.OSM.Data
                     attr.Add(new Attribute(tag.Key, tag.Value));
                 }
 
-                stopIds.Add(wr.AddOrUpdateStop(id, coordinate.X, coordinate.Y, attr));
+                stopIds.Add(wr.AddOrUpdateStop(id, coordinate.Longitude, coordinate.Latitude, attr));
             }
 
 
@@ -149,7 +149,7 @@ namespace Itinero.Transit.IO.OSM.Data
 
 
                 var con = new SimpleConnection(0,
-                    $"https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route={l0Coor.Y}%2C{l0Coor.X}%3B{l1Coor.Y}%2C{l1Coor.X}" +
+                    $"https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route={l0Coor.Latitude}%2C{l0Coor.Longitude}%3B{l1Coor.Latitude}%2C{l1Coor.Longitude}" +
                     $"&from={l0Id}&to={l1Id}",
                     l0, l1, depTime.ToUnixTime(), travelTime, 0, 0, mode, tripId);
                 conns.AddLast((vehicleId, con));

@@ -92,13 +92,21 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
         /// <summary>
-        /// Considers all of the journeys to append them to the frontier
+        /// Considers all of the journeys to append them to the frontier.
+        /// Returns all journeys which were added to the frontier
+        ///
+        /// IMPORTANT: Make sure to consume the iterator! Otherwise the 'yield returns' won't execute everything
+        /// 
         /// </summary>
-        public void AddAllToFrontier(IEnumerable<Journey<T>> journeys)
+        public IEnumerable<Journey<T>> AddAllToFrontier(IEnumerable<Journey<T>> journeys)
         {
             foreach (var journey in journeys)
             {
-                AddToFrontier(journey);
+                var wasAdded = AddToFrontier(journey);
+                if (wasAdded)
+                {
+                    yield return journey;
+                }
             }
         }
 

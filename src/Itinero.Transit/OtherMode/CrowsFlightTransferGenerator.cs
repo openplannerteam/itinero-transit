@@ -1,5 +1,5 @@
+using System.Collections.Generic;
 using Itinero.Transit.Data;
-using Itinero.Transit.Journey;
 
 namespace Itinero.Transit.OtherMode
 {
@@ -45,40 +45,11 @@ namespace Itinero.Transit.OtherMode
             return (uint) (distance * _speed);
         }
 
-        /// <summary>
-        /// Adds a walk to 'targetLocation' at the end of the journey 'buildOn'
-        /// </summary>
-        public Journey<T> CreateDepartureTransfer<T>(IStopsReader reader, Journey<T> buildOn,
-            LocationId otherLocation) where T : IJourneyMetric<T>
+        public Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, LocationId @from, IEnumerable<LocationId> to)
         {
-            var time = TimeBetween(reader, buildOn.Location, otherLocation);
-            if (uint.MaxValue == time)
-            {
-                return null;
-            }
-
-            var arrivalTime = buildOn.Time + time;
-
-
-            return buildOn.ChainSpecial(
-                Journey<T>.WALK, arrivalTime, otherLocation, TripId.Walk);
+            return this.DefaultTimesBetween(reader, from, to);
         }
 
-
-        public Journey<T> CreateArrivingTransfer<T>(IStopsReader reader, Journey<T> buildOn,
-            LocationId otherLocation) where T : IJourneyMetric<T>
-        {
-            var time = TimeBetween(reader, buildOn.Location, otherLocation);
-            if (uint.MaxValue == time)
-            {
-                return null;
-            }
-
-            var arrivalTime = buildOn.Time - time;
-
-            return buildOn.ChainSpecial(
-                Journey<T>.WALK, arrivalTime, otherLocation, TripId.Walk);
-        }
 
         public float Range()
         {

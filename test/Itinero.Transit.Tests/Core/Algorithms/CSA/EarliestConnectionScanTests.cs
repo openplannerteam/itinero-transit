@@ -238,7 +238,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
                 .EarliestArrivalJourney();
             Assert.NotNull(journey);
-            Assert.Equal(Journey<TransferMetric>.WALK, journey.PreviousLink.Connection);
+            Assert.Equal(Journey<TransferMetric>.OTHERMODE, journey.PreviousLink.Connection);
             Assert.True(journey.PreviousLink.SpecialConnection);
         }
 
@@ -307,7 +307,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             {
                 (stop2,
                     new Journey<TransferMetric>(stop2, 0, profile.MetricFactory, new TripId(0, 42))
-                        .ChainSpecial(Journey<TransferMetric>.WALK, 100, stop2, new TripId(0, 0))
+                        .ChainSpecial(Journey<TransferMetric>.OTHERMODE, 100, stop2, new TripId(0, 0))
                 )
             };
 
@@ -323,7 +323,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             Assert.NotNull(journey);
             Assert.Equal(3, journey.AllParts().Count);
-            Assert.Equal(Journey<TransferMetric>.WALK, journey.Connection);
+            Assert.Equal(Journey<TransferMetric>.OTHERMODE, journey.Connection);
             Assert.True(journey.SpecialConnection);
             Assert.False(journey.PreviousLink.SpecialConnection);
             Assert.Equal((uint) 0, journey.PreviousLink.Connection);
@@ -363,7 +363,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             {
                 (stop1,
                     new Journey<TransferMetric>(stop1, startTime.ToUnixTime(), profile.MetricFactory, new TripId(0, 42))
-                        .ChainSpecial(Journey<TransferMetric>.WALK,
+                        .ChainSpecial(Journey<TransferMetric>.OTHERMODE,
                             startTime.ToUnixTime() + 1000, stop1, tripId: new TripId(0, 42))
                 )
             };
@@ -382,7 +382,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             Assert.Equal(3, journey.AllParts().Count);
             Assert.Equal((uint) 0, journey.Connection);
             Assert.True(journey.PreviousLink.PreviousLink.SpecialConnection);
-            Assert.Equal(Journey<TransferMetric>.WALK,
+            Assert.Equal(Journey<TransferMetric>.OTHERMODE,
                 journey.PreviousLink.Connection);
 
             Assert.Equal((uint) 1, journey.Metric.NumberOfTransfers);

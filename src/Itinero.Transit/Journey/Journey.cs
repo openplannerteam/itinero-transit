@@ -2,6 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Itinero.Transit.Data;
+using Itinero.Transit.OtherMode;
 using Itinero.Transit.Utils;
 
 // ReSharper disable StaticMemberInGenericType
@@ -71,15 +72,9 @@ namespace Itinero.Transit.Journey
         public const uint GENESIS = 1;
 
         /// <summary>
-        /// Constant indicating that the traveller doesn't move, but waits or changes platform
-        /// Also used as filler between the genesis and first departure
+        /// Constant indicating that the traveller is in some 'other mode', e.g. transfering, waiting or walking between stops
         /// </summary>
-        // ReSharper disable once MemberCanBePrivate.Global
-        // ReSharper disable once InconsistentNaming
-        public const uint TRANSFER = 2;
-
-        // ReSharper disable once InconsistentNaming
-        public const uint WALK = 3;
+        public const uint OTHERMODE = 2;
 
         /// <summary>
         /// Indicates that this journey represents a choice
@@ -291,8 +286,33 @@ namespace Itinero.Transit.Journey
             // Creating the transfer
             return new Journey<T>(
                 // ReSharper disable once ArrangeThisQualifier
-                Root, this, true, TRANSFER, this.Location, departureTime, new TripId(uint.MaxValue, uint.MaxValue),
+                Root, this, true, OTHERMODE, this.Location, departureTime, new TripId(uint.MaxValue, uint.MaxValue),
                 Metric);
+        }
+
+
+        public Journey<T> ChainForwardWith(IStopsReader reader, IOtherModeGenerator otherModeGenerator, LocationId otherLocation)
+        {
+            var time = otherModeGenerator.TimeBetween(reader, Location, otherLocation);
+            // ReSharper disable once ConvertIfStatementToReturnStatement
+            if (uint.MaxValue == time)
+            {
+                return null;
+            }
+
+            return ChainSpecial(OTHERMODE, Time + time, otherLocation, TripId.Walk);
+        }
+        public Journey<T> ChainBackwardWith(IStopsReader reader, IOtherModeGenerator otherModeGenerator, LocationId otherLocation)
+        {
+            var time = otherModeGenerator.TimeBetween(reader, Location, otherLocation);
+            // ReSharper disable once ConvertIfStatementToReturnStatement
+            if (uint.MaxValue == time)
+            {
+                return null;
+            }
+
+            // Pretty much the only difference is the '-' here instead of a '+' with the forward method
+            return ChainSpecial(OTHERMODE, Time - time, otherLocation, TripId.Walk);
         }
 
 
@@ -478,12 +498,9 @@ namespace Itinero.Transit.Journey
 
                     return
                         $"Genesis at {location}, time is {Time.FromUnixTime():HH:mm}{freeForm}";
-                case WALK:
+                case OTHERMODE:
                     return
-                        $"Walk to {location} in {(long) Time - (long) PreviousLink.Time} seconds till it is {Time.FromUnixTime():HH:mm:ss}";
-                case TRANSFER:
-                    return
-                        $"Transfer/Wait for {Time - PreviousLink.Time} seconds till {Time.FromUnixTime():HH:mm} in {location}";
+                        $"Transfer/Wait/Walk for {Math.Abs((float) Time - PreviousLink.Time)} seconds till {Time.FromUnixTime():HH:mm} in/to {location}";
                 case JOINED_JOURNEYS:
                     return
                         $"Choose a journey: there is a equivalent journey available. Continuing print via one arbitrary option";

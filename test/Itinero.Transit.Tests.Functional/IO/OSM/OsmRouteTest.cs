@@ -18,8 +18,8 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
             foreach (var stopPosition in route.StopPositions)
             {
                 var (_, coor, _) = stopPosition;
-                True(coor.Y > 49); // Lat
-                True(coor.X < 6); // Lon
+                True(coor.Latitude > 49); // Lat
+                True(coor.Longitude < 6); // Lon
             }
             
             return true;
