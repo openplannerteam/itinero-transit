@@ -315,27 +315,12 @@ namespace Itinero.Transit.Algorithms.CSA
                 return;
             }
 
-            if (!_stopsReader.MoveTo(location))
-            {
-                throw new ArgumentException($"Location {location} not found, could not move to it");
-            }
-
-            var reachableLocations =
-                _stopsReader.LocationsInRange(_stopsReader.Latitude, _stopsReader.Longitude, _walkPolicy.Range());
-
             var journey = JourneysToArrivalStopTable[location];
 
-            foreach (var reachableLocation in reachableLocations)
+            foreach (var walkingJourney in journey.WalkTowards(_walkPolicy, _stopsReader))
             {
-                var id = reachableLocation.Id;
+                var id = walkingJourney.Location;
                 if (id.Equals(location))
-                {
-                    continue;
-                }
-
-                var walkingJourney =
-                    journey.ChainBackwardWith(_stopsReader, _walkPolicy, id);
-                if (walkingJourney == null)
                 {
                     continue;
                 }

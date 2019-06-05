@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Itinero.Transit.Data;
 
 namespace Itinero.Transit.OtherMode
@@ -21,6 +22,13 @@ namespace Itinero.Transit.OtherMode
             return !from.Equals(to) ? 
                 uint.MaxValue : 
                 _internalTransferTime;
+        }
+
+        public Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, LocationId @from, IEnumerable<LocationId> to)
+        {
+            // It is a tad weird to have this method implemented, as this one only works when from == to...
+            // But well, here we go anyway
+            return this.DefaultTimesBetween(reader, from, to);
         }
 
         public float Range()

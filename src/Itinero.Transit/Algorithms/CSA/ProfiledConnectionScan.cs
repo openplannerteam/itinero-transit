@@ -10,7 +10,6 @@ using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
-
     /// <summary>
     /// The ProfiledConnectionScan is a CSA that applies A* backward and builds profiles on how to reach a target stop.
     ///
@@ -26,8 +25,8 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly IConnectionEnumerator _connections;
         private readonly IStopsReader _stopsReader;
         private readonly ulong _earliestDeparture, _lastArrival;
-        private readonly List<LocationId> _departureLocations;
-        private readonly List<LocationId> _targetLocations;
+        private readonly HashSet<LocationId> _departureLocations;
+        private readonly HashSet<LocationId> _targetLocations;
 
         private readonly ProfiledMetricComparator<T> _comparator;
 
@@ -108,7 +107,7 @@ namespace Itinero.Transit.Algorithms.CSA
         ///  </summary>
         public ProfiledConnectionScan(ScanSettings<T> settings)
         {
-            _targetLocations = new List<LocationId>();
+            _targetLocations = new HashSet<LocationId>();
             foreach (var (target, journey) in settings.TargetStop)
             {
                 if (journey != null)
@@ -119,7 +118,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 _targetLocations.Add(target);
             }
 
-            _departureLocations = new List<LocationId>();
+            _departureLocations = new HashSet<LocationId>();
             foreach (var (target, journey) in settings.DepartureStop)
             {
                 if (journey != null)
@@ -229,10 +228,10 @@ namespace Itinero.Transit.Algorithms.CSA
 
             if (_filter != null
                 && !_filter.CanBeTaken(c)
-                && !_tripJourneys.ContainsKey(c.TripId) 
+                && !_tripJourneys.ContainsKey(c.TripId)
                 && !_targetLocations.Contains(c.ArrivalStop)
                 && !_departureLocations.Contains(c.DepartureStop)
-                )
+            )
             {
                 // Why all those conditions? See https://github.com/openplannerteam/itinero-transit/issues/63
                 return;
@@ -258,7 +257,7 @@ namespace Itinero.Transit.Algorithms.CSA
             }
 
             /*
-             We have handled this connection and have a few journeys containing C
+             We have handled this connection and have a few journeys containing C taking us to a destination.
              This means we can update the various tables for the rest of the algo.
              
              The first to update is the trip table, where we add the best option.
@@ -280,14 +279,15 @@ namespace Itinero.Transit.Algorithms.CSA
                 _stationJourneys[c.DepartureStop] = new ParetoFrontier<T>(_comparator);
             }
 
-            _stationJourneys[c.DepartureStop].AddAllToFrontier(journeys.Frontier);
+            var addedJourneys = _stationJourneys[c.DepartureStop].AddAllToFrontier(journeys.Frontier);
 
 
             /*We can depart at c.DepartureStop quite optimally.
              This means that we can walk from other locations to here to take an optimal journey to the destination
-             UpdateFootpaths calculates all those walks and adds them to the _stationJourneys
+             UpdateFootpaths calculates all those walks and adds them to the _stationJourneys.
+             (Note that all 'addedJourneys' have location == 'c.DepartureStop'
              */
-            UpdateFootpaths(journeys, c.DepartureStop);
+            UpdateFootpaths(addedJourneys, c.DepartureStop);
         }
 
 
@@ -305,70 +305,68 @@ namespace Itinero.Transit.Algorithms.CSA
                 return Journey<T>.InfiniteJourney;
             }
 
-
-            Journey<T> journeyWithWalk = null;
-
-            foreach (var targetLocation in _targetLocations)
+            if (_targetLocations.Contains(c.ArrivalStop))
             {
-                if (Equals(c.ArrivalStop, targetLocation))
-                {
-                    // We are at a possible target location
-                    // No real need to walk
-                    var arrivingJourney = new Journey<T>
-                    (targetLocation, c.ArrivalTime, _metricFactory.Zero(),
-                        Journey<T>.ProfiledScanJourney);
-                    var journey = arrivingJourney.ChainBackward(c);
-                    return journey;
-                }
+                // We already are at a possible target location
 
-                // We walk from the connection to the target location...
-
-                if (_walkPolicy == null)
-                {
-                    // We are not able to walk - no such policy given
-                    continue;
-                }
-
-                // The journey which walks towards the stop
-                // We start by calculating the time needed
-
-                var timeNeeded = _walkPolicy.TimeBetween(_stopsReader, c.ArrivalStop, targetLocation);
-
-                if (uint.MaxValue == timeNeeded)
-                {
-                    continue;
-                }
-                // We can walk to the target destination!
-                // When would be arriving...?
-                var arrivalTime = c.ArrivalTime + timeNeeded;
-                
-                // And more importantly, is it faster then an earlier found walking journey?
-
-                if (journeyWithWalk != null && journeyWithWalk.Time < arrivalTime)
-                {
-                    // NO! The already found journey with walk is faster
-                    continue;
-                }
-
-                var genesisEnd = new Journey<T>
-                (targetLocation,arrivalTime,
-                    _metricFactory.Zero(),
+                // We create a genesis journey...
+                var arrivingJourney = new Journey<T>
+                (c.ArrivalStop, c.ArrivalTime, _metricFactory.Zero(),
                     Journey<T>.ProfiledScanJourney);
-
-
-                var journeyWithWalkOnly =
-
-                    genesisEnd.ChainBackwardWith(_stopsReader, _walkPolicy, c.ArrivalStop);
-
-                if (journeyWithWalkOnly == null)
-                {
-                    continue;
-                }
-                journeyWithWalk = journeyWithWalkOnly.ChainBackward(c);
-
+                // ... and put 'C' before it
+                var journey = arrivingJourney.ChainBackward(c);
+                return journey;
             }
 
-            return journeyWithWalk;
+
+            // We are not at a destination, lets walk!
+            if (_walkPolicy == null)
+            {
+                // well, to walk, we need a walk policy...
+                return null;
+            }
+
+
+            // Let's calculate the various times to walk towards each possible destination
+            var walkingTimes = _walkPolicy.TimesBetween(_stopsReader, c.ArrivalStop, _targetLocations);
+
+            if (walkingTimes == null || walkingTimes.Count == 0)
+            {
+                return null;
+            }
+
+            // Ofc, we only care about the fastest arrival:
+
+            LocationId? fastestTarget = null;
+            var fastestTime = uint.MaxValue;
+            foreach (var kvpair in walkingTimes)
+            {
+                var targetLoc = kvpair.Key;
+                var timeNeeded = kvpair.Value;
+                if (timeNeeded < fastestTime)
+                {
+                    fastestTime = timeNeeded;
+                    fastestTarget = targetLoc;
+                }
+            }
+
+            if (fastestTarget == null)
+            {
+                return null;
+            }
+
+            return
+                // The 'genesis' indicating when we arrive ... 
+                new Journey<T>
+                    (fastestTarget.Value, c.ArrivalTime + fastestTime,
+                        _metricFactory.Zero(),
+                        Journey<T>.ProfiledScanJourney)
+                    // ... the walking part ...
+                    .ChainSpecial
+                        (Journey<T>.OTHERMODE, c.ArrivalTime, c.ArrivalStop, TripId.Walk)
+                    // ... the connection part ...
+                    .ChainBackward(c)
+                ;
         }
 
         /// <summary>
@@ -424,44 +422,32 @@ namespace Itinero.Transit.Algorithms.CSA
 
         /// <summary>
         /// When a departure stop can be reached by a new journey, each close by stop can be reached via walking too
-        /// This method creates all those footpaths and transfers 
+        /// This method creates all those footpaths and transfers.
+        ///
+        /// Note that every journey should have 'Location' to be equal 'cDepartureLocation'
         /// </summary>
         /// <param name="journeys"></param>
         /// <param name="cDepartureStop"></param>
-        private void UpdateFootpaths(ParetoFrontier<T> journeys, LocationId cDepartureStop)
+        private void UpdateFootpaths(IEnumerable<Journey<T>> journeys, LocationId cDepartureStop)
         {
-            if (_walkPolicy.Range() <= 0f)
+            if (_walkPolicy == null || _walkPolicy.Range() <= 0f)
             {
                 return;
             }
 
-            _stopsReader.MoveTo(cDepartureStop);
-            var nearbyStops = _stopsReader.LocationsInRange
-                (_stopsReader.Latitude, _stopsReader.Longitude, _walkPolicy.Range());
+            var withWalks = journeys.WalkTowards(cDepartureStop, _walkPolicy, _stopsReader);
 
 
-            foreach (var possibleStartingStop in nearbyStops)
+            foreach (var j in withWalks)
             {
-                var stopId = possibleStartingStop.Id;
-                if (stopId.Equals(cDepartureStop))
+                var stopId = j.Location;
+                // And add this journey with walk to the pareto frontier
+                if (!_stationJourneys.ContainsKey(stopId))
                 {
-                    continue;
+                    _stationJourneys[stopId] = new ParetoFrontier<T>(_comparator);
                 }
 
-                foreach (var journey in journeys.Frontier)
-                {
-                    // Create a walk from 'possibleStartingStop' to 'cDepartureStop', where an optimal journey is taken to the destination
-                    var journeyWithWalk =
-                        journey.ChainBackwardWith(_stopsReader, _walkPolicy, stopId);
-
-                    // And add this journey with walk to the pareto frontier
-                    if (!_stationJourneys.ContainsKey(stopId))
-                    {
-                        _stationJourneys[stopId] = new ParetoFrontier<T>(_comparator);
-                    }
-
-                    _stationJourneys[stopId].AddToFrontier(journeyWithWalk);
-                }
+                _stationJourneys[stopId].AddToFrontier(j);
             }
         }
 
@@ -494,15 +480,17 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 var location = option.Key;
                 var frontier = option.Value;
-                
+
                 var journeys = new List<Journey<T>>();
 
                 foreach (var j in frontier.Frontier)
                 {
                     j.ReverseAndAddTo(journeys);
                 }
+
                 isochrone.Add(location, journeys);
             }
+
             return isochrone;
         }
     }

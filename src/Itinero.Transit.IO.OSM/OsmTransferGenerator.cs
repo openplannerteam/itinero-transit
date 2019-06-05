@@ -95,6 +95,11 @@ namespace Itinero.Transit.IO.OSM
             return (uint) route.Value.TotalTime;
         }
 
+        public Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, LocationId @from, IEnumerable<LocationId> to)
+        {
+            throw new NotImplementedException();
+        }
+
         public float Range()
         {
             return _searchDistance;

@@ -1,3 +1,4 @@
+using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journey;
 using Itinero.Transit.OtherMode;
@@ -84,7 +85,10 @@ namespace Itinero.Transit.Algorithms.CSA
                 smallest = b;
             }
 
-            biggest.AddAllToFrontier(smallest.Frontier);
+
+            // AddAllToFrontier uses 'yield return'.
+            // Consuming the enumerator with 'toList' makes sure every yield is executed and thus that every journey is added
+            biggest.AddAllToFrontier(smallest.Frontier) .ToList();
 
             return biggest;
         }

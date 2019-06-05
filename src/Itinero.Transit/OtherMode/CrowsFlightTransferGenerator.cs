@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Itinero.Transit.Data;
 
 namespace Itinero.Transit.OtherMode
@@ -42,6 +43,11 @@ namespace Itinero.Transit.OtherMode
             }
 
             return (uint) (distance * _speed);
+        }
+
+        public Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, LocationId @from, IEnumerable<LocationId> to)
+        {
+            return this.DefaultTimesBetween(reader, from, to);
         }
 
 
