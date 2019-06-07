@@ -18,7 +18,7 @@ namespace Itinero.Transit.OtherMode
         }
 
 
-        public uint TimeBetween(IStopsReader _, (double latitude, double longitude) from, IStop to)
+        public uint TimeBetween((double latitude, double longitude) from, IStop to)
         {
             // The distance should be small enough
             // ReSharper disable once ConvertIfStatementToReturnStatement

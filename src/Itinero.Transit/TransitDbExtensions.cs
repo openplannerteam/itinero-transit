@@ -204,21 +204,24 @@ namespace Itinero.Transit
         internal readonly IConnectionEnumerator ConnectionEnumerator;
         internal readonly IConnectionReader ConnectionReader;
         internal readonly Profile<T> Profile;
+        public readonly uint DatabaseCount;
 
         internal WithProfile(
             IStopsReader stops,
             IConnectionEnumerator connections,
             IConnectionReader connectionsReaders,
-            Profile<T> profile)
+            Profile<T> profile, uint databaseCount)
         {
             StopsReader = stops;
             ConnectionEnumerator = connections;
             ConnectionReader = connectionsReaders;
             Profile = profile;
+            DatabaseCount = databaseCount;
         }
 
         internal WithProfile(IEnumerable<TransitDb.TransitDbSnapShot> tdbs, Profile<T> profile)
         {
+            DatabaseCount = (uint) tdbs.Count();
             StopsReader = StopsReaderAggregator.CreateFrom(tdbs);
             ConnectionEnumerator = ConnectionEnumeratorAggregator.CreateFrom(tdbs);
             ConnectionReader = ConnectionReaderAggregator.CreateFrom(tdbs);
@@ -280,7 +283,8 @@ namespace Itinero.Transit
                     walksGenCache,
                     Profile.MetricFactory,
                     Profile.ProfileComparator
-                )
+                ),
+                DatabaseCount
             );
         }
 
@@ -288,11 +292,9 @@ namespace Itinero.Transit
         /// This method is mainly used to inject a floating StopsReader into the profile.
         ///
         /// Do think about the caching behaviour:
-        /// tdbs.UseProfile(p).PrecalculateClosestStops().AddStopsReader(<some floating which accumulates stops>)
+        /// tdbs.UseProfile(p).PrecalculateClosestStops().AddStopsReader([some floating which accumulates stops])
         /// will not cache the floating points.
-        /// 
         /// </summary>
-        /// <returns></returns>
         [Pure]
         public WithProfile<T> AddStopsReader(IStopsReader stopsReader)
         {
@@ -303,7 +305,8 @@ namespace Itinero.Transit
                 }),
                 ConnectionEnumerator,
                 ConnectionReader,
-                Profile
+                Profile,
+                DatabaseCount+1
             );
         }
 

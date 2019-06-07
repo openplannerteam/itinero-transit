@@ -10,7 +10,36 @@ namespace Itinero.Transit.Tests.IO.OSM
     public class EasWithOsmFloatingPointsTest
     {
         [Fact]
-        public void WithBeginOSMWalk()
+        public void WithOsmWalk()
+        {
+            var transitDb = new TransitDb();
+            var writer = transitDb.GetWriter();
+
+            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
+            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.000001,
+                0.00001); // very walkable distance
+
+
+            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+
+            writer.Close();
+
+            var input = transitDb
+                .SelectProfile(new DefaultProfile())
+                .SelectStops((50.0, 50.0), (0.0, 0.0))
+                .SelectTimeFrame(
+                    new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
+                    new DateTime(2018, 12, 04, 10, 00, 00, DateTimeKind.Utc));
+
+            var eas = input.EarliestArrivalJourney();
+            Assert.NotNull(eas);
+
+        }
+
+
+        [Fact]
+        public void WithBeginOsmWalk()
         {
             // build a one-connection db.
             var transitDb = new TransitDb();
@@ -47,9 +76,8 @@ namespace Itinero.Transit.Tests.IO.OSM
                 .SelectStops(departureLocation, "https://example.com/stops/1")
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc));
-           
-            
-            
+
+
             var journey = input.EarliestArrivalJourney();
             Assert.NotNull(journey);
             input.ResetFilter();
@@ -82,8 +110,7 @@ namespace Itinero.Transit.Tests.IO.OSM
             var latest = transitDb.Latest;
             var arrivalLocation = "https://www.openstreetmap.org/#map=19/0.0/0.0";
 
-            
-            
+
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
@@ -95,15 +122,15 @@ namespace Itinero.Transit.Tests.IO.OSM
             osmStopReader.AddSearchableLocation(osmStopReader.Id);
 
             // Walk to end
-            
+
             var input = latest
                 .SelectProfile(profile)
                 .AddStopsReader(osmStopReader)
-                .SelectStops( "https://example.com/stops/0", arrivalLocation)
+                .SelectStops("https://example.com/stops/0", arrivalLocation)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc));
 
-            
+
             var journey = input.EarliestArrivalJourney();
             Assert.NotNull(journey);
             input.ResetFilter();
@@ -125,9 +152,6 @@ namespace Itinero.Transit.Tests.IO.OSM
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
             var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.000001,
                 0.00001); // very walkable distance
-            var w0 = writer.AddOrUpdateStop("https://example.com/stops/2", 50.00001, 50.00001);
-
-            var w1 = writer.AddOrUpdateStop("https://example.com/stops/3", 0.000002, 0.00002); // very walkable distance
 
             writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
@@ -151,16 +175,15 @@ namespace Itinero.Transit.Tests.IO.OSM
             osmStopReader.MoveTo(arrivalLocation);
             osmStopReader.AddSearchableLocation(osmStopReader.Id);
 
- 
+
             var input = latest
                 .SelectProfile(profile)
                 .AddStopsReader(osmStopReader)
-                .SelectStops( departureLocation, arrivalLocation)
+                .SelectStops(departureLocation, arrivalLocation)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc));
 
 
-            
             var journey = input.EarliestArrivalJourney();
             Assert.NotNull(journey);
             input.ResetFilter();

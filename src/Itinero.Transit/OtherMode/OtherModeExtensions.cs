@@ -20,7 +20,7 @@ namespace Itinero.Transit.OtherMode
             var lon = reader.Longitude;
 
             reader.MoveTo(to);
-            return modeGenerator.TimeBetween(reader, (lat, lon), reader);
+            return modeGenerator.TimeBetween((lat, lon), reader);
         }
 
         public static Dictionary<LocationId, uint> TimesBetween(this IOtherModeGenerator mode,
@@ -135,7 +135,7 @@ namespace Itinero.Transit.OtherMode
             var times = new Dictionary<LocationId, uint>();
             foreach (var stop in to)
             {
-                var time = modeGenerator.TimeBetween(reader, coorFrom, stop);
+                var time = modeGenerator.TimeBetween(coorFrom, stop);
                 if (time == uint.MaxValue)
                 {
                     continue;

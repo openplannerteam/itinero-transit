@@ -72,6 +72,7 @@ namespace Itinero.Transit.Journey
         /// <summary>
         /// Constant indicating that the traveller is in some 'other mode', e.g. transfering, waiting or walking between stops
         /// </summary>
+        // ReSharper disable once InconsistentNaming
         public const uint OTHERMODE = 2;
 
         /// <summary>

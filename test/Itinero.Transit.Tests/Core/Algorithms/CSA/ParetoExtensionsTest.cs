@@ -3,7 +3,6 @@ using Itinero.Transit.Data;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
-using Itinero.Transit.Tests.Core.Walk;
 using Xunit;
 
 namespace Itinero.Transit.Tests.Core.Algorithms.CSA

@@ -16,13 +16,12 @@ namespace Itinero.Transit.OtherMode
         ///
         /// Returns Max_Value if not possible or if this is not the responsibility (e.g. for a walk, if from == to).
         ///
-        /// Warning: the 'to'-IStop will often be the reader. Using 'reader.MoveTo' will thus often also change 'to', thus Lat&Lon should be read first
         /// </summary>
         /// <returns></returns>
-        uint TimeBetween(IStopsReader reader, (double latitude, double longitude) from, IStop to);
+        uint TimeBetween((double latitude, double longitude) from, IStop to);
 
 
-        //// <summary>
+        /// <summary>
         /// Gives the times needed to travel from this stop to all the given locations.
         /// This can be used to do time estimations.
         ///
@@ -34,7 +33,6 @@ namespace Itinero.Transit.OtherMode
         /// However, calling 'MoveNext' will cause that object to change state.
         /// In other words, 'to' should always be used in a 'for-each' loop.
         /// </summary>
-        /// <returns></returns>
         Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, (double latitude, double longitude) from,
             IEnumerable<IStop> to);
         

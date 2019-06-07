@@ -17,7 +17,7 @@ namespace Itinero.Transit.OtherMode
         private Dictionary<((double latitude, double longitude), LocationId tos), uint> _cacheSingle =
             new Dictionary<((double latitude, double longitude), LocationId tos), uint>();
 
-        public uint TimeBetween(IStopsReader reader, (double latitude, double longitude) from, IStop to)
+        public uint TimeBetween((double latitude, double longitude) from, IStop to)
         {
             var key = (from, to.Id);
             if (_cacheSingle.ContainsKey(key))
@@ -25,7 +25,7 @@ namespace Itinero.Transit.OtherMode
                 return _cacheSingle[key];
             }
 
-            var v = _fallback.TimeBetween(reader, @from, to);
+            var v = _fallback.TimeBetween(@from, to);
             _cacheSingle[key] = v;
             return v;
         }

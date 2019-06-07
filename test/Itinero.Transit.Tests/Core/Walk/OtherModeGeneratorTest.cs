@@ -81,7 +81,7 @@ namespace Itinero.Transit.Tests.Core.Walk
 
     internal class VerySlowOtherModeGenerator : IOtherModeGenerator
     {
-        public uint TimeBetween(IStopsReader _, (double, double) __, IStop ___)
+        public uint TimeBetween((double, double) __, IStop ___)
         {
             Thread.Sleep(1000);
             return 50;

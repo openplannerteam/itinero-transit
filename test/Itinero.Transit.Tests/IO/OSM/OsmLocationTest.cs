@@ -46,7 +46,7 @@ namespace Itinero.Transit.Tests.IO.OSM
             var loc = "https://www.openstreetmap.org/#map=19/51.21575/3.21999";
             var zoomLvl = ParseOsmUrl.ParsePrefix().Parse((loc, 0));
             Assert.Equal(19 , zoomLvl.Result);
-            ParseOsmUrl.ParseURL().ParseFull(loc);
+            ParseOsmUrl.ParseUrl().ParseFull(loc);
         }
     }
 }

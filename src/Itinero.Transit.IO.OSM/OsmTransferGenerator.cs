@@ -60,7 +60,7 @@ namespace Itinero.Transit.IO.OSM
         }
 
 
-        public uint TimeBetween(IStopsReader reader, (double latitude, double longitude) from, IStop to)
+        public uint TimeBetween((double latitude, double longitude) from, IStop to)
         {
            
             var latE = (float) to.Latitude;

@@ -35,7 +35,7 @@ namespace Itinero.Transit.OtherMode
         }
 
 
-        public uint TimeBetween(IStopsReader reader, (double latitude, double longitude) from, IStop to)
+        public uint TimeBetween((double latitude, double longitude) from, IStop to)
         {
             var distance =
                 DistanceEstimate.DistanceEstimateInMeter(from.latitude, from.longitude, to.Latitude, to.Longitude);

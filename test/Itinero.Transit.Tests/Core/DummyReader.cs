@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
+// ReSharper disable UnassignedGetOnlyAutoProperty
 
-namespace Itinero.Transit.Tests.Core.Walk
+namespace Itinero.Transit.Tests.Core
 {
     internal class DummyReader : IStopsReader
     {

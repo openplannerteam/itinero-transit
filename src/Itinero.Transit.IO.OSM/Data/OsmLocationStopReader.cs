@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.IO.OSM.Data.OpeningHours;
 using static Itinero.Transit.IO.OSM.Data.OpeningHours.DefaultRdParsers;
@@ -48,10 +45,22 @@ namespace Itinero.Transit.IO.OSM.Data
             _databaseId = databaseId;
         }
 
+        public bool MoveTo((double latitude, double longitude) location)
+        {
+            var (lat, lon) =
+                location;
+            // Slight abuse of the LocationId
+            Id = new LocationId(_databaseId, (uint) ((lat + 90.0) * _precision), (uint) ((lon + 180) * _precision));
+            Latitude = (double) Id.LocalTileId / _precision - 90.0;
+            Longitude = (double) Id.LocalId / _precision - 180.0;
+            GlobalId = $"https://www.openstreetmap.org/#map=19/{Latitude}/{Longitude}";
+            return true;
+        }
+
         public bool MoveTo(string globalId)
         {
             var (lat, lon) =
-                ParseOsmUrl.ParseURL().ParseFull(globalId);
+                ParseOsmUrl.ParseUrl().ParseFull(globalId);
             // Slight abuse of the LocationId
             Id = new LocationId(_databaseId, (uint) ((lat + 90.0) * _precision), (uint) ((lon + 180) * _precision));
             Latitude = (double) Id.LocalTileId / _precision - 90.0;
@@ -77,29 +86,36 @@ namespace Itinero.Transit.IO.OSM.Data
         /// <summary>
         /// Enumerates the special 'inject locations' list
         /// </summary>
-        private int index = 0;
+        private int _index;
 
         public bool MoveNext()
         {
-            index++;
-            if (index >= _searchableLocations.Count)
+            _index++;
+            if (_index >= _searchableLocations.Count)
             {
                 return false;
             }
 
-            MoveTo(_searchableLocations[index]);
+            MoveTo(_searchableLocations[_index]);
             return true;
         }
 
 
         public void Reset()
         {
-            index = 0;
+            _index = 0;
         }
 
         public void AddSearchableLocation(LocationId location)
         {
             _searchableLocations.Add(location);
+        }
+
+        public LocationId AddSearchableLocation((double latitude, double longitude) location)
+        {
+            MoveTo(location);
+            AddSearchableLocation(Id);
+            return Id;
         }
 
         public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
@@ -133,7 +149,7 @@ namespace Itinero.Transit.IO.OSM.Data
                    + !Lit("/");
         }
 
-        public static RDParser<(double, double)> ParseURL()
+        public static RDParser<(double, double)> ParseUrl()
         {
             return RDParser<(double latitude, double longitude)>.X(
                 !ParsePrefix() * Double(),

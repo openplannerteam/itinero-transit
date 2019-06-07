@@ -20,7 +20,7 @@ namespace Itinero.Transit.Tests.IO.OSM.OpeningHours
                 DefaultRdParsers.Int().ParseFull("42CanNotParse");
                 Assert.True(false);
             }
-            catch(FormatException e)
+            catch(FormatException)
             {
 
             }
