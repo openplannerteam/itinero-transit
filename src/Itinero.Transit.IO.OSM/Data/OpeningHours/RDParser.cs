@@ -133,7 +133,7 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
                     // matches[0] is the entire string
                     var match = matches[1].Value;
                     var rest = matches[2].Value;
-                    return new ParseResult<string>(rest, index: index + (uint) match.Length, match);
+                    return new ParseResult<string>(rest,  index + (uint) match.Length, match);
                 }, regex);
         }
 
