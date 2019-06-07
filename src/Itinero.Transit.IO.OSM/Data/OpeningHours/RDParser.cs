@@ -176,7 +176,7 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
 
         public static ParseResult<T> Failed((string rest, uint index) restIndex, string errorMessage)
         {
-            return new ParseResult<T>(restIndex.rest, restIndex.index, errorMessage, default);
+            return new ParseResult<T>(restIndex.rest, restIndex.index, errorMessage, default(T));
         }
 
         public ParseResult<T0> Map<T0>(Func<T, T0> f)
@@ -189,7 +189,7 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
 
         public ParseResult<T0> FailAmendMessage<T0>(string message)
         {
-            return new ParseResult<T0>(Rest, Index, message + ErrorMessage, default);
+            return new ParseResult<T0>(Rest, Index, message + ErrorMessage, default(T0));
         }
 
         public string FancyErrorMessage()
