@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journey;
 
@@ -11,6 +10,27 @@ namespace Itinero.Transit.OtherMode
         public static IOtherModeGenerator UseCache(this IOtherModeGenerator fallback)
         {
             return new OtherModeCacher(fallback);
+        }
+
+        public static uint TimeBetween(this IOtherModeGenerator modeGenerator, IStopsReader reader, LocationId from,
+            LocationId to)
+        {
+            reader.MoveTo(from);
+            var lat = reader.Latitude;
+            var lon = reader.Longitude;
+
+            reader.MoveTo(to);
+            return modeGenerator.TimeBetween(reader, (lat, lon), reader);
+        }
+
+        public static Dictionary<LocationId, uint> TimesBetween(this IOtherModeGenerator mode,
+            IStopsReader reader, LocationId from,
+            IEnumerable<IStop> to)
+        {
+            reader.MoveTo(from);
+            var lat = reader.Latitude;
+            var lon = reader.Longitude;
+            return mode.TimesBetween(reader, (lat, lon), to);
         }
 
         /// <summary>
@@ -33,7 +53,7 @@ namespace Itinero.Transit.OtherMode
             var reachableLocations =
                 stops.LocationsInRange(stops.Latitude, stops.Longitude, otherModeGenerator.Range());
 
-            var times = otherModeGenerator.TimesBetween(stops, journey.Location, reachableLocations.Select(stop => stop.Id));
+            var times = otherModeGenerator.TimesBetween(stops, journey.Location, reachableLocations);
 
             foreach (var v in times)
             {
@@ -81,7 +101,7 @@ namespace Itinero.Transit.OtherMode
             var reachableLocations =
                 stops.LocationsInRange(stops.Latitude, stops.Longitude, otherModeGenerator.Range());
 
-            var times = otherModeGenerator.TimesBetween(stops, location, reachableLocations.Select(stop => stop.Id));
+            var times = otherModeGenerator.TimesBetween(stops, location, reachableLocations);
 
             foreach (var j in journeys)
             {
@@ -108,25 +128,20 @@ namespace Itinero.Transit.OtherMode
         /// A very straightforward implementation to get multiple routings at the same time...
         /// 
         /// </summary>
-        /// <param name="modeGenerator"></param>
-        /// <param name="reader"></param>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <returns></returns>
         internal static Dictionary<LocationId, uint> DefaultTimesBetween(
-            this IOtherModeGenerator modeGenerator, IStopsReader reader, LocationId from,
-            IEnumerable<LocationId> to)
+            this IOtherModeGenerator modeGenerator, IStopsReader reader, (double lat, double lon) coorFrom,
+            IEnumerable<IStop> to)
         {
             var times = new Dictionary<LocationId, uint>();
-            foreach (var id in to)
+            foreach (var stop in to)
             {
-                var time = modeGenerator.TimeBetween(reader, from, id);
+                var time = modeGenerator.TimeBetween(reader, coorFrom, stop);
                 if (time == uint.MaxValue)
                 {
                     continue;
                 }
 
-                times.Add(id, time);
+                times.Add(stop.Id, time);
             }
 
             return times;

@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.IO.OSM.Data.OpeningHours;
-using Itinero.Transit.Utils;
 using static Itinero.Transit.IO.OSM.Data.OpeningHours.DefaultRdParsers;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
@@ -19,6 +20,20 @@ namespace Itinero.Transit.IO.OSM.Data
     /// </summary>
     public class OsmLocationStopReader : IStopsReader
     {
+        /// <summary>
+        /// If we were to search locations close by a given location, we could return infinitely many coordinates.
+        ///
+        /// However, often we are only interested in finding two locations:
+        /// The departure location and the arrival location.
+        ///
+        /// This list acts as the items that can be returned in 'SearchInBox', searchClosest, etc...
+        ///
+        /// We expect this list to stay small (at most 100) so we are not gonna optimize this a lot
+        /// 
+        /// </summary>
+        private readonly List<LocationId> _searchableLocations = new List<LocationId>();
+
+
         private readonly uint _databaseId;
         public string GlobalId { get; private set; }
         public LocationId Id { get; private set; }
@@ -59,41 +74,49 @@ namespace Itinero.Transit.IO.OSM.Data
             return true;
         }
 
+        /// <summary>
+        /// Enumerates the special 'inject locations' list
+        /// </summary>
+        private int index = 0;
+
         public bool MoveNext()
         {
-            return false;
+            index++;
+            if (index >= _searchableLocations.Count)
+            {
+                return false;
+            }
+
+            MoveTo(_searchableLocations[index]);
+            return true;
         }
 
 
         public void Reset()
         {
-            // Do nothing     
+            index = 0;
         }
 
-        public float CalculateDistanceBetween(LocationId a, LocationId b)
+        public void AddSearchableLocation(LocationId location)
         {
-            MoveTo(a);
-            var lat0 = Latitude;
-            var lon0 = Longitude;
-            MoveTo(b);
-            var lat1 = Latitude;
-            var lon1 = Longitude;
-            return DistanceEstimate.DistanceEstimateInMeter(lat0, lon0, lat1, lon1);
-        }
-
-        public IEnumerable<IStop> LocationsInRange(double lat, double lon, double range)
-        {
-            throw new NotImplementedException();
+            _searchableLocations.Add(location);
         }
 
         public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
         {
-            throw new NotImplementedException();
-        }
+            
+            var results=  new List<IStop>();
+            foreach (var location in _searchableLocations)
+            {
+                MoveTo(location);
+                if (box.minLon <= Longitude && Longitude <= box.maxLon
+                    && box.minLat <= Latitude && Latitude <= box.maxLat)
+                {
+                    results.Add(new Stop(this));
+                }
+            }
 
-        public IStop SearchClosest(double lon, double lat, double maxDistanceInMeters = 1000)
-        {
-            throw new NotImplementedException();
+            return results;
         }
     }
 

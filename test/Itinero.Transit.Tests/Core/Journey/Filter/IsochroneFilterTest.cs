@@ -134,7 +134,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             var latest = transitDb.Latest;
 
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
-                new CrowsFlightTransferGenerator(),
+                new CrowsFlightTransferGenerator(), 
                 TransferMetric.Factory,
                 TransferMetric.ProfileTransferCompare);
 

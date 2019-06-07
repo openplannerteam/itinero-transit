@@ -28,8 +28,9 @@ namespace Itinero.Transit.Tests.Core.Walk
             var crow = new CrowsFlightTransferGenerator(speed: 1.0f);
             Assert.Equal(exp, crow.TimeBetween(stops, stop0, stop1));
 
+            stops.MoveTo(stop1);
 
-            var all = crow.TimesBetween(stops, stop0, new List<LocationId> {stop1});
+            var all = crow.TimesBetween(stops, (50,6), new List<IStop> {stops});
             Assert.Single(all);
             Assert.Equal(exp, all[stop1]);
         }
@@ -67,27 +68,27 @@ namespace Itinero.Transit.Tests.Core.Walk
 
             var stop0 = new LocationId(0, 0, 0);
             var stop1 = new LocationId(0, 0, 1);
-            var diff = verySlow.TimeBetween(null, stop0, stop1);
+            var diff = verySlow.TimeBetween(new DummyReader(), stop0, stop1);
             var timeMid = DateTime.Now;
             Assert.True((timeMid - time).TotalMilliseconds >= 999);
 
-            var diff0 = verySlow.TimeBetween(null, stop0, stop1);
+            var diff0 = verySlow.TimeBetween(new DummyReader(), stop0, stop1);
             var timeEnd = DateTime.Now;
             Assert.Equal(diff, diff0);
-            Assert.True((timeEnd - timeMid).TotalMilliseconds < 1);
+            Assert.True((timeEnd - timeMid).TotalMilliseconds < 10);
         }
     }
 
     internal class VerySlowOtherModeGenerator : IOtherModeGenerator
     {
-        public uint TimeBetween(IStopsReader reader, LocationId @from, LocationId to)
+        public uint TimeBetween(IStopsReader _, (double, double) __, IStop ___)
         {
             Thread.Sleep(1000);
             return 50;
         }
 
-        public Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, LocationId @from,
-            IEnumerable<LocationId> to)
+        public Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, (double, double) @from,
+            IEnumerable<IStop> to)
         {
             return this.DefaultTimesBetween(reader, from, to);
         }

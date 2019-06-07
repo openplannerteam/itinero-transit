@@ -54,15 +54,15 @@ namespace Itinero.Transit.Tests.Core.Algorithms.Search
         {
             var (stops, howest, sintClara, station ) = CreateTestReader();
 
-            Assert.Equal(sintClara, StopSearch.SearchClosest(stops, 3.2227f, 51.2153f).Id);
+            Assert.Equal(sintClara, stops.FindClosest( 51.2153f,3.2227f).Id);
 
-            Assert.Equal(howest, StopSearch.SearchClosest(stops, 3.22121f, 51.21538f).Id);
+            Assert.Equal(howest, stops.FindClosest(51.21538f, 3.22121f).Id);
             Assert.Equal(howest,
-                StopSearch.SearchClosest(stops, 3.22111f, 51.21538f).Id); //Slightly perturbated longitude
+                stops.FindClosest(51.21538f, 3.22111f).Id); //Slightly perturbated longitude
 
-            Assert.Equal(station, StopSearch.SearchClosest(stops, 3.21782f, 51.19723f).Id);
+            Assert.Equal(station, stops.FindClosest( 51.19723f,3.21782f).Id);
             // Outside of maxDistance
-            Assert.Null(StopSearch.SearchClosest(stops, 3.0f, 51.19723f));
+            Assert.Null(stops.FindClosest( 51.19723f,3.0f));
         }
 
         [Fact]
@@ -111,7 +111,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.Search
             db.Add("http://irail.be/stations/NMBS/008863011", 4.830207824707031, 51.373280620643370);
             db.Add("http://irail.be/stations/NMBS/008863012", 5.538825988769531, 51.177621156752494);
 
-            var stop = db.GetReader().SearchClosest(4.78686332702636, 51.26277419739382);
+            var stop = db.GetReader().FindClosest(51.26277419739382, 4.78686332702636);
             Assert.NotNull(stop);
             Assert.Equal(id1, stop.Id);
         }
@@ -129,9 +129,9 @@ namespace Itinero.Transit.Tests.Core.Algorithms.Search
             db.Add("http://irail.be/stations/NMBS/008863012", 5.538825988769531, 51.177621156752494);
 
             var reader = db.GetReader().UseCache();
-            var stop = reader.SearchClosest(4.78686332702636, 51.26277419739382);
+            var stop = reader.FindClosest( 51.26277419739382, 4.78686332702636);
             Assert.NotNull(stop);
-            var stop0 = reader.SearchClosest(4.78686332702636, 51.26277419739382);
+            var stop0 = reader.FindClosest( 51.26277419739382, 4.78686332702636);
             Assert.Equal(id1, stop.Id);
             Assert.Equal(id1, stop0.Id);
         }

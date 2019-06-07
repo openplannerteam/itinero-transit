@@ -395,7 +395,13 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
             if (!result.Success())
             {
                 throw new FormatException(
-                    $"{errormsg}: did not parse completely (input: {value}: {result.ErrorMessage})");
+                    $"{errormsg}: could not parse {value}: {result.ErrorMessage})");
+            }
+            
+            if (!string.IsNullOrEmpty(result.Rest))
+            {
+                throw new FormatException(
+                    $"{errormsg}: could not parse everything of {value}, only {result.Index} characters parsed");
             }
 
             return result.Result;

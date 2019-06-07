@@ -505,10 +505,10 @@ namespace Itinero.Transit.Journey
                     }
 
                     return
-                        $"Genesis at {location}, time is {Time.FromUnixTime():HH:mm}{freeForm}";
+                        $"Genesis at {location}, time is {Time.FromUnixTime():s}{freeForm}";
                 case OTHERMODE:
                     return
-                        $"Transfer/Wait/Walk for {Math.Abs((float) Time - PreviousLink.Time)} seconds till {Time.FromUnixTime():HH:mm} in/to {location}";
+                        $"Transfer/Wait/Walk for {Math.Abs((long) Time - (long) PreviousLink.Time)} seconds till {Time.FromUnixTime():s} in/to {location}";
                 case JOINED_JOURNEYS:
                     return
                         $"Choose a journey: there is a equivalent journey available. Continuing print via one arbitrary option";
