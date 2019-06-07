@@ -199,7 +199,7 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
         
         public ParseResult<T0> Fail<T0>()
         {
-            return new ParseResult<T0>(Rest, Index, ErrorMessage, default);
+            return new ParseResult<T0>(Rest, Index, ErrorMessage, default(T0));
         }
 
 
@@ -386,7 +386,7 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
                     throw new FormatException(errormsg + ": input is null");
                 }
 
-                return default;
+                return default(T);
             }
 
             var result = Parse((value, 0));
