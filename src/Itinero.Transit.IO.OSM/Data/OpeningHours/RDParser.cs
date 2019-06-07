@@ -14,7 +14,7 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
     /// <summary>
     /// A collection of generally useful small parsers, such as 'regex', 'literal', 'number', ...
     /// </summary>
-    public class DefaultRdParsers
+    public static class DefaultRdParsers
     {
         [Pure]
         public static RDParser<TimeSpan> Duration()
@@ -40,14 +40,18 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
         public static RDParser<string> Lit(string value)
         {
             return new RDParser<string>(
-                str =>
+                input =>
                 {
-                    if (str.StartsWith(value))
-                    {
-                        return (value, str.Substring(value.Length));
-                    }
-
-                    return null;
+                    var str = input.Item1;
+                    var index = input.Item2;
+                    if (!str.StartsWith(value))
+                        return ParseResult<string>.Failed(input, $"Expected a literal '{value}'");
+                    var l = (uint) value.Length;
+                    return new ParseResult<string>(
+                        str.Substring(value.Length),
+                        index + l,
+                        value
+                    );
                 }, value);
         }
 
@@ -61,20 +65,25 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
         public static RDParser<string> LitCI(string value)
         {
             return new RDParser<string>(
-                str =>
+                input =>
                 {
+                    var str = input.Item1;
+                    var index = input.Item2;
                     if (str.Length < value.Length)
                     {
-                        return null;
+                        return ParseResult<string>.Failed(input,
+                            $"Expected a case insensitive literal: '{value}', but the input string has not enough characters left");
                     }
 
                     var start = str.Substring(0, value.Length);
-                    if (start.ToLower().StartsWith(value.ToLower()))
+                    if (!start.ToLower().StartsWith(value.ToLower()))
                     {
-                        return (start, str.Substring(value.Length));
+                        return ParseResult<string>.Failed(input,
+                            $"Expected a case insensitive literal: '{value}'");
                     }
 
-                    return null;
+                    var l = (uint) value.Length;
+                    return new ParseResult<string>(str.Substring((int) l), index + l, start);
                 }, value);
         }
 
@@ -94,39 +103,109 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
             return Regex("-?[0-9]*").Map(int.Parse);
         }
 
+        public static RDParser<double> Double()
+        {
+            return Regex("-?[0-9]*\\.[0-9]*").Map(double.Parse);
+        }
+
         public static RDParser<string> Regex(string regex)
         {
             return new RDParser<string>(
-                str =>
+                input =>
                 {
-                    Regex reg = new Regex($"^({regex})(.*)$");
+                    var str = input.Item1;
+                    var index = input.Item2;
+                    var reg = new Regex($"^({regex})(.*)$");
 
 
                     var groups = reg.Matches(str);
                     if (groups.Count == 0)
                     {
-                        return null;
+                        return ParseResult<string>.Failed(input, $"Regex {regex} could not be matched");
                     }
 
                     var matches = groups[0].Groups;
 
-                    if (matches.Count == 3)
-                    {
-                        // matches[0] is the entire string
-                        return (matches[1].Value, matches[2].Value);
-                    }
+                    if (matches.Count != 3)
+                        return ParseResult<string>.Failed(input, $"Regex {regex} could not be matched");
 
-                    return null;
+
+                    // matches[0] is the entire string
+                    var match = matches[1].Value;
+                    var rest = matches[2].Value;
+                    return new ParseResult<string>(rest, index: index + (uint) match.Length, match);
                 }, regex);
         }
 
 
         [Pure]
-        public static RDParser<T> Fail<T>()
+        public static RDParser<T> Fail<T>(string message)
         {
             return new RDParser<T>(
-                str => null, ""
+                str => ParseResult<T>.Failed(str, message), ""
             );
+        }
+    }
+
+    /// <summary>
+    /// Either an error message and location or an result
+    /// </summary>
+    public struct ParseResult<T>
+    {
+        public uint Index { get; }
+        public string ErrorMessage { get; }
+        public T Result { get; }
+        public string Rest { get; }
+
+        public ParseResult(string rest, uint index, T value)
+        {
+            Index = index;
+            ErrorMessage = null;
+            Result = value;
+            Rest = rest;
+        }
+
+
+        private ParseResult(string rest, uint index, string errorMessage, T value)
+        {
+            Index = index;
+            ErrorMessage = errorMessage;
+            Result = value;
+            Rest = rest;
+        }
+
+        public static ParseResult<T> Failed((string rest, uint index) restIndex, string errorMessage)
+        {
+            return new ParseResult<T>(restIndex.rest, restIndex.index, errorMessage, default);
+        }
+
+        public ParseResult<T0> Map<T0>(Func<T, T0> f)
+        {
+            return Success()
+                ? new ParseResult<T0>(Rest, Index, ErrorMessage, f(Result))
+                : Fail<T0>();
+        }
+
+
+        public ParseResult<T0> FailAmendMessage<T0>(string message)
+        {
+            return new ParseResult<T0>(Rest, Index, message + ErrorMessage, default);
+        }
+
+        public string FancyErrorMessage()
+        {
+            return $"At position {Index}: {ErrorMessage}";
+        }
+        
+        public ParseResult<T0> Fail<T0>()
+        {
+            return new ParseResult<T0>(Rest, Index, ErrorMessage, default);
+        }
+
+
+        public bool Success()
+        {
+            return string.IsNullOrEmpty(ErrorMessage);
         }
     }
 
@@ -140,10 +219,10 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
     /// <typeparam name="T"></typeparam>
     public class RDParser<T>
     {
-        public readonly Func<string, (T, string)?> Parse;
+        public readonly Func<(string rest, uint index), ParseResult<T>> Parse;
         private readonly string _bnf;
 
-        public RDParser(Func<string, (T, string)?> parse, string bnf)
+        public RDParser(Func<(string, uint), ParseResult<T>> parse, string bnf)
         {
             Parse = parse;
             _bnf = bnf;
@@ -151,8 +230,10 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
 
         // ReSharper disable once MemberCanBePrivate.Global
         public RDParser(T value)
-            : this(str => (value, str), "")
         {
+            Parse = restIndex =>
+                new ParseResult<T>(restIndex.rest, restIndex.index, value);
+            _bnf = "";
         }
 
         public override string ToString()
@@ -190,10 +271,10 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
         }
 
         /// <summary>
-        /// Discards the first element
+        /// Discards the first element.
         /// </summary>
         /// <returns></returns>
-        public static RDParser<T> operator +(RDParser<object> discard, RDParser<T> keep)
+        public static RDParser<T> operator *(RDParser<object> discard, RDParser<T> keep)
         {
             return discard.Bind(_ => keep.Bind(t => new RDParser<T>(t)));
         }
@@ -207,7 +288,24 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
         public static RDParser<T> operator |(RDParser<T> a, RDParser<T> b)
         {
             return new RDParser<T>(
-                str => a.Parse(str) ?? b.Parse(str),
+                input =>
+                {
+                    var resultA = a.Parse(input);
+                    if (resultA.Success())
+                    {
+                        return resultA;
+                    }
+
+                    var resultB = b.Parse(input);
+                    if (resultB.Success())
+                    {
+                        return resultB;
+                    }
+
+                    return ParseResult<T>.Failed(
+                        input, "Both options failed:\n" + resultA.ErrorMessage + "\n" + resultB.ErrorMessage
+                    );
+                },
                 a._bnf + "|" + b._bnf);
         }
 
@@ -224,6 +322,15 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
         {
             return parseA.Bind(a => parseB.Bind(
                 b => new RDParser<T>(f(a, b))));
+        }
+
+        public static RDParser<(A, B)> X<A, B>(
+            RDParser<A> parseA,
+            RDParser<B> parseB
+        )
+        {
+            return parseA.Bind(a => parseB.Bind(
+                b => new RDParser<(A, B)>((a, b))));
         }
 
         /// <summary>
@@ -261,12 +368,13 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
                     return l;
                 },
                 this,
-                (!seperator + this).R()
+                (!seperator * this).R()
             );
         }
 
+       
         /// <summary>
-        /// 
+        /// Parses the given input string, crashes if the entire string was not entirely consumed
         /// </summary>
         /// <returns></returns>
         public T ParseFull(string value, string errormsg = null)
@@ -278,23 +386,19 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
                     throw new FormatException(errormsg + ": input is null");
                 }
 
-                return default(T);
+                return default;
             }
 
-            var raw = Parse(value);
-            if (raw == null)
+            var result = Parse((value, 0));
+
+
+            if (!result.Success())
             {
-                throw new FormatException($"{errormsg}: could not parse {value}");
+                throw new FormatException(
+                    $"{errormsg}: did not parse completely (input: {value}: {result.ErrorMessage})");
             }
 
-            var (t, rest) = raw.Value;
-
-            if (!string.IsNullOrEmpty(rest))
-            {
-                throw new FormatException($"{errormsg}: did not parse completely (input: {value}, rest: {rest})");
-            }
-
-            return t;
+            return result.Result;
         }
 
         /// <summary>
@@ -337,13 +441,13 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
             return new RDParser<U>(str =>
             {
                 var raw = Parse(str);
-                if (raw == null)
+                if (!raw.Success())
                 {
-                    return null;
+                    return raw.Fail<U>();
                 }
 
-                var (t, rest) = raw.Value;
-                return fa2Mb(t).Parse(rest);
+                var t = raw.Result;
+                return fa2Mb(t).Parse((raw.Rest, raw.Index));
             }, "");
         }
 
@@ -357,25 +461,15 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
         public RDParser<U> Map<U>(Func<T, U> f)
         {
             return new RDParser<U>(
-                str =>
-                {
-                    var raw = Parse(str);
-                    if (raw == null)
-                    {
-                        return null;
-                    }
-
-                    var (t, rest) = raw.Value;
-                    return (f(t), rest);
-                }, _bnf
-            );
+                v => Parse(v).Map(f), _bnf);
         }
 
 
         [Pure]
-        public RDParser<T> Assert(Predicate<T> predicate)
+        public RDParser<T> Assert(Predicate<T> predicate, string msg)
         {
-            return Bind(t => predicate(t) ? new RDParser<T>(t) : DefaultRdParsers.Fail<T>()
+            return Bind(t =>
+                predicate(t) ? new RDParser<T>(t) : DefaultRdParsers.Fail<T>("Predicate failed: " + msg)
             );
         }
     }

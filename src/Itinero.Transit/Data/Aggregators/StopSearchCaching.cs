@@ -142,7 +142,5 @@ namespace Itinero.Transit.Data.Aggregators
         {
             _stopsReader.Reset();
         }
-
-        public StopsDb StopsDb => _stopsReader.StopsDb;
     }
 }

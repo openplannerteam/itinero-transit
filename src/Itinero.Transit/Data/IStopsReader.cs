@@ -27,12 +27,6 @@ namespace Itinero.Transit.Data
         IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box);
         IStop SearchClosest(double lon, double lat, double maxDistanceInMeters = 1000);
 
-        /// <summary>
-        /// Gives the internal StopsDb.
-        /// Escapes the abstraction, should only be used for internal operations
-        /// </summary>
-        /// <returns></returns>
-        StopsDb StopsDb { get; }
     }
 
 

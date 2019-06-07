@@ -55,11 +55,13 @@ namespace Itinero.Transit.Data.Aggregators
                 {
                     return true;
                 }
+
                 _currentIndex++;
                 if (_currentIndex == UnderlyingDatabases.Count)
                 {
                     return false;
                 }
+
                 _currentStop = UnderlyingDatabases[_currentIndex];
             }
 
@@ -123,6 +125,7 @@ namespace Itinero.Transit.Data.Aggregators
             {
                 stops.AddRange(db.SearchInBox(box));
             }
+
             return stops;
         }
 
@@ -141,7 +144,5 @@ namespace Itinero.Transit.Data.Aggregators
         public double Latitude => _currentStop.Latitude;
 
         public IAttributeCollection Attributes => _currentStop.Attributes;
-
-        public StopsDb StopsDb => _currentStop.StopsDb;
     }
 }

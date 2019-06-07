@@ -7,6 +7,7 @@ using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.Logging;
+using Itinero.Transit.OtherMode;
 using Itinero.Transit.Utils;
 
 // ReSharper disable PossibleMultipleEnumeration
@@ -207,7 +208,12 @@ namespace Itinero.Transit
             StopsReader = StopsReaderAggregator.CreateFrom(tdbs).UseCache();
             ConnectionEnumerator = ConnectionEnumeratorAggregator.CreateFrom(tdbs);
             ConnectionReader = ConnectionReaderAggregator.CreateFrom(tdbs);
-            Profile = profile;
+            Profile = new Profile<T>(
+                profile.InternalTransferGenerator,
+                profile.WalksGenerator.UseCache(),
+                profile.MetricFactory,
+                profile.ProfileComparator
+                );
 
 
             var alreadyUsedIds = new HashSet<uint>();
@@ -238,9 +244,10 @@ namespace Itinero.Transit
             while (StopsReader.MoveNext())
             {
                 var current = (IStop) StopsReader;
-                StopsReader.LocationsInRange(
+                var inRange = StopsReader.LocationsInRange(
                     current.Latitude, current.Longitude,
                     Profile.WalksGenerator.Range());
+                Profile.WalksGenerator.TimesBetween(StopsReader, StopsReader.Id, inRange.Select(stop => stop.Id));
             }
 
             var end = DateTime.Now;

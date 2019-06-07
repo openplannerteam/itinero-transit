@@ -25,7 +25,4 @@
   <ItemGroup>
     <None Remove="Data\**" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="IO\OSM" />
-  </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 using System.Diagnostics.Contracts;
+using static Itinero.Transit.IO.OSM.Data.OpeningHours.DefaultRdParsers;
 
 namespace Itinero.Transit.IO.OSM.Data.OpeningHours
 {
@@ -8,7 +9,7 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
     /// or by
     /// https://openingh.ypid.de/netzwolf_mirror/time_domain/specification.html#rule7
     /// </summary>
-    public class OpeningHoursRuleParser : DefaultRdParsers
+    public static class OpeningHoursRuleParser 
     {
         // ---------------- CALENDAR -------------------------
 
@@ -51,13 +52,13 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
         [Pure]
         public static RDParser<uint> Minute()
         {
-            return Int().Assert(i => i >= 0 && i <= 60).Map(i => (uint) i);
+            return Int().Assert(i => i >= 0 && i <= 60, "Minute is out of range").Map(i => (uint) i);
         }
 
         [Pure]
         public static RDParser<uint> Hour()
         {
-            return Int().Assert(i => i >= 0 && i <= 24).Map(i => (uint) i);
+            return Int().Assert(i => i >= 0 && i <= 24, "Hour is out of range").Map(i => (uint) i);
         }
 
 
@@ -71,14 +72,14 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
         public static RDParser<uint> DayNum()
         {
             return Int()
-                .Assert(i => i >= 1 && i <= 31).Map(i => (uint) i);
+                .Assert(i => i >= 1 && i <= 31, "Day of month is out of range, should be between 0 and 31").Map(i => (uint) i);
         }
 
         [Pure]
         public static RDParser<uint> WeekNum()
         {
             return Int()
-                .Assert(i => i >= 1 && i <= 53).Map(i => (uint) i);
+                .Assert(i => i >= 1 && i <= 53, "Weeknum is out of range, should be between 1 and 53").Map(i => (uint) i);
         }
 
         [Pure]
