@@ -91,7 +91,7 @@ namespace Itinero.Transit.Data.Synchronization
         {
             foreach (var policy in _policies)
             {
-                var unixNow = DateTime.Now.ToUnixTime();
+                var unixNow = DateTime.Now.ToUniversalTime().ToUnixTime();
                 var date = unixNow - unixNow % policy.Frequency;
                 var triggerDate = date.FromUnixTime();
 
