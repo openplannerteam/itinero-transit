@@ -30,11 +30,11 @@ namespace Itinero.Transit.Tests.Functional
             EnableLogging();
 
             var devTestsOnly = args.Length == 0 || !args[0].Equals("--full-test-suite");
-            devTestsOnly = false;
 
 
             if (devTestsOnly)
             {
+                new InitialSynchronizationTest().Run();
                 return;
             }
 
@@ -99,6 +99,7 @@ namespace Itinero.Transit.Tests.Functional
 
             new OsmRouteTest().Run();
 
+            new InitialSynchronizationTest().Run();
 
             new NoDuplicationTest().Run();
 
