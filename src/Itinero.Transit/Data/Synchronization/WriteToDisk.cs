@@ -21,6 +21,8 @@ namespace Itinero.Transit.Data.Synchronization
         public void Run(DateTime triggerDate, TransitDbUpdater db)
         {
             var tdb = db.TransitDb.Latest;
+            Directory.GetParent(_saveTo).Create();
+            
             using (var stream = File.OpenWrite(_saveTo))
             {
                 tdb.WriteTo(stream);
