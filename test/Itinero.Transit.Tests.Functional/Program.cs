@@ -34,6 +34,7 @@ namespace Itinero.Transit.Tests.Functional
 
             if (devTestsOnly)
             {
+                new OsmRouteTest().Run();
                 return;
             }
 

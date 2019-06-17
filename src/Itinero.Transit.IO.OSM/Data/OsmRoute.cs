@@ -77,7 +77,7 @@ namespace Itinero.Transit.IO.OSM.Data
                     throw new ArgumentNullException();
                 }
 
-                var coordinate = new Coordinate((float) node.Latitude, (float) node.Longitude);
+                var coordinate = new Coordinate((float) node.Longitude, (float) node.Latitude);
                 var nodeId = $"https://www.openstreetmap.org/node/{node.Id}";
                 stopPositions.Add((nodeId, coordinate, el.Tags));
             }
@@ -113,7 +113,7 @@ namespace Itinero.Transit.IO.OSM.Data
                 }
 
 
-                var coordinate = new Coordinate((float) lat, (float) lon);
+                var coordinate = new Coordinate((float) lon, (float) lat);
                 var nodeId = $"https://www.openstreetmap.org/{id}";
 
                 // We make sure that there is no stop closeby
@@ -187,13 +187,11 @@ namespace Itinero.Transit.IO.OSM.Data
             {
                 return LoadFromUrl(new Uri(path));
             }
-            else
+
+            // We are probably dealing with a path
+            using (var stream = File.OpenRead(path))
             {
-                // We are probably dealing with a path
-                using (var stream = File.OpenRead(path))
-                {
-                    return OsmRouteFromStream(stream);
-                }
+                return OsmRouteFromStream(stream);
             }
         }
 
