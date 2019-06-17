@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Itinero.Transit.Data;
+using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.OtherMode
 {
@@ -34,9 +35,10 @@ namespace Itinero.Transit.OtherMode
         }
 
 
-        public uint TimeBetween(IStopsReader reader, LocationId from, LocationId to)
+        public uint TimeBetween((double latitude, double longitude) from, IStop to)
         {
-            var distance = reader.CalculateDistanceBetween(from, to);
+            var distance =
+                DistanceEstimate.DistanceEstimateInMeter(from.latitude, from.longitude, to.Latitude, to.Longitude);
             if (distance > _maxDistance)
             {
                 return uint.MaxValue;
@@ -45,7 +47,8 @@ namespace Itinero.Transit.OtherMode
             return (uint) (distance * _speed);
         }
 
-        public Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, LocationId @from, IEnumerable<LocationId> to)
+        public Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, (double latitude, double longitude) @from,
+            IEnumerable<IStop> to)
         {
             return this.DefaultTimesBetween(reader, from, to);
         }

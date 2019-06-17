@@ -11,8 +11,6 @@ using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Journey
 {
-
-
     /// <summary>
     /// A journey is a part in an intermodal trip, describing the route the user takes.
     ///
@@ -74,6 +72,7 @@ namespace Itinero.Transit.Journey
         /// <summary>
         /// Constant indicating that the traveller is in some 'other mode', e.g. transfering, waiting or walking between stops
         /// </summary>
+        // ReSharper disable once InconsistentNaming
         public const uint OTHERMODE = 2;
 
         /// <summary>
@@ -290,8 +289,12 @@ namespace Itinero.Transit.Journey
                 Metric);
         }
 
-
-        public Journey<T> ChainForwardWith(IStopsReader reader, IOtherModeGenerator otherModeGenerator, LocationId otherLocation)
+        /// <summary>
+        /// Chains an 'othermode' link to this journey, using a forward (with time) logic.
+        /// </summary>
+        [Pure]
+        public Journey<T> ChainForwardWith(IStopsReader reader, IOtherModeGenerator otherModeGenerator,
+            LocationId otherLocation)
         {
             var time = otherModeGenerator.TimeBetween(reader, Location, otherLocation);
             // ReSharper disable once ConvertIfStatementToReturnStatement
@@ -302,7 +305,13 @@ namespace Itinero.Transit.Journey
 
             return ChainSpecial(OTHERMODE, Time + time, otherLocation, TripId.Walk);
         }
-        public Journey<T> ChainBackwardWith(IStopsReader reader, IOtherModeGenerator otherModeGenerator, LocationId otherLocation)
+
+        /// <summary>
+        /// Chains an 'othermode' link to this journey, using a backward (against time) logic.
+        /// </summary>
+        [Pure]
+        public Journey<T> ChainBackwardWith(IStopsReader reader, IOtherModeGenerator otherModeGenerator,
+            LocationId otherLocation)
         {
             var time = otherModeGenerator.TimeBetween(reader, Location, otherLocation);
             // ReSharper disable once ConvertIfStatementToReturnStatement
@@ -497,10 +506,10 @@ namespace Itinero.Transit.Journey
                     }
 
                     return
-                        $"Genesis at {location}, time is {Time.FromUnixTime():HH:mm}{freeForm}";
+                        $"Genesis at {location}, time is {Time.FromUnixTime():s}{freeForm}";
                 case OTHERMODE:
                     return
-                        $"Transfer/Wait/Walk for {Math.Abs((float) Time - PreviousLink.Time)} seconds till {Time.FromUnixTime():HH:mm} in/to {location}";
+                        $"Transfer/Wait/Walk for {Math.Abs((long) Time - (long) PreviousLink.Time)} seconds till {Time.FromUnixTime():s} in/to {location}";
                 case JOINED_JOURNEYS:
                     return
                         $"Choose a journey: there is a equivalent journey available. Continuing print via one arbitrary option";

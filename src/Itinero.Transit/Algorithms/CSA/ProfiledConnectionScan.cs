@@ -26,7 +26,8 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly IStopsReader _stopsReader;
         private readonly ulong _earliestDeparture, _lastArrival;
         private readonly HashSet<LocationId> _departureLocations;
-        private readonly HashSet<LocationId> _targetLocations;
+        private readonly HashSet<IStop> _targetLocations;
+        private readonly HashSet<LocationId> _targetLocationsIds;
 
         private readonly ProfiledMetricComparator<T> _comparator;
 
@@ -107,7 +108,9 @@ namespace Itinero.Transit.Algorithms.CSA
         ///  </summary>
         public ProfiledConnectionScan(ScanSettings<T> settings)
         {
-            _targetLocations = new HashSet<LocationId>();
+            _targetLocations = new HashSet<IStop>();
+            _targetLocationsIds = new HashSet<LocationId>();
+            _stopsReader = settings.StopsReader;
             foreach (var (target, journey) in settings.TargetStop)
             {
                 if (journey != null)
@@ -115,7 +118,9 @@ namespace Itinero.Transit.Algorithms.CSA
                     throw new ArgumentException("PCS does not support target location journeys.");
                 }
 
-                _targetLocations.Add(target);
+                _stopsReader.MoveTo(target);
+                _targetLocations.Add(new Stop(_stopsReader));
+                _targetLocationsIds.Add(target);
             }
 
             _departureLocations = new HashSet<LocationId>();
@@ -134,7 +139,6 @@ namespace Itinero.Transit.Algorithms.CSA
             _lastArrival = settings.LastArrival.ToUnixTime();
 
             _connections = settings.ConnectionsEnumerator;
-            _stopsReader = settings.StopsReader;
 
             _comparator = settings.Comparator;
             _empty = new ParetoFrontier<T>(_comparator);
@@ -229,7 +233,7 @@ namespace Itinero.Transit.Algorithms.CSA
             if (_filter != null
                 && !_filter.CanBeTaken(c)
                 && !_tripJourneys.ContainsKey(c.TripId)
-                && !_targetLocations.Contains(c.ArrivalStop)
+                && !_targetLocationsIds.Contains(c.ArrivalStop)
                 && !_departureLocations.Contains(c.DepartureStop)
             )
             {
@@ -305,7 +309,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 return Journey<T>.InfiniteJourney;
             }
 
-            if (_targetLocations.Contains(c.ArrivalStop))
+            if (_targetLocationsIds.Contains(c.ArrivalStop))
             {
                 // We already are at a possible target location
 
@@ -319,17 +323,8 @@ namespace Itinero.Transit.Algorithms.CSA
             }
 
 
-            // We are not at a destination, lets walk!
-            if (_walkPolicy == null)
-            {
-                // well, to walk, we need a walk policy...
-                return null;
-            }
-
-
             // Let's calculate the various times to walk towards each possible destination
-            var walkingTimes = _walkPolicy.TimesBetween(_stopsReader, c.ArrivalStop, _targetLocations);
-
+            var walkingTimes = _walkPolicy?.TimesBetween(_stopsReader, c.ArrivalStop, _targetLocations);
             if (walkingTimes == null || walkingTimes.Count == 0)
             {
                 return null;

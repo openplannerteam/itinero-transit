@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Itinero.Transit.Algorithms.Search;
 using Itinero.Transit.Data.Attributes;
 
 namespace Itinero.Transit.Data.Aggregators
@@ -55,11 +54,13 @@ namespace Itinero.Transit.Data.Aggregators
                 {
                     return true;
                 }
+
                 _currentIndex++;
                 if (_currentIndex == UnderlyingDatabases.Count)
                 {
                     return false;
                 }
+
                 _currentStop = UnderlyingDatabases[_currentIndex];
             }
 
@@ -105,17 +106,6 @@ namespace Itinero.Transit.Data.Aggregators
             }
         }
 
-        public float CalculateDistanceBetween(LocationId departureLocation, LocationId targetLocation)
-        {
-            return StopSearch.CalculateDistanceBetween(this, departureLocation, targetLocation);
-        }
-
-
-        public IEnumerable<IStop> LocationsInRange(double lat, double lon, double range)
-        {
-            return StopSearch.LocationsInRange(this, lat, lon, range);
-        }
-
         public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
         {
             var stops = new List<IStop>();
@@ -123,14 +113,9 @@ namespace Itinero.Transit.Data.Aggregators
             {
                 stops.AddRange(db.SearchInBox(box));
             }
+
             return stops;
         }
-
-        public IStop SearchClosest(double lon, double lat, double maxDistanceInMeters = 1000)
-        {
-            return StopSearch.SearchClosest(this, lon, lat, maxDistanceInMeters);
-        }
-
 
         public string GlobalId => _currentStop.GlobalId;
 
@@ -141,7 +126,5 @@ namespace Itinero.Transit.Data.Aggregators
         public double Latitude => _currentStop.Latitude;
 
         public IAttributeCollection Attributes => _currentStop.Attributes;
-
-        public StopsDb StopsDb => _currentStop.StopsDb;
     }
 }

@@ -60,20 +60,14 @@ namespace Itinero.Transit.IO.OSM
         }
 
 
-        public uint TimeBetween(IStopsReader reader, LocationId from, LocationId to)
+        public uint TimeBetween((double latitude, double longitude) from, IStop to)
         {
-            if (Equals(from, to))
-            {
-                return uint.MaxValue;
-            }
+           
+            var latE = (float) to.Latitude;
+            var lonE = (float) to.Longitude;
 
-            reader.MoveTo(from);
-            var lat = (float) reader.Latitude;
-            var lon = (float) reader.Longitude;
-
-            reader.MoveTo(to);
-            var latE = (float) reader.Latitude;
-            var lonE = (float) reader.Longitude;
+            var lat = (float) from.latitude;
+            var lon = (float) from.longitude;
 
             // ReSharper disable once RedundantArgumentDefaultValue
             var startPoint = _router.TryResolve(_walkingProfile, lat, lon, _searchDistance);
@@ -95,8 +89,14 @@ namespace Itinero.Transit.IO.OSM
             return (uint) route.Value.TotalTime;
         }
 
-        public Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, LocationId @from, IEnumerable<LocationId> to)
+        public Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, (double latitude, double longitude) from, IEnumerable<IStop> to)
         {
+            foreach (var stop in to)
+            {
+                var lat = stop.Latitude;
+                var lon = stop.Longitude;
+            }
+            
             throw new NotImplementedException();
         }
 

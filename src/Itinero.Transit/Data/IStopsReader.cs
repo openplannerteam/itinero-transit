@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Itinero.Transit.Utils;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
-[assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
 
 namespace Itinero.Transit.Data
 {
@@ -12,33 +13,63 @@ namespace Itinero.Transit.Data
         bool MoveTo(LocationId stop);
         bool MoveTo(string globalId);
         void Reset();
-
-
-        /// <summary>
-        /// Calculates the walking distance between two stops.
-        /// Might _not_ be symmetrical due to oneways
-        /// </summary>
-        /// <param name="departureLocation"></param>
-        /// <param name="targetLocation"></param>
-        /// <returns></returns>
-        float CalculateDistanceBetween(LocationId departureLocation, LocationId targetLocation);
-        IEnumerable<IStop> LocationsInRange(double lat, double lon, double range);
-
         IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box);
-        IStop SearchClosest(double lon, double lat, double maxDistanceInMeters = 1000);
-
-        /// <summary>
-        /// Gives the internal StopsDb.
-        /// Escapes the abstraction, should only be used for internal operations
-        /// </summary>
-        /// <returns></returns>
-        StopsDb StopsDb { get; }
     }
 
 
     public static class StopsReaderExtensions
     {
+        //    IStop SearchClosest(double lon, double lat, double maxDistanceInMeters = 1000);
+        
+        
+        
+        /// <summary>
+        /// Used by 'OtherModeExtensions' to search close by things for TimesBetween
+        /// </summary>
+        public static IEnumerable<IStop> LocationsInRange(
+            this IStopsReader stopsDb, double lat, double lon, double maxDistance)
+        {
+            if (maxDistance <= 0.1)
+            {
+                throw new ArgumentException("Oops, distance is zero or very small");
+            }
 
+            if (double.IsNaN(maxDistance) || double.IsInfinity(maxDistance) ||
+                double.IsNaN(lat) || double.IsInfinity(lat) ||
+                double.IsNaN(lon) || double.IsInfinity(lon) ||
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                lat == double.MaxValue ||
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                lon == double.MaxValue
+            )
+            {
+                throw new ArgumentException(
+                    "Oops, either lat, lon or maxDistance are invalid (such as NaN or Infinite)");
+            }
+
+            var box = (
+                DistanceEstimate.MoveEast(lat, lon, -maxDistance), // minLon
+                DistanceEstimate.MoveNorth(lat, lon, +maxDistance), // MinLat
+                DistanceEstimate.MoveEast(lat, lon, +maxDistance), // MaxLon
+                DistanceEstimate.MoveNorth(lat, lon, -maxDistance) //maxLat
+            );
+
+            if (double.IsNaN(box.Item1) ||
+                double.IsNaN(box.Item2) ||
+                double.IsNaN(box.Item3) ||
+                double.IsNaN(box.Item4) ||
+                box.Item1 > 180 || box.Item1 < -180 ||
+                box.Item3 > 180 || box.Item3 < -180 ||
+                box.Item2 > 90 || box.Item2 < -90 ||
+                box.Item4 > 90 || box.Item4 < -90
+            )
+            {
+                throw new Exception("Bounding box has NaN or is out of range");
+            }
+
+            return stopsDb.SearchInBox(box);
+        }
+        
         public static LocationId FindStop(this IStopsReader reader, string locationId,
             string errorMessage = null)
         {
@@ -50,6 +81,31 @@ namespace Itinero.Transit.Data
             }
 
             return reader.Id;
+        }
+
+        public static Stop FindClosest(this IStopsReader reader,
+            double latitude, double longitude, double maxDistanceInMeters = 1000.0)
+        {
+            LocationId? closestStopId = null;
+            var d = double.MaxValue;
+            foreach (var stop in reader.LocationsInRange(latitude, longitude, maxDistanceInMeters))
+            {
+                var ds = DistanceEstimate.DistanceEstimateInMeter(
+                    stop.Latitude, stop.Longitude, latitude, longitude);
+                if (ds < d)
+                {
+                    d = ds;
+                    closestStopId = stop.Id;
+                }
+            }
+
+            if (closestStopId == null)
+            {
+                return null;
+            }
+
+            reader.MoveTo(closestStopId.Value);
+            return new Stop(reader);
         }
     }
 }

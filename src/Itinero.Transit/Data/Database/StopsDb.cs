@@ -261,25 +261,36 @@ namespace Itinero.Transit.Data
                 _locationEnumerator.Reset();
             }
 
-            public float CalculateDistanceBetween(LocationId departureLocation, LocationId targetLocation)
-            {
-                return StopSearch.CalculateDistanceBetween(this, departureLocation, targetLocation);
-            }
-
-
-            public IEnumerable<IStop> LocationsInRange(double lat, double lon, double range)
-            {
-                return StopSearch.LocationsInRange(this, lat, lon, range);
-            }
-            
+            /// <summary>
+            /// Enumerates all stops in the given bounding box.
+            /// </summary>
+            /// <param name="box">The box to enumerate in.</param>
+            /// <returns>An enumerator with all the stops.</returns>
             public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
             {
-                return StopSearch.SearchInBox(_stopsDb, box);
-            }
+                var rangeStops = new TileRangeStopEnumerable(_stopsDb, box);
+                using (var rangeStopsEnumerator = rangeStops.GetEnumerator())
+                {
+                    while (rangeStopsEnumerator.MoveNext())
+                    {
+                        var location = rangeStopsEnumerator.Current;
 
-            public IStop SearchClosest(double lon, double lat, double maxDistanceInMeters = 1000)
-            {
-                return StopSearch.SearchClosest(this, lon, lat, maxDistanceInMeters);
+                        if (location == null)
+                        {
+                            continue;
+                        }
+
+                        if (box.minLat > location.Latitude ||
+                            box.minLon > location.Longitude ||
+                            box.maxLat < location.Latitude ||
+                            box.maxLon < location.Longitude)
+                        {
+                            continue;
+                        }
+
+                        yield return rangeStopsEnumerator.Current;
+                    }
+                }
             }
 
             /// <summary>
@@ -305,7 +316,7 @@ namespace Itinero.Transit.Data
                 {
                     return false;
                 }
-                
+
                 return MoveTo(stop.LocalTileId, stop.LocalId);
             }
 

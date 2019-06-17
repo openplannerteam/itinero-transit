@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
@@ -7,6 +8,7 @@ using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.Logging;
+using Itinero.Transit.OtherMode;
 using Itinero.Transit.Utils;
 
 // ReSharper disable PossibleMultipleEnumeration
@@ -61,7 +63,7 @@ namespace Itinero.Transit
             double latitude,
             double maxDistanceInMeters = 1000)
         {
-            return snapShot.StopsDb.GetReader().SearchClosest(longitude, latitude, maxDistanceInMeters);
+            return snapShot.StopsDb.GetReader().FindClosest(latitude, longitude, maxDistanceInMeters);
         }
 
         /// <summary>
@@ -72,11 +74,12 @@ namespace Itinero.Transit
         /// <param name="latitude">The latitude.</param>
         /// <param name="maxDistanceInMeters">The maximum distance in meters.</param>
         /// <returns>The closest stop.</returns>
-        public static IStop FindClosestStop(this IEnumerable<TransitDb.TransitDbSnapShot> snapShot, double longitude,
+        public static Stop FindClosestStop(this IEnumerable<TransitDb.TransitDbSnapShot> snapShot, double longitude,
             double latitude,
             double maxDistanceInMeters = 1000)
         {
-            return StopsReaderAggregator.CreateFrom(snapShot).SearchClosest(longitude, latitude, maxDistanceInMeters);
+            var reader = StopsReaderAggregator.CreateFrom(snapShot);
+            return reader.FindClosest(latitude, longitude, maxDistanceInMeters);
         }
 
         public static LocationId FindStop(this TransitDb.TransitDbSnapShot snapshot, string locationId,
@@ -201,13 +204,33 @@ namespace Itinero.Transit
         internal readonly IConnectionEnumerator ConnectionEnumerator;
         internal readonly IConnectionReader ConnectionReader;
         internal readonly Profile<T> Profile;
+        public readonly uint DatabaseCount;
+
+        internal WithProfile(
+            IStopsReader stops,
+            IConnectionEnumerator connections,
+            IConnectionReader connectionsReaders,
+            Profile<T> profile, uint databaseCount)
+        {
+            StopsReader = stops;
+            ConnectionEnumerator = connections;
+            ConnectionReader = connectionsReaders;
+            Profile = profile;
+            DatabaseCount = databaseCount;
+        }
 
         internal WithProfile(IEnumerable<TransitDb.TransitDbSnapShot> tdbs, Profile<T> profile)
         {
-            StopsReader = StopsReaderAggregator.CreateFrom(tdbs).UseCache();
+            DatabaseCount = (uint) tdbs.Count();
+            StopsReader = StopsReaderAggregator.CreateFrom(tdbs);
             ConnectionEnumerator = ConnectionEnumeratorAggregator.CreateFrom(tdbs);
             ConnectionReader = ConnectionReaderAggregator.CreateFrom(tdbs);
-            Profile = profile;
+            Profile = new Profile<T>(
+                profile.InternalTransferGenerator,
+                profile.WalksGenerator,
+                profile.MetricFactory,
+                profile.ProfileComparator
+            );
 
 
             var alreadyUsedIds = new HashSet<uint>();
@@ -227,25 +250,64 @@ namespace Itinero.Transit
         /// Runs the 'closest stops' search as specified by the profile for every stop in the dataset.
         /// Might speed up actual calculations.
         ///
-        /// This method is run synchronously, but could be parallelized
+        /// This method is run synchronously.
+        /// This returns a *new* WithProfile, where the stopsReader uses a cache.
+        /// If memory is tight and only a few queries will be ran, don't use this.
         /// </summary>
-        /// <returns></returns>
+        [Pure]
         public WithProfile<T> PrecalculateClosestStops()
         {
             Log.Information("Caching reachable locations");
             var start = DateTime.Now;
-            StopsReader.Reset();
-            while (StopsReader.MoveNext())
+
+            var withCache = StopsReader.UseCache();
+            var walksGenCache = Profile.WalksGenerator.UseCache();
+            withCache.Reset();
+            while (withCache.MoveNext())
             {
-                var current = (IStop) StopsReader;
-                StopsReader.LocationsInRange(
+                var current = (IStop) withCache;
+                var inRange = withCache.LocationsInRange(
                     current.Latitude, current.Longitude,
                     Profile.WalksGenerator.Range());
+                walksGenCache.TimesBetween(StopsReader, StopsReader.Id, inRange);
             }
 
             var end = DateTime.Now;
             Log.Information($"Caching reachable locations took {(end - start).TotalMilliseconds}ms");
-            return this;
+            return new WithProfile<T>(
+                withCache,
+                ConnectionEnumerator,
+                ConnectionReader,
+                new Profile<T>(
+                    Profile.InternalTransferGenerator,
+                    walksGenCache,
+                    Profile.MetricFactory,
+                    Profile.ProfileComparator
+                ),
+                DatabaseCount
+            );
+        }
+
+        /// <summary>
+        /// This method is mainly used to inject a floating StopsReader into the profile.
+        ///
+        /// Do think about the caching behaviour:
+        /// tdbs.UseProfile(p).PrecalculateClosestStops().AddStopsReader([some floating which accumulates stops])
+        /// will not cache the floating points.
+        /// </summary>
+        [Pure]
+        public WithProfile<T> AddStopsReader(IStopsReader stopsReader)
+        {
+            return new WithProfile<T>(
+                StopsReaderAggregator.CreateFrom(new List<IStopsReader>
+                {
+                    StopsReader, stopsReader
+                }),
+                ConnectionEnumerator,
+                ConnectionReader,
+                Profile,
+                DatabaseCount+1
+            );
         }
 
 

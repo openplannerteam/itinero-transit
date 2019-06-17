@@ -38,7 +38,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             
             var extended = loc0Frontier.ExtendFrontierBackwards(
                 // Arrives at loc0 at 55 => direct can not be taken anymore, transfered can
-                null, new SimpleConnection(6, "6", loc3, loc0, 45, 10, 0, 0, 0, new TripId(0, 1)),
+                new DummyReader(), new SimpleConnection(6, "6", loc3, loc0, 45, 10, 0, 0, 0, new TripId(0, 1)),
                 new InternalTransferGenerator());
             
             Assert.Equal(transfered, extended.Frontier[0].PreviousLink);
@@ -46,7 +46,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             
             extended = loc0Frontier.ExtendFrontierBackwards(
                 // Arrives at loc0 at 45 => both direct and transfered can be taken
-                null, new SimpleConnection(6, "6", loc3, loc0, 35, 10, 0, 0, 0, new TripId(0, 1)),
+                new DummyReader(), new SimpleConnection(6, "6", loc3, loc0, 35, 10, 0, 0, 0, new TripId(0, 1)),
                 new InternalTransferGenerator(0));
             // We expect both routes to be in the frontier... They are, but in a merged way
             // ------------------------------------------- last connection - transferedJourney

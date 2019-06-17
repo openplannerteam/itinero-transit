@@ -28,7 +28,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             var stops = tdb.Latest.StopsDb.GetReader();
 
-            var d = (uint) stops.CalculateDistanceBetween(stop0, stop1);
+            var d = (uint) DistanceEstimate.DistanceEstimateInMeter( 50.00, 3.00f, 50.001,3.001);
 
             Assert.True(d > 100);
 

@@ -8,7 +8,7 @@ namespace Itinero.Transit.Data
     /// </summary>
     public class Stop : IStop
     {
-        internal Stop(IStop stop)
+        public Stop(IStop stop)
         {
             GlobalId = stop.GlobalId;
             Id = stop.Id;

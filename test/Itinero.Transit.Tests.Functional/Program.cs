@@ -34,7 +34,11 @@ namespace Itinero.Transit.Tests.Functional
 
             if (devTestsOnly)
             {
+<<<<<<< HEAD
                 new RoutingTest().Run();
+=======
+                new InitialSynchronizationTest().Run();
+>>>>>>> master
                 return;
             }
 
@@ -99,6 +103,7 @@ namespace Itinero.Transit.Tests.Functional
 
             new OsmRouteTest().Run();
 
+            new InitialSynchronizationTest().Run();
 
             new NoDuplicationTest().Run();
 

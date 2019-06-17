@@ -85,6 +85,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .EarliestArrivalJourney();
             Assert.NotNull(journey);
         }
+
         [Fact]
         public void WithStartEndWalk()
         {
@@ -129,13 +130,15 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var db = tdb.Latest;
 
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
-                new CrowsFlightTransferGenerator(),
+                null,
                 TransferMetric.Factory,
                 TransferMetric.ProfileTransferCompare
             );
 
 
-            var j = db.SelectProfile(profile).SelectStops(stop0, stop1)
+            var j = db
+                .SelectProfile(profile)
+                .SelectStops(stop0, stop1)
                 .SelectTimeFrame(db.GetConn(0).DepartureTime.FromUnixTime(),
                     (db.GetConn(0).DepartureTime + 60 * 60 * 6).FromUnixTime())
                 .EarliestArrivalJourney();
@@ -430,25 +433,24 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             Assert.NotNull(journey);
             Assert.Equal(2, journey.AllParts().Count);
         }
-        
-         [Fact]
+
+        [Fact]
         public void TestModes()
         {
-
             // build a one-connection db.
             var transitDb = new TransitDb();
             var writer = transitDb.GetWriter();
 
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.0,0); 
-            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/2", 5,10);
+            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.0, 0);
+            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/2", 5, 10);
 
-            
+
             writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 10, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 
+                new DateTime(2018, 12, 04, 9, 10, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0),
                 ConnectionExtensions.ModeGetOnOnly);
             writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0),
                 ConnectionExtensions.ModeGetOffOnly);
 
             writer.Close();
@@ -468,7 +470,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                         new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
                 ;
             Assert.Null(input.EarliestArrivalJourney());
-            
+
             input = latest
                     .SelectProfile(profile)
                     .SelectStops(stop1, stop0)
@@ -485,9 +487,6 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                         new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
                 ;
             Assert.NotNull(input.EarliestArrivalJourney());
-
-
-            
         }
     }
 }
