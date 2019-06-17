@@ -4,6 +4,7 @@ using Itinero.IO.Osm.Tiles;
 using Itinero.Profiles;
 using Itinero.Profiles.Lua.Osm;
 using Itinero.Transit.Data;
+using Itinero.Transit.Logging;
 using Itinero.Transit.OtherMode;
 
 namespace Itinero.Transit.IO.OSM
@@ -59,22 +60,30 @@ namespace Itinero.Transit.IO.OSM
                 return uint.MaxValue;
             }
 
-            var route = _routerDb.Calculate(_profile, startPoint.Value, endPoint.Value);
-
-            if (route.IsError)
+            try
             {
+                var route = _routerDb.Calculate(_profile, startPoint.Value, endPoint.Value);
+
+                if (route.IsError)
+                {
+                    return uint.MaxValue;
+                }
+
+                if (route.Value.TotalDistance > _searchDistance)
+                {
+                    // The total walking time exceeds the time that the traveller wants to walk between two stops
+                    // We return MaxValue
+                    // This can happen if a stop is in range crows-flight, but needs a detour to reach via the actual road network
+                    return uint.MaxValue;
+                }
+
+                return (uint) route.Value.TotalTime;
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Could not calculate route from {from} to ({latE},{lonE}) with itinero2.0: {e}");
                 return uint.MaxValue;
             }
-
-            if (route.Value.TotalDistance > _searchDistance)
-            {
-                // The total walking time exceeds the time that the traveller wants to walk between two stops
-                // We return MaxValue
-                // This can happen if a stop is in range crows-flight, but needs a detour to reach via the actual road network
-                return uint.MaxValue;
-            }
-
-            return (uint) route.Value.TotalTime;
         }
 
         public Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, (double latitude, double longitude) from,

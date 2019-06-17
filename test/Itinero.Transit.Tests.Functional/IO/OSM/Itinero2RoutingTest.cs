@@ -51,6 +51,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
                 .SelectTimeFrame(TestAllAlgorithms.TestDate, TestAllAlgorithms.TestDate.AddHours(10))
                 .EarliestArrivalJourney();
             NotNull(easJ);
+            True(easJ.Metric.WalkingTime > 600);
             Information(easJ.ToString(router));
 
 

@@ -40,9 +40,20 @@ namespace Itinero.Transit.IO.OSM.Data
 
         private const uint _precision = 1000000;
 
-        public OsmLocationStopReader(uint databaseId)
+        /// <summary>
+        /// If enabled, every URL that is decoded will be kept in reachable locations
+        /// </summary>
+        private readonly bool _hoard;
+
+        /// <summary>
+        /// Creates a StopsReader which is capable of decoding OSM-urls
+        /// </summary>
+        /// <param name="databaseId"></param>
+        /// <param name="hoard">If enabled, every decoded URL will be kept as searchableLocation</param>
+        public OsmLocationStopReader(uint databaseId, bool hoard = false)
         {
             _databaseId = databaseId;
+            _hoard = hoard;
         }
 
         public bool MoveTo((double latitude, double longitude) location)
@@ -66,6 +77,11 @@ namespace Itinero.Transit.IO.OSM.Data
             Latitude = (double) Id.LocalTileId / _precision - 90.0;
             Longitude = (double) Id.LocalId / _precision - 180.0;
             GlobalId = $"https://www.openstreetmap.org/#map=19/{Latitude}/{Longitude}";
+            if (_hoard)
+            {
+                AddSearchableLocation(Id);
+            }
+
             return true;
         }
 
@@ -108,6 +124,12 @@ namespace Itinero.Transit.IO.OSM.Data
 
         public void AddSearchableLocation(LocationId location)
         {
+            if (_searchableLocations.Contains(location))
+            {
+                // Already there...
+                return;
+            }
+
             _searchableLocations.Add(location);
         }
 
@@ -120,13 +142,12 @@ namespace Itinero.Transit.IO.OSM.Data
 
         public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
         {
-            
-            var results=  new List<IStop>();
+            var results = new List<IStop>();
             foreach (var location in _searchableLocations)
             {
                 MoveTo(location);
                 if (box.minLon <= Longitude && Longitude <= box.maxLon
-                    && box.minLat <= Latitude && Latitude <= box.maxLat)
+                                            && box.minLat <= Latitude && Latitude <= box.maxLat)
                 {
                     results.Add(new Stop(this));
                 }

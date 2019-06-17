@@ -34,7 +34,8 @@ namespace Itinero.Transit.Tests.Functional
 
             if (devTestsOnly)
             {
-                new OsmRouteTest().Run();
+
+                new MixedDestinationTest().Run();
                 return;
             }
 
@@ -87,6 +88,7 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Running multi TransitDb tests");
 
             new TestAllAlgorithms().ExecuteMultiModal();
+            new MixedDestinationTest().Run();
         }
 
         public static void InternetTests()

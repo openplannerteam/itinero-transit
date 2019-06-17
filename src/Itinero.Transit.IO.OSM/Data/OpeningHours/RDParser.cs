@@ -98,16 +98,23 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
         }
 
 
+        [Pure]
         public static RDParser<int> Int()
         {
             return Regex("-?[0-9]*").Map(int.Parse);
         }
 
+        [Pure]
         public static RDParser<double> Double()
         {
-            return Regex("-?[0-9]*\\.[0-9]*").Map(double.Parse);
+            return
+                (Regex("-?[0-9]+\\.[0-9]+") |
+                 Regex("-?[0-9]+") |
+                 Regex("-?\\.[0-9]+"))
+                .Map(double.Parse);
         }
 
+        [Pure]
         public static RDParser<string> Regex(string regex)
         {
             return new RDParser<string>(
@@ -133,7 +140,7 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
                     // matches[0] is the entire string
                     var match = matches[1].Value;
                     var rest = matches[2].Value;
-                    return new ParseResult<string>(rest,  index + (uint) match.Length, match);
+                    return new ParseResult<string>(rest, index + (uint) match.Length, match);
                 }, regex);
         }
 
@@ -196,7 +203,7 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
         {
             return $"At position {Index}: {ErrorMessage}";
         }
-        
+
         public ParseResult<T0> Fail<T0>()
         {
             return new ParseResult<T0>(Rest, Index, ErrorMessage, default(T0));
@@ -372,7 +379,7 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
             );
         }
 
-       
+
         /// <summary>
         /// Parses the given input string, crashes if the entire string was not entirely consumed
         /// </summary>
@@ -397,7 +404,7 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
                 throw new FormatException(
                     $"{errormsg}: could not parse {value}: {result.ErrorMessage})");
             }
-            
+
             if (!string.IsNullOrEmpty(result.Rest))
             {
                 throw new FormatException(
