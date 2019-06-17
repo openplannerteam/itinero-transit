@@ -28,11 +28,11 @@ namespace Sample.SNCB
 
             Console.WriteLine("Calculating journeys...");
 
-            var journeys = snapshot
+            var router = snapshot
                 .SelectProfile(profile)
                 .SelectStops(departureStop, arrivalStop)
-                .SelectTimeFrame(DateTime.Now, DateTime.Now.AddHours(3))
-                .AllJourneys();
+                .SelectTimeFrame(DateTime.Now, DateTime.Now.AddHours(3));
+            var journeys = router.AllJourneys();
             if (journeys == null || journeys.Count == 0)
             {
                 Console.WriteLine("No journeys found.");
@@ -42,7 +42,7 @@ namespace Sample.SNCB
             {
                 foreach (var journey in journeys)
                 {
-                    Console.WriteLine(journey.ToString(snapshot));
+                    Console.WriteLine(journey.ToString(router));
                 }
             }
         }
