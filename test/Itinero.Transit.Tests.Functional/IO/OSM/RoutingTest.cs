@@ -16,19 +16,18 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
             // If something is wrong, just throw an exception
 
             var tdb = TransitDb.ReadFrom(TestAllAlgorithms._nmbs, 0);
-
-            throw new NotImplementedException("IMPLEMENT ME BEN");
+            
             var profile = new Profile<TransferMetric>(
                 new InternalTransferGenerator(),
-                new OsmTransferGenerator(null), // This will probably change
-                TransferMetric.Factory, TransferMetric.ProfileTransferCompare
-                );
+                new OsmTransferGenerator(),
+                TransferMetric.Factory, TransferMetric.ProfileTransferCompare);
 
             tdb.SelectProfile(profile)
-                .SelectStops(TestAllAlgorithms.Brugge, TestAllAlgorithms.Vielsalm);
-            
-            
-            
+                .SelectStops(TestAllAlgorithms.Brugge, TestAllAlgorithms.Vielsalm)
+                .SelectTimeFrame(DateTime.Now, DateTime.Now.AddHours(3))
+                .EarliestArrivalJourney();
+
+            return true;
         }
     }
 }
