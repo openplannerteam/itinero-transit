@@ -34,11 +34,7 @@ namespace Itinero.Transit.Tests.Functional
 
             if (devTestsOnly)
             {
-<<<<<<< HEAD
                 new RoutingTest().Run();
-=======
-                new InitialSynchronizationTest().Run();
->>>>>>> master
                 return;
             }
 
