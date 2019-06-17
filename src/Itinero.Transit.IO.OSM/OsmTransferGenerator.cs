@@ -21,7 +21,7 @@ namespace Itinero.Transit.IO.OSM
         private readonly RouterDb _routerDb;
         private readonly Profile _profile;
 
-        private const float _searchDistance = 50f;
+        private readonly float _searchDistance;
 
         ///  <summary>
         ///  Generate a new transfer generator, which takes into account
@@ -29,11 +29,15 @@ namespace Itinero.Transit.IO.OSM
         /// 
         ///  Footpaths are generated using an Osm-based router database
         ///  </summary>
+        ///  <param name="searchDistance">The maximum distance that the traveller takes this route</param>
         ///  <param name="walkingProfile">The vehicle profile, default is pedestrian.</param>
         ///  <param name="baseTilesUrl">The base tile url.</param>
-        public OsmTransferGenerator(Profile walkingProfile = null,
+        public OsmTransferGenerator(
+            float searchDistance = 100,
+            Profile walkingProfile = null,
             string baseTilesUrl = "https://tiles.openplanner.team/planet")
         {
+            _searchDistance = searchDistance;
             _profile = walkingProfile ?? OsmProfiles.Pedestrian;
             _routerDb = new RouterDb();
             _routerDb.DataProvider = new DataProvider(_routerDb, baseTilesUrl);
@@ -62,13 +66,22 @@ namespace Itinero.Transit.IO.OSM
                 return uint.MaxValue;
             }
 
+            if (route.Value.TotalDistance > _searchDistance)
+            {
+                // The total walking time exceeds the time that the traveller wants to walk between two stops
+                // We return MaxValue
+                // This can happen if a stop is in range crows-flight, but needs a detour to reach via the actual road network
+                return uint.MaxValue;
+            }
+
             return (uint) route.Value.TotalTime;
         }
 
-        public Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, (double latitude, double longitude) from, IEnumerable<IStop> to)
+        public Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, (double latitude, double longitude) from,
+            IEnumerable<IStop> to)
         {
             var result = new Dictionary<LocationId, uint>();
-            
+
             foreach (var stop in to)
             {
                 result[stop.Id] = TimeBetween(from, stop);

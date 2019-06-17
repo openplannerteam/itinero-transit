@@ -2,6 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Itinero.Transit.Data;
+using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Utils;
 
@@ -391,7 +392,7 @@ namespace Itinero.Transit.Journey
         }
 
         [Pure]
-        public string ToString(TransitDb.TransitDbSnapShot snapshot)
+        internal string ToString(TransitDb.TransitDbSnapShot snapshot)
         {
             return ToString(15, snapshot.StopsDb.GetReader());
         }
@@ -403,9 +404,9 @@ namespace Itinero.Transit.Journey
         }
 
 
-        public override string ToString()
+        public string ToString(WithProfile<TransferMetric> withProfile)
         {
-            return ToString(75);
+            return ToString(15, withProfile.StopsReader);
         }
 
         [Pure]
