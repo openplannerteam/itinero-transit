@@ -37,6 +37,7 @@ namespace Itinero.Transit.Algorithms.CSA
             Comparator = profileProfileComparator;
             TransferPolicy = profileInternalTransferGenerator;
             WalkPolicy = profileWalksGenerator;
+            JourneyFilter = journeyFilter;
         }
 
 

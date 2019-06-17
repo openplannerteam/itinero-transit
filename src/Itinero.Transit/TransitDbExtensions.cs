@@ -229,7 +229,8 @@ namespace Itinero.Transit
                 profile.InternalTransferGenerator,
                 profile.WalksGenerator,
                 profile.MetricFactory,
-                profile.ProfileComparator
+                profile.ProfileComparator,
+                profile.JourneyFilter
             );
 
 
