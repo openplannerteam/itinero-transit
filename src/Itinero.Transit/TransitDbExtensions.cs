@@ -633,11 +633,7 @@ namespace Itinero.Transit
                 StopsReader,
                 ConnectionEnumerator,
                 Start, End,
-                Profile.MetricFactory,
-                Profile.ProfileComparator,
-                Profile.InternalTransferGenerator,
-                Profile.WalksGenerator,
-                Profile.JourneyFilter,
+                Profile,
                 From,
                 new List<(LocationId, Journey<T>)>() // EMPTY LIST
             );
@@ -663,11 +659,7 @@ namespace Itinero.Transit
                 ConnectionEnumerator,
                 Start,
                 End,
-                Profile.MetricFactory,
-                Profile.ProfileComparator,
-                Profile.InternalTransferGenerator,
-                Profile.WalksGenerator,
-                Profile.JourneyFilter,
+                Profile,
                 new List<(LocationId, Journey<T>)>(), // EMPTY LIST
                 To
             );
@@ -690,11 +682,7 @@ namespace Itinero.Transit
                 ConnectionEnumerator,
                 Start,
                 End,
-                Profile.MetricFactory,
-                Profile.ProfileComparator,
-                Profile.InternalTransferGenerator,
-                Profile.WalksGenerator,
-                Profile.JourneyFilter,
+                Profile,
                 From, To
             )
             {
@@ -797,11 +785,7 @@ namespace Itinero.Transit
                 ConnectionEnumerator,
                 Start,
                 End,
-                Profile.MetricFactory,
-                Profile.ProfileComparator,
-                Profile.InternalTransferGenerator,
-                Profile.WalksGenerator,
-                Profile.JourneyFilter,
+                Profile,
                 new List<(LocationId, Journey<T>)>(), // We don't pass any departure stop, as we want them all
                 To
             )

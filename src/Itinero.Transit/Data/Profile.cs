@@ -15,6 +15,7 @@ namespace Itinero.Transit.Data
         
         public readonly IOtherModeGenerator InternalTransferGenerator;
         public readonly IOtherModeGenerator WalksGenerator;
+        public IOtherModeGenerator FirstMileWalksGenerator, LastMileWalksGenerator;
 
         public readonly IJourneyFilter<T> JourneyFilter;
 
@@ -28,6 +29,9 @@ namespace Itinero.Transit.Data
             JourneyFilter = journeyFilter;
             InternalTransferGenerator = internalTransferGenerator;
             WalksGenerator = walksGenerator;
+            FirstMileWalksGenerator = walksGenerator;
+            LastMileWalksGenerator = walksGenerator;
         }
+        
     }
 }

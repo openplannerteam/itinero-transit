@@ -35,7 +35,7 @@ namespace Itinero.Transit.Algorithms.CSA
         public ulong ScanBeginTime { get; }
 
         private readonly IOtherModeGenerator _transferPolicy;
-        private readonly IOtherModeGenerator _walkPolicy;
+        private readonly Profile<T> _profile;
 
         /// <summary>
         /// If a traveller has a hard preference on journeys (e.g. max 5 transfers, no specific combination of stations...),
@@ -57,27 +57,27 @@ namespace Itinero.Transit.Algorithms.CSA
         public EarliestConnectionScan(
             ScanSettings<T> settings)
         {
-            _journeyFilter = settings.JourneyFilter;
             ScanBeginTime = settings.EarliestDeparture.ToUnixTime();
             _lastArrival = settings.LastArrival.ToUnixTime();
             _connections = settings.ConnectionsEnumerator;
             _stopsReader = settings.StopsReader;
 
-            _transferPolicy = settings.TransferPolicy;
-            _walkPolicy = settings.WalkPolicy;
+            _transferPolicy = settings.Profile.InternalTransferGenerator;
+            _profile = settings.Profile;
 
             _userTargetLocations = settings.TargetStop;
+            _journeyFilter = settings.Profile.JourneyFilter;
 
             foreach (var (loc, j) in settings.DepartureStop)
             {
                 var journey = j
                               ?? new Journey<T>(
-                                  loc, settings.EarliestDeparture.ToUnixTime(), settings.MetricFactory,
+                                  loc, settings.EarliestDeparture.ToUnixTime(), settings.Profile.MetricFactory,
                                   Journey<T>.EarliestArrivalScanJourney);
 
                 JourneyFromDepartureTable.Add(loc, journey);
                 // Walk away from this departure location, to have some more departure locations
-                WalkAwayFrom(loc);
+                WalkAwayFrom(loc, _profile.FirstMileWalksGenerator);
             }
         }
 
@@ -192,7 +192,7 @@ namespace Itinero.Transit.Algorithms.CSA
             // Add footpath transfers to improved stations
             foreach (var location in improvedLocations)
             {
-                WalkAwayFrom(location);
+                WalkAwayFrom(location, _profile.WalksGenerator);
             }
 
             return hasNext;
@@ -321,16 +321,16 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         /// <param name="location"></param>
         /// <exception cref="ArgumentException"></exception>
-        private void WalkAwayFrom(LocationId location)
+        private void WalkAwayFrom(LocationId location, IOtherModeGenerator walkPolicy)
         {
-            if (_walkPolicy == null || _walkPolicy.Range() <= 0f)
+            if (walkPolicy == null || walkPolicy.Range() <= 0f)
             {
                 return;
             }
 
             var journey = JourneyFromDepartureTable[location];
 
-            foreach (var walkingJourney in journey.WalkAwayFrom(_walkPolicy, _stopsReader))
+            foreach (var walkingJourney in journey.WalkAwayFrom(walkPolicy, _stopsReader))
             {
                 var id = walkingJourney.Location;
 

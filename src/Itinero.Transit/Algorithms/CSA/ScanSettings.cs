@@ -5,6 +5,7 @@ using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
+using Reminiscence.Arrays;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
@@ -18,11 +19,7 @@ namespace Itinero.Transit.Algorithms.CSA
             IConnectionEnumerator connectionsEnumerator,
             DateTime start,
             DateTime end,
-            IJourneyMetric<T> profileMetricFactory,
-            ProfiledMetricComparator<T> profileProfileComparator,
-            IOtherModeGenerator profileInternalTransferGenerator,
-            IOtherModeGenerator profileWalksGenerator,
-            IJourneyFilter<T> journeyFilter,
+            Profile<T> profile,
             List<(LocationId, Journey<T>)> from, List<(LocationId, Journey<T>)> to)
         {
             StopsReader = stopsReader;
@@ -33,11 +30,7 @@ namespace Itinero.Transit.Algorithms.CSA
             DepartureStop = from;
             TargetStop = to;
 
-            MetricFactory = (T) profileMetricFactory;
-            Comparator = profileProfileComparator;
-            TransferPolicy = profileInternalTransferGenerator;
-            WalkPolicy = profileWalksGenerator;
-            JourneyFilter = journeyFilter;
+            Profile = profile;
         }
 
 
@@ -49,11 +42,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
         public List<(LocationId, Journey<T>)> DepartureStop { get; }
         public List<(LocationId, Journey<T>)> TargetStop { get; }
-        public T MetricFactory { get; }
-        public ProfiledMetricComparator<T> Comparator { get; }
-        public IOtherModeGenerator TransferPolicy { get; }
-        public IOtherModeGenerator WalkPolicy { get; }
+        public Profile<T> Profile { get; }
         public IConnectionFilter Filter { get; set; }
-        public IJourneyFilter<T> JourneyFilter { get; set; }
     }
 }

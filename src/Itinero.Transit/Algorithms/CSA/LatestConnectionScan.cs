@@ -26,8 +26,7 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly ulong _earliestDeparture;
 
         private readonly IOtherModeGenerator _transferPolicy;
-        private readonly IOtherModeGenerator _walkPolicy;
-
+        private readonly Profile<T> _profile;
 
         /// <summary>
         /// If a traveller has a hard preference on journeys (e.g. max 5 transfers, no specific combination of stations...),
@@ -74,23 +73,23 @@ namespace Itinero.Transit.Algorithms.CSA
 
         public LatestConnectionScan(ScanSettings<T> settings)
         {
-            _journeyFilter = settings.JourneyFilter;
+            _journeyFilter = settings.Profile.JourneyFilter;
             _stopsReader = settings.StopsReader;
             _earliestDeparture = settings.EarliestDeparture.ToUnixTime();
             ScanEndTime = settings.LastArrival.ToUnixTime();
             _connections = settings.ConnectionsEnumerator;
-            _transferPolicy = settings.TransferPolicy;
-            _walkPolicy = settings.WalkPolicy;
+            _transferPolicy = settings.Profile.InternalTransferGenerator;
             _userDepartureLocation = settings.DepartureStop;
+            _profile = settings.Profile;
             foreach (var (loc, j) in settings.TargetStop)
             {
                 var journey = j?.SetTag(Journey<T>.LatestArrivalScanJourney)
                               ?? new Journey<T>(loc, settings.LastArrival.ToUnixTime(),
-                                  settings.MetricFactory,
+                                  settings.Profile.MetricFactory,
                                   Journey<T>.LatestArrivalScanJourney);
                 JourneysToArrivalStopTable.Add(loc, journey);
                 // Allow an walk to end
-                WalkTowards(loc);
+                WalkTowards(loc, _profile.LastMileWalksGenerator);
             }
         }
 
@@ -202,7 +201,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             foreach (var improvedLocation in improvedLocations)
             {
-                WalkTowards(improvedLocation);
+                WalkTowards(improvedLocation, _profile.WalksGenerator);
             }
 
             return hasNext;
@@ -321,16 +320,16 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
-        private void WalkTowards(LocationId location)
+        private void WalkTowards(LocationId location, IOtherModeGenerator walkPolicy)
         {
-            if (_walkPolicy == null || _walkPolicy.Range() <= 0f)
+            if (walkPolicy == null || walkPolicy.Range() <= 0f)
             {
                 return;
             }
 
             var journey = JourneysToArrivalStopTable[location];
 
-            foreach (var walkingJourney in journey.WalkTowards(_walkPolicy, _stopsReader))
+            foreach (var walkingJourney in journey.WalkTowards(walkPolicy, _stopsReader))
             {
                 var id = walkingJourney.Location;
                 if (id.Equals(location))

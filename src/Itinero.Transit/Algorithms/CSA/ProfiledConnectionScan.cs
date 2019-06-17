@@ -43,10 +43,7 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly IOtherModeGenerator _transferPolicy;
 
 
-        /// <summary>
-        /// Rules how the traveller walks from one stop to another
-        /// </summary>
-        private readonly IOtherModeGenerator _walkPolicy;
+        private readonly Profile<T> _profile;
 
         // Placeholder empty frontier; used when a frontier is needed but not present.
         private readonly ParetoFrontier<T> _empty;
@@ -141,12 +138,12 @@ namespace Itinero.Transit.Algorithms.CSA
 
             _connections = settings.ConnectionsEnumerator;
 
-            _comparator = settings.Comparator;
-            _journeyFilter = settings.JourneyFilter;
+            _comparator = settings.Profile.ProfileComparator;
+            _journeyFilter = settings.Profile.JourneyFilter;
             _empty = new ParetoFrontier<T>(_comparator, _journeyFilter);
-            _metricFactory = settings.MetricFactory;
-            _transferPolicy = settings.TransferPolicy;
-            _walkPolicy = settings.WalkPolicy;
+            _metricFactory = settings.Profile.MetricFactory;
+            _transferPolicy = settings.Profile.InternalTransferGenerator;
+            _profile = settings.Profile;
             _filter = settings.Filter;
             _filter?.CheckWindow(_earliestDeparture, _lastArrival);
         }
@@ -293,7 +290,7 @@ namespace Itinero.Transit.Algorithms.CSA
              UpdateFootpaths calculates all those walks and adds them to the _stationJourneys.
              (Note that all 'addedJourneys' have location == 'c.DepartureStop'
              */
-            UpdateFootpaths(addedJourneys, c.DepartureStop);
+            UpdateFootpaths(addedJourneys, c.DepartureStop, _profile.WalksGenerator);
         }
 
 
@@ -326,7 +323,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
 
             // Let's calculate the various times to walk towards each possible destination
-            var walkingTimes = _walkPolicy?.TimesBetween(_stopsReader, c.ArrivalStop, _targetLocations);
+            var walkingTimes = _profile.LastMileWalksGenerator?.TimesBetween(_stopsReader, c.ArrivalStop, _targetLocations);
             if (walkingTimes == null || walkingTimes.Count == 0)
             {
                 return null;
@@ -425,14 +422,14 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         /// <param name="journeys"></param>
         /// <param name="cDepartureStop"></param>
-        private void UpdateFootpaths(IEnumerable<Journey<T>> journeys, LocationId cDepartureStop)
+        private void UpdateFootpaths(IEnumerable<Journey<T>> journeys, LocationId cDepartureStop, IOtherModeGenerator walkPolicy)
         {
-            if (_walkPolicy == null || _walkPolicy.Range() <= 0f)
+            if (walkPolicy == null || walkPolicy.Range() <= 0f)
             {
                 return;
             }
 
-            var withWalks = journeys.WalkTowards(cDepartureStop, _walkPolicy, _stopsReader);
+            var withWalks = journeys.WalkTowards(cDepartureStop, walkPolicy, _stopsReader);
 
 
             foreach (var j in withWalks)
