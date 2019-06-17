@@ -35,7 +35,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var atDestB =
                 atLocB.ChainForward(new SimpleConnection(3, "3", locA, locDest, 10, 10, 0, 0, 0, new TripId(0, 3)));
 
-            var frontier = new ParetoFrontier<TransferMetric>(TransferMetric.ProfileTransferCompare);
+            var frontier = new ParetoFrontier<TransferMetric>(TransferMetric.ProfileTransferCompare, null);
 
             Assert.True(frontier.AddToFrontier(atDestA));
             Assert.True(frontier.AddToFrontier(atDestB));
@@ -49,7 +49,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         [Fact]
         public void SimpleFrontierTest()
         {
-            var frontier = new ParetoFrontier<TransferMetric>(TransferMetric.ProfileTransferCompare);
+            var frontier = new ParetoFrontier<TransferMetric>(TransferMetric.ProfileTransferCompare, null);
 
             var loc = new LocationId(0, 0, 0);
             var loc1 = new LocationId(0, 0, 1);

@@ -32,7 +32,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var transfered = atLoc1.ChainBackward(
                 new SimpleConnection(0, "0", loc0, loc1, 60, 10, 0, 0, 0, new TripId(0, 1)));
 
-            var loc0Frontier = new ParetoFrontier<TransferMetric>(TransferMetric.ProfileTransferCompare);
+            var loc0Frontier = new ParetoFrontier<TransferMetric>(TransferMetric.ProfileTransferCompare, null);
             loc0Frontier.AddToFrontier(transfered);
             loc0Frontier.AddToFrontier(direct);
             
@@ -85,13 +85,13 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
 
             // And now we add those to pareto frontier to test their behaviour
-            var frontier0 = new ParetoFrontier<TransferMetric>(TransferMetric.ParetoCompare);
+            var frontier0 = new ParetoFrontier<TransferMetric>(TransferMetric.ParetoCompare, null);
 
             Assert.True(frontier0.AddToFrontier(direct));
             Assert.True(frontier0.AddToFrontier(transferedFast));
 
 
-            var frontier1 = new ParetoFrontier<TransferMetric>(TransferMetric.ParetoCompare);
+            var frontier1 = new ParetoFrontier<TransferMetric>(TransferMetric.ParetoCompare, null);
 
             Assert.True(frontier1.AddToFrontier(direct));
             Assert.True(frontier1.AddToFrontier(transferedSlow));

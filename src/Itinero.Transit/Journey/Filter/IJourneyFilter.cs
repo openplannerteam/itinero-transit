@@ -8,7 +8,18 @@ namespace Itinero.Transit.Journey.Filter
     public interface IJourneyFilter<T> where T : IJourneyMetric<T>
     {
 
+        /// <summary>
+        /// Can this (forward) journey be taken?
+        /// </summary>
+        /// <param name="journey"></param>
+        /// <returns></returns>
         bool CanBeTaken(Journey<T> journey);
+        /// <summary>
+        /// Can this backward journey be taken?
+        /// </summary>
+        /// <param name="journey"></param>
+        /// <returns></returns>
+        bool CanBeTakenBackwards(Journey<T> journey);
 
     }
 }

@@ -636,6 +636,7 @@ namespace Itinero.Transit
                 Profile.ProfileComparator,
                 Profile.InternalTransferGenerator,
                 Profile.WalksGenerator,
+                Profile.JourneyFilter,
                 From,
                 new List<(LocationId, Journey<T>)>() // EMPTY LIST
             );
@@ -665,6 +666,7 @@ namespace Itinero.Transit
                 Profile.ProfileComparator,
                 Profile.InternalTransferGenerator,
                 Profile.WalksGenerator,
+                Profile.JourneyFilter,
                 new List<(LocationId, Journey<T>)>(), // EMPTY LIST
                 To
             );
@@ -691,6 +693,7 @@ namespace Itinero.Transit
                 Profile.ProfileComparator,
                 Profile.InternalTransferGenerator,
                 Profile.WalksGenerator,
+                Profile.JourneyFilter,
                 From, To
             )
             {
@@ -797,6 +800,7 @@ namespace Itinero.Transit
                 Profile.ProfileComparator,
                 Profile.InternalTransferGenerator,
                 Profile.WalksGenerator,
+                Profile.JourneyFilter,
                 new List<(LocationId, Journey<T>)>(), // We don't pass any departure stop, as we want them all
                 To
             )

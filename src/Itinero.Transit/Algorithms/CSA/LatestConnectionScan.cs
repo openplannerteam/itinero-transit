@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journey;
+using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Utils;
 
@@ -28,6 +29,12 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly IOtherModeGenerator _walkPolicy;
 
 
+        /// <summary>
+        /// If a traveller has a hard preference on journeys (e.g. max 5 transfers, no specific combination of stations...),
+        /// this can be expressed with the journeyFilter 
+        /// </summary>
+        private readonly IJourneyFilter<T> _journeyFilter;
+        
         public ulong ScanBeginTime { get; private set; } = ulong.MaxValue;
 
         public ulong ScanEndTime { get; }
@@ -67,6 +74,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
         public LatestConnectionScan(ScanSettings<T> settings)
         {
+            _journeyFilter = settings.JourneyFilter;
             _stopsReader = settings.StopsReader;
             _earliestDeparture = settings.EarliestDeparture.ToUnixTime();
             ScanEndTime = settings.LastArrival.ToUnixTime();
@@ -230,8 +238,7 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 // Staying on this trip will take us to our destination
                 // We extend the trip journey
-                _trips[trip] = _trips[trip].ChainBackward(c);
-                journeyFromDeparture = _trips[trip];
+                journeyFromDeparture = _trips[trip].ChainBackward(c);
             }
             else if (!c.CanGetOff())
             {
@@ -266,10 +273,7 @@ namespace Itinero.Transit.Algorithms.CSA
                     }
                 }
 
-                if (journeyFromDeparture != null && c.CanGetOff())
-                {
-                    _trips[trip] = journeyFromDeparture;
-                }
+                
             }
 
             if (journeyFromDeparture == null)
@@ -278,6 +282,15 @@ namespace Itinero.Transit.Algorithms.CSA
                 // Neither by staying seated or getting off at the destination
                 return false;
             }
+
+            if (_journeyFilter != null && !_journeyFilter.CanBeTakenBackwards(journeyFromDeparture))
+            {
+                // The traveller refuses to take this journey
+                return false;
+            }
+            
+            // We can be on this trip, either by getting off or staying seated
+            _trips[trip] = journeyFromDeparture;
 
             // Below this point, we only add it to the journey table...
             // If we can get on at the departureStop that is

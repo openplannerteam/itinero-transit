@@ -35,6 +35,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
         // Indicates if connections can not be taken due to external reasons (e.g. earlier scan)
         private readonly IConnectionFilter _filter;
+        private readonly IJourneyFilter<T> _journeyFilter;
 
         /// <summary>
         /// Rules how much penalty is given to go from one connection to another, without changing stations
@@ -141,7 +142,8 @@ namespace Itinero.Transit.Algorithms.CSA
             _connections = settings.ConnectionsEnumerator;
 
             _comparator = settings.Comparator;
-            _empty = new ParetoFrontier<T>(_comparator);
+            _journeyFilter = settings.JourneyFilter;
+            _empty = new ParetoFrontier<T>(_comparator, _journeyFilter);
             _metricFactory = settings.MetricFactory;
             _transferPolicy = settings.TransferPolicy;
             _walkPolicy = settings.WalkPolicy;
@@ -280,7 +282,7 @@ namespace Itinero.Transit.Algorithms.CSA
             // And ofc, we have a pretty good way out from the departure stop as well
             if (!_stationJourneys.ContainsKey(c.DepartureStop))
             {
-                _stationJourneys[c.DepartureStop] = new ParetoFrontier<T>(_comparator);
+                _stationJourneys[c.DepartureStop] = new ParetoFrontier<T>(_comparator, _journeyFilter);
             }
 
             var addedJourneys = _stationJourneys[c.DepartureStop].AddAllToFrontier(journeys.Frontier);
@@ -439,7 +441,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 // And add this journey with walk to the pareto frontier
                 if (!_stationJourneys.ContainsKey(stopId))
                 {
-                    _stationJourneys[stopId] = new ParetoFrontier<T>(_comparator);
+                    _stationJourneys[stopId] = new ParetoFrontier<T>(_comparator, _journeyFilter);
                 }
 
                 _stationJourneys[stopId].AddToFrontier(j);
@@ -456,7 +458,7 @@ namespace Itinero.Transit.Algorithms.CSA
                     return _empty;
                 }
 
-                var front = new ParetoFrontier<T>(_comparator);
+                var front = new ParetoFrontier<T>(_comparator, _journeyFilter);
                 front.AddToFrontier(j);
                 return front;
             }

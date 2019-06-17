@@ -22,6 +22,7 @@ namespace Itinero.Transit.Algorithms.CSA
             ProfiledMetricComparator<T> profileProfileComparator,
             IOtherModeGenerator profileInternalTransferGenerator,
             IOtherModeGenerator profileWalksGenerator,
+            IJourneyFilter<T> journeyFilter,
             List<(LocationId, Journey<T>)> from, List<(LocationId, Journey<T>)> to)
         {
             StopsReader = stopsReader;
@@ -52,5 +53,6 @@ namespace Itinero.Transit.Algorithms.CSA
         public IOtherModeGenerator TransferPolicy { get; }
         public IOtherModeGenerator WalkPolicy { get; }
         public IConnectionFilter Filter { get; set; }
+        public IJourneyFilter<T> JourneyFilter { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Itinero.Transit.Journey;
+using Itinero.Transit.Journey.Filter;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
@@ -9,6 +10,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
     {
         public readonly MetricComparator<T> Comparator;
+        public readonly IJourneyFilter<T> JourneyFilter;
 
         /// <summary>
         /// Contains all the points on the frontier, in order
@@ -18,10 +20,11 @@ namespace Itinero.Transit.Algorithms.CSA
         public readonly List<Journey<T>> Frontier = new List<Journey<T>>();
 
 
-        public ParetoFrontier(MetricComparator<T> comparator)
+        public ParetoFrontier(MetricComparator<T> comparator, IJourneyFilter<T> journeyFilter)
         {
             Comparator = comparator ?? throw new ArgumentNullException(nameof(comparator),
                              "A Pareto Frontier can not operate without comparator");
+            JourneyFilter = journeyFilter;
         }
 
 
@@ -35,6 +38,11 @@ namespace Itinero.Transit.Algorithms.CSA
         public bool AddToFrontier(Journey<T> considered)
         {
             if (considered == null || ReferenceEquals(considered, Journey<T>.InfiniteJourney))
+            {
+                return false;
+            }
+
+            if (JourneyFilter != null && !JourneyFilter.CanBeTakenBackwards(considered))
             {
                 return false;
             }

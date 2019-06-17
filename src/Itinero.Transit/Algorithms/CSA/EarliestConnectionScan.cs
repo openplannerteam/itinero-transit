@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journey;
+using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Utils;
 
@@ -33,7 +34,14 @@ namespace Itinero.Transit.Algorithms.CSA
 
         public ulong ScanBeginTime { get; }
 
-        private readonly IOtherModeGenerator _transferPolicy, _walkPolicy;
+        private readonly IOtherModeGenerator _transferPolicy;
+        private readonly IOtherModeGenerator _walkPolicy;
+
+        /// <summary>
+        /// If a traveller has a hard preference on journeys (e.g. max 5 transfers, no specific combination of stations...),
+        /// this can be expressed with the journeyFilter 
+        /// </summary>
+        private readonly IJourneyFilter<T> _journeyFilter;
 
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as early as possible
@@ -49,6 +57,7 @@ namespace Itinero.Transit.Algorithms.CSA
         public EarliestConnectionScan(
             ScanSettings<T> settings)
         {
+            _journeyFilter = settings.JourneyFilter;
             ScanBeginTime = settings.EarliestDeparture.ToUnixTime();
             _lastArrival = settings.LastArrival.ToUnixTime();
             _connections = settings.ConnectionsEnumerator;
@@ -221,8 +230,7 @@ namespace Itinero.Transit.Algorithms.CSA
             // Extend trip journey: if we already are on the trip we can always stay seated on it
             if (_trips.ContainsKey(trip))
             {
-                _trips[trip] = _trips[trip].ChainForward(c);
-                journeyToArrival = _trips[trip];
+                journeyToArrival = _trips[trip].ChainForward(c);
             }
             else if (!c.CanGetOn())
             {
@@ -256,13 +264,6 @@ namespace Itinero.Transit.Algorithms.CSA
                         journeyToArrival = null;
                     }
                 }
-
-                if (journeyToArrival != null && c.CanGetOn())
-                {
-                    // If we can get on the connection, we keep track of the trip
-                    // We don't necessarily have to get off at c.ArrivalStop, so we don't have to check 'canGetOff'
-                    _trips[trip] = journeyToArrival;
-                }
             }
 
             if (journeyToArrival == null)
@@ -270,7 +271,16 @@ namespace Itinero.Transit.Algorithms.CSA
                 // There was no way to be on the trip: neither by staying seated or by getting on
                 return false;
             }
+            
+            
+            if (_journeyFilter != null && !_journeyFilter.CanBeTaken(journeyToArrival))
+            {
+                // The traveller doesn't want to take this journey for some reason or another
+                return false;
+            }
 
+            // We register that we can be on this trip: we could get on (or we already were on this trip)
+            _trips[trip] = journeyToArrival;
 
             // Update the possible journeys index
             // But for that, we should be able to get of at the arrival stop!
@@ -278,6 +288,8 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 return false;
             }
+
+           
 
             if (!JourneyFromDepartureTable.ContainsKey(c.ArrivalStop))
             {

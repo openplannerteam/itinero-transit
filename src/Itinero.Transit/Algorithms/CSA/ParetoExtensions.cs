@@ -27,7 +27,7 @@ namespace Itinero.Transit.Algorithms.CSA
         {
             // The journeys in the frontier are ordered: the journeys which are added later to the profile,
             // will have an _earlier_ departure time (because PCS) runs in reverse order.
-            var newFrontier = new ParetoFrontier<T>(pareto.Comparator);
+            var newFrontier = new ParetoFrontier<T>(pareto.Comparator, pareto.JourneyFilter);
 
             foreach (var journey in pareto.Frontier)
             {
