@@ -44,11 +44,15 @@ namespace Itinero.Transit.Data
 
         /// <summary>
         /// An extra piece of state to sneak in more data.
-        /// The first usage is to indicate Dropoff and pickup types:
+        /// The first usage (least significant 2 bits) is to indicate Dropoff and pickup types:
         /// (Mode % 4) == 0 => Both pickup and dropoff are possible - the normal situation
         ///           == 1 => Only pickup is possible
         ///           == 2 => Only dropoff is possible
         ///           == 3 => Neither pickup nor dropoff are possible
+        /// The second mode indicates if the train is cancelled
+        /// (Mode & 4) == 4 indicates that the train is cancelled and can not be taken.
+        /// It might still be desirable to include them in a search, e.g. to detect the route the traveller is used to and to display a clear warning to them.
+        /// 
         /// </summary>
         ushort Mode { get; }
 
@@ -80,6 +84,11 @@ namespace Itinero.Transit.Data
         {
             var m = (c.Mode % 4);
             return m == 0 || m == 2;
+        }
+
+        public static bool IsCancelled(this IConnection c)
+        {
+            return (c.Mode & ModeCancelled) == ModeCancelled;
         }
 
 

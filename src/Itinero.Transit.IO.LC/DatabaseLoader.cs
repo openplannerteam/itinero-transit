@@ -202,6 +202,11 @@ namespace Itinero.Transit.IO.LC
                 mode += 2;
             }
 
+            if (connection.IsCancelled)
+            {
+                mode += 4;
+            }
+
             _writer.AddOrUpdateConnection(stop1Id, stop2Id, connectionUri,
                 connection.DepartureTime(),
                 (ushort) (connection.ArrivalTime() - connection.DepartureTime()).TotalSeconds,

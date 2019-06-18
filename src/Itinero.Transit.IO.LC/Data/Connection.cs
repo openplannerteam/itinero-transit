@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using JsonLD.Core;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -52,11 +53,17 @@ namespace Itinero.Transit.IO.LC.Data
         /// Indicates that a traveller can get on to this connection
         /// </summary>
         public bool GetOn { get; private set; }
-        
+
         /// <summary>
         /// Indicates that a traveller can get off this connection here
         /// </summary>
         public bool GetOff { get; private set; }
+
+
+        /// <summary>
+        /// Indicates that this connection exceptionally doesn't go
+        /// </summary>
+        public bool IsCancelled { get; private set; }
 
 
         private const string _gtfsRegular = "http://vocab.gtfs.org/terms#Regular";
@@ -64,15 +71,6 @@ namespace Itinero.Transit.IO.LC.Data
         // ReSharper disable once UnusedMember.Global
         public Connection(Uri uri) : base(uri)
         {
-        }
-
-        public Connection(Uri id, Uri departureStop, Uri arrivalStop, DateTime departureTime,
-            DateTime arrivalTime) : base(id)
-        {
-            _departureTime = departureTime;
-            _arrivalTime = arrivalTime;
-            _arrivalStop = arrivalStop;
-            _departureStop = departureStop;
         }
 
         public Connection(JObject json) : base(json.GetId())
@@ -103,7 +101,13 @@ namespace Itinero.Transit.IO.LC.Data
 
         protected sealed override void FromJson(JObject json)
         {
-            json.AssertTypeIs("http://semweb.mmlab.be/ns/linkedconnections#Connection");
+            var isCancelledConnection = json.IsType("http://semweb.mmlab.be/ns/linkedconnections#CancelledConnection");
+            if (!json.IsType("http://semweb.mmlab.be/ns/linkedconnections#Connection")
+                && !isCancelledConnection)
+            {
+                throw new JsonException(
+                    "Incorrect type: this connection is not a linked connection (neither is it a cancelled linked connection)");
+            }
 
             _departureStop = json.GetId("http://semweb.mmlab.be/ns/linkedconnections#departureStop");
             _arrivalStop = json.GetId("http://semweb.mmlab.be/ns/linkedconnections#arrivalStop");
@@ -141,13 +145,15 @@ namespace Itinero.Transit.IO.LC.Data
             GtfsRoute = json.GetId("http://vocab.gtfs.org/terms#route");
 
             var getOn = json.GetContents("http://vocab.gtfs.org/terms#pickupType", _gtfsRegular);
-            
+
             GetOn = (getOn.IsString() && getOn.ToString().Equals(_gtfsRegular))
-                        || getOn.GetId().ToString().Equals(_gtfsRegular);
-                
+                    || getOn.GetId().ToString().Equals(_gtfsRegular);
+
+            IsCancelled = isCancelledConnection;
+
             var getOff = json.GetContents("http://vocab.gtfs.org/terms#dropOffType", _gtfsRegular);
-                GetOff = (getOff.IsString() && getOff.ToString().Equals(_gtfsRegular))
-                    || getOff.GetId().ToString().Equals(_gtfsRegular);
+            GetOff = (getOff.IsString() && getOff.ToString().Equals(_gtfsRegular))
+                     || getOff.GetId().ToString().Equals(_gtfsRegular);
 
             // ReSharper disable once InvertIf
             if (_arrivalTime <= _departureTime)
