@@ -1,7 +1,4 @@
-using System;
 using Itinero.Transit.IO.LC.Data;
-using JsonLD.Core;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Newtonsoft.Json.Linq;
 using Xunit;
 

@@ -93,10 +93,16 @@ namespace Itinero.Transit.Journey.Filter
             }
         }
 
+
+        public bool ValidWindow(ulong depTime, ulong arrTime)
+        {
+            return !(_earliestValidDate > depTime
+                     || _latestValidDate < arrTime);
+        }
+
         public void CheckWindow(ulong depTime, ulong arrTime)
         {
-            if (_earliestValidDate > depTime
-                || _latestValidDate < arrTime)
+            if (!ValidWindow(depTime, arrTime))
             {
                 throw new ArgumentException(
                     "The requesting algorithm requests connections outside of the valid range of this algorithm");

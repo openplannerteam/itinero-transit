@@ -144,8 +144,36 @@ namespace Itinero.Transit.Algorithms.CSA
             _metricFactory = settings.Profile.MetricFactory;
             _transferPolicy = settings.Profile.InternalTransferGenerator;
             _profile = settings.Profile;
-            _filter = settings.Filter;
+
+            // Apply the connection filter from the profile
+            _filter = settings.Profile.ConnectionFilter;
             _filter?.CheckWindow(_earliestDeparture, _lastArrival);
+
+
+            // The isochronefilter is created by a preceding EAS or isochrone scan and speeds up by a critical speed....
+            // But it requires some special attention
+            var isochroneFilter = settings.Filter;
+
+            if (isochroneFilter != null && isochroneFilter.ValidWindow(_earliestDeparture, _lastArrival))
+            {
+                // There is an isochrone filter and the timing does work out - hooray!
+                // But - the isochronefilter is often too strict
+                // (see https://github.com/openplannerteam/itinero-transit/issues/63)
+                // For this, a few cases are whitelisted, namely:
+                // - If the connection arrives at a destination or departs at a departure stop
+                // - If we are on the trip already
+                // These are handled by the SpecialCaseFilter
+
+                HashSet<LocationId> whiteList = new HashSet<LocationId>();
+                whiteList.UnionWith(_departureLocations);
+                whiteList.UnionWith(_targetLocationsIds);
+                
+                var filter = new SpecialCaseConnectionFilter<T>(
+                    isochroneFilter,
+                    whiteList,
+                    _tripJourneys
+                    );
+            }
         }
 
 
@@ -232,8 +260,6 @@ namespace Itinero.Transit.Algorithms.CSA
             if (_filter != null
                 && !_filter.CanBeTaken(c)
                 && !_tripJourneys.ContainsKey(c.TripId)
-                && !_targetLocationsIds.Contains(c.ArrivalStop)
-                && !_departureLocations.Contains(c.DepartureStop)
             )
             {
                 // Why all those conditions? See https://github.com/openplannerteam/itinero-transit/issues/63
@@ -323,7 +349,8 @@ namespace Itinero.Transit.Algorithms.CSA
 
 
             // Let's calculate the various times to walk towards each possible destination
-            var walkingTimes = _profile.LastMileWalksGenerator?.TimesBetween(_stopsReader, c.ArrivalStop, _targetLocations);
+            var walkingTimes =
+                _profile.LastMileWalksGenerator?.TimesBetween(_stopsReader, c.ArrivalStop, _targetLocations);
             if (walkingTimes == null || walkingTimes.Count == 0)
             {
                 return null;
@@ -420,9 +447,8 @@ namespace Itinero.Transit.Algorithms.CSA
         ///
         /// Note that every journey should have 'Location' to be equal 'cDepartureLocation'
         /// </summary>
-        /// <param name="journeys"></param>
-        /// <param name="cDepartureStop"></param>
-        private void UpdateFootpaths(IEnumerable<Journey<T>> journeys, LocationId cDepartureStop, IOtherModeGenerator walkPolicy)
+        private void UpdateFootpaths(IEnumerable<Journey<T>> journeys, LocationId cDepartureStop,
+            IOtherModeGenerator walkPolicy)
         {
             if (walkPolicy == null || walkPolicy.Range() <= 0f)
             {
@@ -486,6 +512,48 @@ namespace Itinero.Transit.Algorithms.CSA
             }
 
             return isochrone;
+        }
+    }
+    
+    internal class SpecialCaseConnectionFilter<T> : IConnectionFilter where T : IJourneyMetric<T>
+    {
+        private readonly IConnectionFilter _implementation;
+        private readonly HashSet<LocationId> _whiteListed;
+        private readonly Dictionary<TripId, ParetoFrontier<T>> _tripJourneys;
+
+        /// <summary>
+        /// Creates a special case filter.
+        /// This filter is meant to be used by PCS.
+        /// </summary>
+        /// <param name="implementation"></param>
+        /// <param name="whiteListed"></param>
+        /// <param name="tripJourneys">A POINTER to the dictionary containing the trips. </param>
+        public SpecialCaseConnectionFilter(IConnectionFilter implementation,
+            HashSet<LocationId> whiteListed,
+            Dictionary<TripId, ParetoFrontier<T>> tripJourneys
+        )
+        {
+            _implementation = implementation;
+            _whiteListed = whiteListed;
+            _tripJourneys = tripJourneys; // IMPORTANT: this is a pointer to the datastructure used in PCS!
+        }
+
+        public bool CanBeTaken(IConnection c)
+        {
+            if (_whiteListed.Contains(c.DepartureStop) ||
+                _whiteListed.Contains(c.ArrivalStop) ||
+                _tripJourneys.ContainsKey(c.TripId)
+            )
+            {
+                return true;
+            }
+
+            return _implementation.CanBeTaken(c);
+        }
+
+        public void CheckWindow(ulong depTime, ulong arrTime)
+        {
+            _implementation.CheckWindow(depTime, arrTime);
         }
     }
 }

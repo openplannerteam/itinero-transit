@@ -456,7 +456,7 @@ namespace Itinero.Transit.Journey
             if (connection != null)
             {
                 connection.MoveTo(dbOperator, Connection);
-                switch (connection.Mode)
+                switch (connection.Mode % 4)
                 {
                     case 1:
                         md = "; Only getting on";
@@ -470,6 +470,11 @@ namespace Itinero.Transit.Journey
                     default:
                         md = "; normal connection";
                         break;
+                }
+
+                if ((connection.Mode & 4 )== 4)
+                {
+                    md += "; CANCELLED";
                 }
             }
 

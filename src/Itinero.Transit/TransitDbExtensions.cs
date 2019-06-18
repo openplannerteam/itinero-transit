@@ -228,8 +228,11 @@ namespace Itinero.Transit
             Profile = new Profile<T>(
                 profile.InternalTransferGenerator,
                 profile.WalksGenerator,
+                profile.FirstMileWalksGenerator,
+                profile.LastMileWalksGenerator,
                 profile.MetricFactory,
                 profile.ProfileComparator,
+                profile.ConnectionFilter,
                 profile.JourneyFilter
             );
 
@@ -307,7 +310,7 @@ namespace Itinero.Transit
                 ConnectionEnumerator,
                 ConnectionReader,
                 Profile,
-                DatabaseCount+1
+                DatabaseCount + 1
             );
         }
 
@@ -547,7 +550,10 @@ namespace Itinero.Transit
         public DateTime End { get; private set; }
 
 
-        internal IConnectionFilter Filter;
+        /// <summary>
+        /// The filter constructed by other computations, e.g. by EAS
+        /// </summary>
+        internal IsochroneFilter<T> TimedFilter;
 
         internal WithTime(IStopsReader stopsReader,
             IConnectionEnumerator connectionEnumerator,
@@ -686,7 +692,7 @@ namespace Itinero.Transit
                 From, To
             )
             {
-                Filter = Filter
+                Filter = TimedFilter
             };
         }
 
@@ -715,6 +721,7 @@ namespace Itinero.Transit
 
             var eas = new EarliestConnectionScan<T>(settings);
             var journey = eas.CalculateJourney(expandSearchLong);
+
             UseFilter(eas.AsFilter());
             if (journey != null && expandSearch != null)
             {
@@ -750,6 +757,7 @@ namespace Itinero.Transit
 
             var las = new LatestConnectionScan<T>(settings);
             var journey = las.CalculateJourney(expandSearchLong);
+
             UseFilter(las.AsFilter());
             if (journey != null && expandSearch != null)
             {
@@ -790,7 +798,7 @@ namespace Itinero.Transit
                 To
             )
             {
-                Filter = Filter
+                Filter = TimedFilter
             };
             var pcs = new ProfiledConnectionScan<T>(settings);
             pcs.CalculateJourneys();
@@ -803,9 +811,9 @@ namespace Itinero.Transit
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        private void UseFilter(IConnectionFilter filter)
+        private void UseFilter(IsochroneFilter<T> filter)
         {
-            Filter = filter;
+            TimedFilter = filter;
         }
 
         private void CheckNoOverlap()
@@ -847,7 +855,7 @@ namespace Itinero.Transit
 
         internal void ResetFilter()
         {
-            Filter = null;
+            TimedFilter = null;
         }
     }
 }

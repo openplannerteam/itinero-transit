@@ -1,3 +1,4 @@
+using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
 
@@ -18,7 +19,8 @@ namespace Itinero.Transit.Data
         : base(new InternalTransferGenerator(180), 
             new CrowsFlightTransferGenerator(maxDistance: 500 /*meter*/,  speed: 1.4f /*meter/second*/),
             TransferMetric.Factory,
-            TransferMetric.ProfileTransferCompare)
+            TransferMetric.ProfileTransferCompare,
+            connectionFilter:new CancelledConnectionFilter())
         {
             
         }

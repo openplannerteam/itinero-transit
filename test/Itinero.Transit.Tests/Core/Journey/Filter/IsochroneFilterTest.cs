@@ -146,8 +146,8 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
                         new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
                 ;
             input.IsochroneFrom();
-            Assert.NotNull(input.Filter);
-            Assert.True(input.Filter is IsochroneFilter<TransferMetric>);
+            Assert.NotNull(input.TimedFilter);
+            Assert.True(input.TimedFilter is IsochroneFilter<TransferMetric>);
 
             var journeys = input.AllJourneys();
             Assert.NotNull(journeys);
@@ -201,8 +201,8 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             input.ResetFilter();
             
             input.IsochroneFrom();
-            Assert.NotNull(input.Filter);
-            Assert.True(input.Filter is IsochroneFilter<TransferMetric>);
+            Assert.NotNull(input.TimedFilter);
+            Assert.True(input.TimedFilter is IsochroneFilter<TransferMetric>);
 
             var journeys = input.AllJourneys();
             Assert.NotNull(journeys);

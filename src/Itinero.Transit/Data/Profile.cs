@@ -15,21 +15,41 @@ namespace Itinero.Transit.Data
         
         public readonly IOtherModeGenerator InternalTransferGenerator;
         public readonly IOtherModeGenerator WalksGenerator;
-        public IOtherModeGenerator FirstMileWalksGenerator, LastMileWalksGenerator;
+        public readonly IOtherModeGenerator FirstMileWalksGenerator;
+        public IOtherModeGenerator LastMileWalksGenerator;
 
+        public readonly IConnectionFilter ConnectionFilter;
         public readonly IJourneyFilter<T> JourneyFilter;
 
         public Profile(IOtherModeGenerator internalTransferGenerator,
             IOtherModeGenerator walksGenerator,
             T metricFactory,
-            ProfiledMetricComparator<T> profileComparator, IJourneyFilter<T> journeyFilter = null)
+            ProfiledMetricComparator<T> profileComparator, IConnectionFilter connectionFilter = null, IJourneyFilter<T> journeyFilter = null)
         {
             MetricFactory = metricFactory;
             ProfileComparator = profileComparator;
+            ConnectionFilter = connectionFilter;
             JourneyFilter = journeyFilter;
             InternalTransferGenerator = internalTransferGenerator;
             WalksGenerator = walksGenerator;
             FirstMileWalksGenerator = walksGenerator;
+            LastMileWalksGenerator = walksGenerator;
+        }
+        
+        public Profile(IOtherModeGenerator internalTransferGenerator,
+            IOtherModeGenerator walksGenerator, 
+            IOtherModeGenerator firstMile, 
+            IOtherModeGenerator lastMile, 
+            T metricFactory,
+            ProfiledMetricComparator<T> profileComparator, IConnectionFilter connectionFilter = null, IJourneyFilter<T> journeyFilter = null)
+        {
+            MetricFactory = metricFactory;
+            ProfileComparator = profileComparator;
+            ConnectionFilter = connectionFilter;
+            JourneyFilter = journeyFilter;
+            InternalTransferGenerator = internalTransferGenerator;
+            WalksGenerator = firstMile;
+            FirstMileWalksGenerator = lastMile;
             LastMileWalksGenerator = walksGenerator;
         }
         

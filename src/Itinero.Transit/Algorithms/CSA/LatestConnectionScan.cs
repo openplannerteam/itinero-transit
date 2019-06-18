@@ -70,10 +70,16 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         private readonly Dictionary<TripId, Journey<T>> _trips = new Dictionary<TripId, Journey<T>>();
 
+        private readonly IConnectionFilter _connectionFilter;
+
 
         public LatestConnectionScan(ScanSettings<T> settings)
         {
             _journeyFilter = settings.Profile.JourneyFilter;
+            _connectionFilter = settings.Profile.ConnectionFilter;
+            // settings.Filter is NOT used and SHOULD NOT BE used
+
+
             _stopsReader = settings.StopsReader;
             _earliestDeparture = settings.EarliestDeparture.ToUnixTime();
             ScanEndTime = settings.LastArrival.ToUnixTime();
@@ -220,6 +226,13 @@ namespace Itinero.Transit.Algorithms.CSA
         {
             // The connection describes a random connection somewhere
             // Lets check if we can take it
+
+            if (_connectionFilter != null
+                && !_connectionFilter.CanBeTaken(c))
+            {
+                // Filtered away...
+                return false;
+            }
 
             var journeyFromArrival = GetJourneyFrom(c.ArrivalStop);
 

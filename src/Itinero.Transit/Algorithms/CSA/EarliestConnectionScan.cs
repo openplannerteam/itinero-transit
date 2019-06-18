@@ -43,6 +43,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         private readonly IJourneyFilter<T> _journeyFilter;
 
+        private readonly IConnectionFilter _connectionFilter;
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as early as possible
         /// </summary>
@@ -67,6 +68,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             _userTargetLocations = settings.TargetStop;
             _journeyFilter = settings.Profile.JourneyFilter;
+            _connectionFilter = settings.Profile.ConnectionFilter; // settings.Filter is NOT used and SHOULD NOT BE used
 
             foreach (var (loc, j) in settings.DepartureStop)
             {
@@ -215,6 +217,16 @@ namespace Itinero.Transit.Algorithms.CSA
             // The connection describes a random connection somewhere
             // Lets check if we can take it
 
+            if (_connectionFilter != null
+                && !_connectionFilter.CanBeTaken(c)
+            )
+            {
+                // Filtered away...
+                return false;
+            }
+
+            
+            
             var journeyTillDeparture = GetJourneyTo(c.DepartureStop);
 
 
@@ -319,7 +331,6 @@ namespace Itinero.Transit.Algorithms.CSA
         ///
         /// This method is very unpure
         /// </summary>
-        /// <param name="location"></param>
         /// <exception cref="ArgumentException"></exception>
         private void WalkAwayFrom(LocationId location, IOtherModeGenerator walkPolicy)
         {

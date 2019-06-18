@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Filter;
-using Itinero.Transit.Journey.Metric;
-using Itinero.Transit.OtherMode;
-using Reminiscence.Arrays;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
@@ -43,6 +40,6 @@ namespace Itinero.Transit.Algorithms.CSA
         public List<(LocationId, Journey<T>)> DepartureStop { get; }
         public List<(LocationId, Journey<T>)> TargetStop { get; }
         public Profile<T> Profile { get; }
-        public IConnectionFilter Filter { get; set; }
+        public IsochroneFilter<T> Filter { get; set; }
     }
 }
