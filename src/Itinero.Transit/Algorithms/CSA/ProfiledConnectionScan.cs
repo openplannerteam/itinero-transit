@@ -173,6 +173,8 @@ namespace Itinero.Transit.Algorithms.CSA
                     whiteList,
                     _tripJourneys
                     );
+                // Install the extra filter
+                _filter = ConnectionFilterAggregator.CreateFrom(filter, _filter);
             }
         }
 

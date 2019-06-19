@@ -147,7 +147,6 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
                 ;
             input.IsochroneFrom();
             Assert.NotNull(input.TimedFilter);
-            Assert.True(input.TimedFilter is IsochroneFilter<TransferMetric>);
 
             var journeys = input.AllJourneys();
             Assert.NotNull(journeys);
@@ -202,7 +201,6 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             
             input.IsochroneFrom();
             Assert.NotNull(input.TimedFilter);
-            Assert.True(input.TimedFilter is IsochroneFilter<TransferMetric>);
 
             var journeys = input.AllJourneys();
             Assert.NotNull(journeys);

@@ -52,7 +52,7 @@ namespace Itinero.Transit.IO.LC.Json
                     default:
                         if (c < ' ')
                         {
-                            var t = "000" + string.Format("X", c);
+                            var t = $"000{(int) c}";
                             sb.Append("\\u" + t.Substring(t.Length - 4));
                         }
                         else {

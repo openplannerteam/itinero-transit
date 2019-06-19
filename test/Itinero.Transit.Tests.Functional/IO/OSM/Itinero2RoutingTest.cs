@@ -18,7 +18,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
 
             // The profile of the traveller. This states that the traveller...
             var profile = new Profile<TransferMetric>( // Cares about both number of transfers and total travel time
-                new InternalTransferGenerator(180), // Needs 3 minutes to go from one train to another
+                new InternalTransferGenerator(), // Needs 3 minutes to go from one train to another
                 new OsmTransferGenerator(
                     searchDistance: 2500), // Likes walking far! The traveller is not afraid of walking over 2 kilometers between stops...
                 TransferMetric.Factory, // Actual boiler plate code

@@ -81,7 +81,10 @@ namespace Itinero.Transit.Tests.Functional.Performance
             GC.Collect();
 
             var p = Process.GetCurrentProcess();
-            _memory = p.PrivateMemorySize64;
+            lock (_memoryUsageLog)
+            {
+                _memory = p.PrivateMemorySize64;
+            }
             _ticks = DateTime.Now.Ticks;
             //Itinero.Logging.Logger.Log("Test", Itinero.Logging.TraceEventType.Information, _name + ":Started!");
         }

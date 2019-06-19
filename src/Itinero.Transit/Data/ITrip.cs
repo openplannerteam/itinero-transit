@@ -7,7 +7,7 @@ namespace Itinero.Transit.Data
     public struct TripId
     {
         public readonly uint DatabaseId, InternalId;
-        
+
         public static readonly TripId Walk = new TripId(uint.MaxValue, uint.MaxValue);
 
         public TripId(uint databaseId, uint internalId)
@@ -22,12 +22,14 @@ namespace Itinero.Transit.Data
             return DatabaseId == other.DatabaseId && InternalId == other.InternalId;
         }
 
+        [Pure]
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             return obj is TripId other && Equals(other);
         }
 
+        [Pure]
         public override int GetHashCode()
         {
             unchecked
@@ -36,6 +38,7 @@ namespace Itinero.Transit.Data
             }
         }
 
+        [Pure]
         public override string ToString()
         {
             return $"Trip {DatabaseId}_{InternalId}";
