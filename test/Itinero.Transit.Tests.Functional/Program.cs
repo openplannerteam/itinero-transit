@@ -34,8 +34,7 @@ namespace Itinero.Transit.Tests.Functional
 
             if (devTestsOnly)
             {
-
-                new MixedDestinationTest().Run();
+                new Itinero2RoutingTest().Run();
                 return;
             }
 
