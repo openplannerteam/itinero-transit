@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journey;
@@ -35,7 +36,7 @@ namespace Itinero.Transit.Algorithms.CSA
         public ulong ScanBeginTime { get; }
 
         private readonly IOtherModeGenerator _transferPolicy;
-        private readonly Profile<T> _profile;
+        private IOtherModeGenerator _walkPolicy;
 
         /// <summary>
         /// If a traveller has a hard preference on journeys (e.g. max 5 transfers, no specific combination of stations...),
@@ -44,6 +45,7 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly IJourneyFilter<T> _journeyFilter;
 
         private readonly IConnectionFilter _connectionFilter;
+
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as early as possible
         /// </summary>
@@ -55,6 +57,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         private readonly Dictionary<TripId, Journey<T>> _trips = new Dictionary<TripId, Journey<T>>();
 
+
         public EarliestConnectionScan(
             ScanSettings<T> settings)
         {
@@ -64,11 +67,13 @@ namespace Itinero.Transit.Algorithms.CSA
             _stopsReader = settings.StopsReader;
 
             _transferPolicy = settings.Profile.InternalTransferGenerator;
-            _profile = settings.Profile;
 
             _userTargetLocations = settings.TargetStop;
             _journeyFilter = settings.Profile.JourneyFilter;
             _connectionFilter = settings.Profile.ConnectionFilter; // settings.Filter is NOT used and SHOULD NOT BE used
+            _walkPolicy = FirstLastMilePolicy.CreateFrom(settings.Profile,
+                settings.DepartureStop.Select(fm => fm.Item1),
+                settings.TargetStop.Select(lm => lm.Item1));
 
             foreach (var (loc, j) in settings.DepartureStop)
             {
@@ -79,7 +84,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
                 JourneyFromDepartureTable.Add(loc, journey);
                 // Walk away from this departure location, to have some more departure locations
-                WalkAwayFrom(loc, _profile.FirstMileWalksGenerator);
+                WalkAwayFrom(loc);
             }
         }
 
@@ -194,7 +199,7 @@ namespace Itinero.Transit.Algorithms.CSA
             // Add footpath transfers to improved stations
             foreach (var location in improvedLocations)
             {
-                WalkAwayFrom(location, _profile.WalksGenerator);
+                WalkAwayFrom(location);
             }
 
             return hasNext;
@@ -225,8 +230,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 return false;
             }
 
-            
-            
+
             var journeyTillDeparture = GetJourneyTo(c.DepartureStop);
 
 
@@ -283,8 +287,8 @@ namespace Itinero.Transit.Algorithms.CSA
                 // There was no way to be on the trip: neither by staying seated or by getting on
                 return false;
             }
-            
-            
+
+
             if (_journeyFilter != null && !_journeyFilter.CanBeTaken(journeyToArrival))
             {
                 // The traveller doesn't want to take this journey for some reason or another
@@ -301,7 +305,6 @@ namespace Itinero.Transit.Algorithms.CSA
                 return false;
             }
 
-           
 
             if (!JourneyFromDepartureTable.ContainsKey(c.ArrivalStop))
             {
@@ -332,16 +335,16 @@ namespace Itinero.Transit.Algorithms.CSA
         /// This method is very unpure
         /// </summary>
         /// <exception cref="ArgumentException"></exception>
-        private void WalkAwayFrom(LocationId location, IOtherModeGenerator walkPolicy)
+        private void WalkAwayFrom(LocationId location)
         {
-            if (walkPolicy == null || walkPolicy.Range() <= 0f)
+            if (_walkPolicy == null || _walkPolicy.Range() <= 0f)
             {
                 return;
             }
 
             var journey = JourneyFromDepartureTable[location];
 
-            foreach (var walkingJourney in journey.WalkAwayFrom(walkPolicy, _stopsReader))
+            foreach (var walkingJourney in journey.WalkAwayFrom(_walkPolicy, _stopsReader))
             {
                 var id = walkingJourney.Location;
 

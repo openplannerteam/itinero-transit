@@ -13,6 +13,58 @@ namespace Itinero.Transit.Tests.Core.Walk
     public class OtherModeGeneratorTest
     {
         [Fact]
+        public void TestMixedModes()
+        {
+            var stop0 = new Stop("0", new LocationId(0, 0, 0), 0, 0, null);
+            var stop1 = new Stop("1", new LocationId(0, 0, 1), 0.0001, 0, null);
+            var stop2 = new Stop("2", new LocationId(0, 0, 2), 0.0002, 0, null);
+
+            var mixed = new FirstLastMilePolicy(
+                new FixedGenerator(1),
+                new FixedGenerator(2),
+                new List<LocationId> {stop1.Id},
+                new FixedGenerator(3),
+                new List<LocationId> {stop2.Id}
+            );
+
+
+            // Normal situation
+            Assert.Equal((uint) 1, mixed.TimeBetween(stop0, stop1));
+            // First mile
+            Assert.Equal((uint) 2, mixed.TimeBetween(stop1, stop0));
+            
+            
+            // Normal situation
+            Assert.Equal((uint) 1, mixed.TimeBetween(stop2, stop1));
+            // last mile
+            Assert.Equal((uint) 3, mixed.TimeBetween(stop0, stop2));
+
+            var timesBetween = mixed.TimesBetween(stop0, new List<IStop>
+            {
+                stop1,
+                stop2
+            });
+            
+            Assert.Equal((uint) 1, 
+                timesBetween[stop1.Id]);
+            Assert.Equal((uint) 3, 
+                timesBetween[stop2.Id]);
+            
+            
+            timesBetween = mixed.TimesBetween(stop1, new List<IStop>
+            {
+                stop0,
+                stop2
+            });
+            
+            Assert.Equal((uint) 2, 
+                timesBetween[stop0.Id]);
+            Assert.Equal((uint) 2, 
+                timesBetween[stop2.Id]);
+
+        }
+
+        [Fact]
         public void TestCrowsFlight()
         {
             var tdb = new TransitDb();
@@ -30,7 +82,8 @@ namespace Itinero.Transit.Tests.Core.Walk
 
             stops.MoveTo(stop1);
 
-            var all = crow.TimesBetween(stops, (50,6), new List<IStop> {stops});
+            var from = new Stop("qsdf", new LocationId(0, 0, 0), 6, 50, null);
+            var all = crow.TimesBetween(from, new List<IStop> {stops});
             Assert.Single(all);
             Assert.Equal(exp, all[stop1]);
         }
@@ -81,21 +134,46 @@ namespace Itinero.Transit.Tests.Core.Walk
 
     internal class VerySlowOtherModeGenerator : IOtherModeGenerator
     {
-        public uint TimeBetween((double, double) __, IStop ___)
+        public uint TimeBetween(IStop __, IStop ___)
         {
             Thread.Sleep(1000);
             return 50;
         }
 
-        public Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, (double, double) @from,
+        public Dictionary<LocationId, uint> TimesBetween(IStop @from,
             IEnumerable<IStop> to)
         {
-            return this.DefaultTimesBetween(reader, from, to);
+            return this.DefaultTimesBetween(from, to);
         }
 
         public float Range()
         {
             return 1000.0f;
+        }
+    }
+
+    class FixedGenerator : IOtherModeGenerator
+    {
+        private readonly uint _time;
+
+        public FixedGenerator(uint time)
+        {
+            _time = time;
+        }
+
+        public uint TimeBetween(IStop @from, IStop to)
+        {
+            return _time;
+        }
+
+        public Dictionary<LocationId, uint> TimesBetween(IStop @from, IEnumerable<IStop> to)
+        {
+            return this.DefaultTimesBetween(from, to);
+        }
+
+        public float Range()
+        {
+           return float.MaxValue;
         }
     }
 }

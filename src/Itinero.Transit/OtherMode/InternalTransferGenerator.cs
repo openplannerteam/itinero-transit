@@ -18,11 +18,11 @@ namespace Itinero.Transit.OtherMode
         }
 
 
-        public uint TimeBetween((double latitude, double longitude) from, IStop to)
+        public uint TimeBetween(IStop from, IStop to)
         {
             // The distance should be small enough
             // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (DistanceEstimate.DistanceEstimateInMeter(from.latitude, from.longitude, to.Latitude, to.Longitude) >
+            if (DistanceEstimate.DistanceEstimateInMeter(from.Latitude, from.Longitude, to.Latitude, to.Longitude) >
                 Range())
             {
                 return uint.MaxValue;
@@ -32,12 +32,12 @@ namespace Itinero.Transit.OtherMode
                 _internalTransferTime;
         }
 
-        public Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, (double latitude, double longitude) from,
+        public Dictionary<LocationId, uint> TimesBetween(IStop from,
             IEnumerable<IStop> to)
         {
             // It is a tad weird to have this method implemented, as this one only works when from == to...
             // But well, here we go anyway
-            return this.DefaultTimesBetween(reader, from, to);
+            return this.DefaultTimesBetween(from, to);
         }
 
         public float Range()

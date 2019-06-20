@@ -9,7 +9,6 @@ namespace Itinero.Transit.OtherMode
     /// </summary>
     public interface IOtherModeGenerator
     {
-    
         /// <summary>
         /// Gives the time needed to travel from this stop to the next.
         /// This can be used to do time estimations.
@@ -18,7 +17,7 @@ namespace Itinero.Transit.OtherMode
         ///
         /// </summary>
         /// <returns></returns>
-        uint TimeBetween((double latitude, double longitude) from, IStop to);
+        uint TimeBetween(IStop from, IStop to);
 
 
         /// <summary>
@@ -33,9 +32,9 @@ namespace Itinero.Transit.OtherMode
         /// However, calling 'MoveNext' will cause that object to change state.
         /// In other words, 'to' should always be used in a 'for-each' loop.
         /// </summary>
-        Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, (double latitude, double longitude) from,
+        Dictionary<LocationId, uint> TimesBetween(IStop from,
             IEnumerable<IStop> to);
-        
+
         /// <summary>
         /// The maximum range of this IOtherModeGenerator, in meters.
         /// This generator will only be asked to generate transfers within this range.

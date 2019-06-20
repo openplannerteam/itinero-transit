@@ -42,8 +42,11 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         private readonly IOtherModeGenerator _transferPolicy;
 
-
-        private readonly Profile<T> _profile;
+        /// <summary>
+        /// Rules how much time is needed to walk from one stop to another.
+        /// This IOtherModeGenerator may show complex behaviour, e.g. based on what the first or last stop is for first- and lastmile policies
+        /// </summary>
+        private readonly IOtherModeGenerator _walkPolicy;
 
         // Placeholder empty frontier; used when a frontier is needed but not present.
         private readonly ParetoFrontier<T> _empty;
@@ -143,7 +146,9 @@ namespace Itinero.Transit.Algorithms.CSA
             _empty = new ParetoFrontier<T>(_comparator, _journeyFilter);
             _metricFactory = settings.Profile.MetricFactory;
             _transferPolicy = settings.Profile.InternalTransferGenerator;
-            _profile = settings.Profile;
+            _walkPolicy = FirstLastMilePolicy.CreateFrom(settings.Profile
+                , _departureLocations, _targetLocationsIds
+            );
 
             // Apply the connection filter from the profile
             _filter = settings.Profile.ConnectionFilter;
@@ -167,12 +172,12 @@ namespace Itinero.Transit.Algorithms.CSA
                 HashSet<LocationId> whiteList = new HashSet<LocationId>();
                 whiteList.UnionWith(_departureLocations);
                 whiteList.UnionWith(_targetLocationsIds);
-                
+
                 var filter = new SpecialCaseConnectionFilter<T>(
                     isochroneFilter,
                     whiteList,
                     _tripJourneys
-                    );
+                );
                 // Install the extra filter
                 _filter = ConnectionFilterAggregator.CreateFrom(filter, _filter);
             }
@@ -318,7 +323,7 @@ namespace Itinero.Transit.Algorithms.CSA
              UpdateFootpaths calculates all those walks and adds them to the _stationJourneys.
              (Note that all 'addedJourneys' have location == 'c.DepartureStop'
              */
-            UpdateFootpaths(addedJourneys, c.DepartureStop, _profile.WalksGenerator);
+            UpdateFootpaths(addedJourneys, c.DepartureStop);
         }
 
 
@@ -351,8 +356,9 @@ namespace Itinero.Transit.Algorithms.CSA
 
 
             // Let's calculate the various times to walk towards each possible destination
+            _stopsReader.MoveTo(c.ArrivalStop);
             var walkingTimes =
-                _profile.LastMileWalksGenerator?.TimesBetween(_stopsReader, c.ArrivalStop, _targetLocations);
+                _walkPolicy?.TimesBetween(/* IStop from */ _stopsReader, _targetLocations);
             if (walkingTimes == null || walkingTimes.Count == 0)
             {
                 return null;
@@ -449,15 +455,14 @@ namespace Itinero.Transit.Algorithms.CSA
         ///
         /// Note that every journey should have 'Location' to be equal 'cDepartureLocation'
         /// </summary>
-        private void UpdateFootpaths(IEnumerable<Journey<T>> journeys, LocationId cDepartureStop,
-            IOtherModeGenerator walkPolicy)
+        private void UpdateFootpaths(IEnumerable<Journey<T>> journeys, LocationId cDepartureStop)
         {
-            if (walkPolicy == null || walkPolicy.Range() <= 0f)
+            if (_walkPolicy == null || _walkPolicy.Range() <= 0f)
             {
                 return;
             }
 
-            var withWalks = journeys.WalkTowards(cDepartureStop, walkPolicy, _stopsReader);
+            var withWalks = journeys.WalkTowards(cDepartureStop, _walkPolicy, _stopsReader);
 
 
             foreach (var j in withWalks)
@@ -516,7 +521,7 @@ namespace Itinero.Transit.Algorithms.CSA
             return isochrone;
         }
     }
-    
+
     internal class SpecialCaseConnectionFilter<T> : IConnectionFilter where T : IJourneyMetric<T>
     {
         private readonly IConnectionFilter _implementation;

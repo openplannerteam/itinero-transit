@@ -273,7 +273,7 @@ namespace Itinero.Transit
                 var inRange = withCache.LocationsInRange(
                     current.Latitude, current.Longitude,
                     Profile.WalksGenerator.Range());
-                walksGenCache.TimesBetween(StopsReader, StopsReader.Id, inRange);
+                walksGenCache.TimesBetween(StopsReader, inRange);
             }
 
             var end = DateTime.Now;

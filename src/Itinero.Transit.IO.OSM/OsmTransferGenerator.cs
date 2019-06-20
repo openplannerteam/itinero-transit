@@ -44,16 +44,10 @@ namespace Itinero.Transit.IO.OSM
             _routerDb.DataProvider = new DataProvider(_routerDb, baseTilesUrl);
         }
 
-        public uint TimeBetween((double latitude, double longitude) from, IStop to)
+        public uint TimeBetween(IStop from, IStop to)
         {
-            var latE = (float) to.Latitude;
-            var lonE = (float) to.Longitude;
-
-            var lat = (float) from.latitude;
-            var lon = (float) from.longitude;
-
-            var startPoint = _routerDb.Snap(lon, lat);
-            var endPoint = _routerDb.Snap(lonE, latE);
+            var startPoint = _routerDb.Snap((float) @from.Longitude, (float) @from.Latitude);
+            var endPoint = _routerDb.Snap((float) to.Longitude, (float) to.Latitude);
 
             if (startPoint.IsError || endPoint.IsError)
             {
@@ -81,12 +75,13 @@ namespace Itinero.Transit.IO.OSM
             }
             catch (Exception e)
             {
-                Log.Error($"Could not calculate route from {from} to ({latE},{lonE}) with itinero2.0: {e}");
+                Log.Error(
+                    $"Could not calculate route from {from} to ({(float) to.Latitude},{(float) to.Longitude}) with itinero2.0: {e}");
                 return uint.MaxValue;
             }
         }
 
-        public Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, (double latitude, double longitude) from,
+        public Dictionary<LocationId, uint> TimesBetween(IStop from,
             IEnumerable<IStop> to)
         {
             var result = new Dictionary<LocationId, uint>();

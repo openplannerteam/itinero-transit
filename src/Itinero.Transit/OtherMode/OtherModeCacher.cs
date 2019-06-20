@@ -14,12 +14,12 @@ namespace Itinero.Transit.OtherMode
         }
 
 
-        private Dictionary<((double latitude, double longitude), LocationId tos), uint> _cacheSingle =
-            new Dictionary<((double latitude, double longitude), LocationId tos), uint>();
+        private Dictionary<(LocationId, LocationId tos), uint> _cacheSingle =
+            new Dictionary<(LocationId, LocationId tos), uint>();
 
-        public uint TimeBetween((double latitude, double longitude) from, IStop to)
+        public uint TimeBetween(IStop from, IStop to)
         {
-            var key = (from, to.Id);
+            var key = (from.Id, to.Id);
             if (_cacheSingle.ContainsKey(key))
             {
                 return _cacheSingle[key];
@@ -31,12 +31,12 @@ namespace Itinero.Transit.OtherMode
         }
 
 
-        private Dictionary<((double latitude, double longitude) from, List<LocationId> tos),
+        private Dictionary<(LocationId from, List<LocationId> tos),
             Dictionary<LocationId, uint>> _cache =
-            new Dictionary<((double latitude, double longitude) from, List<LocationId> tos),
+            new Dictionary<(LocationId from, List<LocationId> tos),
                 Dictionary<LocationId, uint>>();
 
-        public Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, (double latitude, double longitude) from,
+        public Dictionary<LocationId, uint> TimesBetween(IStop from,
             IEnumerable<IStop> to)
         {
             /**
@@ -69,13 +69,13 @@ namespace Itinero.Transit.OtherMode
             // FIRST select the IDs to make sure 'return yield'-enumerators run correctly on an enumerating object
             to = to.Select(stop => new Stop(stop)).ToList();
             var tos = to.Select(stop => stop.Id).ToList();
-            var key = (from, tos);
+            var key = (from.Id, tos);
             if (_cache.ContainsKey(key))
             {
                 return _cache[key];
             }
 
-            var v = _fallback.TimesBetween(reader, @from, to);
+            var v = _fallback.TimesBetween(@from, to);
             _cache[key] = v;
             return v;
         }

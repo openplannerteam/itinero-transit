@@ -35,10 +35,10 @@ namespace Itinero.Transit.OtherMode
         }
 
 
-        public uint TimeBetween((double latitude, double longitude) from, IStop to)
+        public uint TimeBetween(IStop from, IStop to)
         {
             var distance =
-                DistanceEstimate.DistanceEstimateInMeter(from.latitude, from.longitude, to.Latitude, to.Longitude);
+                DistanceEstimate.DistanceEstimateInMeter(from.Latitude, from.Longitude, to.Latitude, to.Longitude);
             if (distance > _maxDistance)
             {
                 return uint.MaxValue;
@@ -47,10 +47,10 @@ namespace Itinero.Transit.OtherMode
             return (uint) (distance * _speed);
         }
 
-        public Dictionary<LocationId, uint> TimesBetween(IStopsReader reader, (double latitude, double longitude) @from,
+        public Dictionary<LocationId, uint> TimesBetween(IStop @from,
             IEnumerable<IStop> to)
         {
-            return this.DefaultTimesBetween(reader, from, to);
+            return this.DefaultTimesBetween(from, to);
         }
 
 

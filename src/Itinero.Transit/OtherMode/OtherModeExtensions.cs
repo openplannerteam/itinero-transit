@@ -16,21 +16,9 @@ namespace Itinero.Transit.OtherMode
             LocationId to)
         {
             reader.MoveTo(from);
-            var lat = reader.Latitude;
-            var lon = reader.Longitude;
-
+            var fr = new Stop(reader);
             reader.MoveTo(to);
-            return modeGenerator.TimeBetween((lat, lon), reader);
-        }
-
-        public static Dictionary<LocationId, uint> TimesBetween(this IOtherModeGenerator mode,
-            IStopsReader reader, LocationId from,
-            IEnumerable<IStop> to)
-        {
-            reader.MoveTo(from);
-            var lat = reader.Latitude;
-            var lon = reader.Longitude;
-            return mode.TimesBetween(reader, (lat, lon), to);
+            return modeGenerator.TimeBetween(fr, reader);
         }
 
         /// <summary>
@@ -53,7 +41,8 @@ namespace Itinero.Transit.OtherMode
             var reachableLocations =
                 stops.LocationsInRange(stops.Latitude, stops.Longitude, otherModeGenerator.Range());
 
-            var times = otherModeGenerator.TimesBetween(stops, journey.Location, reachableLocations);
+            stops.MoveTo(journey.Location);
+            var times = otherModeGenerator.TimesBetween(/*from Istop journey.Location*/stops, reachableLocations);
 
             foreach (var v in times)
             {
@@ -101,7 +90,8 @@ namespace Itinero.Transit.OtherMode
             var reachableLocations =
                 stops.LocationsInRange(stops.Latitude, stops.Longitude, otherModeGenerator.Range());
 
-            var times = otherModeGenerator.TimesBetween(stops, location, reachableLocations);
+            stops.MoveTo(location);
+            var times = otherModeGenerator.TimesBetween(stops, reachableLocations);
 
             foreach (var j in journeys)
             {
@@ -129,7 +119,7 @@ namespace Itinero.Transit.OtherMode
         /// 
         /// </summary>
         internal static Dictionary<LocationId, uint> DefaultTimesBetween(
-            this IOtherModeGenerator modeGenerator, IStopsReader reader, (double lat, double lon) coorFrom,
+            this IOtherModeGenerator modeGenerator, IStop coorFrom,
             IEnumerable<IStop> to)
         {
             var times = new Dictionary<LocationId, uint>();
