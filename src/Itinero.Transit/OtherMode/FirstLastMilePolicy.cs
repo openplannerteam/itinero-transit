@@ -17,26 +17,6 @@ namespace Itinero.Transit.OtherMode
         private readonly HashSet<LocationId> _firstMileStops;
         private readonly HashSet<LocationId> _lastMileStops;
 
-        public static IOtherModeGenerator CreateFrom<T>(Profile<T> profile,
-         IEnumerable<LocationId> firstMileStops,
-            IEnumerable<LocationId> lastMileStops) where T : IJourneyMetric<T>
-        {
-            if (profile.FirstMileWalksGenerator == profile.WalksGenerator &&
-                profile.LastMileWalksGenerator == profile.WalksGenerator)
-            {
-                return profile.WalksGenerator;
-            }
-            
-            return new FirstLastMilePolicy(
-                profile.WalksGenerator,
-                profile.FirstMileWalksGenerator, firstMileStops,
-                profile.LastMileWalksGenerator, lastMileStops
-                );
-            
-            
-            
-        }
-
         public FirstLastMilePolicy(
             IOtherModeGenerator otherModeGeneratorImplementation,
             IOtherModeGenerator firstMile, IEnumerable<LocationId> firstMileStops,
@@ -122,6 +102,17 @@ namespace Itinero.Transit.OtherMode
         public float Range()
         {
             return _range;
+        }
+
+        public string OtherModeIdentifier()
+        {
+            return
+                $"https://openplanner.team/itinero-transit/walks/firstLastMile" +
+                $"&default={Uri.EscapeUriString(_defaultWalk.OtherModeIdentifier())}" +
+                $"&firstMile={Uri.EscapeUriString(_firstMile.OtherModeIdentifier())}" +
+                $"&lastMile={Uri.EscapeUriString(_lastMile.OtherModeIdentifier())}"
+                ;
+                
         }
     }
 }

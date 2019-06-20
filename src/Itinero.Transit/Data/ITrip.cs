@@ -1,4 +1,6 @@
+using System;
 using System.Diagnostics.Contracts;
+using Itinero.Transit.OtherMode;
 
 namespace Itinero.Transit.Data
 {
@@ -8,12 +10,16 @@ namespace Itinero.Transit.Data
     {
         public readonly uint DatabaseId, InternalId;
 
-        public static readonly TripId Walk = new TripId(uint.MaxValue, uint.MaxValue);
-
         public TripId(uint databaseId, uint internalId)
         {
             DatabaseId = databaseId;
             InternalId = internalId;
+        }
+
+        public TripId(IOtherModeGenerator otherModeGenerator):this(UInt32.MaxValue, 
+            (uint) otherModeGenerator.OtherModeIdentifier().GetHashCode())
+        {
+            
         }
 
         [Pure]

@@ -43,5 +43,17 @@ namespace Itinero.Transit.OtherMode
         /// </summary>
         /// <returns></returns>
         float Range();
+
+
+      
+        /// <summary>
+        /// An URL which represents this other mode generator.
+        /// Can be used to deduct the otherModeGenerator used.
+        /// This should be a constant.
+        /// </summary>
+        /// <returns></returns>
+        string OtherModeIdentifier();
+
+
     }
 }

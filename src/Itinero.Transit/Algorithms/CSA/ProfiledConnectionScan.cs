@@ -146,9 +146,7 @@ namespace Itinero.Transit.Algorithms.CSA
             _empty = new ParetoFrontier<T>(_comparator, _journeyFilter);
             _metricFactory = settings.Profile.MetricFactory;
             _transferPolicy = settings.Profile.InternalTransferGenerator;
-            _walkPolicy = FirstLastMilePolicy.CreateFrom(settings.Profile
-                , _departureLocations, _targetLocationsIds
-            );
+            _walkPolicy = settings.Profile.WalksGenerator;
 
             // Apply the connection filter from the profile
             _filter = settings.Profile.ConnectionFilter;
@@ -392,7 +390,7 @@ namespace Itinero.Transit.Algorithms.CSA
                         Journey<T>.ProfiledScanJourney)
                     // ... the walking part ...
                     .ChainSpecial
-                        (Journey<T>.OTHERMODE, c.ArrivalTime, c.ArrivalStop, TripId.Walk)
+                        (Journey<T>.OTHERMODE, c.ArrivalTime, c.ArrivalStop, new TripId(_walkPolicy))
                     // ... the connection part ...
                     .ChainBackward(c)
                 ;

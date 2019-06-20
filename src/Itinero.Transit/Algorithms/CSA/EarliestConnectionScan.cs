@@ -71,9 +71,8 @@ namespace Itinero.Transit.Algorithms.CSA
             _userTargetLocations = settings.TargetStop;
             _journeyFilter = settings.Profile.JourneyFilter;
             _connectionFilter = settings.Profile.ConnectionFilter; // settings.Filter is NOT used and SHOULD NOT BE used
-            _walkPolicy = FirstLastMilePolicy.CreateFrom(settings.Profile,
-                settings.DepartureStop.Select(fm => fm.Item1),
-                settings.TargetStop.Select(lm => lm.Item1));
+            _walkPolicy = settings.Profile.WalksGenerator;
+
 
             foreach (var (loc, j) in settings.DepartureStop)
             {

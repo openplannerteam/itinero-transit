@@ -98,5 +98,10 @@ namespace Itinero.Transit.IO.OSM
         {
             return _searchDistance;
         }
+        
+        public string OtherModeIdentifier()
+        {
+            return $"https://openplanner.team/itinero-transit/walks/osm&maxDistance={_searchDistance}&profile={_profile.Name}";
+        }
     }
 }

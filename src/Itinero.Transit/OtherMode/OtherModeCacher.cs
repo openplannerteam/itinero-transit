@@ -61,8 +61,6 @@ namespace Itinero.Transit.OtherMode
              * But we want all the ids to be able to cache.
              * And we cant use the 'to'-list as cache key, because it points towards the same reader n-times.
              *
-             *
-             * TODO BUG
              */
 
 
@@ -83,6 +81,11 @@ namespace Itinero.Transit.OtherMode
         public float Range()
         {
             return _fallback.Range();
+        }
+        
+        public string OtherModeIdentifier()
+        {
+            return _fallback.OtherModeIdentifier();
         }
     }
 }

@@ -55,7 +55,8 @@ namespace Itinero.Transit.OtherMode
                 }
 
                 var walkingJourney =
-                    journey.ChainSpecial(Journey<T>.OTHERMODE, journey.Time + time, reachableLocation, TripId.Walk);
+                    journey.ChainSpecial(Journey<T>.OTHERMODE, journey.Time + time, reachableLocation, 
+                        new TripId(otherModeGenerator));
 
                 yield return walkingJourney;
             }
@@ -107,7 +108,7 @@ namespace Itinero.Transit.OtherMode
 
                     // Biggest difference: subtraction instead of addition
                     var walkingJourney =
-                        j.ChainSpecial(Journey<T>.OTHERMODE, j.Time - time, reachableLocation, TripId.Walk);
+                        j.ChainSpecial(Journey<T>.OTHERMODE, j.Time - time, reachableLocation, new TripId(otherModeGenerator));
 
                     yield return walkingJourney;
                 }

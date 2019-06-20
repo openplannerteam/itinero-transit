@@ -87,10 +87,8 @@ namespace Itinero.Transit.Algorithms.CSA
             _connections = settings.ConnectionsEnumerator;
             _transferPolicy = settings.Profile.InternalTransferGenerator;
             _userDepartureLocation = settings.DepartureStop;
-            
-            _walkPolicy = FirstLastMilePolicy.CreateFrom(settings.Profile,
-                settings.DepartureStop.Select(fm => fm.Item1),
-                settings.TargetStop.Select(lm => lm.Item1));
+             _walkPolicy = settings.Profile.WalksGenerator;
+
             
             foreach (var (loc, j) in settings.TargetStop)
             {

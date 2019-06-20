@@ -15,8 +15,6 @@ namespace Itinero.Transit.Data
         
         public readonly IOtherModeGenerator InternalTransferGenerator;
         public readonly IOtherModeGenerator WalksGenerator;
-        public readonly IOtherModeGenerator FirstMileWalksGenerator;
-        public IOtherModeGenerator LastMileWalksGenerator;
 
         public readonly IConnectionFilter ConnectionFilter;
         public readonly IJourneyFilter<T> JourneyFilter;
@@ -32,26 +30,6 @@ namespace Itinero.Transit.Data
             JourneyFilter = journeyFilter;
             InternalTransferGenerator = internalTransferGenerator;
             WalksGenerator = walksGenerator;
-            FirstMileWalksGenerator = walksGenerator;
-            LastMileWalksGenerator = walksGenerator;
         }
-        
-        public Profile(IOtherModeGenerator internalTransferGenerator,
-            IOtherModeGenerator walksGenerator, 
-            IOtherModeGenerator firstMile, 
-            IOtherModeGenerator lastMile, 
-            T metricFactory,
-            ProfiledMetricComparator<T> profileComparator, IConnectionFilter connectionFilter = null, IJourneyFilter<T> journeyFilter = null)
-        {
-            MetricFactory = metricFactory;
-            ProfileComparator = profileComparator;
-            ConnectionFilter = connectionFilter;
-            JourneyFilter = journeyFilter;
-            InternalTransferGenerator = internalTransferGenerator;
-            WalksGenerator = firstMile;
-            FirstMileWalksGenerator = lastMile;
-            LastMileWalksGenerator = walksGenerator;
-        }
-        
     }
 }

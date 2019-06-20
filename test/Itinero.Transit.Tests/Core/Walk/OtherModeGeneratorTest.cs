@@ -32,8 +32,8 @@ namespace Itinero.Transit.Tests.Core.Walk
             Assert.Equal((uint) 1, mixed.TimeBetween(stop0, stop1));
             // First mile
             Assert.Equal((uint) 2, mixed.TimeBetween(stop1, stop0));
-            
-            
+
+
             // Normal situation
             Assert.Equal((uint) 1, mixed.TimeBetween(stop2, stop1));
             // last mile
@@ -44,24 +44,23 @@ namespace Itinero.Transit.Tests.Core.Walk
                 stop1,
                 stop2
             });
-            
-            Assert.Equal((uint) 1, 
+
+            Assert.Equal((uint) 1,
                 timesBetween[stop1.Id]);
-            Assert.Equal((uint) 3, 
+            Assert.Equal((uint) 3,
                 timesBetween[stop2.Id]);
-            
-            
+
+
             timesBetween = mixed.TimesBetween(stop1, new List<IStop>
             {
                 stop0,
                 stop2
             });
-            
-            Assert.Equal((uint) 2, 
-                timesBetween[stop0.Id]);
-            Assert.Equal((uint) 2, 
-                timesBetween[stop2.Id]);
 
+            Assert.Equal((uint) 2,
+                timesBetween[stop0.Id]);
+            Assert.Equal((uint) 2,
+                timesBetween[stop2.Id]);
         }
 
         [Fact]
@@ -150,6 +149,11 @@ namespace Itinero.Transit.Tests.Core.Walk
         {
             return 1000.0f;
         }
+
+        public string OtherModeIdentifier()
+        {
+            return "https://openplanner.team/itinero-transit/walks/test";
+        }
     }
 
     class FixedGenerator : IOtherModeGenerator
@@ -173,7 +177,12 @@ namespace Itinero.Transit.Tests.Core.Walk
 
         public float Range()
         {
-           return float.MaxValue;
+            return float.MaxValue;
+        }
+
+        public string OtherModeIdentifier()
+        {
+            return "https://openplanner.team/itinero-transit/walks/test";
         }
     }
 }

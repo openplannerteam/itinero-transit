@@ -228,8 +228,6 @@ namespace Itinero.Transit
             Profile = new Profile<T>(
                 profile.InternalTransferGenerator,
                 profile.WalksGenerator,
-                profile.FirstMileWalksGenerator,
-                profile.LastMileWalksGenerator,
                 profile.MetricFactory,
                 profile.ProfileComparator,
                 profile.ConnectionFilter,

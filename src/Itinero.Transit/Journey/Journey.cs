@@ -20,6 +20,7 @@ namespace Itinero.Transit.Journey
     ///
     /// The above properties are reversed in the CPS algorithm. The last step of that algorithm is to reverse the journeys,
     /// so that users of the lib get a uniform experience
+    ///
     /// </summary>
     public class Journey<T>
         where T : IJourneyMetric<T>
@@ -60,6 +61,7 @@ namespace Itinero.Transit.Journey
         /// 2: This is a Transfer (within the same station)
         /// 3: This is a Walk, from the previous journey collection to here.
         ///         Note that the actual route is _not_ saved as not to use too much memory
+        /// 
         /// 
         /// </summary>
         public readonly uint Connection;
@@ -304,7 +306,7 @@ namespace Itinero.Transit.Journey
                 return null;
             }
 
-            return ChainSpecial(OTHERMODE, Time + time, otherLocation, TripId.Walk);
+            return ChainSpecial(OTHERMODE, Time + time, otherLocation, new TripId(otherModeGenerator));
         }
 
         /// <summary>
@@ -322,7 +324,7 @@ namespace Itinero.Transit.Journey
             }
 
             // Pretty much the only difference is the '-' here instead of a '+' with the forward method
-            return ChainSpecial(OTHERMODE, Time - time, otherLocation, TripId.Walk);
+            return ChainSpecial(OTHERMODE, Time - time, otherLocation, new TripId(otherModeGenerator));
         }
 
 
