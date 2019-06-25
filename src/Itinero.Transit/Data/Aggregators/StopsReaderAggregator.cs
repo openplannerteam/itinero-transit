@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Itinero.Transit.Data.Attributes;
 
@@ -21,10 +22,11 @@ namespace Itinero.Transit.Data.Aggregators
             return CreateFrom(enumerators);
         }
 
-        private IStopsReader[] UnderlyingDatabases;
+        private readonly IStopsReader[] UnderlyingDatabases;
         private int _currentIndex;
         private readonly HashSet<uint> _responsibleFor;
 
+        private readonly List<IStopsReader> _uniqueUnderlyingDatabass = new List<IStopsReader>();
 
         public static IStopsReader CreateFrom(List<IStopsReader> stopsReaders)
         {
@@ -46,6 +48,7 @@ namespace Itinero.Transit.Data.Aggregators
             var expanded = new List<IStopsReader>();
             _responsibleFor = new HashSet<uint>();
 
+            var uniqueUnderlyingDatabases = new HashSet<IStopsReader>();
             foreach (var stop in stops)
             {
                 if (stop is StopsReaderAggregator aggr)
@@ -57,8 +60,11 @@ namespace Itinero.Transit.Data.Aggregators
                     expanded.Add(stop);
                 }
 
+                uniqueUnderlyingDatabases.Add(stop);
                 _responsibleFor.UnionWith(stop.DatabaseIndexes());
             }
+
+            _uniqueUnderlyingDatabass = uniqueUnderlyingDatabases.ToList();
 
             var max = _responsibleFor.Max();
             UnderlyingDatabases = new IStopsReader[max + 1];
@@ -82,7 +88,7 @@ namespace Itinero.Transit.Data.Aggregators
 
         public bool MoveNext()
         {
-            while (_currentIndex < UnderlyingDatabases.Length)
+            while (_currentIndex < _uniqueUnderlyingDatabass.Count)
             {
                 if (_currentStop.MoveNext())
                 {
@@ -125,7 +131,7 @@ namespace Itinero.Transit.Data.Aggregators
         public void Reset()
         {
             _currentIndex = 0;
-            foreach (var reader in UnderlyingDatabases)
+            foreach (var reader in _uniqueUnderlyingDatabass)
             {
                 reader.Reset();
             }
@@ -134,7 +140,7 @@ namespace Itinero.Transit.Data.Aggregators
         public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
         {
             var stops = new HashSet<IStop>();
-            foreach (var db in UnderlyingDatabases)
+            foreach (var db in _uniqueUnderlyingDatabass)
             {
                 stops.UnionWith(db.SearchInBox(box));
             }
