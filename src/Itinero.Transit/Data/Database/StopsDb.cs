@@ -349,6 +349,11 @@ namespace Itinero.Transit.Data
                 return false;
             }
 
+            public HashSet<uint> DatabaseIndexes()
+            {
+                return new HashSet<uint>{_stopsDb.DatabaseId};
+            }
+
             /// <summary>
             /// Moves to the next stop.
             /// </summary>

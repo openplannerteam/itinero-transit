@@ -14,6 +14,11 @@ namespace Itinero.Transit.Tests.Core
         public double Latitude { get; }
         public IAttributeCollection Attributes { get; }
 
+        public HashSet<uint> DatabaseIndexes()
+        {
+            return new HashSet<uint>();
+        }
+
         public bool MoveNext()
         {
             throw new NotImplementedException();

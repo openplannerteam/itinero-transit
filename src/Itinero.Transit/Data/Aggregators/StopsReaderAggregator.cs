@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Itinero.Transit.Data.Attributes;
 
 namespace Itinero.Transit.Data.Aggregators
@@ -7,11 +8,6 @@ namespace Itinero.Transit.Data.Aggregators
     public class StopsReaderAggregator : IStopsReader
     {
         private IStopsReader _currentStop;
-
-
-        public List<IStopsReader> UnderlyingDatabases { get; }
-        private int _currentIndex;
-
 
         public static IStopsReader CreateFrom(IEnumerable<TransitDb.TransitDbSnapShot> snapShot)
         {
@@ -25,6 +21,11 @@ namespace Itinero.Transit.Data.Aggregators
             return CreateFrom(enumerators);
         }
 
+        private IStopsReader[] UnderlyingDatabases;
+        private int _currentIndex;
+        private readonly HashSet<uint> _responsibleFor;
+
+
         public static IStopsReader CreateFrom(List<IStopsReader> enumerators)
         {
             if (enumerators.Count == 0)
@@ -32,7 +33,7 @@ namespace Itinero.Transit.Data.Aggregators
                 throw new Exception("No enumerators found");
             }
 
-            if (enumerators.Count == 0)
+            if (enumerators.Count == 1)
             {
                 return enumerators[0];
             }
@@ -42,13 +43,46 @@ namespace Itinero.Transit.Data.Aggregators
 
         private StopsReaderAggregator(List<IStopsReader> stops)
         {
-            UnderlyingDatabases = stops;
+            var expanded = new List<IStopsReader>();
+            _responsibleFor = new HashSet<uint>();
+
+            foreach (var stop in stops)
+            {
+                if (stop is StopsReaderAggregator aggr)
+                {
+                    expanded.AddRange(aggr.UnderlyingDatabases);
+                }
+                else
+                {
+                    expanded.Add(stop);
+                }
+
+                _responsibleFor.UnionWith(stop.DatabaseIndexes());
+            }
+
+            var max = _responsibleFor.Max();
+            UnderlyingDatabases = new IStopsReader[max + 1];
+
+            foreach (var stopsReader in expanded)
+            {
+                foreach (var index in stopsReader.DatabaseIndexes())
+                {
+                    UnderlyingDatabases[index] = stopsReader;
+                }
+            }
+
             _currentStop = stops[_currentIndex];
+        }
+
+
+        public HashSet<uint> DatabaseIndexes()
+        {
+            return _responsibleFor;
         }
 
         public bool MoveNext()
         {
-            while (_currentIndex < UnderlyingDatabases.Count)
+            while (_currentIndex < UnderlyingDatabases.Length)
             {
                 if (_currentStop.MoveNext())
                 {
@@ -56,7 +90,7 @@ namespace Itinero.Transit.Data.Aggregators
                 }
 
                 _currentIndex++;
-                if (_currentIndex == UnderlyingDatabases.Count)
+                if (_currentIndex == UnderlyingDatabases.Length)
                 {
                     return false;
                 }
@@ -69,17 +103,8 @@ namespace Itinero.Transit.Data.Aggregators
 
         public bool MoveTo(LocationId stop)
         {
-            foreach (var stopsReader in UnderlyingDatabases)
-            {
-                // ReSharper disable once InvertIf
-                if (stopsReader.MoveTo(stop))
-                {
-                    _currentStop = stopsReader;
-                    return true;
-                }
-            }
-
-            return false;
+            _currentStop = UnderlyingDatabases[stop.DatabaseId];
+            return _currentStop.MoveTo(stop);
         }
 
         public bool MoveTo(string globalId)

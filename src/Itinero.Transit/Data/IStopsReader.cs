@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Utils;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
@@ -9,6 +10,8 @@ namespace Itinero.Transit.Data
 {
     public interface IStopsReader : IStop
     {
+        HashSet<uint> DatabaseIndexes();
+
         bool MoveNext();
         bool MoveTo(LocationId stop);
         bool MoveTo(string globalId);
@@ -20,9 +23,8 @@ namespace Itinero.Transit.Data
     public static class StopsReaderExtensions
     {
         //    IStop SearchClosest(double lon, double lat, double maxDistanceInMeters = 1000);
-        
-        
-        
+
+
         /// <summary>
         /// Used by 'OtherModeExtensions' to search close by things for TimesBetween
         /// </summary>
@@ -69,7 +71,7 @@ namespace Itinero.Transit.Data
 
             return stopsDb.SearchInBox(box);
         }
-        
+
         public static LocationId FindStop(this IStopsReader reader, string locationId,
             string errorMessage = null)
         {
@@ -106,6 +108,17 @@ namespace Itinero.Transit.Data
 
             reader.MoveTo(closestStopId.Value);
             return new Stop(reader);
+        }
+
+        public static IStopsReader UseCache(this IStopsReader stopsReader)
+        {
+            // ReSharper disable once ConvertIfStatementToReturnStatement
+            if (stopsReader is StopSearchCaching)
+            {
+                return stopsReader;
+            }
+
+            return new StopSearchCaching(stopsReader);
         }
     }
 }

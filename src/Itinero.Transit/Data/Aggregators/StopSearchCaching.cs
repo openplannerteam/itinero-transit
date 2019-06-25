@@ -4,20 +4,6 @@ using Itinero.Transit.Data.Attributes;
 
 namespace Itinero.Transit.Data.Aggregators
 {
-    public static class StopReaderExtensions
-    {
-        public static IStopsReader UseCache(this IStopsReader stopsReader)
-        {
-            // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (stopsReader is StopSearchCaching)
-            {
-                return stopsReader;
-            }
-
-            return new StopSearchCaching(stopsReader);
-        }
-    }
-
 
     public class StopSearchCaching : IStopsReader
     {
@@ -66,6 +52,11 @@ namespace Itinero.Transit.Data.Aggregators
         public bool MoveTo(string globalId)
         {
             return _stopsReader.MoveTo(globalId);
+        }
+
+        public HashSet<uint> DatabaseIndexes()
+        {
+            return _stopsReader.DatabaseIndexes();
         }
 
         public bool MoveNext()
