@@ -312,6 +312,18 @@ namespace Itinero.Transit
             );
         }
 
+        [Pure]
+        public WithProfile<T> SetStopsReader(IStopsReader stopsReader)
+        {
+            return new WithProfile<T>(
+                stopsReader,
+                ConnectionEnumerator,
+                ConnectionReader,
+                Profile,
+                DatabaseCount + 1
+            );
+        }
+
 
         public IWithSingleLocation<T> SelectSingleStop(IEnumerable<(LocationId, Journey<T>)> stop)
         {

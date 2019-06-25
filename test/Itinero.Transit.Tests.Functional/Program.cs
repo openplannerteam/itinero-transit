@@ -35,7 +35,7 @@ namespace Itinero.Transit.Tests.Functional
             if (devTestsOnly)
             {
 
-                new MixedDestinationTest().Run();
+                new Speedtest().Run();
                 return;
             }
 
@@ -112,10 +112,10 @@ namespace Itinero.Transit.Tests.Functional
 
         public static void SlowTests()
         {
-            new MultipleLoadTest().Run(0);
+            new MultipleLoadTest().Run();
 
             // This tests starts a timer which reloads a lot
-            new TestAutoUpdating().Run(null);
+            new TestAutoUpdating().Run();
         }
 
 

@@ -56,12 +56,14 @@ namespace Itinero.Transit.Data
 
 
         [Pure]
-        public static IEnumerable<TransitDb> ReadFrom(IReadOnlyList<string> paths)
+        public static IEnumerable<TransitDb> ReadFrom(IEnumerable<string> paths)
         {
             var tdbs = new List<TransitDb>();
-            for (var i = 0; i < paths.Count; i++)
+            var i = 0;
+            foreach (var path in paths)
             {
-                tdbs.Add(ReadFrom(paths[i], (uint) i));
+                tdbs.Add(ReadFrom(path, (uint) i));
+                i++;
             }
 
             return tdbs;

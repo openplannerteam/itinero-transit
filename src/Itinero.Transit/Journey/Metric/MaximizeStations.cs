@@ -36,7 +36,7 @@ namespace Itinero.Transit.Journey.Metric
             _importances.TryGetValue(y.Location, out var yL);
 
 
-            sum += (int) (yL - xL);
+            sum += (int) yL - (int) xL;
             return sum;
         }
     }

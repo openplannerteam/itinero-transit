@@ -29,20 +29,11 @@ namespace Itinero.Transit.Tests.Functional
         public bool Log { get; set; } = true;
 
         /// <summary>
-        /// Executes this test.
-        /// </summary>
-        /// <returns>The output.</returns>
-        public virtual TOut Run()
-        {
-            return Run(default(TIn));
-        }
-
-        /// <summary>
         /// Executes this test for the given input.
         /// </summary>
         /// <param name="input">The input.</param>
         /// <returns>The output.</returns>
-        public virtual TOut Run(TIn input)
+        public TOut Run(TIn input = default(TIn))
         {
             try
             {
