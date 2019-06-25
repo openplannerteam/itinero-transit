@@ -6,12 +6,22 @@ This is a C# implementation of a client consuming [Linked Connections(LC)](https
 
 # Documentation
 
-All the documentation can be found [here](index.md).
+To use the library and get a feel for the algorithm , please see our [documentation repo](https://github.com/itinero/docs/blob/feature/transit/docs/transit/index.md)
+If you want to setup a http-server to perform routing, have a look [here](https://github.com/openplannerteam/itinero-transit/)
 
+# Project overview
+
+The source directory contains three sub-projects:
+
+1) Itinero-Transit contains the algorithms, which use transitDbs to perform routing and necessary data structures and classes.
+2) Itinero.Transit.IO.LC contains all code to create a transitDB from a LinkedConnection-source
+3) Itinero.Transit.IO.OSM contains all code to create a transitDB based on relations which adhere to the PTv2-scheme and contain a class plan walks between stops using OSM.
 
 ## TransitDb
 
-We have a slightly different approach than the other LC clients. We don't use LCs directly but we use an intermediate data structure between the route planning algorithms (CSA) and the source of the connections, being linked connections.
+
+A TransitDb is a data structure which contains all stops, connections and trips. It can be build using LC, OSM or -if needed- by other sources.
+By default, Itinero-Transit prefetches all the data and only does routeplanning afterwards.
 
 The TransitDb is:
 - A cache for connections    
@@ -24,7 +34,4 @@ It contains stops, connections and trips. The stops can be retrieved, updated or
 A high-level overview of how these things tie together:
 
 ![transit-db-diagram](images/transit-db-lc-io-diagram.png)
-
-A transit db can request new data from its connection source and a connection source can notify the transit db if it there is new data available.
-
 

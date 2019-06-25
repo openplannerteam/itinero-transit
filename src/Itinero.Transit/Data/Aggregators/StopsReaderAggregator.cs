@@ -41,7 +41,7 @@ namespace Itinero.Transit.Data.Aggregators
             return new StopsReaderAggregator(stopsReaders);
         }
 
-        private StopsReaderAggregator(List<IStopsReader> stops)
+        private StopsReaderAggregator(IReadOnlyList<IStopsReader> stops)
         {
             var expanded = new List<IStopsReader>();
             _responsibleFor = new HashSet<uint>();
@@ -133,10 +133,10 @@ namespace Itinero.Transit.Data.Aggregators
 
         public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
         {
-            var stops = new List<IStop>();
+            var stops = new HashSet<IStop>();
             foreach (var db in UnderlyingDatabases)
             {
-                stops.AddRange(db.SearchInBox(box));
+                stops.UnionWith(db.SearchInBox(box));
             }
 
             return stops;
