@@ -26,19 +26,19 @@ namespace Itinero.Transit.Data.Aggregators
         private readonly HashSet<uint> _responsibleFor;
 
 
-        public static IStopsReader CreateFrom(List<IStopsReader> enumerators)
+        public static IStopsReader CreateFrom(List<IStopsReader> stopsReaders)
         {
-            if (enumerators.Count == 0)
+            if (stopsReaders.Count == 0)
             {
                 throw new Exception("No enumerators found");
             }
 
-            if (enumerators.Count == 1)
+            if (stopsReaders.Count == 1)
             {
-                return enumerators[0];
+                return stopsReaders[0];
             }
 
-            return new StopsReaderAggregator(enumerators);
+            return new StopsReaderAggregator(stopsReaders);
         }
 
         private StopsReaderAggregator(List<IStopsReader> stops)

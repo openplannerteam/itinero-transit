@@ -25,7 +25,7 @@ namespace Itinero.Transit.IO.OSM.Data
         /// <returns></returns>
         public static WithProfile<T> UseOsmLocations<T>(this WithProfile<T> withProfile) where T : IJourneyMetric<T>
         {
-            var databaseIdCount = withProfile.DatabaseCount;
+            var databaseIdCount = withProfile.StopsReader.DatabaseIndexes().Max() + 1;
 
             var osmReader = new OsmLocationStopReader(databaseIdCount, hoard: true);
             return withProfile.AddStopsReader(osmReader);
@@ -36,7 +36,7 @@ namespace Itinero.Transit.IO.OSM.Data
             this WithProfile<T> withProfile,
             (double latitude, double longitude) stop) where T : IJourneyMetric<T>
         {
-            var databaseIdCount = withProfile.DatabaseCount;
+            var databaseIdCount = withProfile.StopsReader.DatabaseIndexes().Max() + 1;
             var osmReader = new OsmLocationStopReader(databaseIdCount);
             var fromId = osmReader.AddSearchableLocation(stop);
 
@@ -49,7 +49,8 @@ namespace Itinero.Transit.IO.OSM.Data
             this WithProfile<T> withProfile,
             IEnumerable<(double latitude, double longitude)> stops) where T : IJourneyMetric<T>
         {
-            var databaseIdCount = withProfile.DatabaseCount;
+            var databaseIdCount = withProfile.StopsReader.DatabaseIndexes().Max() + 1;
+
             var osmReader = new OsmLocationStopReader(databaseIdCount);
             var fromIds = stops.Select(osmReader.AddSearchableLocation).ToList();
 
@@ -63,7 +64,7 @@ namespace Itinero.Transit.IO.OSM.Data
             (double latitude, double longitude) from,
             (double latitude, double longitude) to) where T : IJourneyMetric<T>
         {
-            var databaseIdCount = withProfile.DatabaseCount;
+            var databaseIdCount = withProfile.StopsReader.DatabaseIndexes().Max() + 1;
             var osmReader = new OsmLocationStopReader(databaseIdCount);
             var fromId = osmReader.AddSearchableLocation(from);
             var toId = osmReader.AddSearchableLocation(to);
@@ -78,7 +79,7 @@ namespace Itinero.Transit.IO.OSM.Data
             IEnumerable<(double latitude, double longitude)> from,
             IEnumerable<(double latitude, double longitude)> to) where T : IJourneyMetric<T>
         {
-            var databaseIdCount = withProfile.DatabaseCount;
+            var databaseIdCount = withProfile.StopsReader.DatabaseIndexes().Max() + 1;
             var osmReader = new OsmLocationStopReader(databaseIdCount);
             var fromIds = from.Select(osmReader.AddSearchableLocation).ToList();
             var toIds = to.Select(osmReader.AddSearchableLocation).ToList();

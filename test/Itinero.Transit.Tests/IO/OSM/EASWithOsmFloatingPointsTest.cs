@@ -42,7 +42,7 @@ namespace Itinero.Transit.Tests.IO.OSM
         public void WithBeginOsmWalk()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);

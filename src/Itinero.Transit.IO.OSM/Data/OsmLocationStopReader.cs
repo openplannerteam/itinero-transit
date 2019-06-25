@@ -106,7 +106,7 @@ namespace Itinero.Transit.IO.OSM.Data
 
         public HashSet<uint> DatabaseIndexes()
         {
-            return new HashSet<uint>();
+            return new HashSet<uint>(){_databaseId};
         }
 
         public bool MoveNext()

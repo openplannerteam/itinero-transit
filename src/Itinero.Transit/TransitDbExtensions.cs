@@ -200,28 +200,25 @@ namespace Itinero.Transit
 
     public class WithProfile<T> where T : IJourneyMetric<T>
     {
-        internal readonly IStopsReader StopsReader;
-        internal readonly IConnectionEnumerator ConnectionEnumerator;
-        internal readonly IConnectionReader ConnectionReader;
-        internal readonly Profile<T> Profile;
-        public readonly uint DatabaseCount;
+        public readonly IStopsReader StopsReader;
+        public readonly IConnectionEnumerator ConnectionEnumerator;
+        public readonly IConnectionReader ConnectionReader;
+        public readonly Profile<T> Profile;
 
         internal WithProfile(
             IStopsReader stops,
             IConnectionEnumerator connections,
             IConnectionReader connectionsReaders,
-            Profile<T> profile, uint databaseCount)
+            Profile<T> profile)
         {
             StopsReader = stops;
             ConnectionEnumerator = connections;
             ConnectionReader = connectionsReaders;
             Profile = profile;
-            DatabaseCount = databaseCount;
         }
 
         internal WithProfile(IEnumerable<TransitDb.TransitDbSnapShot> tdbs, Profile<T> profile)
         {
-            DatabaseCount = (uint) tdbs.Count();
             StopsReader = StopsReaderAggregator.CreateFrom(tdbs);
             ConnectionEnumerator = ConnectionEnumeratorAggregator.CreateFrom(tdbs);
             ConnectionReader = ConnectionReaderAggregator.CreateFrom(tdbs);
@@ -285,8 +282,7 @@ namespace Itinero.Transit
                     walksGenCache,
                     Profile.MetricFactory,
                     Profile.ProfileComparator
-                ),
-                DatabaseCount
+                )
             );
         }
 
@@ -307,8 +303,7 @@ namespace Itinero.Transit
                 }),
                 ConnectionEnumerator,
                 ConnectionReader,
-                Profile,
-                DatabaseCount + 1
+                Profile
             );
         }
 
@@ -319,8 +314,7 @@ namespace Itinero.Transit
                 stopsReader,
                 ConnectionEnumerator,
                 ConnectionReader,
-                Profile,
-                DatabaseCount + 1
+                Profile
             );
         }
 
