@@ -356,7 +356,7 @@ namespace Itinero.Transit.Algorithms.CSA
             // Let's calculate the various times to walk towards each possible destination
             _stopsReader.MoveTo(c.ArrivalStop);
             var walkingTimes =
-                _walkPolicy?.TimesBetween(/* IStop from */ _stopsReader, _targetLocations);
+                _walkPolicy?.TimesBetween( /* IStop from */ _stopsReader, _targetLocations);
             if (walkingTimes == null || walkingTimes.Count == 0)
             {
                 return null;
@@ -517,6 +517,16 @@ namespace Itinero.Transit.Algorithms.CSA
             }
 
             return isochrone;
+        }
+
+        /// <summary>
+        /// Gives raw access to the internal data structure of PCS.
+        /// This is mostly meant for debugging
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<LocationId, ParetoFrontier<T>> StationJourneys()
+        {
+            return _stationJourneys;
         }
     }
 

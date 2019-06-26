@@ -13,11 +13,23 @@ namespace Itinero.Transit.Algorithms.CSA
         public readonly IJourneyFilter<T> JourneyFilter;
 
         /// <summary>
-        /// Contains all the points on the frontier, in order
+        /// Contains all the points on the frontier, sorted by descending Journey.Time (thus the earliest departure is last in the list)
         /// This is needed for certain optimisations.
         /// Note that most removals (if they happen) will probably be on the tail, so not have too much of an performance impact
         /// </summary>
         public readonly List<Journey<T>> Frontier = new List<Journey<T>>();
+
+        /// <summary>
+        ///
+        /// The ShadowIndex contains the departure times of a subset of Journeys from Frontier (but is equally long).
+        /// ShadowIndex[i] contains the departure time of a journey which will
+        /// - Depart earlier then (or at the same time as) frontier[i]
+        /// - Which is located at frontier[j] (with j smaller then i)
+        ///
+        /// Often, ShadowIndex[i] will be equals to Frontier[i].Root.Time, but this is not always the case 
+        /// 
+        /// </summary>
+        public readonly List<ulong> ShadowIndex = new List<ulong>();
 
 
         public ParetoFrontier(MetricComparator<T> comparator, IJourneyFilter<T> journeyFilter)
@@ -47,10 +59,74 @@ namespace Itinero.Transit.Algorithms.CSA
                 return false;
             }
 
+            /*
+             * PCS runs backwards, thus starts at the latest departing journeys
+             * This means that journeys which are added, will probably depart earlier and that
+             * Frontier is sorted on Journey.Time, with the lowest (earliest) times to the end.
+             * However, in a very few cases this order might be disturbed (mostly footpaths) because a footpath migth generate a walk
+             * which is longer then another walk and arrive before another train is inserted.
+             *
+             * We make sure that the sorted property is adhered by keeping track what insertion point is needed - although this case is pretty rare
+             */
+            var insertionPoint = Frontier.Count;
 
             for (var i = Frontier.Count - 1; i >= 0; i--)
             {
                 var guard = Frontier[i];
+
+                // ### About the ShadowIndex
+
+                // The pareto frontier always uses a profiled connection
+                // Thus, if the journey arrives sooner then every element in the frontier, it will be accepted regardless of other properties
+                // The frontier is sorted by arrival time, with the latest arrival times first.
+
+                // IN other words, we scan from the back of the list to the front 
+                // As soon as the guard arrives later then considered, we know that no guard will be able to beat considered
+                // However, the considered might still be able to kick out a few guards if it departs later then the guards
+                // E.G. the following ascii art with journeys, departure to the left
+
+                /* 
+                 * Considered: (no transf)    |-------------->|
+                 * Frontier[3] (one transf)      |------------>| (the last element of the frontier arrives later => Considered will be added to the frontier)
+                 * Frontier[2] (no transf)   |-------------------->| (This one is worse then considered and should be removed)
+                 * Frontier[1] ( 1 transf)                |-------------->| (This one is neither worse nor better then considered
+                 * Frontier[0] (no transf)               |----------------->|    
+                 *
+                 * 
+                 * How do we now we should still check up till Frontier[2]? For this we keep track of the departure time shadow.
+                 * We shine a light at the bottom of the image above and register where the shadow falls:
+                 *
+                 * Considered: (no transf)   X|-------------->|
+                 * Frontier[3] (one transf)  XXXX|------------>|
+                 * Frontier[2] (no transf)   |-------------------->|
+                 * Frontier[1] ( 1 transf)               X|-------------->|
+                 * Frontier[0] (no transf)               |----------------->|    
+                 *
+                 *
+                 * 'Light source:'         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                 * (X = shadow)
+                 * As long as no light touches 'Considered', we have to continue scanning.
+                 *
+                 * In other words, we keep track what, for each frontier element, the index is of the element giving shadow to it)
+                 * This is 'ShadowIndex'
+                 */
+
+                if (guard.Time > considered.Time)
+                {
+                    // At this point, we know that considered will be a part of the frontier
+                    // We still have to check if there are elements on the frontier that could possibly be removed
+
+                    if (ShadowIndex[i] > considered.Root.Time)
+                    {
+                        // At the current point, we know that for i (and all smaller indices holds):
+                        // Frontier[i].(Arrival)Time > considered.Time -> Considered is accepted as it arrives sooner
+                        // Frontier[i].Root.(Departure)Time > considered.Root.(DepartureTime) -> Considered can not remove a frontier element anymore, as it departs sooner
+                        // IN other words: we are done with performing checks!
+                        break;
+                    }
+                }
+
+
                 var duel = Comparator.ADominatesB(guard, considered);
                 switch (duel)
                 {
@@ -60,7 +136,10 @@ namespace Itinero.Transit.Algorithms.CSA
                     case 1:
                         // The new journey defeated the guard
                         Frontier.RemoveAt(i);
+                        ShadowIndex.RemoveAt(i);
                         i--;
+                        insertionPoint--;
+                        FixShadowIndexFrom(i);
                         continue; // We continue the loop to remove other, possible sub-optimal entries further ahead in the list
                     case 0: // Both have exactly the same stats...
                         // Both are equally good
@@ -85,6 +164,16 @@ namespace Itinero.Transit.Algorithms.CSA
                         // So: 1) The guard can not eliminate the candidate
                         // 2) The candidate can not eliminate the guard 
                         // We just have to continue scanning - if no guard defeats the candidate, it owned its place
+
+                        // We consider if the insertion point is still valid
+                        // Biggest time goes on the right
+                        if (guard.Time < considered.Time)
+                        {
+                            // This case is needed around 50 times in the TestAllAlgorithm-suite. I've counted them manually while debugging,
+                            // So it is pretty rare
+                            insertionPoint = i;
+                        }
+
                         continue;
                     default:
                         throw new Exception("Comparison of two journeys in metric did not return -1,1 or 0 but " +
@@ -93,10 +182,56 @@ namespace Itinero.Transit.Algorithms.CSA
             }
 
 
-            //if (comparison == int.MaxValue)
             // The new journey is on the pareto front and can be added
-            Frontier.Add(considered);
+            if (insertionPoint < Frontier.Count)
+            {
+                Frontier.Insert(insertionPoint, considered);
+                ShadowIndex.Add(uint
+                    .MinValue); // This value does not matter, it'll be overwritten by FixShadowIndex anyway
+                FixShadowIndexFrom(insertionPoint);
+            }
+            else if (insertionPoint == Frontier.Count)
+            {
+                Frontier.Add(considered);
+
+                var earliest = considered.Root.Time;
+                if (ShadowIndex.Count > 0)
+                {
+                    var lastShadowIndex = ShadowIndex[ShadowIndex.Count - 1];
+                    if (lastShadowIndex < earliest)
+                    {
+                        earliest = lastShadowIndex;
+                    }
+                }
+
+                ShadowIndex.Add(earliest);
+            }
+            else
+            {
+                throw new Exception("Wut?");
+            }
+
             return true;
+        }
+
+        private void FixShadowIndexFrom(int i)
+        {
+            if (Frontier.Count == 0 || Frontier.Count >= i)
+            {
+                return;
+            }
+
+            var curEarliest = Frontier[i];
+            for (; i < Frontier.Count; i++)
+            {
+                if (Frontier[i].Root.Time < curEarliest.Root.Time)
+                {
+                    // This journey generates more shadow
+                    curEarliest = Frontier[i];
+                }
+
+                ShadowIndex[i] = curEarliest.Root.Time;
+            }
         }
 
         /// <summary>
