@@ -42,7 +42,7 @@ namespace Itinero.Transit.OtherMode
                 stops.LocationsInRange(stops.Latitude, stops.Longitude, otherModeGenerator.Range());
 
             stops.MoveTo(journey.Location);
-            var times = otherModeGenerator.TimesBetween(/*from Istop journey.Location*/stops, reachableLocations);
+            var times = otherModeGenerator.TimesBetween( /*from Istop journey.Location*/stops, reachableLocations);
 
             foreach (var v in times)
             {
@@ -55,7 +55,7 @@ namespace Itinero.Transit.OtherMode
                 }
 
                 var walkingJourney =
-                    journey.ChainSpecial(Journey<T>.OTHERMODE, journey.Time + time, reachableLocation, 
+                    journey.ChainSpecial(Journey<T>.OTHERMODE, journey.Time + time, reachableLocation,
                         new TripId(otherModeGenerator));
 
                 yield return walkingJourney;
@@ -88,11 +88,11 @@ namespace Itinero.Transit.OtherMode
                 throw new ArgumentException($"Location {location} not found, could not move to it");
             }
 
+            var l = new Stop(stops);
             var reachableLocations =
-                stops.LocationsInRange(stops.Latitude, stops.Longitude, otherModeGenerator.Range());
+                stops.LocationsInRange(l.Latitude, l.Longitude, otherModeGenerator.Range());
 
-            stops.MoveTo(location);
-            var times = otherModeGenerator.TimesBetween(stops, reachableLocations);
+            var times = otherModeGenerator.TimesBetween(l, reachableLocations);
 
             foreach (var j in journeys)
             {
@@ -108,7 +108,8 @@ namespace Itinero.Transit.OtherMode
 
                     // Biggest difference: subtraction instead of addition
                     var walkingJourney =
-                        j.ChainSpecial(Journey<T>.OTHERMODE, j.Time - time, reachableLocation, new TripId(otherModeGenerator));
+                        j.ChainSpecial(Journey<T>.OTHERMODE, j.Time - time, reachableLocation,
+                            new TripId(otherModeGenerator));
 
                     yield return walkingJourney;
                 }
