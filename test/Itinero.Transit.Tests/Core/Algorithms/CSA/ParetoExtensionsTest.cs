@@ -27,10 +27,10 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             // Departs at Loc0 at 50, no transfers
             var direct = atLoc1.ChainBackward(
-                new SimpleConnection(0, "0", loc0, loc1, 50, 10, 0, 0, 0, new TripId(0, 0)));
+                new SimpleConnection(1, "1", loc0, loc1, 50, 10, 0, 0, 0, new TripId(0, 0)));
             // Departs at Loc0 at 60, one transfers
             var transfered = atLoc1.ChainBackward(
-                new SimpleConnection(0, "0", loc0, loc1, 60, 10, 0, 0, 0, new TripId(0, 1)));
+                new SimpleConnection(2, "2", loc0, loc1, 60, 10, 0, 0, 0, new TripId(0, 1)));
 
             var loc0Frontier = new ParetoFrontier<TransferMetric>(TransferMetric.ProfileTransferCompare, null);
             loc0Frontier.AddToFrontier(transfered);
@@ -46,13 +46,18 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             
             extended = loc0Frontier.ExtendFrontierBackwards(
                 // Arrives at loc0 at 45 => both direct and transfered can be taken
-                new DummyReader(), new SimpleConnection(6, "6", loc3, loc0, 35, 10, 0, 0, 0, new TripId(0, 1)),
+                new DummyReader(), 
+                new SimpleConnection(6, "6", loc3, loc0, 35, 10, 0, 0, 0,
+                    new TripId(0, 1)),
                 new InternalTransferGenerator(0));
             // We expect both routes to be in the frontier... They are, but in a merged way
             // ------------------------------------------- last connection - transferedJourney
-            Assert.Equal(transfered, extended.Frontier[0].PreviousLink.PreviousLink);
+            Assert.Equal(transfered, extended.Frontier[0]
+                .AlternativePreviousLink // A fake element - this is the merging journey
+                .PreviousLink // The actual journey
+            );
             // -------------------------------------- lest connection -------- transferObject - directjourney
-            Assert.Equal(direct, extended.Frontier[0].AlternativePreviousLink.PreviousLink.PreviousLink);
+            Assert.Equal(direct, extended.Frontier[0].PreviousLink.PreviousLink.PreviousLink);
         }
         
 
