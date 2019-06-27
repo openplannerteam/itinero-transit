@@ -40,20 +40,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var stationJourneys = pcs.StationJourneys();
             foreach (var kv in stationJourneys)
             {
-                var frontier = kv.Value.Frontier;
-
-                var lastDep = frontier[0];
-                foreach (var journey in frontier)
-                {
-                    if (lastDep.Time >= journey.Time)
-                    {
-                        lastDep = journey;
-                    }
-                    else
-                    {
-                        throw new Exception("Not sorted. A journey departs earlier then its predecessor");
-                    }
-                }
+                var frontier = kv.Value;
+                frontier.DumpCounts();
+                frontier.IsSorted();
             }
 
             return true;

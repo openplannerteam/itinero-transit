@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Filter;
+using Itinero.Transit.Logging;
+using Reminiscence.Arrays;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
@@ -65,10 +67,7 @@ namespace Itinero.Transit.Algorithms.CSA
              * Frontier is sorted on Journey.Time, with the lowest (earliest) times to the end.
              * However, in a very few cases this order might be disturbed (mostly footpaths) because a footpath migth generate a walk
              * which is longer then another walk and arrive before another train is inserted.
-             *
-             * We make sure that the sorted property is adhered by keeping track what insertion point is needed - although this case is pretty rare
              */
-            var insertionPoint = Frontier.Count;
 
             for (var i = Frontier.Count - 1; i >= 0; i--)
             {
@@ -138,7 +137,6 @@ namespace Itinero.Transit.Algorithms.CSA
                         Frontier.RemoveAt(i);
                         ShadowIndex.RemoveAt(i);
                         i--;
-                        insertionPoint--;
                         FixShadowIndexFrom(i);
                         continue; // We continue the loop to remove other, possible sub-optimal entries further ahead in the list
                     case 0: // Both have exactly the same stats...
@@ -165,15 +163,6 @@ namespace Itinero.Transit.Algorithms.CSA
                         // 2) The candidate can not eliminate the guard 
                         // We just have to continue scanning - if no guard defeats the candidate, it owned its place
 
-                        // We consider if the insertion point is still valid
-                        // Biggest time goes on the right
-                        if (guard.Time < considered.Time)
-                        {
-                            // This case is needed around 50 times in the TestAllAlgorithm-suite. I've counted them manually while debugging,
-                            // So it is pretty rare
-                            insertionPoint = i;
-                        }
-
                         continue;
                     default:
                         throw new Exception("Comparison of two journeys in metric did not return -1,1 or 0 but " +
@@ -181,14 +170,25 @@ namespace Itinero.Transit.Algorithms.CSA
                 }
             }
 
-            while (Frontier.Count > 0 && insertionPoint > 0 && Frontier[insertionPoint].Time < considered.Time)
+            var insertionPoint = Frontier.Count;
+            while (insertionPoint > 0)
             {
+                if (Frontier[insertionPoint - 1].Time >= considered.Time)
+                {
+                    // As it should be
+                    // The list is already sorted, we are done
+                    break;
+                }
+
+                decreases++;
+                // Hmm, we have to search further on!
                 insertionPoint--;
             }
 
             // The new journey is on the pareto front and can be added
             if (insertionPoint < Frontier.Count)
             {
+                insertions++;
                 Frontier.Insert(insertionPoint, considered);
                 ShadowIndex.Add(uint
                     .MinValue); // This value does not matter, it'll be overwritten by FixShadowIndex anyway
@@ -215,11 +215,16 @@ namespace Itinero.Transit.Algorithms.CSA
                 throw new Exception("Wut?");
             }
 
-            IsSorted(); // TODO remove
             return true;
         }
 
-        private void IsSorted()
+        private uint insertions = 0;
+        private uint decreases = 0;
+        internal void DumpCounts()
+        {
+            Log.Information($"Insertions: {insertions}, decreases: {decreases}");
+        }
+        internal void IsSorted()
         {
             var lastDep = Frontier[0];
             foreach (var journey in Frontier)
