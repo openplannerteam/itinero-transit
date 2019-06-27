@@ -122,7 +122,7 @@ namespace Itinero.Transit.Algorithms.CSA
                         // Frontier[i].(Arrival)Time > considered.Time -> Considered is accepted as it arrives sooner
                         // Frontier[i].Root.(Departure)Time > considered.Root.(DepartureTime) -> Considered can not remove a frontier element anymore, as it departs sooner
                         // IN other words: we are done with performing checks!
-                        break;
+                        //    break;
                     }
                 }
 
@@ -181,6 +181,10 @@ namespace Itinero.Transit.Algorithms.CSA
                 }
             }
 
+            while (Frontier.Count > 0 && insertionPoint > 0 && Frontier[insertionPoint].Time < considered.Time)
+            {
+                insertionPoint--;
+            }
 
             // The new journey is on the pareto front and can be added
             if (insertionPoint < Frontier.Count)
@@ -211,7 +215,24 @@ namespace Itinero.Transit.Algorithms.CSA
                 throw new Exception("Wut?");
             }
 
+            IsSorted(); // TODO remove
             return true;
+        }
+
+        private void IsSorted()
+        {
+            var lastDep = Frontier[0];
+            foreach (var journey in Frontier)
+            {
+                if (lastDep.Time >= journey.Time)
+                {
+                    lastDep = journey;
+                }
+                else
+                {
+                    throw new Exception("Not sorted. A journey departs earlier then its predecessor");
+                }
+            }
         }
 
         private void FixShadowIndexFrom(int i)

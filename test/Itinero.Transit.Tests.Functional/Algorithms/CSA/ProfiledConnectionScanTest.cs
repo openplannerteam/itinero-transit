@@ -15,10 +15,10 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         protected override bool Execute(WithTime<TransferMetric> input)
         {
             input.IsochroneFrom(); // Calculating the isochrone lines makes sure this is reused as filter - in some cases, testing goes from ~26 seconds to ~6
-            
+
             var pcs = new ProfiledConnectionScan<TransferMetric>(input.GetScanSettings());
-            var journeys= pcs.CalculateJourneys();
-            
+            var journeys = pcs.CalculateJourneys();
+
             // verify result.
             NotNull(journeys);
             var withLoop = new List<Journey<TransferMetric>>();
@@ -33,27 +33,29 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             True(journeys.Any());
 
             Information($"Found {journeys.Count} profiles");
-            
-            
+
+
             // Verify properties on Pareto frontiers
 
-           var stationJourneys= pcs.StationJourneys();
-           foreach (var kv in stationJourneys)
-           {
-               var frontier = kv.Value.Frontier;
+            var stationJourneys = pcs.StationJourneys();
+            foreach (var kv in stationJourneys)
+            {
+                var frontier = kv.Value.Frontier;
 
-               var lastDep = frontier[0];
-               foreach (var journey in frontier)
-               {
-                   if (lastDep.Time < journey.Time)
-                   {
-                       throw new Exception("Not sorted. A journey departs earlier then its predecessor");
-                   }
+                var lastDep = frontier[0];
+                foreach (var journey in frontier)
+                {
+                    if (lastDep.Time >= journey.Time)
+                    {
+                        lastDep = journey;
+                    }
+                    else
+                    {
+                        throw new Exception("Not sorted. A journey departs earlier then its predecessor");
+                    }
+                }
+            }
 
-                   lastDep = journey;
-               }
-               
-           }
             return true;
         }
     }

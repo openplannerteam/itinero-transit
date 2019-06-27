@@ -36,7 +36,7 @@ namespace Itinero.Transit.Tests.Functional
             if (devTestsOnly)
             {
 
-                new TestAllAlgorithms().ExecuteDefault();
+                new TestAllAlgorithms().ExecuteMultiModal();
                 return;
             }
 
