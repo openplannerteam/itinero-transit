@@ -53,11 +53,11 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             // We expect both routes to be in the frontier... They are, but in a merged way
             // ------------------------------------------- last connection - transferedJourney
             Assert.Equal(transfered, extended.Frontier[0]
-                .AlternativePreviousLink // A fake element - this is the merging journey
+                .PreviousLink // A fake element - this is the merging journey
                 .PreviousLink // The actual journey
             );
             // -------------------------------------- lest connection -------- transferObject - directjourney
-            Assert.Equal(direct, extended.Frontier[0].PreviousLink.PreviousLink.PreviousLink);
+            Assert.Equal(direct, extended.Frontier[0].AlternativePreviousLink.PreviousLink.PreviousLink);
         }
         
 

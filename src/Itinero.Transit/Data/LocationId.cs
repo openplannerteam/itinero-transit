@@ -23,6 +23,7 @@ namespace Itinero.Transit.Data
             return DatabaseId == other.DatabaseId && LocalTileId == other.LocalTileId && LocalId == other.LocalId;
         }
 
+        [Pure]
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;

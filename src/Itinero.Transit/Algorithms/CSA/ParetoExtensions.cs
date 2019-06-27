@@ -26,17 +26,16 @@ namespace Itinero.Transit.Algorithms.CSA
             IConnection c, IOtherModeGenerator transferPolicy) where T : IJourneyMetric<T>
         {
             var newFrontier = new ParetoFrontier<T>(pareto.Comparator, pareto.JourneyFilter);
-            
-            
+
+
             // The journeys in the frontier are ordered: the journeys which are added later to the profile,
             // will have an _earlier_ departure time (because PCS) runs in reverse order.
 
             // But... We chain this connection at the front, equalizing all those departure times.
             // IN other words, the earliest elements in the frontier will have the lowest chance of surviving - so we check them last
-            
-            for (var i = pareto.Frontier.Count-1; i >=0; i--)
+
+            foreach (var journey in pareto.Frontier)
             {
-                var journey = pareto.Frontier[i];   
                 if (journey.Time <= c.ArrivalTime)
                 {
                     // We can not hop on this journey

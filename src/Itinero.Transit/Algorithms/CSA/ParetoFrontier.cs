@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.Logging;
-using Reminiscence.Arrays;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
@@ -180,7 +179,7 @@ namespace Itinero.Transit.Algorithms.CSA
                     break;
                 }
 
-                decreases++;
+                _decreases++;
                 // Hmm, we have to search further on!
                 insertionPoint--;
             }
@@ -188,7 +187,7 @@ namespace Itinero.Transit.Algorithms.CSA
             // The new journey is on the pareto front and can be added
             if (insertionPoint < Frontier.Count)
             {
-                insertions++;
+                _insertions++;
                 Frontier.Insert(insertionPoint, considered);
                 ShadowIndex.Add(uint
                     .MinValue); // This value does not matter, it'll be overwritten by FixShadowIndex anyway
@@ -218,11 +217,11 @@ namespace Itinero.Transit.Algorithms.CSA
             return true;
         }
 
-        private uint insertions = 0;
-        private uint decreases = 0;
+        private uint _insertions;
+        private uint _decreases;
         internal void DumpCounts()
         {
-            Log.Information($"Insertions: {insertions}, decreases: {decreases}");
+            Log.Information($"Insertions: {_insertions}, decreases: {_decreases}");
         }
         internal void IsSorted()
         {
