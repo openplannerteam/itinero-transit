@@ -338,10 +338,16 @@ namespace Itinero.Transit.Algorithms.CSA
                 return Journey<T>.InfiniteJourney;
             }
 
+            if (_targetLocationsIds.Contains(c.DepartureStop))
+            {
+                // No use to depart, is it?
+                return Journey<T>.InfiniteJourney;
+            }
+
             if (_targetLocationsIds.Contains(c.ArrivalStop))
             {
                 // We already are at a possible target location
-
+                
                 // We create a genesis journey...
                 var arrivingJourney = new Journey<T>
                 (c.ArrivalStop, c.ArrivalTime, _metricFactory.Zero(),
@@ -413,6 +419,13 @@ namespace Itinero.Transit.Algorithms.CSA
             var frontier = pareto.Frontier;
             for (var i = 0; i < frontier.Count; i++)
             {
+                if (frontier[i].Root.Location.Equals(c.DepartureStop))
+                {
+                    // We are walking in circles
+                    frontier.RemoveAt(i);
+                    i--;
+                    continue;
+                }
                 frontier[i] = frontier[i].ChainBackward(c);
             }
 
@@ -447,8 +460,10 @@ namespace Itinero.Transit.Algorithms.CSA
 
 
         /// <summary>
-        /// When a departure stop can be reached by a new journey, each close by stop can be reached via walking too
-        /// This method creates all those footpaths and transfers.
+        /// When a new journey to the destination is discovered departing at A at time T,
+        /// the destination can be reached too by walking towards A (a few minutes earlier) and then taking that journey.
+        ///
+        ///  This method calculates all those journeys walking towards A from nearby stops
         ///
         /// Note that every journey should have 'Location' to be equal 'cDepartureLocation'
         /// </summary>
@@ -464,7 +479,16 @@ namespace Itinero.Transit.Algorithms.CSA
 
             foreach (var j in withWalks)
             {
+                // The journey starts at this location now at a slightly earlier time
                 var stopId = j.Location;
+
+                if (stopId.Equals(j.Root.Location))
+                {
+                    // We are walking in circles... 
+                    continue;
+                }
+                
+                
                 // And add this journey with walk to the pareto frontier
                 if (!_stationJourneys.ContainsKey(stopId))
                 {

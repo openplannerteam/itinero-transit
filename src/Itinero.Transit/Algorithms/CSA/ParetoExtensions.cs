@@ -42,6 +42,12 @@ namespace Itinero.Transit.Algorithms.CSA
                     continue;
                 }
 
+                if (journey.Root.Location.Equals(c.DepartureStop))
+                {
+                    // Well, no use in going back to where we started...
+                    continue;
+                }
+
                 Journey<T> extendedJourney;
                 var lastTripId = journey.LastTripId();
                 if (lastTripId.HasValue && lastTripId.Value.Equals(c.TripId))

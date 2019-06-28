@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Itinero.Transit.Data;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.Logging;
+using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
@@ -47,6 +49,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <returns>True if the journey was appended to the frontier</returns>
         public bool AddToFrontier(Journey<T> considered)
         {
+        
             if (considered == null || ReferenceEquals(considered, Journey<T>.InfiniteJourney))
             {
                 return false;
@@ -82,11 +85,11 @@ namespace Itinero.Transit.Algorithms.CSA
                 // First thing to check:
                 // Does one completely overlap the other?
 
-
+                
                 if (
                     considered.Time <= guard.Time && guard.Root.Time <= considered.Root.Time)
                 {
-                    // Guard completely falls within considered
+                    // Guard completely falls within considered or has a same time period
 
                     // It might kill considered
                     var duel = Comparator.ADominatesB(guard, considered);

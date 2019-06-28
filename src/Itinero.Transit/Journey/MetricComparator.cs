@@ -15,12 +15,6 @@
         where T : IJourneyMetric<T>
     {
        
-        
-        public const int ADominates = -1;
-        public const int BDominates = 1;
-        public const int EqualsCode = 0;
-        public const int NotComparable = int.MaxValue;
-
         /// <summary>
         /// Returns (-1) if A is smaller (and thus more optimized),
         /// Return 1 if B is smaller (and thus more optimized)
@@ -31,7 +25,9 @@
         /// <param name="b">The second metric to compare</param>
         /// <returns></returns>
         public abstract int ADominatesB(Journey<T> a, Journey<T> b);
-        
-        
+
+        public abstract int NumberOfDimension();
+
+
     }
 }

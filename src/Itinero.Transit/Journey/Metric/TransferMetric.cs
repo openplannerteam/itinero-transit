@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 
@@ -16,16 +17,8 @@ namespace Itinero.Transit.Journey.Metric
     /// </summary>
     public class TransferMetric : IJourneyMetric<TransferMetric>
     {
-        //------------------ ALL KINDS OF COMPARATORS -------------------
-
-        public static readonly MinimizeTransfers MinimizeTransfers = new MinimizeTransfers();
-        public static readonly MinimizeTravelTimes MinimizeTravelTimes = new MinimizeTravelTimes();
 
         public static readonly MinimizeAll ParetoCompare = new MinimizeAll();
-
-        // ReSharper disable once UnusedMember.Global
-        public static readonly ChainedComparator<TransferMetric> MinimizeTravelTimeFirst =
-            new ChainedComparator<TransferMetric>(MinimizeTravelTimes, MinimizeTransfers);
 
 
         // ----------------- ZERO ELEMENT ------------------
@@ -125,54 +118,74 @@ namespace Itinero.Transit.Journey.Metric
     }
 
 
-    public class MinimizeTransfers : MetricComparator<TransferMetric>
-    {
-        public override int ADominatesB(Journey<TransferMetric> a, Journey<TransferMetric> b)
-        {
-            return a.Metric.NumberOfTransfers.CompareTo(b.Metric.NumberOfTransfers);
-        }
-    }
-
-    public class MinimizeTravelTimes : MetricComparator<TransferMetric>
-    {
-        public override int ADominatesB(Journey<TransferMetric> a, Journey<TransferMetric> b)
-        {
-            return (a.Metric.TravelTime).CompareTo(b.Metric.TravelTime);
-        }
-    }
-
-    
     public class MinimizeAll : MetricComparator<TransferMetric>
     {
+        [SuppressMessage("ReSharper", "RedundantIfElseBlock")]
         public override int ADominatesB(Journey<TransferMetric> a, Journey<TransferMetric> b)
         {
-            if (a.Metric.TravelTime.Equals(b.Metric.TravelTime) &&
-                a.Metric.NumberOfTransfers.Equals(b.Metric.NumberOfTransfers))
-            {
-                return 0;
-            }
+            // Returns (-1) if A is smaller (and thus more optimized),
+            // Return 1 if B is smaller (and thus more optimized)
+            // Return 0 if they are equally optimal
+            
+            var am = a.Metric;
+            var bm = b.Metric;
 
-            if (S1DominatesS2(a.Metric, b.Metric))
-            {
-                return -1;
-            }
 
-            // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (S1DominatesS2(b.Metric, a.Metric))
-            {
-                return 1;
-            }
 
-            return int.MaxValue;
+            if (am.NumberOfTransfers == bm.NumberOfTransfers)
+            {
+
+                if (am.TravelTime < bm.TravelTime)
+                {
+                    return -1;
+                }else if (am.TravelTime > bm.TravelTime)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            else if(am.NumberOfTransfers < bm.NumberOfTransfers)
+            {
+                
+                // a is clearly better on this dimension...
+                // Is it also better on the other dimension?
+                
+                if (am.TravelTime <= bm.TravelTime)
+                {
+                    // A is better (or equally good) on the other aspect too
+                    return -1;
+                }
+                else
+                {
+                    // B is better on the other dimension: no comparison possible
+                    return int.MaxValue;
+                }
+            }
+            else /* am.NumberOfTransfers > bm.NumberOfTransfers*/
+            {
+                // b is clearly better on this dimension...
+                // Is it also better on the other dimension?
+                
+                if (am.TravelTime >= bm.TravelTime)
+                {
+                    // B is better (or equally good) on the other aspect too
+                    return 1;
+                }
+                else
+                {
+                    // B is better on the other dimension: no comparison possible
+                    return int.MaxValue;
+                }
+            }
         }
 
-        private bool S1DominatesS2(TransferMetric s1, TransferMetric s2)
+        public override int NumberOfDimension()
         {
-            return
-                (s1.NumberOfTransfers < s2.NumberOfTransfers
-                 && s1.TravelTime <= s2.TravelTime)
-                || (s1.NumberOfTransfers <= s2.NumberOfTransfers
-                    && s1.TravelTime < s2.TravelTime);
+            return 2;
         }
+
     }
 }
