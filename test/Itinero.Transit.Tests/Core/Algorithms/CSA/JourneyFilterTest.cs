@@ -50,7 +50,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare,
+                TransferMetric.ParetoCompare,
                 null,
                 new MaxNumberOfTransferFilter(0)
             );
@@ -124,7 +124,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare
+                TransferMetric.ParetoCompare
             );
 
 

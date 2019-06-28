@@ -21,11 +21,11 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <param name="transferPolicy"></param>
         /// <typeparam name="T"></typeparam>
         ///  <returns></returns>
-        public static ParetoFrontier<T> ExtendFrontierBackwards<T>(this ParetoFrontier<T> pareto,
+        public static ProfiledParetoFrontier<T> ExtendFrontierBackwards<T>(this ProfiledParetoFrontier<T> pareto,
             IStopsReader stopsReader,
             IConnection c, IOtherModeGenerator transferPolicy) where T : IJourneyMetric<T>
         {
-            var newFrontier = new ParetoFrontier<T>(pareto.Comparator, pareto.JourneyFilter);
+            var newFrontier = new ProfiledParetoFrontier<T>(pareto.Comparator, pareto.JourneyFilter);
 
 
             // The journeys in the frontier are ordered: the journeys which are added later to the profile,
@@ -80,7 +80,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <param name="b"></param>
         /// <returns></returns>
         // ReSharper disable once MemberCanBePrivate.Global
-        public static ParetoFrontier<T> Combine<T>(ParetoFrontier<T> a, ParetoFrontier<T> b) where T : IJourneyMetric<T>
+        public static ProfiledParetoFrontier<T> Combine<T>(ProfiledParetoFrontier<T> a, ProfiledParetoFrontier<T> b) where T : IJourneyMetric<T>
         {
             var smallest = a;
             var biggest = b;

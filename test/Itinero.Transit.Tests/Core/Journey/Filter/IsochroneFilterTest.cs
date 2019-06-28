@@ -31,7 +31,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare);
+                TransferMetric.ParetoCompare);
 
             var con = latest.ConnectionsDb.GetReader();
             con.MoveTo(connId);
@@ -81,7 +81,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare);
+                TransferMetric.ParetoCompare);
 
             var iso = latest.SelectProfile(profile)
                 .SelectSingleStop(stop1)
@@ -136,7 +136,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(), 
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare);
+                TransferMetric.ParetoCompare);
 
             var input = latest
                     .SelectProfile(profile)
@@ -185,7 +185,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare);
+                TransferMetric.ParetoCompare);
 
             var input = latest
                     .SelectProfile(profile)

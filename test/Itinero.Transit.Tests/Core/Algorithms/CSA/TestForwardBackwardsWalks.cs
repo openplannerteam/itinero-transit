@@ -43,7 +43,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                     new InternalTransferGenerator(),
                     crow,
                     TransferMetric.Factory,
-                    TransferMetric.ProfileTransferCompare
+                    TransferMetric.ParetoCompare
                 ))
                 .SelectStops(stop0, stop1)
                 .SelectTimeFrame(tStart.FromUnixTime(), (tStart + 1000).FromUnixTime());

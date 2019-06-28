@@ -4,7 +4,6 @@ using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Filter;
-using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Utils;
 
@@ -29,7 +28,7 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly HashSet<IStop> _targetLocations;
         private readonly HashSet<LocationId> _targetLocationsIds;
 
-        private readonly ProfiledMetricComparator<T> _comparator;
+        private readonly MetricComparator<T> _comparator;
 
         private readonly T _metricFactory;
 
@@ -49,7 +48,7 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly IOtherModeGenerator _walkPolicy;
 
         // Placeholder empty frontier; used when a frontier is needed but not present.
-        private readonly ParetoFrontier<T> _empty;
+        private readonly ProfiledParetoFrontier<T> _empty;
 
         /// <summary>
         /// Maps each stop onto a pareto-frontier.
@@ -62,8 +61,8 @@ namespace Itinero.Transit.Algorithms.CSA
         /// Also known as 'S' in the paper
         ///
         /// </summary>
-        private readonly Dictionary<LocationId, ParetoFrontier<T>> _stationJourneys =
-            new Dictionary<LocationId, ParetoFrontier<T>>();
+        private readonly Dictionary<LocationId, ProfiledParetoFrontier<T>> _stationJourneys =
+            new Dictionary<LocationId, ProfiledParetoFrontier<T>>();
 
 
         /// <summary>
@@ -100,8 +99,8 @@ namespace Itinero.Transit.Algorithms.CSA
         /// (Note that I thought it was not needed at first and all could be modelled with just the station journeys.
         /// I've spent a few days figuring out why certain routes where omitted)
         /// </summary>
-        private readonly Dictionary<TripId, ParetoFrontier<T>> _tripJourneys =
-            new Dictionary<TripId, ParetoFrontier<T>>();
+        private readonly Dictionary<TripId, ProfiledParetoFrontier<T>> _tripJourneys =
+            new Dictionary<TripId, ProfiledParetoFrontier<T>>();
 
 
         ///  <summary>
@@ -143,7 +142,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             _comparator = settings.Profile.ProfileComparator;
             _journeyFilter = settings.Profile.JourneyFilter;
-            _empty = new ParetoFrontier<T>(_comparator, _journeyFilter);
+            _empty = new ProfiledParetoFrontier<T>(_comparator, _journeyFilter);
             _metricFactory = settings.Profile.MetricFactory;
             _transferPolicy = settings.Profile.InternalTransferGenerator;
             _walkPolicy = settings.Profile.WalksGenerator;
@@ -310,7 +309,7 @@ namespace Itinero.Transit.Algorithms.CSA
             // And ofc, we have a pretty good way out from the departure stop as well
             if (!_stationJourneys.ContainsKey(c.DepartureStop))
             {
-                _stationJourneys[c.DepartureStop] = new ParetoFrontier<T>(_comparator, _journeyFilter);
+                _stationJourneys[c.DepartureStop] = new ProfiledParetoFrontier<T>(_comparator, _journeyFilter);
             }
 
             var addedJourneys = _stationJourneys[c.DepartureStop].AddAllToFrontier(journeys.Frontier);
@@ -400,7 +399,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// Chains the given connection to the needed trips
         /// </summary>
         /// <param name="c"></param>
-        private ParetoFrontier<T> ExtendTrip(IConnection c)
+        private ProfiledParetoFrontier<T> ExtendTrip(IConnection c)
         {
             var key = c.TripId;
             if (!_tripJourneys.ContainsKey(key))
@@ -421,7 +420,7 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
-        private ParetoFrontier<T> TransferAfter(IConnection c)
+        private ProfiledParetoFrontier<T> TransferAfter(IConnection c)
         {
             // We have just taken C and are gonna transfer
             // In what possible journeys (if any) to the destination will this result?
@@ -469,7 +468,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 // And add this journey with walk to the pareto frontier
                 if (!_stationJourneys.ContainsKey(stopId))
                 {
-                    _stationJourneys[stopId] = new ParetoFrontier<T>(_comparator, _journeyFilter);
+                    _stationJourneys[stopId] = new ProfiledParetoFrontier<T>(_comparator, _journeyFilter);
                 }
 
                 _stationJourneys[stopId].AddToFrontier(j);
@@ -477,7 +476,7 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
-        private ParetoFrontier<T> PickBestJourneys(Journey<T> j, ParetoFrontier<T> a, ParetoFrontier<T> b)
+        private ProfiledParetoFrontier<T> PickBestJourneys(Journey<T> j, ProfiledParetoFrontier<T> a, ProfiledParetoFrontier<T> b)
         {
             if (a.Frontier.Count == 0 && b.Frontier.Count == 0)
             {
@@ -486,7 +485,7 @@ namespace Itinero.Transit.Algorithms.CSA
                     return _empty;
                 }
 
-                var front = new ParetoFrontier<T>(_comparator, _journeyFilter);
+                var front = new ProfiledParetoFrontier<T>(_comparator, _journeyFilter);
                 front.AddToFrontier(j);
                 return front;
             }
@@ -524,7 +523,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// This is mostly meant for debugging
         /// </summary>
         /// <returns></returns>
-        public Dictionary<LocationId, ParetoFrontier<T>> StationJourneys()
+        public Dictionary<LocationId, ProfiledParetoFrontier<T>> StationJourneys()
         {
             return _stationJourneys;
         }
@@ -534,7 +533,7 @@ namespace Itinero.Transit.Algorithms.CSA
     {
         private readonly IConnectionFilter _implementation;
         private readonly HashSet<LocationId> _whiteListed;
-        private readonly Dictionary<TripId, ParetoFrontier<T>> _tripJourneys;
+        private readonly Dictionary<TripId, ProfiledParetoFrontier<T>> _tripJourneys;
 
         /// <summary>
         /// Creates a special case filter.
@@ -545,7 +544,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <param name="tripJourneys">A POINTER to the dictionary containing the trips. </param>
         public SpecialCaseConnectionFilter(IConnectionFilter implementation,
             HashSet<LocationId> whiteListed,
-            Dictionary<TripId, ParetoFrontier<T>> tripJourneys
+            Dictionary<TripId, ProfiledParetoFrontier<T>> tripJourneys
         )
         {
             _implementation = implementation;

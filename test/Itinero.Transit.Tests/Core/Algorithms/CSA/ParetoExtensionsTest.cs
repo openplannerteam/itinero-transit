@@ -32,7 +32,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var transfered = atLoc1.ChainBackward(
                 new SimpleConnection(2, "2", loc0, loc1, 60, 10, 0, 0, 0, new TripId(0, 1)));
 
-            var loc0Frontier = new ParetoFrontier<TransferMetric>(TransferMetric.ProfileTransferCompare, null);
+            var loc0Frontier = new ProfiledParetoFrontier<TransferMetric>(TransferMetric.ParetoCompare, null);
             loc0Frontier.AddToFrontier(transfered);
             loc0Frontier.AddToFrontier(direct);
             
@@ -69,40 +69,41 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var loc2 = new LocationId(0, 0, 2);
 
 
-            // Genesis at time 0
-            var genesis = new Journey<TransferMetric>(loc0, 0, TransferMetric.Factory);
+            // Genesis at time 60
+            var genesis = new Journey<TransferMetric>(loc0, 60, TransferMetric.Factory);
 
-            // Arrives at Loc1 at time 10
-            var atLoc1 = genesis.ChainForward(
-                new SimpleConnection(0, "0", loc0, loc1, 0, 10, 0, 0, 0, new TripId(0, 0)));
+            // Departs from Loc1 at time 10s needed
+            var atLoc1 = genesis.ChainBackward(
+                new SimpleConnection(0, "0", loc0, loc1, 50, 10, 0, 0, 0, new TripId(0, 0)));
 
-            // Arrives at Loc2 (destination)  at 25, without transfer but slightly slow 
-            var direct = atLoc1.ChainForward(
-                new SimpleConnection(1, "1", loc1, loc2, 15, 10, 0, 0, 0, new TripId(0, 0)));
+            // Departs from Loc2 (destination) at 25s needed, without transfer but slightly slow 
+            var direct = atLoc1.ChainBackward(
+                new SimpleConnection(1, "1", loc1, loc2, 35, 10, 0, 0, 0, new TripId(0, 0)));
 
-            // Arrives at Loc2 (destination) slightly faster (at 21) but with one transfer
-            var transferedFast = atLoc1.ChainForward(
-                new SimpleConnection(2, "2", loc1, loc2, 11, 10, 0, 0, 0, new TripId(0, 1)));
+            // Departs from Loc2 (destination) slightly faster (at 21s needed) but with one transfer
+            var transferedFast = atLoc1.ChainBackward(
+                new SimpleConnection(2, "2", loc1, loc2, 39, 10, 0, 0, 0, new TripId(0, 1)));
 
-            // Arrives at Loc2 (destination) slightly slower (at 23) and with one transfer
-            var transferedSlow = atLoc1.ChainForward(
-                new SimpleConnection(2, "2", loc1, loc2, 13, 10, 0, 0, 0, new TripId(0, 1)));
+            // Departs from Loc2 (destination) slightly slower (at 23s needed) and with one transfer - suboptimal
+            var transferedSlow = atLoc1.ChainBackward(
+                new SimpleConnection(2, "2", loc1, loc2, 37, 10, 0, 0, 0, new TripId(0, 1)));
 
 
             // And now we add those to pareto frontier to test their behaviour
-            var frontier0 = new ParetoFrontier<TransferMetric>(TransferMetric.ParetoCompare, null);
+            var frontier0 = new ProfiledParetoFrontier<TransferMetric>(TransferMetric.ParetoCompare, null);
 
             Assert.True(frontier0.AddToFrontier(direct));
             Assert.True(frontier0.AddToFrontier(transferedFast));
 
 
-            var frontier1 = new ParetoFrontier<TransferMetric>(TransferMetric.ParetoCompare, null);
+            var frontier1 = new ProfiledParetoFrontier<TransferMetric>(TransferMetric.ParetoCompare, null);
 
             Assert.True(frontier1.AddToFrontier(direct));
             Assert.True(frontier1.AddToFrontier(transferedSlow));
 
             var frontier = ParetoExtensions.Combine(frontier0, frontier1);
 
+            Assert.Equal(2, frontier.Frontier.Count);
             Assert.Equal(direct, frontier.Frontier[0]);
             Assert.Equal(transferedFast, frontier.Frontier[1]);
             Assert.DoesNotContain(transferedSlow, frontier.Frontier);

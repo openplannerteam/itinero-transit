@@ -41,8 +41,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             foreach (var kv in stationJourneys)
             {
                 var frontier = kv.Value;
-                frontier.DumpCounts();
-                frontier.IsSorted();
+           //     frontier.IsSorted();
             }
 
             return true;

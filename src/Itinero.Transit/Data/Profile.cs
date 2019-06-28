@@ -11,7 +11,7 @@ namespace Itinero.Transit.Data
         
         
         public readonly T MetricFactory;
-        public readonly ProfiledMetricComparator<T> ProfileComparator;
+        public readonly MetricComparator<T> ProfileComparator;
         
         public readonly IOtherModeGenerator InternalTransferGenerator;
         public readonly IOtherModeGenerator WalksGenerator;
@@ -22,7 +22,7 @@ namespace Itinero.Transit.Data
         public Profile(IOtherModeGenerator internalTransferGenerator,
             IOtherModeGenerator walksGenerator,
             T metricFactory,
-            ProfiledMetricComparator<T> profileComparator, IConnectionFilter connectionFilter = null, IJourneyFilter<T> journeyFilter = null)
+            MetricComparator<T> profileComparator, IConnectionFilter connectionFilter = null, IJourneyFilter<T> journeyFilter = null)
         {
             MetricFactory = metricFactory;
             ProfileComparator = profileComparator;

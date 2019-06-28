@@ -62,7 +62,7 @@ namespace Itinero.Transit.Tests.IO.OSM
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare);
+                TransferMetric.ParetoCompare);
 
             var osmStopReader = new OsmLocationStopReader(1);
 
@@ -114,7 +114,7 @@ namespace Itinero.Transit.Tests.IO.OSM
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare);
+                TransferMetric.ParetoCompare);
 
             var osmStopReader = new OsmLocationStopReader(1);
 
@@ -164,7 +164,7 @@ namespace Itinero.Transit.Tests.IO.OSM
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare);
+                TransferMetric.ParetoCompare);
 
             var departureLocation = "https://www.openstreetmap.org/#map=19/50.00005/49.99953";
             var arrivalLocation = "https://www.openstreetmap.org/#map=19/0.0/0.0";

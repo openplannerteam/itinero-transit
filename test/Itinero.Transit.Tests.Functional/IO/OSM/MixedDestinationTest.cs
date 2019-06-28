@@ -18,7 +18,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
                         new InternalTransferGenerator(),
                         new CrowsFlightTransferGenerator(2500),
                         TransferMetric.Factory,
-                        TransferMetric.ProfileTransferCompare
+                        TransferMetric.ParetoCompare
                     ))
                     .UseOsmLocations()
                     .SelectStops(
@@ -38,7 +38,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
                     new InternalTransferGenerator(),
                     new CrowsFlightTransferGenerator(2500),
                     TransferMetric.Factory,
-                    TransferMetric.ProfileTransferCompare
+                    TransferMetric.ParetoCompare
                 ))
                 .UseOsmLocations()
                 .SelectStops(

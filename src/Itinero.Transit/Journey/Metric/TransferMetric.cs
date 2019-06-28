@@ -21,12 +21,7 @@ namespace Itinero.Transit.Journey.Metric
         public static readonly MinimizeTransfers MinimizeTransfers = new MinimizeTransfers();
         public static readonly MinimizeTravelTimes MinimizeTravelTimes = new MinimizeTravelTimes();
 
-        public static readonly ProfileTransferCompare ProfileTransferCompare = new ProfileTransferCompare();
-        public static readonly ProfileCompare ProfileCompare = new ProfileCompare();
-        public static readonly ParetoCompare ParetoCompare = new ParetoCompare();
-
-        public static readonly ChainedComparator<TransferMetric> MinimizeTransfersFirst =
-            new ChainedComparator<TransferMetric>(MinimizeTransfers, MinimizeTravelTimes);
+        public static readonly MinimizeAll ParetoCompare = new MinimizeAll();
 
         // ReSharper disable once UnusedMember.Global
         public static readonly ChainedComparator<TransferMetric> MinimizeTravelTimeFirst =
@@ -146,105 +141,8 @@ namespace Itinero.Transit.Journey.Metric
         }
     }
 
-    /// <summary>
-    /// Compares two BACKWARDS journeys with each other
-    /// </summary>
-    public class ProfileTransferCompare : ProfiledMetricComparator<TransferMetric>
-    {
-        public override int ADominatesB(Journey<TransferMetric> a, Journey<TransferMetric> b)
-        {
-            var aBetterThenB = AIsBetterThenB(a, b);
-            var bBetterThenA = AIsBetterThenB(b, a);
-
-            if (aBetterThenB && bBetterThenA)
-            {
-                // No Domination either way
-                return int.MaxValue;
-            }
-
-            if (aBetterThenB)
-            {
-                return -1;
-            }
-
-            if (bBetterThenA)
-            {
-                return 1;
-            }
-
-            // both perform the same
-            return 0;
-        }
-
-        /// <summary>
-        /// Returns true if A performs better then B in at least one aspect.
-        /// This does imply that A dominates B!
-        /// This does only imply that B does _not_ dominate A
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        private bool AIsBetterThenB(Journey<TransferMetric> a, Journey<TransferMetric> b)
-        {
-            // A is better in at least one aspect if...
-            // it has less transfers ...
-            return a.Metric.NumberOfTransfers < b.Metric.NumberOfTransfers
-                   // ... OR it departs later ...
-                   || a.Root.Time < b.Root.Time
-                   // ... OR it arrives earlier ...
-                   || a.Time > b.Time;
-        }
-    }
-
-
-    public class ProfileCompare : ProfiledMetricComparator<TransferMetric>
-    {
-        public override int ADominatesB(Journey<TransferMetric> a, Journey<TransferMetric> b)
-        {
-            if (a.Equals(b))
-            {
-                return 0;
-            }
-
-            var aBetterThenB = AIsBetterThenB(a, b);
-            var bBetterThenA = AIsBetterThenB(b, a);
-
-            if (aBetterThenB && bBetterThenA)
-            {
-                // No Domination either way
-                return int.MaxValue;
-            }
-
-            if (aBetterThenB)
-            {
-                return -1;
-            }
-
-            if (bBetterThenA)
-            {
-                return 1;
-            }
-
-            // both perform the same
-            return 0;
-        }
-
-        /// <summary>
-        /// Returns true if A performs better then B in at least one aspect.
-        /// This does imply that A dominates B!
-        /// This does only imply that B does _not_ dominate A
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        private bool AIsBetterThenB(Journey<TransferMetric> a, Journey<TransferMetric> b)
-        {
-            return a.PreviousLink.Time > b.PreviousLink.Time
-                   || a.Time < b.Time;
-        }
-    }
-
-    public class ParetoCompare : MetricComparator<TransferMetric>
+    
+    public class MinimizeAll : MetricComparator<TransferMetric>
     {
         public override int ADominatesB(Journey<TransferMetric> a, Journey<TransferMetric> b)
         {

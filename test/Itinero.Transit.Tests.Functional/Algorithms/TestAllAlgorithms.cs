@@ -21,7 +21,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
     {
         private Profile<TransferMetric> Profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
             new CrowsFlightTransferGenerator(),
-            TransferMetric.Factory, TransferMetric.ProfileTransferCompare
+            TransferMetric.Factory, TransferMetric.ParetoCompare
         );
 
 

@@ -23,7 +23,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
                     searchDistance: 2500), // Likes walking far! The traveller is not afraid of walking over 2 kilometers between stops...
                 TransferMetric.Factory, // Actual boiler plate code
                 TransferMetric
-                    .ProfileTransferCompare // This is the actual comparator which drives the selection of routes
+                    .ParetoCompare // This is the actual comparator which drives the selection of routes
             );
 
             Information("Performing a routing test. This might take some internet and time on first use");

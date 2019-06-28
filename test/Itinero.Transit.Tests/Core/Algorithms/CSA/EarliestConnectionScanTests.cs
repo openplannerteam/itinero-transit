@@ -37,7 +37,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare);
+                TransferMetric.ParetoCompare);
 
 
             // Walk from start
@@ -74,7 +74,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare);
+                TransferMetric.ParetoCompare);
 
 
             // Walk to end
@@ -111,7 +111,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare);
+                TransferMetric.ParetoCompare);
 
 
             // Walk to end
@@ -132,7 +132,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 null,
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare
+                TransferMetric.ParetoCompare
             );
 
 
@@ -188,7 +188,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare);
+                TransferMetric.ParetoCompare);
 
             var journey = latest.SelectProfile(profile)
                 .SelectStops(stop0, stop3)
@@ -234,7 +234,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare);
+                TransferMetric.ParetoCompare);
             var journey = latest.SelectProfile(profile)
                 .SelectStops(stop0, stop3)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
@@ -268,7 +268,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 null,
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare);
+                TransferMetric.ParetoCompare);
 
 
             var journey = latest.SelectProfile(profile)
@@ -302,7 +302,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 null,
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare);
+                TransferMetric.ParetoCompare);
 
             var sources = new List<(LocationId, Journey<TransferMetric> journey)>
                 {(stop1, null)};
@@ -358,7 +358,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 null,
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare);
+                TransferMetric.ParetoCompare);
 
 
             var startTime = new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc);
@@ -423,7 +423,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 null,
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare);
+                TransferMetric.ParetoCompare);
 
             var journey = latest.SelectProfile(profile)
                 .SelectStops(stop1, stop2)
@@ -460,7 +460,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory,
-                TransferMetric.ProfileTransferCompare);
+                TransferMetric.ParetoCompare);
 
             var input = latest
                     .SelectProfile(profile)
