@@ -54,7 +54,7 @@ namespace Itinero.Transit.IO.LC.Data
                 }
                 catch (ArgumentException e)
                 {
-                        Log.Warning(e, "Connection ignored due to exception");
+                        Log.Information($"Connection ignored due to exceptions {e}");
                 }
             }
         }

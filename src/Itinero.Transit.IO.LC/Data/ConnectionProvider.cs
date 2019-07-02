@@ -27,10 +27,10 @@ namespace Itinero.Transit.IO.LC.Data
         {
             _searchTemplate = hydraSearch.GetLDValue("http://www.w3.org/ns/hydra/core#template");
 
-            Log.Information($"Search template is {_searchTemplate}");
+            Log.Verbose($"Search template is {_searchTemplate}");
             // TODO Softcode departure time argument
             var baseString = _searchTemplate.Replace("{?departureTime}", "");
-            Log.Information($"Base string is {baseString}");
+            Log.Verbose($"Base string is {baseString}");
             var baseUri = new Uri(baseString);
             _processor = new JsonLdProcessor(_loader, baseUri);
         }
