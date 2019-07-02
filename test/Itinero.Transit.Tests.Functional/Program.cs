@@ -4,7 +4,6 @@ using System.IO;
 using Itinero.Transit.Data;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms;
-using Itinero.Transit.Tests.Functional.Algorithms.CSA;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
 using Itinero.Transit.Tests.Functional.Data;
 using Itinero.Transit.Tests.Functional.IO;
@@ -35,8 +34,6 @@ namespace Itinero.Transit.Tests.Functional
 
             if (devTestsOnly)
             {
-
-                new TestAllAlgorithms().ExecuteMultiModal();
                 return;
             }
 
