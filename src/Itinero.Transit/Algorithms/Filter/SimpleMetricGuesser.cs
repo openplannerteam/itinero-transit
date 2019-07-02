@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 
@@ -42,8 +41,7 @@ namespace Itinero.Transit.Journey.Filter
         {
             var teleportation = new SimpleConnection(uint.MaxValue, "https://en.wikipedia.org/wiki/Teleportation",
                 _departureStop, intermediate.Location,
-                _pcs._connections
-                    .DepartureTime, // The current connection scan is here, future departures will only be sooner
+                _clock.DepartureTime, // The current connection scan is here, future departures will only be sooner
                 0, // Traveltime is 0 - we are talking about Teleportation after all!
                 0,
                 0,
@@ -56,7 +54,7 @@ namespace Itinero.Transit.Journey.Filter
 
         public bool ShouldBeChecked(ProfiledParetoFrontier<T> frontier)
         {
-            var curScanTime = _pcs._connections.DepartureTime;
+            var curScanTime = _clock.DepartureTime;
             // ReSharper disable once InvertIf
             if (curScanTime != _alreadyCleanedScanTime)
             {
