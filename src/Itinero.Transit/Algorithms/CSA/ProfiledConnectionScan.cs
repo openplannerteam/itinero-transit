@@ -21,12 +21,12 @@ namespace Itinero.Transit.Algorithms.CSA
     /// </summary>
     internal class ProfiledConnectionScan<T> where T : IJourneyMetric<T>
     {
-        private readonly IConnectionEnumerator _connections;
+        internal readonly IConnectionEnumerator _connections;
         private readonly IStopsReader _stopsReader;
-        private readonly ulong _earliestDeparture, _lastArrival;
-        private readonly HashSet<LocationId> _departureLocations;
-        private readonly HashSet<IStop> _targetLocations;
-        private readonly HashSet<LocationId> _targetLocationsIds;
+        internal readonly ulong _earliestDeparture, _lastArrival;
+        internal readonly HashSet<LocationId> _departureLocations;
+        internal readonly HashSet<IStop> _targetLocations;
+        internal readonly HashSet<LocationId> _targetLocationsIds;
 
         private readonly MetricComparator<T> _comparator;
 
@@ -39,13 +39,13 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <summary>
         /// Rules how much penalty is given to go from one connection to another, without changing stations
         /// </summary>
-        private readonly IOtherModeGenerator _transferPolicy;
+        internal readonly IOtherModeGenerator _transferPolicy;
 
         /// <summary>
         /// Rules how much time is needed to walk from one stop to another.
         /// This IOtherModeGenerator may show complex behaviour, e.g. based on what the first or last stop is for first- and lastmile policies
         /// </summary>
-        private readonly IOtherModeGenerator _walkPolicy;
+        internal readonly IOtherModeGenerator _walkPolicy;
 
         // Placeholder empty frontier; used when a frontier is needed but not present.
         private readonly ProfiledParetoFrontier<T> _empty;
