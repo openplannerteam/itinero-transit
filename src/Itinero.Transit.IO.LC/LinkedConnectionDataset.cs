@@ -30,10 +30,10 @@ namespace Itinero.Transit.IO.LC
         {
             // Note the differences between _onTimeTableLoaded (the field), onTimeTableLoaded (the parameter) and onTimeTableLoaded (the function)
             _onLocationLoaded = onLocationLoaded ??
-                                new LoggingOptions(OnLocationLoaded, 50);
+                                new LoggingOptions(OnLocationLoaded, 500);
             _onTimeTableLoaded = onTimeTableLoaded ??
-                                  new LoggingOptions(OnTimeTableLoaded, 1);
-            _onError = onError ?? Log.Warning;
+                                  new LoggingOptions(OnTimeTableLoaded, 100);
+            _onError = onError ?? Log.Verbose;
         }
 
 
