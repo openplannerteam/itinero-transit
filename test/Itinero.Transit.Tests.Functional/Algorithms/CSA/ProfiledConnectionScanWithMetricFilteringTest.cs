@@ -1,10 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.Journey.Metric;
-using Reminiscence.Collections;
 
 // ReSharper disable PossibleMultipleEnumeration
 
@@ -13,6 +13,19 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
     public class ProfiledConnectionScanWithMetricFilteringTest :
         DefaultFunctionalTest<TransferMetric>
     {
+        private void AreSame(ICollection<Journey<TransferMetric>> js, ICollection<Journey<TransferMetric>> bs)
+        {
+            foreach (var a in js)
+            {
+                True(bs.Contains(a));
+            }
+
+            foreach (var b in bs)
+            {
+                True(js.Contains(b));
+            }
+        }
+
         protected override bool Execute(WithTime<TransferMetric> input)
         {
             input.IsochroneFrom(); // Calculating the isochrone lines makes sure this is reused as filter - in some cases, testing goes from ~26 seconds to ~6
@@ -43,21 +56,10 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             True(journeysF.Any());
             Information(
                 $"Found {journeysF.Count} profiles in {filteredTime}ms with metric (difference: {noFilterTime - filteredTime}ms faster)");
-           
-            True(Equals(journeys.Count, journeysF.Count));
 
-            foreach (var j in journeysF)
-            {
-                True(journeys.Contains(j));
-            }
-            
-            foreach (var j in journeys)
-            {
-                True(journeysF.Contains(j));
-            }
-            
-            
-           
+            AreSame(journeysF, journeys);
+
+
             settings = input.GetScanSettings();
             start = DateTime.Now;
             settings.MetricGuesser = new SimpleMetricGuesser<TransferMetric>(
@@ -70,20 +72,10 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             NotNull(journeysFEarliest);
             True(journeysFEarliest.Any());
             True(Equals(journeysFEarliest.Count, journeys.Count));
-            
+
             Information(
                 $"Found {journeysFEarliest.Count} profiles in {filteredTimeEarliest}ms with earliest (difference: {noFilterTime - filteredTimeEarliest}ms faster then no filter at all)");
-            foreach (var j in journeysFEarliest)
-            {
-                True(journeys.Contains(j));
-            }
-            
-            foreach (var j in journeys)
-            {
-                True(journeysFEarliest.Contains(j));
-            }
-            
-            
+            AreSame(journeysFEarliest, journeys);
 
 
             return true;
