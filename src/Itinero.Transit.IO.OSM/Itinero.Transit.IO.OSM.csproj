@@ -15,7 +15,7 @@
 
     <ItemGroup>
         <PackageReference Include="GeoTimeZone" Version="3.2.0" />
-        <PackageReference Include="openplannerteam.Itinero.IO.Osm.Tiles" Version="2.0.0-pre007" />
+        <PackageReference Include="openplannerteam.Itinero.IO.Osm.Tiles" Version="2.0.0-pre008" />
         <PackageReference Include="NodaTime" Version="2.4.5" />
         <PackageReference Include="OsmSharp" Version="6.2.0" />
     </ItemGroup>
