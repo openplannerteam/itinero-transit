@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
+using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
 using Xunit;
@@ -210,6 +212,72 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             }
         }
 
+        [Fact]
+        public static void TestMetricFiltering()
+        {
+            var transitDb = new TransitDb();
+            var writer = transitDb.GetWriter();
+
+            var loc0 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
+            var loc1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
+            var loc2 = writer.AddOrUpdateStop("https://example.com/stops/1", 2.1, 0.1);
+            var loc3 = writer.AddOrUpdateStop("https://example.com/stops/1", 3.1, 0.1);
+
+            writer.AddOrUpdateConnection(loc0, loc1,
+                "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
+                30 * 60, 0, 0, new TripId(0, 0), 0);
+
+
+            writer.AddOrUpdateConnection(loc0, loc1,
+                "https://example.com/connections/1",
+                new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
+                40 * 60, 0, 0, new TripId(0, 1), 0);
+
+            writer.AddOrUpdateConnection(loc2, loc3, "https//example.com/connections/2",
+                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc),
+                40 * 60, 0, 0, new TripId(0, 2), 0);
+
+            writer.AddOrUpdateConnection(loc2, loc3, "https//example.com/connections/4",
+                new DateTime(2018, 12, 04, 2, 00, 00, DateTimeKind.Utc),
+                40 * 60, 0, 0, new TripId(0, 3), 0);
+
+            writer.Close();
+
+            
+            var latest = transitDb.Latest;
+
+
+          
+            
+            
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(60),
+                new CrowsFlightTransferGenerator(),
+                TransferMetric.Factory, TransferMetric.ParetoCompare);
+
+            var calculator = latest.SelectProfile(profile)
+                .SelectStops(loc0, loc1)
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
+                    new DateTime(2018, 12, 04, 18, 00, 00, DateTimeKind.Utc));
+
+
+            var settings = calculator.GetScanSettings();
+
+            settings.MetricGuesser = new SimpleMetricGuesser<TransferMetric>(
+                calculator.ConnectionReader,
+                calculator.From[0].Item1
+            );
+            
+            var pcs = new ProfiledConnectionScan<TransferMetric>(calculator.GetScanSettings());
+            var journeys = pcs.CalculateJourneys();
+            Assert.Single(journeys);
+            foreach (var j in journeys)
+            {
+                Assert.Equal(30 * 60, (int) j.Metric.TravelTime);
+            }
+        }
+
+        
         [Fact]
         public void ShouldFindNoConnectionJourney()
         {

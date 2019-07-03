@@ -41,5 +41,9 @@ namespace Itinero.Transit.Algorithms.CSA
         public List<(LocationId, Journey<T>)> TargetStop { get; }
         public Profile<T> Profile { get; }
         public IsochroneFilter<T> Filter { get; set; }
+
+        public IMetricGuesser<T> MetricGuesser { get; set; }
+
+        public Journey<T> ExampleJourney { get; set; }
     }
 }

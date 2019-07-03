@@ -25,6 +25,10 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly IStopsReader _stopsReader;
         internal readonly ulong _earliestDeparture, _lastArrival;
         internal readonly HashSet<LocationId> _departureLocations;
+
+        internal readonly HashSet<ProfiledParetoFrontier<T>> _departureFrontiers =
+            new HashSet<ProfiledParetoFrontier<T>>();
+
         internal readonly HashSet<IStop> _targetLocations;
         internal readonly HashSet<LocationId> _targetLocationsIds;
 
@@ -35,6 +39,7 @@ namespace Itinero.Transit.Algorithms.CSA
         // Indicates if connections can not be taken due to external reasons (e.g. earlier scan)
         private readonly IConnectionFilter _filter;
         private readonly IJourneyFilter<T> _journeyFilter;
+        private readonly IMetricGuesser<T> _guesser;
 
         /// <summary>
         /// Rules how much penalty is given to go from one connection to another, without changing stations
@@ -108,6 +113,9 @@ namespace Itinero.Transit.Algorithms.CSA
         ///  </summary>
         public ProfiledConnectionScan(ScanSettings<T> settings)
         {
+            _comparator = settings.Profile.ProfileComparator;
+            _journeyFilter = settings.Profile.JourneyFilter;
+
             _targetLocations = new HashSet<IStop>();
             _targetLocationsIds = new HashSet<LocationId>();
             _stopsReader = settings.StopsReader;
@@ -132,20 +140,30 @@ namespace Itinero.Transit.Algorithms.CSA
                 }
 
                 _departureLocations.Add(target);
+                // We already create a frontier for each of the destinations...
+                var frontier = new ProfiledParetoFrontier<T>(_comparator, _journeyFilter);
+                _stationJourneys[target] = frontier;
+                // ...and keep track of them. This index server to compare with the metricGuessers
+                _departureFrontiers.Add(frontier);
             }
 
+            if (settings.ExampleJourney != null)
+            {
+                var example = settings.ExampleJourney;
+                _stationJourneys[example.Location].AddToFrontier(example);
+            }
 
             _earliestDeparture = settings.EarliestDeparture.ToUnixTime();
             _lastArrival = settings.LastArrival.ToUnixTime();
 
             _connections = settings.ConnectionsEnumerator;
 
-            _comparator = settings.Profile.ProfileComparator;
-            _journeyFilter = settings.Profile.JourneyFilter;
-            _empty = new ProfiledParetoFrontier<T>(_comparator, _journeyFilter);
+             _empty = new ProfiledParetoFrontier<T>(_comparator, _journeyFilter);
             _metricFactory = settings.Profile.MetricFactory;
             _transferPolicy = settings.Profile.InternalTransferGenerator;
             _walkPolicy = settings.Profile.WalksGenerator;
+
+            _guesser = settings.MetricGuesser;
 
             // Apply the connection filter from the profile
             _filter = settings.Profile.ConnectionFilter;
@@ -270,6 +288,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 return;
             }
 
+
             /*What if we went by foot after taking C?*/
             var journeyT1 = WalkToTargetFrom(c);
 
@@ -347,7 +366,7 @@ namespace Itinero.Transit.Algorithms.CSA
             if (_targetLocationsIds.Contains(c.ArrivalStop))
             {
                 // We already are at a possible target location
-                
+
                 // We create a genesis journey...
                 var arrivingJourney = new Journey<T>
                 (c.ArrivalStop, c.ArrivalTime, _metricFactory.Zero(),
@@ -426,6 +445,7 @@ namespace Itinero.Transit.Algorithms.CSA
                     i--;
                     continue;
                 }
+
                 frontier[i] = frontier[i].ChainBackward(c);
             }
 
@@ -454,6 +474,9 @@ namespace Itinero.Transit.Algorithms.CSA
 
             // We get all possible, pareto optimal journeys departing here...
             var pareto = _stationJourneys[c.ArrivalStop];
+            // ... we try to clean up this frontier a little ...
+            pareto.Clean(_guesser, _departureFrontiers);
+
             // .. and we extend them with c. What is non-dominated, we return
             return pareto.ExtendFrontierBackwards(_stopsReader, c, _transferPolicy);
         }
@@ -487,8 +510,8 @@ namespace Itinero.Transit.Algorithms.CSA
                     // We are walking in circles... 
                     continue;
                 }
-                
-                
+
+
                 // And add this journey with walk to the pareto frontier
                 if (!_stationJourneys.ContainsKey(stopId))
                 {
@@ -500,7 +523,8 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
-        private ProfiledParetoFrontier<T> PickBestJourneys(Journey<T> j, ProfiledParetoFrontier<T> a, ProfiledParetoFrontier<T> b)
+        private ProfiledParetoFrontier<T> PickBestJourneys(Journey<T> j, ProfiledParetoFrontier<T> a,
+            ProfiledParetoFrontier<T> b)
         {
             if (a.Frontier.Count == 0 && b.Frontier.Count == 0)
             {

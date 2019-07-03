@@ -16,7 +16,7 @@ namespace Itinero.Transit.Journey.Filter
     /// 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal class SimpleMetricGuesser<T> : IMetricGuesser<T> where T : IJourneyMetric<T>
+    public class SimpleMetricGuesser<T> : IMetricGuesser<T> where T : IJourneyMetric<T>
     {
         private readonly IConnection _clock;
 
@@ -37,7 +37,7 @@ namespace Itinero.Transit.Journey.Filter
             _departureStop = departureStop;
         }
 
-        public IConnection LeastTheoreticalConnection(Journey<T> intermediate)
+        public Journey<T> LeastTheoreticalConnection(Journey<T> intermediate)
         {
             var teleportation = new SimpleConnection(uint.MaxValue, "https://en.wikipedia.org/wiki/Teleportation",
                 _departureStop, intermediate.Location,
@@ -49,7 +49,7 @@ namespace Itinero.Transit.Journey.Filter
                 intermediate.TripId
             );
 
-            return teleportation;
+            return intermediate.ChainBackward(teleportation);
         }
 
         public bool ShouldBeChecked(ProfiledParetoFrontier<T> frontier)

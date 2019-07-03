@@ -49,7 +49,6 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <returns>True if the journey was appended to the frontier</returns>
         public bool AddToFrontier(Journey<T> considered)
         {
-        
             if (considered == null || ReferenceEquals(considered, Journey<T>.InfiniteJourney))
             {
                 return false;
@@ -85,7 +84,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 // First thing to check:
                 // Does one completely overlap the other?
 
-                
+
                 if (
                     considered.Time <= guard.Time && guard.Root.Time <= considered.Root.Time)
                 {
@@ -180,11 +179,9 @@ namespace Itinero.Transit.Algorithms.CSA
                                                 duel);
                     }
                 }
-                else
-                {
-                    // No comparison is possible - no need for a duel
-                    continue;
-                }
+
+                // Journeys are not strictly overlapping thus
+                // No comparison is possible - no need for a duel
             }
 
             Frontier.Add(considered);
@@ -210,6 +207,112 @@ namespace Itinero.Transit.Algorithms.CSA
             }
         }
 
+
+        public bool IsOnFrontier(Journey<T> j)
+        {
+            foreach (var guard in Frontier)
+            {
+                if (j.Time <= guard.Time && guard.Root.Time <= j.Root.Time)
+                {
+                    // Guard completely falls within 'j' or has a same time period
+                    // Note that guard has an edge here
+                    var duel = Comparator.ADominatesB(guard, j);
+                    switch (duel)
+                    {
+                        case -1: return false;
+                        case 0:
+                            // Identical to the above big switch cases, but compacted
+                            if (j.Time == guard.Time && guard.Root.Time == j.Root.Time)
+                            {
+                                return !j.Equals(guard);
+                            }
+                            else
+                            {
+                                // Both have equally good stats... But the guard strictly falls within considered
+                                // Thus: considered takes a longer time and is worse
+                                return false;
+                            }
+
+                        default:
+                            // No comparison is possible
+                            continue;
+                    }
+                }
+                else if (guard.Time <= j.Time && j.Root.Time <= guard.Root.Time)
+                {
+                    // j falls completely within guard
+
+                    var duel = Comparator.ADominatesB(guard, j);
+                    switch (duel)
+                    {
+                        case int.MaxValue: // Both are better then the other on some different dimension
+                        /* Fallthrough to -1 */
+                        case -1:
+                            // The new journey is worse on some aspect then the guard...
+                            // Except that it is faster!
+
+                            // So: 1) The guard can not eliminate the candidate
+                            // 2) The candidate can not eliminate the guard 
+
+                            // No conclusion can be drawn
+                            // We just have to continue scanning - if no guard defeats the candidate, it owned its place
+
+                            continue;
+                        case 0:
+                        // The new journey is strictly faster and is just as good on other aspects as the guard
+                        // That makes the new journey strictly better! Down with the guard:
+                        /*Fallthrough to case 1*/
+                        case 1:
+                            continue; // Other items might still be better then the new journey
+                        default:
+                            throw new Exception("Comparison of two journeys in metric did not return -1,1 or 0 but " +
+                                                duel);
+                    }
+                }
+            }
+
+            // Nothing has eliminated this journey
+            return true;
+        }
+
+        public void Clean(
+            IMetricGuesser<T> metricGuess,
+            HashSet<ProfiledParetoFrontier<T>> stopsToReach)
+        {
+            if (metricGuess == null)
+            {
+                return;
+            }
+
+            if (stopsToReach.Contains(this))
+            {
+                return;
+            }
+            
+            if (!metricGuess.ShouldBeChecked(this))
+            {
+                return;
+            }
+
+
+            for (var i = Frontier.Count-1; i >= 0; i--)
+            {
+                var teleported = metricGuess.LeastTheoreticalConnection(Frontier[i]);
+                foreach (var testFrontier in stopsToReach)
+                {
+                    if (!testFrontier.IsOnFrontier(teleported))
+                    {
+                        // Even _with_ a teleport, the intermediate journey could not beat any
+                        // already existing journey to the destination...
+                        // This means that this intermediate journey can never ever be optimal
+                        // and we prune this thing from the frontiers
+                        Frontier.RemoveAt(i);
+                        i--;
+                        break; // The inner loop is broken
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Considers all of the journeys to append them to the frontier.

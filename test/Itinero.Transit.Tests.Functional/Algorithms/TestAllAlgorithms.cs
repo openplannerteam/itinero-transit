@@ -34,6 +34,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
                 new EasPcsComparison(),
                 new EasLasComparison(),
                 new IsochroneTest(),
+              //  new ProfiledConnectionScanWithMetricFilteringTest(),
                 new MultiTransitDbTest()
             };
 
