@@ -201,25 +201,29 @@ namespace Itinero.Transit
     public class WithProfile<T> where T : IJourneyMetric<T>
     {
         public readonly IStopsReader StopsReader;
+        public readonly Func<IStopsReader> CreateStopsReader;
         public readonly IConnectionEnumerator ConnectionEnumerator;
         public readonly IConnectionReader ConnectionReader;
         public readonly Profile<T> Profile;
 
         internal WithProfile(
-            IStopsReader stops,
+            Func<IStopsReader> stops,
             IConnectionEnumerator connections,
             IConnectionReader connectionsReaders,
             Profile<T> profile)
         {
-            StopsReader = stops;
+            CreateStopsReader = stops;
+            StopsReader = stops();
             ConnectionEnumerator = connections;
             ConnectionReader = connectionsReaders;
             Profile = profile;
+            CreateStopsReader = stops;
         }
 
         internal WithProfile(IEnumerable<TransitDb.TransitDbSnapShot> tdbs, Profile<T> profile)
         {
-            StopsReader = StopsReaderAggregator.CreateFrom(tdbs);
+            CreateStopsReader = () => StopsReaderAggregator.CreateFrom(tdbs);
+            StopsReader = CreateStopsReader();
             ConnectionEnumerator = ConnectionEnumeratorAggregator.CreateFrom(tdbs);
             ConnectionReader = ConnectionReaderAggregator.CreateFrom(tdbs);
             Profile = new Profile<T>(
@@ -261,20 +265,12 @@ namespace Itinero.Transit
 
             var withCache = StopsReader.UseCache();
             var walksGenCache = Profile.WalksGenerator.UseCache();
-            withCache.Reset();
-            while (withCache.MoveNext())
-            {
-                var current = (IStop) withCache;
-                var inRange = withCache.LocationsInRange(
-                    current.Latitude, current.Longitude,
-                    Profile.WalksGenerator.Range());
-                walksGenCache.TimesBetween(StopsReader, inRange);
-            }
+            walksGenCache.PreCalculateCacheMultiThreaded(CreateStopsReader);
 
             var end = DateTime.Now;
             Log.Information($"Caching reachable locations took {(end - start).TotalMilliseconds}ms");
             return new WithProfile<T>(
-                withCache,
+               () => withCache,
                 ConnectionEnumerator,
                 ConnectionReader,
                 new Profile<T>(
@@ -297,9 +293,9 @@ namespace Itinero.Transit
         public WithProfile<T> AddStopsReader(IStopsReader stopsReader)
         {
             return new WithProfile<T>(
-                StopsReaderAggregator.CreateFrom(new List<IStopsReader>
+               () => StopsReaderAggregator.CreateFrom(new List<IStopsReader>
                 {
-                    StopsReader, stopsReader
+                    stopsReader, CreateStopsReader()
                 }),
                 ConnectionEnumerator,
                 ConnectionReader,
@@ -308,7 +304,7 @@ namespace Itinero.Transit
         }
 
         [Pure]
-        public WithProfile<T> SetStopsReader(IStopsReader stopsReader)
+        public WithProfile<T> SetStopsReader(Func<IStopsReader> stopsReader)
         {
             return new WithProfile<T>(
                 stopsReader,

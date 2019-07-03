@@ -17,12 +17,20 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         {
             foreach (var a in js)
             {
-                True(bs.Contains(a));
+                if (!bs.Contains(a))
+                {
+                    Logging.Log.Error($"Journey {a.ToString(100)} is missing");
+                    True(false);
+                }
             }
 
             foreach (var b in bs)
             {
-                True(js.Contains(b));
+                if (!js.Contains(b))
+                {
+                    Logging.Log.Error($"Journey {b.ToString(100)} is missing");
+                    True(false);
+                }
             }
         }
 

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Itinero.Transit.Data;
 
 namespace Itinero.Transit.OtherMode
@@ -78,11 +80,67 @@ namespace Itinero.Transit.OtherMode
             return v;
         }
 
+        public void PreCalculateCache(IStopsReader withCache, int offset = 0, int skiprate = 0)
+        {
+            withCache.Reset();
+
+            for (var i = 0; i < offset; i++)
+            {
+                withCache.MoveNext();
+            }
+
+            while (withCache.MoveNext())
+            {
+                var current = (IStop) withCache;
+                var inRange = withCache.LocationsInRange(
+                    current.Latitude, current.Longitude,
+                    Range());
+                TimesBetween(withCache, inRange);
+
+                for (var i = 0; i < skiprate; i++)
+                {
+                    withCache.MoveNext();
+                }
+            }
+        }
+
+        public void PreCalculateCacheMultiThreaded(Func<IStopsReader> stopsReaderGenerator)
+        {
+            var processors = Environment.ProcessorCount;
+            var allCaches = new List<OtherModeCacher>();
+            var taskPool = new Task[processors];
+
+            for (var i = 0; i < processors; i++)
+            {
+                var otherCache = new OtherModeCacher(_fallback);
+                allCaches.Add(otherCache);
+
+                var task = new Task(() =>
+                {
+                    var stopsReader = stopsReaderGenerator();
+                    otherCache.PreCalculateCache(stopsReader, i, processors);
+                });
+                taskPool[i] = task;
+                task.Start();
+            }
+
+            Task.WaitAll(taskPool);
+
+            foreach (var otherModeCacher in allCaches)
+            {
+                _cache.Union(otherModeCacher._cache);
+            }
+            
+            
+            
+        }
+
+
         public float Range()
         {
             return _fallback.Range();
         }
-        
+
         public string OtherModeIdentifier()
         {
             return _fallback.OtherModeIdentifier();

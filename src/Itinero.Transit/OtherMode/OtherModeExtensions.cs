@@ -7,7 +7,7 @@ namespace Itinero.Transit.OtherMode
 {
     public static class OtherModeExtensions
     {
-        public static IOtherModeGenerator UseCache(this IOtherModeGenerator fallback)
+        public static OtherModeCacher UseCache(this IOtherModeGenerator fallback)
         {
             return new OtherModeCacher(fallback);
         }

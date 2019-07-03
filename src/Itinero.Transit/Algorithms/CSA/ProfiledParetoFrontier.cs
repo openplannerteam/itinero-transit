@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Itinero.Transit.Data;
+using System.Linq;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Filter;
-using Itinero.Transit.Logging;
-using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
@@ -288,20 +286,27 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 return;
             }
-            
+
             if (!metricGuess.ShouldBeChecked(this))
             {
                 return;
             }
 
 
-            for (var i = Frontier.Count-1; i >= 0; i--)
+            for (var i = Frontier.Count - 1; i >= 0; i--)
             {
                 var teleported = metricGuess.LeastTheoreticalConnection(Frontier[i]);
                 foreach (var testFrontier in stopsToReach)
                 {
                     if (!testFrontier.IsOnFrontier(teleported))
                     {
+
+                        if (Frontier[i].ToList().Select(p => p.Connection).ToList().Contains(18775))
+                        {
+                            throw new Exception("DONT REMOVE ME");
+                        }
+                        
+                        
                         // Even _with_ a teleport, the intermediate journey could not beat any
                         // already existing journey to the destination...
                         // This means that this intermediate journey can never ever be optimal
