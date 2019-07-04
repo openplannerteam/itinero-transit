@@ -110,11 +110,7 @@ namespace Itinero.Transit.Tests.Functional
             new NoDuplicationTest().Run();
 
             new CachingTest().Run(true);
-                <<<<<<< HEAD
-                // TODO RE-ENABLE  new Itinero2RoutingTest().Run();
-                ====== =
-            new Itinero2RoutingTest().Run();
-                >>>>>>> 6e5f 28c0ad9b2cb1b880d9cb3f92cb39b0d079fe
+            // TODO RE-ENABLE  new Itinero2RoutingTest().Run();
         }
 
         public static void SlowTests()
