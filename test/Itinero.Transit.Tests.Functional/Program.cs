@@ -32,7 +32,8 @@ namespace Itinero.Transit.Tests.Functional
         {
             EnableLogging();
 
-            var devTestsOnly = args.Length == 0 || !args[0].Equals("--full-test-suite");
+            var devTestsOnly = args.Length == 0 ||
+                               !new List<string> {"--full-test-suite", "--full", "--test"}.Contains(args[0].ToLower());
 
             // do some local caching.
 

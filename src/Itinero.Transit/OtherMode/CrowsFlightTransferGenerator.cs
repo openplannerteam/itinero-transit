@@ -43,7 +43,6 @@ namespace Itinero.Transit.OtherMode
             _n++;
             var distance =
                 DistanceEstimate.DistanceEstimateInMeter(from.Latitude, from.Longitude, to.Latitude, to.Longitude);
-            Console.WriteLine($"Calculated {_n} times: {distance}");
             if (distance > _maxDistance)
             {
                 return uint.MaxValue;
