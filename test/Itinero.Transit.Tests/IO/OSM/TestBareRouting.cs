@@ -50,7 +50,7 @@ namespace Itinero.Transit.Tests.IO.OSM
             var pedestrian = OsmProfiles.Pedestrian;
 
 
-            var p = new OsmTransferGenerator(5000, profile: pedestrian);
+            var p = new OsmTransferGenerator(profile: pedestrian);
             // Rijselstraat, just behind the station
       
             var route = p.CreateRoute(( 51.193350000000009f, 3.2137800000000141f), (51.197229555160746f, 3.2167249917984009f), out _);

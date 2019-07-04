@@ -40,8 +40,7 @@ namespace Itinero.Transit.IO.OSM
         ///  <param name="searchDistance">The maximum distance that the traveller takes this route</param>
         ///  <param name="profile">The vehicle profile, default is pedestrian.</param>
         ///  <param name="baseTilesUrl">The base tile url.</param>
-        public OsmTransferGenerator(
-            float searchDistance = 1000,
+        public OsmTransferGenerator(float searchDistance = 1000,
             Profile profile = null)
         {
             _searchDistance = searchDistance;
@@ -52,6 +51,12 @@ namespace Itinero.Transit.IO.OSM
 
         public uint TimeBetween(IStop from, IStop to)
         {
+            if (from.Id.Equals(to.Id))
+            {
+                // This thing is not allowed to generate transfers between the same stops
+                return uint.MaxValue;
+            }
+
             var distance =
                 Coordinate.DistanceEstimateInMeter(@from.Longitude, @from.Latitude, to.Longitude, to.Latitude);
             // Small patch for small distances...
@@ -66,7 +71,7 @@ namespace Itinero.Transit.IO.OSM
             }
 
             var route = CreateRoute(((float) from.Latitude, (float) from.Longitude),
-                ((float) from.Latitude, (float) from.Longitude), out var isEmpty);
+                ((float) to.Latitude, (float) to.Longitude), out var isEmpty);
             if (isEmpty)
             {
                 return 0;

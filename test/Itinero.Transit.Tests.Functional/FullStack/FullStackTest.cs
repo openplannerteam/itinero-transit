@@ -22,7 +22,7 @@ namespace Itinero.Transit.Tests.Functional.FullStack
 
             var defaultRealLifeProfile = new Profile<TransferMetric>(
                 new InternalTransferGenerator(180),
-                new OsmTransferGenerator(500).UseCache(),
+                new OsmTransferGenerator().UseCache(),
                 TransferMetric.Factory,
                 TransferMetric.ParetoCompare,
                 new CancelledConnectionFilter(),

@@ -1,5 +1,3 @@
-using Itinero.IO.Osm.Tiles;
-using Itinero.Profiles.Lua;
 using Itinero.Profiles.Lua.Osm;
 using Itinero.Transit.Data;
 using Itinero.Transit.IO.OSM;
@@ -14,7 +12,6 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
     {
         protected override object Execute(object input)
         {
-            TestRijselsestraatBrugge2Station();
 
             // We create a transitDB with testdata from _nmbs.
             // Note that this database only contains connections of a certain date, namely TestAllAlgorithms.TestDate
@@ -27,8 +24,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
 
 
             OsmTransferGenerator.EnableCaching("./cache");
-            var gen = new OsmTransferGenerator(
-                5000,
+            var gen = new OsmTransferGenerator(5000,
                 OsmProfiles.Pedestrian
             );
 
@@ -76,28 +72,11 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
                 .SelectTimeFrame(TestAllAlgorithms.TestDate, TestAllAlgorithms.TestDate.AddHours(10))
                 .EarliestArrivalJourney();
             NotNull(easJ);
-            True(easJ.Metric.WalkingTime > 600);
             Information(easJ.ToString(router));
+            True(easJ.Metric.WalkingTime > 600);
 
 
             return true;
-        }
-
-        private void TestRijselsestraatBrugge2Station()
-        {
-            var routerDb = new RouterDb();
-            routerDb.DataProvider = new DataProvider(routerDb);
-
-            var pedestrian = OsmProfiles.Pedestrian;
-
-
-            var p = new OsmTransferGenerator(5000, profile: pedestrian);
-            // Rijselstraat, just behind the station
-
-            var route = p.CreateRoute((51.193350000000009f, 3.2137800000000141f), 
-                (51.197229555160746f, 3.2167249917984009f), out _);
-            NotNull(route);
-            True(route.Shape.Count > 10);
         }
     }
 }
