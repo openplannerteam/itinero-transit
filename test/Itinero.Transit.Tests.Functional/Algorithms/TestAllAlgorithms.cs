@@ -69,19 +69,10 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
         public const string BrusselZuid = "http://irail.be/stations/NMBS/008814001";
         public const string Kortrijk = "http://irail.be/stations/NMBS/008896008";
         public const string Oostende = "http://irail.be/stations/NMBS/008891702";
-        public const string Antwerpen = "http://irail.be/stations/NMBS/008821006"; // Antwerpen centraal
         public const string SintJorisWeert = "http://irail.be/stations/NMBS/008833159"; // Antwerpen centraal
         public const string Leuven = "http://irail.be/stations/NMBS/008833001"; // Antwerpen centraal
-        public const string Howest = "https://data.delijn.be/stops/502132";
-        public const string ZandStraat = "https://data.delijn.be/stops/500562";
-        public const string AzSintJan = "https://data.delijn.be/stops/502083";
-        public const string Moereind = "https://data.delijn.be/stops/107455";
-
         public const string GentZwijnaardeDeLijn = "https://data.delijn.be/stops/200657";
-
-        public const string StationBruggeOsm = "https://www.openstreetmap.org/node/6348496391";
-        public const string CoiseauKaaiOsm = "https://www.openstreetmap.org/node/6348562147";
-
+        
 
         /// <summary>
         ///  Tests all algorithms, with the default test data on the default test date
@@ -269,11 +260,11 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
 
             return new List<WithTime<TransferMetric>>
             {
-                withProfile.SelectStops(CoiseauKaaiOsm,
+                withProfile.SelectStops(Constants.CoiseauKaaiOsm,
                     Gent).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(12)),
-                withProfile.SelectStops(CoiseauKaaiOsm,
+                withProfile.SelectStops(Constants.CoiseauKaaiOsm,
                     GentZwijnaardeDeLijn).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(12)),

@@ -80,6 +80,18 @@ namespace Itinero.Transit.OtherMode
             return v;
         }
 
+        private bool CachingIsDone = false;
+
+        // ReSharper disable once UnusedMember.Global
+        public OtherModeCacher PreCalculateCache(IStopsReader withCache)
+        {
+            // ReSharper disable once RedundantArgumentDefaultValue
+            PreCalculateCache(withCache, 0, 0);
+            CachingIsDone = true;
+            return this;
+        }
+
+        // ReSharper disable once MemberCanBePrivate.Global
         public void PreCalculateCache(IStopsReader withCache, int offset = 0, int skiprate = 0)
         {
             withCache.Reset();
@@ -102,10 +114,19 @@ namespace Itinero.Transit.OtherMode
                     withCache.MoveNext();
                 }
             }
+
+           
         }
 
-        public void PreCalculateCacheMultiThreaded(Func<IStopsReader> stopsReaderGenerator)
+        // ReSharper disable once UnusedMember.Global
+        public bool ChachingIsDone()
         {
+            return CachingIsDone;
+        }
+
+        private void PreCalculateCacheMultiThreaded(Func<IStopsReader> stopsReaderGenerator)
+        {
+            // TODO TEST ME
             var processors = Environment.ProcessorCount;
             var allCaches = new List<OtherModeCacher>();
             var taskPool = new Task[processors];
@@ -130,9 +151,6 @@ namespace Itinero.Transit.OtherMode
             {
                 _cache.Union(otherModeCacher._cache);
             }
-            
-            
-            
         }
 
 

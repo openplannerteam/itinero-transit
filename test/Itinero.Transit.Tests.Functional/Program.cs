@@ -6,6 +6,7 @@ using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
 using Itinero.Transit.Tests.Functional.Data;
+using Itinero.Transit.Tests.Functional.FullStack;
 using Itinero.Transit.Tests.Functional.IO;
 using Itinero.Transit.Tests.Functional.IO.LC;
 using Itinero.Transit.Tests.Functional.IO.LC.Synchronization;
@@ -34,8 +35,6 @@ namespace Itinero.Transit.Tests.Functional
 
             if (devTestsOnly)
             {
-                var r = new TestAllAlgorithms();
-                r.ExecuteMultiModal(7);
                 return;
             }
 
@@ -89,6 +88,7 @@ namespace Itinero.Transit.Tests.Functional
 
             new TestAllAlgorithms().ExecuteMultiModal();
             new MixedDestinationTest().Run();
+            new FullStackTest();
         }
 
         public static void InternetTests()
@@ -107,7 +107,7 @@ namespace Itinero.Transit.Tests.Functional
 
             new CachingTest().Run(true);
 
-          // TODO RE-ENABLE  new Itinero2RoutingTest().Run();
+            // TODO RE-ENABLE  new Itinero2RoutingTest().Run();
         }
 
         public static void SlowTests()
