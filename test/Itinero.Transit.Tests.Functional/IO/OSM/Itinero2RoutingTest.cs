@@ -15,7 +15,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
         protected override object Execute(object input)
         {
             TestRijselsestraatBrugge2Station();
-            
+
             // We create a transitDB with testdata from _nmbs.
             // Note that this database only contains connections of a certain date, namely TestAllAlgorithms.TestDate
             // Testing outside this range will give an error ("no connections loaded")
@@ -56,7 +56,8 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
             var toStp = new Stop(stops);
 
 
-            var route = gen.CreateRoute(fromStp, toStp, out _);
+            var route = gen.CreateRoute(((float) fromStp.Latitude, (float) fromStp.Longitude),
+                ((float) toStp.Latitude, (float) toStp.Longitude), out _);
             NotNull(route, "Route not found");
 
             // This routing test only contains a walk: from somewhere in Bruges towards the station of Bruges
@@ -81,7 +82,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
 
             return true;
         }
-        
+
         private void TestRijselsestraatBrugge2Station()
         {
             var routerDb = new RouterDb();
@@ -92,12 +93,9 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
 
             var p = new OsmTransferGenerator(5000, profile: pedestrian);
             // Rijselstraat, just behind the station
-            var from = new Stop("a", new LocationId(0, 0, 0),
-                3.2137800000000141, 51.193350000000009, null);
-            var to = new Stop("b", new LocationId(0, 0, 1),
-                3.2167249917984009, 51.197229555160746, null);
 
-            var route = p.CreateRoute(from, to, out _);
+            var route = p.CreateRoute((51.193350000000009f, 3.2137800000000141f), 
+                (51.197229555160746f, 3.2167249917984009f), out _);
             NotNull(route);
             True(route.Shape.Count > 10);
         }

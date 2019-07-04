@@ -42,8 +42,7 @@ namespace Itinero.Transit.IO.OSM
         ///  <param name="baseTilesUrl">The base tile url.</param>
         public OsmTransferGenerator(
             float searchDistance = 1000,
-            Profile profile = null,
-            string baseTilesUrl = "https://tiles.openplanner.team/planet")
+            Profile profile = null)
         {
             _searchDistance = searchDistance;
             _profile = profile ?? OsmProfiles.Pedestrian;
@@ -66,7 +65,8 @@ namespace Itinero.Transit.IO.OSM
                 return uint.MaxValue;
             }
 
-            var route = CreateRoute(from, to, out bool isEmpty);
+            var route = CreateRoute(((float) from.Latitude, (float) from.Longitude),
+                ((float) from.Latitude, (float) from.Longitude), out var isEmpty);
             if (isEmpty)
             {
                 return 0;
@@ -81,11 +81,11 @@ namespace Itinero.Transit.IO.OSM
         }
 
         // ReSharper disable once MemberCanBePrivate.Global
-        public Route CreateRoute(IStop from, IStop to, out bool isEmpty)
+        public Route CreateRoute((float lat, float lon) from, (float lat, float lon) to, out bool isEmpty)
         {
             var startPoint = _routerDb.Snap(
-                @from.Longitude, @from.Latitude, profile: _profile);
-            var endPoint = _routerDb.Snap(to.Longitude, to.Latitude, profile: _profile);
+                @from.lon, @from.lat, profile: _profile);
+            var endPoint = _routerDb.Snap(to.lon, to.lat, profile: _profile);
             isEmpty = false;
             if (startPoint.IsError || endPoint.IsError)
             {
@@ -123,7 +123,7 @@ namespace Itinero.Transit.IO.OSM
             catch (Exception e)
             {
                 Log.Error(
-                    $"Could not calculate route from {from} to ({(float) to.Latitude},{(float) to.Longitude}) with itinero2.0: {e}");
+                    $"Could not calculate route from {from} to {to} with itinero2.0: {e}");
                 return null;
             }
         }
