@@ -17,8 +17,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
             // We create a router from the TDB and amend it with an OSM-Locations-Reader to decode OSM-coordinates
             var router0 = tdb.SelectProfile(new Profile<TransferMetric>(
                         new InternalTransferGenerator(),
-                        new OsmTransferGenerator(2500),
-                        //new CrowsFlightTransferGenerator(maxDistance: 2500), 
+                        new CrowsFlightTransferGenerator(maxDistance: 2500), 
                         TransferMetric.Factory,
                         TransferMetric.ParetoCompare
                     ))
