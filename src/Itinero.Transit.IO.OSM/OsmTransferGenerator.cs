@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Itinero.IO.Osm.Tiles;
+using Itinero.LocalGeo;
 using Itinero.Profiles;
 using Itinero.Profiles.Lua.Osm;
 using Itinero.Transit.Data;
@@ -24,6 +25,8 @@ namespace Itinero.Transit.IO.OSM
 
         private readonly float _searchDistance;
 
+        private static int _n = 0;
+
         ///  <summary>
         ///  Generate a new transfer generator, which takes into account
         ///  the time needed to transfer, walk, ...
@@ -46,14 +49,32 @@ namespace Itinero.Transit.IO.OSM
 
         public uint TimeBetween(IStop from, IStop to)
         {
-            var startPoint = _routerDb.Snap((float) @from.Longitude, (float) @from.Latitude);
-            var endPoint = _routerDb.Snap((float) to.Longitude, (float) to.Latitude);
+            _n++;
+            var distance =
+                Coordinate.DistanceEstimateInMeter(@from.Longitude, @from.Latitude, to.Longitude, to.Latitude);
+            if (distance < 20)
+            {
+                return 0;
+            }
+            if (distance > 2500)
+            {
+                return uint.MaxValue;
+            }
+            
+            var startPoint = _routerDb.Snap(@from.Longitude,  @from.Latitude, profile: _profile);
+            var endPoint = _routerDb.Snap(to.Longitude,  to.Latitude, profile: _profile);
 
             if (startPoint.IsError || endPoint.IsError)
             {
                 return uint.MaxValue;
             }
 
+            if (startPoint.Value.EdgeId == endPoint.Value.EdgeId &&
+                startPoint.Value.Offset == endPoint.Value.Offset)
+            {
+                return 0;
+            }
+            
             try
             {
                 var route = _routerDb.Calculate(_profile, startPoint.Value, endPoint.Value);
@@ -75,6 +96,7 @@ namespace Itinero.Transit.IO.OSM
             }
             catch (Exception e)
             {
+                Console.WriteLine($"Calculated {_n} routes: Exception!");
                 Log.Error(
                     $"Could not calculate route from {from} to ({(float) to.Latitude},{(float) to.Longitude}) with itinero2.0: {e}");
                 return uint.MaxValue;
