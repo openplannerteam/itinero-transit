@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Utils;
@@ -13,6 +14,8 @@ namespace Itinero.Transit.OtherMode
     {
         private readonly int _maxDistance;
         private readonly float _speed;
+
+        private static int _n;
 
         ///  <summary>
         ///  Generates a walk constructor.
@@ -37,8 +40,10 @@ namespace Itinero.Transit.OtherMode
 
         public uint TimeBetween(IStop from, IStop to)
         {
+            _n++;
             var distance =
                 DistanceEstimate.DistanceEstimateInMeter(from.Latitude, from.Longitude, to.Latitude, to.Longitude);
+            Console.WriteLine($"Calculated {_n} times: {distance}");
             if (distance > _maxDistance)
             {
                 return uint.MaxValue;

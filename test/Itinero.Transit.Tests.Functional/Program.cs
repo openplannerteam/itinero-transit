@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Itinero.IO.Osm.Tiles.Parsers;
 using Itinero.Transit.Data;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms;
@@ -11,6 +12,7 @@ using Itinero.Transit.Tests.Functional.IO;
 using Itinero.Transit.Tests.Functional.IO.LC;
 using Itinero.Transit.Tests.Functional.IO.LC.Synchronization;
 using Itinero.Transit.Tests.Functional.IO.OSM;
+using Itinero.Transit.Tests.Functional.Staging;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
@@ -32,10 +34,12 @@ namespace Itinero.Transit.Tests.Functional
 
             var devTestsOnly = args.Length == 0 || !args[0].Equals("--full-test-suite");
 
+            // do some local caching.
+            TileParser.DownloadFunc = TilesDownloadHelper.Download;
 
             if (devTestsOnly)
             {
-              //  return;
+                //  return;
             }
 
 
@@ -106,8 +110,11 @@ namespace Itinero.Transit.Tests.Functional
             new NoDuplicationTest().Run();
 
             new CachingTest().Run(true);
-
-            // TODO RE-ENABLE  new Itinero2RoutingTest().Run();
+                <<<<<<< HEAD
+                // TODO RE-ENABLE  new Itinero2RoutingTest().Run();
+                ====== =
+            new Itinero2RoutingTest().Run();
+                >>>>>>> 6e5f 28c0ad9b2cb1b880d9cb3f92cb39b0d079fe
         }
 
         public static void SlowTests()

@@ -1,4 +1,5 @@
 using Itinero.Transit.Data;
+using Itinero.Transit.IO.OSM;
 using Itinero.Transit.IO.OSM.Data;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
@@ -16,7 +17,8 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
             // We create a router from the TDB and amend it with an OSM-Locations-Reader to decode OSM-coordinates
             var router0 = tdb.SelectProfile(new Profile<TransferMetric>(
                         new InternalTransferGenerator(),
-                        new CrowsFlightTransferGenerator(2500),
+                        new OsmTransferGenerator(2500),
+                        //new CrowsFlightTransferGenerator(maxDistance: 2500), 
                         TransferMetric.Factory,
                         TransferMetric.ParetoCompare
                     ))
@@ -27,9 +29,12 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
                     .SelectTimeFrame(TestAllAlgorithms.TestDate, TestAllAlgorithms.TestDate.AddHours(10))
                 ;
 
-            NotNull(router0.EarliestArrivalJourney());
+            var earliestArrival = router0.EarliestArrivalJourney();
+            var s = earliestArrival.ToString(router0);
+            NotNull(earliestArrival);
             router0.ResetFilter();
-            NotNull(router0.LatestDepartureJourney());
+            var latestDeparture = router0.LatestDepartureJourney();
+            NotNull(latestDeparture);
             router0.ResetFilter();
             True(router0.AllJourneys().Count > 0);
 
