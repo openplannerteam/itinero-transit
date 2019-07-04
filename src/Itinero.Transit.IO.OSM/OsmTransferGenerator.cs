@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Itinero.IO.Osm.Tiles;
+using Itinero.IO.Osm.Tiles.Parsers;
 using Itinero.LocalGeo;
 using Itinero.Profiles;
 using Itinero.Profiles.Lua.Osm;
@@ -24,6 +25,11 @@ namespace Itinero.Transit.IO.OSM
         private readonly Profile _profile;
 
         private readonly float _searchDistance;
+
+        public static void EnableCaching(string cachindDirectory)
+        {
+            TileParser.DownloadFunc = new TilesDownloadHelper(cachindDirectory).Download;
+        }
 
         ///  <summary>
         ///  Generate a new transfer generator, which takes into account
@@ -54,6 +60,7 @@ namespace Itinero.Transit.IO.OSM
             {
                 return 0;
             }
+
             if (distance > 2500)
             {
                 return uint.MaxValue;
@@ -71,15 +78,14 @@ namespace Itinero.Transit.IO.OSM
             }
 
             return (uint) route.TotalTime;
-
         }
 
         // ReSharper disable once MemberCanBePrivate.Global
         public Route CreateRoute(IStop from, IStop to, out bool isEmpty)
         {
             var startPoint = _routerDb.Snap(
-                @from.Longitude,  @from.Latitude, profile: _profile);
-            var endPoint = _routerDb.Snap(to.Longitude,  to.Latitude, profile: _profile);
+                @from.Longitude, @from.Latitude, profile: _profile);
+            var endPoint = _routerDb.Snap(to.Longitude, to.Latitude, profile: _profile);
             isEmpty = false;
             if (startPoint.IsError || endPoint.IsError)
             {
@@ -93,7 +99,7 @@ namespace Itinero.Transit.IO.OSM
                 isEmpty = true;
                 return null;
             }
-            
+
             try
             {
                 var route = _routerDb.Calculate(_profile, startPoint.Value, endPoint.Value);
@@ -139,10 +145,11 @@ namespace Itinero.Transit.IO.OSM
         {
             return _searchDistance;
         }
-        
+
         public string OtherModeIdentifier()
         {
-            return $"https://openplanner.team/itinero-transit/walks/osm&maxDistance={_searchDistance}&profile={_profile.Name}";
+            return
+                $"https://openplanner.team/itinero-transit/walks/osm&maxDistance={_searchDistance}&profile={_profile.Name}";
         }
     }
 }

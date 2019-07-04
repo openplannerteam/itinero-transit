@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Itinero.IO.Osm.Tiles.Parsers;
 using Itinero.Transit.Data;
+using Itinero.Transit.IO.OSM;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
@@ -12,7 +13,6 @@ using Itinero.Transit.Tests.Functional.IO;
 using Itinero.Transit.Tests.Functional.IO.LC;
 using Itinero.Transit.Tests.Functional.IO.LC.Synchronization;
 using Itinero.Transit.Tests.Functional.IO.OSM;
-using Itinero.Transit.Tests.Functional.Staging;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
@@ -36,10 +36,9 @@ namespace Itinero.Transit.Tests.Functional
                                !new List<string> {"--full-test-suite", "--full", "--test"}.Contains(args[0].ToLower());
 
             // do some local caching.
-
             if (devTestsOnly)
             {
-                new MixedDestinationTest().Run();
+                new Itinero2RoutingTest().Run();
                 return;
             }
 

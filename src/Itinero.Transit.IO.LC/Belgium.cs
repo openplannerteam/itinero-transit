@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 
 namespace Itinero.Transit.IO.LC
 {
-    public static class Belgium
+    public static class  Belgium
     {
         /// <summary>
         /// All links for Belgium

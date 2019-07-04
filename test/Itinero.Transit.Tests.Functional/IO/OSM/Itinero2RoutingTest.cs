@@ -26,6 +26,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
             var to = Constants.Brugge;
 
 
+            OsmTransferGenerator.EnableCaching("./cache");
             var gen = new OsmTransferGenerator(
                 5000,
                 OsmProfiles.Pedestrian
