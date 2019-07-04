@@ -35,11 +35,10 @@ namespace Itinero.Transit.Tests.Functional
             var devTestsOnly = args.Length == 0 || !args[0].Equals("--full-test-suite");
 
             // do some local caching.
-            TileParser.DownloadFunc = TilesDownloadHelper.Download;
 
             if (devTestsOnly)
             {
-                //  return;
+                return;
             }
 
 
@@ -110,7 +109,7 @@ namespace Itinero.Transit.Tests.Functional
             new NoDuplicationTest().Run();
 
             new CachingTest().Run(true);
-            // TODO RE-ENABLE  new Itinero2RoutingTest().Run();
+            new Itinero2RoutingTest().Run();
         }
 
         public static void SlowTests()

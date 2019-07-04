@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
+
 // ReSharper disable UnassignedGetOnlyAutoProperty
 
 namespace Itinero.Transit.Tests.Core
@@ -21,7 +22,7 @@ namespace Itinero.Transit.Tests.Core
 
         public bool MoveNext()
         {
-            throw new NotImplementedException();
+            throw new Exception("Not implemented - should not be called");
         }
 
         public bool MoveTo(LocationId stop)
@@ -31,17 +32,17 @@ namespace Itinero.Transit.Tests.Core
 
         public bool MoveTo(string globalId)
         {
-            throw new NotImplementedException();
+            throw new Exception("Not implemented - should not be called");
         }
 
         public void Reset()
         {
-            throw new NotImplementedException();
+            throw new Exception("Not implemented - should not be called");
         }
 
         public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
         {
-            throw new NotImplementedException();
+            throw new Exception("Not implemented - should not be called");
         }
     }
 }

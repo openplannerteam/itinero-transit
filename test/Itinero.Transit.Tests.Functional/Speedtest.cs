@@ -24,7 +24,7 @@ namespace Itinero.Transit.Tests.Functional
             Information($"Loading from disk took {(start - startLoading).TotalMilliseconds}ms");
             var calc = tdb.SelectProfile(new DefaultProfile())
                 .PrecalculateClosestStops()
-                .SelectStops(TestAllAlgorithms.Poperinge, TestAllAlgorithms.Vielsalm)
+                .SelectStops(Constants.Poperinge, Constants.Vielsalm)
                 .SelectTimeFrame(date.AddHours(8), date.AddHours(18));
             calc.IsochroneFrom();
             var end = DateTime.Now;

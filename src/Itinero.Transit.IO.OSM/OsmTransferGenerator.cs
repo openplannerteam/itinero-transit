@@ -25,8 +25,6 @@ namespace Itinero.Transit.IO.OSM
 
         private readonly float _searchDistance;
 
-        private static int _n = 0;
-
         ///  <summary>
         ///  Generate a new transfer generator, which takes into account
         ///  the time needed to transfer, walk, ...
@@ -34,24 +32,24 @@ namespace Itinero.Transit.IO.OSM
         ///  Footpaths are generated using an Osm-based router database
         ///  </summary>
         ///  <param name="searchDistance">The maximum distance that the traveller takes this route</param>
-        ///  <param name="walkingProfile">The vehicle profile, default is pedestrian.</param>
+        ///  <param name="profile">The vehicle profile, default is pedestrian.</param>
         ///  <param name="baseTilesUrl">The base tile url.</param>
         public OsmTransferGenerator(
-            float searchDistance = 100,
-            Profile walkingProfile = null,
+            float searchDistance = 1000,
+            Profile profile = null,
             string baseTilesUrl = "https://tiles.openplanner.team/planet")
         {
             _searchDistance = searchDistance;
-            _profile = walkingProfile ?? OsmProfiles.Pedestrian;
+            _profile = profile ?? OsmProfiles.Pedestrian;
             _routerDb = new RouterDb();
-            _routerDb.DataProvider = new DataProvider(_routerDb, baseTilesUrl);
+            _routerDb.DataProvider = new DataProvider(_routerDb);
         }
 
         public uint TimeBetween(IStop from, IStop to)
         {
-            _n++;
             var distance =
                 Coordinate.DistanceEstimateInMeter(@from.Longitude, @from.Latitude, to.Longitude, to.Latitude);
+            // Small patch for small distances...
             if (distance < 20)
             {
                 return 0;
@@ -60,19 +58,40 @@ namespace Itinero.Transit.IO.OSM
             {
                 return uint.MaxValue;
             }
-            
-            var startPoint = _routerDb.Snap(@from.Longitude,  @from.Latitude, profile: _profile);
-            var endPoint = _routerDb.Snap(to.Longitude,  to.Latitude, profile: _profile);
 
-            if (startPoint.IsError || endPoint.IsError)
+            var route = CreateRoute(from, to, out bool isEmpty);
+            if (isEmpty)
+            {
+                return 0;
+            }
+
+            if (route == null)
             {
                 return uint.MaxValue;
+            }
+
+            return (uint) route.TotalTime;
+
+        }
+
+        // ReSharper disable once MemberCanBePrivate.Global
+        public Route CreateRoute(IStop from, IStop to, out bool isEmpty)
+        {
+            var startPoint = _routerDb.Snap(
+                @from.Longitude,  @from.Latitude, profile: _profile);
+            var endPoint = _routerDb.Snap(to.Longitude,  to.Latitude, profile: _profile);
+            isEmpty = false;
+            if (startPoint.IsError || endPoint.IsError)
+            {
+                Log.Information("Could not snap to either startPoint or endPoint");
+                return null;
             }
 
             if (startPoint.Value.EdgeId == endPoint.Value.EdgeId &&
                 startPoint.Value.Offset == endPoint.Value.Offset)
             {
-                return 0;
+                isEmpty = true;
+                return null;
             }
             
             try
@@ -81,7 +100,8 @@ namespace Itinero.Transit.IO.OSM
 
                 if (route.IsError)
                 {
-                    return uint.MaxValue;
+                    Log.Warning("Could not calculate route: isError ");
+                    return null;
                 }
 
                 if (route.Value.TotalDistance > _searchDistance)
@@ -89,17 +109,16 @@ namespace Itinero.Transit.IO.OSM
                     // The total walking time exceeds the time that the traveller wants to walk between two stops
                     // We return MaxValue
                     // This can happen if a stop is in range crows-flight, but needs a detour to reach via the actual road network
-                    return uint.MaxValue;
+                    return null;
                 }
 
-                return (uint) route.Value.TotalTime;
+                return route.Value;
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Calculated {_n} routes: Exception!");
                 Log.Error(
                     $"Could not calculate route from {from} to ({(float) to.Latitude},{(float) to.Longitude}) with itinero2.0: {e}");
-                return uint.MaxValue;
+                return null;
             }
         }
 

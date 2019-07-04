@@ -69,9 +69,6 @@ namespace Itinero.Transit.IO.LC.Data
 
             var start = DateTime.Now;
 
-            Log.Information($"Downloading {uri}...");
-
-
             try
             {
                 var response = await _client.GetAsync(uri).ConfigureAwait(false);
@@ -89,7 +86,7 @@ namespace Itinero.Transit.IO.LC.Data
 
 
                 var timeNeeded = (end - start).TotalMilliseconds / 1000;
-                Log.Information(
+                Log.Verbose(
                     $"Downloading {uri} completed in {timeNeeded}s, got {data.Length} bytes");
                 return data;
             }

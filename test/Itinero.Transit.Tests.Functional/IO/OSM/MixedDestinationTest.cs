@@ -25,7 +25,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
                     .UseOsmLocations()
                     .SelectStops(
                         "https://www.openstreetmap.org/#map=19/51.21460/3.21811",
-                        TestAllAlgorithms.Gent)
+                        Constants.Gent)
                     .SelectTimeFrame(TestAllAlgorithms.TestDate, TestAllAlgorithms.TestDate.AddHours(10))
                 ;
 
@@ -47,7 +47,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
                 ))
                 .UseOsmLocations()
                 .SelectStops(
-                    TestAllAlgorithms.Gent,
+                    Constants.Gent,
                     "https://www.openstreetmap.org/#map=19/51.21460/3.21811"
                 )
                 .SelectTimeFrame(TestAllAlgorithms.TestDate, TestAllAlgorithms.TestDate.AddHours(10));

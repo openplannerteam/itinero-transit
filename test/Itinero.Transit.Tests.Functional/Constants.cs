@@ -14,6 +14,19 @@ namespace Itinero.Transit.Tests.Functional
 
 
         public const string NearStationBruggeLatLon = "https://www.openstreetmap.org/#map=19/51.19764/3.21847";
+        public const string NearStationBruggeLatLonRijselse = "https://www.openstreetmap.org/#map=17/51.19335/3.21378";
+
+        
+        public const string Brugge = "http://irail.be/stations/NMBS/008891009";
+        public const string Poperinge = "http://irail.be/stations/NMBS/008896735";
+        public const string Vielsalm = "http://irail.be/stations/NMBS/008845146";
+        public const string BrusselZuid = "http://irail.be/stations/NMBS/008814001";
+        public const string Kortrijk = "http://irail.be/stations/NMBS/008896008";
+        public const string Oostende = "http://irail.be/stations/NMBS/008891702";
+        public const string SintJorisWeert = "http://irail.be/stations/NMBS/008833159"; // Antwerpen centraal
+        public const string Leuven = "http://irail.be/stations/NMBS/008833001"; // Antwerpen centraal
+        public const string GentZwijnaardeDeLijn = "https://data.delijn.be/stops/200657";
+
 
         public const string StationBruggeOsm = "https://www.openstreetmap.org/node/6348496391";
         public const string CoiseauKaaiOsm = "https://www.openstreetmap.org/node/6348562147";

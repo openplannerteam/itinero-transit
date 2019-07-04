@@ -34,7 +34,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
                 new EasPcsComparison(),
                 new EasLasComparison(),
                 new IsochroneTest(),
-          //      new ProfiledConnectionScanWithMetricFilteringTest(),
+                //      new ProfiledConnectionScanWithMetricFilteringTest(),
                 new MultiTransitDbTest()
             };
 
@@ -50,6 +50,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
             _delijnAnt
         };
 
+        public static DateTime TestDate = new DateTime(2019, 05, 30, 09, 00, 00).ToUniversalTime().Date;
 
         public const string _osmCentrumShuttle = "testdata/fixed-test-cases-osm-CentrumbusBrugge2019-05-30.transitdb";
         public const string _nmbs = "testdata/fixed-test-cases-sncb-2019-05-30.transitdb";
@@ -60,18 +61,6 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
         public const string _delijnAnt = "testdata/fixed-test-cases-de-lijn-ant-2019-05-30.transitdb";
 
 
-        public static DateTime TestDate = new DateTime(2019, 05, 30, 09, 00, 00).ToUniversalTime().Date;
-
-        public const string Gent = "http://irail.be/stations/NMBS/008892007";
-        public const string Brugge = "http://irail.be/stations/NMBS/008891009";
-        public const string Poperinge = "http://irail.be/stations/NMBS/008896735";
-        public const string Vielsalm = "http://irail.be/stations/NMBS/008845146";
-        public const string BrusselZuid = "http://irail.be/stations/NMBS/008814001";
-        public const string Kortrijk = "http://irail.be/stations/NMBS/008896008";
-        public const string Oostende = "http://irail.be/stations/NMBS/008891702";
-        public const string SintJorisWeert = "http://irail.be/stations/NMBS/008833159"; // Antwerpen centraal
-        public const string Leuven = "http://irail.be/stations/NMBS/008833001"; // Antwerpen centraal
-        public const string GentZwijnaardeDeLijn = "https://data.delijn.be/stops/200657";
 
 
         /// <summary>
@@ -199,47 +188,49 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
 
             return new List<WithTime<TransferMetric>>
             {
-                withProfile.SelectStops(Brugge, Gent).SelectTimeFrame(
+                withProfile.SelectStops(
+                    Constants.Brugge, Constants.Gent).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(12)), //*/
-                withProfile.SelectStops(Poperinge, Brugge).SelectTimeFrame(
+                withProfile.SelectStops(Constants.Poperinge, Constants.Brugge).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(12)),
-                withProfile.SelectStops(Brugge, Poperinge).SelectTimeFrame(
+                withProfile.SelectStops(Constants.Brugge, Constants.Poperinge).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(12)),
                 withProfile.SelectStops(
-                    Oostende,
-                    Brugge).SelectTimeFrame(
+                    Constants.Oostende,
+                    Constants.Brugge).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(11)),
                 withProfile.SelectStops(
-                    Brugge,
-                    Oostende).SelectTimeFrame(
+                    Constants.Brugge,
+                    Constants.Oostende).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(11)),
                 withProfile.SelectStops(
-                    BrusselZuid,
-                    Leuven).SelectTimeFrame(
+                    Constants.BrusselZuid,
+                    Constants.Leuven).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(14)),
                 withProfile.SelectStops(
-                    Leuven,
-                    SintJorisWeert).SelectTimeFrame(
+                    Constants.Leuven,
+                    Constants.SintJorisWeert).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(14)),
                 withProfile.SelectStops(
-                    BrusselZuid,
-                    SintJorisWeert).SelectTimeFrame(
+                    Constants.BrusselZuid,
+                    Constants.SintJorisWeert).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(14)),
                 withProfile.SelectStops(
-                    Brugge,
-                    Kortrijk).SelectTimeFrame(
+                    Constants.Brugge,
+                    Constants.Kortrijk).SelectTimeFrame(
                     date.Date.AddHours(10),
                     date.Date.AddHours(12)),
-                withProfile.SelectStops(Kortrijk,
-                    Vielsalm).SelectTimeFrame(
+                withProfile.SelectStops(
+                    Constants.Kortrijk,
+                    Constants.Vielsalm).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(18)) //*/
             };
@@ -261,11 +252,11 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
             return new List<WithTime<TransferMetric>>
             {
                 withProfile.SelectStops(Constants.CoiseauKaaiOsm,
-                    Gent).SelectTimeFrame(
+                    Constants.Gent).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(12)),
                 withProfile.SelectStops(Constants.CoiseauKaaiOsm,
-                    GentZwijnaardeDeLijn).SelectTimeFrame(
+                    Constants.GentZwijnaardeDeLijn).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(12)),
             };
