@@ -265,7 +265,7 @@ namespace Itinero.Transit
 
             var withCache = StopsReader.UseCache();
             var walksGenCache = Profile.WalksGenerator.UseCache();
-            walksGenCache.PreCalculateCacheMultiThreaded(CreateStopsReader);
+            walksGenCache.PreCalculateCache(withCache);
 
             var end = DateTime.Now;
             Log.Information($"Caching reachable locations took {(end - start).TotalMilliseconds}ms");

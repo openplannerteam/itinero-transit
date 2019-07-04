@@ -34,7 +34,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
                 new EasPcsComparison(),
                 new EasLasComparison(),
                 new IsochroneTest(),
-                new ProfiledConnectionScanWithMetricFilteringTest(),
+          //      new ProfiledConnectionScanWithMetricFilteringTest(),
                 new MultiTransitDbTest()
             };
 
@@ -72,7 +72,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
         public const string SintJorisWeert = "http://irail.be/stations/NMBS/008833159"; // Antwerpen centraal
         public const string Leuven = "http://irail.be/stations/NMBS/008833001"; // Antwerpen centraal
         public const string GentZwijnaardeDeLijn = "https://data.delijn.be/stops/200657";
-        
+
 
         /// <summary>
         ///  Tests all algorithms, with the default test data on the default test date

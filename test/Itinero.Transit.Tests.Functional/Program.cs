@@ -35,7 +35,7 @@ namespace Itinero.Transit.Tests.Functional
 
             if (devTestsOnly)
             {
-                return;
+              //  return;
             }
 
 
