@@ -88,12 +88,12 @@ namespace Itinero.Transit.IO.OSM
         // ReSharper disable once MemberCanBePrivate.Global
         public Route CreateRoute((float lat, float lon) from, (float lat, float lon) to, out bool isEmpty)
         {
+            isEmpty = false;
             try
             {
                 var startPoint = _routerDb.Snap(
                     @from.lon, @from.lat, profile: _profile);
                 var endPoint = _routerDb.Snap(to.lon, to.lat, profile: _profile);
-                isEmpty = false;
                 if (startPoint.IsError || endPoint.IsError)
                 {
                     Log.Information("Could not snap to either startPoint or endPoint");
