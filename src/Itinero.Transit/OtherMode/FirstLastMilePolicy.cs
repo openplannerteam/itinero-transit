@@ -32,17 +32,7 @@ namespace Itinero.Transit.OtherMode
 
         public uint TimeBetween(IStop from, IStop to)
         {
-            if (_firstMileStops.Contains(from.Id))
-            {
-                return _firstMile.TimeBetween(from, to);
-            }
-
-            if (_lastMileStops.Contains(to.Id))
-            {
-                return _lastMile.TimeBetween(from, to);
-            }
-
-            return _defaultWalk.TimeBetween(@from, to);
+            return GeneratorFor(from.Id, to.Id).TimeBetween(from, to);
         }
 
         public Dictionary<LocationId, uint> TimesBetween(IStop @from,
@@ -101,6 +91,21 @@ namespace Itinero.Transit.OtherMode
         public float Range()
         {
             return _range;
+        }
+
+        public IOtherModeGenerator GeneratorFor(LocationId from, LocationId to)
+        {
+            if (_firstMileStops.Contains(from))
+            {
+                return _firstMile;
+            }
+
+            if (_lastMileStops.Contains(to))
+            {
+                return _lastMile;
+            }
+
+            return _defaultWalk;
         }
 
         public string OtherModeIdentifier()
