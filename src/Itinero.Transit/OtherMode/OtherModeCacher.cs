@@ -163,5 +163,7 @@ namespace Itinero.Transit.OtherMode
         {
             return _fallback.OtherModeIdentifier();
         }
+
+        public IOtherModeGenerator Fallback => _fallback;
     }
 }
