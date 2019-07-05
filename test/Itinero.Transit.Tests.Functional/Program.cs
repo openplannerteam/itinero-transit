@@ -41,8 +41,6 @@ namespace Itinero.Transit.Tests.Functional
                 return;
             }
 
-            return;
-
             // These are all the tests, and will be run in full on the build server
             // Tests for devving are below this block
             LocalTests();
