@@ -47,7 +47,7 @@ namespace Itinero.Transit.OtherMode
 
         public string OtherModeIdentifier()
         {
-            return "https://openplanner.team/itinero-transit/walks/internalTransfer&timeNeeded=" + _internalTransferTime;
+            return "internalTransfer&timeNeeded=" + _internalTransferTime;
         }
     }
 }

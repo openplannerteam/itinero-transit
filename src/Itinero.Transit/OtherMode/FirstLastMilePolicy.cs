@@ -111,7 +111,7 @@ namespace Itinero.Transit.OtherMode
         public string OtherModeIdentifier()
         {
             return
-                $"https://openplanner.team/itinero-transit/walks/firstLastMile" +
+                $"firstLastMile" +
                 $"&default={Uri.EscapeUriString(_defaultWalk.OtherModeIdentifier())}" +
                 $"&firstMile={Uri.EscapeUriString(_firstMile.OtherModeIdentifier())}" +
                 $"&lastMile={Uri.EscapeUriString(_lastMile.OtherModeIdentifier())}"

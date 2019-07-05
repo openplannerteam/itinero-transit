@@ -65,7 +65,7 @@ namespace Itinero.Transit.OtherMode
 
         public string OtherModeIdentifier()
         {
-            return $"https://openplanner.team/itinero-transit/walks/crowsflight&maxDistance={_maxDistance}&speed={_speed}";
+            return $"crowsflight&maxDistance={_maxDistance}&speed={_speed}";
         }
     }
 }

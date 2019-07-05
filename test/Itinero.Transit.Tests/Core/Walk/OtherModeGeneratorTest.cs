@@ -152,7 +152,7 @@ namespace Itinero.Transit.Tests.Core.Walk
 
         public string OtherModeIdentifier()
         {
-            return "https://openplanner.team/itinero-transit/walks/test";
+            return "test";
         }
     }
 
@@ -182,7 +182,7 @@ namespace Itinero.Transit.Tests.Core.Walk
 
         public string OtherModeIdentifier()
         {
-            return "https://openplanner.team/itinero-transit/walks/test";
+            return "test";
         }
     }
 }
