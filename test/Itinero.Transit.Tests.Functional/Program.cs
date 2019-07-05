@@ -41,6 +41,7 @@ namespace Itinero.Transit.Tests.Functional
                 return;
             }
 
+            return;
 
             // These are all the tests, and will be run in full on the build server
             // Tests for devving are below this block
@@ -117,7 +118,7 @@ namespace Itinero.Transit.Tests.Functional
             new MultipleLoadTest().Run();
 
             // This tests starts a timer which reloads a lot
-        //    new TestAutoUpdating().Run();
+            new TestAutoUpdating().Run();
         }
 
 
