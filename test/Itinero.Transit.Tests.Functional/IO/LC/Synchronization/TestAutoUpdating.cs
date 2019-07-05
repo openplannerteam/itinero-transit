@@ -16,7 +16,7 @@ namespace Itinero.Transit.Tests.Functional.IO.LC.Synchronization
             var (syncer, _) = tdb.UseLinkedConnections(
                 sncb.connections,
                 sncb.locations,
-                new SynchronizedWindow(5, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(3600)));
+                new SynchronizedWindow(5, TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(14400)));
 
             syncer.Start();
             // There is a default initial delay of 1 second

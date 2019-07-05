@@ -8,11 +8,12 @@ namespace Itinero.Transit.OtherMode
 {
     public class OtherModeCacher : IOtherModeGenerator
     {
-        private IOtherModeGenerator _fallback;
+        // ReSharper disable once MemberCanBePrivate.Global
+        public IOtherModeGenerator Fallback { get; }
 
         public OtherModeCacher(IOtherModeGenerator fallback)
         {
-            _fallback = fallback;
+            Fallback = fallback;
         }
 
 
@@ -27,7 +28,7 @@ namespace Itinero.Transit.OtherMode
                 return _cacheSingle[key];
             }
 
-            var v = _fallback.TimeBetween(@from, to);
+            var v = Fallback.TimeBetween(@from, to);
             _cacheSingle[key] = v;
             return v;
         }
@@ -75,7 +76,7 @@ namespace Itinero.Transit.OtherMode
                 return _cache[key];
             }
 
-            var v = _fallback.TimesBetween(@from, to);
+            var v = Fallback.TimesBetween(@from, to);
             _cache[key] = v;
             return v;
         }
@@ -114,8 +115,6 @@ namespace Itinero.Transit.OtherMode
                     withCache.MoveNext();
                 }
             }
-
-           
         }
 
         // ReSharper disable once UnusedMember.Global
@@ -133,7 +132,7 @@ namespace Itinero.Transit.OtherMode
 
             for (var i = 0; i < processors; i++)
             {
-                var otherCache = new OtherModeCacher(_fallback);
+                var otherCache = new OtherModeCacher(Fallback);
                 allCaches.Add(otherCache);
 
                 var task = new Task(() =>
@@ -156,14 +155,12 @@ namespace Itinero.Transit.OtherMode
 
         public float Range()
         {
-            return _fallback.Range();
+            return Fallback.Range();
         }
 
         public string OtherModeIdentifier()
         {
-            return _fallback.OtherModeIdentifier();
+            return Fallback.OtherModeIdentifier();
         }
-
-        public IOtherModeGenerator Fallback => _fallback;
     }
 }

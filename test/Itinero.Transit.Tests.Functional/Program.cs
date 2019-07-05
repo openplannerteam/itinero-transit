@@ -38,7 +38,6 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
-                new Itinero2RoutingTest().Run();
                 return;
             }
 
@@ -118,7 +117,7 @@ namespace Itinero.Transit.Tests.Functional
             new MultipleLoadTest().Run();
 
             // This tests starts a timer which reloads a lot
-            new TestAutoUpdating().Run();
+        //    new TestAutoUpdating().Run();
         }
 
 
