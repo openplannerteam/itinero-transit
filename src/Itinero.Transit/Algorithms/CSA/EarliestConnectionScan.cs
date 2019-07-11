@@ -196,7 +196,7 @@ namespace Itinero.Transit.Algorithms.CSA
                     improvedLocations.Add(c.ArrivalStop);
                 }
 
-                hasNext = _connectionsEnumerator.HasNext()
+                hasNext = _connectionsEnumerator.HasNext();
             } while (hasNext && _connectionsEnumerator.CurrentDateTime == lastDepartureTime);
 
 
