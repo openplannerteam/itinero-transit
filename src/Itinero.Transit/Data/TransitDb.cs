@@ -224,7 +224,7 @@ namespace Itinero.Transit.Data
                 ushort departureDelay, ushort arrivalDelay, TripId tripId, ushort mode)
             {
                 var internalId = _connectionsDb.AddOrUpdate(
-                    new SimpleConnection(
+                    new Connection(
                         new ConnectionId(0,0),
                         globalId,
                         stop1,
@@ -240,7 +240,7 @@ namespace Itinero.Transit.Data
                 return new ConnectionId(_connectionsDb.DatabaseId, internalId);
             }
 
-            public uint AddOrUpdateConnection(SimpleConnection c)
+            public uint AddOrUpdateConnection(Connection c)
             {
                 return _connectionsDb.AddOrUpdate(c);
             }

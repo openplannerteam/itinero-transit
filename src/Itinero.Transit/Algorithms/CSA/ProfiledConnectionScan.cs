@@ -205,7 +205,7 @@ namespace Itinero.Transit.Algorithms.CSA
             // Move the enumerator after the last arrival time
             enumerator.MoveTo(_lastArrival);
 
-            var c = new SimpleConnection();
+            var c = new Connection();
             while (
                 enumerator.HasPrevious() &&
                 enumerator.CurrentDateTime >= _earliestDeparture)
@@ -252,7 +252,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// Looks to this single connection, the actual PCS step
         /// </summary>
         /// <param name="c"></param>
-        private void IntegrateConnection(SimpleConnection c)
+        private void IntegrateConnection(Connection c)
         {
             if (c.ArrivalTime > _lastArrival)
             {
@@ -329,7 +329,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         /// <param name="c"></param>
         /// <returns></returns>
-        private Journey<T> WalkToTargetFrom(SimpleConnection c)
+        private Journey<T> WalkToTargetFrom(Connection c)
         {
             if (!c.CanGetOff())
             {
@@ -404,7 +404,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// Chains the given connection to the needed trips
         /// </summary>
         /// <param name="c"></param>
-        private ProfiledParetoFrontier<T> ExtendTrip(SimpleConnection c)
+        private ProfiledParetoFrontier<T> ExtendTrip(Connection c)
         {
             var key = c.TripId;
             if (!_tripJourneys.ContainsKey(key))
@@ -433,7 +433,7 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
-        private ProfiledParetoFrontier<T> TransferAfter(SimpleConnection c)
+        private ProfiledParetoFrontier<T> TransferAfter(Connection c)
         {
             // We have just taken C and are gonna transfer
             // In what possible journeys (if any) to the destination will this result?
@@ -580,7 +580,7 @@ namespace Itinero.Transit.Algorithms.CSA
             _tripJourneys = tripJourneys; // IMPORTANT: this is a pointer to the datastructure used in PCS!
         }
 
-        public bool CanBeTaken(SimpleConnection c)
+        public bool CanBeTaken(Connection c)
         {
             if (_whiteListed.Contains(c.DepartureStop) ||
                 _whiteListed.Contains(c.ArrivalStop) ||

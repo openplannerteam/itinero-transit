@@ -48,13 +48,13 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
 
             Assert.True(filter.CanBeTaken(c));
             Assert.False(filter.CanBeTaken(
-                new SimpleConnection(new ConnectionId(0, 1), "http://ex.org/con/563", stop1, stop0,
+                new Connection(new ConnectionId(0, 1), "http://ex.org/con/563", stop1, stop0,
                     // This is the same time we depart from stop0 towards stop1
                     new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc).ToUnixTime(),
                     10 * 60, 0, 0, 0, new TripId(0, 1))));
 
             Assert.True(filter.CanBeTaken(
-                new SimpleConnection(new ConnectionId(0, 1), "http://ex.org/con/563", stop1, stop0,
+                new Connection(new ConnectionId(0, 1), "http://ex.org/con/563", stop1, stop0,
                     // This is the same time we arrive at stop1
                     new DateTime(2018, 12, 04, 9, 40, 00, DateTimeKind.Utc).ToUnixTime(),
                     10 * 60, 0, 0, 0, new TripId(0, 1))));
@@ -100,7 +100,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
 
             // Arriving at stop0 at 09:30 makes that we could still just get our connection
             Assert.True(filter.CanBeTaken(
-                new SimpleConnection(
+                new Connection(
                     new ConnectionId(0, 1), "http://ex.org/con/563",
                     stop1, stop0,
                     new DateTime(2018, 12, 04, 9, 20, 00, DateTimeKind.Utc).ToUnixTime(),
@@ -108,7 +108,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
 
             // If we arrived at 09:50 at stop0, we can't take our connection anymore
             Assert.False(filter.CanBeTaken(
-                new SimpleConnection(new ConnectionId(0, 1), "http://ex.org/con/563", stop1, stop0,
+                new Connection(new ConnectionId(0, 1), "http://ex.org/con/563", stop1, stop0,
                     new DateTime(2018, 12, 04, 9, 40, 00, DateTimeKind.Utc).ToUnixTime(),
                     10 * 60, 0, 0, 0, new TripId(0, 1))));
         }
@@ -174,10 +174,10 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
 
             writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 9, 10, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0),
-                SimpleConnection.ModeGetOnOnly);
+                Connection.ModeGetOnOnly);
             writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0),
-                SimpleConnection.ModeGetOffOnly);
+                Connection.ModeGetOffOnly);
 
             writer.Close();
 

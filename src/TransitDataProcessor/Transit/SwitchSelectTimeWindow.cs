@@ -81,7 +81,7 @@ namespace Itinero.Transit.DataProcessor.Transit
 
             var connsEnumerator = old.Latest.ConnectionsDb.GetDepartureEnumerator();
             connsEnumerator.MoveTo(start.ToUnixTime());
-            var c = new SimpleConnection();
+            var c = new Connection();
             var copied = 0;
             
             while (connsEnumerator.HasNext() && connsEnumerator.CurrentDateTime <= end)

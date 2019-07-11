@@ -17,7 +17,7 @@ namespace Itinero.Transit.Tests.Functional.Data
             //while (reader.DepartureTime.FromUnixTime() < input.date.Date.AddHours(1))
             var alreadySeen = new HashSet<string>();
             var timeout = 10;
-            var c = new SimpleConnection();
+            var c = new Connection();
             while(reader.HasPrevious())
             {
                 reader.Current(c);

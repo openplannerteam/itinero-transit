@@ -196,7 +196,7 @@ namespace Itinero.Transit.Algorithms.CSA
         {
             var improvedLocations = new List<LocationId>();
 
-            var c = new SimpleConnection();
+            var c = new Connection();
             var lastDepartureTime = _connectionsEnumerator.CurrentDateTime;
             bool hasNext;
             do
@@ -229,7 +229,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         /// <param name="c">A DepartureEnumeration, which is used here as if it were a single connection object</param>
         private bool IntegrateConnection(
-            SimpleConnection c)
+            Connection c)
         {
             // The connection describes a random connection somewhere
             // Lets check if we can take it

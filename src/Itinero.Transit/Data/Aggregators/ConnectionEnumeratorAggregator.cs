@@ -160,7 +160,7 @@ namespace Itinero.Transit.Data.Aggregators
             return nextFound;
         }
 
-        public bool Current(SimpleConnection toWrite)
+        public bool Current(Connection toWrite)
         {
             return _enumerators[_currentBest].Current(toWrite);
         }

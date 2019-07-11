@@ -17,7 +17,7 @@ namespace Itinero.Transit.Journey.Filter
         /// </summary>
         /// <param name="c"></param>
         /// <returns></returns>
-        bool CanBeTaken(SimpleConnection c);
+        bool CanBeTaken(Connection c);
         
         /// <summary>
         /// Didn't we fuck up? E.G. we want to check connections which fall before the earliest connection scan

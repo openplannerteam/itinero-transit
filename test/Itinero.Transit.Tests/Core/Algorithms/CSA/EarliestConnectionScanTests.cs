@@ -449,10 +449,10 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 9, 10, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0),
-                SimpleConnection.ModeGetOnOnly);
+                Connection.ModeGetOnOnly);
             writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0),
-                SimpleConnection.ModeGetOffOnly);
+                Connection.ModeGetOffOnly);
 
             writer.Close();
 

@@ -57,7 +57,7 @@ namespace Itinero.Transit.Journey.Filter
         }
 
 
-        public bool CanBeTaken(SimpleConnection c)
+        public bool CanBeTaken(Connection c)
         {
             if (_isForward)
             {

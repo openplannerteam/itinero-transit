@@ -201,10 +201,10 @@ namespace Itinero.Transit.Data
         /// <param name="tripId">The trip id.</param>
         /// <param name="mode">The mode, indicates if getting on or off is supported</param>
         /// <returns>An internal id representing the connection in this transit db.</returns>
-        internal uint AddOrUpdate(SimpleConnection newConnection)
+        internal uint AddOrUpdate(Connection newConnection)
         {
             var reader = GetReader();
-            var c = new SimpleConnection();
+            var c = new Connection();
             if (!reader.Get(newConnection.GlobalId, c))
             {
                 // The connection is not yet added
@@ -277,7 +277,7 @@ namespace Itinero.Transit.Data
         /// <param name="tripId">The trip id.</param>
         /// <param name="mode">The trip mode</param>
         /// <returns>An internal id representing the connection in this transit db.</returns>
-        private uint Add(SimpleConnection c)
+        private uint Add(Connection c)
         {
             // get the next internal id.
             var internalId = _nextInternalId;
@@ -309,7 +309,7 @@ namespace Itinero.Transit.Data
             return internalId;
         }
 
-        private void SetConnection(uint internalId, SimpleConnection c)
+        private void SetConnection(uint internalId, Connection c)
         {
             // make sure the data array is big enough.
             var dataPointer = internalId * _connectionSizeInBytes;
@@ -403,7 +403,7 @@ namespace Itinero.Transit.Data
 
         [Pure]
         private bool
-            GetConnection(ConnectionId id, SimpleConnection writeTo)
+            GetConnection(ConnectionId id, Connection writeTo)
         {
             if (id.DatabaseId != DatabaseId)
             {

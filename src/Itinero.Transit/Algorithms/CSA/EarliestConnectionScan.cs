@@ -106,7 +106,7 @@ namespace Itinero.Transit.Algorithms.CSA
         public Journey<T> CalculateJourney(Func<ulong, ulong, ulong> depArrivalToTimeout = null)
         {
             var enumerator = _connectionsEnumerator;
-            var currentConnection = new SimpleConnection();
+            var currentConnection = new Connection();
 
             enumerator.MoveTo(ScanBeginTime);
             if (!enumerator.HasNext())
@@ -186,7 +186,7 @@ namespace Itinero.Transit.Algorithms.CSA
             var lastDepartureTime = _connectionsEnumerator.CurrentDateTime;
             bool hasNext;
 
-            var c = new SimpleConnection();
+            var c = new Connection();
             do
             {
                 // The enumerator should already be initialized on the next entry
@@ -221,7 +221,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         /// <param name="c">A DepartureEnumeration, which is used here as if it were a single connection object</param>
         private bool IntegrateConnection(
-            SimpleConnection c)
+            Connection c)
         {
             // The connection describes a random connection somewhere
             // Lets check if we can take it

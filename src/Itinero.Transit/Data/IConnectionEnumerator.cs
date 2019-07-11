@@ -19,7 +19,7 @@ namespace Itinero.Transit.Data
         /// Copies the information on the 'current' index into 'toWrite'
         /// </summary>
         /// <returns></returns>
-        bool Current(SimpleConnection toWrite);
+        bool Current(Connection toWrite);
 
         /// <summary>
         /// NONPURE

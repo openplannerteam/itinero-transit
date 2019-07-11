@@ -39,7 +39,7 @@ namespace Itinero.Transit.Journey.Filter
 
         public Journey<T> LeastTheoreticalConnection(Journey<T> intermediate)
         {
-            var teleportation = new SimpleConnection(ConnectionId.Invalid, 
+            var teleportation = new Connection(ConnectionId.Invalid, 
                 "https://en.wikipedia.org/wiki/Teleportation",
                 _departureStop, intermediate.Location,
                 _clock.CurrentDateTime, // The current connection scan is here, future departures will only be sooner

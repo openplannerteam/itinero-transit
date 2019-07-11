@@ -28,7 +28,7 @@ namespace Itinero.Transit.Tests.Functional.Data
             
             var departureEnumerator = latest.ConnectionsDb.GetDepartureEnumerator();
             departureEnumerator.MoveTo(latest.ConnectionsDb.EarliestDate);
-            var c = new SimpleConnection();
+            var c = new Connection();
             while (departureEnumerator.HasNext())
             {
                 departureEnumerator.Current(c);

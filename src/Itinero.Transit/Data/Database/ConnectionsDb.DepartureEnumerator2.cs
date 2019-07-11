@@ -248,7 +248,7 @@ namespace Itinero.Transit.Data
                 return true;
             }
 
-            public bool Current(SimpleConnection toWrite)
+            public bool Current(Connection toWrite)
             {
                 return _reader.Get(new ConnectionId(_connectionsDb.DatabaseId, _connectionInternalId), toWrite);
             }

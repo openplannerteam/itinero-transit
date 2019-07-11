@@ -236,7 +236,7 @@ namespace Itinero.Transit.Journey
         }
 
         [Pure]
-        public Journey<T> ChainForward(SimpleConnection c)
+        public Journey<T> ChainForward(Connection c)
         {
             // ReSharper disable once InvertIf
             if (SpecialConnection && Equals(Connection, GENESIS))
@@ -252,7 +252,7 @@ namespace Itinero.Transit.Journey
         }
 
         [Pure]
-        public Journey<T> ChainBackward(SimpleConnection c)
+        public Journey<T> ChainBackward(Connection c)
         {
             // ReSharper disable once InvertIf
             if (SpecialConnection && Equals(Connection, GENESIS))
@@ -415,7 +415,7 @@ namespace Itinero.Transit.Journey
         }
 
         [Pure]
-        public string ToString(uint truncateAt, IStopsReader stops = null, IDatabaseReader<ConnectionId, SimpleConnection> connection = null)
+        public string ToString(uint truncateAt, IStopsReader stops = null, IDatabaseReader<ConnectionId, Connection> connection = null)
         {
             if (Equals(InfiniteJourney))
             {
@@ -446,7 +446,7 @@ namespace Itinero.Transit.Journey
 
         [Pure]
         private string PartToString(IStopsReader stops,
-            IDatabaseReader<ConnectionId, SimpleConnection> connectionReader)
+            IDatabaseReader<ConnectionId, Connection> connectionReader)
         {
             var location = Location.ToString();
             var dbOperator = uint.MaxValue;

@@ -9,8 +9,8 @@ namespace Itinero.Transit.Data
         /// A connections DB reader is an object which allows accessing properties of a single connection contained in the DB
         /// </summary>
         public class ConnectionsDbReader :
-            IDatabaseReader<ConnectionId, SimpleConnection>,
-            IDatabaseEnumerator<ConnectionId, SimpleConnection>
+            IDatabaseReader<ConnectionId, Connection>,
+            IDatabaseEnumerator<ConnectionId, Connection>
         {
             private readonly ConnectionsDb _db;
 
@@ -21,12 +21,12 @@ namespace Itinero.Transit.Data
             }
 
 
-            public bool Get(ConnectionId id, SimpleConnection objectToWrite)
+            public bool Get(ConnectionId id, Connection objectToWrite)
             {
                 return _db.GetConnection(id, objectToWrite);
             }
 
-            public bool Get(string globalId, SimpleConnection objectToWrite)
+            public bool Get(string globalId, Connection objectToWrite)
             {
                 var hash = Hash(globalId);
                 var pointer = _db._globalIdPointersPerHash[hash];

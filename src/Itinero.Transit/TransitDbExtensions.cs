@@ -203,13 +203,13 @@ namespace Itinero.Transit
         public readonly IStopsReader StopsReader;
         public readonly Func<IStopsReader> CreateStopsReader;
         public readonly IConnectionEnumerator ConnectionEnumerator;
-        public readonly IDatabaseReader<ConnectionId, SimpleConnection> ConnectionReader;
+        public readonly IDatabaseReader<ConnectionId, Connection> ConnectionReader;
         public readonly Profile<T> Profile;
 
         internal WithProfile(
             Func<IStopsReader> stops,
             IConnectionEnumerator connections,
-            IDatabaseReader<ConnectionId, SimpleConnection> connectionsReaders,
+            IDatabaseReader<ConnectionId, Connection> connectionsReaders,
             Profile<T> profile)
         {
             CreateStopsReader = stops;
@@ -225,7 +225,7 @@ namespace Itinero.Transit
             CreateStopsReader = () => StopsReaderAggregator.CreateFrom(tdbs);
             StopsReader = CreateStopsReader();
             ConnectionEnumerator = ConnectionEnumeratorAggregator.CreateFrom(tdbs.Select(tdb => tdb.ConnectionsDb.GetDepartureEnumerator()));
-            ConnectionReader = DatabaseEnumeratorAggregator<ConnectionId, SimpleConnection>.CreateFrom(
+            ConnectionReader = DatabaseEnumeratorAggregator<ConnectionId, Connection>.CreateFrom(
                 tdbs.Select(tdb => tdb.ConnectionsDb.GetReader()));
             Profile = new Profile<T>(
                 profile.InternalTransferGenerator,
@@ -467,7 +467,7 @@ namespace Itinero.Transit
     {
         internal readonly IStopsReader StopsReader;
         internal readonly IConnectionEnumerator ConnectionEnumerator;
-        internal readonly IDatabaseReader<ConnectionId, SimpleConnection> ConnectionReader;
+        internal readonly IDatabaseReader<ConnectionId, Connection> ConnectionReader;
 
 
         private readonly Profile<T> _profile;
@@ -478,7 +478,7 @@ namespace Itinero.Transit
 
         internal WithLocation(IStopsReader stopsReader,
             IConnectionEnumerator connectionEnumerator,
-            IDatabaseReader<ConnectionId, SimpleConnection> connectionReader,
+            IDatabaseReader<ConnectionId, Connection> connectionReader,
             Profile<T> profile,
             IEnumerable<(LocationId, Journey<T>)> @from, IEnumerable<(LocationId, Journey<T>)> to)
         {
@@ -540,7 +540,7 @@ namespace Itinero.Transit
         where T : IJourneyMetric<T>
     {
         internal readonly IStopsReader StopsReader;
-        internal readonly IDatabaseReader<ConnectionId, SimpleConnection> ConnectionReader;
+        internal readonly IDatabaseReader<ConnectionId, Connection> ConnectionReader;
         internal readonly IConnectionEnumerator ConnectionEnumerator;
 
         internal readonly Profile<T> Profile;
@@ -558,7 +558,7 @@ namespace Itinero.Transit
 
         internal WithTime(IStopsReader stopsReader,
             IConnectionEnumerator connectionEnumerator,
-            IDatabaseReader<ConnectionId, SimpleConnection> connectionReader,
+            IDatabaseReader<ConnectionId, Connection> connectionReader,
             Profile<T> profile,
             List<(LocationId, Journey<T>)> from,
             List<(LocationId, Journey<T>)> to,

@@ -3,6 +3,7 @@ using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.IO.LC.Data;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
+using Connection = Itinero.Transit.IO.LC.Data.Connection;
 
 namespace Itinero.Transit.IO.LC
 {

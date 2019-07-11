@@ -2,83 +2,7 @@ using System.Collections.Generic;
 
 namespace Itinero.Transit.Data
 {
-    /// <summary>
-    /// Abstract definition of a connection.
-    /// </summary>
-    public interface IConnection
-    {
-        /// <summary>
-        /// Gets the internal connection id.
-        /// </summary>
-        ConnectionId Id { get; }
-
-
-        /// <summary>
-        /// Gets the global id, often an Uri
-        /// </summary>
-        string GlobalId { get; }
-
-        /// <summary>
-        /// Gets the arrival time.
-        /// </summary>
-        ulong ArrivalTime { get; }
-
-        /// <summary>
-        /// Gets the departure time.
-        /// </summary>
-        ulong DepartureTime { get; }
-
-        /// <summary>
-        /// Gets the travel time.
-        /// </summary>
-        ushort TravelTime { get; }
-
-        /// <summary>
-        /// Gets the arrival delay.
-        /// </summary>
-        ushort ArrivalDelay { get; }
-
-        /// <summary>
-        /// Gets the departure delay.
-        /// </summary>
-        ushort DepartureDelay { get; }
-
-
-        /// <summary>
-        /// An extra piece of state to sneak in more data.
-        /// The first usage (least significant 2 bits) is to indicate Dropoff and pickup types:
-        /// (Mode % 4) == 0 => Both pickup and dropoff are possible - the normal situation
-        ///           == 1 => Only pickup is possible
-        ///           == 2 => Only dropoff is possible
-        ///           == 3 => Neither pickup nor dropoff are possible
-        /// The second mode indicates if the train is cancelled
-        /// (Mode & 4) == 4 indicates that the train is cancelled and can not be taken.
-        /// It might still be desirable to include them in a search, e.g. to detect the route the traveller is used to and to display a clear warning to them.
-        /// 
-        /// </summary>
-        ushort Mode { get; }
-
-        /// <summary>
-        /// Gets the trip id.
-        /// </summary>
-        TripId TripId { get; }
-
-        /// <summary>
-        /// Gets the departure stop id.
-        /// </summary>
-        LocationId DepartureStop { get; }
-
-        /// <summary>
-        /// Gets the arrival stop id.
-        /// </summary>
-        LocationId ArrivalStop { get; }
-    }
-
-    public static class ConnectionExtensions
-    {
-    }
-
-    public class SimpleConnection
+    public class Connection
     {
         public const ushort ModeNormal = 0;
         public const ushort ModeGetOnOnly = 1;
@@ -87,11 +11,11 @@ namespace Itinero.Transit.Data
 
         public const ushort ModeCancelled = 4;
 
-        public SimpleConnection()
+        public Connection()
         {
         }
 
-        public SimpleConnection(
+        public Connection(
             ConnectionId id,
             string globalId,
             LocationId departureStop,
@@ -159,7 +83,7 @@ namespace Itinero.Transit.Data
 
         public override bool Equals(object obj)
         {
-            if (obj is SimpleConnection c)
+            if (obj is Connection c)
             {
                 return Equals(this, c);
             }
@@ -168,7 +92,7 @@ namespace Itinero.Transit.Data
         }
 
 
-        public bool Equals(SimpleConnection x, SimpleConnection y)
+        public bool Equals(Connection x, Connection y)
         {
             if (ReferenceEquals(x, y)) return true;
             if (ReferenceEquals(x, null)) return false;
@@ -181,7 +105,7 @@ namespace Itinero.Transit.Data
                    x.ArrivalStop.Equals(y.ArrivalStop);
         }
 
-        public int GetHashCode(SimpleConnection obj)
+        public int GetHashCode(Connection obj)
         {
             unchecked
             {

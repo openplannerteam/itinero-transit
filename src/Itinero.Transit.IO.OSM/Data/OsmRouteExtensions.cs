@@ -44,7 +44,7 @@ namespace Itinero.Transit.IO.OSM.Data
             }
 
 
-            var allRuns = new List<(uint, SimpleConnection)>();
+            var allRuns = new List<(uint, Connection)>();
 
             {
                 // Simulate the buses running.
@@ -102,7 +102,7 @@ namespace Itinero.Transit.IO.OSM.Data
         ///  For now, the vehicle is assumed to take the same amount of time between each stop
         ///  
         ///  </summary>
-        private static LinkedList<(uint, SimpleConnection)> CreateRun(this OsmRoute route,
+        private static LinkedList<(uint, Connection)> CreateRun(this OsmRoute route,
             uint dbId,
             TripId tripId, uint vehicleId,
             List<LocationId> locations,
@@ -113,7 +113,7 @@ namespace Itinero.Transit.IO.OSM.Data
                 throw new ArgumentException("startMoment: DateTimes should be UTC");
             }
 
-            var conns = new LinkedList<(uint, SimpleConnection)>();
+            var conns = new LinkedList<(uint, Connection)>();
 
             var travelTime = (ushort) (route.Duration.TotalSeconds / route.StopPositions.Count);
 
@@ -138,17 +138,17 @@ namespace Itinero.Transit.IO.OSM.Data
                     if (i == 0)
                     {
                         // Getting up only
-                        mode = SimpleConnection.ModeGetOnOnly;
+                        mode = Connection.ModeGetOnOnly;
                     }
 
                     if (i == locations.Count - 2)
                     {
-                        mode = SimpleConnection.ModeGetOffOnly;
+                        mode = Connection.ModeGetOffOnly;
                     }
                 }
 
 
-                var con = new SimpleConnection(
+                var con = new Connection(
                     new ConnectionId(dbId, 0),
                     $"https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route={l0Coor.Latitude}%2C{l0Coor.Longitude}%3B{l1Coor.Latitude}%2C{l1Coor.Longitude}" +
                     $"&from={l0Id}&to={l1Id}",

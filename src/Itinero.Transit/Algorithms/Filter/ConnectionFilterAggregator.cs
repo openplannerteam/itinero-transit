@@ -35,7 +35,7 @@ namespace Itinero.Transit.Journey.Filter
             this.filters = filters;
         }
 
-        public bool CanBeTaken(SimpleConnection c)
+        public bool CanBeTaken(Connection c)
         {
             foreach (var filter in filters)
             {
