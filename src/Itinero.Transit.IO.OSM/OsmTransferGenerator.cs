@@ -26,9 +26,9 @@ namespace Itinero.Transit.IO.OSM
 
         private readonly float _searchDistance;
 
-        public static void EnableCaching(string cachindDirectory)
+        public static void EnableCaching(string cachingDirectory)
         {
-            TileParser.DownloadFunc = new TilesDownloadHelper(cachindDirectory).Download;
+            TileParser.DownloadFunc = new TilesDownloadHelper(cachingDirectory).Download;
         }
 
         ///  <summary>
@@ -37,16 +37,15 @@ namespace Itinero.Transit.IO.OSM
         /// 
         ///  Footpaths are generated using an Osm-based router database
         ///  </summary>
+        ///  <param name="routerDb">The router db to use.</param>
         ///  <param name="searchDistance">The maximum distance that the traveller takes this route</param>
         ///  <param name="profile">The vehicle profile, default is pedestrian.</param>
-        ///  <param name="baseTilesUrl">The base tile url.</param>
-        public OsmTransferGenerator(float searchDistance = 1000,
+        public OsmTransferGenerator(RouterDb routerDb, float searchDistance = 1000,
             Profile profile = null)
         {
+            _routerDb = routerDb ?? throw new ArgumentNullException(nameof(routerDb));
             _searchDistance = searchDistance;
             _profile = profile ?? OsmProfiles.Pedestrian;
-            _routerDb = new RouterDb();
-            _routerDb.DataProvider = new DataProvider(_routerDb);
         }
 
         public uint TimeBetween(IStop from, IStop to)

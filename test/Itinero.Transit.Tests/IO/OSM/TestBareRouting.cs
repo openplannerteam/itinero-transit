@@ -49,8 +49,8 @@ namespace Itinero.Transit.Tests.IO.OSM
 
             var pedestrian = OsmProfiles.Pedestrian;
 
-
-            var p = new OsmTransferGenerator(profile: pedestrian);
+            // TODO: this should not be in the unit tests, it uses the web to load data.
+            var p = new OsmTransferGenerator(new RouterDb(), profile: pedestrian);
             // Rijselstraat, just behind the station
       
             var route = p.CreateRoute(( 51.193350000000009f, 3.2137800000000141f), (51.197229555160746f, 3.2167249917984009f), out _);
