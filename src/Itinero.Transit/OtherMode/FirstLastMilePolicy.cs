@@ -13,18 +13,18 @@ namespace Itinero.Transit.OtherMode
         private readonly IOtherModeGenerator _firstMile;
         private readonly IOtherModeGenerator _lastMile;
         private readonly float _range;
-        private readonly HashSet<LocationId> _firstMileStops;
-        private readonly HashSet<LocationId> _lastMileStops;
+        private readonly HashSet<StopId> _firstMileStops;
+        private readonly HashSet<StopId> _lastMileStops;
 
         public FirstLastMilePolicy(
             IOtherModeGenerator otherModeGeneratorImplementation,
-            IOtherModeGenerator firstMile, IEnumerable<LocationId> firstMileStops,
-            IOtherModeGenerator lastMile, IEnumerable<LocationId> lastMileStops)
+            IOtherModeGenerator firstMile, IEnumerable<StopId> firstMileStops,
+            IOtherModeGenerator lastMile, IEnumerable<StopId> lastMileStops)
         {
             _firstMile = firstMile;
-            _firstMileStops = new HashSet<LocationId>(firstMileStops);
+            _firstMileStops = new HashSet<StopId>(firstMileStops);
             _lastMile = lastMile;
-            _lastMileStops = new HashSet<LocationId>(lastMileStops);
+            _lastMileStops = new HashSet<StopId>(lastMileStops);
             _defaultWalk = otherModeGeneratorImplementation;
             _range = Math.Max(firstMile.Range(),
                 Math.Max(lastMile.Range(), _defaultWalk.Range()));
@@ -35,7 +35,7 @@ namespace Itinero.Transit.OtherMode
             return GeneratorFor(from.Id, to.Id).TimeBetween(from, to);
         }
 
-        public Dictionary<LocationId, uint> TimesBetween(IStop @from,
+        public Dictionary<StopId, uint> TimesBetween(IStop @from,
             IEnumerable<IStop> to)
         {
             if (_firstMileStops.Contains(from.Id))
@@ -93,7 +93,7 @@ namespace Itinero.Transit.OtherMode
             return _range;
         }
 
-        public IOtherModeGenerator GeneratorFor(LocationId from, LocationId to)
+        public IOtherModeGenerator GeneratorFor(StopId from, StopId to)
         {
             if (_firstMileStops.Contains(from))
             {

@@ -15,7 +15,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// Gets the id.
         /// </summary>
-        LocationId Id { get; }
+        StopId Id { get; }
         
         /// <summary>
         /// Gets the longitude.

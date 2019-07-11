@@ -18,7 +18,7 @@ namespace Itinero.Transit.Algorithms.CSA
     internal class LatestConnectionScan<T>
         where T : IJourneyMetric<T>
     {
-        private readonly List<(LocationId, Journey<T>)> _userDepartureLocation;
+        private readonly List<(StopId, Journey<T>)> _userDepartureLocation;
 
         private readonly IConnectionEnumerator _connectionsEnumerator;
         private readonly IStopsReader _stopsReader;
@@ -44,9 +44,9 @@ namespace Itinero.Transit.Algorithms.CSA
         /// (thus: genesis = root, arrival = leaf)
         /// </summary>
         /// <returns></returns>
-        public IReadOnlyDictionary<LocationId, Journey<T>> Isochrone()
+        public IReadOnlyDictionary<StopId, Journey<T>> Isochrone()
         {
-            var reversedJourneys = new Dictionary<LocationId, Journey<T>>();
+            var reversedJourneys = new Dictionary<StopId, Journey<T>>();
             foreach (var pair in JourneysToArrivalStopTable)
             {
                 // Due to the nature of LAS, there can be no choices in the journeys; reversal will only return one value
@@ -61,8 +61,8 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as late as possible
         /// </summary>
-        internal readonly Dictionary<LocationId, Journey<T>> JourneysToArrivalStopTable =
-            new Dictionary<LocationId, Journey<T>>();
+        internal readonly Dictionary<StopId, Journey<T>> JourneysToArrivalStopTable =
+            new Dictionary<StopId, Journey<T>>();
 
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <param name="enumerator"></param>
         private bool IntegrateBatch()
         {
-            var improvedLocations = new List<LocationId>();
+            var improvedLocations = new List<StopId>();
 
             var c = new Connection();
             var lastDepartureTime = _connectionsEnumerator.CurrentDateTime;
@@ -338,7 +338,7 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
-        private void WalkTowards(LocationId location)
+        private void WalkTowards(StopId location)
         {
             if (_walkPolicy == null || _walkPolicy.Range() <= 0f)
             {
@@ -403,7 +403,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
 
         private Journey<T>
-            GetJourneyFrom(LocationId location)
+            GetJourneyFrom(StopId location)
         {
             return JourneysToArrivalStopTable.ContainsKey(location)
                 ? JourneysToArrivalStopTable[location]

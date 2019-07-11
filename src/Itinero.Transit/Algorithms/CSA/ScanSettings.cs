@@ -17,7 +17,7 @@ namespace Itinero.Transit.Algorithms.CSA
             DateTime start,
             DateTime end,
             Profile<T> profile,
-            List<(LocationId, Journey<T>)> from, List<(LocationId, Journey<T>)> to)
+            List<(StopId, Journey<T>)> from, List<(StopId, Journey<T>)> to)
         {
             StopsReader = stopsReader;
             ConnectionsEnumerator = connectionsEnumerator;
@@ -37,8 +37,8 @@ namespace Itinero.Transit.Algorithms.CSA
         public DateTime EarliestDeparture { get; }
         public DateTime LastArrival { get; }
 
-        public List<(LocationId, Journey<T>)> DepartureStop { get; }
-        public List<(LocationId, Journey<T>)> TargetStop { get; }
+        public List<(StopId, Journey<T>)> DepartureStop { get; }
+        public List<(StopId, Journey<T>)> TargetStop { get; }
         public Profile<T> Profile { get; }
         public IsochroneFilter<T> Filter { get; set; }
 

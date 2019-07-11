@@ -61,7 +61,7 @@ namespace Itinero.Transit.DataProcessor.Transit
             var wr = filtered.GetWriter();
 
 
-            var stopIdMapping = new Dictionary<LocationId, LocationId>();
+            var stopIdMapping = new Dictionary<StopId, StopId>();
 
             var stops = old.Latest.StopsDb.GetReader();
             var copied = 0;

@@ -28,12 +28,12 @@ namespace Itinero.Transit.IO.OSM.Data
         /// We expect this list to stay small (at most 100) so we are not gonna optimize this a lot
         /// 
         /// </summary>
-        private readonly List<LocationId> _searchableLocations = new List<LocationId>();
+        private readonly List<StopId> _searchableLocations = new List<StopId>();
 
 
         private readonly uint _databaseId;
         public string GlobalId { get; private set; }
-        public LocationId Id { get; private set; }
+        public StopId Id { get; private set; }
         public double Longitude { get; private set; }
         public double Latitude { get; private set; }
         public IAttributeCollection Attributes => null; //No attributes supported here
@@ -61,7 +61,7 @@ namespace Itinero.Transit.IO.OSM.Data
             var (lat, lon) =
                 location;
             // Slight abuse of the LocationId
-            Id = new LocationId(_databaseId, (uint) ((lat + 90.0) * _precision), (uint) ((lon + 180) * _precision));
+            Id = new StopId(_databaseId, (uint) ((lat + 90.0) * _precision), (uint) ((lon + 180) * _precision));
             Latitude = (double) Id.LocalTileId / _precision - 90.0;
             Longitude = (double) Id.LocalId / _precision - 180.0;
             GlobalId = $"https://www.openstreetmap.org/#map=19/{Latitude}/{Longitude}";
@@ -73,7 +73,7 @@ namespace Itinero.Transit.IO.OSM.Data
             var (lat, lon) =
                 ParseOsmUrl.ParseUrl().ParseFull(globalId);
             // Slight abuse of the LocationId
-            Id = new LocationId(_databaseId, (uint) ((lat + 90.0) * _precision), (uint) ((lon + 180) * _precision));
+            Id = new StopId(_databaseId, (uint) ((lat + 90.0) * _precision), (uint) ((lon + 180) * _precision));
             Latitude = (double) Id.LocalTileId / _precision - 90.0;
             Longitude = (double) Id.LocalId / _precision - 180.0;
             GlobalId = $"https://www.openstreetmap.org/#map=19/{Latitude}/{Longitude}";
@@ -85,7 +85,7 @@ namespace Itinero.Transit.IO.OSM.Data
             return true;
         }
 
-        public bool MoveTo(LocationId stop)
+        public bool MoveTo(StopId stop)
         {
             if (stop.DatabaseId != _databaseId)
             {
@@ -127,7 +127,7 @@ namespace Itinero.Transit.IO.OSM.Data
             _index = 0;
         }
 
-        public void AddSearchableLocation(LocationId location)
+        public void AddSearchableLocation(StopId location)
         {
             if (_searchableLocations.Contains(location))
             {
@@ -138,7 +138,7 @@ namespace Itinero.Transit.IO.OSM.Data
             _searchableLocations.Add(location);
         }
 
-        public LocationId AddSearchableLocation((double latitude, double longitude) location)
+        public StopId AddSearchableLocation((double latitude, double longitude) location)
         {
             MoveTo(location);
             AddSearchableLocation(Id);

@@ -20,7 +20,7 @@ namespace Itinero.Transit.Journey.Filter
     {
         private readonly IConnectionEnumerator _clock;
 
-        private readonly LocationId _departureStop;
+        private readonly StopId _departureStop;
 
         private HashSet<ProfiledParetoFrontier<T>> _alreadyCleaned;
         private ulong _alreadyCleanedScanTime = uint.MaxValue;
@@ -30,7 +30,7 @@ namespace Itinero.Transit.Journey.Filter
         /// </summary>
         /// <param name="clock">The 'clock' is a IConnectionReader, IConnectionEnumerator or something _stateful_. The departure time should regularly update to reflect departure time PCS is scanning </param>
         /// <param name="departureStop">A normal ID where to teleport too</param>
-        public SimpleMetricGuesser(IConnectionEnumerator clock, LocationId departureStop)
+        public SimpleMetricGuesser(IConnectionEnumerator clock, StopId departureStop)
         {
             _clock = clock;
             // It doesn't matter a whole lot what the exact destination stop is

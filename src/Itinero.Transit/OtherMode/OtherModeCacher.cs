@@ -17,8 +17,8 @@ namespace Itinero.Transit.OtherMode
         }
 
 
-        private Dictionary<(LocationId, LocationId tos), uint> _cacheSingle =
-            new Dictionary<(LocationId, LocationId tos), uint>();
+        private Dictionary<(StopId, StopId tos), uint> _cacheSingle =
+            new Dictionary<(StopId, StopId tos), uint>();
 
         public uint TimeBetween(IStop from, IStop to)
         {
@@ -34,12 +34,12 @@ namespace Itinero.Transit.OtherMode
         }
 
 
-        private Dictionary<(LocationId from, List<LocationId> tos),
-            Dictionary<LocationId, uint>> _cache =
-            new Dictionary<(LocationId from, List<LocationId> tos),
-                Dictionary<LocationId, uint>>();
+        private Dictionary<(StopId from, List<StopId> tos),
+            Dictionary<StopId, uint>> _cache =
+            new Dictionary<(StopId from, List<StopId> tos),
+                Dictionary<StopId, uint>>();
 
-        public Dictionary<LocationId, uint> TimesBetween(IStop from,
+        public Dictionary<StopId, uint> TimesBetween(IStop from,
             IEnumerable<IStop> to)
         {
             /**

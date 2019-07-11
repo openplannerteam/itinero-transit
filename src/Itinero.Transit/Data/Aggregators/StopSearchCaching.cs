@@ -36,7 +36,7 @@ namespace Itinero.Transit.Data.Aggregators
 
         public string GlobalId => _stopsReader.GlobalId;
 
-        public LocationId Id => _stopsReader.Id;
+        public StopId Id => _stopsReader.Id;
 
         public double Longitude => _stopsReader.Longitude;
 
@@ -44,7 +44,7 @@ namespace Itinero.Transit.Data.Aggregators
 
         public IAttributeCollection Attributes => _stopsReader.Attributes;
 
-        public bool MoveTo(LocationId stop)
+        public bool MoveTo(StopId stop)
         {
             return _stopsReader.MoveTo(stop);
         }

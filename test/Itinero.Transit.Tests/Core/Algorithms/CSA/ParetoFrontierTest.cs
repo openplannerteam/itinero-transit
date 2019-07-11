@@ -14,10 +14,10 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             // In some cases, journeys which perform equally good are merged as to save needed comparisons
             // A typical real-life example is a train stopping in A, B, C and a second train stopping in B, C, D. A traveller going from A to D has the choice to transfer in B and C
             // This check makes sure the merging is correct
-            var locDep = new LocationId(0, 0, 0);
-            var locA = new LocationId(0, 0, 1);
-            var locB = new LocationId(0, 0, 2);
-            var locDest = new LocationId(0, 0, 3);
+            var locDep = new StopId(0, 0, 0);
+            var locA = new StopId(0, 0, 1);
+            var locB = new StopId(0, 0, 2);
+            var locDest = new StopId(0, 0, 3);
 
 
             // Genesis at time 0
@@ -50,9 +50,9 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         {
             var frontier = new ProfiledParetoFrontier<TransferMetric>(TransferMetric.ParetoCompare, null);
 
-            var loc = new LocationId(0, 0, 0);
-            var loc1 = new LocationId(0, 0, 1);
-            var loc2 = new LocationId(0, 0, 2);
+            var loc = new StopId(0, 0, 0);
+            var loc1 = new StopId(0, 0, 1);
+            var loc2 = new StopId(0, 0, 2);
 
             // Backwards journey
             var j = new Journey<TransferMetric>(loc, 20, TransferMetric.Factory);

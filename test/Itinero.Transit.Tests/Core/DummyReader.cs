@@ -10,7 +10,7 @@ namespace Itinero.Transit.Tests.Core
     internal class DummyReader : IStopsReader
     {
         public string GlobalId { get; }
-        public LocationId Id { get; }
+        public StopId Id { get; }
         public double Longitude { get; }
         public double Latitude { get; }
         public IAttributeCollection Attributes { get; }
@@ -25,7 +25,7 @@ namespace Itinero.Transit.Tests.Core
             throw new Exception("Not implemented - should not be called");
         }
 
-        public bool MoveTo(LocationId stop)
+        public bool MoveTo(StopId stop)
         {
             return true;
         }

@@ -18,7 +18,7 @@ namespace Itinero.Transit.Tests.Functional
 
         public bool ContainsLoop(Journey<T> journey)
         { 
-            var seen = new HashSet<LocationId>();
+            var seen = new HashSet<StopId>();
             var curStop = journey.Location;
 
             while (journey != null)

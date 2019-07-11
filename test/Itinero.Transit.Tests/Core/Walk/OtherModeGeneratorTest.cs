@@ -15,16 +15,16 @@ namespace Itinero.Transit.Tests.Core.Walk
         [Fact]
         public void TestMixedModes()
         {
-            var stop0 = new Stop("0", new LocationId(0, 0, 0), 0, 0, null);
-            var stop1 = new Stop("1", new LocationId(0, 0, 1), 0.0001, 0, null);
-            var stop2 = new Stop("2", new LocationId(0, 0, 2), 0.0002, 0, null);
+            var stop0 = new Stop("0", new StopId(0, 0, 0), 0, 0, null);
+            var stop1 = new Stop("1", new StopId(0, 0, 1), 0.0001, 0, null);
+            var stop2 = new Stop("2", new StopId(0, 0, 2), 0.0002, 0, null);
 
             var mixed = new FirstLastMilePolicy(
                 new FixedGenerator(1),
                 new FixedGenerator(2),
-                new List<LocationId> {stop1.Id},
+                new List<StopId> {stop1.Id},
                 new FixedGenerator(3),
-                new List<LocationId> {stop2.Id}
+                new List<StopId> {stop2.Id}
             );
 
 
@@ -81,7 +81,7 @@ namespace Itinero.Transit.Tests.Core.Walk
 
             stops.MoveTo(stop1);
 
-            var from = new Stop("qsdf", new LocationId(0, 0, 0), 6, 50, null);
+            var from = new Stop("qsdf", new StopId(0, 0, 0), 6, 50, null);
             var all = crow.TimesBetween(from, new List<IStop> {stops});
             Assert.Single(all);
             Assert.Equal(exp, all[stop1]);
@@ -118,8 +118,8 @@ namespace Itinero.Transit.Tests.Core.Walk
 
             var time = DateTime.Now;
 
-            var stop0 = new LocationId(0, 0, 0);
-            var stop1 = new LocationId(0, 0, 1);
+            var stop0 = new StopId(0, 0, 0);
+            var stop1 = new StopId(0, 0, 1);
             var diff = verySlow.TimeBetween(new DummyReader(), stop0, stop1);
             var timeMid = DateTime.Now;
             Assert.True((timeMid - time).TotalMilliseconds >= 999);
@@ -139,7 +139,7 @@ namespace Itinero.Transit.Tests.Core.Walk
             return 50;
         }
 
-        public Dictionary<LocationId, uint> TimesBetween(IStop @from,
+        public Dictionary<StopId, uint> TimesBetween(IStop @from,
             IEnumerable<IStop> to)
         {
             return this.DefaultTimesBetween(from, to);
@@ -170,7 +170,7 @@ namespace Itinero.Transit.Tests.Core.Walk
             return _time;
         }
 
-        public Dictionary<LocationId, uint> TimesBetween(IStop @from, IEnumerable<IStop> to)
+        public Dictionary<StopId, uint> TimesBetween(IStop @from, IEnumerable<IStop> to)
         {
             return this.DefaultTimesBetween(from, to);
         }

@@ -6,12 +6,12 @@ namespace Itinero.Transit.Tests
     internal static class Db
     {
         public static TransitDb GetDefaultTestDb(
-            out LocationId stop0,
-            out LocationId stop1,
-            out LocationId stop2,
-            out LocationId stop3,
-            out LocationId stop10,
-            out LocationId stop11)
+            out StopId stop0,
+            out StopId stop1,
+            out StopId stop2,
+            out StopId stop3,
+            out StopId stop10,
+            out StopId stop11)
         {
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();

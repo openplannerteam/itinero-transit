@@ -92,7 +92,7 @@ namespace Itinero.Transit.Journey
         /// 
         /// Only for the genesis connection, this is the departure location.
         /// </summary>
-        public readonly LocationId Location;
+        public readonly StopId Location;
 
         /// <summary>
         /// Keep track of Time.
@@ -134,7 +134,7 @@ namespace Itinero.Transit.Journey
             Root = this;
             PreviousLink = this;
             Connection = ConnectionId.Invalid;
-            Location = LocationId.Invalid;
+            Location = StopId.Invalid;
             Time = time;
             SpecialConnection = true;
             TripId = new TripId(uint.MaxValue, uint.MaxValue);
@@ -156,7 +156,7 @@ namespace Itinero.Transit.Journey
         /// <param name="metric"></param>
         private Journey(Journey<T> root,
             Journey<T> previousLink, bool specialLink, ConnectionId connection,
-            LocationId location, ulong time, TripId tripId, T metric)
+            StopId location, ulong time, TripId tripId, T metric)
         {
             Root = root;
             SpecialConnection = specialLink;
@@ -174,7 +174,7 @@ namespace Itinero.Transit.Journey
         /// Genesis constructor.
         /// This constructor creates a root journey
         /// </summary>
-        public Journey(LocationId location, ulong departureTime, T initialMetric)
+        public Journey(StopId location, ulong departureTime, T initialMetric)
             : this(location, departureTime, initialMetric, new TripId(uint.MaxValue, uint.MaxValue))
         {
         }
@@ -183,7 +183,7 @@ namespace Itinero.Transit.Journey
         /// Genesis constructor.
         /// This constructor creates a root journey
         /// </summary>
-        public Journey(LocationId location, ulong departureTime, T initialMetric,
+        public Journey(StopId location, ulong departureTime, T initialMetric,
             TripId debuggingFreeformTag)
         {
             Root = this;
@@ -228,7 +228,7 @@ namespace Itinero.Transit.Journey
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
         [Pure]
-        internal Journey<T> Chain(ConnectionId connection, ulong time, LocationId location,
+        internal Journey<T> Chain(ConnectionId connection, ulong time, StopId location,
             TripId tripId)
         {
             return new Journey<T>(
@@ -273,7 +273,7 @@ namespace Itinero.Transit.Journey
         /// </summary>
         [Pure]
         public Journey<T> ChainSpecial(ConnectionId specialCode, ulong time,
-            LocationId location, TripId tripId)
+            StopId location, TripId tripId)
         {
             return new Journey<T>(
                 Root, this, true, specialCode, location, time, tripId, Metric);
@@ -299,7 +299,7 @@ namespace Itinero.Transit.Journey
         /// </summary>
         [Pure]
         public Journey<T> ChainForwardWith(IStopsReader reader, IOtherModeGenerator otherModeGenerator,
-            LocationId otherLocation)
+            StopId otherLocation)
         {
             var time = otherModeGenerator.TimeBetween(reader, Location, otherLocation);
             // ReSharper disable once ConvertIfStatementToReturnStatement
@@ -316,7 +316,7 @@ namespace Itinero.Transit.Journey
         /// </summary>
         [Pure]
         public Journey<T> ChainBackwardWith(IStopsReader reader, IOtherModeGenerator otherModeGenerator,
-            LocationId otherLocation)
+            StopId otherLocation)
         {
             var time = otherModeGenerator.TimeBetween(reader, Location, otherLocation);
             // ReSharper disable once ConvertIfStatementToReturnStatement

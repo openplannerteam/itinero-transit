@@ -32,7 +32,7 @@ namespace Itinero.Transit.OtherMode
                 _internalTransferTime;
         }
 
-        public Dictionary<LocationId, uint> TimesBetween(IStop from,
+        public Dictionary<StopId, uint> TimesBetween(IStop from,
             IEnumerable<IStop> to)
         {
             // It is a tad weird to have this method implemented, as this one only works when from == to...

@@ -142,7 +142,7 @@ namespace Itinero.Transit.IO.LC
         /// </summary>
         /// <param name="location"></param>
         /// <returns></returns>
-        private LocationId AddLocation(Location location)
+        private StopId AddLocation(Location location)
         {
             var globalId = location.Uri;
             var stopId = globalId.ToString();
@@ -165,7 +165,7 @@ namespace Itinero.Transit.IO.LC
         /// Adds the given stop to the DB. Returns the internal ID
         /// </summary>
         /// <returns></returns>
-        private LocationId
+        private StopId
             AddStop(LocationProvider profile, Uri stopUri)
         {
             var location = profile.GetCoordinateFor(stopUri);

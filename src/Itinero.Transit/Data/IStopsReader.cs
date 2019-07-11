@@ -13,7 +13,7 @@ namespace Itinero.Transit.Data
         HashSet<uint> DatabaseIndexes();
 
         bool MoveNext();
-        bool MoveTo(LocationId stop);
+        bool MoveTo(StopId stop);
         bool MoveTo(string globalId);
         void Reset();
         IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box);
@@ -72,7 +72,7 @@ namespace Itinero.Transit.Data
             return stopsDb.SearchInBox(box);
         }
 
-        public static LocationId FindStop(this IStopsReader reader, string locationId,
+        public static StopId FindStop(this IStopsReader reader, string locationId,
             string errorMessage = null)
         {
             // ReSharper disable once InvertIf
@@ -88,7 +88,7 @@ namespace Itinero.Transit.Data
         public static Stop FindClosest(this IStopsReader reader,
             double latitude, double longitude, double maxDistanceInMeters = 1000.0)
         {
-            LocationId? closestStopId = null;
+            StopId? closestStopId = null;
             var d = double.MaxValue;
             foreach (var stop in reader.LocationsInRange(latitude, longitude, maxDistanceInMeters))
             {

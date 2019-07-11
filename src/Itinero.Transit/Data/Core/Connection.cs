@@ -18,8 +18,8 @@ namespace Itinero.Transit.Data
         public Connection(
             ConnectionId id,
             string globalId,
-            LocationId departureStop,
-            LocationId arrivalStop,
+            StopId departureStop,
+            StopId arrivalStop,
             ulong departureTime,
             ushort travelTime,
             ushort arrivalDelay,
@@ -58,9 +58,9 @@ namespace Itinero.Transit.Data
 
         public TripId TripId { get; set; }
 
-        public LocationId DepartureStop { get; set; }
+        public StopId DepartureStop { get; set; }
 
-        public LocationId ArrivalStop { get; set; }
+        public StopId ArrivalStop { get; set; }
 
 
         public bool CanGetOn()

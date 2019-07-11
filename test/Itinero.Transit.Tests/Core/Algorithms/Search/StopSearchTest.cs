@@ -9,7 +9,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.Search
 {
     public class StopSearchTest
     {
-        public static (StopsDb.StopsDbReader, LocationId howest, LocationId sintClara, LocationId station)
+        public static (StopsDb.StopsDbReader, StopId howest, StopId sintClara, StopId station)
             CreateTestReader()
         {
             var tdb = new TransitDb();

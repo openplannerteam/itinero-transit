@@ -12,8 +12,8 @@ namespace Itinero.Transit.OtherMode
             return new OtherModeCacher(fallback);
         }
 
-        public static uint TimeBetween(this IOtherModeGenerator modeGenerator, IStopsReader reader, LocationId from,
-            LocationId to)
+        public static uint TimeBetween(this IOtherModeGenerator modeGenerator, IStopsReader reader, StopId from,
+            StopId to)
         {
             reader.MoveTo(from);
             var fr = new Stop(reader);
@@ -79,7 +79,7 @@ namespace Itinero.Transit.OtherMode
         /// </summary>
         public static IEnumerable<Journey<T>> WalkTowards<T>(
             this IEnumerable<Journey<T>> journeys,
-            LocationId location,
+            StopId location,
             IOtherModeGenerator otherModeGenerator,
             IStopsReader stops) where T : IJourneyMetric<T>
         {
@@ -120,11 +120,11 @@ namespace Itinero.Transit.OtherMode
         /// A very straightforward implementation to get multiple routings at the same time...
         /// 
         /// </summary>
-        internal static Dictionary<LocationId, uint> DefaultTimesBetween(
+        internal static Dictionary<StopId, uint> DefaultTimesBetween(
             this IOtherModeGenerator modeGenerator, IStop coorFrom,
             IEnumerable<IStop> to)
         {
-            var times = new Dictionary<LocationId, uint>();
+            var times = new Dictionary<StopId, uint>();
             foreach (var stop in to)
             {
                 var time = modeGenerator.TimeBetween(coorFrom, stop);

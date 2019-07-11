@@ -107,7 +107,7 @@ namespace Itinero.Transit.Data.Aggregators
             return false;
         }
 
-        public bool MoveTo(LocationId stop)
+        public bool MoveTo(StopId stop)
         {
             _currentStop = UnderlyingDatabases[stop.DatabaseId];
             return _currentStop.MoveTo(stop);
@@ -150,7 +150,7 @@ namespace Itinero.Transit.Data.Aggregators
 
         public string GlobalId => _currentStop.GlobalId;
 
-        public LocationId Id => _currentStop.Id;
+        public StopId Id => _currentStop.Id;
 
         public double Longitude => _currentStop.Longitude;
 

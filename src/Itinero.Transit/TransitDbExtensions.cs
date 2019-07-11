@@ -82,19 +82,19 @@ namespace Itinero.Transit
             return reader.FindClosest(latitude, longitude, maxDistanceInMeters);
         }
 
-        public static LocationId FindStop(this TransitDb.TransitDbSnapShot snapshot, string locationId,
+        public static StopId FindStop(this TransitDb.TransitDbSnapShot snapshot, string locationId,
             string errMsg = null)
         {
             return snapshot.StopsDb.GetReader().FindStop(locationId, errMsg);
         }
 
-        public static LocationId FindStop(this IEnumerable<TransitDb.TransitDbSnapShot> snapshot, string locationId,
+        public static StopId FindStop(this IEnumerable<TransitDb.TransitDbSnapShot> snapshot, string locationId,
             string errMsg = null)
         {
             return StopsReaderAggregator.CreateFrom(snapshot).FindStop(locationId, errMsg);
         }
 
-        public static IEnumerable<LocationId> FindStops(this IEnumerable<TransitDb.TransitDbSnapShot> snapshot,
+        public static IEnumerable<StopId> FindStops(this IEnumerable<TransitDb.TransitDbSnapShot> snapshot,
             IEnumerable<string> locationIds,
             Func<string, string> errMsg = null)
         {
@@ -105,7 +105,7 @@ namespace Itinero.Transit
             }
         }
 
-        public static IEnumerable<LocationId> FindStops(this IStopsReader reader,
+        public static IEnumerable<StopId> FindStops(this IStopsReader reader,
             IEnumerable<string> locationIds,
             Func<string, string> errMsg = null)
         {
@@ -116,7 +116,7 @@ namespace Itinero.Transit
         }
 
 
-        public static LocationId FindStops(this IStopsReader reader,
+        public static StopId FindStops(this IStopsReader reader,
             string id,
             Func<string, string> errMsg = null)
         {
@@ -316,7 +316,7 @@ namespace Itinero.Transit
         }
 
 
-        public IWithSingleLocation<T> SelectSingleStop(IEnumerable<(LocationId, Journey<T>)> stop)
+        public IWithSingleLocation<T> SelectSingleStop(IEnumerable<(StopId, Journey<T>)> stop)
         {
             return new WithLocation<T>(StopsReader, ConnectionEnumerator, ConnectionReader, Profile, stop,
                 stop);
@@ -333,7 +333,7 @@ namespace Itinero.Transit
         /// whereas the 'AllJourneys' (profiled search) could give one option C to X and another option B to Y, ignoring A and Z altogether.
         /// 
         /// </summary>
-        public IWithSingleLocation<T> SelectSingleStop(IEnumerable<LocationId> stop)
+        public IWithSingleLocation<T> SelectSingleStop(IEnumerable<StopId> stop)
         {
             return SelectSingleStop(AddNullJourneys(stop));
         }
@@ -374,9 +374,9 @@ namespace Itinero.Transit
             );
         }
 
-        public IWithSingleLocation<T> SelectSingleStop(LocationId stop)
+        public IWithSingleLocation<T> SelectSingleStop(StopId stop)
         {
-            return SelectSingleStop(new List<LocationId> {stop});
+            return SelectSingleStop(new List<StopId> {stop});
         }
 
         public IWithSingleLocation<T> SelectSingleStop(IStop stop)
@@ -392,14 +392,14 @@ namespace Itinero.Transit
         }
 
 
-        public WithLocation<T> SelectStops(IEnumerable<(LocationId, Journey<T>)> from,
-            IEnumerable<(LocationId, Journey<T>)> to)
+        public WithLocation<T> SelectStops(IEnumerable<(StopId, Journey<T>)> from,
+            IEnumerable<(StopId, Journey<T>)> to)
         {
             return new WithLocation<T>(StopsReader, ConnectionEnumerator, ConnectionReader, Profile, @from, to);
         }
 
-        public WithLocation<T> SelectStops(IEnumerable<LocationId> from,
-            IEnumerable<LocationId> to)
+        public WithLocation<T> SelectStops(IEnumerable<StopId> from,
+            IEnumerable<StopId> to)
         {
             return SelectStops(AddNullJourneys(from), AddNullJourneys(to));
         }
@@ -420,9 +420,9 @@ namespace Itinero.Transit
             );
         }
 
-        public WithLocation<T> SelectStops(LocationId from, LocationId to)
+        public WithLocation<T> SelectStops(StopId from, StopId to)
         {
-            return SelectStops(new List<LocationId> {from}, new List<LocationId> {to});
+            return SelectStops(new List<StopId> {from}, new List<StopId> {to});
         }
 
         public WithLocation<T> SelectStops(IStop from, IStop to)
@@ -439,9 +439,9 @@ namespace Itinero.Transit
         }
 
 
-        private static List<(LocationId, Journey<T>)> AddNullJourneys(IEnumerable<LocationId> locs)
+        private static List<(StopId, Journey<T>)> AddNullJourneys(IEnumerable<StopId> locs)
         {
-            var l = new List<(LocationId, Journey<T>)>();
+            var l = new List<(StopId, Journey<T>)>();
             foreach (var loc in locs)
             {
                 l.Add((loc, null));
@@ -472,15 +472,15 @@ namespace Itinero.Transit
 
         private readonly Profile<T> _profile;
 
-        private readonly List<(LocationId, Journey<T>)> _from;
-        private readonly List<(LocationId, Journey<T>)> _to;
+        private readonly List<(StopId, Journey<T>)> _from;
+        private readonly List<(StopId, Journey<T>)> _to;
 
 
         internal WithLocation(IStopsReader stopsReader,
             IConnectionEnumerator connectionEnumerator,
             IDatabaseReader<ConnectionId, Connection> connectionReader,
             Profile<T> profile,
-            IEnumerable<(LocationId, Journey<T>)> @from, IEnumerable<(LocationId, Journey<T>)> to)
+            IEnumerable<(StopId, Journey<T>)> @from, IEnumerable<(StopId, Journey<T>)> to)
         {
             _profile = profile;
             ConnectionEnumerator = connectionEnumerator;
@@ -523,17 +523,17 @@ namespace Itinero.Transit
         ///  <summary>
         ///  Calculates all journeys which depart at 'from' at the given departure time and arrive before the specified 'end'-time of the timeframe.
         ///  </summary>
-        IReadOnlyDictionary<LocationId, Journey<T>> IsochroneFrom();
+        IReadOnlyDictionary<StopId, Journey<T>> IsochroneFrom();
 
         ///  <summary>
         ///  Calculates all journeys which arrive at 'to' at the given arrival time and departarter the specified 'start'-time of the timeframe.
         ///  </summary>
-        IReadOnlyDictionary<LocationId, Journey<T>> IsochroneTo();
+        IReadOnlyDictionary<StopId, Journey<T>> IsochroneTo();
 
         /// <summary>
         /// Calculates all journeys which are optimal for their given timeframe and which go to the destination stop.
         /// </summary>
-        Dictionary<LocationId, List<Journey<T>>> AllProfileJourneysTowards();
+        Dictionary<StopId, List<Journey<T>>> AllProfileJourneysTowards();
     }
 
     public class WithTime<T> : IWithTimeSingleLocation<T>
@@ -544,8 +544,8 @@ namespace Itinero.Transit
         internal readonly IConnectionEnumerator ConnectionEnumerator;
 
         internal readonly Profile<T> Profile;
-        internal readonly List<(LocationId, Journey<T>)> From;
-        internal readonly List<(LocationId, Journey<T>)> To;
+        internal readonly List<(StopId, Journey<T>)> From;
+        internal readonly List<(StopId, Journey<T>)> To;
 
         public DateTime Start { get; private set; }
         public DateTime End { get; private set; }
@@ -560,8 +560,8 @@ namespace Itinero.Transit
             IConnectionEnumerator connectionEnumerator,
             IDatabaseReader<ConnectionId, Connection> connectionReader,
             Profile<T> profile,
-            List<(LocationId, Journey<T>)> from,
-            List<(LocationId, Journey<T>)> to,
+            List<(StopId, Journey<T>)> from,
+            List<(StopId, Journey<T>)> to,
             DateTime start,
             DateTime end)
         {
@@ -624,7 +624,7 @@ namespace Itinero.Transit
         ///  Calculates all journeys which depart at 'from' at the given departure time and arrive before the specified 'end'-time of the timeframe.
         /// This ignores the given 'to'-location
         ///  </summary>
-        public IReadOnlyDictionary<LocationId, Journey<T>> IsochroneFrom()
+        public IReadOnlyDictionary<StopId, Journey<T>> IsochroneFrom()
         {
             CheckHasFrom();
             /*
@@ -642,7 +642,7 @@ namespace Itinero.Transit
                 Start, End,
                 Profile,
                 From,
-                new List<(LocationId, Journey<T>)>() // EMPTY LIST
+                new List<(StopId, Journey<T>)>() // EMPTY LIST
             );
             var eas = new EarliestConnectionScan<T>(settings);
             eas.CalculateJourney();
@@ -655,7 +655,7 @@ namespace Itinero.Transit
         ///  Calculates all journeys which arrive at 'to' at the given arrival time and departarter the specified 'start'-time of the timeframe.
         /// This ignores the given 'from'-location
         ///  </summary>
-        public IReadOnlyDictionary<LocationId, Journey<T>> IsochroneTo()
+        public IReadOnlyDictionary<StopId, Journey<T>> IsochroneTo()
         {
             CheckHasTo();
             /*
@@ -667,7 +667,7 @@ namespace Itinero.Transit
                 Start,
                 End,
                 Profile,
-                new List<(LocationId, Journey<T>)>(), // EMPTY LIST
+                new List<(StopId, Journey<T>)>(), // EMPTY LIST
                 To
             );
             var las = new LatestConnectionScan<T>(settings);
@@ -786,7 +786,7 @@ namespace Itinero.Transit
         /// <summary>
         /// Calculates all journeys which are optimal for their given timeframe and which go to the destination stop.
         /// </summary>
-        public Dictionary<LocationId, List<Journey<T>>> AllProfileJourneysTowards()
+        public Dictionary<StopId, List<Journey<T>>> AllProfileJourneysTowards()
         {
             CheckAll();
             var settings = new ScanSettings<T>(
@@ -795,7 +795,7 @@ namespace Itinero.Transit
                 Start,
                 End,
                 Profile,
-                new List<(LocationId, Journey<T>)>(), // We don't pass any departure stop, as we want them all
+                new List<(StopId, Journey<T>)>(), // We don't pass any departure stop, as we want them all
                 To
             )
             {

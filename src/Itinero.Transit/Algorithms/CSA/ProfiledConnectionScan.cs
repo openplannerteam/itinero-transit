@@ -24,13 +24,13 @@ namespace Itinero.Transit.Algorithms.CSA
         internal readonly IConnectionEnumerator _connections;
         private readonly IStopsReader _stopsReader;
         internal readonly ulong _earliestDeparture, _lastArrival;
-        internal readonly HashSet<LocationId> _departureLocations;
+        internal readonly HashSet<StopId> _departureLocations;
 
         internal readonly HashSet<ProfiledParetoFrontier<T>> _departureFrontiers =
             new HashSet<ProfiledParetoFrontier<T>>();
 
         internal readonly HashSet<IStop> _targetLocations;
-        internal readonly HashSet<LocationId> _targetLocationsIds;
+        internal readonly HashSet<StopId> _targetLocationsIds;
 
         private readonly MetricComparator<T> _comparator;
 
@@ -66,8 +66,8 @@ namespace Itinero.Transit.Algorithms.CSA
         /// Also known as 'S' in the paper
         ///
         /// </summary>
-        private readonly Dictionary<LocationId, ProfiledParetoFrontier<T>> _stationJourneys =
-            new Dictionary<LocationId, ProfiledParetoFrontier<T>>();
+        private readonly Dictionary<StopId, ProfiledParetoFrontier<T>> _stationJourneys =
+            new Dictionary<StopId, ProfiledParetoFrontier<T>>();
 
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace Itinero.Transit.Algorithms.CSA
             _journeyFilter = settings.Profile.JourneyFilter;
 
             _targetLocations = new HashSet<IStop>();
-            _targetLocationsIds = new HashSet<LocationId>();
+            _targetLocationsIds = new HashSet<StopId>();
             _stopsReader = settings.StopsReader;
             foreach (var (target, journey) in settings.TargetStop)
             {
@@ -131,7 +131,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 _targetLocationsIds.Add(target);
             }
 
-            _departureLocations = new HashSet<LocationId>();
+            _departureLocations = new HashSet<StopId>();
             foreach (var (target, journey) in settings.DepartureStop)
             {
                 if (journey != null)
@@ -184,7 +184,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 // - If we are on the trip already
                 // These are handled by the SpecialCaseFilter
 
-                HashSet<LocationId> whiteList = new HashSet<LocationId>();
+                HashSet<StopId> whiteList = new HashSet<StopId>();
                 whiteList.UnionWith(_departureLocations);
                 whiteList.UnionWith(_targetLocationsIds);
 
@@ -368,7 +368,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             // Ofc, we only care about the fastest arrival:
 
-            LocationId? fastestTarget = null;
+            StopId? fastestTarget = null;
             var fastestTime = uint.MaxValue;
             foreach (var kvpair in walkingTimes)
             {
@@ -470,7 +470,7 @@ namespace Itinero.Transit.Algorithms.CSA
         ///
         /// Note that every journey should have 'Location' to be equal 'cDepartureLocation'
         /// </summary>
-        private void UpdateFootpaths(IEnumerable<Journey<T>> journeys, LocationId cDepartureStop)
+        private void UpdateFootpaths(IEnumerable<Journey<T>> journeys, StopId cDepartureStop)
         {
             if (_walkPolicy == null || _walkPolicy.Range() <= 0f)
             {
@@ -524,9 +524,9 @@ namespace Itinero.Transit.Algorithms.CSA
             return frontier;
         }
 
-        public Dictionary<LocationId, List<Journey<T>>> Isochrone()
+        public Dictionary<StopId, List<Journey<T>>> Isochrone()
         {
-            var isochrone = new Dictionary<LocationId, List<Journey<T>>>();
+            var isochrone = new Dictionary<StopId, List<Journey<T>>>();
 
             foreach (var option in _stationJourneys)
             {
@@ -551,7 +551,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// This is mostly meant for debugging
         /// </summary>
         /// <returns></returns>
-        public Dictionary<LocationId, ProfiledParetoFrontier<T>> StationJourneys()
+        public Dictionary<StopId, ProfiledParetoFrontier<T>> StationJourneys()
         {
             return _stationJourneys;
         }
@@ -560,7 +560,7 @@ namespace Itinero.Transit.Algorithms.CSA
     internal class SpecialCaseConnectionFilter<T> : IConnectionFilter where T : IJourneyMetric<T>
     {
         private readonly IConnectionFilter _implementation;
-        private readonly HashSet<LocationId> _whiteListed;
+        private readonly HashSet<StopId> _whiteListed;
         private readonly Dictionary<TripId, ProfiledParetoFrontier<T>> _tripJourneys;
 
         /// <summary>
@@ -571,7 +571,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <param name="whiteListed"></param>
         /// <param name="tripJourneys">A POINTER to the dictionary containing the trips. </param>
         public SpecialCaseConnectionFilter(IConnectionFilter implementation,
-            HashSet<LocationId> whiteListed,
+            HashSet<StopId> whiteListed,
             Dictionary<TripId, ProfiledParetoFrontier<T>> tripJourneys
         )
         {

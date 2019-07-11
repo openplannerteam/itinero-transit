@@ -29,7 +29,7 @@ namespace Itinero.Transit.IO.OSM.Data
                 throw new ArgumentException("No or only one stop positions in OSM route");
             }
 
-            var stopIds = new List<LocationId>();
+            var stopIds = new List<StopId>();
 
             foreach (var (id, coordinate, tags) in route.StopPositions)
             {
@@ -105,7 +105,7 @@ namespace Itinero.Transit.IO.OSM.Data
         private static LinkedList<(uint, Connection)> CreateRun(this OsmRoute route,
             uint dbId,
             TripId tripId, uint vehicleId,
-            List<LocationId> locations,
+            List<StopId> locations,
             DateTime startMoment)
         {
             if (startMoment.Kind != DateTimeKind.Utc)

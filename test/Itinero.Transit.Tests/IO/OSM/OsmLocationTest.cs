@@ -26,7 +26,7 @@ namespace Itinero.Transit.Tests.IO.OSM
         public void TestMoveToLocationId()
         {
 
-            var id = new LocationId(0, 141215750, 183219990);
+            var id = new StopId(0, 141215750, 183219990);
             var loc = "https://www.openstreetmap.org/#map=19/51.21575/3.21999";
             var reader = new OsmLocationStopReader(0);
             reader.MoveTo(id);

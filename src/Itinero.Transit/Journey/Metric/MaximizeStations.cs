@@ -11,9 +11,9 @@ namespace Itinero.Transit.Journey.Metric
     /// <typeparam name="T"></typeparam>
     public class MaximizeStations<T> : Comparer<Journey<T>> where T : IJourneyMetric<T>
     {
-        private readonly Dictionary<LocationId, uint> _importances;
+        private readonly Dictionary<StopId, uint> _importances;
 
-        public MaximizeStations(Dictionary<LocationId, uint> importances)
+        public MaximizeStations(Dictionary<StopId, uint> importances)
         {
             _importances = importances;
         }

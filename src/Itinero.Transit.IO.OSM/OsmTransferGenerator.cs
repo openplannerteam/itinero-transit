@@ -133,10 +133,10 @@ namespace Itinero.Transit.IO.OSM
             }
         }
 
-        public Dictionary<LocationId, uint> TimesBetween(IStop from,
+        public Dictionary<StopId, uint> TimesBetween(IStop from,
             IEnumerable<IStop> to)
         {
-            var result = new Dictionary<LocationId, uint>();
+            var result = new Dictionary<StopId, uint>();
 
             foreach (var stop in to)
             {

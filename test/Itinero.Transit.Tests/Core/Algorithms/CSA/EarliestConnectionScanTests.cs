@@ -305,9 +305,9 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 TransferMetric.Factory,
                 TransferMetric.ParetoCompare);
 
-            var sources = new List<(LocationId, Journey<TransferMetric> journey)>
+            var sources = new List<(StopId, Journey<TransferMetric> journey)>
                 {(stop1, null)};
-            var targets = new List<(LocationId, Journey<TransferMetric> journey)>
+            var targets = new List<(StopId, Journey<TransferMetric> journey)>
             {
                 (stop2,
                     new Journey<TransferMetric>(stop2, 0, profile.MetricFactory, new TripId(0, 42))
@@ -363,7 +363,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
 
             var startTime = new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc);
-            var sources = new List<(LocationId, Journey<TransferMetric> journey)>
+            var sources = new List<(StopId, Journey<TransferMetric> journey)>
             {
                 (stop1,
                     new Journey<TransferMetric>(stop1, startTime.ToUnixTime(), profile.MetricFactory, new TripId(0, 42))
@@ -372,7 +372,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 )
             };
 
-            var targets = new List<(LocationId, Journey<TransferMetric> journey)>
+            var targets = new List<(StopId, Journey<TransferMetric> journey)>
                 {(stop2, null)};
 
 

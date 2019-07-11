@@ -2,14 +2,14 @@ using System.Diagnostics.Contracts;
 
 namespace Itinero.Transit.Data
 {
-    public struct LocationId
+    public struct StopId
     {
-        public static LocationId Invalid = new LocationId(uint.MaxValue, uint.MaxValue, uint.MaxValue);
+        public static StopId Invalid = new StopId(uint.MaxValue, uint.MaxValue, uint.MaxValue);
 
 
         public readonly uint DatabaseId, LocalTileId, LocalId;
 
-        public LocationId(uint databaseId, uint localTileId, uint localId)
+        public StopId(uint databaseId, uint localTileId, uint localId)
         {
             DatabaseId = databaseId;
             LocalTileId = localTileId;
@@ -18,7 +18,7 @@ namespace Itinero.Transit.Data
 
 
         [Pure]
-        public bool Equals(LocationId other)
+        public bool Equals(StopId other)
         {
             return DatabaseId == other.DatabaseId && LocalTileId == other.LocalTileId && LocalId == other.LocalId;
         }
@@ -27,7 +27,7 @@ namespace Itinero.Transit.Data
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
-            return obj is LocationId other && Equals(other);
+            return obj is StopId other && Equals(other);
         }
 
         public override int GetHashCode()

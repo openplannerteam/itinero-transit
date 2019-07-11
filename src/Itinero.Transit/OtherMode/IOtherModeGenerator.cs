@@ -32,7 +32,7 @@ namespace Itinero.Transit.OtherMode
         /// However, calling 'MoveNext' will cause that object to change state.
         /// In other words, 'to' should always be used in a 'for-each' loop.
         /// </summary>
-        Dictionary<LocationId, uint> TimesBetween(IStop from,
+        Dictionary<StopId, uint> TimesBetween(IStop from,
             IEnumerable<IStop> to);
 
         /// <summary>

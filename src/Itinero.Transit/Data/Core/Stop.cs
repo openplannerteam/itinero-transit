@@ -20,7 +20,7 @@ namespace Itinero.Transit.Data
             }
         }
         
-        internal Stop(string globalId, LocationId id,
+        internal Stop(string globalId, StopId id,
             double longitude, double latitude, IAttributeCollection attributes)
         {
             GlobalId = globalId;
@@ -41,7 +41,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// Gets the id.
         /// </summary>
-        public LocationId Id { get; }
+        public StopId Id { get; }
 
         /// <summary>
         /// Gets the longitude.

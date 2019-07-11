@@ -10,9 +10,9 @@ namespace Itinero.Transit.Tests.Core.Journey
         [Fact]
         public void TestChain()
         {
-            var j = new Journey<TransferMetric>(new LocationId(0, 0, 0), 0, TransferMetric.Factory);
+            var j = new Journey<TransferMetric>(new StopId(0, 0, 0), 0, TransferMetric.Factory);
 
-            var j0 = j.Chain(new ConnectionId(0,0), 10, new LocationId(0, 0, 1), new TripId(0, 0));
+            var j0 = j.Chain(new ConnectionId(0,0), 10, new StopId(0, 0, 1), new TripId(0, 0));
 
             Assert.False(j0.SpecialConnection);
             Assert.Equal(j, j0.PreviousLink);
@@ -22,7 +22,7 @@ namespace Itinero.Transit.Tests.Core.Journey
         [Fact]
         public void TestTransfer()
         {
-            var j = new Journey<TransferMetric>(new LocationId(0, 0, 0), 0, TransferMetric.Factory);
+            var j = new Journey<TransferMetric>(new StopId(0, 0, 0), 0, TransferMetric.Factory);
 
             var j0 = j.Transfer(10);
 

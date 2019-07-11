@@ -18,7 +18,7 @@ namespace Itinero.Transit.Algorithms.CSA
     internal class EarliestConnectionScan<T>
         where T : IJourneyMetric<T>
     {
-        private readonly List<(LocationId, Journey<T>)> _userTargetLocations;
+        private readonly List<(StopId, Journey<T>)> _userTargetLocations;
 
         private readonly IConnectionEnumerator _connectionsEnumerator;
         private readonly IStopsReader _stopsReader;
@@ -28,7 +28,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         private readonly ulong _lastArrival;
 
-        internal IReadOnlyDictionary<LocationId, Journey<T>> Isochrone() => JourneyFromDepartureTable;
+        internal IReadOnlyDictionary<StopId, Journey<T>> Isochrone() => JourneyFromDepartureTable;
 
         public ulong ScanEndTime { get; private set; } = ulong.MinValue;
 
@@ -48,8 +48,8 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <summary>
         /// This dictionary keeps, for each stop, the journey that arrives as early as possible
         /// </summary>
-        internal readonly Dictionary<LocationId, Journey<T>> JourneyFromDepartureTable =
-            new Dictionary<LocationId, Journey<T>>();
+        internal readonly Dictionary<StopId, Journey<T>> JourneyFromDepartureTable =
+            new Dictionary<StopId, Journey<T>>();
 
         /// <summary>
         /// Keeps track of where we are on each trip, thus if we wouldn't leave a bus once we're on it
@@ -182,7 +182,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         private bool IntegrateBatch()
         {
-            var improvedLocations = new HashSet<LocationId>();
+            var improvedLocations = new HashSet<StopId>();
             var lastDepartureTime = _connectionsEnumerator.CurrentDateTime;
             bool hasNext;
 
@@ -339,7 +339,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// This method is very unpure
         /// </summary>
         /// <exception cref="ArgumentException"></exception>
-        private void WalkAwayFrom(LocationId location)
+        private void WalkAwayFrom(StopId location)
         {
             if (_walkPolicy == null || _walkPolicy.Range() <= 0f)
             {
@@ -402,7 +402,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
 
         private Journey<T>
-            GetJourneyTo(LocationId stop)
+            GetJourneyTo(StopId stop)
         {
             return JourneyFromDepartureTable.ContainsKey(stop)
                 ? JourneyFromDepartureTable[stop]

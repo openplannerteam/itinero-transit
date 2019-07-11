@@ -13,10 +13,10 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         public void ExtendFrontiersTest()
         {
             // We have to use backwards journeys here as we have to use the ProfiledTransferCompare
-            var loc0 = new LocationId(0, 0, 0);
-            var loc1 = new LocationId(0, 0, 1);
-            var loc2 = new LocationId(0, 0, 2);
-            var loc3 = new LocationId(0, 0, 3);
+            var loc0 = new StopId(0, 0, 0);
+            var loc1 = new StopId(0, 0, 1);
+            var loc2 = new StopId(0, 0, 2);
+            var loc3 = new StopId(0, 0, 3);
 
             // Arrival at time 100
             var genesis = new Journey<TransferMetric>(loc2, 100, TransferMetric.Factory);
@@ -64,9 +64,9 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         [Fact]
         public void CombineFrontiersTest()
         {
-            var loc0 = new LocationId(0, 0, 0);
-            var loc1 = new LocationId(0, 0, 1);
-            var loc2 = new LocationId(0, 0, 2);
+            var loc0 = new StopId(0, 0, 0);
+            var loc1 = new StopId(0, 0, 1);
+            var loc2 = new StopId(0, 0, 2);
 
 
             // Genesis at time 60

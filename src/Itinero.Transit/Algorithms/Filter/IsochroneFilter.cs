@@ -42,12 +42,12 @@ namespace Itinero.Transit.Journey.Filter
     internal class IsochroneFilter<T> : IConnectionFilter
         where T : IJourneyMetric<T>
     {
-        private readonly IReadOnlyDictionary<LocationId, Journey<T>> _isochrone;
+        private readonly IReadOnlyDictionary<StopId, Journey<T>> _isochrone;
         private readonly bool _isForward;
 
         private readonly ulong _earliestValidDate, _latestValidDate;
 
-        public IsochroneFilter(IReadOnlyDictionary<LocationId, Journey<T>> isochrone, bool isForward,
+        public IsochroneFilter(IReadOnlyDictionary<StopId, Journey<T>> isochrone, bool isForward,
             ulong earliestValidDate, ulong latestValidDate)
         {
             _isochrone = isochrone;

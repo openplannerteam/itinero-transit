@@ -56,7 +56,7 @@ namespace Itinero.Transit.Algorithms.Search
                 if (!_tileRangeLocationEnumerator.MoveNext()) return false;
                 var current = _tileRangeLocationEnumerator.Current;
 
-                return _stopsDbReader.MoveTo(new LocationId(_stopsDbReader.StopsDb.DatabaseId, current.tileId, current.localId));
+                return _stopsDbReader.MoveTo(new StopId(_stopsDbReader.StopsDb.DatabaseId, current.tileId, current.localId));
             }
 
             public void Reset()

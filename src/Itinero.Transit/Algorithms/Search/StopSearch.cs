@@ -35,7 +35,7 @@ namespace Itinero.Transit.Algorithms.Search
 
 
         public static float CalculateDistanceBetween
-            (IStopsReader reader, LocationId departureLocation, LocationId targetLocation)
+            (IStopsReader reader, StopId departureLocation, StopId targetLocation)
         {
             if (!reader.Id.Equals(targetLocation))
             {

@@ -425,7 +425,7 @@ namespace Itinero.Transit.Data
             var offset = 0;
 
             var departureStop =
-                new LocationId(DatabaseId,
+                new StopId(DatabaseId,
                     BitConverter.ToUInt32(bytes, 0),
                     BitConverter.ToUInt32(bytes, 4));
             if (departureStop.LocalTileId == uint.MaxValue &&
@@ -437,7 +437,7 @@ namespace Itinero.Transit.Data
             writeTo.DepartureStop = departureStop;
             offset += 8;
 
-            writeTo.ArrivalStop = new LocationId(DatabaseId,
+            writeTo.ArrivalStop = new StopId(DatabaseId,
                 BitConverter.ToUInt32(bytes, offset + 0),
                 BitConverter.ToUInt32(bytes, offset + 4));
 
