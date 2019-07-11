@@ -4,11 +4,10 @@ using Itinero.Transit.OtherMode;
 
 namespace Itinero.Transit.Data
 {
-    using Attributes;
-
-    public struct TripId
+    public struct TripId : InternalId
     {
-        public readonly uint DatabaseId, InternalId;
+        public uint DatabaseId { get;  }
+        public readonly uint InternalId;
 
         public TripId(uint databaseId, uint internalId)
         {
@@ -21,6 +20,8 @@ namespace Itinero.Transit.Data
         {
             
         }
+
+        public static readonly TripId Invalid = new TripId(uint.MaxValue, uint.MaxValue);
 
         [Pure]
         public bool Equals(TripId other)
@@ -51,24 +52,4 @@ namespace Itinero.Transit.Data
         }
     }
 
-    /// <summary>
-    /// Abstract definition of a trip.
-    /// </summary>
-    public interface ITrip
-    {
-        /// <summary>
-        /// Gets the global id, probably an URI representing this trip.
-        /// </summary>
-        string GlobalId { get; }
-
-        /// <summary>
-        /// Gets the local id in this database.
-        /// </summary>
-        TripId Id { get; }
-
-        /// <summary>
-        /// Gets the attributes.
-        /// </summary>
-        IAttributeCollection Attributes { get; }
-    }
 }
