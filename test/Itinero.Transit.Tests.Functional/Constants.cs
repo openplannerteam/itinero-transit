@@ -5,7 +5,7 @@ namespace Itinero.Transit.Tests.Functional
     public class Constants
     {
         
-        public static DateTime TestDate = new DateTime(2019, 05, 30, 09, 00, 00).ToUniversalTime().Date;
+        public static DateTime TestDate = new DateTime(2019, 07, 11, 09, 00, 00).ToUniversalTime().Date;
 
         
         public const string ZandStraat = "https://data.delijn.be/stops/500562";

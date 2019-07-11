@@ -18,7 +18,7 @@ namespace Itinero.Transit.Journey.Filter
     /// <typeparam name="T"></typeparam>
     public class SimpleMetricGuesser<T> : IMetricGuesser<T> where T : IJourneyMetric<T>
     {
-        private readonly IConnection _clock;
+        private readonly IConnectionEnumerator _clock;
 
         private readonly LocationId _departureStop;
 
@@ -30,7 +30,7 @@ namespace Itinero.Transit.Journey.Filter
         /// </summary>
         /// <param name="clock">The 'clock' is a IConnectionReader, IConnectionEnumerator or something _stateful_. The departure time should regularly update to reflect departure time PCS is scanning </param>
         /// <param name="departureStop">A normal ID where to teleport too</param>
-        public SimpleMetricGuesser(IConnection clock, LocationId departureStop)
+        public SimpleMetricGuesser(IConnectionEnumerator clock, LocationId departureStop)
         {
             _clock = clock;
             // It doesn't matter a whole lot what the exact destination stop is
@@ -39,9 +39,10 @@ namespace Itinero.Transit.Journey.Filter
 
         public Journey<T> LeastTheoreticalConnection(Journey<T> intermediate)
         {
-            var teleportation = new SimpleConnection(uint.MaxValue, "https://en.wikipedia.org/wiki/Teleportation",
+            var teleportation = new SimpleConnection(ConnectionId.Invalid, 
+                "https://en.wikipedia.org/wiki/Teleportation",
                 _departureStop, intermediate.Location,
-                _clock.DepartureTime, // The current connection scan is here, future departures will only be sooner
+                _clock.CurrentDateTime, // The current connection scan is here, future departures will only be sooner
                 0, // Traveltime is 0 - we are talking about Teleportation after all!
                 0,
                 0,
@@ -54,7 +55,7 @@ namespace Itinero.Transit.Journey.Filter
 
         public bool ShouldBeChecked(ProfiledParetoFrontier<T> frontier)
         {
-            var curScanTime = _clock.DepartureTime;
+            var curScanTime = _clock.CurrentDateTime;
             // ReSharper disable once InvertIf
             if (curScanTime != _alreadyCleanedScanTime)
             {

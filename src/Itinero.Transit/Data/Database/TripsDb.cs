@@ -15,7 +15,7 @@ namespace Itinero.Transit.Data
     /// <summary>
     /// A trips database.
     /// </summary>
-    public class TripsDb
+    public class TripsDb : IDatabaseReader<TripId, Trip>
     {
         private readonly ArrayBase<string> _tripIds; // holds the trip ids.
         private readonly ArrayBase<uint> _tripAttributeIds; // holds the trip attribute ids.
@@ -28,7 +28,8 @@ namespace Itinero.Transit.Data
 
         private readonly AttributesIndex _attributes;
         private uint _nextId;
-        private uint _dbId;
+        private readonly uint _dbId;
+        public IEnumerable<uint> DatabaseIds { get; }
 
         /// <summary>
         /// Creates a new trips database.
@@ -36,6 +37,7 @@ namespace Itinero.Transit.Data
         internal TripsDb(uint dbId)
         {
             _dbId = dbId;
+            DatabaseIds = new[] {dbId};
             _tripIds = new MemoryArray<string>(0);
             _tripAttributeIds = new MemoryArray<uint>(0);
             _tripIdPointersPerHash = new MemoryArray<uint>(_tripIdHashSize);
@@ -195,97 +197,51 @@ namespace Itinero.Transit.Data
                 _tripIdLinkedListPointer, _nextId, _tripIdHashSize);
         }
 
-        /// <summary>
-        /// Gets the reader.
-        /// </summary>
-        /// <returns>The reader.</returns>
-        public TripsDbReader GetReader()
+        public bool Get(string globalId, Trip objectToWrite)
         {
-            return new TripsDbReader(_dbId, this);
+            // The databases use an internal linked list
+            // We calculate the initial pointer based on the hash...
+            var hash = Hash(globalId);
+            // and use the dictionary to get an initial pointer
+            var pointer = _tripIdPointersPerHash[hash];
+            while (pointer != _noData)
+            {
+                // The linked list is basically 
+                // an array of [internalId, nextBucketPointer, internalId, nextBucketPointer, ... ]
+                var internalId = _tripIdLinkedList[pointer + 0];
+                if (Get(new TripId(_dbId, internalId), objectToWrite))
+                {
+                    var potentialMatch = _tripIds[internalId];
+                    if (potentialMatch == globalId)
+                    {
+                        return true;
+                    }
+                }
+
+                pointer = _tripIdLinkedList[pointer + 1];
+            }
+
+            return false;
         }
 
-        /// <summary>
-        /// A trips reader.
-        /// </summary>
-        public class TripsDbReader : ITripReader
+        public bool Get(TripId id, Trip objectToWrite)
         {
-            private readonly uint _dbId;
-            private readonly TripsDb _tripsDb;
-
-            internal TripsDbReader(uint dbId, TripsDb tripsDb)
+            if (id.DatabaseId != _dbId)
             {
-                _dbId = dbId;
-                _tripsDb = tripsDb;
-            }
-
-            private uint _tripId = uint.MaxValue;
-
-            /// <summary>
-            /// Moves this enumerator to the given trip.
-            /// </summary>
-            /// <param name="trip">The trip.</param>
-            /// <returns>True if there is more data.</returns>
-            public bool MoveTo(uint trip)
-            {
-                if (trip >= _tripsDb._nextId) return false;
-
-                _tripId = trip;
-                return true;
-            }
-
-            /// <summary>
-            /// Moves this enumerator to the given trip.
-            /// </summary>
-            /// <param name="trip">The trip.</param>
-            /// <returns>True if there is more data.</returns>
-            public bool MoveTo(TripId trip)
-            {
-                // ReSharper disable once ConvertIfStatementToReturnStatement
-                if (trip.DatabaseId != _dbId)
-                {
-                    return false;
-                }
-
-                return MoveTo(trip.InternalId);
-            }
-
-            /// <summary>
-            /// Moves this enumerator to the trip with the given global id.
-            /// </summary>
-            /// <param name="globalId">The global id.</param>
-            /// <returns>True if the trip was found and there is data.</returns>
-            public bool MoveTo(string globalId)
-            {
-                var hash = _tripsDb.Hash(globalId);
-                var pointer = _tripsDb._tripIdPointersPerHash[hash];
-                while (pointer != _noData)
-                {
-                    var tripId = _tripsDb._tripIdLinkedList[pointer + 0];
-
-                    if (MoveTo(tripId))
-                    {
-                        var potentialMatch = GlobalId;
-                        if (potentialMatch == globalId)
-                        {
-                            _tripId = tripId;
-                            return true;
-                        }
-                    }
-
-                    pointer = _tripsDb._tripIdLinkedList[pointer + 1];
-                }
-
                 return false;
             }
 
-            /// <inheritdoc />
-            public IAttributeCollection Attributes => _tripsDb._attributes.Get(_tripsDb._tripAttributeIds[_tripId]);
+            var internalId = id.InternalId;
+            if (internalId >= _nextId)
+            {
+                return false;
+            }
 
-            /// <inheritdoc />
-            public TripId Id => new TripId(_dbId, _tripId);
+            objectToWrite.Id = id;
+            objectToWrite.GlobalId = _tripIds[internalId];
+            objectToWrite.Attributes = _attributes.Get(_tripAttributeIds[internalId]);
 
-            /// <inheritdoc />
-            public string GlobalId => _tripsDb._tripIds[_tripId];
+            return true;
         }
     }
 }

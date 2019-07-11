@@ -12,31 +12,34 @@ namespace Itinero.Transit.IO.LC.Data
     [Serializable]
     public class TimeTable : LinkedObject
     {
+        public Uri Uri { get; }
         private Uri Next { get; set; }
         private Uri Prev { get; set; }
 
         private DateTime _startTime, _endTime;
 
         private List<Connection> Graph { get; set; }
-        
-        public TimeTable(Uri uri) : base(uri)
+
+        public TimeTable(Uri uri)
         {
+            Uri = uri;
         }
 
-        public TimeTable(JObject json) : base(new Uri(json["@id"].ToString()))
+        public TimeTable(JObject json)
         {
+            Uri = new Uri(json["@id"].ToString());
             FromJson(json);
         }
 
-        protected sealed override void FromJson(JObject json)
+        public void FromJson(JObject json)
         {
-            if(!json.IsType("http://www.w3.org/ns/hydra/core#PartialCollectionView") && 
-               !json.IsType("http://www.w3.org/ns/hydra/core#PagedCollection"))
+            if (!json.IsType("http://www.w3.org/ns/hydra/core#PartialCollectionView") &&
+                !json.IsType("http://www.w3.org/ns/hydra/core#PagedCollection"))
             {
-                throw new ArgumentException("The passed JSON does not follow the expected ontology");                
+                throw new ArgumentException("The passed JSON does not follow the expected ontology");
             }
 
-            
+
             Next = new Uri(json["http://www.w3.org/ns/hydra/core#next"][0]["@id"].ToString());
             Prev = new Uri(json["http://www.w3.org/ns/hydra/core#previous"][0]["@id"].ToString());
             _startTime = _extractTime(new Uri(json["@id"].ToString()));
@@ -47,14 +50,13 @@ namespace Itinero.Transit.IO.LC.Data
             var jsonGraph = json["@graph"];
             foreach (var conn in jsonGraph)
             {
-                
                 try
                 {
                     Graph.Add(new Connection((JObject) conn));
                 }
                 catch (ArgumentException e)
                 {
-                        Log.Information($"Connection ignored due to exceptions {e}");
+                    Log.Information($"Connection ignored due to exceptions {e}");
                 }
             }
         }
@@ -124,7 +126,7 @@ namespace Itinero.Transit.IO.LC.Data
 
         public DateTime NextTableTime()
         {
-          return  _extractTime(Next);
+            return _extractTime(Next);
         }
 
         public Uri NextTable()
@@ -141,6 +143,5 @@ namespace Itinero.Transit.IO.LC.Data
         {
             return Graph;
         }
-
     }
 }

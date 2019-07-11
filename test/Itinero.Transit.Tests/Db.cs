@@ -13,7 +13,7 @@ namespace Itinero.Transit.Tests
             out LocationId stop10,
             out LocationId stop11)
         {
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
@@ -41,29 +41,28 @@ namespace Itinero.Transit.Tests
             writer.AddOrUpdateConnection(stop1, stop3,
                 "https://example.com/connections/2",
                 new DateTime(2018, 12, 04, 16, 35, 00, DateTimeKind.Utc),
-                40 * 60, 0, 0,new TripId (0, 0), 0);
+                40 * 60, 0, 0, new TripId(0, 0), 0);
 
             // We add a very early and late connection in order to be able to run the algos and not run out of connections
             writer.AddOrUpdateConnection(stop10, stop11,
                 "https://example.com/connections/100",
                 new DateTime(2018, 12, 04, 23, 30, 00, DateTimeKind.Utc),
-                120, 0, 0,new TripId (0, 100), 0);
+                120, 0, 0, new TripId(0, 100), 0);
 
             writer.AddOrUpdateConnection(stop11, stop10,
                 "AddOrUpdateConnection://example.com/connections/101",
                 new DateTime(2018, 12, 04, 00, 30, 00, DateTimeKind.Utc),
-                120, 0, 0,new TripId (0, 100), 0);
+                120, 0, 0, new TripId(0, 100), 0);
 
             writer.Close();
 
             return transitDb;
         }
 
-        public static IConnection GetConn(this TransitDb.TransitDbSnapShot db, uint id)
+        public static SimpleConnection GetConn(this TransitDb.TransitDbSnapShot db, uint id)
         {
             var reader = db.ConnectionsDb.GetReader();
-            reader.MoveTo(id);
-            return reader;
+            return reader.Get(new ConnectionId(0, id));
         }
     }
 }

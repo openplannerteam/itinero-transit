@@ -143,7 +143,7 @@ namespace Itinero.Transit.IO.LC
         /// <returns></returns>
         private LocationId AddLocation(Location location)
         {
-            var globalId = location.Id();
+            var globalId = location.Uri;
             var stopId = globalId.ToString();
 
             var attributes = new AttributeCollection();
@@ -188,7 +188,7 @@ namespace Itinero.Transit.IO.LC
 
             var tripId = AddTrip(connection);
 
-            var connectionUri = connection.Id().ToString();
+            var connectionUri = connection.Uri.ToString();
 
             
             ushort mode = 0;

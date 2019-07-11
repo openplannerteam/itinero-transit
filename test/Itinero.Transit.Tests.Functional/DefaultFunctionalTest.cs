@@ -40,7 +40,7 @@ namespace Itinero.Transit.Tests.Functional
             return false;   
         }
 
-        public void NoLoops(Journey<T> journey, IStopsReader stops, IConnectionReader conn)
+        public void NoLoops(Journey<T> journey, IStopsReader stops, IDatabaseReader<ConnectionId, SimpleConnection> conn)
         {
             if (ContainsLoop(journey))
             {

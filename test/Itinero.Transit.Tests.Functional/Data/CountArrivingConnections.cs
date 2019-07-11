@@ -2,19 +2,20 @@ using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Tests.Functional.Data
 {
-    public class CountArrivingConnections : 
+    public class CountArrivingConnections :
         FunctionalTest<uint, (ConnectionsDb, LocationId)>
     {
-        
         public static readonly CountArrivingConnections Default = new CountArrivingConnections();
-        
+
         protected override uint Execute((ConnectionsDb, LocationId) input)
         {
             var count = (uint) 0;
-            var enumerator = input.Item1.GetDepartureEnumerator();
-            while (enumerator.MoveNext())
+            var enumerator = input.Item1.GetReader();
+            var index = enumerator.First().Value;
+            while (enumerator.HasNext(index, out index))
             {
-                if (Equals(enumerator.ArrivalStop, input.Item2))
+                var c = enumerator.Get(index);
+                if (Equals(c.ArrivalStop, input.Item2))
                 {
                     count++;
                 }
@@ -23,6 +24,5 @@ namespace Itinero.Transit.Tests.Functional.Data
             Information($"Counted {count} connections arriving at the requested location {input.Item2}");
             return count;
         }
-
     }
 }

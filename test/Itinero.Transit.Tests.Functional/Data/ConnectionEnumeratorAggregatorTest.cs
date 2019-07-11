@@ -12,15 +12,17 @@ namespace Itinero.Transit.Tests.Functional.Data
         protected override bool Execute((IEnumerable<TransitDb> dbs, DateTime date) input)
         {
 
-            var reader = ConnectionEnumeratorAggregator.CreateFrom(input.dbs.Select(a => a.Latest));
-            reader.MovePrevious(input.date.Date.AddHours(3));
+            var reader = ConnectionEnumeratorAggregator.CreateFrom(input.dbs.Select(a => a.Latest.ConnectionsDb.GetDepartureEnumerator()));
+            reader.MoveTo(input.date.Date.AddHours(3).ToUnixTime());
             //while (reader.DepartureTime.FromUnixTime() < input.date.Date.AddHours(1))
             var alreadySeen = new HashSet<string>();
             var timeout = 10;
-            while(reader.MovePrevious())
+            var c = new SimpleConnection();
+            while(reader.HasPrevious())
             {
-                Information($"{reader.DepartureTime.FromUnixTime():s}");
-                var id = reader.GlobalId;
+                reader.Current(c);
+                Information($"{c.DepartureTime.FromUnixTime():s}");
+                var id = c.GlobalId;
                 Information(id);
                 if (alreadySeen.Contains(id))
                 {

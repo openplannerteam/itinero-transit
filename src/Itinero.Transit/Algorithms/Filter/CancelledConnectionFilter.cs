@@ -7,7 +7,7 @@ namespace Itinero.Transit.Journey.Filter
     /// </summary>
     public class CancelledConnectionFilter : IConnectionFilter
     {
-        public bool CanBeTaken(IConnection c)
+        public bool CanBeTaken(SimpleConnection c)
         {
             return !c.IsCancelled();
         }

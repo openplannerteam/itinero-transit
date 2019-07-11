@@ -10,18 +10,6 @@ namespace Itinero.Transit.Data
         /// </summary>
         uint DatabaseId { get; }
     }
-
-    public interface IDatabaseEnumerator<TId, in T> where TId : struct
-    {
-        /// <summary>
-        /// Gives the first identifier.
-        /// Returns null if the collection is empty
-        /// </summary>
-        /// <returns></returns>
-        TId? First();
-        bool HasNext(TId current, T next);
-    }
-
     public interface IDatabaseReader<Tid, in T>
         where Tid : InternalId, new()
     {
@@ -55,8 +43,8 @@ namespace Itinero.Transit.Data
         public static bool Get<Tid, T>(
             this IDatabaseReader<Tid, T> db, string globalId, out T found) where Tid : InternalId, new() where T : new()
         {
-           found = new T();
-           return db.Get(globalId, found);
+            found = new T();
+            return db.Get(globalId, found);
         }
         public static T Get<Tid, T>(this IDatabaseReader<Tid, T> db, Tid id)
             where T : new() where Tid : InternalId, new()
@@ -70,4 +58,23 @@ namespace Itinero.Transit.Data
             return default(T);
         }
     }
+    public interface IDatabaseEnumerator<TId, in T> where TId : struct
+    {
+        /// <summary>
+        /// Gives the first identifier.
+        /// Returns null if the collection is empty
+        /// </summary>
+        /// <returns></returns>
+        TId? First();
+        /// <summary>
+        /// Gives the next index based on the current
+        /// SHould be Pure
+        /// </summary>
+        /// <param name="current"></param>
+        /// <param name="next"></param>
+        /// <returns></returns>
+        bool HasNext(TId current, out TId next);
+    }
+
+
 }

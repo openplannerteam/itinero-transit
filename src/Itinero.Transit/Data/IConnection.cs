@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Itinero.Transit.Data
 {
     /// <summary>
@@ -8,7 +10,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// Gets the internal connection id.
         /// </summary>
-        uint Id { get; }
+        ConnectionId Id { get; }
 
 
         /// <summary>
@@ -74,36 +76,24 @@ namespace Itinero.Transit.Data
 
     public static class ConnectionExtensions
     {
-        public static bool CanGetOn(this IConnection c)
-        {
-            var m = (c.Mode % 4);
-            return m == 0 || m == 1;
-        }
+    }
 
-        public static bool CanGetOff(this IConnection c)
-        {
-            var m = (c.Mode % 4);
-            return m == 0 || m == 2;
-        }
-
-        public static bool IsCancelled(this IConnection c)
-        {
-            return (c.Mode & ModeCancelled) == ModeCancelled;
-        }
-
-
+    public class SimpleConnection
+    {
         public const ushort ModeNormal = 0;
         public const ushort ModeGetOnOnly = 1;
         public const ushort ModeGetOffOnly = 2;
         public const ushort ModeCantGetOnOff = 3;
 
         public const ushort ModeCancelled = 4;
-    }
 
-    public class SimpleConnection : IConnection
-    {
+        public SimpleConnection()
+        {
+        }
+
         public SimpleConnection(
-            uint id, string globalId,
+            ConnectionId id,
+            string globalId,
             LocationId departureStop,
             LocationId arrivalStop,
             ulong departureTime,
@@ -127,26 +117,87 @@ namespace Itinero.Transit.Data
             ArrivalTime = departureTime + travelTime;
         }
 
-        public uint Id { get; }
+        public ConnectionId Id { get; set; }
+        public string GlobalId { get; set; }
 
-        public string GlobalId { get; }
+        public ulong ArrivalTime { get; set; }
 
-        public ulong ArrivalTime { get; }
+        public ulong DepartureTime { get; set; }
 
-        public ulong DepartureTime { get; }
+        public ushort TravelTime { get; set; }
 
-        public ushort TravelTime { get; }
+        public ushort ArrivalDelay { get; set; }
 
-        public ushort ArrivalDelay { get; }
+        public ushort DepartureDelay { get; set; }
 
-        public ushort DepartureDelay { get; }
+        public ushort Mode { get; set; }
 
-        public ushort Mode { get; }
+        public TripId TripId { get; set; }
 
-         public TripId TripId { get; }
+        public LocationId DepartureStop { get; set; }
 
-        public LocationId DepartureStop { get; }
+        public LocationId ArrivalStop { get; set; }
 
-        public LocationId ArrivalStop { get; }
+
+        public bool CanGetOn()
+        {
+            var m = (Mode % 4);
+            return m == 0 || m == 1;
+        }
+
+        public bool CanGetOff()
+        {
+            var m = (Mode % 4);
+            return m == 0 || m == 2;
+        }
+
+        public bool IsCancelled()
+        {
+            return (Mode & ModeCancelled) == ModeCancelled;
+        }
+
+
+        public override bool Equals(object obj)
+        {
+            if (obj is SimpleConnection c)
+            {
+                return Equals(this, c);
+            }
+
+            return false;
+        }
+
+
+        public bool Equals(SimpleConnection x, SimpleConnection y)
+        {
+            if (ReferenceEquals(x, y)) return true;
+            if (ReferenceEquals(x, null)) return false;
+            if (ReferenceEquals(y, null)) return false;
+            if (x.GetType() != y.GetType()) return false;
+            return x.Id.Equals(y.Id) && string.Equals(x.GlobalId, y.GlobalId) && x.ArrivalTime == y.ArrivalTime &&
+                   x.DepartureTime == y.DepartureTime && x.TravelTime == y.TravelTime &&
+                   x.ArrivalDelay == y.ArrivalDelay && x.DepartureDelay == y.DepartureDelay && x.Mode == y.Mode &&
+                   x.TripId.Equals(y.TripId) && x.DepartureStop.Equals(y.DepartureStop) &&
+                   x.ArrivalStop.Equals(y.ArrivalStop);
+        }
+
+        public int GetHashCode(SimpleConnection obj)
+        {
+            unchecked
+            {
+                var hashCode = obj.Id.GetHashCode();
+                hashCode = (hashCode * 397) ^ obj.GlobalId.GetHashCode();
+                hashCode = (hashCode * 397) ^ obj.ArrivalTime.GetHashCode();
+                hashCode = (hashCode * 397) ^ obj.DepartureTime.GetHashCode();
+                hashCode = (hashCode * 397) ^ obj.TravelTime.GetHashCode();
+                hashCode = (hashCode * 397) ^ obj.ArrivalDelay.GetHashCode();
+                hashCode = (hashCode * 397) ^ obj.DepartureDelay.GetHashCode();
+                hashCode = (hashCode * 397) ^ obj.Mode.GetHashCode();
+                hashCode = (hashCode * 397) ^ obj.TripId.GetHashCode();
+                hashCode = (hashCode * 397) ^ obj.DepartureStop.GetHashCode();
+                hashCode = (hashCode * 397) ^ obj.ArrivalStop.GetHashCode();
+                return hashCode;
+            }
+        }
     }
 }

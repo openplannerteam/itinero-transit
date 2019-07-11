@@ -12,9 +12,12 @@ namespace Itinero.Transit.Data
     /// </summary>
     public class TransitDb
     {
+        public uint DatabaseId { get; }
+
         public TransitDb(uint databaseId = 0) : this(
             new StopsDb(databaseId), new TripsDb(databaseId), new ConnectionsDb(databaseId))
         {
+            DatabaseId = databaseId;
         }
 
         private TransitDb(StopsDb stopsDb, TripsDb tripsDb, ConnectionsDb connectionsDb)
@@ -195,10 +198,9 @@ namespace Itinero.Transit.Data
             /// <returns>The trip id.</returns>
             public TripId AddOrUpdateTrip(string globalId, IEnumerable<Attribute> attributes = null)
             {
-                var tripsDbReader = _tripsDb.GetReader();
-                if (tripsDbReader.MoveTo(globalId))
+                if (_tripsDb.Get(globalId, out var found))
                 {
-                    return tripsDbReader.Id;
+                    return found.Id;
                 }
 
                 return _tripsDb.Add(globalId, attributes);
@@ -217,20 +219,30 @@ namespace Itinero.Transit.Data
             /// <param name="tripId">The trip id.</param>
             /// <param name="mode"></param>
             /// <returns></returns>
-            public uint AddOrUpdateConnection(LocationId stop1,
+            public ConnectionId AddOrUpdateConnection(LocationId stop1,
                 LocationId stop2, string globalId, DateTime departureTime, ushort travelTime,
                 ushort departureDelay, ushort arrivalDelay, TripId tripId, ushort mode)
             {
-                return _connectionsDb.AddOrUpdate(stop1, stop2, globalId, departureTime.ToUnixTime(), travelTime,
-                    departureDelay,
-                    arrivalDelay, tripId, mode);
+                var internalId = _connectionsDb.AddOrUpdate(
+                    new SimpleConnection(
+                        new ConnectionId(0,0),
+                        globalId,
+                        stop1,
+                        stop2,
+                        departureTime.ToUnixTime(),
+                        travelTime,
+                        arrivalDelay,
+                        departureDelay,
+                        mode,
+                        tripId
+                        )
+                    );
+                return new ConnectionId(_connectionsDb.DatabaseId, internalId);
             }
 
-            public uint AddOrUpdateConnection(string globalId, IConnection c)
+            public uint AddOrUpdateConnection(SimpleConnection c)
             {
-                return _connectionsDb.AddOrUpdate(c.DepartureStop, c.ArrivalStop, globalId, c.DepartureTime,
-                    c.TravelTime,
-                    c.DepartureDelay, c.ArrivalDelay, c.TripId, c.Mode);
+                return _connectionsDb.AddOrUpdate(c);
             }
 
             /// <summary>

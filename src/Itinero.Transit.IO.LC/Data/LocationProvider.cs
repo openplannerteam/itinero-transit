@@ -13,6 +13,7 @@ namespace Itinero.Transit.IO.LC.Data
     [Serializable]
     public class LocationProvider : LinkedObject
     {
+        public Uri Uri { get; }
         public readonly List<Location> Locations = new List<Location>();
 
         private readonly Dictionary<string, Location> _locationMapping = new Dictionary<string, Location>();
@@ -22,24 +23,12 @@ namespace Itinero.Transit.IO.LC.Data
 
         private float _minLat, _maxLat, _minLon, _maxLon;
 
-        public LocationProvider(Uri uri) : base(uri)
+        public LocationProvider(Uri uri)
         {
+            Uri = uri;
         }
 
-        /// <summary>
-        /// Constructor with a number of preloaded locations.
-        /// Mainly used for testing
-        /// </summary>
-        /// <param name="uri"></param>
-        /// <param name="locations"></param>
-        public LocationProvider(Uri uri, IEnumerable<Location> locations)
-            : base(uri)
-        {
-            Locations = new List<Location>(locations);
-            ProcessLocations();
-        }
-
-        protected override void FromJson(JObject json)
+        public void FromJson(JObject json)
         {
             _minLat = 180f;
             _minLon = 180f;
@@ -91,16 +80,6 @@ namespace Itinero.Transit.IO.LC.Data
             return string.Empty;
         }
 
-        public bool ContainsLocation(Uri locationId)
-        {
-            return _locationMapping.ContainsKey(locationId.ToString());
-        }
-
-        public bool TryGetCoordinateFor(Uri locationId, out Location location)
-        {
-            return _locationMapping.TryGetValue(locationId.ToString(), out location);
-        }
-
         public Location GetCoordinateFor(Uri locationId)
         {
             if (_locationMapping.TryGetValue(locationId.ToString(), out var value))
@@ -116,12 +95,5 @@ namespace Itinero.Transit.IO.LC.Data
         {
             return _nameMapping[name];
         }
-
-        public IEnumerable<Location> GetAllLocations()
-        {
-            return Locations;
-        }
-
-   
     }
 }

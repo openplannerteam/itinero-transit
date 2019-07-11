@@ -23,14 +23,14 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             // Departs at Loc1 at 90
             var atLoc1 = genesis.ChainBackward(
-                new SimpleConnection(0, "0", loc1, loc2, 90, 10, 0, 0, 0, new TripId(0, 0)));
+                new SimpleConnection(new ConnectionId(0,0), "0", loc1, loc2, 90, 10, 0, 0, 0, new TripId(0, 0)));
 
             // Departs at Loc0 at 50, no transfers
             var direct = atLoc1.ChainBackward(
-                new SimpleConnection(1, "1", loc0, loc1, 50, 10, 0, 0, 0, new TripId(0, 0)));
+                new SimpleConnection(new ConnectionId(0,1), "1", loc0, loc1, 50, 10, 0, 0, 0, new TripId(0, 0)));
             // Departs at Loc0 at 60, one transfers
             var transfered = atLoc1.ChainBackward(
-                new SimpleConnection(2, "2", loc0, loc1, 60, 10, 0, 0, 0, new TripId(0, 1)));
+                new SimpleConnection(new ConnectionId(0,2), "2", loc0, loc1, 60, 10, 0, 0, 0, new TripId(0, 1)));
 
             var loc0Frontier = new ProfiledParetoFrontier<TransferMetric>(TransferMetric.ParetoCompare, null);
             loc0Frontier.AddToFrontier(transfered);
@@ -38,7 +38,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             
             var extended = loc0Frontier.ExtendFrontierBackwards(
                 // Arrives at loc0 at 55 => direct can not be taken anymore, transfered can
-                new DummyReader(), new SimpleConnection(6, "6", loc3, loc0, 45, 10, 0, 0, 0, new TripId(0, 1)),
+                new DummyReader(), new SimpleConnection(new ConnectionId(0,6), "6", loc3, loc0, 45, 10, 0, 0, 0, new TripId(0, 1)),
                 new InternalTransferGenerator());
             
             Assert.Equal(transfered, extended.Frontier[0].PreviousLink);
@@ -47,7 +47,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             extended = loc0Frontier.ExtendFrontierBackwards(
                 // Arrives at loc0 at 45 => both direct and transfered can be taken
                 new DummyReader(), 
-                new SimpleConnection(6, "6", loc3, loc0, 35, 10, 0, 0, 0,
+                new SimpleConnection(new ConnectionId(0,6), "6", loc3, loc0, 35, 10, 0, 0, 0,
                     new TripId(0, 1)),
                 new InternalTransferGenerator(0));
             // We expect both routes to be in the frontier... They are, but in a merged way
@@ -74,19 +74,19 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             // Departs from Loc1 at time 10s needed
             var atLoc1 = genesis.ChainBackward(
-                new SimpleConnection(0, "0", loc0, loc1, 50, 10, 0, 0, 0, new TripId(0, 0)));
+                new SimpleConnection(new ConnectionId(0,0), "0", loc0, loc1, 50, 10, 0, 0, 0, new TripId(0, 0)));
 
             // Departs from Loc2 (destination) at 25s needed, without transfer but slightly slow 
             var direct = atLoc1.ChainBackward(
-                new SimpleConnection(1, "1", loc1, loc2, 35, 10, 0, 0, 0, new TripId(0, 0)));
+                new SimpleConnection(new ConnectionId(0,1), "1", loc1, loc2, 35, 10, 0, 0, 0, new TripId(0, 0)));
 
             // Departs from Loc2 (destination) slightly faster (at 21s needed) but with one transfer
             var transferedFast = atLoc1.ChainBackward(
-                new SimpleConnection(2, "2", loc1, loc2, 39, 10, 0, 0, 0, new TripId(0, 1)));
+                new SimpleConnection(new ConnectionId(0,2), "2", loc1, loc2, 39, 10, 0, 0, 0, new TripId(0, 1)));
 
             // Departs from Loc2 (destination) slightly slower (at 23s needed) and with one transfer - suboptimal
             var transferedSlow = atLoc1.ChainBackward(
-                new SimpleConnection(2, "2", loc1, loc2, 37, 10, 0, 0, 0, new TripId(0, 1)));
+                new SimpleConnection(new ConnectionId(0,3), "3", loc1, loc2, 37, 10, 0, 0, 0, new TripId(0, 1)));
 
 
             // And now we add those to pareto frontier to test their behaviour

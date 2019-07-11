@@ -14,7 +14,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         [Fact]
         public void SimpleLasTest()
         {
-            var tdb = Db.GetDefaultTestDb(out var stop0, out var stop1, out var stop2, out var _, out var _, out var _);
+            var tdb = Db.GetDefaultTestDb(out var stop0, out var stop1, out var stop2, out _, out _, out _);
             var db = tdb.Latest;
 
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(0),
@@ -31,7 +31,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                     .LatestDepartureJourney();
                 
             Assert.NotNull(j);
-            Assert.Equal((uint) 0, j.Connection);
+            Assert.Equal(new ConnectionId(0,0), j.Connection);
 
             j = db.SelectProfile(profile)
                 .SelectStops(stop0, stop2)

@@ -264,7 +264,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var settings = calculator.GetScanSettings();
 
             settings.MetricGuesser = new SimpleMetricGuesser<TransferMetric>(
-                calculator.ConnectionReader,
+                calculator.ConnectionEnumerator,
                 calculator.From[0].Item1
             );
             

@@ -203,15 +203,15 @@ namespace Itinero.Transit.Algorithms.CSA
         {
             var enumerator = _connections;
             // Move the enumerator after the last arrival time
-            enumerator.MovePrevious(_lastArrival);
+            enumerator.MoveTo(_lastArrival);
 
-            while (enumerator.DepartureTime >= _earliestDeparture)
+            var c = new SimpleConnection();
+            while (
+                enumerator.HasPrevious() &&
+                enumerator.CurrentDateTime >= _earliestDeparture)
             {
-                if (!IntegrateBatch(enumerator))
-                {
-                    // Database depleted
-                    break;
-                }
+                enumerator.Current(c);
+                IntegrateConnection(c);
             }
 
             // The main algorithm is done
@@ -249,30 +249,10 @@ namespace Itinero.Transit.Algorithms.CSA
 
 
         /// <summary>
-        /// Integrates all connections of the enumerator where the departure time is the current departure time
-        /// </summary>
-        /// <param name="enumerator"></param>
-        private bool IntegrateBatch(IConnectionEnumerator enumerator)
-        {
-            var depTime = enumerator.DepartureTime;
-            do
-            {
-                IntegrateConnection(enumerator);
-                if (!enumerator.MovePrevious())
-                {
-                    return false;
-                }
-            } while (depTime == enumerator.DepartureTime);
-
-            return true;
-        }
-
-
-        /// <summary>
         /// Looks to this single connection, the actual PCS step
         /// </summary>
         /// <param name="c"></param>
-        private void IntegrateConnection(IConnection c)
+        private void IntegrateConnection(SimpleConnection c)
         {
             if (c.ArrivalTime > _lastArrival)
             {
@@ -349,7 +329,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         /// <param name="c"></param>
         /// <returns></returns>
-        private Journey<T> WalkToTargetFrom(IConnection c)
+        private Journey<T> WalkToTargetFrom(SimpleConnection c)
         {
             if (!c.CanGetOff())
             {
@@ -424,7 +404,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// Chains the given connection to the needed trips
         /// </summary>
         /// <param name="c"></param>
-        private ProfiledParetoFrontier<T> ExtendTrip(IConnection c)
+        private ProfiledParetoFrontier<T> ExtendTrip(SimpleConnection c)
         {
             var key = c.TripId;
             if (!_tripJourneys.ContainsKey(key))
@@ -453,7 +433,7 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
-        private ProfiledParetoFrontier<T> TransferAfter(IConnection c)
+        private ProfiledParetoFrontier<T> TransferAfter(SimpleConnection c)
         {
             // We have just taken C and are gonna transfer
             // In what possible journeys (if any) to the destination will this result?
@@ -600,7 +580,7 @@ namespace Itinero.Transit.Algorithms.CSA
             _tripJourneys = tripJourneys; // IMPORTANT: this is a pointer to the datastructure used in PCS!
         }
 
-        public bool CanBeTaken(IConnection c)
+        public bool CanBeTaken(SimpleConnection c)
         {
             if (_whiteListed.Contains(c.DepartureStop) ||
                 _whiteListed.Contains(c.ArrivalStop) ||

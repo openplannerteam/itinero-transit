@@ -35,10 +35,11 @@ namespace Itinero.Transit.Tests.Functional
             var devTestsOnly = args.Length == 0 ||
                                !new List<string> {"--full-test-suite", "--full", "--test"}.Contains(args[0].ToLower());
 
+
             // do some local caching.
             if (devTestsOnly)
             {
-                return;
+              //  return;
             }
 
             // These are all the tests, and will be run in full on the build server

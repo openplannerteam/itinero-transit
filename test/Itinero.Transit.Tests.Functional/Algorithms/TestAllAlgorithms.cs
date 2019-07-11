@@ -52,13 +52,14 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
 
         public static DateTime TestDate = new DateTime(2019, 05, 30, 09, 00, 00).ToUniversalTime().Date;
 
-        public const string _osmCentrumShuttle = "testdata/fixed-test-cases-osm-CentrumbusBrugge2019-05-30.transitdb";
-        public const string _nmbs = "testdata/fixed-test-cases-sncb-2019-05-30.transitdb";
-        public const string _delijnWvl = "testdata/fixed-test-cases-de-lijn-wvl-2019-05-30.transitdb";
-        public const string _delijnOVl = "testdata/fixed-test-cases-de-lijn-ovl-2019-05-30.transitdb";
-        public const string _delijnVlB = "testdata/fixed-test-cases-de-lijn-vlb-2019-05-30.transitdb";
-        public const string _delijnLim = "testdata/fixed-test-cases-de-lijn-lim-2019-05-30.transitdb";
-        public const string _delijnAnt = "testdata/fixed-test-cases-de-lijn-ant-2019-05-30.transitdb";
+        public const string _osmCentrumShuttle = 
+                                         "testdata/fixed-test-cases-osm-CentrumbusBrugge2019-07-11.transitdb";
+        public const string _nmbs =      "testdata/fixed-test-cases-sncb-2019-07-11.transitdb";
+        public const string _delijnWvl = "testdata/fixed-test-cases-de-lijn-wvl-2019-07-11.transitdb";
+        public const string _delijnOVl = "testdata/fixed-test-cases-de-lijn-ovl-2019-07-11.transitdb";
+        public const string _delijnVlB = "testdata/fixed-test-cases-de-lijn-vlb-2019-07-11.transitdb";
+        public const string _delijnLim = "testdata/fixed-test-cases-de-lijn-lim-2019-07-11.transitdb";
+        public const string _delijnAnt = "testdata/fixed-test-cases-de-lijn-ant-2019-07-11.transitdb";
 
 
 

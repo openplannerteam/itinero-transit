@@ -64,25 +64,26 @@ namespace Itinero.Transit.Journey
         /// 
         /// 
         /// </summary>
-        public readonly uint Connection;
+        public readonly ConnectionId Connection;
 
         /// <summary>
         /// Constant indicating that the journey starts here
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        public const uint GENESIS = 1;
+        public static readonly ConnectionId GENESIS = new ConnectionId(uint.MaxValue, 1);
 
         /// <summary>
         /// Constant indicating that the traveller is in some 'other mode', e.g. transfering, waiting or walking between stops
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        public const uint OTHERMODE = 2;
+        public static readonly ConnectionId OTHERMODE = new ConnectionId(uint.MaxValue, 2);
+
 
         /// <summary>
         /// Indicates that this journey represents a choice
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        public const uint JOINED_JOURNEYS = 4;
+        public static readonly ConnectionId JOINED_JOURNEYS = new ConnectionId(uint.MaxValue, 3);
 
         /// <summary>
         /// Keep track of Location.
@@ -132,7 +133,7 @@ namespace Itinero.Transit.Journey
         {
             Root = this;
             PreviousLink = this;
-            Connection = int.MaxValue;
+            Connection = ConnectionId.Invalid;
             Location = LocationId.Invalid;
             Time = time;
             SpecialConnection = true;
@@ -153,7 +154,8 @@ namespace Itinero.Transit.Journey
         /// <param name="time"></param>
         /// <param name="tripId"></param>
         /// <param name="metric"></param>
-        private Journey(Journey<T> root, Journey<T> previousLink, bool specialLink, uint connection,
+        private Journey(Journey<T> root,
+            Journey<T> previousLink, bool specialLink, ConnectionId connection,
             LocationId location, ulong time, TripId tripId, T metric)
         {
             Root = root;
@@ -226,7 +228,7 @@ namespace Itinero.Transit.Journey
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
         [Pure]
-        internal Journey<T> Chain(uint connection, ulong time, LocationId location,
+        internal Journey<T> Chain(ConnectionId connection, ulong time, LocationId location,
             TripId tripId)
         {
             return new Journey<T>(
@@ -234,10 +236,10 @@ namespace Itinero.Transit.Journey
         }
 
         [Pure]
-        public Journey<T> ChainForward(IConnection c)
+        public Journey<T> ChainForward(SimpleConnection c)
         {
             // ReSharper disable once InvertIf
-            if (SpecialConnection && Connection == GENESIS)
+            if (SpecialConnection && Equals(Connection, GENESIS))
             {
                 // We do something special here:
                 // We move the genesis to the departure time of the connection
@@ -250,10 +252,10 @@ namespace Itinero.Transit.Journey
         }
 
         [Pure]
-        public Journey<T> ChainBackward(IConnection c)
+        public Journey<T> ChainBackward(SimpleConnection c)
         {
             // ReSharper disable once InvertIf
-            if (SpecialConnection && Connection == GENESIS)
+            if (SpecialConnection && Equals(Connection, GENESIS))
             {
                 // We do something special here:
                 // We move the genesis to the departure time of the connection
@@ -270,7 +272,7 @@ namespace Itinero.Transit.Journey
         /// Gives a new journey which extends this journey with the given connection.
         /// </summary>
         [Pure]
-        public Journey<T> ChainSpecial(uint specialCode, ulong time,
+        public Journey<T> ChainSpecial(ConnectionId specialCode, ulong time,
             LocationId location, TripId tripId)
         {
             return new Journey<T>(
@@ -344,7 +346,7 @@ namespace Itinero.Transit.Journey
         [Pure]
         public ulong DepartureTime()
         {
-            if (SpecialConnection && Connection == GENESIS)
+            if (SpecialConnection && Equals(Connection, GENESIS))
             {
                 return Time;
             }
@@ -371,7 +373,8 @@ namespace Itinero.Transit.Journey
         {
             var j = this;
             while (restingJourney != null &&
-                   (!restingJourney.SpecialConnection || restingJourney.Connection != GENESIS))
+                   (!restingJourney.SpecialConnection ||
+                    !Equals(restingJourney.Connection, GENESIS)))
             {
                 // Resting journey is backwards - so restingJourney is departure, restingJourney.PreviousLink the arrival time
                 var timeDiff =
@@ -412,7 +415,7 @@ namespace Itinero.Transit.Journey
         }
 
         [Pure]
-        public string ToString(uint truncateAt, IStopsReader stops = null, IConnectionReader connection = null)
+        public string ToString(uint truncateAt, IStopsReader stops = null, IDatabaseReader<ConnectionId, SimpleConnection> connection = null)
         {
             if (Equals(InfiniteJourney))
             {
@@ -442,7 +445,8 @@ namespace Itinero.Transit.Journey
         }
 
         [Pure]
-        private string PartToString(IStopsReader stops, IConnectionReader connection)
+        private string PartToString(IStopsReader stops,
+            IDatabaseReader<ConnectionId, SimpleConnection> connectionReader)
         {
             var location = Location.ToString();
             var dbOperator = uint.MaxValue;
@@ -454,10 +458,10 @@ namespace Itinero.Transit.Journey
                 dbOperator = stops.Id.DatabaseId;
             }
 
-            string md = "";
-            if (connection != null)
+            var md = "";
+            if (connectionReader != null)
             {
-                connection.MoveTo(dbOperator, Connection);
+                var connection = connectionReader.Get(Connection);
                 switch (connection.Mode % 4)
                 {
                     case 1:
@@ -474,7 +478,7 @@ namespace Itinero.Transit.Journey
                         break;
                 }
 
-                if ((connection.Mode & 4 )== 4)
+                if ((connection.Mode & 4) == 4)
                 {
                     md += "; CANCELLED";
                 }
@@ -491,47 +495,49 @@ namespace Itinero.Transit.Journey
 
         private string SpecialPartToString(string location)
         {
-            switch (Connection)
+            if (Connection.Equals(GENESIS))
             {
-                case GENESIS:
-                    var freeForm = ", debugging free form tag is ";
+                var freeForm = ", debugging free form tag is ";
 
-                    if (TripId.Equals(EarliestArrivalScanJourney))
-                    {
-                        freeForm += "EAS";
-                    }
-                    else if (TripId.Equals(LatestArrivalScanJourney))
-                    {
-                        freeForm += "LAS";
-                    }
-                    else if (TripId.Equals(ProfiledScanJourney))
-                    {
-                        freeForm += "PCS";
-                    }
-                    else
-                    {
-                        freeForm = TripId.ToString();
-                    }
+                if (TripId.Equals(EarliestArrivalScanJourney))
+                {
+                    freeForm += "EAS";
+                }
+                else if (TripId.Equals(LatestArrivalScanJourney))
+                {
+                    freeForm += "LAS";
+                }
+                else if (TripId.Equals(ProfiledScanJourney))
+                {
+                    freeForm += "PCS";
+                }
+                else
+                {
+                    freeForm = TripId.ToString();
+                }
 
-                    return
-                        $"Genesis at {location}, time is {Time.FromUnixTime():s}{freeForm}";
-                case OTHERMODE:
-                    return
-                        $"Transfer/Wait/Walk for {Math.Abs((long) Time - (long) PreviousLink.Time)} seconds till {Time.FromUnixTime():s} in/to {location}";
-                case JOINED_JOURNEYS:
-                    return
-                        $"Choose a journey: there is a equivalent journey available. Continuing print via one arbitrary option";
-
-                case int.MaxValue:
-                    return "Infinite journey";
-                default:
-                    throw new ArgumentException($"Unknown Special Connection code {Connection}");
+                return
+                    $"Genesis at {location}, time is {Time.FromUnixTime():s}{freeForm}";
             }
+
+            if (Connection.Equals(OTHERMODE))
+            {
+                return
+                    $"Transfer/Wait/Walk for {Math.Abs((long) Time - (long) PreviousLink.Time)} seconds till {Time.FromUnixTime():s} in/to {location}";
+            }
+
+            if (Connection.Equals(JOINED_JOURNEYS))
+            {
+                return
+                    $"Choose a journey: there is a equivalent journey available. Continuing print via one arbitrary option";
+            }
+
+            throw new ArgumentException($"Unknown Special Connection code {Connection}");
         }
 
 
         [Pure]
-        protected bool Equals(Journey<T> other)
+        private bool Equals(Journey<T> other)
         {
             return _hashCode == other._hashCode;
         }
@@ -558,7 +564,7 @@ namespace Itinero.Transit.Journey
             {
                 var hashCode = SpecialConnection.GetHashCode();
                 hashCode = (hashCode * 397) ^ (PreviousLink?.GetHashCode() ?? 0);
-                hashCode = (hashCode * 397) ^ (int) Connection;
+                hashCode = (hashCode * 397) ^ Connection.GetHashCode();
                 hashCode = (hashCode * 397) ^ Location.GetHashCode();
                 hashCode = (hashCode * 397) ^ Time.GetHashCode();
                 hashCode = (hashCode * 397) ^ TripId.GetHashCode();

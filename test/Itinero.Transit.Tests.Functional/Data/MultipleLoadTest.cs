@@ -26,13 +26,16 @@ namespace Itinero.Transit.Tests.Functional.Data
 
             var hours = 24;
 
-            dbUpdater.UpdateTimeFrame(DateTime.Today.ToUniversalTime(), DateTime.Today.AddHours(hours).ToUniversalTime());
+            dbUpdater.UpdateTimeFrame(DateTime.Today.ToUniversalTime(),
+                DateTime.Today.AddHours(hours).ToUniversalTime());
             Test(db);
 
-            dbUpdater.UpdateTimeFrame(DateTime.Today.AddDays(1).ToUniversalTime(), DateTime.Today.AddDays(1).AddHours(hours).ToUniversalTime());
+            dbUpdater.UpdateTimeFrame(DateTime.Today.AddDays(1).ToUniversalTime(),
+                DateTime.Today.AddDays(1).AddHours(hours).ToUniversalTime());
             Test(db);
 
-            dbUpdater.UpdateTimeFrame(DateTime.Today.AddHours(-hours).ToUniversalTime(), DateTime.Today.AddHours(0).ToUniversalTime());
+            dbUpdater.UpdateTimeFrame(DateTime.Today.AddHours(-hours).ToUniversalTime(),
+                DateTime.Today.AddHours(0).ToUniversalTime());
             Test(db);
 
             return 1;
@@ -45,15 +48,11 @@ namespace Itinero.Transit.Tests.Functional.Data
             var enumerator = conns.GetDepartureEnumerator();
             var count = 0;
 
-            enumerator.MoveNext(DateTime.Today.AddHours(10).ToUniversalTime());
+            enumerator.MoveTo(DateTime.Today.AddHours(10).ToUniversalTime().ToUnixTime());
             var endTime = DateTime.Today.AddHours(11).ToUniversalTime().ToUnixTime();
-            while (enumerator.DepartureTime < endTime)
+            while (enumerator.HasNext() && enumerator.CurrentDateTime < endTime)
             {
                 count++;
-                if (!enumerator.MoveNext())
-                {
-                    break;
-                }
             }
 
             True(count > 0);

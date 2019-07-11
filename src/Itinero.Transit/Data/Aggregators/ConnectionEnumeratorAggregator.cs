@@ -1,277 +1,180 @@
-using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Itinero.Transit.Data.Aggregators
 {
     public class ConnectionEnumeratorAggregator : IConnectionEnumerator
     {
-        private IConnectionEnumerator _currentConnection;
+        private readonly IConnectionEnumerator[] _enumerators;
+        private readonly bool[] _canContinue;
+        private uint _currentBest;
 
-        private readonly IConnectionEnumerator _a, _b;
-        private bool _aDepleted, _bDepleted;
 
-        public static IConnectionEnumerator CreateFrom(IEnumerable<TransitDb.TransitDbSnapShot> enumerators)
+        private ConnectionEnumeratorAggregator(IEnumerable<IConnectionEnumerator> sources)
         {
-            var depEnumerators =
-                enumerators.Select(tdb => (IConnectionEnumerator) tdb.ConnectionsDb.GetDepartureEnumerator()).ToList();
-            return CreateFrom(depEnumerators);
+            _enumerators = sources.ToArray();
+            _canContinue = new bool[_enumerators.Length];
         }
 
-        public static IConnectionEnumerator CreateFrom(List<IConnectionEnumerator> enumerators)
+
+        public void MoveTo(ulong dateTime)
         {
-            if (enumerators.Count == 0)
+            foreach (var e in _enumerators)
             {
-                throw new Exception("No enumerators found");
+                e.MoveTo(dateTime);
             }
 
-            if (enumerators.Count == 1)
-            {
-                return enumerators[0];
-            }
-
-            return new ConnectionEnumeratorAggregator(enumerators);
-        }
-
-        private ConnectionEnumeratorAggregator(List<IConnectionEnumerator> enumerators)
-        {
-            switch (enumerators.Count)
-            {
-                case 0:
-                case 1:
-                    throw new ArgumentException("At least two enumerators are needed to fuse them");
-                case 2:
-                    _a = enumerators[0];
-                    _b = enumerators[1];
-                    break;
-                case 3:
-                    _a = enumerators[0];
-                    _b = new ConnectionEnumeratorAggregator(enumerators[1], enumerators[2]);
-                    break;
-                default:
-                    var halfway = enumerators.Count / 2;
-                    _a = CreateFrom(enumerators.GetRange(0, halfway));
-                    _b = CreateFrom(enumerators.GetRange(halfway, enumerators.Count - halfway));
-                    break;
-            }
-        }
-
-        private ConnectionEnumeratorAggregator(IConnectionEnumerator a, IConnectionEnumerator b)
-        {
-            _a = a;
-            _b = b;
+            _currentBest = uint.MaxValue;
         }
 
 
-        private void MoveNextA(DateTime? dateTime = null)
+        public bool HasNext()
         {
-            try
+            
+            // Actual initialization
+            if (_currentBest == uint.MaxValue)
             {
-                if (!_a.MoveNext(dateTime))
+                var oneFound = false;
+                var lowestTime = ulong.MaxValue;
+                for (var i = 0; i < _enumerators.Length; i++)
                 {
-                    _aDepleted = true;
+                    var ei = _enumerators[i];
+                    var found = ei.HasNext();
+                    oneFound |= found;
+                    _canContinue[i] = found;
+                    // ReSharper disable once InvertIf
+                    if (found && ei.CurrentDateTime < lowestTime)
+                    {
+                        _currentBest = (uint) i;
+                        lowestTime =  ei.CurrentDateTime;
+                    }
                 }
-            }
-            catch
-            {
-                _aDepleted = true;
-            }
-        }
 
-        private void MoveNextB(DateTime? dateTime = null)
-        {
-            try
-            {
-                if (!_b.MoveNext(dateTime))
-                {
-                    _bDepleted = true;
-                }
+                return oneFound;
             }
-            catch
+            
+            
+            // We increase the enumerator which has been read: namely the current lowest
+            // We keep track of its date though...
+            var curLow = _enumerators[_currentBest];
+            var oldDate = curLow.CurrentDateTime;
+            if (!curLow.HasNext())
             {
-                _bDepleted = true;
+                _canContinue[_currentBest] = false;
             }
-        }
-
-        private void MoveNextCurrent()
-        {
-            if (_currentConnection == null)
+            else if (oldDate == curLow.CurrentDateTime)
             {
-                throw new InvalidOperationException(
-                    "Initialize the enumerator first with 'movePrevious(DateTime)' or 'moveNext(DateTime)'");
-            }
-
-            if (_currentConnection.MoveNext())
-            {
-                return;
-            }
-
-            // The enumerator has depleted
-            // We figure out which one and mark it as used
-            if (_currentConnection == _a)
-            {
-                _aDepleted = true;
-            }
-            else
-            {
-                _bDepleted = true;
-            }
-        }
-
-
-        public bool MoveNext(DateTime? dateTime = null)
-        {
-            if (dateTime != null)
-            {
-                _aDepleted = false;
-                _bDepleted = false;
-                // We have to initialize
-                MoveNextA(dateTime);
-                MoveNextB(dateTime);
-            }
-            else
-            {
-                MoveNextCurrent();
-            }
-
-            if (_aDepleted && _bDepleted)
-            {
-                // Both are depleted
-                return false;
-            }
-
-            if (_bDepleted)
-            {
-                // _a is still loaded
-                _currentConnection = _a;
+                // Current lowest does not change and has a next value
+                // All done
                 return true;
             }
 
-            if (_aDepleted)
+            var nextFound = false;
+            _currentBest = int.MaxValue;
+            var currentLowestTime = ulong.MaxValue;
+            // We need to search a new currentLowest
+            for (var i = 0; i < _enumerators.Length; i++)
             {
-                // _b is still loaded
-                _currentConnection = _b;
-                return true;
-            }
 
-            // Both are still loaded
-            // We select the one that has the earliest departure time
-            _currentConnection = _a.DepartureTime <= _b.DepartureTime ? _a : _b;
-            return true;
-        }
-
-
-        private void MovePreviousA(DateTime? dateTime = null)
-        {
-            try
-            {
-                if (!_a.MovePrevious(dateTime))
+                if (!_canContinue[i])
                 {
-                    _aDepleted = true;
+                    continue;
                 }
-            }
-            catch
-            {
-                _aDepleted = true;
-            }
-        }
 
-        private void MovePreviousB(DateTime? dateTime = null)
-        {
-            try
-            {
-                if (!_b.MovePrevious(dateTime))
+                if (_enumerators[i].CurrentDateTime < currentLowestTime)
                 {
-                    _bDepleted = true;
+                    _currentBest = (uint) i;
+                    currentLowestTime = _enumerators[i].CurrentDateTime;
+                    nextFound = true;
                 }
+                
             }
-            catch
-            {
-                _bDepleted = true;
-            }
+
+            // All the non-depleted things should be ready to give a new value
+            return nextFound;
         }
-
-        private void MovePreviousCurrent()
+        
+        
+          public bool HasPrevious()
         {
-            if (_currentConnection == null)
+            
+            // Actual initialization
+            if (_currentBest == uint.MaxValue)
             {
-                throw new InvalidOperationException("Initialize the enumerator by");
-            }
+                var oneFound = false;
+                var lowestTime = ulong.MinValue;
+                for (var i = 0; i < _enumerators.Length; i++)
+                {
+                    var ei = _enumerators[i];
+                    var found = ei.HasPrevious();
+                    oneFound |= found;
+                    _canContinue[i] = found;
+                    // ReSharper disable once InvertIf
+                    if (found && ei.CurrentDateTime > lowestTime)
+                    {
+                        _currentBest = (uint) i;
+                        lowestTime =  ei.CurrentDateTime;
+                    }
+                }
 
-            if (_currentConnection.MovePrevious())
-            {
-                return;
+                return oneFound;
             }
-
-            // The enumerator has depleted
-            // We figure out which one and null it
-            if (_currentConnection == _a)
+            
+            
+            // We increase the enumerator which has been read: namely the current best
+            // We keep track of its date though...
+            var curHigh = _enumerators[_currentBest];
+            var oldDate = curHigh.CurrentDateTime;
+            if (!curHigh.HasPrevious())
             {
-                _aDepleted = true;
+                _canContinue[_currentBest] = false;
             }
-            else
+            else if (oldDate == curHigh.CurrentDateTime)
             {
-                _bDepleted = true;
-            }
-        }
-
-
-        public bool MovePrevious(DateTime? dateTime = null)
-        {
-            if (dateTime != null)
-            {
-                _aDepleted = false;
-                _bDepleted = false;
-                // We have to initialize
-                MovePreviousA(dateTime);
-                MovePreviousB(dateTime);
-            }
-            else
-            {
-                MovePreviousCurrent();
-            }
-
-            if (_aDepleted && _bDepleted)
-            {
-                // Both are depleted
-                return false;
-            }
-
-            if (_bDepleted)
-            {
-                // _a is still loaded
-                _currentConnection = _a;
+                // Current best does not change and has a next value
+                // All done
                 return true;
             }
 
-            if (_aDepleted)
+            var nextFound = false;
+            _currentBest = int.MaxValue;
+            var currentHighestTime = ulong.MaxValue;
+            // We need to search a new currentLowest
+            for (var i = 0; i < _enumerators.Length; i++)
             {
-                // _b is still loaded
-                _currentConnection = _b;
-                return true;
+
+                if (!_canContinue[i])
+                {
+                    continue;
+                }
+
+                if (_enumerators[i].CurrentDateTime > currentHighestTime)
+                {
+                    _currentBest = (uint) i;
+                    currentHighestTime = _enumerators[i].CurrentDateTime;
+                    nextFound = true;
+                }
+                
             }
 
-            // Both are still loaded
-            // We select the one that has the latest departure time
-            _currentConnection = _a.DepartureTime >= _b.DepartureTime ? _a : _b;
-            return true;
+            return nextFound;
         }
 
+        public bool Current(SimpleConnection toWrite)
+        {
+            return _enumerators[_currentBest].Current(toWrite);
+        }
 
-        [Pure] public uint Id => _currentConnection.Id;
-        [Pure] public string GlobalId => _currentConnection.GlobalId;
-        [Pure] public ulong ArrivalTime => _currentConnection.ArrivalTime;
+        public ulong CurrentDateTime => _enumerators[_currentBest].CurrentDateTime;
 
-        [Pure] public ulong DepartureTime => _currentConnection.DepartureTime;
-        [Pure] public ushort TravelTime => _currentConnection.TravelTime;
-        [Pure] public ushort ArrivalDelay => _currentConnection.ArrivalDelay;
-        [Pure] public ushort DepartureDelay => _currentConnection.DepartureDelay;
-        [Pure] public ushort Mode => _currentConnection.Mode;
-
-        [Pure] public TripId TripId => _currentConnection.TripId;
-        [Pure] public LocationId DepartureStop => _currentConnection.DepartureStop;
-
-        [Pure] public LocationId ArrivalStop => _currentConnection.ArrivalStop;
+        public static IConnectionEnumerator CreateFrom(IEnumerable<IConnectionEnumerator> sources)
+        {
+            if (sources.Count() == 1)
+            {
+                return sources.First();
+            }
+            
+            return new ConnectionEnumeratorAggregator(sources);
+        }
     }
 }

@@ -12,8 +12,8 @@ namespace Itinero.Transit.Tests.Core.Journey
         {
             var j = new Journey<TransferMetric>(new LocationId(0, 0, 0), 0, TransferMetric.Factory);
 
-            var j0 = j.Chain(1, 10, new LocationId(0, 0, 1), new TripId(0, 0));
-            var j1 = j0.Chain(2, 20, new LocationId(0, 0, 2), new TripId(0, 0));
+            var j0 = j.Chain(new ConnectionId(0,1), 10, new LocationId(0, 0, 1), new TripId(0, 0));
+            var j1 = j0.Chain(new ConnectionId(0,2), 20, new LocationId(0, 0, 2), new TripId(0, 0));
 
 
             var revs= j1.Reversed();

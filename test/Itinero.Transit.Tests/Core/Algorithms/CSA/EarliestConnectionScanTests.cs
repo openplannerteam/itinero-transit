@@ -144,7 +144,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .EarliestArrivalJourney();
 
             Assert.NotNull(j);
-            Assert.Equal((uint) 0, j.Connection);
+            Assert.Equal(new ConnectionId(0,0), j.Connection);
 
 
             j = db.SelectProfile(profile)
@@ -156,7 +156,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 ;
 
             Assert.NotNull(j);
-            Assert.Equal((uint) 1, j.Connection);
+            Assert.Equal(new ConnectionId(0,1), j.Connection);
         }
 
         [Fact]
@@ -255,12 +255,13 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var stop1 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
             var stop2 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
 
-            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/0",
+            writer.AddOrUpdateConnection(
+                stop1, stop2, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
 
             // Prevent depletion of the DB
             writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 1), 0);
 
             writer.Close();
 
@@ -329,7 +330,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             Assert.Equal(Journey<TransferMetric>.OTHERMODE, journey.Connection);
             Assert.True(journey.SpecialConnection);
             Assert.False(journey.PreviousLink.SpecialConnection);
-            Assert.Equal((uint) 0, journey.PreviousLink.Connection);
+            Assert.Equal(new ConnectionId(0,0), journey.PreviousLink.Connection);
             Assert.Equal(100, journey.Metric.WalkingTime);
             Assert.Equal((uint) (10 * 60 + 100), journey.Metric.TravelTime);
         }
@@ -383,7 +384,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             Assert.NotNull(journey);
             Assert.Equal(3, journey.AllParts().Count);
-            Assert.Equal((uint) 0, journey.Connection);
+            Assert.Equal(new ConnectionId(0,0), journey.Connection);
             Assert.True(journey.PreviousLink.PreviousLink.SpecialConnection);
             Assert.Equal(Journey<TransferMetric>.OTHERMODE,
                 journey.PreviousLink.Connection);
@@ -448,10 +449,10 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 9, 10, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0),
-                ConnectionExtensions.ModeGetOnOnly);
+                SimpleConnection.ModeGetOnOnly);
             writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0),
-                ConnectionExtensions.ModeGetOffOnly);
+                SimpleConnection.ModeGetOffOnly);
 
             writer.Close();
 

@@ -1,3 +1,4 @@
+using Itinero.Data.Attributes;
 using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Tests.Functional.Data
@@ -9,15 +10,16 @@ namespace Itinero.Transit.Tests.Functional.Data
             var latest = input.Latest;
 
             Information("Testing headsign attribute");
-            var trip = latest.TripsDb.GetReader();
-            var cons = latest.ConnectionsDb.GetDepartureEnumerator();
+            var tripDb = latest.TripsDb;
+            var consReader = latest.ConnectionsDb.GetReader();
             uint failed = 0;
             uint found = 0;
             uint total = 0;
-            while (cons.MoveNext())
+            var index = consReader.First().Value;
+            while (consReader.HasNext(index, out index))
             {
                 total++;
-                trip.MoveTo(cons.TripId);
+                var trip = tripDb.Get(consReader.Get(index).TripId);
                 trip.Attributes.TryGetValue("headsign", out var hs);
                 if (hs == null)
                 {
@@ -33,6 +35,15 @@ namespace Itinero.Transit.Tests.Functional.Data
             True(failed == 0);
             True(found > 0);
             return failed;
+        }
+    }
+
+    internal static class Helpers
+    {
+        public static string Get(this IAttributeCollection attributes, string name)
+        {
+            attributes.TryGetValue(name, out var result);
+            return result;
         }
     }
 }

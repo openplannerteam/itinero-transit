@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using Itinero.Transit.Data;
 using JsonLD.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -18,6 +19,8 @@ namespace Itinero.Transit.IO.LC.Data
     {
         private Uri _departureStop;
         private Uri _arrivalStop;
+        
+        public Uri Uri { get; }
 
         private DateTime _departureTime;
         private DateTime _arrivalTime;
@@ -69,12 +72,14 @@ namespace Itinero.Transit.IO.LC.Data
         private const string _gtfsRegular = "http://vocab.gtfs.org/terms#Regular";
 
         // ReSharper disable once UnusedMember.Global
-        public Connection(Uri uri) : base(uri)
+        public Connection(Uri uri)
         {
+            Uri = uri;
         }
 
-        public Connection(JObject json) : base(json.GetId())
+        public Connection(JObject json)
         {
+            Uri = json.GetId();
             FromJson(json);
         }
 
@@ -99,7 +104,7 @@ namespace Itinero.Transit.IO.LC.Data
             return DateTime.Parse(value).ToUniversalTime();
         }
 
-        protected sealed override void FromJson(JObject json)
+        public void FromJson(JObject json)
         {
             var isCancelledConnection = json.IsType("http://semweb.mmlab.be/ns/linkedconnections#CancelledConnection");
             if (!json.IsType("http://semweb.mmlab.be/ns/linkedconnections#Connection")

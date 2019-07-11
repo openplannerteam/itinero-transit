@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Itinero.Transit.Data
 {
@@ -19,19 +20,10 @@ namespace Itinero.Transit.Data
                 DatabaseIds = new[] {_db.DatabaseId};
             }
 
-            public bool Get(uint internalId, SimpleConnection objectToWrite)
-            {
-                return _db.GetConnection(internalId, objectToWrite);
-            }
 
             public bool Get(ConnectionId id, SimpleConnection objectToWrite)
             {
-                if (id.DatabaseId != _db.DatabaseId)
-                {
-                    return false;
-                }
-
-                return Get(id.InternalId, objectToWrite);
+                return _db.GetConnection(id, objectToWrite);
             }
 
             public bool Get(string globalId, SimpleConnection objectToWrite)
@@ -41,7 +33,7 @@ namespace Itinero.Transit.Data
                 while (pointer != _noData)
                 {
                     var internalId = _db._globalIdLinkedList[pointer + 0];
-                    if (Get(internalId, objectToWrite))
+                    if (Get(new ConnectionId(_db.DatabaseId, internalId), objectToWrite))
                     {
                         // This could be made more efficient by not relying on Get
                         // But for now, it is fast and even more important: easy and maintainalbe
@@ -62,6 +54,7 @@ namespace Itinero.Transit.Data
 
             public IEnumerable<uint> DatabaseIds { get; }
 
+            [Pure]
             public ConnectionId? First()
             {
                 if (_db._nextInternalId == 0)
@@ -72,9 +65,11 @@ namespace Itinero.Transit.Data
                 return new ConnectionId(_db.DatabaseId, 0);
             }
 
-            public bool HasNext(ConnectionId current, SimpleConnection nextToWrite)
+            [Pure]
+            public bool HasNext(ConnectionId current,out  ConnectionId next)
             {
-                return Get(new ConnectionId(current.DatabaseId, current.InternalId + 1), nextToWrite);
+                next = new ConnectionId(current.DatabaseId, current.InternalId + 1);
+                return next.InternalId < _db._nextInternalId;
             }
         }
     }

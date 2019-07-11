@@ -109,7 +109,7 @@ namespace Itinero.Transit.IO.OSM.Data
             {
                 foreach (var r in route)
                 {
-                    transitDbWriter.UseOsmRoute(r, start, end);
+                    transitDbWriter.UseOsmRoute(tdb.DatabaseId, r, start, end);
                 }
             }
 

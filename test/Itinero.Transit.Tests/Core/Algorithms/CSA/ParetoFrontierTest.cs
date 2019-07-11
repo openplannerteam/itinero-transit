@@ -25,14 +25,14 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             
             var atLocA =
-                genesis.ChainBackward(new SimpleConnection(0, "0", locDep, locA, 10, 10, 0, 0, 0, new TripId(0, 0)));
+                genesis.ChainBackward(new SimpleConnection(new ConnectionId(0,0), "0", locDep, locA, 10, 10, 0, 0, 0, new TripId(0, 0)));
             var atLocB =
-                genesis.ChainBackward(new SimpleConnection(1, "1", locDep, locB, 10, 10, 0, 0, 0, new TripId(0, 1)));
+                genesis.ChainBackward(new SimpleConnection(new ConnectionId(0,1), "1", locDep, locB, 10, 10, 0, 0, 0, new TripId(0, 1)));
 
             var atDestA =
-                atLocA.ChainBackward(new SimpleConnection(2, "2", locA, locDest, 00, 10, 0, 0, 0, new TripId(0, 2)));
+                atLocA.ChainBackward(new SimpleConnection(new ConnectionId(0,2), "2", locA, locDest, 00, 10, 0, 0, 0, new TripId(0, 2)));
             var atDestB =
-                atLocB.ChainBackward(new SimpleConnection(3, "3", locA, locDest, 00, 10, 0, 0, 0, new TripId(0, 3)));
+                atLocB.ChainBackward(new SimpleConnection(new ConnectionId(0,3), "3", locA, locDest, 00, 10, 0, 0, 0, new TripId(0, 3)));
 
             var frontier = new ProfiledParetoFrontier<TransferMetric>(TransferMetric.ParetoCompare, null);
 
@@ -56,22 +56,22 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             // Backwards journey
             var j = new Journey<TransferMetric>(loc, 20, TransferMetric.Factory);
-            j = j.ChainBackward(new SimpleConnection(0, "01", loc1, loc2, 10, 20, 30, 1, 0, new TripId(0, 1)));
-            j = j.ChainBackward(new SimpleConnection(0, "00", loc, loc1, 0, 10, 10, 0, 0, new TripId(0, 0)));
+            j = j.ChainBackward(new SimpleConnection(new ConnectionId(0,0), "01", loc1, loc2, 10, 20, 30, 1, 0, new TripId(0, 1)));
+            j = j.ChainBackward(new SimpleConnection(new ConnectionId(0,0), "00", loc, loc1, 0, 10, 10, 0, 0, new TripId(0, 0)));
 
 
             Assert.True(frontier.AddToFrontier(j));
 
 
             var direct = new Journey<TransferMetric>(loc, 40, TransferMetric.Factory);
-            direct = direct.ChainBackward(new SimpleConnection(2, "02", loc, loc2, 2, 0, 40, 2, 0, new TripId(0, 2)));
+            direct = direct.ChainBackward(new SimpleConnection(new ConnectionId(0,2), "02", loc, loc2, 2, 0, 40, 2, 0, new TripId(0, 2)));
             Assert.True(frontier.AddToFrontier(direct));
 
 
             var trSlow = new Journey<TransferMetric>(loc, 45, TransferMetric.Factory);
 
-            trSlow = trSlow.ChainBackward(new SimpleConnection(0, "03", loc1, loc2, 1, 20, 45, 3, 0, new TripId(0, 2)));
-            trSlow = trSlow.ChainBackward(new SimpleConnection(0, "04", loc1, loc2, 1, 20, 45, 3, 0, new TripId(0, 3)));
+            trSlow = trSlow.ChainBackward(new SimpleConnection(new ConnectionId(0,0), "03", loc1, loc2, 1, 20, 45, 3, 0, new TripId(0, 2)));
+            trSlow = trSlow.ChainBackward(new SimpleConnection(new ConnectionId(0,0), "04", loc1, loc2, 1, 20, 45, 3, 0, new TripId(0, 3)));
             Assert.False(frontier.AddToFrontier(trSlow));
         }
     }

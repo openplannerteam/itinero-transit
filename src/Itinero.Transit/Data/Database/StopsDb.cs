@@ -243,13 +243,12 @@ namespace Itinero.Transit.Data
         /// <inheritdoc />
         public class StopsDbReader : IStopsReader
         {
-            private readonly StopsDb _stopsDb;
             private readonly TiledLocationIndex.Enumerator _locationEnumerator;
 
             internal StopsDbReader(StopsDb stopsDb)
             {
-                _stopsDb = stopsDb;
-                _locationEnumerator = _stopsDb._stopLocations.GetEnumerator();
+                StopsDb = stopsDb;
+                _locationEnumerator = StopsDb._stopLocations.GetEnumerator();
             }
 
             /// <summary>
@@ -268,7 +267,7 @@ namespace Itinero.Transit.Data
             /// <returns>An enumerator with all the stops.</returns>
             public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
             {
-                var rangeStops = new TileRangeStopEnumerable(_stopsDb, box);
+                var rangeStops = new TileRangeStopEnumerable(StopsDb, box);
                 using (var rangeStopsEnumerator = rangeStops.GetEnumerator())
                 {
                     while (rangeStopsEnumerator.MoveNext())
@@ -312,7 +311,7 @@ namespace Itinero.Transit.Data
             public bool MoveTo(LocationId stop)
             {
                 // ReSharper disable once ConvertIfStatementToReturnStatement
-                if (_stopsDb.DatabaseId != stop.DatabaseId)
+                if (StopsDb.DatabaseId != stop.DatabaseId)
                 {
                     return false;
                 }
@@ -327,12 +326,12 @@ namespace Itinero.Transit.Data
             /// <returns>True if the stop was found and there is data.</returns>
             public bool MoveTo(string globalId)
             {
-                var hash = _stopsDb.Hash(globalId);
-                var pointer = _stopsDb._stopIdPointersPerHash[hash];
+                var hash = StopsDb.Hash(globalId);
+                var pointer = StopsDb._stopIdPointersPerHash[hash];
                 while (pointer != _noData)
                 {
-                    var localTileId = _stopsDb._stopIdLinkedList[pointer + 0];
-                    var localId = _stopsDb._stopIdLinkedList[pointer + 1];
+                    var localTileId = StopsDb._stopIdLinkedList[pointer + 0];
+                    var localId = StopsDb._stopIdLinkedList[pointer + 1];
 
                     if (MoveTo(localTileId, localId))
                     {
@@ -343,7 +342,7 @@ namespace Itinero.Transit.Data
                         }
                     }
 
-                    pointer = _stopsDb._stopIdLinkedList[pointer + 2];
+                    pointer = StopsDb._stopIdLinkedList[pointer + 2];
                 }
 
                 return false;
@@ -351,7 +350,7 @@ namespace Itinero.Transit.Data
 
             public HashSet<uint> DatabaseIndexes()
             {
-                return new HashSet<uint>{_stopsDb.DatabaseId};
+                return new HashSet<uint> {StopsDb.DatabaseId};
             }
 
             /// <summary>
@@ -364,11 +363,11 @@ namespace Itinero.Transit.Data
             }
 
             /// <inheritdoc />
-            public string GlobalId => _stopsDb._stopIds[_locationEnumerator.DataPointer];
+            public string GlobalId => StopsDb._stopIds[_locationEnumerator.DataPointer];
 
             /// <inheritdoc />
             public LocationId Id =>
-                new LocationId(_stopsDb.DatabaseId, _locationEnumerator.TileId, _locationEnumerator.LocalId);
+                new LocationId(StopsDb.DatabaseId, _locationEnumerator.TileId, _locationEnumerator.LocalId);
 
             /// <inheritdoc />
             public double Latitude => _locationEnumerator.Latitude;
@@ -380,11 +379,9 @@ namespace Itinero.Transit.Data
             /// Gets the attributes.
             /// </summary>
             public IAttributeCollection Attributes =>
-                _stopsDb._attributes.Get(_stopsDb._stopAttributeIds[_locationEnumerator.DataPointer]);
+                StopsDb._attributes.Get(StopsDb._stopAttributeIds[_locationEnumerator.DataPointer]);
 
-            public StopsDb StopsDb => _stopsDb;
-
-            public List<IStopsReader> UnderlyingDatabases => null;
+            public StopsDb StopsDb { get; }
         }
     }
 }

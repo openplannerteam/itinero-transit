@@ -59,5 +59,38 @@ namespace Itinero.Transit.Data
 
             return false;
         }
+        
+        public static IDatabaseReader<Tid, T> CreateFrom(IDatabaseReader<Tid, T> a, IDatabaseReader<Tid, T> b)
+        {
+
+            return CreateFrom(
+                new []{a, b}
+                );
+        }
+
+        public static IDatabaseReader<Tid, T> CreateFrom(IEnumerable<IDatabaseReader<Tid, T>> sources)
+        {
+            var s = sources.ToList();
+            if (s.Count == 0)
+            {
+                throw new ArgumentException("At least one reader is needed to merge");
+            }
+
+            if (s.Count == 1)
+            {
+                return s[0];
+            }
+
+            foreach (var elem in s)
+            {
+                if (elem is DatabaseEnumeratorAggregator<Tid, T> aggr)
+                {
+                    s.Remove(elem);
+                    s.AddRange(aggr._uniqueUnderlyingDatabases);
+                }
+            }
+
+            return new DatabaseEnumeratorAggregator<Tid, T>(s);
+        }
     }
 }

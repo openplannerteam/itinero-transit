@@ -23,7 +23,7 @@ namespace Itinero.Transit.Algorithms.CSA
         ///  <returns></returns>
         public static ProfiledParetoFrontier<T> ExtendFrontierBackwards<T>(this ProfiledParetoFrontier<T> pareto,
             IStopsReader stopsReader,
-            IConnection c, IOtherModeGenerator transferPolicy) where T : IJourneyMetric<T>
+            SimpleConnection c, IOtherModeGenerator transferPolicy) where T : IJourneyMetric<T>
         {
             var newFrontier = new ProfiledParetoFrontier<T>(pareto.Comparator, pareto.JourneyFilter);
 

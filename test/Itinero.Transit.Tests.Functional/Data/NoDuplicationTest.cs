@@ -2,6 +2,7 @@ using System;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Synchronization;
 using Itinero.Transit.IO.LC;
+using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Data
 {
@@ -12,8 +13,8 @@ namespace Itinero.Transit.Tests.Functional.Data
             var latest = tdb.Latest;
             var count = 0;
             var enumerator = latest.ConnectionsDb.GetDepartureEnumerator();
-            enumerator.MoveNext(now);
-            while (enumerator.MoveNext())
+            enumerator.MoveTo(now.ToUnixTime());
+            while (enumerator.HasNext())
             {
                 count++;
             }

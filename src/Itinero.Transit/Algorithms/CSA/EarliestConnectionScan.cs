@@ -20,7 +20,7 @@ namespace Itinero.Transit.Algorithms.CSA
     {
         private readonly List<(LocationId, Journey<T>)> _userTargetLocations;
 
-        private readonly IConnectionEnumerator _connections;
+        private readonly IConnectionEnumerator _connectionsEnumerator;
         private readonly IStopsReader _stopsReader;
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Itinero.Transit.Algorithms.CSA
         public ulong ScanBeginTime { get; }
 
         private readonly IOtherModeGenerator _transferPolicy;
-        private IOtherModeGenerator _walkPolicy;
+        private readonly IOtherModeGenerator _walkPolicy;
 
         /// <summary>
         /// If a traveller has a hard preference on journeys (e.g. max 5 transfers, no specific combination of stations...),
@@ -62,7 +62,7 @@ namespace Itinero.Transit.Algorithms.CSA
         {
             ScanBeginTime = settings.EarliestDeparture.ToUnixTime();
             _lastArrival = settings.LastArrival.ToUnixTime();
-            _connections = settings.ConnectionsEnumerator;
+            _connectionsEnumerator = settings.ConnectionsEnumerator;
             _stopsReader = settings.StopsReader;
 
             _transferPolicy = settings.Profile.InternalTransferGenerator;
@@ -105,15 +105,20 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <exception cref="Exception"></exception>
         public Journey<T> CalculateJourney(Func<ulong, ulong, ulong> depArrivalToTimeout = null)
         {
-            var enumerator = _connections;
+            var enumerator = _connectionsEnumerator;
+            var currentConnection = new SimpleConnection();
 
-            enumerator.MoveNext(ScanBeginTime);
+            enumerator.MoveTo(ScanBeginTime);
+            if (!enumerator.HasNext())
+            {
+                throw new Exception("Empty enumerator, can not calculate EAS");
+            }
 
             var lastDeparture = _lastArrival;
             Journey<T> bestJourney = null;
-            while (enumerator.DepartureTime <= lastDeparture)
+            while (currentConnection.DepartureTime <= lastDeparture)
             {
-                if (!IntegrateBatch(enumerator))
+                if (!IntegrateBatch())
                 {
                     // Only happens if database is exhausted
                     bestJourney = null;
@@ -160,9 +165,9 @@ namespace Itinero.Transit.Algorithms.CSA
             // The user might need a profile to optimize PCS later on
             // We got an alternative end time, we still calculate a little
             ScanEndTime = depArrivalToTimeout(bestJourney.Root.Time, bestJourney.Time);
-            while (enumerator.DepartureTime < ScanEndTime)
+            while (enumerator.CurrentDateTime < ScanEndTime)
             {
-                if (!IntegrateBatch(enumerator))
+                if (!IntegrateBatch())
                 {
                     break;
                 }
@@ -175,23 +180,24 @@ namespace Itinero.Transit.Algorithms.CSA
         /// Integrates all connections which happen to have the same departure time.
         /// Once all those connections are handled, the walks from the improved locations are batched
         /// </summary>
-        /// <param name="enumerator"></param>
-        private bool IntegrateBatch(IConnectionEnumerator enumerator)
+        private bool IntegrateBatch()
         {
             var improvedLocations = new HashSet<LocationId>();
-            var lastDepartureTime = enumerator.DepartureTime;
+            var lastDepartureTime = _connectionsEnumerator.CurrentDateTime;
             bool hasNext;
+
+            var c = new SimpleConnection();
             do
             {
-                if (IntegrateConnection(enumerator))
+                // The enumerator should already be initialized on the next entry
+                _connectionsEnumerator.Current(c);
+                if (IntegrateConnection(c))
                 {
-                    improvedLocations.Add(enumerator.ArrivalStop);
+                    improvedLocations.Add(c.ArrivalStop);
                 }
 
-                hasNext = enumerator.MoveNext();
-            } while (
-                hasNext &&
-                lastDepartureTime == enumerator.DepartureTime);
+                hasNext = _connectionsEnumerator.HasNext()
+            } while (hasNext && _connectionsEnumerator.CurrentDateTime == lastDepartureTime);
 
 
             // Add footpath transfers to improved stations
@@ -215,7 +221,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         /// <param name="c">A DepartureEnumeration, which is used here as if it were a single connection object</param>
         private bool IntegrateConnection(
-            IConnection c)
+            SimpleConnection c)
         {
             // The connection describes a random connection somewhere
             // Lets check if we can take it

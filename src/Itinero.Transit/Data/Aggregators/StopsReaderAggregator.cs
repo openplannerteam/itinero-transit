@@ -22,11 +22,11 @@ namespace Itinero.Transit.Data.Aggregators
             return CreateFrom(enumerators);
         }
 
+        private readonly List<IStopsReader> _uniqueUnderlyingDatabass = new List<IStopsReader>();
         private readonly IStopsReader[] UnderlyingDatabases;
         private int _currentIndex;
         private readonly HashSet<uint> _responsibleFor;
 
-        private readonly List<IStopsReader> _uniqueUnderlyingDatabass = new List<IStopsReader>();
 
         public static IStopsReader CreateFrom(List<IStopsReader> stopsReaders)
         {

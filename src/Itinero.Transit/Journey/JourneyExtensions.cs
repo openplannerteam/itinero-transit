@@ -39,14 +39,14 @@ namespace Itinero.Transit.Journey
         private static void Reversed<T>(this Journey<T> j, Journey<T> buildOn, List<Journey<T>> addTo)
             where T : IJourneyMetric<T>
         {
-            if (j.SpecialConnection && j.Connection == Journey<T>.GENESIS)
+            if (j.SpecialConnection && Equals(j.Connection, Journey<T>.GENESIS))
             {
                 // We have arrived at the end of the journey, all information should be added already
                 addTo.Add(buildOn);
                 return;
             }
 
-            if (j.SpecialConnection && j.Connection == Journey<T>.JOINED_JOURNEYS)
+            if (j.SpecialConnection && Equals(j.Connection, Journey<T>.JOINED_JOURNEYS))
             {
                 j.PreviousLink.Reversed(buildOn, addTo);
                 j.AlternativePreviousLink.Reversed(buildOn, addTo);
@@ -144,7 +144,7 @@ namespace Itinero.Transit.Journey
         [Pure]
         public static Journey<T> SetTag<T>(this Journey<T> j, TripId tag) where T : IJourneyMetric<T>
         {
-            if (j.SpecialConnection && j.Connection == Journey<T>.GENESIS)
+            if (j.SpecialConnection && Equals(j.Connection, Journey<T>.GENESIS))
             {
                 return new Journey<T>(j.Location, j.DepartureTime(), j.Metric, tag);
             }
@@ -170,7 +170,7 @@ namespace Itinero.Transit.Journey
                     j.Location, j.Time, newMetricFactory.Zero(), j.TripId);
             }
 
-            if (j.SpecialConnection && j.Connection == Journey<T>.JOINED_JOURNEYS)
+            if (j.SpecialConnection && Equals(j.Connection, Journey<T>.JOINED_JOURNEYS))
             {
                 var prev = j.PreviousLink.MeasureWith(newMetricFactory);
                 var altPrev = j.AlternativePreviousLink?.MeasureWith(newMetricFactory);

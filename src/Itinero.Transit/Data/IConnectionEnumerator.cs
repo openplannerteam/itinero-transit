@@ -1,17 +1,41 @@
-using System;
+using System.Diagnostics.Contracts;
 
 namespace Itinero.Transit.Data
 {
-    /// <inheritdoc />
-    /// <summary>
-    /// An enumerator is an object which has all the fields of an IConnection, but changes those fields when
-    /// 'MoveNext' is called.
-    /// </summary>
-    public interface IConnectionEnumerator : IConnection
+    public interface IConnectionEnumerator
     {
+        /// <summary>
+        /// Moves the enumerator to the given date.
+        /// HasNext or HasPrevious will then correctly move the enumerator to the next or previous entry - if any
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
+        void MoveTo(ulong dateTime);
 
-        bool MoveNext(DateTime? dateTime = null);
-        bool MovePrevious(DateTime? dateTime = null);
+        
+        [Pure]
+        /// <summary>
+        /// PURE
+        /// Copies the information on the 'current' index into 'toWrite'
+        /// </summary>
+        /// <returns></returns>
+        bool Current(SimpleConnection toWrite);
 
+        /// <summary>
+        /// NONPURE
+        /// Determines what the next connection to scan is.
+        /// If not found, returns true
+        /// </summary>
+        /// <returns></returns>
+        bool HasNext();
+
+        bool HasPrevious();
+
+        /// <summary>
+        /// THe current time this enumerator points to. Only valid after calling 
+        /// </summary>
+        ulong CurrentDateTime { get; }
     }
+
+    
 }

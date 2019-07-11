@@ -15,21 +15,19 @@ namespace Itinero.Transit.IO.LC.Data
     [Serializable]
     public class Location : LinkedObject
     {
+        public Uri Uri { get; }
         public string Name;
         public float Lat, Lon;
 
         public (string lang, string name)[] Names { get; set; }
 
-        public Location(Uri uri) : base(uri)
+        public Location(JObject obj)
         {
-        }
-
-        public Location(JObject obj) : base(obj.GetId())
-        {
+            Uri = obj.GetId();
             FromJson(obj);
         }
 
-        protected sealed override void FromJson(JObject json)
+        public void FromJson(JObject json)
         {
             Lat = json.GetFloat("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
             Lon = json.GetFloat("http://www.w3.org/2003/01/geo/wgs84_pos#long");

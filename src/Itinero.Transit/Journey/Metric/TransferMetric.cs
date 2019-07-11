@@ -53,7 +53,7 @@ namespace Itinero.Transit.Journey.Metric
         {
             var transferred = !journey.PreviousLink.LastTripId().Equals(journey.LastTripId())
                               && !(journey.PreviousLink.SpecialConnection &&
-                                   journey.PreviousLink.Connection == Journey<TransferMetric>.GENESIS);
+                                   Equals(journey.PreviousLink.Connection, Journey<TransferMetric>.GENESIS));
 
             ulong travelTime;
 
@@ -68,7 +68,7 @@ namespace Itinero.Transit.Journey.Metric
 
 
             ulong walkingTime = 0;
-            if (journey.SpecialConnection && journey.Connection == Journey<TransferMetric>.OTHERMODE)
+            if (journey.SpecialConnection && Equals(journey.Connection, Journey<TransferMetric>.OTHERMODE))
             {
                 walkingTime = travelTime;
             }

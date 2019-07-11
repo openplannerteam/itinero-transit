@@ -298,23 +298,20 @@ namespace Itinero.Transit.Algorithms.CSA
                 var teleported = metricGuess.LeastTheoreticalConnection(Frontier[i]);
                 foreach (var testFrontier in stopsToReach)
                 {
-                    if (!testFrontier.IsOnFrontier(teleported))
+                    if (testFrontier.IsOnFrontier(teleported))
                     {
-
-                        if (Frontier[i].ToList().Select(p => p.Connection).ToList().Contains(18775))
-                        {
-                            throw new Exception("DONT REMOVE ME");
-                        }
-                        
-                        
-                        // Even _with_ a teleport, the intermediate journey could not beat any
-                        // already existing journey to the destination...
-                        // This means that this intermediate journey can never ever be optimal
-                        // and we prune this thing from the frontiers
-                        Frontier.RemoveAt(i);
-                        i--;
-                        break; // The inner loop is broken
+                        // No conclusions can be made
+                        continue;
                     }
+                    
+                    
+                    // Even _with_ a teleport, the intermediate journey could not beat any
+                    // already existing journey to the destination...
+                    // This means that this intermediate journey can never ever be optimal
+                    // and we prune this thing from the frontiers
+                    Frontier.RemoveAt(i);
+                    i--;
+                    break; // The inner loop is broken
                 }
             }
         }
