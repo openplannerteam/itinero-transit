@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <AssemblyName>Itinero.Transit.DataProcessor</AssemblyName>
+        <RootNamespace>Itinero.Transit.DataProcessor</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Itinero.Transit.IO.LC\Itinero.Transit.IO.LC.csproj" />
+      <ProjectReference Include="..\Itinero.Transit.IO.OSM\Itinero.Transit.IO.OSM.csproj" />
+      <ProjectReference Include="..\Itinero.Transit\Itinero.Transit.csproj" />
+    </ItemGroup>
+
+</Project>
