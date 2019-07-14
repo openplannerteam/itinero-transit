@@ -67,6 +67,7 @@ namespace Itinero.Transit.Data
             /// </summary>
             /// <returns></returns>
             private ulong lastTime = 0;
+
             public bool HasNext()
             {
                 // We put everything in one big loop, to avoid tail recursion
@@ -75,12 +76,11 @@ namespace Itinero.Transit.Data
                 hasNext:
                 if (CurrentDateTime >= 1562785320)
                 {
-
                     Console.Write("Hi");
                 }
 
                 lastTime = CurrentDateTime;
-                
+
                 if (_indexInWindow == uint.MaxValue)
                 {
                     // Needs some initialization
@@ -122,19 +122,18 @@ namespace Itinero.Transit.Data
                     // Lets see if we can retrieve the connection itself
                     // For that, we should check if the index is within the window size
                     var windowSize = _connectionsDb._departureWindowPointers[window * 2 + 1];
-                    
+
                     if (CurrentDateTime == 1562785380)
                     {
-
                         for (int i = 0; i < windowSize; i++)
                         {
                             var intId = _connectionsDb._departurePointers[windowPointer + i];
                             Console.WriteLine($"> {i} {intId}");
                         }
+
                         Console.WriteLine("HI");
-                    
                     }
-                    
+
                     if (_indexInWindow >= windowSize)
                     {
                         // Ahh, the good old 'IndexOutOfBounds'
@@ -185,11 +184,14 @@ namespace Itinero.Transit.Data
                 // And we should point to its last element
 
                 var window = _connectionsDb.WindowFor(CurrentDateTime);
-                _indexInWindow = _connectionsDb._departureWindowPointers[window * 2 + 1]; // Reuse the size as pointer. Note that we do not do a minus one
+                _indexInWindow =
+                    _connectionsDb._departureWindowPointers
+                        [window * 2 + 1]; // Reuse the size as pointer. Note that we do not do a minus one
             }
 
             public bool HasPrevious()
             {
+                hasPrevious:
                 if (CurrentDateTime == 0)
                 {
                     return false;
@@ -228,7 +230,7 @@ namespace Itinero.Transit.Data
 
                     // There might be a next window available
                     PreviousWindow();
-                    return HasPrevious();
+                    goto hasPrevious; // === return HasPrevious();
                 }
 
 
@@ -244,7 +246,7 @@ namespace Itinero.Transit.Data
                         // In other words, this window is simply depleted
                         // We attempt to use the next window
                         PreviousWindow();
-                        return HasPrevious();
+                        goto hasPrevious; // === return HasPrevious();
                     }
 
 
