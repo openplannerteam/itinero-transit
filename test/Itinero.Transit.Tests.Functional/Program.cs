@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Itinero.Data.Graphs.Coders;
+using Itinero.IO.Osm.Tiles;
 using Itinero.IO.Osm.Tiles.Parsers;
 using Itinero.Transit.Data;
 using Itinero.Transit.IO.OSM;
@@ -13,6 +15,7 @@ using Itinero.Transit.Tests.Functional.IO;
 using Itinero.Transit.Tests.Functional.IO.LC;
 using Itinero.Transit.Tests.Functional.IO.LC.Synchronization;
 using Itinero.Transit.Tests.Functional.IO.OSM;
+using Itinero.Transit.Tests.Functional.Staging;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
@@ -34,10 +37,14 @@ namespace Itinero.Transit.Tests.Functional
 
             var devTestsOnly = args.Length == 0 ||
                                !new List<string> {"--full-test-suite", "--full", "--test"}.Contains(args[0].ToLower());
+            
+            // use one router db globally.
+            RouterDbStaging.Setup();
 
             // do some local caching.
             if (devTestsOnly)
             {
+                new Itinero2RoutingTest().Run();
                 return;
             }
 

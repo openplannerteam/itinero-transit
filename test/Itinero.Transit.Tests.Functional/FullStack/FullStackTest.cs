@@ -7,6 +7,7 @@ using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Tests.Functional.Algorithms;
+using Itinero.Transit.Tests.Functional.Staging;
 
 namespace Itinero.Transit.Tests.Functional.FullStack
 {
@@ -22,7 +23,7 @@ namespace Itinero.Transit.Tests.Functional.FullStack
 
             var defaultRealLifeProfile = new Profile<TransferMetric>(
                 new InternalTransferGenerator(180),
-                new OsmTransferGenerator().UseCache(),
+                new OsmTransferGenerator(RouterDbStaging.RouterDb).UseCache(),
                 TransferMetric.Factory,
                 TransferMetric.ParetoCompare,
                 new CancelledConnectionFilter(),
