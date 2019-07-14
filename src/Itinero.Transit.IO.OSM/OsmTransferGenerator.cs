@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Itinero.IO.Osm.Tiles;
 using Itinero.IO.Osm.Tiles.Parsers;
 using Itinero.LocalGeo;
 using Itinero.Profiles;
@@ -44,6 +43,10 @@ namespace Itinero.Transit.IO.OSM
             Profile profile = null)
         {
             _routerDb = routerDb ?? throw new ArgumentNullException(nameof(routerDb));
+            if (_routerDb.DataProvider == null)
+            {
+                throw new ArgumentNullException("routerDb.Dataprovider");
+            }
             _searchDistance = searchDistance;
             _profile = profile ?? OsmProfiles.Pedestrian;
         }
@@ -85,7 +88,7 @@ namespace Itinero.Transit.IO.OSM
         }
 
         // ReSharper disable once MemberCanBePrivate.Global
-        public Route CreateRoute((float lat, float lon) from, (float lat, float lon) to, out bool isEmpty)
+        public Route CreateRoute((double lat, double lon) from, (double lat, double lon) to, out bool isEmpty)
         {
             isEmpty = false;
             try
