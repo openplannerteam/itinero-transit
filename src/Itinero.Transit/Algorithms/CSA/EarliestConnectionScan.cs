@@ -185,10 +185,10 @@ namespace Itinero.Transit.Algorithms.CSA
             var improvedLocations = new HashSet<StopId>();
             var lastDepartureTime = _connectionsEnumerator.CurrentDateTime;
             bool hasNext;
-
             var c = new Connection();
             do
             {
+                
                 // The enumerator should already be initialized on the next entry
                 _connectionsEnumerator.Current(c);
                 if (IntegrateConnection(c))

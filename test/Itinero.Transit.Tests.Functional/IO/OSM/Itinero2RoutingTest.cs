@@ -60,7 +60,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
             // Buses are not loaded, so walking is the only option
             var easJ = router
                 .SelectStops(from, to)
-                .SelectTimeFrame(TestAllAlgorithms.TestDate, TestAllAlgorithms.TestDate.AddHours(10))
+                .SelectTimeFrame(Constants.TestDate, Constants.TestDate.AddHours(10))
                 .EarliestArrivalJourney();
             NotNull(easJ);
             Information(easJ.ToString(router));
@@ -69,7 +69,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
             // And an attempt to reach Ghent from that same location!
             easJ = router.SelectStops("https://www.openstreetmap.org/#map=19/51.21460/3.21811",
                     Constants.Gent)
-                .SelectTimeFrame(TestAllAlgorithms.TestDate, TestAllAlgorithms.TestDate.AddHours(10))
+                .SelectTimeFrame(Constants.TestDate, Constants.TestDate.AddHours(10))
                 .EarliestArrivalJourney();
             NotNull(easJ);
             Information(easJ.ToString(router));

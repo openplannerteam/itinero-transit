@@ -1,3 +1,5 @@
+using System;
+
 namespace Itinero.Transit.Data
 {
     public partial class ConnectionsDb
@@ -12,7 +14,6 @@ namespace Itinero.Transit.Data
         public class DepartureEnumerator : IConnectionEnumerator
         {
             private readonly ConnectionsDb _connectionsDb;
-            private readonly ConnectionsDbReader _reader;
 
 
             /// <summary>
@@ -26,11 +27,9 @@ namespace Itinero.Transit.Data
             private uint _indexInWindow;
 
             public DepartureEnumerator(
-                ConnectionsDb connectionsDb,
-                ConnectionsDbReader reader)
+                ConnectionsDb connectionsDb)
             {
                 _connectionsDb = connectionsDb;
-                _reader = reader;
                 _indexInWindow = 0;
             }
 
@@ -67,8 +66,21 @@ namespace Itinero.Transit.Data
             ///
             /// </summary>
             /// <returns></returns>
+            private ulong lastTime = 0;
             public bool HasNext()
             {
+                // We put everything in one big loop, to avoid tail recursion
+                // Note that the loop is written as a GOTO-label
+                // Yes, you read that right! A GOTO
+                hasNext:
+                if (CurrentDateTime >= 1562785320)
+                {
+
+                    Console.Write("Hi");
+                }
+
+                lastTime = CurrentDateTime;
+                
                 if (_indexInWindow == uint.MaxValue)
                 {
                     // Needs some initialization
@@ -98,7 +110,8 @@ namespace Itinero.Transit.Data
 
                     // There might be a next window available
                     NextWindow();
-                    return HasNext();
+
+                    goto hasNext; // === return HasNext();
                 }
 
 
@@ -109,13 +122,26 @@ namespace Itinero.Transit.Data
                     // Lets see if we can retrieve the connection itself
                     // For that, we should check if the index is within the window size
                     var windowSize = _connectionsDb._departureWindowPointers[window * 2 + 1];
+                    
+                    if (CurrentDateTime == 1562785380)
+                    {
+
+                        for (int i = 0; i < windowSize; i++)
+                        {
+                            var intId = _connectionsDb._departurePointers[windowPointer + i];
+                            Console.WriteLine($"> {i} {intId}");
+                        }
+                        Console.WriteLine("HI");
+                    
+                    }
+                    
                     if (_indexInWindow >= windowSize)
                     {
                         // Ahh, the good old 'IndexOutOfBounds'
                         // In other words, this window is simply depleted
                         // We attempt to use the next window
                         NextWindow();
-                        return HasNext();
+                        goto hasNext; // === return HasNext();
                     }
 
 
@@ -159,7 +185,7 @@ namespace Itinero.Transit.Data
                 // And we should point to its last element
 
                 var window = _connectionsDb.WindowFor(CurrentDateTime);
-                _indexInWindow = _connectionsDb._departureWindowPointers[window * 2 + 1];
+                _indexInWindow = _connectionsDb._departureWindowPointers[window * 2 + 1]; // Reuse the size as pointer. Note that we do not do a minus one
             }
 
             public bool HasPrevious()
@@ -250,7 +276,7 @@ namespace Itinero.Transit.Data
 
             public bool Current(Connection toWrite)
             {
-                return _reader.Get(new ConnectionId(_connectionsDb.DatabaseId, _connectionInternalId), toWrite);
+                return _connectionsDb.Get(new ConnectionId(_connectionsDb.DatabaseId, _connectionInternalId), toWrite);
             }
         }
     }

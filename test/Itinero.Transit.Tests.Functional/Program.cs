@@ -32,6 +32,7 @@ namespace Itinero.Transit.Tests.Functional
         {
             EnableLogging();
 
+            Log.Information("Starting the functional tests...");
             var devTestsOnly = args.Length == 0 ||
                                !new List<string> {"--full-test-suite", "--full", "--test"}.Contains(args[0].ToLower());
 
@@ -39,7 +40,7 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
-              //  return;
+                //  return;
             }
 
             // These are all the tests, and will be run in full on the build server
@@ -68,8 +69,10 @@ namespace Itinero.Transit.Tests.Functional
 
         private static void LocalTests()
         {
-            var db = new TestAllAlgorithms().ExecuteDefault();
             var nmbs = TransitDb.ReadFrom(TestAllAlgorithms._nmbs, 0);
+            nmbs.Latest.ConnectionsDb.ResetDepartureEnumeratorIndex();
+            new ConnectionsDbDepartureEnumeratorTest().Run(nmbs);
+            var db = new TestAllAlgorithms().ExecuteDefault();
             var wvl = TransitDb.ReadFrom(TestAllAlgorithms._delijnWvl, 1);
 
             new StopEnumerationTest().Run(new List<TransitDb>()
@@ -82,16 +85,16 @@ namespace Itinero.Transit.Tests.Functional
             TestClosestStopsAndRouting(db);
             Log.Information("Running NoDuplicationTest");
 
-            new ConnectionsDbDepartureEnumeratorTest().Run(db);
             new DelayTest().Run(true);
 
             Log.Information("Running single TransitDb tests");
             new TestAllAlgorithms().ExecuteDefault();
             Log.Information("Running multi TransitDb tests");
 
-            new TestAllAlgorithms().ExecuteMultiModal();
             new MixedDestinationTest().Run();
             new FullStackTest();
+            
+            new TestAllAlgorithms().ExecuteMultiModal();
         }
 
         public static void InternetTests()

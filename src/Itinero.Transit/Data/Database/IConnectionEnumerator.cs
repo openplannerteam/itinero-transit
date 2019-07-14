@@ -2,6 +2,11 @@ using System.Diagnostics.Contracts;
 
 namespace Itinero.Transit.Data
 {
+    
+    /// <summary>
+    /// A time aware enumerator for connections.
+    /// It has a special form to ensure efficiency
+    /// </summary>
     public interface IConnectionEnumerator
     {
         /// <summary>
@@ -13,9 +18,8 @@ namespace Itinero.Transit.Data
         void MoveTo(ulong dateTime);
 
         
-        [Pure]
         /// <summary>
-        /// PURE
+        /// PURE (except that it changes things in 'toWrite')
         /// Copies the information on the 'current' index into 'toWrite'
         /// </summary>
         /// <returns></returns>
@@ -35,6 +39,16 @@ namespace Itinero.Transit.Data
         /// THe current time this enumerator points to. Only valid after calling 
         /// </summary>
         ulong CurrentDateTime { get; }
+    }
+
+    public static class ConnectionEnumeratorExtensions
+    {
+        public static Connection Current(this IConnectionEnumerator ice)
+        {
+            var c = new Connection();
+            ice.Current(c);
+            return c;
+        }
     }
 
     

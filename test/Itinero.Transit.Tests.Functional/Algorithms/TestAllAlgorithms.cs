@@ -50,8 +50,6 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
             _delijnAnt
         };
 
-        public static DateTime TestDate = new DateTime(2019, 05, 30, 09, 00, 00).ToUniversalTime().Date;
-
         public const string _osmCentrumShuttle = 
                                          "testdata/fixed-test-cases-osm-CentrumbusBrugge2019-07-11.transitdb";
         public const string _nmbs =      "testdata/fixed-test-cases-sncb-2019-07-11.transitdb";
@@ -70,14 +68,14 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
         /// <returns></returns>
         public TransitDb ExecuteDefault()
         {
-            Execute(new List<string> {_nmbs}, TestDate, CreateInputs, AllTests);
+            Execute(new List<string> {_nmbs}, Constants.TestDate, CreateInputs, AllTests);
             return tdbCache[_nmbs];
         }
 
 
         public void ExecuteMultiModal(int input = -1)
         {
-            Execute(testDbs, TestDate,
+            Execute(testDbs, Constants.TestDate,
                 a =>
                 {
                     var list = CreateInputs(a).Concat(CreateInputsMultiModal(a)).ToList();

@@ -11,5 +11,10 @@ namespace Itinero.Transit.Data
             DatabaseId = databaseId;
             InternalId = internalId;
         }
+
+        public override string ToString()
+        {
+            return $"Connectionid({DatabaseId}, {InternalId})";
+        }
     }
 }

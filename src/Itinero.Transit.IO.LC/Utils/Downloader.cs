@@ -38,10 +38,26 @@ namespace Itinero.Transit.IO.LC.Data
             _client.Timeout = TimeSpan.FromMilliseconds(5000);
         }
 
-
         public JToken LoadDocument(Uri uri)
         {
-            return JObject.Parse(DownloadRaw(uri).ConfigureAwait(false).GetAwaiter().GetResult());
+            return LoadDocument(uri, 5);
+        }
+
+        public JToken LoadDocument(Uri uri, int numberOfTries)
+        {
+            try
+            {
+                return JObject.Parse(DownloadRaw(uri).ConfigureAwait(false).GetAwaiter().GetResult());
+            }
+            catch (Exception e)
+            {
+                if (numberOfTries > 0)
+                {
+                    return LoadDocument(uri, numberOfTries-1);
+                }
+
+                throw e;
+            }
         }
 
 

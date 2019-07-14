@@ -123,5 +123,6 @@ namespace Itinero.Transit.Data
                 return hashCode;
             }
         }
+
     }
 }

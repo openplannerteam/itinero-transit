@@ -25,7 +25,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
                     .SelectStops(
                         "https://www.openstreetmap.org/#map=19/51.21460/3.21811",
                         Constants.Gent)
-                    .SelectTimeFrame(TestAllAlgorithms.TestDate, TestAllAlgorithms.TestDate.AddHours(10))
+                    .SelectTimeFrame(Constants.TestDate, Constants.TestDate.AddHours(10))
                 ;
 
             var earliestArrival = router0.EarliestArrivalJourney();
@@ -49,7 +49,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
                     Constants.Gent,
                     "https://www.openstreetmap.org/#map=19/51.21460/3.21811"
                 )
-                .SelectTimeFrame(TestAllAlgorithms.TestDate, TestAllAlgorithms.TestDate.AddHours(10));
+                .SelectTimeFrame(Constants.TestDate, Constants.TestDate.AddHours(10));
             NotNull(router1.EarliestArrivalJourney());
             router1.ResetFilter();
             NotNull(router1.LatestDepartureJourney());

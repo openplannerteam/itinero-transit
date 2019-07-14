@@ -25,7 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{FE66
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.SNCB", "samples\Sample.SNCB\Sample.SNCB.csproj", "{3C87AC45-82D6-41D6-8ECF-18107BE2079A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransitDataProcessor", "src\TransitDataProcessor\TransitDataProcessor.csproj", "{75B416D1-1893-40CB-8891-C3895A5534A4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Itinero.Transit.Processor", "src\Itinero.Transit.Processor\Itinero.Transit.Processor.csproj", "{75B416D1-1893-40CB-8891-C3895A5534A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

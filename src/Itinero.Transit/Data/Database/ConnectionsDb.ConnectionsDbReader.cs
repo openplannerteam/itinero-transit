@@ -1,76 +1,61 @@
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 namespace Itinero.Transit.Data
 {
-    public partial class ConnectionsDb
+    /// <summary>
+    /// A connections DB reader is an object which allows accessing properties of a single connection contained in the DB
+    /// </summary>
+    public partial class ConnectionsDb :
+        IDatabaseReader<ConnectionId, Connection>,
+        IDatabaseEnumerator<ConnectionId, Connection>
     {
-        /// <summary>
-        /// A connections DB reader is an object which allows accessing properties of a single connection contained in the DB
-        /// </summary>
-        public class ConnectionsDbReader :
-            IDatabaseReader<ConnectionId, Connection>,
-            IDatabaseEnumerator<ConnectionId, Connection>
+        public bool Get(ConnectionId id, Connection objectToWrite)
         {
-            private readonly ConnectionsDb _db;
+            return GetConnection(id, objectToWrite);
+        }
 
-            internal ConnectionsDbReader(ConnectionsDb db)
+        public bool Get(string globalId, Connection objectToWrite)
+        {
+            var hash = Hash(globalId);
+            var pointer = _globalIdPointersPerHash[hash];
+            while (pointer != _noData)
             {
-                _db = db;
-                DatabaseIds = new[] {_db.DatabaseId};
-            }
-
-
-            public bool Get(ConnectionId id, Connection objectToWrite)
-            {
-                return _db.GetConnection(id, objectToWrite);
-            }
-
-            public bool Get(string globalId, Connection objectToWrite)
-            {
-                var hash = Hash(globalId);
-                var pointer = _db._globalIdPointersPerHash[hash];
-                while (pointer != _noData)
+                var internalId = _globalIdLinkedList[pointer + 0];
+                if (Get(new ConnectionId(DatabaseId, internalId), objectToWrite))
                 {
-                    var internalId = _db._globalIdLinkedList[pointer + 0];
-                    if (Get(new ConnectionId(_db.DatabaseId, internalId), objectToWrite))
+                    // This could be made more efficient by not relying on Get
+                    // But for now, it is fast and even more important: easy and maintainalbe
+
+                    var potentialMatch = objectToWrite.GlobalId;
+                    if (potentialMatch == globalId)
                     {
-                        // This could be made more efficient by not relying on Get
-                        // But for now, it is fast and even more important: easy and maintainalbe
-
-                        var potentialMatch = objectToWrite.GlobalId;
-                        if (potentialMatch == globalId)
-                        {
-                            return true;
-                        }
+                        return true;
                     }
-
-                    pointer = _db._globalIdLinkedList[pointer + 1];
                 }
 
-                return false;
+                pointer = _globalIdLinkedList[pointer + 1];
             }
 
+            return false;
+        }
 
-            public IEnumerable<uint> DatabaseIds { get; }
 
-            [Pure]
-            public ConnectionId? First()
+        [Pure]
+        public ConnectionId? First()
+        {
+            if (_nextInternalId == 0)
             {
-                if (_db._nextInternalId == 0)
-                {
-                    return null;
-                }
-
-                return new ConnectionId(_db.DatabaseId, 0);
+                return null;
             }
 
-            [Pure]
-            public bool HasNext(ConnectionId current,out  ConnectionId next)
-            {
-                next = new ConnectionId(current.DatabaseId, current.InternalId + 1);
-                return next.InternalId < _db._nextInternalId;
-            }
+            return new ConnectionId(DatabaseId, 0);
+        }
+
+        [Pure]
+        public bool HasNext(ConnectionId current, out ConnectionId next)
+        {
+            next = new ConnectionId(current.DatabaseId, current.InternalId + 1);
+            return next.InternalId < _nextInternalId;
         }
     }
 }
