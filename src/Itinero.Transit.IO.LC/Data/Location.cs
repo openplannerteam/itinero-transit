@@ -13,7 +13,7 @@ namespace Itinero.Transit.IO.LC.Data
     /// Represents a transit location, such as a bus stop or train station
     /// </summary>
     [Serializable]
-    public class Location : LinkedObject
+    public class Location : ILinkedObject
     {
         public Uri Uri { get; }
         public string Name;

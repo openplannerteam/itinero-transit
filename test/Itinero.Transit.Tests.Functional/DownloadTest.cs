@@ -1,5 +1,4 @@
 using System;
-using Itinero.Transit.Tests.Functional.Algorithms;
 
 namespace Itinero.Transit.Tests.Functional
 {

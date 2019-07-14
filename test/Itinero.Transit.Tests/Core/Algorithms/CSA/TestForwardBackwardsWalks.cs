@@ -1,6 +1,7 @@
 using System;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Utils;
@@ -18,7 +19,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             // This is the reproduction of it
 
 
-            var tdb = new TransitDb();
+            var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
 
             var stop0 = wr.AddOrUpdateStop("0", 3.00, 50.00);
@@ -78,7 +79,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             // This is the reproduction of it
 
 
-            var tdb = new TransitDb();
+            var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
 
             var stop0 = wr.AddOrUpdateStop("0", 3.00, 50.00);

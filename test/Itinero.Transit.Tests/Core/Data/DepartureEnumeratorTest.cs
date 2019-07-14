@@ -1,7 +1,7 @@
-using System.Diagnostics;
 using System.IO;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Aggregators;
+using Itinero.Transit.Data.Core;
 using Xunit;
 
 namespace Itinero.Transit.Tests.Core.Data
@@ -38,7 +38,7 @@ namespace Itinero.Transit.Tests.Core.Data
         [Fact]
         public void TestEnumeration()
         {
-            var tdb = new TransitDb();
+            var tdb = new TransitDb(0);
 
 
             var wr = tdb.GetWriter();
@@ -120,7 +120,7 @@ namespace Itinero.Transit.Tests.Core.Data
         [Fact]
         public void TestEnumeration0()
         {
-            var tdb = new TransitDb();
+            var tdb = new TransitDb(0);
             var d = (ulong) 24 * 60 * 60;
 
 
@@ -181,8 +181,8 @@ namespace Itinero.Transit.Tests.Core.Data
         [Fact]
         public void TestEnumerationAggregator()
         {
-            var tdb = new TransitDb();
-            var tdb1 = new TransitDb();
+            var tdb = new TransitDb(0);
+            var tdb1 = new TransitDb(0);
 
             var d = (ulong) 24 * 60 * 60;
 
@@ -248,7 +248,7 @@ namespace Itinero.Transit.Tests.Core.Data
         [Fact]
         public void TestEnumerationAfterRead()
         {
-            var tdb = new TransitDb();
+            var tdb = new TransitDb(0);
             var d = (ulong) 24 * 60 * 60;
 
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
+using Itinero.Transit.Data.Core;
 
 // ReSharper disable UnassignedGetOnlyAutoProperty
 

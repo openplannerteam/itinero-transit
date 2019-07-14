@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
-using Itinero.Transit.DataProcessor;
 using Itinero.Transit.IO.OSM.Data;
 using Itinero.Transit.Logging;
 
-namespace IDP.Switches.Transit
+namespace Itinero.Transit.Processor.Switch
 {
-    using static SwitchesExtensions;
-
+    // ReSharper disable once InconsistentNaming
     internal class SwitchCreateTransitDbOSM : DocumentedSwitch, ITransitDbSource, ITransitDbModifier
     {
         private static readonly string[] _names =
@@ -30,12 +28,12 @@ namespace IDP.Switches.Transit
             _extraParams =
                 new List<(List<string> args, bool isObligated, string comment, string defaultValue)>
                 {
-                    obl("relation", "id",
+                    SwitchesExtensions.obl("relation", "id",
                         "Either a number, an url (starting with http or https) or a path where the relation can be found"),
-                    opt("window-start", "start",
+                    SwitchesExtensions.opt("window-start", "start",
                             "The start of the timewindow to load. Specify 'now' to take the current date and time.")
                         .SetDefault("now"),
-                    opt("window-duration", "duration",
+                    SwitchesExtensions.opt("window-duration", "duration",
                             "The length of the window to load, in seconds. If zero is specified, no connections will be downloaded.")
                         .SetDefault("3600")
                 };
@@ -49,7 +47,7 @@ namespace IDP.Switches.Transit
 
         public TransitDb Generate(Dictionary<string, string> arguments)
         {
-            var tdb = new TransitDb();
+            var tdb = new TransitDb(0);
             Modify(arguments, tdb);
             return tdb;
         }

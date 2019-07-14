@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.IO.LC.Data;
+using Itinero.Transit.IO.LC.Utils;
 using Itinero.Transit.Logging;
 using JsonLD.Core;
 
@@ -32,7 +33,7 @@ namespace Itinero.Transit.IO.LC
             _onLocationLoaded = onLocationLoaded ??
                                 new LoggingOptions(OnLocationLoaded, 500);
             _onTimeTableLoaded = onTimeTableLoaded ??
-                                  new LoggingOptions(OnTimeTableLoaded, 100);
+                                  new LoggingOptions(OnTimeTableLoaded, 250);
             _onError = onError ?? Log.Verbose;
         }
 

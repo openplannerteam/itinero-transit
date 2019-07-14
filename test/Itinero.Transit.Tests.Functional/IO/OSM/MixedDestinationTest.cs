@@ -1,5 +1,4 @@
 using Itinero.Transit.Data;
-using Itinero.Transit.IO.OSM;
 using Itinero.Transit.IO.OSM.Data;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
@@ -29,7 +28,6 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
                 ;
 
             var earliestArrival = router0.EarliestArrivalJourney();
-            var s = earliestArrival.ToString(router0);
             NotNull(earliestArrival);
             router0.ResetFilter();
             var latestDeparture = router0.LatestDepartureJourney();

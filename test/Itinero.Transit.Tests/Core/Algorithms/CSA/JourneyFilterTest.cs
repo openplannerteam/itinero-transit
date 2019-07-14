@@ -1,6 +1,7 @@
 using System;
+using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Data;
-using Itinero.Transit.Journey.Filter;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
 using Xunit;
@@ -12,7 +13,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         [Fact]
         public void TestFiltering()
         {
-            var tdb = new TransitDb();
+            var tdb = new TransitDb(0);
 
             var writer = tdb.GetWriter();
 
@@ -74,7 +75,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         [Fact]
         public void TestFilteringCancelled()
         {
-            var tdb = new TransitDb();
+            var tdb = new TransitDb(0);
 
             var writer = tdb.GetWriter();
 

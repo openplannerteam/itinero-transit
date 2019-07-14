@@ -1,5 +1,6 @@
 using System;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.IO.OSM.Data;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
@@ -12,7 +13,7 @@ namespace Itinero.Transit.Tests.IO.OSM
         [Fact]
         public void WithOsmWalk()
         {
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
@@ -94,7 +95,7 @@ namespace Itinero.Transit.Tests.IO.OSM
         public void WithEndWalk()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
@@ -146,7 +147,7 @@ namespace Itinero.Transit.Tests.IO.OSM
         public void WithStartEndWalk()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.Data.Tiles;
 
 namespace Itinero.Transit.Algorithms.Search

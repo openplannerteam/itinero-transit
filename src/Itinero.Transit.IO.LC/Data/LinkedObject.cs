@@ -5,7 +5,7 @@ using JsonLD.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Itinero.Transit.IO.LC
+namespace Itinero.Transit.IO.LC.Data
 {
     /// <summary>
     /// A linked object is an object which has an Uniform Resource Identifier.
@@ -13,7 +13,7 @@ namespace Itinero.Transit.IO.LC
     /// 
     /// Then, the attributes should be set via the 'FromJson' object. This JSON can be provided directly or via the 'Download'method
     /// </summary>
-    public interface LinkedObject
+    public interface ILinkedObject
     {
         // ReSharper disable once MemberCanBeProtected.Global
         Uri Uri { get; }
@@ -33,7 +33,7 @@ namespace Itinero.Transit.IO.LC
         /// </summary>
         /// <returns>The string at the given resource</returns>
         /// <exception cref="FileNotFoundException">If nothing could be downloaded</exception>
-        public static void Download(this LinkedObject lo, JsonLdProcessor loader)
+        public static void Download(this ILinkedObject lo, JsonLdProcessor loader)
         {
             try
             {

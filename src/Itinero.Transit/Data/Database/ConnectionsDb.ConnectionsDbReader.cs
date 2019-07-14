@@ -1,4 +1,5 @@
 using System.Diagnostics.Contracts;
+using Itinero.Transit.Data.Core;
 
 namespace Itinero.Transit.Data
 {
@@ -7,7 +8,7 @@ namespace Itinero.Transit.Data
     /// </summary>
     public partial class ConnectionsDb :
         IDatabaseReader<ConnectionId, Connection>,
-        IDatabaseEnumerator<ConnectionId, Connection>
+        IDatabaseEnumerator<ConnectionId>
     {
         public bool Get(ConnectionId id, Connection objectToWrite)
         {
@@ -20,7 +21,7 @@ namespace Itinero.Transit.Data
             var pointer = _globalIdPointersPerHash[hash];
             while (pointer != _noData)
             {
-                var internalId = _globalIdLinkedList[pointer + 0];
+                var internalId = GlobalIdLinkedList[pointer + 0];
                 if (Get(new ConnectionId(DatabaseId, internalId), objectToWrite))
                 {
                     // This could be made more efficient by not relying on Get
@@ -33,7 +34,7 @@ namespace Itinero.Transit.Data
                     }
                 }
 
-                pointer = _globalIdLinkedList[pointer + 1];
+                pointer = GlobalIdLinkedList[pointer + 1];
             }
 
             return false;

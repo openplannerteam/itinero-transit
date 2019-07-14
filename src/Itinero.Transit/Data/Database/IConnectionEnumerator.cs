@@ -1,4 +1,4 @@
-using System.Diagnostics.Contracts;
+using Itinero.Transit.Data.Core;
 
 namespace Itinero.Transit.Data
 {

@@ -1,6 +1,6 @@
 using System.Diagnostics.Contracts;
 
-namespace Itinero.Transit.Data
+namespace Itinero.Transit.Data.Core
 {
     public struct StopId
     {

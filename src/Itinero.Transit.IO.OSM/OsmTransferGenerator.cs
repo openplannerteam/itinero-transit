@@ -6,6 +6,7 @@ using Itinero.LocalGeo;
 using Itinero.Profiles;
 using Itinero.Profiles.Lua.Osm;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.Logging;
 using Itinero.Transit.OtherMode;
 
@@ -39,7 +40,6 @@ namespace Itinero.Transit.IO.OSM
         ///  </summary>
         ///  <param name="searchDistance">The maximum distance that the traveller takes this route</param>
         ///  <param name="profile">The vehicle profile, default is pedestrian.</param>
-        ///  <param name="baseTilesUrl">The base tile url.</param>
         public OsmTransferGenerator(float searchDistance = 1000,
             Profile profile = null)
         {

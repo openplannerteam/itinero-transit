@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
@@ -66,7 +67,7 @@ namespace Itinero.Transit.Tests.Core.Walk
         [Fact]
         public void TestCrowsFlight()
         {
-            var tdb = new TransitDb();
+            var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
             var stop0 = wr.AddOrUpdateStop("0", 6, 50);
             var stop1 = wr.AddOrUpdateStop("1", 6.001, 50);
@@ -90,7 +91,7 @@ namespace Itinero.Transit.Tests.Core.Walk
         [Fact]
         public void TestCrowsFlightJourneyBuilding()
         {
-            var tdb = new TransitDb();
+            var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
             var stop0 = wr.AddOrUpdateStop("0", 6, 50);
             var stop1 = wr.AddOrUpdateStop("1", 6.001, 50);

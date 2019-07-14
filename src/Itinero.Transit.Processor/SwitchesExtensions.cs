@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+// ReSharper disable InconsistentNaming
 
-namespace IDP.Switches
+namespace Itinero.Transit.Processor
 {
     public static class SwitchesExtensions
     {

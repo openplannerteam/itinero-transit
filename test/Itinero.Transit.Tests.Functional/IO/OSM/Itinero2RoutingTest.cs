@@ -1,5 +1,6 @@
 using Itinero.Profiles.Lua.Osm;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.IO.OSM;
 using Itinero.Transit.IO.OSM.Data;
 using Itinero.Transit.Journey.Metric;

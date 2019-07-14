@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Itinero.Transit.Data;
-using Itinero.Transit.DataProcessor;
-using static System.String;
-using static IDP.Switches.SwitchesExtensions;
 
-namespace IDP.Switches
+namespace Itinero.Transit.Processor
 {
     internal class HelpSwitch : DocumentedSwitch, ITransitDbModifier, ITransitDbSource
     {
@@ -17,10 +14,10 @@ namespace IDP.Switches
             _extraParams =
                 new List<(List<string>argName, bool isObligated, string comment, string defaultValue)>
                 {
-                    opt("about", "The command (or switch) you'd like more info about"),
-                    opt("markdown", "md",
+                    SwitchesExtensions.opt("about", "The command (or switch) you'd like more info about"),
+                    SwitchesExtensions.opt("markdown", "md",
                         "Write the help text as markdown to a file. The documentation is generated with this flag."),
-                    opt("experimental", "Include experimental switches in the output").SetDefault("false")
+                    SwitchesExtensions.opt("experimental", "Include experimental switches in the output").SetDefault("false")
                 };
 
         private const bool _isStable = true;
@@ -41,12 +38,12 @@ namespace IDP.Switches
         {
             PrintHelp(parameters);
 
-            return new TransitDb();
+            return new TransitDb(0);
         }
 
         public void PrintHelp(Dictionary<string, string> arguments)
         {
-            if (!IsNullOrEmpty(arguments["about"]))
+            if (!String.IsNullOrEmpty(arguments["about"]))
             {
                 var needed = arguments["about"];
                 var allSwitches = SwitchParsers.Documented;
@@ -69,14 +66,14 @@ namespace IDP.Switches
                     $"Did not find documentation for switch {needed}. Don't worry, the switch probably exists but is not documented yet");
             }
 
-            if (IsNullOrEmpty(arguments["markdown"]))
+            if (String.IsNullOrEmpty(arguments["markdown"]))
             {
                 Console.Write(GenerateAllHelp());
             }
             else
             {
                 File.WriteAllText(arguments["markdown"],
-                    GenerateAllHelp(true, DocumentedSwitch.IsTrue(arguments["experimental"])));
+                    GenerateAllHelp(true, IsTrue(arguments["experimental"])));
             }
         }
 

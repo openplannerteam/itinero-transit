@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 
-namespace Itinero.Transit.Journey.Filter
+namespace Itinero.Transit.Algorithms.Filter
 {
     public class ConnectionFilterAggregator : IConnectionFilter
     {

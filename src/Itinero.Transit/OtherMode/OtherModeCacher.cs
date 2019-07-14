@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 
 namespace Itinero.Transit.OtherMode
 {
@@ -81,14 +80,14 @@ namespace Itinero.Transit.OtherMode
             return v;
         }
 
-        private bool CachingIsDone = false;
+        private bool _cachingIsDone;
 
         // ReSharper disable once UnusedMember.Global
         public OtherModeCacher PreCalculateCache(IStopsReader withCache)
         {
             // ReSharper disable once RedundantArgumentDefaultValue
             PreCalculateCache(withCache, 0, 0);
-            CachingIsDone = true;
+            _cachingIsDone = true;
             return this;
         }
 
@@ -118,38 +117,9 @@ namespace Itinero.Transit.OtherMode
         }
 
         // ReSharper disable once UnusedMember.Global
-        public bool ChachingIsDone()
+        public bool CachingIsDone()
         {
-            return CachingIsDone;
-        }
-
-        private void PreCalculateCacheMultiThreaded(Func<IStopsReader> stopsReaderGenerator)
-        {
-            // TODO TEST ME
-            var processors = Environment.ProcessorCount;
-            var allCaches = new List<OtherModeCacher>();
-            var taskPool = new Task[processors];
-
-            for (var i = 0; i < processors; i++)
-            {
-                var otherCache = new OtherModeCacher(Fallback);
-                allCaches.Add(otherCache);
-
-                var task = new Task(() =>
-                {
-                    var stopsReader = stopsReaderGenerator();
-                    otherCache.PreCalculateCache(stopsReader, i, processors);
-                });
-                taskPool[i] = task;
-                task.Start();
-            }
-
-            Task.WaitAll(taskPool);
-
-            foreach (var otherModeCacher in allCaches)
-            {
-                _cache.Union(otherModeCacher._cache);
-            }
+            return _cachingIsDone;
         }
 
 

@@ -1,6 +1,7 @@
 using System;
+using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Data;
-using Itinero.Transit.Journey.Filter;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Utils;
@@ -14,7 +15,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
         public void CreateIsochroneFilterTest()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
@@ -64,7 +65,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
         public void CreateIsochroneFilterTestArrival()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
@@ -120,7 +121,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             // Build an isochronefilter, then calculate all journeys via PCS
 
             // build a one-connection db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
@@ -162,7 +163,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             // Build an isochronefilter, then calculate all journeys via PCS
 
             // build a one-connection db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);

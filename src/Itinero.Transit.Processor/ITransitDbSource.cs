@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Itinero.Transit.Data;
 
-namespace Itinero.Transit.DataProcessor
+namespace Itinero.Transit.Processor
 {
     public interface ITransitDbSource
     {
@@ -13,7 +13,6 @@ namespace Itinero.Transit.DataProcessor
         /// <summary>
         /// Does _not_ change the transitDb
         /// </summary>
-        /// <param name="transitDb"></param>
         void Use(Dictionary<string, string> parameters, TransitDb transitDb);
     }
     public interface ITransitDbModifier
@@ -21,7 +20,6 @@ namespace Itinero.Transit.DataProcessor
         /// <summary>
         /// Modifies the transitdb
         /// </summary>
-        /// <param name="transitDb"></param>
         void Modify(Dictionary<string, string> parameters, TransitDb transitDb);
     }
 }

@@ -1,4 +1,6 @@
-namespace Itinero.Transit.Journey.Filter
+using Itinero.Transit.Journey;
+
+namespace Itinero.Transit.Algorithms.Filter
 {  /// <summary>
     /// A journey filter helps to optimize PCS by saying if a journey should be taken or not.
     ///

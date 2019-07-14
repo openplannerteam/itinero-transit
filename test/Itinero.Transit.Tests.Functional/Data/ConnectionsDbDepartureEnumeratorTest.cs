@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 
 namespace Itinero.Transit.Tests.Functional.Data
 {

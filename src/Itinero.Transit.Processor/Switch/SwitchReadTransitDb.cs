@@ -22,10 +22,9 @@
 
 using System.Collections.Generic;
 using System.IO;
-using IDP.Switches;
 using Itinero.Transit.Data;
 
-namespace Itinero.Transit.DataProcessor.Transit
+namespace Itinero.Transit.Processor.Switch
 {
     /// <summary>
     /// Represents a switch to read a shapefile for routing.

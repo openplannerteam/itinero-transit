@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using IDP.Switches;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.Utils;
 
-namespace Itinero.Transit.DataProcessor.Transit
+namespace Itinero.Transit.Processor.Switch
 {
     class SwitchSelectStops : DocumentedSwitch, ITransitDbModifier
     {
@@ -57,7 +57,7 @@ namespace Itinero.Transit.DataProcessor.Transit
 
             var old = transitDb;
 
-            var filtered = new TransitDb();
+            var filtered = new TransitDb(0);
             var wr = filtered.GetWriter();
 
 

@@ -11,7 +11,7 @@ namespace Itinero.Transit.Tests.Core.Data
         [Fact]
         public void TestAggregator()
         {
-            var tdb0 = new TransitDb();
+            var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
             wr0.AddOrUpdateStop("b", 4.2, 4.100001);
             wr0.Close();
@@ -38,7 +38,7 @@ namespace Itinero.Transit.Tests.Core.Data
         [Fact]
         public void TestAggregator1()
         {
-            var tdb0 = new TransitDb();
+            var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
             wr0.AddOrUpdateStop("a", 4.0001, 4.100001);
             wr0.Close();

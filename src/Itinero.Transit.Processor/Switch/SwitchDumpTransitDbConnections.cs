@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using IDP.Switches;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Utils;
 
-namespace Itinero.Transit.DataProcessor.Transit
+namespace Itinero.Transit.Processor.Switch
 {
     class SwitchDumpTransitDbConnections : DocumentedSwitch, ITransitDbSink
     {

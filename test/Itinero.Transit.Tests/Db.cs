@@ -1,5 +1,6 @@
 using System;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 
 namespace Itinero.Transit.Tests
 {

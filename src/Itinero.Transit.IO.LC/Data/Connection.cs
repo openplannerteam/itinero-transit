@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using Itinero.Transit.Data;
 using JsonLD.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -15,7 +14,7 @@ namespace Itinero.Transit.IO.LC.Data
      * Note that a connection does _never_ have intermediate stops.
      */
     [Serializable]
-    public class Connection : LinkedObject
+    public class Connection : ILinkedObject
     {
         private Uri _departureStop;
         private Uri _arrivalStop;

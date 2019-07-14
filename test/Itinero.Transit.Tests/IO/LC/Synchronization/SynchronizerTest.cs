@@ -20,7 +20,7 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
                 Assert.Equal(TimeSpan.FromSeconds(3), end - start);
             }
 
-            var tdb = new TransitDb();
+            var tdb = new TransitDb(0);
 
 
             var synchronizer = new Synchronizer(tdb, Update, 
@@ -52,7 +52,7 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
                 }
             }
 
-            var tdb = new TransitDb();
+            var tdb = new TransitDb(0);
 
 
             var sync = new Synchronizer(tdb, Update,

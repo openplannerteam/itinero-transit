@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using System.Timers;
 
 namespace Itinero.Transit.Data
 {
+    // ReSharper disable once InconsistentNaming
     public interface InternalId
     {
         /// <summary>
@@ -10,15 +10,14 @@ namespace Itinero.Transit.Data
         /// </summary>
         uint DatabaseId { get; }
     }
-    public interface IDatabaseReader<Tid, in T>
-        where Tid : InternalId, new()
+    public interface IDatabaseReader<in TId, in T>
+        where TId : InternalId, new()
     {
         /// <summary>
         /// MoveNext will  
         /// </summary>
-        /// <param name="objectToWrite"></param>
         /// <returns></returns>
-        bool Get(Tid id, T objectToWrite);
+        bool Get(TId id, T objectToWrite);
 
         /// <summary>
         /// Searches if this globalId is present in this database.
@@ -27,8 +26,6 @@ namespace Itinero.Transit.Data
         ///
         /// Note that Tids should be structs for performance
         /// </summary>
-        /// <param name="globalId"></param>
-        /// <param name="foundId"></param>
         /// <returns></returns>
         bool Get(string globalId, T objectToWrite);
 
@@ -40,14 +37,14 @@ namespace Itinero.Transit.Data
 
     public static class DatabaseExtensions
     {
-        public static bool Get<Tid, T>(
-            this IDatabaseReader<Tid, T> db, string globalId, out T found) where Tid : InternalId, new() where T : new()
+        public static bool Get<TId, T>(
+            this IDatabaseReader<TId, T> db, string globalId, out T found) where TId : InternalId, new() where T : new()
         {
             found = new T();
             return db.Get(globalId, found);
         }
-        public static T Get<Tid, T>(this IDatabaseReader<Tid, T> db, Tid id)
-            where T : new() where Tid : InternalId, new()
+        public static T Get<TId, T>(this IDatabaseReader<TId, T> db, TId id)
+            where T : new() where TId : InternalId, new()
         {
             var t = new T();
             if (db.Get(id, t))
@@ -58,7 +55,7 @@ namespace Itinero.Transit.Data
             return default(T);
         }
     }
-    public interface IDatabaseEnumerator<TId, in T> where TId : struct
+    public interface IDatabaseEnumerator<TId> where TId : struct
     {
         /// <summary>
         /// Gives the first identifier.

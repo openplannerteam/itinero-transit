@@ -1,6 +1,7 @@
+using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Metric;
 
-namespace Itinero.Transit.Journey.Filter
+namespace Itinero.Transit.Algorithms.Filter
 {
     public class MaxNumberOfTransferFilter : IJourneyFilter<TransferMetric>
     {

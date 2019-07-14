@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey;
-using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Utils;
 
@@ -191,7 +192,6 @@ namespace Itinero.Transit.Algorithms.CSA
         /// Integrates all connections which happen to have the same departure time.
         /// Once all those connections are handled, the walks from the improved locations are batched
         /// </summary>
-        /// <param name="enumerator"></param>
         private bool IntegrateBatch()
         {
             var improvedLocations = new List<StopId>();

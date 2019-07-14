@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Data.Aggregators;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.Utils;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]

@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Itinero.Transit.IO.LC.Data;
 
-namespace Itinero.Transit.IO.LC.Data
+namespace Itinero.Transit.IO.LC.Utils
 {
     internal static class TimeTableExtensions
     {

@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics.Contracts;
 using Itinero.Transit.OtherMode;
 
-namespace Itinero.Transit.Data
+namespace Itinero.Transit.Data.Core
 {
     public struct TripId : InternalId
     {

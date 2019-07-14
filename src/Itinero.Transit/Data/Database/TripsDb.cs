@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Data.Attributes;
+using Itinero.Transit.Data.Core;
 using Reminiscence;
 using Reminiscence.Arrays;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;

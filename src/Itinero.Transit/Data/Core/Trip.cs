@@ -1,6 +1,6 @@
 using Itinero.Transit.Data.Attributes;
 
-namespace Itinero.Transit.Data
+namespace Itinero.Transit.Data.Core
 {
     /// <summary>
     /// The class representing a single trip and related attributes.

@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Journey;
@@ -33,16 +32,6 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             True(journeys.Any());
 
             Information($"Found {journeys.Count} profiles");
-
-
-            // Verify properties on Pareto frontiers
-
-            var stationJourneys = pcs.StationJourneys();
-            foreach (var kv in stationJourneys)
-            {
-                var frontier = kv.Value;
-           //     frontier.IsSorted();
-            }
 
             return true;
         }

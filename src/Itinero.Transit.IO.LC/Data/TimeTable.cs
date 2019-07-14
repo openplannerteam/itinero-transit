@@ -10,7 +10,7 @@ namespace Itinero.Transit.IO.LC.Data
     /// Represents one entire page of connections, based on a LinkedConnections JSON-LD
     /// </summary>
     [Serializable]
-    public class TimeTable : LinkedObject
+    public class TimeTable : ILinkedObject
     {
         public Uri Uri { get; }
         private Uri Next { get; set; }

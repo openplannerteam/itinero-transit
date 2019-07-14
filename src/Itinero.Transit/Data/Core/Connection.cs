@@ -1,6 +1,6 @@
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Itinero.Transit.Data
+namespace Itinero.Transit.Data.Core
 {
     public class Connection
     {
@@ -105,21 +105,22 @@ namespace Itinero.Transit.Data
                    x.ArrivalStop.Equals(y.ArrivalStop);
         }
 
-        public int GetHashCode(Connection obj)
+        [SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode")]
+        public override int GetHashCode()
         {
             unchecked
             {
-                var hashCode = obj.Id.GetHashCode();
-                hashCode = (hashCode * 397) ^ obj.GlobalId.GetHashCode();
-                hashCode = (hashCode * 397) ^ obj.ArrivalTime.GetHashCode();
-                hashCode = (hashCode * 397) ^ obj.DepartureTime.GetHashCode();
-                hashCode = (hashCode * 397) ^ obj.TravelTime.GetHashCode();
-                hashCode = (hashCode * 397) ^ obj.ArrivalDelay.GetHashCode();
-                hashCode = (hashCode * 397) ^ obj.DepartureDelay.GetHashCode();
-                hashCode = (hashCode * 397) ^ obj.Mode.GetHashCode();
-                hashCode = (hashCode * 397) ^ obj.TripId.GetHashCode();
-                hashCode = (hashCode * 397) ^ obj.DepartureStop.GetHashCode();
-                hashCode = (hashCode * 397) ^ obj.ArrivalStop.GetHashCode();
+                var hashCode = Id.GetHashCode();
+                hashCode = (hashCode * 397) ^ GlobalId.GetHashCode();
+                hashCode = (hashCode * 397) ^ ArrivalTime.GetHashCode();
+                hashCode = (hashCode * 397) ^ DepartureTime.GetHashCode();
+                hashCode = (hashCode * 397) ^ TravelTime.GetHashCode();
+                hashCode = (hashCode * 397) ^ ArrivalDelay.GetHashCode();
+                hashCode = (hashCode * 397) ^ DepartureDelay.GetHashCode();
+                hashCode = (hashCode * 397) ^ Mode.GetHashCode();
+                hashCode = (hashCode * 397) ^ TripId.GetHashCode();
+                hashCode = (hashCode * 397) ^ DepartureStop.GetHashCode();
+                hashCode = (hashCode * 397) ^ ArrivalStop.GetHashCode();
                 return hashCode;
             }
         }

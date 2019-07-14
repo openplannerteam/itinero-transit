@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
+using Itinero.Transit.Journey;
 
-namespace Itinero.Transit.Journey.Filter
+namespace Itinero.Transit.Algorithms.Filter
 {
     /// <summary>
     /// The simple metric guesser 'teleports' the traveller to the destination at the current

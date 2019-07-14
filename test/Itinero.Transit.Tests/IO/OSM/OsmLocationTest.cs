@@ -1,5 +1,5 @@
 using System;
-using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.IO.OSM.Data;
 using Xunit;
 

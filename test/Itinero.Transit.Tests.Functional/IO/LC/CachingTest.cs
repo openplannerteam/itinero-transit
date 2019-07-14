@@ -1,5 +1,4 @@
 using System;
-using Itinero.Transit.IO.LC;
 using Itinero.Transit.IO.LC.Data;
 
 namespace Itinero.Transit.Tests.Functional.IO.LC

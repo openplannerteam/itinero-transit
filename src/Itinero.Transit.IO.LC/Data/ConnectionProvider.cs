@@ -1,4 +1,5 @@
 using System;
+using Itinero.Transit.IO.LC.Utils;
 using Itinero.Transit.Logging;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;

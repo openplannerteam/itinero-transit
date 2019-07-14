@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.Utils;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
@@ -14,7 +15,7 @@ namespace Itinero.Transit.Data
     {
         public uint DatabaseId { get; }
 
-        public TransitDb(uint databaseId = 0) : this(
+        public TransitDb(uint databaseId ) : this(
             new StopsDb(databaseId), new TripsDb(databaseId), new ConnectionsDb(databaseId))
         {
             DatabaseId = databaseId;

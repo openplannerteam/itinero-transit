@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey;
-using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Utils;
 
@@ -21,16 +22,17 @@ namespace Itinero.Transit.Algorithms.CSA
     /// </summary>
     internal class ProfiledConnectionScan<T> where T : IJourneyMetric<T>
     {
-        internal readonly IConnectionEnumerator _connections;
+        private readonly IConnectionEnumerator _connections;
         private readonly IStopsReader _stopsReader;
-        internal readonly ulong _earliestDeparture, _lastArrival;
-        internal readonly HashSet<StopId> _departureLocations;
+        private readonly ulong _earliestDeparture;
+        private readonly ulong _lastArrival;
+        private readonly HashSet<StopId> _departureLocations;
 
-        internal readonly HashSet<ProfiledParetoFrontier<T>> _departureFrontiers =
+        private readonly HashSet<ProfiledParetoFrontier<T>> _departureFrontiers =
             new HashSet<ProfiledParetoFrontier<T>>();
 
-        internal readonly HashSet<IStop> _targetLocations;
-        internal readonly HashSet<StopId> _targetLocationsIds;
+        private readonly HashSet<IStop> _targetLocations;
+        private readonly HashSet<StopId> _targetLocationsIds;
 
         private readonly MetricComparator<T> _comparator;
 
@@ -44,13 +46,13 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <summary>
         /// Rules how much penalty is given to go from one connection to another, without changing stations
         /// </summary>
-        internal readonly IOtherModeGenerator _transferPolicy;
+        private readonly IOtherModeGenerator _transferPolicy;
 
         /// <summary>
         /// Rules how much time is needed to walk from one stop to another.
         /// This IOtherModeGenerator may show complex behaviour, e.g. based on what the first or last stop is for first- and lastmile policies
         /// </summary>
-        internal readonly IOtherModeGenerator _walkPolicy;
+        private readonly IOtherModeGenerator _walkPolicy;
 
         // Placeholder empty frontier; used when a frontier is needed but not present.
         private readonly ProfiledParetoFrontier<T> _empty;

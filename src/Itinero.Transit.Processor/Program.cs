@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Globalization;
 using Itinero.Transit.Data;
-using Itinero.Transit.DataProcessor;
 using Itinero.Transit.Logging;
 
-namespace TransitDataProcessor
+namespace Itinero.Transit.Processor
 {
     class Program
     {
@@ -13,13 +12,11 @@ namespace TransitDataProcessor
             // enable logging.
             OsmSharp.Logging.Logger.LogAction = (origin, level, message, parameters) =>
             {
-                Console.WriteLine(string.Format("[{0}-{3}] {1} - {2}", origin, level, message,
-                    DateTime.Now.ToString(CultureInfo.InvariantCulture)));
+                Console.WriteLine("[{0}-{3}] {1} - {2}", origin, level, message, DateTime.Now.ToString(CultureInfo.InvariantCulture));
             };
             Itinero.Logging.Logger.LogAction = (origin, level, message, parameters) =>
             {
-                Console.WriteLine(string.Format("[{0}-{3}] {1} - {2}", origin, level, message,
-                    DateTime.Now.ToString(CultureInfo.InvariantCulture)));
+                Console.WriteLine("[{0}-{3}] {1} - {2}", origin, level, message, DateTime.Now.ToString(CultureInfo.InvariantCulture));
             };
             
             Log.Information("Starting Transit Data Preprocessor 0.1");
@@ -42,7 +39,7 @@ namespace TransitDataProcessor
             }
             else
             {
-                tdb = new TransitDb();
+                tdb = new TransitDb(0);
             }
 
             foreach (var (swtch, parameters) in switches)

@@ -26,7 +26,7 @@ namespace Itinero.Transit.Tests.Functional.Data
         {
             var now = DateTime.Now.ToUniversalTime();
 
-            var tdb = new TransitDb();
+            var tdb = new TransitDb(0);
             var dataset = tdb.UseLinkedConnections(Belgium.SncbConnections, Belgium.SncbLocations,
                 DateTime.MaxValue, DateTime.MinValue);
             var updater = new TransitDbUpdater(tdb, dataset.UpdateTimeFrame);

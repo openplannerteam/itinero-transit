@@ -10,7 +10,7 @@ namespace Itinero.Transit.Tests.Functional.IO.LC.Synchronization
     {
         protected override object Execute(object input)
         {
-            var tdb = new TransitDb();
+            var tdb = new TransitDb(0);
 
             var sncb = Belgium.AllLinks["sncb"];
             var (syncer, _) = tdb.UseLinkedConnections(

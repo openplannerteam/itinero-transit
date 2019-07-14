@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Utils;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;

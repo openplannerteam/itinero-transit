@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace IDP.Switches
+namespace Itinero.Transit.Processor
 {
     /// <summary>
     /// A documented switch contains all flags explicitly,

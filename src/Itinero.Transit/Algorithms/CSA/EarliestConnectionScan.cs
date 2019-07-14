@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey;
-using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Utils;
 

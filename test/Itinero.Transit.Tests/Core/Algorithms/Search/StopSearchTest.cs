@@ -3,7 +3,7 @@ using System.Linq;
 using Itinero.Transit.Data;
 using Xunit;
 using Itinero.Transit.Algorithms.Search;
-using Itinero.Transit.Data.Aggregators;
+using Itinero.Transit.Data.Core;
 
 namespace Itinero.Transit.Tests.Core.Algorithms.Search
 {
@@ -12,7 +12,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.Search
         public static (StopsDb.StopsDbReader, StopId howest, StopId sintClara, StopId station)
             CreateTestReader()
         {
-            var tdb = new TransitDb();
+            var tdb = new TransitDb(0);
 
             var wr = tdb.GetWriter();
 

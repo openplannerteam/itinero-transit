@@ -30,7 +30,7 @@ namespace Itinero.Transit.Tests.Core.Data
         [Fact]
         public void TestEnumerator()
         {
-            var tdb = new TransitDb();
+            var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
 
             var a = wr.AddOrUpdateStop("a", 1, 1);

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.OtherMode

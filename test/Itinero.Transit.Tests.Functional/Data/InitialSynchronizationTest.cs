@@ -11,7 +11,7 @@ namespace Itinero.Transit.Tests.Functional.Data
     {
         protected override bool Execute(bool input)
         {
-            var tdb = new TransitDb();
+            var tdb = new TransitDb(0);
             var connections = "https://graph.irail.be/sncb/connections";
             var location = "https://irail.be/stations";
 

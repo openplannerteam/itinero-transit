@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using IDP.Switches;
-using IDP.Switches.Transit;
-using Itinero.Transit.DataProcessor.Transit;
-using OsmSharp.Db;
+using Itinero.Transit.Processor.Switch;
 
-namespace Itinero.Transit.DataProcessor
+namespace Itinero.Transit.Processor
 {
     /// <summary>
     /// A switch parser.

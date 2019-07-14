@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
-using IDP.Switches;
 using Itinero.Transit.Data;
 using Itinero.Transit.IO.LC;
 using Itinero.Transit.Logging;
 
-namespace Itinero.Transit.DataProcessor.Transit
+namespace Itinero.Transit.Processor.Switch
 {
+    // ReSharper disable once InconsistentNaming
     internal class SwitchCreateTransitDbLC : DocumentedSwitch, ITransitDbModifier
     {
         private static readonly string[] _names =
@@ -48,7 +48,7 @@ namespace Itinero.Transit.DataProcessor.Transit
 
         public TransitDb Generate(Dictionary<string, string> arguments)
         {
-            var tdb = new TransitDb();
+            var tdb = new TransitDb(0);
             Modify(arguments, tdb);
             return tdb;
         }

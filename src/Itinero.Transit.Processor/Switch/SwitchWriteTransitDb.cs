@@ -23,10 +23,8 @@
 using System.Collections.Generic;
 using System.IO;
 using Itinero.Transit.Data;
-using Itinero.Transit.DataProcessor;
-using static IDP.Switches.SwitchesExtensions;
 
-namespace IDP.Switches.Transit
+namespace Itinero.Transit.Processor.Switch
 {
     /// <summary>
     /// Represents a switch to read a shapefile for routing.
@@ -43,7 +41,7 @@ namespace IDP.Switches.Transit
             _extraParams =
                 new List<(List<string> args, bool isObligated, string comment, string defaultValue)>
                 {
-                    obl("file", "The output file to write to"),
+                    SwitchesExtensions.obl("file", "The output file to write to"),
                 };
 
         private const bool _isStable = false;

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Itinero.IO.Osm.Tiles.Parsers;
 using Itinero.Transit.Data;
-using Itinero.Transit.IO.OSM;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
@@ -91,7 +89,7 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Running multi TransitDb tests");
 
             new MixedDestinationTest().Run();
-            new FullStackTest();
+            new FullStackTest().Run();
             
             new TestAllAlgorithms().ExecuteMultiModal();
         }

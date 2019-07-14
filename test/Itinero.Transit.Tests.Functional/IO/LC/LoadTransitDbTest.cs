@@ -36,7 +36,7 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
         protected override TransitDb Execute((DateTime date, TimeSpan window) input)
         {
             // create a stops db and connections db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
 
             // load connections for the current day.
             var w = transitDb.GetWriter();

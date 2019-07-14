@@ -1,7 +1,7 @@
 using Itinero.Transit.Algorithms.CSA;
-using Itinero.Transit.Data;
+using Itinero.Transit.Journey;
 
-namespace Itinero.Transit.Journey.Filter
+namespace Itinero.Transit.Algorithms.Filter
 {
     /// <summary>
     /// The IMetricGuesser tries to guess a minimal time to complete the journey.

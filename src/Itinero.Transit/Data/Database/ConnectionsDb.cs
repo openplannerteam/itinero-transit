@@ -4,6 +4,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Algorithms.Sorting;
+using Itinero.Transit.Data.Core;
 using Reminiscence;
 using Reminiscence.Arrays;
 
@@ -45,20 +46,20 @@ namespace Itinero.Transit.Data
         private uint
             _nextInternalId; // the next empty position in the connection data array, divided by the connection size in bytes.
 
-        internal readonly ArrayBase<byte> _data; // the connection data.
+        internal readonly ArrayBase<byte> Data; // the connection data.
 
         // this stores the connections globalId (hash of Uri) index.
         private const int _globalIdHashSize = ushort.MaxValue;
         private readonly ArrayBase<uint> _globalIdPointersPerHash;
 
         // ReSharper disable once RedundantDefaultMemberInitializer
-        internal uint _globalIdLinkedListPointer = 0;
-        internal readonly ArrayBase<uint> _globalIdLinkedList;
+        internal uint GlobalIdLinkedListPointer = 0;
+        internal readonly ArrayBase<uint> GlobalIdLinkedList;
 
 
         // the connections meta-data, its global, trip.
-        internal readonly ArrayBase<string> _globalIds; // holds the global ids.
-        internal readonly ArrayBase<uint> _tripIds; // holds the trip ids.
+        internal readonly ArrayBase<string> GlobalIds; // holds the global ids.
+        private readonly ArrayBase<uint> _tripIds; // holds the trip ids.
 
 
         /// <summary>
@@ -72,7 +73,7 @@ namespace Itinero.Transit.Data
         /// The metadata on the window of HH:MM is kept in _departureWindowPointers
         /// 
         /// </summary>
-        internal readonly ArrayBase<uint> _departurePointers;
+        internal readonly ArrayBase<uint> DeparturePointers;
 
 
         /// <summary>
@@ -83,7 +84,7 @@ namespace Itinero.Transit.Data
         /// Then, the start of the window for this time of day can be found at _departureWindowPointers[5 * 2]
         /// The length of this window can be found at _departureWindowPointers[5 * 2 + 1]
         /// </summary>
-        internal readonly ArrayBase<uint> _departureWindowPointers;
+        internal readonly ArrayBase<uint> DepartureWindowPointers;
 
 
         private uint _nextDeparturePointer;
@@ -94,12 +95,12 @@ namespace Itinero.Transit.Data
         /// There is an index of connections sorted by departure time
         /// This determines the size of those windows - by default one minute -
         /// </summary>
-        internal readonly uint _windowSizeInSeconds;
+        internal readonly uint WindowSizeInSeconds;
 
         /// <summary>
         /// Indicates how many windows are indexed
         /// </summary>
-        internal readonly uint _numberOfWindows;
+        internal readonly uint NumberOfWindows;
 
         private const int _connectionSizeInBytes = 8 + 8 + 4 + 2 + 2 + 2 + 2;
 
@@ -127,15 +128,15 @@ namespace Itinero.Transit.Data
         internal ConnectionsDb(uint databaseId, uint windowSizeInSeconds = 60, uint numberOfWindows = 24 * 60)
         {
             DatabaseId = databaseId;
-            _windowSizeInSeconds = windowSizeInSeconds;
-            _numberOfWindows = numberOfWindows;
+            WindowSizeInSeconds = windowSizeInSeconds;
+            NumberOfWindows = numberOfWindows;
 
             // initialize the data array.
-            _data = new MemoryArray<byte>(0);
+            Data = new MemoryArray<byte>(0);
             _nextInternalId = 0;
 
             // initialize the meta-data arrays.
-            _globalIds = new MemoryArray<string>(0);
+            GlobalIds = new MemoryArray<string>(0);
             _tripIds = new MemoryArray<uint>(0);
             _nextInternalId = 0;
 
@@ -146,20 +147,20 @@ namespace Itinero.Transit.Data
                 _globalIdPointersPerHash[h] = _noData;
             }
 
-            _globalIdLinkedList = new MemoryArray<uint>(0);
+            GlobalIdLinkedList = new MemoryArray<uint>(0);
 
             // initialize the sorting data structure for the departure pointers
             // Only a fixed amount of DepartureWindows is kept, this can be configured though
             // Note: we keep two uints for each entry:
             // one pointing into the departurePointers themself, one indicating the next index in the departureWindowPointers
-            _departureWindowPointers = new MemoryArray<uint>(numberOfWindows * 2);
-            for (var w = 0; w < _departureWindowPointers.Length / 2; w++)
+            DepartureWindowPointers = new MemoryArray<uint>(numberOfWindows * 2);
+            for (var w = 0; w < DepartureWindowPointers.Length / 2; w++)
             {
-                _departureWindowPointers[w * 2 + 0] = _noData; // point to nothing.
-                _departureWindowPointers[w * 2 + 1] = 0; // empty.
+                DepartureWindowPointers[w * 2 + 0] = _noData; // point to nothing.
+                DepartureWindowPointers[w * 2 + 1] = 0; // empty.
             }
 
-            _departurePointers = new MemoryArray<uint>(0);
+            DeparturePointers = new MemoryArray<uint>(0);
         }
 
         private ConnectionsDb(uint databaseId, uint windowSizeInSeconds, uint numberOfWindows, ArrayBase<byte> data,
@@ -170,18 +171,18 @@ namespace Itinero.Transit.Data
             ArrayBase<uint> departureWindowPointers, ArrayBase<uint> departurePointers, uint departurePointer,
             ulong earliestDate, ulong latestDate)
         {
-            _windowSizeInSeconds = windowSizeInSeconds;
-            _numberOfWindows = numberOfWindows;
-            _data = data;
+            WindowSizeInSeconds = windowSizeInSeconds;
+            NumberOfWindows = numberOfWindows;
+            Data = data;
             _nextInternalId = nextInternalId;
-            _globalIds = globalIds;
+            GlobalIds = globalIds;
             _tripIds = tripIds;
-            _globalIdLinkedListPointer = globalIdLinkedListPointer;
+            GlobalIdLinkedListPointer = globalIdLinkedListPointer;
             _globalIdPointersPerHash = globalIdPointersPerHash;
-            _globalIdLinkedList = globalIdLinkedList;
+            GlobalIdLinkedList = globalIdLinkedList;
 
-            _departureWindowPointers = departureWindowPointers;
-            _departurePointers = departurePointers;
+            DepartureWindowPointers = departureWindowPointers;
+            DeparturePointers = departurePointers;
             _nextDeparturePointer = departurePointer;
 
             EarliestDate = earliestDate;
@@ -192,19 +193,6 @@ namespace Itinero.Transit.Data
         }
 
 
-        /// <summary>
-        /// Adds a new connection.
-        /// </summary>
-        /// <param name="stop1">The first stop.</param>
-        /// <param name="stop2">The last stop.</param>
-        /// <param name="globalId">The global id.</param>
-        /// <param name="departureTime">The departure time.</param>
-        /// <param name="travelTime">The travel time in seconds.</param>
-        /// <param name="departureDelay">The departure delay time in seconds.</param>
-        /// <param name="arrivalDelay">The arrival delay time in seconds.</param>
-        /// <param name="tripId">The trip id.</param>
-        /// <param name="mode">The mode, indicates if getting on or off is supported</param>
-        /// <returns>An internal id representing the connection in this transit db.</returns>
         internal uint AddOrUpdate(Connection newConnection)
         {
             var reader = GetReader();
@@ -268,19 +256,6 @@ namespace Itinero.Transit.Data
             return internalId;
         }
 
-        /// <summary>
-        /// Adds a new connection.
-        /// </summary>
-        /// <param name="stop1">The first stop.</param>
-        /// <param name="stop2">The last stop.</param>
-        /// <param name="globalId">The global id.</param>
-        /// <param name="departureTime">The departure time.</param>
-        /// <param name="travelTime">The travel time in seconds.</param>
-        /// <param name="departureDelay">The departure delay time in seconds.</param>
-        /// <param name="arrivalDelay">The arrival delay time in seconds.</param>
-        /// <param name="tripId">The trip id.</param>
-        /// <param name="mode">The trip mode</param>
-        /// <returns>An internal id representing the connection in this transit db.</returns>
         private uint Add(Connection c)
         {
             // get the next internal id.
@@ -317,13 +292,13 @@ namespace Itinero.Transit.Data
         {
             // make sure the data array is big enough.
             var dataPointer = internalId * _connectionSizeInBytes;
-            while (_data.Length <= dataPointer + _connectionSizeInBytes)
+            while (Data.Length <= dataPointer + _connectionSizeInBytes)
             {
-                var oldLength = _data.Length;
-                _data.Resize(_data.Length + 1024);
-                for (var i = oldLength; i < _data.Length; i++)
+                var oldLength = Data.Length;
+                Data.Resize(Data.Length + 1024);
+                for (var i = oldLength; i < Data.Length; i++)
                 {
-                    _data[i] = byte.MaxValue;
+                    Data[i] = byte.MaxValue;
                 }
             }
 
@@ -336,7 +311,7 @@ namespace Itinero.Transit.Data
             var bytes = BitConverter.GetBytes(c.DepartureStop.LocalTileId);
             for (var b = 0; b < 4; b++)
             {
-                _data[dataPointer + offset + b] = bytes[b];
+                Data[dataPointer + offset + b] = bytes[b];
             }
 
             offset += 4;
@@ -344,7 +319,7 @@ namespace Itinero.Transit.Data
             bytes = BitConverter.GetBytes(c.DepartureStop.LocalId);
             for (var b = 0; b < 4; b++)
             {
-                _data[dataPointer + offset + b] = bytes[b];
+                Data[dataPointer + offset + b] = bytes[b];
             }
 
             offset += 4;
@@ -352,49 +327,49 @@ namespace Itinero.Transit.Data
             bytes = BitConverter.GetBytes(c.ArrivalStop.LocalTileId);
             for (var b = 0; b < 4; b++)
             {
-                _data[dataPointer + offset + b] = bytes[b];
+                Data[dataPointer + offset + b] = bytes[b];
             }
 
             offset += 4;
             bytes = BitConverter.GetBytes(c.ArrivalStop.LocalId);
             for (var b = 0; b < 4; b++)
             {
-                _data[dataPointer + offset + b] = bytes[b];
+                Data[dataPointer + offset + b] = bytes[b];
             }
 
             offset += 4;
             bytes = BitConverter.GetBytes(c.DepartureTime);
             for (var b = 0; b < 4; b++)
             {
-                _data[dataPointer + offset + b] = bytes[b];
+                Data[dataPointer + offset + b] = bytes[b];
             }
 
             offset += 4;
             bytes = BitConverter.GetBytes(c.TravelTime);
             for (var b = 0; b < 2; b++)
             {
-                _data[dataPointer + offset + b] = bytes[b];
+                Data[dataPointer + offset + b] = bytes[b];
             }
 
             offset += 2;
             bytes = BitConverter.GetBytes(c.DepartureDelay);
             for (var b = 0; b < 2; b++)
             {
-                _data[dataPointer + offset + b] = bytes[b];
+                Data[dataPointer + offset + b] = bytes[b];
             }
 
             offset += 2;
             bytes = BitConverter.GetBytes(c.ArrivalDelay);
             for (var b = 0; b < 2; b++)
             {
-                _data[dataPointer + offset + b] = bytes[b];
+                Data[dataPointer + offset + b] = bytes[b];
             }
 
             offset += 2;
             bytes = BitConverter.GetBytes(c.Mode);
             for (var b = 0; b < 2; b++)
             {
-                _data[dataPointer + offset + b] = bytes[b];
+                Data[dataPointer + offset + b] = bytes[b];
             }
 
             offset += 2;
@@ -416,7 +391,7 @@ namespace Itinero.Transit.Data
 
             writeTo.Id = id;
             var dataPointer = id.InternalId * _connectionSizeInBytes;
-            if (_data.Length <= dataPointer + _connectionSizeInBytes)
+            if (Data.Length <= dataPointer + _connectionSizeInBytes)
             {
                 return false;
             }
@@ -424,7 +399,7 @@ namespace Itinero.Transit.Data
             var bytes = new byte[_connectionSizeInBytes];
             for (var b = 0; b < _connectionSizeInBytes; b++)
             {
-                bytes[b] = _data[dataPointer + b];
+                bytes[b] = Data[dataPointer + b];
             }
 
             var offset = 0;
@@ -469,7 +444,7 @@ namespace Itinero.Transit.Data
         private uint GetConnectionDeparture(uint internalId)
         {
             var dataPointer = internalId * _connectionSizeInBytes;
-            if (_data.Length <= dataPointer + _connectionSizeInBytes)
+            if (Data.Length <= dataPointer + _connectionSizeInBytes)
             {
                 return uint.MaxValue;
             }
@@ -477,7 +452,7 @@ namespace Itinero.Transit.Data
             var bytes = new byte[4];
             for (var b = 0; b < 4; b++)
             {
-                bytes[b] = _data[dataPointer + 16 + b];
+                bytes[b] = Data[dataPointer + 16 + b];
             }
 
             return BitConverter.ToUInt32(bytes, 0);
@@ -495,31 +470,31 @@ namespace Itinero.Transit.Data
 
         private void SetGlobalId(uint internalId, string globalId)
         {
-            while (_globalIds.Length <= internalId)
+            while (GlobalIds.Length <= internalId)
             {
-                _globalIds.Resize(_globalIds.Length + 1024);
+                GlobalIds.Resize(GlobalIds.Length + 1024);
             }
 
-            _globalIds[internalId] = globalId;
+            GlobalIds[internalId] = globalId;
 
             // add stop id to the index.
-            var linkedListPointer = _globalIdLinkedListPointer;
-            _globalIdLinkedListPointer += 2;
-            while (_globalIdLinkedList.Length <= linkedListPointer)
+            var linkedListPointer = GlobalIdLinkedListPointer;
+            GlobalIdLinkedListPointer += 2;
+            while (GlobalIdLinkedList.Length <= linkedListPointer)
             {
-                _globalIdLinkedList.Resize(_globalIdLinkedList.Length + 1024);
+                GlobalIdLinkedList.Resize(GlobalIdLinkedList.Length + 1024);
             }
 
             var hash = Hash(globalId);
 
-            _globalIdLinkedList[linkedListPointer + 0] = internalId;
-            _globalIdLinkedList[linkedListPointer + 1] = _globalIdPointersPerHash[hash];
+            GlobalIdLinkedList[linkedListPointer + 0] = internalId;
+            GlobalIdLinkedList[linkedListPointer + 1] = _globalIdPointersPerHash[hash];
             _globalIdPointersPerHash[hash] = linkedListPointer + 0;
         }
 
         private string GetGlobalId(uint internalId)
         {
-            return _globalIds[internalId];
+            return GlobalIds[internalId];
         }
 
         [Pure]
@@ -547,35 +522,35 @@ namespace Itinero.Transit.Data
         [Pure]
         internal uint WindowFor(ulong unixTime)
         {
-            return (uint) ((unixTime / _windowSizeInSeconds) % _numberOfWindows);
+            return (uint) ((unixTime / WindowSizeInSeconds) % NumberOfWindows);
         }
 
         // ReSharper disable once UnusedMethodReturnValue.Local
         private bool RemoveDepartureIndex(uint internalId, uint window)
         {
-            var windowPointer = _departureWindowPointers[window * 2 + 0];
-            if (_departureWindowPointers[window * 2 + 0] == _noData)
+            var windowPointer = DepartureWindowPointers[window * 2 + 0];
+            if (DepartureWindowPointers[window * 2 + 0] == _noData)
             {
                 // nothing to remove.
                 return false;
             }
 
-            var windowSize = _departureWindowPointers[window * 2 + 1];
+            var windowSize = DepartureWindowPointers[window * 2 + 1];
 
             // find entry.
             for (var p = windowPointer; p < windowPointer + windowSize; p++)
             {
-                var id = _departurePointers[p];
+                var id = DeparturePointers[p];
                 if (id != internalId) continue;
 
                 // move all after one down.
                 for (; p < windowPointer + windowSize - 1; p++)
                 {
-                    _departurePointers[p] = _departurePointers[p + 1];
+                    DeparturePointers[p] = DeparturePointers[p + 1];
                 }
 
                 // decrease window size.
-                _departureWindowPointers[window * 2 + 1] = windowSize - 1;
+                DepartureWindowPointers[window * 2 + 1] = windowSize - 1;
                 return true;
             }
 
@@ -606,16 +581,16 @@ namespace Itinero.Transit.Data
             _nextDeparturePointer += windowSize * 2;
 
             // Increase the size of the array as long as is needed, in chunks of 1024 bytes
-            while (_departurePointers.Length <= _nextDeparturePointer)
+            while (DeparturePointers.Length <= _nextDeparturePointer)
             {
-                _departurePointers.Resize(_departurePointers.Length + 1024);
+                DeparturePointers.Resize(DeparturePointers.Length + 1024);
             }
 
             // copy over data.
             for (var c = 0; c < windowSize; c++)
             {
-                _departurePointers[newWindowPointer + c] =
-                    _departurePointers[windowPointer + c];
+                DeparturePointers[newWindowPointer + c] =
+                    DeparturePointers[windowPointer + c];
             }
 
             return newWindowPointer;
@@ -634,7 +609,7 @@ namespace Itinero.Transit.Data
 
             // Where, in _departurePointers can we find this window?
             // This is kept by _departureWindowPointers
-            var windowPointer = _departureWindowPointers[window * 2 + 0];
+            var windowPointer = DepartureWindowPointers[window * 2 + 0];
             if (windowPointer == _noData)
             {
                 // add a new window.
@@ -642,32 +617,32 @@ namespace Itinero.Transit.Data
                 _nextDeparturePointer += 1;
 
                 // update the window.
-                _departureWindowPointers[window * 2 + 0] = nextEmpty;
-                _departureWindowPointers[window * 2 + 1] = 1;
+                DepartureWindowPointers[window * 2 + 0] = nextEmpty;
+                DepartureWindowPointers[window * 2 + 1] = 1;
             }
             else
             {
                 // there is already data in the window.
-                var windowSize = _departureWindowPointers[window * 2 + 1];
+                var windowSize = DepartureWindowPointers[window * 2 + 1];
 
                 // If needed, increase the size
                 windowPointer = IncreaseWindowSizeIfNeeded(windowPointer, windowSize);
                 // Save the new windowpointer. Won't do anything in 90% of the cases
-                _departureWindowPointers[window * 2 + 0] = windowPointer;
+                DepartureWindowPointers[window * 2 + 0] = windowPointer;
                 // Increase the windowsize
-                _departureWindowPointers[window * 2 + 1] = windowSize + 1;
+                DepartureWindowPointers[window * 2 + 1] = windowSize + 1;
                 // Increase the nextEmpty pointer
                 nextEmpty = windowPointer + windowSize;
             }
 
             // If needed, we allocate another chunk of memory
-            while (_departurePointers.Length <= nextEmpty)
+            while (DeparturePointers.Length <= nextEmpty)
             {
-                _departurePointers.Resize(_departurePointers.Length + 1024);
+                DeparturePointers.Resize(DeparturePointers.Length + 1024);
             }
 
             // set the data.
-            _departurePointers[nextEmpty] = internalId;
+            DeparturePointers[nextEmpty] = internalId;
 
             // sort the window.
             SortDepartureWindow(window);
@@ -675,14 +650,14 @@ namespace Itinero.Transit.Data
 
         private void SortDepartureWindow(uint window)
         {
-            var windowPointer = _departureWindowPointers[window * 2 + 0];
-            var windowSize = _departureWindowPointers[window * 2 + 1];
-            QuickSort.Sort(i => GetConnectionDeparture(_departurePointers[i]),
+            var windowPointer = DepartureWindowPointers[window * 2 + 0];
+            var windowSize = DepartureWindowPointers[window * 2 + 1];
+            QuickSort.Sort(i => GetConnectionDeparture(DeparturePointers[i]),
                 (i1, i2) =>
                 {
-                    var temp = _departurePointers[i1];
-                    _departurePointers[i1] = _departurePointers[i2];
-                    _departurePointers[i2] = temp;
+                    var temp = DeparturePointers[i1];
+                    DeparturePointers[i1] = DeparturePointers[i2];
+                    DeparturePointers[i2] = temp;
                 }, windowPointer, windowPointer + windowSize - 1);
         }
 
@@ -694,25 +669,25 @@ namespace Itinero.Transit.Data
         [Pure]
         public ConnectionsDb Clone()
         {
-            var data = new MemoryArray<byte>(_data.Length);
-            data.CopyFrom(_data, _data.Length);
-            var globalIds = new MemoryArray<string>(_globalIds.Length);
-            globalIds.CopyFrom(_globalIds, _globalIds.Length);
+            var data = new MemoryArray<byte>(Data.Length);
+            data.CopyFrom(Data, Data.Length);
+            var globalIds = new MemoryArray<string>(GlobalIds.Length);
+            globalIds.CopyFrom(GlobalIds, GlobalIds.Length);
             var tripIds = new MemoryArray<uint>(_tripIds.Length);
             tripIds.CopyFrom(_tripIds, _tripIds.Length);
             var globalIdPointersPerHash = new MemoryArray<uint>(_globalIdPointersPerHash.Length);
             globalIdPointersPerHash.CopyFrom(_globalIdPointersPerHash, _globalIdPointersPerHash.Length);
-            var globalIdLinkedList = new MemoryArray<uint>(_globalIdLinkedList.Length);
-            globalIdLinkedList.CopyFrom(_globalIdLinkedList, _globalIdLinkedList.Length);
-            var departureWindowPointers = new MemoryArray<uint>(_departureWindowPointers.Length);
-            departureWindowPointers.CopyFrom(_departureWindowPointers, _departureWindowPointers.Length);
-            var departurePointers = new MemoryArray<uint>(_departurePointers.Length);
-            departurePointers.CopyFrom(_departurePointers, _departurePointers.Length);
+            var globalIdLinkedList = new MemoryArray<uint>(GlobalIdLinkedList.Length);
+            globalIdLinkedList.CopyFrom(GlobalIdLinkedList, GlobalIdLinkedList.Length);
+            var departureWindowPointers = new MemoryArray<uint>(DepartureWindowPointers.Length);
+            departureWindowPointers.CopyFrom(DepartureWindowPointers, DepartureWindowPointers.Length);
+            var departurePointers = new MemoryArray<uint>(DeparturePointers.Length);
+            departurePointers.CopyFrom(DeparturePointers, DeparturePointers.Length);
             return new ConnectionsDb(
                 DatabaseId,
-                _windowSizeInSeconds, _numberOfWindows, data, _nextInternalId, globalIds, tripIds,
+                WindowSizeInSeconds, NumberOfWindows, data, _nextInternalId, globalIds, tripIds,
                 globalIdPointersPerHash, globalIdLinkedList,
-                _globalIdLinkedListPointer, departureWindowPointers, departurePointers, _nextDeparturePointer,
+                GlobalIdLinkedListPointer, departureWindowPointers, departurePointers, _nextDeparturePointer,
                 EarliestDate, LatestDate);
         }
 
@@ -726,29 +701,29 @@ namespace Itinero.Transit.Data
             length++;
 
             // Write the five big data structures
-            length += _data.CopyToWithSize(stream);
-            length += _globalIds.CopyToWithSize(stream);
+            length += Data.CopyToWithSize(stream);
+            length += GlobalIds.CopyToWithSize(stream);
             length += _tripIds.CopyToWithSize(stream);
             length += _globalIdPointersPerHash.CopyToWithSize(stream);
-            length += _globalIdLinkedList.CopyToWithSize(stream);
+            length += GlobalIdLinkedList.CopyToWithSize(stream);
 
             // Write the linkedListPointer for global ids
-            var bytes = BitConverter.GetBytes(_globalIdLinkedListPointer);
+            var bytes = BitConverter.GetBytes(GlobalIdLinkedListPointer);
             stream.Write(bytes, 0, 4);
             length += 4;
 
             // Write the departure window data + size
-            length += _departureWindowPointers.CopyToWithSize(stream);
-            length += _departurePointers.CopyToWithSize(stream);
+            length += DepartureWindowPointers.CopyToWithSize(stream);
+            length += DeparturePointers.CopyToWithSize(stream);
             bytes = BitConverter.GetBytes(_nextDeparturePointer);
             stream.Write(bytes, 0, 4);
             length += 4;
 
             // Three other ints: windowSize, numbers and interalIdPOinter
-            bytes = BitConverter.GetBytes(_windowSizeInSeconds);
+            bytes = BitConverter.GetBytes(WindowSizeInSeconds);
             stream.Write(bytes, 0, 4);
             length += 4;
-            bytes = BitConverter.GetBytes(_numberOfWindows);
+            bytes = BitConverter.GetBytes(NumberOfWindows);
             stream.Write(bytes, 0, 4);
             length += 4;
             bytes = BitConverter.GetBytes(_nextInternalId);

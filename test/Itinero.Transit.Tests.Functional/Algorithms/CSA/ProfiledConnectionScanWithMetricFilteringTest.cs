@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
+using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Journey;
-using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.Journey.Metric;
 
 // ReSharper disable PossibleMultipleEnumeration

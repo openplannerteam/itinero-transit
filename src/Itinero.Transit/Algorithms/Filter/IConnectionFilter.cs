@@ -1,6 +1,6 @@
-using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 
-namespace Itinero.Transit.Journey.Filter
+namespace Itinero.Transit.Algorithms.Filter
 {
     /// <summary>
     /// A connection filter helps to optimize PCS by saying if a connection can be taken or not.

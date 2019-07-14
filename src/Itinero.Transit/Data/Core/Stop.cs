@@ -1,6 +1,6 @@
 using Itinero.Transit.Data.Attributes;
 
-namespace Itinero.Transit.Data
+namespace Itinero.Transit.Data.Core
 {
     /// <inheritdoc />
     /// <summary>

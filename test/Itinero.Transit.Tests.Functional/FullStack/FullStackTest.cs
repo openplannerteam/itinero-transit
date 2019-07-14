@@ -1,12 +1,10 @@
-using System.Data;
 using System.Linq;
+using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Data;
 using Itinero.Transit.IO.OSM;
 using Itinero.Transit.IO.OSM.Data;
-using Itinero.Transit.Journey.Filter;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
-using Itinero.Transit.Tests.Functional.Algorithms;
 
 namespace Itinero.Transit.Tests.Functional.FullStack
 {
@@ -21,7 +19,7 @@ namespace Itinero.Transit.Tests.Functional.FullStack
 
 
             var defaultRealLifeProfile = new Profile<TransferMetric>(
-                new InternalTransferGenerator(180),
+                new InternalTransferGenerator(),
                 new OsmTransferGenerator().UseCache(),
                 TransferMetric.Factory,
                 TransferMetric.ParetoCompare,

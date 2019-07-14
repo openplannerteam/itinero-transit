@@ -1,7 +1,9 @@
 using System;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.IO.LC.Data;
+using Itinero.Transit.IO.LC.Utils;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 using Connection = Itinero.Transit.IO.LC.Data.Connection;
 

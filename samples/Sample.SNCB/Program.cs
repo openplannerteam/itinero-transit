@@ -11,7 +11,7 @@ namespace Sample.SNCB
         private static void Main(string[] args)
         {
             // create an empty transit db and specify where to get data from, in this case linked connections.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             Console.WriteLine("Loading connections...");
             transitDb.UseLinkedConnections("https://graph.irail.be/sncb/connections",
                 "https://irail.be/stations", DateTime.Now, DateTime.Now.AddHours(5));

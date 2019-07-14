@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Algorithms.Search;
 using Itinero.Transit.Data.Attributes;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.Data.Tiles;
 using Reminiscence;
 using Reminiscence.Arrays;

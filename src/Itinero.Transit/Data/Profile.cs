@@ -1,6 +1,5 @@
+using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Journey;
-using Itinero.Transit.Journey.Filter;
-using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
 
 namespace Itinero.Transit.Data

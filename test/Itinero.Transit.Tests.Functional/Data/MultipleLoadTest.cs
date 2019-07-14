@@ -1,7 +1,6 @@
 using System;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Synchronization;
-using Itinero.Transit.IO.LC;
 using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Data
@@ -17,7 +16,7 @@ namespace Itinero.Transit.Tests.Functional.Data
                 sncb.AddAllConnectionsTo(w, start, end);
             }
 
-            var db = new TransitDb();
+            var db = new TransitDb(0);
             var dbUpdater = new TransitDbUpdater(db, UpdateTimeFrame);
 
             var writer = db.GetWriter();

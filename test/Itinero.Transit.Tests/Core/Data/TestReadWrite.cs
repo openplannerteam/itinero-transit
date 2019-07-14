@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Reminiscence.Arrays;
 using Xunit;
 
@@ -40,16 +41,16 @@ namespace Itinero.Transit.Tests.Core.Data
 
             Assert.Equal(conn.EarliestDate, read.EarliestDate);
             Assert.Equal(conn.LatestDate, read.LatestDate);
-            Assert.Equal(conn._numberOfWindows, read._numberOfWindows);
-            Assert.Equal(conn._windowSizeInSeconds, read._windowSizeInSeconds);
-            AssertArrayEquals(conn._data, read._data);
+            Assert.Equal(conn.NumberOfWindows, read.NumberOfWindows);
+            Assert.Equal(conn.WindowSizeInSeconds, read.WindowSizeInSeconds);
+            AssertArrayEquals(conn.Data, read.Data);
 
-            AssertArrayEquals(conn._globalIdLinkedList, read._globalIdLinkedList);
-            AssertArrayEquals(conn._departureWindowPointers, read._departureWindowPointers);
-            AssertArrayEquals(conn._departurePointers, read._departurePointers);
-            AssertArrayEquals(conn._globalIds, read._globalIds);
+            AssertArrayEquals(conn.GlobalIdLinkedList, read.GlobalIdLinkedList);
+            AssertArrayEquals(conn.DepartureWindowPointers, read.DepartureWindowPointers);
+            AssertArrayEquals(conn.DeparturePointers, read.DeparturePointers);
+            AssertArrayEquals(conn.GlobalIds, read.GlobalIds);
 
-            Assert.Equal(conn._globalIdLinkedListPointer, read._globalIdLinkedListPointer);
+            Assert.Equal(conn.GlobalIdLinkedListPointer, read.GlobalIdLinkedListPointer);
         }
 
         private void AssertArrayEquals<T>(ArrayBase<T> a, ArrayBase<T> b)

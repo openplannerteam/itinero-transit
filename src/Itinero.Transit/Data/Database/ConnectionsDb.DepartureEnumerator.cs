@@ -1,4 +1,4 @@
-using System;
+using Itinero.Transit.Data.Core;
 
 namespace Itinero.Transit.Data
 {
@@ -52,7 +52,7 @@ namespace Itinero.Transit.Data
                 _connectionsDb = connectionsDb;
                 _indexInWindow = 0;
 
-                _alreadyUsed = new uint[_connectionsDb._numberOfWindows];
+                _alreadyUsed = new uint[_connectionsDb.NumberOfWindows];
             }
 
             public void MoveTo(ulong dateTime)
@@ -62,7 +62,7 @@ namespace Itinero.Transit.Data
                 CurrentDateTime = dateTime;
                 _indexInWindow = uint.MaxValue;
                 _connectionInternalId = uint.MaxValue;
-                for (var i = 0; i < _connectionsDb._numberOfWindows; i++)
+                for (var i = 0; i < _connectionsDb.NumberOfWindows; i++)
                 {
                     _alreadyUsed[i] = uint.MaxValue;
                 }
@@ -78,8 +78,8 @@ namespace Itinero.Transit.Data
                 // We increase the dateTime so that it is exactly the start of the next window
 
                 CurrentDateTime =
-                    ((CurrentDateTime / _connectionsDb._windowSizeInSeconds) + 1) *
-                    _connectionsDb._windowSizeInSeconds;
+                    ((CurrentDateTime / _connectionsDb.WindowSizeInSeconds) + 1) *
+                    _connectionsDb.WindowSizeInSeconds;
                 _indexInWindow = _alreadyUsed[_connectionsDb.WindowFor(CurrentDateTime)];
             }
 
@@ -119,7 +119,7 @@ namespace Itinero.Transit.Data
                     _alreadyUsed[window] = 0;
                 }
 
-                var windowPointer = _connectionsDb._departureWindowPointers[window * 2 + 0];
+                var windowPointer = _connectionsDb.DepartureWindowPointers[window * 2 + 0];
 
                 if (windowPointer == _noData)
                 {
@@ -138,7 +138,7 @@ namespace Itinero.Transit.Data
                     // Ok, so we at least have te right window.
                     // Lets see if we can retrieve the connection itself
                     // For that, we should check if the index is within the window size
-                    var windowSize = _connectionsDb._departureWindowPointers[window * 2 + 1];
+                    var windowSize = _connectionsDb.DepartureWindowPointers[window * 2 + 1];
 
                     if (_indexInWindow >= windowSize)
                     {
@@ -152,7 +152,7 @@ namespace Itinero.Transit.Data
 
 
                     // Ok, so we have the right window and the connection exists! Hooray!
-                    _connectionInternalId = _connectionsDb._departurePointers[windowPointer + _indexInWindow];
+                    _connectionInternalId = _connectionsDb.DeparturePointers[windowPointer + _indexInWindow];
 
                     // We update the DTI
                     _indexInWindow++;
@@ -170,7 +170,7 @@ namespace Itinero.Transit.Data
                 // If we end up here, the desired connection exists and its departure time falls after the specified time
                 // However, depTime might have shot to far
                 // For this, we check that the depTime still falls within the current range
-                if (depTime - CurrentDateTime > _connectionsDb._windowSizeInSeconds)
+                if (depTime - CurrentDateTime > _connectionsDb.WindowSizeInSeconds)
                 {
                     // Nope, we made a cycle jump
                     _alreadyUsed[window] = _indexInWindow-1;
@@ -194,8 +194,8 @@ namespace Itinero.Transit.Data
 
                 // First, put it at the start of the current window
                 CurrentDateTime =
-                    (CurrentDateTime / _connectionsDb._windowSizeInSeconds) *
-                    _connectionsDb._windowSizeInSeconds;
+                    (CurrentDateTime / _connectionsDb.WindowSizeInSeconds) *
+                    _connectionsDb.WindowSizeInSeconds;
                 // And decrease by one
                 CurrentDateTime--;
 
@@ -216,7 +216,7 @@ namespace Itinero.Transit.Data
                 {
                     // Needs some initialization
                     var w = _connectionsDb.WindowFor(CurrentDateTime);
-                    var size = _connectionsDb._departureWindowPointers[w * 2 + 1];
+                    var size = _connectionsDb.DepartureWindowPointers[w * 2 + 1];
 
                     _indexInWindow = size;
                 }
@@ -228,7 +228,7 @@ namespace Itinero.Transit.Data
 
                 // For starters, what is the wanted window and does it exist?
                 var window = _connectionsDb.WindowFor(CurrentDateTime);
-                var windowPointer = _connectionsDb._departureWindowPointers[window * 2 + 0];
+                var windowPointer = _connectionsDb.DepartureWindowPointers[window * 2 + 0];
 
                 if (windowPointer == _noData)
                 {
@@ -266,7 +266,7 @@ namespace Itinero.Transit.Data
 
 
                     // Ok, so we have the right window and the connection exists! Hooray!
-                    _connectionInternalId = _connectionsDb._departurePointers[windowPointer + _indexInWindow - 1];
+                    _connectionInternalId = _connectionsDb.DeparturePointers[windowPointer + _indexInWindow - 1];
 
                     // We update the DTI
                     _indexInWindow--;
@@ -282,7 +282,7 @@ namespace Itinero.Transit.Data
 
                 // If we end up here, the desired connection exists and its departure time falls before the specified time
                 // however, we might have jumped an entire cycle
-                if (CurrentDateTime - depTime > _connectionsDb._windowSizeInSeconds)
+                if (CurrentDateTime - depTime > _connectionsDb.WindowSizeInSeconds)
                 {
                     // Nope, we made a cycle jump
                     _alreadyUsed[window] = _indexInWindow + 1;

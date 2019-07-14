@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
 
-namespace Itinero.Transit.IO.LC.Data
+namespace Itinero.Transit.IO.LC.Utils
 {
     public class Downloader : IDocumentLoader
     {
@@ -49,14 +49,14 @@ namespace Itinero.Transit.IO.LC.Data
             {
                 return JObject.Parse(DownloadRaw(uri).ConfigureAwait(false).GetAwaiter().GetResult());
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (numberOfTries > 0)
                 {
                     return LoadDocument(uri, numberOfTries-1);
                 }
 
-                throw e;
+                throw;
             }
         }
 

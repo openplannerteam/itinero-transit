@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.Utils;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]

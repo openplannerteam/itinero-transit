@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Itinero.Transit.IO.LC;
 
 // ReSharper disable MemberCanBePrivate.Global
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
 
-namespace Itinero.Transit.IO.LC
+namespace Itinero.Transit.Tests.Functional
 {
     public static class  Belgium
     {

@@ -1,8 +1,9 @@
 using System;
 using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
+using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Data;
-using Itinero.Transit.Journey.Filter;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
 using Xunit;
@@ -17,7 +18,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         public void WithBeginWalk()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
@@ -56,7 +57,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         public void WithEndWalk()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
@@ -93,7 +94,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         public void WithStartEndWalk()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
@@ -165,7 +166,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         [Fact]
         public static void TestFiltering()
         {
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var loc0 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
@@ -215,7 +216,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         [Fact]
         public static void TestMetricFiltering()
         {
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var loc0 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
@@ -282,7 +283,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         public void ShouldFindNoConnectionJourney()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var stop1 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);

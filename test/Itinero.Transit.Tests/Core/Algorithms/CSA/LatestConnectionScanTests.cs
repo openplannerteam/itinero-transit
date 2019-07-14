@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
@@ -50,7 +51,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         public void LatestConnectionScan_ShouldFindNoConnectionJourney()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var stop1 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
@@ -82,7 +83,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         public void LatestConnectionScan_ShouldFindOneConnectionJourney()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var stop1 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
@@ -115,7 +116,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         public void Latest_ConnectionScan_WithBeginWalk()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
@@ -152,7 +153,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         public void Latest_ConnectionScan_WithEndWalk()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
@@ -189,7 +190,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         public void Latest_ConnectionScan_WithBeginEndWalk()
         {
             // build a one-connection db.
-            var transitDb = new TransitDb();
+            var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
