@@ -22,15 +22,37 @@ namespace Itinero.Transit.Data
             /// </summary>
             public ulong CurrentDateTime { get; private set; }
 
+            /// <summary>
+            /// Where are we in the current window?
+            /// </summary>
+            private uint _indexInWindow;
+
+            /// <summary>
+            /// What is the corresponding internal id?
+            /// </summary>
             private uint _connectionInternalId = uint.MaxValue;
 
-            private uint _indexInWindow;
+
+            /// <summary>
+            /// A single window can contain chunks which are one cycle (e.g. one day) away from each other.
+            /// E.g. a window can contain departure dates as following (if windowSize = 1 minute and number of windows = 24*60):
+            ///     [ (yesterday 10:00), (today: 10:00), (today: 10:00), (tomorrow: 10:00), ...]
+            ///
+            /// When enumerating, this means that we must be able to suddenly jump into the middle of the window, if yesterday has already been enumerated
+            ///
+            /// This array keeps track of that
+            /// 
+            /// </summary>
+            private uint[] _alreadyUsed;
+
 
             public DepartureEnumerator(
                 ConnectionsDb connectionsDb)
             {
                 _connectionsDb = connectionsDb;
                 _indexInWindow = 0;
+
+                _alreadyUsed = new uint[_connectionsDb._numberOfWindows];
             }
 
             public void MoveTo(ulong dateTime)
@@ -40,6 +62,10 @@ namespace Itinero.Transit.Data
                 CurrentDateTime = dateTime;
                 _indexInWindow = uint.MaxValue;
                 _connectionInternalId = uint.MaxValue;
+                for (var i = 0; i < _connectionsDb._numberOfWindows; i++)
+                {
+                    _alreadyUsed[i] = uint.MaxValue;
+                }
             }
 
 
@@ -54,19 +80,9 @@ namespace Itinero.Transit.Data
                 CurrentDateTime =
                     ((CurrentDateTime / _connectionsDb._windowSizeInSeconds) + 1) *
                     _connectionsDb._windowSizeInSeconds;
-                _indexInWindow = 0;
+                _indexInWindow = _alreadyUsed[_connectionsDb.WindowFor(CurrentDateTime)];
             }
 
-
-            /// <summary>
-            /// Determines the next DepartureTimeIndex. If it is found, it will be written into 'current'
-            /// If there is no next value because the connectionDb is depleted, false will be returned.
-            ///
-            /// This method will automatically skip empty windows.
-            ///
-            /// </summary>
-            /// <returns></returns>
-            private ulong lastTime = 0;
 
             public bool HasNext()
             {
@@ -74,18 +90,20 @@ namespace Itinero.Transit.Data
                 // Note that the loop is written as a GOTO-label
                 // Yes, you read that right! A GOTO
                 hasNext:
-                if (CurrentDateTime >= 1562785320)
+
+                if (CurrentDateTime > _connectionsDb.LatestDate)
                 {
-                    Console.Write("Hi");
+                    // Nope, depleted!
+                    return false;
                 }
 
-                lastTime = CurrentDateTime;
-
-                if (_indexInWindow == uint.MaxValue)
+                if (_indexInWindow == uint.MaxValue - 1)
                 {
-                    // Needs some initialization
-                    _indexInWindow = 0;
+                    // We got here by a NextWindow, but that window has already been depleted
+                    NextWindow();
+                    goto hasNext;
                 }
+
                 // ALL RIGHT FOLKS
                 // Time to figure things out!
                 // We need the connection in the window for the given datetime, at the given index
@@ -93,20 +111,19 @@ namespace Itinero.Transit.Data
 
                 // For starters, what is the wanted window and does it exist?
                 var window = _connectionsDb.WindowFor(CurrentDateTime);
+
+                if (_indexInWindow == uint.MaxValue)
+                {
+                    // Needs some initialization
+                    _indexInWindow = 0;
+                    _alreadyUsed[window] = 0;
+                }
+
                 var windowPointer = _connectionsDb._departureWindowPointers[window * 2 + 0];
 
                 if (windowPointer == _noData)
                 {
                     // Nope, that window is not there!
-
-                    // Either this window just happens to be empty
-                    // Or we are at the end of our connections database
-
-                    if (CurrentDateTime > _connectionsDb.LatestDate)
-                    {
-                        // Yep, the database is depleted
-                        return false;
-                    }
 
                     // There might be a next window available
                     NextWindow();
@@ -123,22 +140,12 @@ namespace Itinero.Transit.Data
                     // For that, we should check if the index is within the window size
                     var windowSize = _connectionsDb._departureWindowPointers[window * 2 + 1];
 
-                    if (CurrentDateTime == 1562785380)
-                    {
-                        for (int i = 0; i < windowSize; i++)
-                        {
-                            var intId = _connectionsDb._departurePointers[windowPointer + i];
-                            Console.WriteLine($"> {i} {intId}");
-                        }
-
-                        Console.WriteLine("HI");
-                    }
-
                     if (_indexInWindow >= windowSize)
                     {
                         // Ahh, the good old 'IndexOutOfBounds'
                         // In other words, this window is simply depleted
                         // We attempt to use the next window
+                        _alreadyUsed[window] = uint.MaxValue - 1;
                         NextWindow();
                         goto hasNext; // === return HasNext();
                     }
@@ -159,7 +166,18 @@ namespace Itinero.Transit.Data
                     // If that happens, we just restart everything:
                 } while (depTime < CurrentDateTime);
 
+
                 // If we end up here, the desired connection exists and its departure time falls after the specified time
+                // However, depTime might have shot to far
+                // For this, we check that the depTime still falls within the current range
+                if (depTime - CurrentDateTime > _connectionsDb._windowSizeInSeconds)
+                {
+                    // Nope, we made a cycle jump
+                    _alreadyUsed[window] = _indexInWindow-1;
+                    NextWindow();
+                    goto hasNext;
+                }
+
                 // current.WindowIndex points to the next needed element in the window
                 // And current.ConnectionInternalId is set
                 // So, we are pretty much done
@@ -183,10 +201,7 @@ namespace Itinero.Transit.Data
 
                 // And we should point to its last element
 
-                var window = _connectionsDb.WindowFor(CurrentDateTime);
-                _indexInWindow =
-                    _connectionsDb._departureWindowPointers
-                        [window * 2 + 1]; // Reuse the size as pointer. Note that we do not do a minus one
+                _indexInWindow = _alreadyUsed[_connectionsDb.WindowFor(CurrentDateTime)];
             }
 
             public bool HasPrevious()
@@ -266,6 +281,15 @@ namespace Itinero.Transit.Data
                 } while (depTime > CurrentDateTime);
 
                 // If we end up here, the desired connection exists and its departure time falls before the specified time
+                // however, we might have jumped an entire cycle
+                if (CurrentDateTime - depTime > _connectionsDb._windowSizeInSeconds)
+                {
+                    // Nope, we made a cycle jump
+                    _alreadyUsed[window] = _indexInWindow + 1;
+                    PreviousWindow();
+                    goto hasPrevious;
+                }
+
                 // current.WindowIndex points to the next needed element in the window
                 // And current.ConnectionInternalId is set
                 // So, we are pretty much done

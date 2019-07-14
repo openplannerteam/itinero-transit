@@ -816,27 +816,6 @@ namespace Itinero.Transit.Data
                 earliestDate, latestDate);
         }
 
-        public void ResetDepartureEnumeratorIndex()
-        {
-            // TODO remove this one?
-
-            var f = First();
-            if (f == null)
-            {
-                return;
-            }
-
-            for (var i = 0; i < _numberOfWindows; i++)
-            {
-                _departureWindowPointers[i * 2 + 1] = 0;
-            }
-
-            var index = f.Value;
-            do
-            {
-                AddDepartureIndex(index.InternalId);
-            } while (HasNext(index, out index));
-        }
 
         /// <summary>
         /// Gets a reader.

@@ -70,7 +70,6 @@ namespace Itinero.Transit.Tests.Functional
         private static void LocalTests()
         {
             var nmbs = TransitDb.ReadFrom(TestAllAlgorithms._nmbs, 0);
-            nmbs.Latest.ConnectionsDb.ResetDepartureEnumeratorIndex();
             new ConnectionsDbDepartureEnumeratorTest().Run(nmbs);
             var db = new TestAllAlgorithms().ExecuteDefault();
             var wvl = TransitDb.ReadFrom(TestAllAlgorithms._delijnWvl, 1);

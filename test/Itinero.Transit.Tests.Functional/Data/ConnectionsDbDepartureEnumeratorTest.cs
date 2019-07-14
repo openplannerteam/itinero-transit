@@ -17,36 +17,17 @@ namespace Itinero.Transit.Tests.Functional.Data
             var enumerator = latest.ConnectionsDb.GetReader();
             var index = enumerator.First().Value;
             var all = new List<uint>();
-            while (enumerator.HasNext(index, out index))
+            do
             {
                 var c = enumerator.Get(index);
                 tt += c.TravelTime;
                 all.Add(index.InternalId);
                 forwardCount++;
-            }
+            } while (enumerator.HasNext(index, out index));
 
             Information($"Enumerated {forwardCount} connections!");
 
             var departureEnumerator = latest.ConnectionsDb.GetDepartureEnumerator();
-
-
-            Information("Starting backwards enumeration");
-            // enumerate connections by departure time, but in reverse.
-            var backwardsCount = 0;
-            departureEnumerator.MoveTo(latest.ConnectionsDb.LatestDate);
-            var seenInBackwards = new List<uint>();
-            while (departureEnumerator.HasPrevious())
-            {
-                var c = departureEnumerator.Current();
-                if (seenInBackwards.Contains(c.Id.InternalId))
-                {
-                    throw new Exception("Enumerated same connection twice: " + c.GlobalId);
-                }
-
-                seenInBackwards.Add(c.Id.InternalId);
-                tt -= c.TravelTime;
-                backwardsCount++;
-            }
 
 
             Information("Starting Forwards enumeration");
@@ -54,7 +35,7 @@ namespace Itinero.Transit.Tests.Functional.Data
             tt = 0;
             forwardCount = 0;
             departureEnumerator.MoveTo(latest.ConnectionsDb.EarliestDate);
-            var seenInForward = new List<uint>();
+            var seenInForward = new HashSet<uint>();
 
             while (departureEnumerator.HasNext())
             {
@@ -70,6 +51,24 @@ namespace Itinero.Transit.Tests.Functional.Data
                 forwardCount++;
             }
 
+            Information("Starting backwards enumeration");
+            // enumerate connections by departure time, but in reverse.
+            var backwardsCount = 0;
+            departureEnumerator.MoveTo(latest.ConnectionsDb.LatestDate);
+            var seenInBackwards = new HashSet<uint>();
+            while (departureEnumerator.HasPrevious())
+            {
+                var c = departureEnumerator.Current();
+                if (seenInBackwards.Contains(c.Id.InternalId))
+                {
+                    throw new Exception("Enumerated same connection twice: " + c.GlobalId);
+                }
+
+                seenInBackwards.Add(c.Id.InternalId);
+                tt -= c.TravelTime;
+                backwardsCount++;
+            }
+
 
             var oneMissed = false;
             var i = 0;
@@ -81,14 +80,15 @@ namespace Itinero.Transit.Tests.Functional.Data
                     oneMissed = true;
                     var c = cdb.Get(
                         new ConnectionId(0, cid));
-                    Information($"{i} The forwards enumerator did not contain {cid} (dep time {c.DepartureTime} ({cdb.WindowFor(c.DepartureTime)})");
+                    Information(
+                        $"{i} The forwards enumerator did not contain {cid} (dep time {c.DepartureTime} ({cdb.WindowFor(c.DepartureTime)})");
                     i++;
                 }
             }
 
             foreach (var cid in all)
             {
-                if (!seenInBackwards.Select(x => x == cid).Any())
+                if (!seenInBackwards.Contains(cid))
                 {
                     oneMissed = true;
                     var c = latest.ConnectionsDb.Get(new ConnectionId(0, cid));
@@ -97,14 +97,16 @@ namespace Itinero.Transit.Tests.Functional.Data
                 }
             }
 
-            True(!oneMissed);
-
-            Information($"Enumerated forward, {tt}");
+            Information($"All contains {all.Count}");
+            Information($"Enumerated forward, {seenInForward.Count}");
+            Information($"Enumerated backwardd, {seenInBackwards.Count}");
 
 
             True(backwardsCount == forwardCount);
+            True(all.Count == backwardsCount);
+            True(!oneMissed);
             True(tt == 0);
-            Information($"Enumerated forward, {tt}");
+
 
             return forwardCount;
         }
