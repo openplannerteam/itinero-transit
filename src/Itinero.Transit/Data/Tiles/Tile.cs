@@ -63,18 +63,6 @@ namespace Itinero.Transit.Data.Tiles
         public double Right { get; private set; }
 
         /// <summary>
-        /// Updates the data in this tile to correspond with the given local tile id.
-        /// </summary>
-        /// <param name="localId">The local tile id.</param>
-        public void UpdateToLocalId(ulong localId)
-        {
-            var xMax = (ulong) (1 << Zoom);
-
-            X = (uint) (localId % xMax);
-            Y = (uint) (localId / xMax);
-        }
-
-        /// <summary>
         /// Gets the local tile id.
         /// </summary>
         /// <remarks>This is the id relative to the zoom level.</remarks>
@@ -100,18 +88,6 @@ namespace Itinero.Transit.Data.Tiles
 
             return new Tile((uint) (localId % xMax), 
                 (uint) (localId / xMax), zoom);
-        }
-
-        /// <summary>
-        /// Calculates the maximum local id for the given zoom level.
-        /// </summary>
-        /// <param name="zoom">The zoom level.</param>
-        /// <returns>The maximum local id for the given zoom level</returns>
-        public static ulong MaxLocalId(int zoom)
-        {
-            var xMax = (ulong) (1 << zoom);
-
-            return xMax * xMax;
         }
 
         /// <summary>

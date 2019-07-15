@@ -19,19 +19,40 @@ namespace Itinero.Transit.Data
     /// </summary>
     public partial class StopsDb
     {
-        private readonly TiledLocationIndex _stopLocations; // holds the stop location in a tiled way.
-        private const int _stopIdHashSize = ushort.MaxValue;
-        private readonly ArrayBase<string> _stopIds; // holds the stop ids per stop.
-        private readonly ArrayBase<uint> _stopAttributeIds; // holds the stop attribute ids per stop.
+        /// <summary>
+        /// Uniquely identifies this database
+        /// </summary>
+        public readonly uint DatabaseId;
 
-        private const uint _noData = uint.MaxValue;
+
+        private const int _stopIdHashSize = ushort.MaxValue;
+        private readonly TiledLocationIndex _stopLocations; // holds the stop location in a tiled way.
+
+
+        /// <summary>
+        /// Maps 'internal id' of the stop onto the 'global id'
+        /// </summary>
+        private readonly ArrayBase<string> _stopIds;
+
+        /// <summary>
+        /// Maps the 'internal id' onto the i, such that _attributes[i] contains the needed attributes for that stop
+        /// </summary>
+        private readonly ArrayBase<uint> _stopAttributeIds;
+
+        /// <summary>
+        /// Maps the hash of the globalId onto the internal id, so that:
+        ///     var internalId = _stopIdPointersPerHash[globalId.Hash]
+        ///     Get(internalId).GlobalId == globalId
+        /// </summary>
         private readonly ArrayBase<uint> _stopIdPointersPerHash;
+
+        
         private uint _stopIdLinkedListPointer;
         private readonly ArrayBase<uint> _stopIdLinkedList;
 
         private readonly AttributesIndex _attributes;
 
-        public readonly uint DatabaseId;
+        private const uint _noData = uint.MaxValue;
 
         /// <summary>
         /// Creates a new stops database.

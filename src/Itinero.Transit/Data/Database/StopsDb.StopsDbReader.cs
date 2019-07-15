@@ -13,6 +13,11 @@ namespace Itinero.Transit.Data
         
         public bool Get(StopId id, Stop objectToWrite)
         {
+            
+            
+            
+            
+            
             throw new System.NotImplementedException();
         }
 

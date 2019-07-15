@@ -276,7 +276,8 @@ namespace Itinero.Transit.Data.Tiles
         }
         
         
-        private (double longitude, double latitude, bool hasData) GetEncodedLocation(uint pointer, Tile tile)
+        private (double longitude, double latitude, bool hasData) 
+            GetEncodedLocation(uint pointer, Tile tile)
         {
             const int tileResolutionInBits = _coordinateSizeInBytes * 8 / 2;
             var locationPointer = pointer * (long)_coordinateSizeInBytes;

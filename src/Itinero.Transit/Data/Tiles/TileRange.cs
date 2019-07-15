@@ -4,8 +4,22 @@ using System.Collections.Generic;
 
 namespace Itinero.Transit.Data.Tiles
 {
+    /// <summary>
+    /// A tilerange represents tiles within a given bounding box
+    /// </summary>
     internal struct TileRange : IEnumerable<Tile>
     {
+        
+        public uint Left { get; }
+
+        public uint Right { get; }
+
+        public uint Top { get; }
+
+        public uint Bottom { get; }
+
+        public int Zoom { get; }
+        
         public TileRange((double minLon, double minLat, double maxLon, double maxLat) box, int zoom)
         {
             try
@@ -30,15 +44,7 @@ namespace Itinero.Transit.Data.Tiles
             }
         }
 
-        public uint Left { get; }
-
-        public uint Right { get; }
-
-        public uint Top { get; }
-
-        public uint Bottom { get; }
-
-        public int Zoom { get; }
+  
 
         public IEnumerator<Tile> GetEnumerator()
         {
