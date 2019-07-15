@@ -40,6 +40,7 @@ namespace Itinero.Transit.IO.OSM
 
             if (!File.Exists(fileName + ".hash") && File.Exists(fileName))
             {
+                Log.Information("Hash of the file not found - probably downloading failed earlier on");
                 File.Delete(fileName);
             }
 
@@ -58,7 +59,7 @@ namespace Itinero.Transit.IO.OSM
 
             if (!File.Exists(fileName))
             {
-                Log.Information("Downloading " + url);
+                Log.Information($"Downloading {url} as {fileName} wasn't found");
                 try
                 {
                     var client = new HttpClient();
