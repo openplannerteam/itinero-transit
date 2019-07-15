@@ -1,5 +1,5 @@
 using System;
-using Itinero.Transit.IO.OSM.Data.OpeningHours;
+using Itinero.Transit.IO.OSM.Data.Parser;
 using Xunit;
 
 namespace Itinero.Transit.Tests.IO.OSM.OpeningHours

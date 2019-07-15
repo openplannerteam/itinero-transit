@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
-using Itinero.Transit.IO.OSM.Data.OpeningHours;
-using static Itinero.Transit.IO.OSM.Data.OpeningHours.DefaultRdParsers;
+using Itinero.Transit.IO.OSM.Data.Parser;
+using static Itinero.Transit.IO.OSM.Data.Parser.DefaultRdParsers;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 
