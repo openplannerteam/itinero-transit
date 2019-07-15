@@ -60,7 +60,7 @@ namespace Itinero.Transit.Tests.IO.OSM
             // TODO: this should not be in the unit tests, it uses the web to load data.
             var p = new OsmTransferGenerator(routerDb, 5000, pedestrian);
             // Rijselstraat, just behind the station
-            var route0 = p.CreateRoute(from, to, out _);
+            var route0 = p.CreateRoute(from, to, out _, out _);
             Assert.NotNull(route0);
             Assert.True(route0.Shape.Count > 1);
         }
