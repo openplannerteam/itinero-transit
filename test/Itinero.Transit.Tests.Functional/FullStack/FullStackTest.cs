@@ -20,10 +20,12 @@ namespace Itinero.Transit.Tests.Functional.FullStack
 
             var tdbsNmbs = TransitDb.ReadFrom(Constants.Nmbs, 0);
 
-
+            var osmGen = new OsmTransferGenerator(RouterDbStaging.RouterDb).UseCache();
+            osmGen.PreCalculateCache(tdbsNmbs.Latest.StopsDb.GetReader());
+            
             var defaultRealLifeProfile = new Profile<TransferMetric>(
                 new InternalTransferGenerator(180),
-                new OsmTransferGenerator(RouterDbStaging.RouterDb).UseCache(),
+                osmGen,
                 TransferMetric.Factory,
                 TransferMetric.ParetoCompare,
                 new CancelledConnectionFilter(),

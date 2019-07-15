@@ -93,7 +93,7 @@ namespace Itinero.Transit.OtherMode
         }
 
         // ReSharper disable once MemberCanBePrivate.Global
-        public void PreCalculateCache(IStopsReader withCache, int offset = 0, int skiprate = 0)
+        public void PreCalculateCache(IStopsReader withCache, int offset, int skiprate = 0)
         {
             withCache.Reset();
 
