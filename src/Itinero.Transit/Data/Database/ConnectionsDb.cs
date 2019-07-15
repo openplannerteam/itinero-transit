@@ -380,8 +380,7 @@ namespace Itinero.Transit.Data
         }
 
         [Pure]
-        private bool
-            GetConnection(ConnectionId id, Connection writeTo)
+        public bool Get(ConnectionId id, Connection writeTo)
         {
             if (id.DatabaseId != DatabaseId)
             {

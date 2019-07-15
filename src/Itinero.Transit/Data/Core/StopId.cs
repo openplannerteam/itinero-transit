@@ -2,12 +2,14 @@ using System.Diagnostics.Contracts;
 
 namespace Itinero.Transit.Data.Core
 {
-    public struct StopId
+    public struct StopId : InternalId
     {
         public static StopId Invalid = new StopId(uint.MaxValue, uint.MaxValue, uint.MaxValue);
 
 
-        public readonly uint DatabaseId, LocalTileId, LocalId;
+        public uint DatabaseId { get; }
+        public readonly uint LocalTileId;
+        public readonly uint LocalId;
 
         public StopId(uint databaseId, uint localTileId, uint localId)
         {
@@ -43,7 +45,7 @@ namespace Itinero.Transit.Data.Core
 
         public override string ToString()
         {
-            return$"{(DatabaseId,LocalTileId,LocalId)}";
+            return $"{(DatabaseId, LocalTileId, LocalId)}";
         }
     }
 }

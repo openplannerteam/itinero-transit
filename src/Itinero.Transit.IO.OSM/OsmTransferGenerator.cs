@@ -111,7 +111,7 @@ namespace Itinero.Transit.IO.OSM
 
                 if (route.IsError)
                 {
-                    Log.Warning("Could not calculate route: isError ");
+                    Log.Warning($"Could not calculate route: isError {route.ErrorMessage}. Route from {from} to {to}");
                     return null;
                 }
 

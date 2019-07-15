@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Itinero.Transit.Tests.Functional
 {
@@ -7,7 +8,7 @@ namespace Itinero.Transit.Tests.Functional
         
         public static DateTime TestDate = new DateTime(2019, 07, 11, 09, 00, 00).ToUniversalTime().Date;
 
-        
+
         public const string ZandStraat = "https://data.delijn.be/stops/500562";
         public const string AzSintJan = "https://data.delijn.be/stops/502083";
         public const string Moereind = "https://data.delijn.be/stops/107455";
@@ -44,6 +45,15 @@ namespace Itinero.Transit.Tests.Functional
         public const string DelijnAnt = "testdata/fixed-test-cases-de-lijn-ant-2019-07-11.transitdb";
 
 
-
+        public static readonly IReadOnlyList<string> testDbs = new[]
+        {
+            Nmbs,
+            OsmCentrumShuttle,
+            DelijnVlB,
+            DelijnWvl,
+            DelijnOVl,
+            DelijnLim,
+            DelijnAnt
+        };
     }
 }

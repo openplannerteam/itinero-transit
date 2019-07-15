@@ -67,6 +67,7 @@ namespace Itinero.Transit.Tests.Functional
 
         private static void LocalTests()
         {
+            new FullStackTest().Run();
             var nmbs = TransitDb.ReadFrom(TestAllAlgorithms._nmbs, 0);
             new ConnectionsDbDepartureEnumeratorTest().Run(nmbs);
             var db = new TestAllAlgorithms().ExecuteDefault();
@@ -89,7 +90,6 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Running multi TransitDb tests");
 
             new MixedDestinationTest().Run();
-            new FullStackTest().Run();
             
             new TestAllAlgorithms().ExecuteMultiModal();
         }

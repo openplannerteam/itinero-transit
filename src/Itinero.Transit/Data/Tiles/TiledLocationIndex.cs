@@ -10,14 +10,22 @@ namespace Itinero.Transit.Data.Tiles
 {
     internal class TiledLocationIndex
     {
-        private readonly int _zoom;
+        
+        /// <summary>
+        /// The zoom level of this tiled location index.
+        /// Same as OSM-zoom levels
+        /// </summary>
+        public int Zoom { get; }
         
         private const byte _defaultTileCapacityInBytes = 0; 
         private const int _coordinateSizeInBytes = 3; // 3 bytes = 24 bits = 4096 x 4096, the needed resolution depends on the zoom-level, higher, less resolution.
         private const int _tileResolutionInBits = _coordinateSizeInBytes * 8 / 2;
 
         private readonly ArrayBase<byte> _tileIndex;
-        private readonly ArrayBase<byte> _locations; // holds stop locations, encode relative to the tile they are in.
+        /// <summary>
+        /// holds stop locations, encoded relative to the tile they are in.
+        /// </summary>
+        private readonly ArrayBase<byte> _locations; 
         private const uint _tileNotLoaded = uint.MaxValue;
         private uint _tileIndexPointer;
         private uint _tileDataPointer;
@@ -32,7 +40,7 @@ namespace Itinero.Transit.Data.Tiles
             {
                 throw new ArgumentException("Use at most 19 as zoom level");
             }
-            _zoom = zoom;
+            Zoom = zoom;
             
             _tileIndex = new MemoryArray<byte>(0);
             _locations = new MemoryArray<byte>(0);
@@ -43,13 +51,13 @@ namespace Itinero.Transit.Data.Tiles
         {
             _tileIndex = tileIndex;
             _locations = locations;
-            _zoom = zoom;
+            Zoom = zoom;
             _tileIndexPointer = tileIndexPointer;
             _tileDataPointer = tileDataPointer;
         }
 
         /// <summary>
-        /// Adds a new latitude longitude pair.
+        /// Adds a new latitude-longitude pair.
         /// </summary>
         /// <param name="latitude">The latitude.</param>
         /// <param name="longitude">The longitude</param>
@@ -57,7 +65,7 @@ namespace Itinero.Transit.Data.Tiles
         public (uint tileId, uint localId, uint dataPointer) Add(double longitude, double latitude)
         {
             // get the local tile id.
-            var tile = Tile.WorldToTile(longitude, latitude, _zoom);
+            var tile = Tile.WorldToTile(longitude, latitude, Zoom);
             var tileId = tile.LocalId;
 
             // try to find the tile.
@@ -70,7 +78,7 @@ namespace Itinero.Transit.Data.Tiles
 
             // find or create a place to store the location.
             uint nextEmpty;
-            const int defaultCapacity = 1 << _defaultTileCapacityInBytes;
+            
             if (GetEncodedLocation((uint) (tileDataPointer + capacity - 1), tile).hasData)
             {
                 // tile is maximum capacity.
@@ -104,10 +112,6 @@ namespace Itinero.Transit.Data.Tiles
             return (tileId, localId, nextEmpty);
         }
 
-        /// <summary>
-        /// Gets the zoom.
-        /// </summary>
-        public int Zoom => _zoom;
 
         /// <summary>
         /// A delegate to notify listeners that a block of locations has moved.
@@ -334,7 +338,7 @@ namespace Itinero.Transit.Data.Tiles
             var locations = new MemoryArray<byte>(_locations.Length);
             locations.CopyFrom(_locations, _locations.Length);
 
-            return new TiledLocationIndex(tileIndex, locations, _zoom, _tileIndexPointer, _tileDataPointer);
+            return new TiledLocationIndex(tileIndex, locations, Zoom, _tileIndexPointer, _tileDataPointer);
         }
 
         internal long WriteTo(Stream stream)
@@ -346,7 +350,7 @@ namespace Itinero.Transit.Data.Tiles
             length++;
             
             // write zoom.
-            stream.WriteByte((byte)_zoom);
+            stream.WriteByte((byte)Zoom);
             length++;
             
             // write tile index.
@@ -441,7 +445,7 @@ namespace Itinero.Transit.Data.Tiles
                 { // local id doesn't exist.
                     return false;
                 }
-                var tile = Tile.FromLocalId(localTileId, _index._zoom);
+                var tile = Tile.FromLocalId(localTileId, _index.Zoom);
                 
                 var (longitude, latitude, hasData) = _index.GetEncodedLocation(tileDataPointer + localId, tile);
                 if (!hasData)
@@ -488,7 +492,7 @@ namespace Itinero.Transit.Data.Tiles
                         (_currentTileDataPointer, localTileId, _currentTileCapacity) = _index.ReadTile(_currentTileIndexPointer);
                     }
 
-                    _currentTile = Tile.FromLocalId(localTileId, _index._zoom);
+                    _currentTile = Tile.FromLocalId(localTileId, _index.Zoom);
                     TileId = localTileId;
                     LocalId = 0;
                 }
@@ -505,7 +509,7 @@ namespace Itinero.Transit.Data.Tiles
                             (_currentTileDataPointer, localTileId, _currentTileCapacity) = _index.ReadTile(_currentTileIndexPointer);
                         } while (_currentTileCapacity <= 0);
 
-                        _currentTile = Tile.FromLocalId(localTileId, _index._zoom);
+                        _currentTile = Tile.FromLocalId(localTileId, _index.Zoom);
                         TileId = localTileId;
                         LocalId = 0;
                     }

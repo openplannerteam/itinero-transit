@@ -10,11 +10,6 @@ namespace Itinero.Transit.Data
         IDatabaseReader<ConnectionId, Connection>,
         IDatabaseEnumerator<ConnectionId>
     {
-        public bool Get(ConnectionId id, Connection objectToWrite)
-        {
-            return GetConnection(id, objectToWrite);
-        }
-
         public bool Get(string globalId, Connection objectToWrite)
         {
             var hash = Hash(globalId);
