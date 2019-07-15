@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Xml;
 using GeoTimeZone;
 using Itinero.LocalGeo;
-using Itinero.Transit.IO.OSM.Data.OpeningHours;
+using Itinero.Transit.IO.OSM.Data.Parser;
 using Itinero.Transit.Utils;
 using OsmSharp;
 using OsmSharp.Complete;

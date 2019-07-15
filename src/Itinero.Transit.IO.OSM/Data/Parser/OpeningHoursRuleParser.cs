@@ -1,7 +1,6 @@
 using System.Diagnostics.Contracts;
-using static Itinero.Transit.IO.OSM.Data.OpeningHours.DefaultRdParsers;
 
-namespace Itinero.Transit.IO.OSM.Data.OpeningHours
+namespace Itinero.Transit.IO.OSM.Data.Parser
 {
     /// <summary>
     /// This class implements Opening Hours Rules parsing, as declared by
@@ -42,7 +41,7 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
         [Pure]
         public static RDParser<ITimedElement> VariableDate()
         {
-            return LitCI("easter").Map(
+            return DefaultRdParsers.LitCI("easter").Map(
                 _ => TimedElements.Easter()
             );
         }
@@ -52,64 +51,64 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
         [Pure]
         public static RDParser<uint> Minute()
         {
-            return Int().Assert(i => i >= 0 && i <= 60, "Minute is out of range").Map(i => (uint) i);
+            return DefaultRdParsers.Int().Assert(i => i >= 0 && i <= 60, "Minute is out of range").Map(i => (uint) i);
         }
 
         [Pure]
         public static RDParser<uint> Hour()
         {
-            return Int().Assert(i => i >= 0 && i <= 24, "Hour is out of range").Map(i => (uint) i);
+            return DefaultRdParsers.Int().Assert(i => i >= 0 && i <= 24, "Hour is out of range").Map(i => (uint) i);
         }
 
 
         [Pure]
         public static RDParser<uint> MDay()
         {
-            return DayNum() + !Lit(".");
+            return DayNum() + !DefaultRdParsers.Lit(".");
         }
 
         [Pure]
         public static RDParser<uint> DayNum()
         {
-            return Int()
+            return DefaultRdParsers.Int()
                 .Assert(i => i >= 1 && i <= 31, "Day of month is out of range, should be between 0 and 31").Map(i => (uint) i);
         }
 
         [Pure]
         public static RDParser<uint> WeekNum()
         {
-            return Int()
+            return DefaultRdParsers.Int()
                 .Assert(i => i >= 1 && i <= 53, "Weeknum is out of range, should be between 1 and 53").Map(i => (uint) i);
         }
 
         [Pure]
         public static RDParser<int> Wday()
         {
-            return LitCI("mo").Map(_ => 0) |
-                   LitCI("tu").Map(_ => 1) |
-                   LitCI("we").Map(_ => 2) |
-                   LitCI("th").Map(_ => 3) |
-                   LitCI("fr").Map(_ => 4) |
-                   LitCI("sa").Map(_ => 5) |
-                   LitCI("su").Map(_ => 6);
+            return DefaultRdParsers.LitCI("mo").Map(_ => 0) |
+                   DefaultRdParsers.LitCI("tu").Map(_ => 1) |
+                   DefaultRdParsers.LitCI("we").Map(_ => 2) |
+                   DefaultRdParsers.LitCI("th").Map(_ => 3) |
+                   DefaultRdParsers.LitCI("fr").Map(_ => 4) |
+                   DefaultRdParsers.LitCI("sa").Map(_ => 5) |
+                   DefaultRdParsers.LitCI("su").Map(_ => 6);
         }
 
         [Pure]
         // ReSharper disable once MemberCanBePrivate.Global
         public static RDParser<int> Month()
         {
-            return LitCI("jan").Map(_ => 1) |
-                   LitCI("feb").Map(_ => 2) |
-                   LitCI("mar").Map(_ => 3) |
-                   LitCI("apr").Map(_ => 4) |
-                   LitCI("may").Map(_ => 5) |
-                   LitCI("jun").Map(_ => 6) |
-                   LitCI("jul").Map(_ => 7) |
-                   LitCI("aug").Map(_ => 8) |
-                   LitCI("sep").Map(_ => 9) |
-                   LitCI("oct").Map(_ => 10) |
-                   LitCI("nov").Map(_ => 11) |
-                   LitCI("dec").Map(_ => 12);
+            return DefaultRdParsers.LitCI("jan").Map(_ => 1) |
+                   DefaultRdParsers.LitCI("feb").Map(_ => 2) |
+                   DefaultRdParsers.LitCI("mar").Map(_ => 3) |
+                   DefaultRdParsers.LitCI("apr").Map(_ => 4) |
+                   DefaultRdParsers.LitCI("may").Map(_ => 5) |
+                   DefaultRdParsers.LitCI("jun").Map(_ => 6) |
+                   DefaultRdParsers.LitCI("jul").Map(_ => 7) |
+                   DefaultRdParsers.LitCI("aug").Map(_ => 8) |
+                   DefaultRdParsers.LitCI("sep").Map(_ => 9) |
+                   DefaultRdParsers.LitCI("oct").Map(_ => 10) |
+                   DefaultRdParsers.LitCI("nov").Map(_ => 11) |
+                   DefaultRdParsers.LitCI("dec").Map(_ => 12);
         }
 
         [Pure]
@@ -117,14 +116,14 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
         {
             return RDParser<(uint, uint)>.X(
                 (h, m) => (h, m),
-                Hour() + !Lit(": "), Minute()
+                Hour() + !DefaultRdParsers.Lit(": "), Minute()
             );
         }
 
         [Pure]
         public static RDParser<string> Comment()
         {
-            return Regex("\"[^\"]*\"");
+            return DefaultRdParsers.Regex("\"[^\"]*\"");
         }
     }
 }

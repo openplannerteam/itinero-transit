@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 
-namespace Itinero.Transit.IO.OSM.Data.OpeningHours
+namespace Itinero.Transit.IO.OSM.Data.Parser
 {
     /// <summary>
     /// A timed element is a cyclical element (in time) which is used to describe time patterns (esp. opening hours).

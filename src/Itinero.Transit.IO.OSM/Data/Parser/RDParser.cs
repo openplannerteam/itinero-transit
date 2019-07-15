@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 // ReSharper disable InconsistentNaming
 
 
-namespace Itinero.Transit.IO.OSM.Data.OpeningHours
+namespace Itinero.Transit.IO.OSM.Data.Parser
 {
     // I had a major headache while writing this code. Make sure you don't get one too
 
@@ -111,7 +112,7 @@ namespace Itinero.Transit.IO.OSM.Data.OpeningHours
                 (Regex("-?[0-9]+\\.[0-9]+") |
                  Regex("-?[0-9]+") |
                  Regex("-?\\.[0-9]+"))
-                .Map(double.Parse);
+                .Map(str => double.Parse(str, CultureInfo.InvariantCulture));
         }
 
         [Pure]
