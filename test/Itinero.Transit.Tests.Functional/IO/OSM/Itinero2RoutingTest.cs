@@ -6,6 +6,7 @@ using Itinero.Transit.IO.OSM.Data;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Tests.Functional.Algorithms;
+using Itinero.Transit.Tests.Functional.Staging;
 
 namespace Itinero.Transit.Tests.Functional.IO.OSM
 {
@@ -23,9 +24,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
             var from = Constants.NearStationBruggeLatLonRijselse;
             var to = Constants.Brugge;
 
-
-            OsmTransferGenerator.EnableCaching("./cache");
-            var gen = new OsmTransferGenerator(5000,
+            var gen = new OsmTransferGenerator(RouterDbStaging.RouterDb, 5000,
                 OsmProfiles.Pedestrian
             );
 
@@ -54,7 +53,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
 
 
             var route = gen.CreateRoute(((float) fromStp.Latitude, (float) fromStp.Longitude),
-                ((float) toStp.Latitude, (float) toStp.Longitude), out _);
+                ((float) toStp.Latitude, (float) toStp.Longitude), out _, out _);
             NotNull(route, "Route not found");
 
             // This routing test only contains a walk: from somewhere in Bruges towards the station of Bruges

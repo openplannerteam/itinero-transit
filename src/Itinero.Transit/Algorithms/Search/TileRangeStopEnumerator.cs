@@ -47,7 +47,8 @@ namespace Itinero.Transit.Algorithms.Search
             {
                 _stopsDbReader = stopsDb.GetReader();
                 var range = new TileRange(box, stopsDb.StopLocations.Zoom);
-                var tileRangeLocationEnumerable = stopsDb.StopLocations.GetTileRangeEnumerator(range);
+                var tileRangeLocationEnumerable = 
+                    new TileRangeLocationEnumerable(stopsDb.StopLocations, range);
 
                 _tileRangeLocationEnumerator = tileRangeLocationEnumerable.GetEnumerator();
             }

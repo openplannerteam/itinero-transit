@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Itinero.IO.Osm.Tiles;
 using Itinero.IO.Osm.Tiles.Parsers;
 using Itinero.LocalGeo;
 using Itinero.Profiles;
@@ -27,9 +26,9 @@ namespace Itinero.Transit.IO.OSM
 
         private readonly float _searchDistance;
 
-        public static void EnableCaching(string cachindDirectory)
+        public static void EnableCaching(string cachingDirectory)
         {
-            TileParser.DownloadFunc = new TilesDownloadHelper(cachindDirectory).Download;
+            TileParser.DownloadFunc = new TilesDownloadHelper(cachingDirectory).Download;
         }
 
         ///  <summary>
@@ -38,15 +37,20 @@ namespace Itinero.Transit.IO.OSM
         /// 
         ///  Footpaths are generated using an Osm-based router database
         ///  </summary>
+        ///  <param name="routerDb">The router db to use.</param>
         ///  <param name="searchDistance">The maximum distance that the traveller takes this route</param>
         ///  <param name="profile">The vehicle profile, default is pedestrian.</param>
-        public OsmTransferGenerator(float searchDistance = 1000,
+        public OsmTransferGenerator(RouterDb routerDb, float searchDistance = 1000,
             Profile profile = null)
         {
+            _routerDb = routerDb ?? throw new ArgumentNullException(nameof(routerDb));
+            if (_routerDb.DataProvider == null)
+            {
+                throw new ArgumentNullException("routerDb.Dataprovider");
+            }
+
             _searchDistance = searchDistance;
             _profile = profile ?? OsmProfiles.Pedestrian;
-            _routerDb = new RouterDb();
-            _routerDb.DataProvider = new DataProvider(_routerDb);
         }
 
         public uint TimeBetween(IStop from, IStop to)
@@ -71,7 +75,7 @@ namespace Itinero.Transit.IO.OSM
             }
 
             var route = CreateRoute(((float) from.Latitude, (float) from.Longitude),
-                ((float) to.Latitude, (float) to.Longitude), out var isEmpty);
+                ((float) to.Latitude, (float) to.Longitude), out var isEmpty, out _);
             if (isEmpty)
             {
                 return 0;
@@ -86,7 +90,8 @@ namespace Itinero.Transit.IO.OSM
         }
 
         // ReSharper disable once MemberCanBePrivate.Global
-        public Route CreateRoute((float lat, float lon) from, (float lat, float lon) to, out bool isEmpty)
+        public Route CreateRoute((double lat, double lon) from, (double lat, double lon) to, out bool isEmpty,
+            out string errorMessage)
         {
             isEmpty = false;
             try
@@ -96,7 +101,10 @@ namespace Itinero.Transit.IO.OSM
                 var endPoint = _routerDb.Snap(to.lon, to.lat, profile: _profile);
                 if (startPoint.IsError || endPoint.IsError)
                 {
-                    Log.Information("Could not snap to either startPoint or endPoint");
+                    errorMessage = "Could not snap to either startPoint or endPoint. \n" +
+                                   $"Startpoint error message: {startPoint.ErrorMessage}\n" +
+                                   $"Endpoint error message: {endPoint.ErrorMessage}";
+                    Log.Information(errorMessage);
                     return null;
                 }
 
@@ -104,6 +112,7 @@ namespace Itinero.Transit.IO.OSM
                     startPoint.Value.Offset == endPoint.Value.Offset)
                 {
                     isEmpty = true;
+                    errorMessage = "Start and end-point are the same";
                     return null;
                 }
 
@@ -111,24 +120,28 @@ namespace Itinero.Transit.IO.OSM
 
                 if (route.IsError)
                 {
-                    Log.Warning($"Could not calculate route: isError {route.ErrorMessage}. Route from {from} to {to}");
+                    errorMessage = $"Could not calculate route from {from} to {to}: got {route.ErrorMessage}";
+                    Log.Warning(errorMessage);
                     return null;
                 }
 
                 if (route.Value.TotalDistance > _searchDistance)
                 {
+                    errorMessage =
+                        "The actual distance via OSM exceeds the specified range (even though it probably is in range via crowsflight)";
                     // The total walking time exceeds the time that the traveller wants to walk between two stops
                     // We return MaxValue
                     // This can happen if a stop is in range crows-flight, but needs a detour to reach via the actual road network
                     return null;
                 }
 
+                errorMessage = null;
                 return route.Value;
             }
             catch (Exception e)
             {
-                Log.Error(
-                    $"Could not calculate route from {from} to {to} with itinero2.0: {e}");
+                errorMessage = $"Could not calculate route from {from} to {to} with itinero2.0: {e}";
+                Log.Error(errorMessage);
                 return null;
             }
         }

@@ -5,6 +5,7 @@ using Itinero.Transit.IO.OSM;
 using Itinero.Transit.IO.OSM.Data;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
+using Itinero.Transit.Tests.Functional.Staging;
 
 namespace Itinero.Transit.Tests.Functional.FullStack
 {
@@ -17,10 +18,12 @@ namespace Itinero.Transit.Tests.Functional.FullStack
 
             var tdbsNmbs = TransitDb.ReadFrom(Constants.Nmbs, 0);
 
+            var osmGen = new OsmTransferGenerator(RouterDbStaging.RouterDb).UseCache();
+            osmGen.PreCalculateCache(tdbsNmbs.Latest.StopsDb.GetReader());
 
             var defaultRealLifeProfile = new Profile<TransferMetric>(
                 new InternalTransferGenerator(),
-                new OsmTransferGenerator().UseCache(),
+                osmGen,
                 TransferMetric.Factory,
                 TransferMetric.ParetoCompare,
                 new CancelledConnectionFilter(),
