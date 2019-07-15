@@ -16,7 +16,7 @@ namespace Itinero.Transit.OtherMode
         }
 
 
-        private Dictionary<(StopId, StopId tos), uint> _cacheSingle =
+        private readonly Dictionary<(StopId, StopId tos), uint> _cacheSingle =
             new Dictionary<(StopId, StopId tos), uint>();
 
         public uint TimeBetween(IStop from, IStop to)
