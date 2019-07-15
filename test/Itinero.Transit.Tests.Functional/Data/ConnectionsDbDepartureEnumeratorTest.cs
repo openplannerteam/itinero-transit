@@ -14,7 +14,7 @@ namespace Itinero.Transit.Tests.Functional.Data
             // enumerate connections by departure time.
             var tt = 0;
             var forwardCount = 0;
-            var enumerator = latest.ConnectionsDb.GetReader();
+            var enumerator = latest.ConnectionsDb;
             var index = enumerator.First().Value;
             var all = new List<uint>();
             do

@@ -195,9 +195,8 @@ namespace Itinero.Transit.Data
 
         internal uint AddOrUpdate(Connection newConnection)
         {
-            var reader = GetReader();
             var c = new Connection();
-            if (!reader.Get(newConnection.GlobalId, c))
+            if (!Get(newConnection.GlobalId, c))
             {
                 // The connection is not yet added
                 // We add the connection fresh
@@ -789,18 +788,6 @@ namespace Itinero.Transit.Data
                 globalIdPointersPerHash, globalIdLinkedList, globalIdLinkedListPointer,
                 departureWindowPointers, departurePointers, departurePointer,
                 earliestDate, latestDate);
-        }
-
-
-        /// <summary>
-        /// Gets a reader.
-        /// </summary>
-        /// <returns></returns>
-        [Pure]
-        public ConnectionsDb GetReader()
-        {
-            // TODO REMOVE THIS
-            return this;
         }
 
         public IEnumerable<uint> DatabaseIds { get; }

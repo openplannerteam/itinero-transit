@@ -87,7 +87,7 @@ namespace Itinero.Transit.Processor.Switch
             }
 
 
-            var consDb = old.Latest.ConnectionsDb.GetReader();
+            var consDb = old.Latest.ConnectionsDb;
             var tripsDb = old.Latest.TripsDb;
 
             var stopCount = copied;

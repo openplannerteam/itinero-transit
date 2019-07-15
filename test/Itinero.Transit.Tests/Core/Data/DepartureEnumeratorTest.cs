@@ -26,9 +26,9 @@ namespace Itinero.Transit.Tests.Core.Data
             wr.Close();
 
 
-            var reader = tdb.Latest.ConnectionsDb.GetReader();
-            var f = reader.First().Value;
-            var output = reader.Get(f);
+            var connectionsDb = tdb.Latest.ConnectionsDb;
+            var f = connectionsDb.First().Value;
+            var output = connectionsDb.Get(f);
 
             Assert.Equal(input.TravelTime, output.TravelTime);
 

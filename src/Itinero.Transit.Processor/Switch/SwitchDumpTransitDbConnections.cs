@@ -44,7 +44,7 @@ namespace Itinero.Transit.Processor.Switch
                 outStream.WriteLine(header);
 
 
-                var consDb = tdb.Latest.ConnectionsDb.GetReader();
+                var consDb = tdb.Latest.ConnectionsDb;
                 var dep = tdb.Latest.StopsDb.GetReader();
                 var arr = tdb.Latest.StopsDb.GetReader();
                 var tripsDb = tdb.Latest.TripsDb;

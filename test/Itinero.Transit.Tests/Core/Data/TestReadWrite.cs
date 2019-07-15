@@ -33,10 +33,10 @@ namespace Itinero.Transit.Tests.Core.Data
 
             File.Delete("Test.transitdb");
 
-            var index = read.GetReader().First().Value;
-            var output = read.GetReader().Get(index);
+            var index = read.First().Value;
+            var output = read.Get(index);
             Assert.Equal(input, output);
-            Assert.False(read.GetReader().HasNext(index, out index));
+            Assert.False(read.HasNext(index, out index));
 
 
             Assert.Equal(conn.EarliestDate, read.EarliestDate);

@@ -225,9 +225,11 @@ namespace Itinero.Transit
         {
             CreateStopsReader = () => StopsReaderAggregator.CreateFrom(tdbs);
             StopsReader = CreateStopsReader();
-            ConnectionEnumerator = ConnectionEnumeratorAggregator.CreateFrom(tdbs.Select(tdb => tdb.ConnectionsDb.GetDepartureEnumerator()));
+            ConnectionEnumerator =
+                ConnectionEnumeratorAggregator.CreateFrom(
+                    tdbs.Select(tdb => tdb.ConnectionsDb.GetDepartureEnumerator()));
             ConnectionReader = DatabaseEnumeratorAggregator<ConnectionId, Connection>.CreateFrom(
-                tdbs.Select(tdb => tdb.ConnectionsDb.GetReader()));
+                tdbs.Select(tdb => tdb.ConnectionsDb));
             Profile = new Profile<T>(
                 profile.InternalTransferGenerator,
                 profile.WalksGenerator,
@@ -272,7 +274,7 @@ namespace Itinero.Transit
             var end = DateTime.Now;
             Log.Information($"Caching reachable locations took {(end - start).TotalMilliseconds}ms");
             return new WithProfile<T>(
-               () => withCache,
+                () => withCache,
                 ConnectionEnumerator,
                 ConnectionReader,
                 new Profile<T>(
@@ -295,7 +297,7 @@ namespace Itinero.Transit
         public WithProfile<T> AddStopsReader(IStopsReader stopsReader)
         {
             return new WithProfile<T>(
-               () => StopsReaderAggregator.CreateFrom(new List<IStopsReader>
+                () => StopsReaderAggregator.CreateFrom(new List<IStopsReader>
                 {
                     stopsReader, CreateStopsReader()
                 }),

@@ -11,7 +11,7 @@ namespace Itinero.Transit.Tests.Functional.Data
         protected override uint Execute((ConnectionsDb, StopId) input)
         {
             var count = (uint) 0;
-            var enumerator = input.Item1.GetReader();
+            var enumerator = input.Item1;
             var index = enumerator.First().Value;
             while (enumerator.HasNext(index, out index))
             {

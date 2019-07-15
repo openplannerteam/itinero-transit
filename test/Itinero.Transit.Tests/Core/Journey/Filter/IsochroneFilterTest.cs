@@ -34,7 +34,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
                 TransferMetric.Factory,
                 TransferMetric.ParetoCompare);
 
-            var con = latest.ConnectionsDb.GetReader();
+            var con = latest.ConnectionsDb;
             var c = con.Get(connId);
             var iso = latest.SelectProfile(profile)
                 .SelectSingleStop(stop0)
@@ -95,7 +95,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
                 new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc).ToUnixTime(),
                 new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc).ToUnixTime());
 
-            var con = latest.ConnectionsDb.GetReader();
+            var con = latest.ConnectionsDb;
             var c = con.Get(connId);
             Assert.True(filter.CanBeTaken(c));
 
