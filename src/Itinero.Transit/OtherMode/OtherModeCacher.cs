@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Itinero.Transit.Data;
 
 namespace Itinero.Transit.OtherMode
@@ -34,7 +32,7 @@ namespace Itinero.Transit.OtherMode
         }
 
 
-        private Dictionary<(LocationId from, List<LocationId> tos),
+        private readonly Dictionary<(LocationId from, List<LocationId> tos),
             Dictionary<LocationId, uint>> _cache =
             new Dictionary<(LocationId from, List<LocationId> tos),
                 Dictionary<LocationId, uint>>();
@@ -77,18 +75,22 @@ namespace Itinero.Transit.OtherMode
             }
 
             var v = Fallback.TimesBetween(@from, to);
-            _cache[key] = v;
+            if (!_cacheIsClosed)
+            {
+                _cache[key] = v;
+            }
+
             return v;
         }
 
-        private bool CachingIsDone = false;
+        private bool CachingIsDone;
+        private bool _cacheIsClosed;
 
         // ReSharper disable once UnusedMember.Global
         public OtherModeCacher PreCalculateCache(IStopsReader withCache)
         {
             // ReSharper disable once RedundantArgumentDefaultValue
             PreCalculateCache(withCache, 0, 0);
-            CachingIsDone = true;
             return this;
         }
 
@@ -117,41 +119,6 @@ namespace Itinero.Transit.OtherMode
             }
         }
 
-        // ReSharper disable once UnusedMember.Global
-        public bool ChachingIsDone()
-        {
-            return CachingIsDone;
-        }
-
-        private void PreCalculateCacheMultiThreaded(Func<IStopsReader> stopsReaderGenerator)
-        {
-            // TODO TEST ME
-            var processors = Environment.ProcessorCount;
-            var allCaches = new List<OtherModeCacher>();
-            var taskPool = new Task[processors];
-
-            for (var i = 0; i < processors; i++)
-            {
-                var otherCache = new OtherModeCacher(Fallback);
-                allCaches.Add(otherCache);
-
-                var task = new Task(() =>
-                {
-                    var stopsReader = stopsReaderGenerator();
-                    otherCache.PreCalculateCache(stopsReader, i, processors);
-                });
-                taskPool[i] = task;
-                task.Start();
-            }
-
-            Task.WaitAll(taskPool);
-
-            foreach (var otherModeCacher in allCaches)
-            {
-                _cache.Union(otherModeCacher._cache);
-            }
-        }
-
 
         public float Range()
         {
@@ -161,6 +128,19 @@ namespace Itinero.Transit.OtherMode
         public string OtherModeIdentifier()
         {
             return Fallback.OtherModeIdentifier();
+        }
+
+
+        /// <summary>
+        /// Consider the following situation: you have a big cache of all the timings between all the public transport stops.
+        /// You need to add in a few extra floating points, which you'll only shortly need.
+        ///
+        /// For this, you can create a small, extra cache, add the needed stuff and let the others delegate to the fallback
+        /// 
+        /// </summary>
+        public void CloseCache()
+        {
+            _cacheIsClosed = true;
         }
     }
 }
