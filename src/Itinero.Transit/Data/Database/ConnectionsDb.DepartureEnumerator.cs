@@ -173,7 +173,7 @@ namespace Itinero.Transit.Data
                 if (depTime - CurrentDateTime > _connectionsDb.WindowSizeInSeconds)
                 {
                     // Nope, we made a cycle jump
-                    _alreadyUsed[window] = _indexInWindow-1;
+                    _alreadyUsed[window] = _indexInWindow - 1;
                     NextWindow();
                     goto hasNext;
                 }
@@ -196,8 +196,11 @@ namespace Itinero.Transit.Data
                 CurrentDateTime =
                     (CurrentDateTime / _connectionsDb.WindowSizeInSeconds) *
                     _connectionsDb.WindowSizeInSeconds;
-                // And decrease by one
-                CurrentDateTime--;
+                if (CurrentDateTime > 0)
+                {
+                    // And decrease by one - but don't underflow
+                    CurrentDateTime--;
+                }
 
                 // And we should point to its last element
 

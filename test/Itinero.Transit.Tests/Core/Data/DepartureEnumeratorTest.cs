@@ -87,7 +87,11 @@ namespace Itinero.Transit.Tests.Core.Data
             Assert.Equal("g", c.GlobalId);
             Assert.False(enumerator.HasNext());
 
+            
+            enumerator.MoveTo(1460);
             Assert.True(enumerator.HasPrevious());
+            enumerator.Current(c);
+            Assert.Equal("g", c.GlobalId);
             Assert.True(enumerator.HasPrevious());
             enumerator.Current(c);
             Assert.Equal("f", c.GlobalId);
@@ -107,8 +111,7 @@ namespace Itinero.Transit.Tests.Core.Data
             Assert.True(enumerator.HasPrevious());
             enumerator.Current(c);
             Assert.Equal("a", c.GlobalId);
-            Assert.True(enumerator.HasPrevious());
-            enumerator.Current(c);
+            Assert.False(enumerator.HasPrevious());
 
             enumerator.MoveTo(1001);
             Assert.True(enumerator.HasNext());
