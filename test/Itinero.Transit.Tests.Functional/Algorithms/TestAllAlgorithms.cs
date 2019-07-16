@@ -30,23 +30,20 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
             {
                 new EarliestConnectionScanTest(),
                 new LatestConnectionScanTest(),
-                new ProfiledConnectionScanTest(),
+                new ProfiledConnectionScanTest(), //*/
                 new EasPcsComparison(),
                 new EasLasComparison(),
                 new IsochroneTest(),
                 //      new ProfiledConnectionScanWithMetricFilteringTest(),
-                new MultiTransitDbTest()
+                new MultiTransitDbTest() //*/
             };
 
 
-        
+        public const string _osmCentrumShuttle =
+            "testdata/fixed-test-cases-osm-CentrumbusBrugge2019-07-11.transitdb";
 
-        public const string _osmCentrumShuttle = 
-                                         "testdata/fixed-test-cases-osm-CentrumbusBrugge2019-07-11.transitdb";
-        public const string _nmbs =      "testdata/fixed-test-cases-sncb-2019-07-11.transitdb";
+        public const string _nmbs = "testdata/fixed-test-cases-sncb-2019-07-11.transitdb";
         public const string _delijnWvl = "testdata/fixed-test-cases-de-lijn-wvl-2019-07-11.transitdb";
-        
-
 
 
         /// <summary>

@@ -31,7 +31,7 @@ namespace Itinero.Transit.Data.Core
                 maxCount = (int) Math.Max(maxCount, db.DatabaseIds.Max());
             }
 
-            _underlyingDatabases = new IDatabaseReader<TId, T>[maxCount];
+            _underlyingDatabases = new IDatabaseReader<TId, T>[maxCount+1];
             foreach (var db in databases)
             {
                 foreach (var i in db.DatabaseIds)

@@ -42,7 +42,8 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
-                //  return;
+                new TestAllAlgorithms().ExecuteMultiModal();
+                  return;
             }
 
             // These are all the tests, and will be run in full on the build server
@@ -71,7 +72,7 @@ namespace Itinero.Transit.Tests.Functional
 
         private static void LocalTests()
         {
-            new FullStackTest().Run();
+            new MixedDestinationTest().Run();
             var nmbs = TransitDb.ReadFrom(TestAllAlgorithms._nmbs, 0);
             new ConnectionsDbDepartureEnumeratorTest().Run(nmbs);
             var db = new TestAllAlgorithms().ExecuteDefault();
@@ -88,12 +89,12 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Running NoDuplicationTest");
 
             new DelayTest().Run(true);
+            new FullStackTest().Run();
 
             Log.Information("Running single TransitDb tests");
             new TestAllAlgorithms().ExecuteDefault();
             Log.Information("Running multi TransitDb tests");
 
-            new MixedDestinationTest().Run();
             
             new TestAllAlgorithms().ExecuteMultiModal();
         }

@@ -130,12 +130,12 @@ namespace Itinero.Transit.Algorithms.CSA
 
             var earliestAllowedDeparture = _earliestDeparture;
             Journey<T> bestJourney = null;
-            while (enumerator.CurrentDateTime >= earliestAllowedDeparture)
+            var depleted = false;
+            while (!depleted && enumerator.CurrentDateTime >= earliestAllowedDeparture)
             {
                 if (!IntegrateBatch())
                 {
-                    bestJourney = null;
-                    break;
+                    depleted = true;
                 }
 
                 // we have reached a new batch of departure times
@@ -177,7 +177,7 @@ namespace Itinero.Transit.Algorithms.CSA
             // The user might need a profile to optimize PCS later on
             // We got an alternative end time, we still calculate a little
             ScanBeginTime = depArrivalToTimeout(bestJourney.Root.Time, bestJourney.Time);
-            while (enumerator.CurrentDateTime >= ScanBeginTime)
+            while (!depleted && enumerator.CurrentDateTime >= ScanBeginTime)
             {
                 if (!IntegrateBatch())
                 {

@@ -6,26 +6,10 @@ using Itinero.Transit.Data.Tiles;
 
 namespace Itinero.Transit.Data
 {
-    public partial class StopsDb : IDatabaseReader<StopId, Stop>
+    public partial class StopsDb
     {
         
-        
-        
-        public bool Get(StopId id, Stop objectToWrite)
-        {
-            
-            
-            
-            
-            
-            throw new System.NotImplementedException();
-        }
-
-        public bool Get(string globalId, Stop objectToWrite)
-        {
-            throw new System.NotImplementedException();
-        }
-
+       
         public IEnumerable<uint> DatabaseIds { get; }
         public class StopsDbReader : IStopsReader
         {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Data.Core;
@@ -164,7 +165,17 @@ namespace Itinero.Transit.Data.Aggregators
             return _enumerators[_currentBest].Current(toWrite);
         }
 
-        public ulong CurrentDateTime => _enumerators[_currentBest].CurrentDateTime;
+        public ulong CurrentDateTime
+        {
+            get
+            {
+                if (_currentBest < 0 || _currentBest >= _enumerators.Length)
+                {
+                    throw new IndexOutOfRangeException("_currentBest to high or to low");
+                }
+                return _enumerators[_currentBest].CurrentDateTime;
+            }
+        }
 
         public static IConnectionEnumerator CreateFrom(IConnectionEnumerator a, IConnectionEnumerator b)
         {

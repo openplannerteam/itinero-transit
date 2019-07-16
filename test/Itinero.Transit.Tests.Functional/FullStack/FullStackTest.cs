@@ -1,6 +1,7 @@
 using System.Linq;
 using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.IO.OSM;
 using Itinero.Transit.IO.OSM.Data;
 using Itinero.Transit.Journey.Metric;
@@ -19,11 +20,23 @@ namespace Itinero.Transit.Tests.Functional.FullStack
             var tdbsNmbs = TransitDb.ReadFrom(Constants.Nmbs, 0);
 
             var osmGen = new OsmTransferGenerator(RouterDbStaging.RouterDb).UseCache();
-            osmGen.PreCalculateCache(tdbsNmbs.Latest.StopsDb.GetReader());
+            // osmGen.PreCalculateCache(tdbsNmbs.Latest.StopsDb.GetReader());
+
+            var stopsReader = (IStopsReader) new OsmLocationStopReader(1);
+            stopsReader.MoveTo(from);
+            var fromStop = new Stop(stopsReader);
+
+            stopsReader = tdbsNmbs.Latest.StopsDb.GetReader();
+            stopsReader.MoveTo(to);
+            var toStop = new Stop(stopsReader);
 
             var defaultRealLifeProfile = new Profile<TransferMetric>(
                 new InternalTransferGenerator(),
-                osmGen,
+                new FirstLastMilePolicy(
+                    new CrowsFlightTransferGenerator(),
+                    osmGen, new[] {fromStop.Id},
+                    osmGen, new[] {toStop.Id}
+                ),
                 TransferMetric.Factory,
                 TransferMetric.ParetoCompare,
                 new CancelledConnectionFilter(),

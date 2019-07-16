@@ -117,13 +117,13 @@ namespace Itinero.Transit.Algorithms.CSA
 
             var lastDeparture = _lastArrival;
             Journey<T> bestJourney = null;
-            while (currentConnection.DepartureTime <= lastDeparture)
+            var depleted = false;
+            while (!depleted && currentConnection.DepartureTime <= lastDeparture)
             {
                 if (!IntegrateBatch())
                 {
                     // Only happens if database is exhausted
-                    bestJourney = null;
-                    break;
+                    depleted = true;
                 }
 
                 // we have reached a new batch of departure times
@@ -166,11 +166,11 @@ namespace Itinero.Transit.Algorithms.CSA
             // The user might need a profile to optimize PCS later on
             // We got an alternative end time, we still calculate a little
             ScanEndTime = depArrivalToTimeout(bestJourney.Root.Time, bestJourney.Time);
-            while (enumerator.CurrentDateTime < ScanEndTime)
+            while (!depleted && enumerator.CurrentDateTime < ScanEndTime)
             {
                 if (!IntegrateBatch())
                 {
-                    break;
+                    depleted = true;
                 }
             }
 
