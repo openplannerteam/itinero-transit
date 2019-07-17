@@ -38,7 +38,6 @@ namespace Itinero.Transit.Data
         internal TripsDb(uint dbId)
         {
             _dbId = dbId;
-            DatabaseIds = new[] {dbId};
             _tripIds = new MemoryArray<string>(0);
             _tripAttributeIds = new MemoryArray<uint>(0);
             _tripIdPointersPerHash = new MemoryArray<uint>(_tripIdHashSize);
@@ -49,6 +48,7 @@ namespace Itinero.Transit.Data
 
             _tripIdLinkedList = new MemoryArray<uint>(0);
             _attributes = new AttributesIndex();
+            DatabaseIds = new[] {dbId};
         }
 
         private TripsDb(
@@ -65,7 +65,8 @@ namespace Itinero.Transit.Data
             _tripIdLinkedList = tripIdLinkedList;
             _attributes = attributes;
             _tripIdLinkedListPointer = tripIdLinkedListPointer;
-            _nextId = nextId;
+            _nextId = nextId; 
+            DatabaseIds = new[] {dbId};
         }
 
         /// <summary>

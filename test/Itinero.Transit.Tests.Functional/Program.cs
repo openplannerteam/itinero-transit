@@ -42,6 +42,7 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
+                new Itinero2RoutingTest().Run();
                 return;
             }
 
@@ -113,7 +114,7 @@ namespace Itinero.Transit.Tests.Functional
             new NoDuplicationTest().Run();
 
             new CachingTest().Run(true);
-          // TODO re-enable  new Itinero2RoutingTest().Run();
+            new Itinero2RoutingTest().Run();
         }
 
         public static void SlowTests()

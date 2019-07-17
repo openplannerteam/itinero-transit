@@ -5,7 +5,6 @@ namespace Itinero.Transit.Tests.Functional
 {
     public class Constants
     {
-        
         public static DateTime TestDate = new DateTime(2019, 07, 11, 09, 00, 00).ToUniversalTime().Date;
 
 
@@ -16,8 +15,8 @@ namespace Itinero.Transit.Tests.Functional
 
         public const string NearStationBruggeLatLon = "https://www.openstreetmap.org/#map=19/51.19764/3.21847";
         public const string NearStationBruggeLatLonRijselse = "https://www.openstreetmap.org/#map=17/51.19335/3.21378";
+        public const string BruggeHome = "https://www.openstreetmap.org/#map=19/51.21576/3.22048";
 
-        
         public const string Brugge = "http://irail.be/stations/NMBS/008891009";
         public const string Poperinge = "http://irail.be/stations/NMBS/008896735";
         public const string Vielsalm = "http://irail.be/stations/NMBS/008845146";
@@ -35,7 +34,7 @@ namespace Itinero.Transit.Tests.Functional
         public const string Antwerpen = "http://irail.be/stations/NMBS/008821006"; // Antwerpen centraal
 
         public const string Gent = "http://irail.be/stations/NMBS/008892007";
-        
+
         public const string OsmCentrumShuttle = "testdata/fixed-test-cases-osm-CentrumbusBrugge2019-07-11.transitdb";
         public const string Nmbs = "testdata/fixed-test-cases-sncb-2019-07-11.transitdb";
         public const string DelijnWvl = "testdata/fixed-test-cases-de-lijn-wvl-2019-07-11.transitdb";

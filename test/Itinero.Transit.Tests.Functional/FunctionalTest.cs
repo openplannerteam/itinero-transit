@@ -79,6 +79,14 @@ namespace Itinero.Transit.Tests.Functional
                 throw new Exception("Assertion failed, expected true");
             }
         }
+        
+        protected void True(bool value, string msg)
+        {
+            if (!value)
+            {
+                throw new Exception("Assertion failed: "+msg);
+            }
+        }
 
         public void NotNull(object o)
         {

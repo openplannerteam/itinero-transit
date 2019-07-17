@@ -1,4 +1,5 @@
 using System;
+using Itinero.IO.Json;
 using Itinero.Profiles.Lua.Osm;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
@@ -81,8 +82,11 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
 
             var route = gen.CreateRoute(((float) fromStp.Latitude, (float) fromStp.Longitude),
                 ((float) toStp.Latitude, (float) toStp.Longitude), out _, out _);
+            
             NotNull(route, "Route not found");
-
+            Console.WriteLine(route.ToGeoJson());
+            True(route.TotalTime > 1, "The route is too short, walking to the station should take a few minutes");
+            
             // This routing test only contains a walk: from somewhere in Bruges towards the station of Bruges
             // Buses are not loaded, so walking is the only option
             var easJ = router
@@ -109,7 +113,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
                 .EarliestArrivalJourney();
             NotNull(easJ);
             Information(easJ.ToString(router));
-            True(easJ.Metric.WalkingTime > 300);
+            True(easJ.Metric.WalkingTime > 1);
 
 
             return true;
