@@ -26,9 +26,12 @@ namespace Itinero.Transit.IO.OSM
 
         private readonly float _searchDistance;
 
+        private static TilesDownloadHelper downloadHelper;
+
         public static void EnableCaching(string cachingDirectory)
         {
-            TileParser.DownloadFunc = new TilesDownloadHelper(cachingDirectory).Download;
+            downloadHelper = new TilesDownloadHelper(cachingDirectory);
+            TileParser.DownloadFunc = downloadHelper.Download;
         }
 
         ///  <summary>
@@ -46,6 +49,7 @@ namespace Itinero.Transit.IO.OSM
             _routerDb = routerDb ?? throw new ArgumentNullException(nameof(routerDb));
             if (_routerDb.DataProvider == null)
             {
+                // ReSharper disable once NotResolvedInText
                 throw new ArgumentNullException("routerDb.Dataprovider");
             }
 
@@ -69,11 +73,12 @@ namespace Itinero.Transit.IO.OSM
                 return 0;
             }
 
-            if (distance > 2500)
+            if (distance > _searchDistance)
             {
                 return uint.MaxValue;
             }
 
+            Log.Information("From: " + from.GlobalId + " to: " + to.GlobalId);
             var route = CreateRoute(((float) from.Latitude, (float) from.Longitude),
                 ((float) to.Latitude, (float) to.Longitude), out var isEmpty, out _);
             if (isEmpty)
