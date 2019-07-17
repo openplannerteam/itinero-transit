@@ -9,8 +9,6 @@ namespace Itinero.Transit.Data
     public partial class StopsDb
     {
         
-       
-        public IEnumerable<uint> DatabaseIds { get; }
         public class StopsDbReader : IStopsReader
         {
             private readonly TiledLocationIndex.Enumerator _locationEnumerator;
@@ -19,6 +17,7 @@ namespace Itinero.Transit.Data
             {
                 StopsDb = stopsDb;
                 _locationEnumerator = StopsDb._stopLocations.GetEnumerator();
+                
             }
 
             /// <summary>

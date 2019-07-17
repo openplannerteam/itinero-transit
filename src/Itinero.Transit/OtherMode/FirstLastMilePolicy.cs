@@ -31,6 +31,17 @@ namespace Itinero.Transit.OtherMode
                 Math.Max(lastMile.Range(), _defaultWalk.Range()));
         }
 
+        public FirstLastMilePolicy(
+            IOtherModeGenerator otherModeGeneratorImplementation,
+            IOtherModeGenerator firstMile, IStop firstMileStop,
+            IOtherModeGenerator lastMile, IStop lastMileStop) : this(
+            otherModeGeneratorImplementation, firstMile, new[]
+            {
+                firstMileStop.Id
+            }, lastMile, new[] {lastMileStop.Id})
+        {
+        }
+
         public uint TimeBetween(IStop from, IStop to)
         {
             return GeneratorFor(from.Id, to.Id).TimeBetween(from, to);
@@ -117,7 +128,6 @@ namespace Itinero.Transit.OtherMode
                 $"&firstMile={Uri.EscapeUriString(_firstMile.OtherModeIdentifier())}" +
                 $"&lastMile={Uri.EscapeUriString(_lastMile.OtherModeIdentifier())}"
                 ;
-                
         }
     }
 }

@@ -45,7 +45,7 @@ namespace Itinero.Transit.Tests.Functional
         public const string DelijnAnt = "testdata/fixed-test-cases-de-lijn-ant-2019-07-11.transitdb";
 
 
-        public static readonly IReadOnlyList<string> testDbs = new[]
+        public static readonly IReadOnlyList<string> TestDbs = new[]
         {
             Nmbs,
             OsmCentrumShuttle,

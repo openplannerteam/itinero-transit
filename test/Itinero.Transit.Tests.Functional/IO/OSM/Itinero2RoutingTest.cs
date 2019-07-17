@@ -1,3 +1,4 @@
+using System;
 using Itinero.Profiles.Lua.Osm;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
@@ -10,30 +11,56 @@ using Itinero.Transit.Tests.Functional.Staging;
 
 namespace Itinero.Transit.Tests.Functional.IO.OSM
 {
-    public class Itinero2RoutingTest : FunctionalTest<object, object>
+    public class Itinero2RoutingTest : FunctionalTest<object, bool>
     {
-        protected override object Execute(object input)
+        protected override object Execute(bool useOsmBetweenWalks)
         {
-
             // We create a transitDB with testdata from _nmbs.
             // Note that this database only contains connections of a certain date, namely TestAllAlgorithms.TestDate
             // Testing outside this range will give an error ("no connections loaded")
             var tdb = TransitDb.ReadFrom(TestAllAlgorithms._nmbs, 0);
 
+            var stopsReader = tdb.Latest.StopsDb.GetReader()
+                .UseCache()
+                .AddOsmReader();
 
             var from = Constants.NearStationBruggeLatLonRijselse;
             var to = Constants.Brugge;
 
-            var gen = new OsmTransferGenerator(RouterDbStaging.RouterDb, 5000,
+            stopsReader.MoveTo(from);
+            var fromStop = new Stop(stopsReader);
+
+            stopsReader.MoveTo(to);
+            var toStop = new Stop(stopsReader);
+
+            var gen = new OsmTransferGenerator(RouterDbStaging.RouterDb, 2000,
                 OsmProfiles.Pedestrian
             );
+            IOtherModeGenerator walks;
+            if (!useOsmBetweenWalks)
+            {
+                walks = new FirstLastMilePolicy(
+                    new CrowsFlightTransferGenerator(),
+                    gen, fromStop,
+                    gen, toStop
+                );
+            }
+            else
+            {
+                var cached = gen.UseCache();
+                Information("Precalculating the cache... Hang on...");
+                var start = DateTime.Now;
+                cached.PreCalculateCache(stopsReader);
+                var end = DateTime.Now;
+                Information($"Filling cache took {(end - start).TotalMilliseconds}ms");
+                walks = cached;
+            }
 
 
             // The profile of the traveller. This states that the traveller...
             var profile = new Profile<TransferMetric>( // Cares about both number of transfers and total travel time
                 new InternalTransferGenerator(), // Needs 3 minutes to go from one train to another
-                gen
-                    .UseCache(), // Likes walking far! The traveller is not afraid of walking over 2 kilometers between stops...
+                walks, // Likes walking far! The traveller is not afraid of walking over 2 kilometers between stops...
                 TransferMetric.Factory, // Actual boiler plate code
                 TransferMetric
                     .ParetoCompare // This is the actual comparator which drives the selection of routes
@@ -65,15 +92,24 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
             NotNull(easJ);
             Information(easJ.ToString(router));
 
-
+            // can we get from bruges to ghent?
+            easJ = router
+                .SelectStops(Constants.Brugge, Constants.Gent)
+                .SelectTimeFrame(Constants.TestDate, Constants.TestDate.AddHours(10))
+                .EarliestArrivalJourney();
+            NotNull(easJ);
+            
+            
             // And an attempt to reach Ghent from that same location!
-            easJ = router.SelectStops("https://www.openstreetmap.org/#map=19/51.21460/3.21811",
+            easJ = router
+                .SelectStops(
+                    from,
                     Constants.Gent)
                 .SelectTimeFrame(Constants.TestDate, Constants.TestDate.AddHours(10))
                 .EarliestArrivalJourney();
             NotNull(easJ);
             Information(easJ.ToString(router));
-            True(easJ.Metric.WalkingTime > 600);
+            True(easJ.Metric.WalkingTime > 300);
 
 
             return true;

@@ -1,7 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Data.Core;
+using Itinero.Transit.Logging;
+using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.OtherMode
 {
@@ -33,10 +37,8 @@ namespace Itinero.Transit.OtherMode
         }
 
 
-        private readonly Dictionary<(StopId from, List<StopId> tos),
-            Dictionary<StopId, uint>> _cache =
-            new Dictionary<(StopId from, List<StopId> tos),
-                Dictionary<StopId, uint>>();
+        private readonly Dictionary<(StopId Id, KeyList<StopId> tos), Dictionary<StopId, uint>> _cache =
+            new Dictionary<(StopId @from, KeyList<StopId> tos), Dictionary<StopId, uint>>();
 
         public Dictionary<StopId, uint> TimesBetween(IStop from,
             IEnumerable<IStop> to)
@@ -68,7 +70,7 @@ namespace Itinero.Transit.OtherMode
 
             // FIRST select the IDs to make sure 'return yield'-enumerators run correctly on an enumerating object
             to = to.Select(stop => new Stop(stop)).ToList();
-            var tos = to.Select(stop => stop.Id).ToList();
+            var tos = new KeyList<StopId>(to.Select(stop => stop.Id));
             var key = (from.Id, tos);
             if (_cache.ContainsKey(key))
             {
@@ -104,9 +106,19 @@ namespace Itinero.Transit.OtherMode
                 withCache.MoveNext();
             }
 
+            if (!(withCache is StopSearchCaching))
+            {
+                throw new Exception("You'll really want to use a caching stops reader here!");
+            }
+
+            var c = 0; // withCache.Count();
+            var done = 0;
             while (withCache.MoveNext())
             {
+                var start = DateTime.Now;
                 var current = (IStop) withCache;
+                Log.Information($"Searching around {current.GlobalId}");
+                done++;
                 var inRange = withCache.LocationsInRange(
                     current.Latitude, current.Longitude,
                     Range());
@@ -116,6 +128,10 @@ namespace Itinero.Transit.OtherMode
                 {
                     withCache.MoveNext();
                 }
+
+                var end = DateTime.Now;
+                Log.Information($"Filling cache: {done}/{c} took {(end - start).TotalMilliseconds}ms");
+
             }
         }
 
@@ -141,5 +157,6 @@ namespace Itinero.Transit.OtherMode
         {
             _cacheIsClosed = true;
         }
+        
     }
 }

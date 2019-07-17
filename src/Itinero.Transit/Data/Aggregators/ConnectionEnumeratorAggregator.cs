@@ -169,7 +169,7 @@ namespace Itinero.Transit.Data.Aggregators
         {
             get
             {
-                if (_currentBest < 0 || _currentBest >= _enumerators.Length)
+                if (_currentBest >= _enumerators.Length)
                 {
                     throw new IndexOutOfRangeException("_currentBest to high or to low");
                 }

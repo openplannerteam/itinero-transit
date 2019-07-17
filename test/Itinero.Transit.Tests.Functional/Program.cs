@@ -34,7 +34,7 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Starting the functional tests...");
             var devTestsOnly = args.Length == 0 ||
                                !new List<string> {"--full-test-suite", "--full", "--test"}.Contains(args[0].ToLower());
-            
+
             // use one router db globally.
             RouterDbStaging.Setup();
 
@@ -42,8 +42,12 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
-                new TestAllAlgorithms().ExecuteMultiModal();
-                  return;
+                new MultipleLoadTest().Run();
+
+                // This tests starts a timer which reloads a lot
+                // new TestAutoUpdating().Run();
+                // */
+                return;
             }
 
             // These are all the tests, and will be run in full on the build server
@@ -95,7 +99,7 @@ namespace Itinero.Transit.Tests.Functional
             new TestAllAlgorithms().ExecuteDefault();
             Log.Information("Running multi TransitDb tests");
 
-            
+
             new TestAllAlgorithms().ExecuteMultiModal();
         }
 

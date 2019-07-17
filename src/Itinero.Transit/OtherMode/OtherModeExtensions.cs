@@ -121,7 +121,7 @@ namespace Itinero.Transit.OtherMode
         /// A very straightforward implementation to get multiple routings at the same time...
         /// 
         /// </summary>
-        internal static Dictionary<StopId, uint> DefaultTimesBetween(
+        public static Dictionary<StopId, uint> DefaultTimesBetween(
             this IOtherModeGenerator modeGenerator, IStop coorFrom,
             IEnumerable<IStop> to)
         {

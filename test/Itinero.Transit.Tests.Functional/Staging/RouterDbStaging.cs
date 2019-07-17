@@ -15,13 +15,14 @@ namespace Itinero.Transit.Tests.Functional.Staging
                 Zoom = 14,
                 EdgeDataLayout = new EdgeDataLayout(new (string key, EdgeDataType dataType)[]
                 {
+                    ("pedestrian.weight", EdgeDataType.UInt32) ,
                     ("bicycle.weight", EdgeDataType.UInt32) // add one for each profile that is going to be used with name (profile).weight.
                 })
             });
             routerDb.DataProvider = new DataProvider(routerDb);
             OsmTransferGenerator.EnableCaching("cache");
 
-            RouterDbStaging.RouterDb = routerDb;
+            RouterDb = routerDb;
         }
     }
 }

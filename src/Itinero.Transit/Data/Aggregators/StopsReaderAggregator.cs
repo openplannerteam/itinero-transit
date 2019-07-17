@@ -10,6 +10,11 @@ namespace Itinero.Transit.Data.Aggregators
     {
         private IStopsReader _currentStop;
 
+        public static IStopsReader CreateFrom(IStopsReader a, IStopsReader b)
+        {
+            return CreateFrom(new List<IStopsReader> {a, b});
+        }
+
         public static IStopsReader CreateFrom(IEnumerable<TransitDb.TransitDbSnapShot> snapShot)
         {
             var enumerators = new List<IStopsReader>();

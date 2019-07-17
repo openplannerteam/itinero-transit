@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Data.Synchronization;
 using Itinero.Transit.Journey;
 
@@ -117,6 +118,13 @@ namespace Itinero.Transit.IO.OSM.Data
                 tdb,
                 Update,
                 synchronizations);
+        }
+
+        public static IStopsReader AddOsmReader(this IStopsReader reader)
+        {
+            var id = reader.DatabaseIndexes().Max() + 1u;
+          var osmReader =  new OsmLocationStopReader(id);
+          return StopsReaderAggregator.CreateFrom(reader, osmReader);
         }
     }
 }

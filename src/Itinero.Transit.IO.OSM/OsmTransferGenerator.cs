@@ -154,14 +154,7 @@ namespace Itinero.Transit.IO.OSM
         public Dictionary<StopId, uint> TimesBetween(IStop from,
             IEnumerable<IStop> to)
         {
-            var result = new Dictionary<StopId, uint>();
-
-            foreach (var stop in to)
-            {
-                result[stop.Id] = TimeBetween(from, stop);
-            }
-
-            return result;
+            return OtherModeExtensions.DefaultTimesBetween(this, from, to);
         }
 
         public float Range()

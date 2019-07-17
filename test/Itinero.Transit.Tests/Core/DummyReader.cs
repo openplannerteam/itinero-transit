@@ -41,6 +41,11 @@ namespace Itinero.Transit.Tests.Core
             throw new Exception("Not implemented - should not be called");
         }
 
+        public int Count()
+        {
+            return 0;
+        }
+
         public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
         {
             throw new Exception("Not implemented - should not be called");

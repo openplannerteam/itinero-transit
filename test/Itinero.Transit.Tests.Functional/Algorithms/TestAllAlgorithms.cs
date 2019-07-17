@@ -59,7 +59,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
 
         public void ExecuteMultiModal(int input = -1)
         {
-            Execute(Constants.testDbs, Constants.TestDate,
+            Execute(Constants.TestDbs, Constants.TestDate,
                 a =>
                 {
                     var list = CreateInputs(a).Concat(CreateInputsMultiModal(a)).ToList();
