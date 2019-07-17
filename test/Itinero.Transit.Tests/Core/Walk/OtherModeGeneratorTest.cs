@@ -155,6 +155,11 @@ namespace Itinero.Transit.Tests.Core.Walk
         {
             return "test";
         }
+
+        public IOtherModeGenerator GetSource(StopId @from, StopId to)
+        {
+            return this;
+        }
     }
 
     class FixedGenerator : IOtherModeGenerator
@@ -184,6 +189,11 @@ namespace Itinero.Transit.Tests.Core.Walk
         public string OtherModeIdentifier()
         {
             return "test";
+        }
+
+        public IOtherModeGenerator GetSource(StopId @from, StopId to)
+        {
+            return this;
         }
     }
 }

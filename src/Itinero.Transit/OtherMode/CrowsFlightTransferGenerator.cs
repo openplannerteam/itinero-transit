@@ -64,5 +64,10 @@ namespace Itinero.Transit.OtherMode
         {
             return $"crowsflight&maxDistance={_maxDistance}&speed={_speed}";
         }
+
+        public IOtherModeGenerator GetSource(StopId @from, StopId to)
+        {
+            return this;
+        }
     }
 }

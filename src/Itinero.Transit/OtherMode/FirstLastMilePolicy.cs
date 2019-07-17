@@ -44,7 +44,7 @@ namespace Itinero.Transit.OtherMode
 
         public uint TimeBetween(IStop from, IStop to)
         {
-            return GeneratorFor(from.Id, to.Id).TimeBetween(from, to);
+            return GetSource(from.Id, to.Id).TimeBetween(from, to);
         }
 
         public Dictionary<StopId, uint> TimesBetween(IStop @from,
@@ -105,7 +105,7 @@ namespace Itinero.Transit.OtherMode
             return _range;
         }
 
-        public IOtherModeGenerator GeneratorFor(StopId from, StopId to)
+        public IOtherModeGenerator GetSource(StopId from, StopId to)
         {
             if (_firstMileStops.Contains(from))
             {
@@ -129,5 +129,6 @@ namespace Itinero.Transit.OtherMode
                 $"&lastMile={Uri.EscapeUriString(_lastMile.OtherModeIdentifier())}"
                 ;
         }
+
     }
 }

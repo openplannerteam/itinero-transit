@@ -145,6 +145,11 @@ namespace Itinero.Transit.OtherMode
             return Fallback.OtherModeIdentifier();
         }
 
+        public IOtherModeGenerator GetSource(StopId @from, StopId to)
+        {
+            return Fallback;
+        }
+
 
         /// <summary>
         /// Consider the following situation: you have a big cache of all the timings between all the public transport stops.

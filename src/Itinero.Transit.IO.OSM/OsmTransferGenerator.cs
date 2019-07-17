@@ -167,5 +167,10 @@ namespace Itinero.Transit.IO.OSM
             return
                 $"osm&maxDistance={_searchDistance}&profile={_profile.Name}";
         }
+
+        public IOtherModeGenerator GetSource(StopId @from, StopId to)
+        {
+            return this;
+        }
     }
 }

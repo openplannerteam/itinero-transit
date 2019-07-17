@@ -50,5 +50,10 @@ namespace Itinero.Transit.OtherMode
         {
             return "internalTransfer&timeNeeded=" + _internalTransferTime;
         }
+
+        public IOtherModeGenerator GetSource(StopId @from, StopId to)
+        {
+            return this;
+        }
     }
 }

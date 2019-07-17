@@ -55,6 +55,13 @@ namespace Itinero.Transit.OtherMode
         /// <returns></returns>
         string OtherModeIdentifier();
 
+        /// <summary>
+        /// Gives the actual OtherModeGenerator which will construct the route for this
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        IOtherModeGenerator GetSource(StopId from, StopId to);
 
     }
 }
