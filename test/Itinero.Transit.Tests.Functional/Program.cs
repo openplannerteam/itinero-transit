@@ -49,24 +49,24 @@ namespace Itinero.Transit.Tests.Functional
             // These are all the tests, and will be run in full on the build server
             // Tests for devving are below this block
             LocalTests();
-            try
-            {
-                InternetTests();
-                SlowTests();
-            }
-            catch (OperationCanceledException)
-            {
-                Log.Warning("Some website is down... Skipping internet tests");
-            }
-            catch (ArgumentException e)
-            {
-                if (!(e.InnerException is OperationCanceledException))
-                {
-                    throw;
-                }
-
-                Log.Warning("Some website is down... Skipping internet tests");
-            }
+//            try
+//            {
+//                InternetTests();
+//                SlowTests();
+//            }
+//            catch (OperationCanceledException)
+//            {
+//                Log.Warning("Some website is down... Skipping internet tests");
+//            }
+//            catch (ArgumentException e)
+//            {
+//                if (!(e.InnerException is OperationCanceledException))
+//                {
+//                    throw;
+//                }
+//
+//                Log.Warning("Some website is down... Skipping internet tests");
+//            }
         }
 
 

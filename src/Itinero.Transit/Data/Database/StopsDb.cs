@@ -28,7 +28,6 @@ namespace Itinero.Transit.Data
         private const int _stopIdHashSize = ushort.MaxValue;
         private readonly TiledLocationIndex _stopLocations; // holds the stop location in a tiled way.
 
-
         /// <summary>
         /// Maps 'internal id' of the stop onto the 'global id'
         /// </summary>

@@ -13,7 +13,6 @@ namespace Itinero.Transit.Data.Tiles
             {
                 _index = index;
 
-                _currentTileIndexPointer = uint.MaxValue;
                 _currentTileDataPointer = uint.MaxValue;
                 _currentTileCapacity = uint.MaxValue;
                 LocalId = uint.MaxValue;
@@ -24,19 +23,19 @@ namespace Itinero.Transit.Data.Tiles
                 TileId = uint.MaxValue;
             }
 
-            private uint _currentTileIndexPointer;
             private Tile _currentTile;
             private uint _currentTileDataPointer;
             private uint _currentTileCapacity;
+            private uint _t;
 
             /// <summary>
             /// Resets this enumerator.
             /// </summary>
             public void Reset()
             {
-                _currentTileIndexPointer = uint.MaxValue;
                 _currentTileDataPointer = uint.MaxValue;
                 _currentTileCapacity = uint.MaxValue;
+                _t = uint.MaxValue;
                 LocalId = uint.MaxValue;
             }
 
@@ -47,7 +46,9 @@ namespace Itinero.Transit.Data.Tiles
             /// <param name="localId">The local id of the location.</param>
             public bool MoveTo(uint localTileId, uint localId)
             {
-                var (tileDataPointer, tileIndexPointer, capacity) = _index.FindTile(localTileId);
+                var (tileDataPointer, t, capacity) = _index.GetTile(localTileId);
+                _t = t;
+                
                 if (localId >= capacity)
                 { // local id doesn't exist.
                     return false;
@@ -63,7 +64,6 @@ namespace Itinero.Transit.Data.Tiles
                 _currentTile = tile;
                 _currentTileCapacity = (uint)capacity;
                 _currentTileDataPointer = tileDataPointer;
-                _currentTileIndexPointer = tileIndexPointer;
                 Latitude = latitude;
                 Longitude = longitude;
                 LocalId = localId;
@@ -79,24 +79,25 @@ namespace Itinero.Transit.Data.Tiles
             /// <returns>True if there is a location available, false otherwise.</returns>
             public bool MoveNext()
             {
-                if (_currentTileIndexPointer == uint.MaxValue)
+                if (_currentTileDataPointer == TiledLocationIndex.TileNotLoaded)
                 { // first move, move to first tile and first pointer.
-                    if (_index._tileIndexPointer == 0)
+                    if (_index._tilesCount == 0)
                     { // no data.
                         return false;
                     }
 
                     // first tile exists, get its data.
-                    _currentTileIndexPointer = 0;
-                    uint localTileId;
-                    (_currentTileDataPointer, localTileId, _currentTileCapacity) = _index.ReadTile(_currentTileIndexPointer);
+                    _t = 0;
+                    var localTileId = _index.GetLocalTileId(_t);
+                    (_currentTileDataPointer, _, _currentTileCapacity) = _index.GetTile(localTileId);
                     
                     // if the tile is empty, keep moving until a non-empty tile is found.
                     while (_currentTileCapacity <= 0)
                     {
-                        _currentTileIndexPointer += 9;
-                        if (_currentTileIndexPointer >= _index._tileIndexPointer) return false; // this was the last tile.
-                        (_currentTileDataPointer, localTileId, _currentTileCapacity) = _index.ReadTile(_currentTileIndexPointer);
+                        _t++;
+                        localTileId = _index.GetLocalTileId(_t);
+                        if (localTileId == TiledLocationIndex.TileNotLoaded) return false; // this was the last tile.
+                        (_currentTileDataPointer, localTileId, _currentTileCapacity) = _index.GetTile(localTileId);
                     }
 
                     _currentTile = Tile.FromLocalId(localTileId, _index.Zoom);
@@ -110,10 +111,10 @@ namespace Itinero.Transit.Data.Tiles
                         uint localTileId;
                         do
                         {
-                            _currentTileIndexPointer += 9;
-                            if (_currentTileIndexPointer >= _index._tileIndexPointer)
-                                return false; // this was the last tile.
-                            (_currentTileDataPointer, localTileId, _currentTileCapacity) = _index.ReadTile(_currentTileIndexPointer);
+                            _t++;
+                            localTileId = _index.GetLocalTileId(_t);
+                            if (localTileId == TiledLocationIndex.TileNotLoaded) return false; // this was the last tile.
+                            (_currentTileDataPointer, _, _currentTileCapacity) = _index.GetTile(localTileId);
                         } while (_currentTileCapacity <= 0);
 
                         _currentTile = Tile.FromLocalId(localTileId, _index.Zoom);
