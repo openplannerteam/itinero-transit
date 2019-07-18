@@ -136,7 +136,7 @@ namespace Itinero.Transit.OtherMode
 
             if (firstMileWalks == null || firstMileWalks.Count == 0)
             {
-                return defaultWalks
+                return defaultWalks;
             }
             if (defaultWalks == null || defaultWalks.Count == null)
             {
