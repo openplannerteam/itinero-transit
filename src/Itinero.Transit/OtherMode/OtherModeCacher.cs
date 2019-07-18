@@ -169,7 +169,7 @@ namespace Itinero.Transit.OtherMode
 
         public IOtherModeGenerator GetSource(StopId @from, StopId to)
         {
-            return Fallback;
+            return Fallback.GetSource(from, to);
         }
 
 
