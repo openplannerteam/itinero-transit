@@ -80,7 +80,14 @@ namespace Itinero.Transit.IO.OSM
 
             Log.Information("From: " + from.GlobalId + " to: " + to.GlobalId);
             var route = CreateRoute(((float) from.Latitude, (float) from.Longitude),
-                ((float) to.Latitude, (float) to.Longitude), out var isEmpty, out _);
+                ((float) to.Latitude, (float) to.Longitude), out var isEmpty, out var errMessage);
+            var msg = "Success!";
+            if (route == null)
+            {
+                msg = "Failed with " + errMessage;
+            }
+            Log.Information($"From: {@from.GlobalId} to: {to.GlobalId} finished. {msg}");
+
             if (isEmpty)
             {
                 return 0;
