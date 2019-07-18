@@ -139,5 +139,24 @@ namespace Itinero.Transit.OtherMode
 
             return times;
         }
+
+        public static Dictionary<StopId, uint> DefaultTimesBetween(
+            this IOtherModeGenerator modeGenerator, IEnumerable<IStop> from,
+            IStop to)
+        {
+            var times = new Dictionary<StopId, uint>();
+            foreach (var stop in from)
+            {
+                var time = modeGenerator.TimeBetween(stop, to);
+                if (time == uint.MaxValue)
+                {
+                    continue;
+                }
+
+                times.Add(stop.Id, time);
+            }
+
+            return times;
+        }
     }
 }

@@ -102,6 +102,54 @@ namespace Itinero.Transit.OtherMode
 
             return _defaultWalk.TimesBetween(@from, tosDefault);
         }
+        
+        public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @from,
+            IStop to)
+        {
+            var firstMiles = new List<IStop>();
+            var defaults = new List<IStop>();
+
+            foreach (var stop in from)
+            {
+                if (_firstMileStops.Contains(stop.Id))
+                {
+                    firstMiles.Add(stop);
+                }
+                else
+                {
+                    defaults.Add(stop);
+                }
+            }
+
+            var firstMileWalks = _firstMile.TimesBetween(firstMiles, to);
+
+                Dictionary<StopId, uint> defaultWalks;
+            if (_lastMileStops.Contains(to.Id))
+            {
+                defaultWalks = _lastMile.TimesBetween(defaults, to);
+            }
+            else
+            {
+                defaultWalks = _defaultWalk.TimesBetween(defaults, to);
+            }
+
+
+            if (firstMileWalks == null || firstMileWalks.Count == 0)
+            {
+                return defaultWalks
+            }
+            if (defaultWalks == null || defaultWalks.Count == null)
+            {
+                return firstMileWalks;
+            }
+
+            foreach (var walk in firstMileWalks)
+            {
+                defaultWalks[walk.Key] = walk.Value;
+            }
+            return defaultWalks;
+
+        }
 
         public float Range()
         {

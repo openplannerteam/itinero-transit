@@ -146,6 +146,11 @@ namespace Itinero.Transit.Tests.Core.Walk
             return this.DefaultTimesBetween(from, to);
         }
 
+        public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @from, IStop to)
+        {
+            return this.DefaultTimesBetween(from, to);
+        }
+
         public float Range()
         {
             return 1000.0f;
@@ -177,6 +182,11 @@ namespace Itinero.Transit.Tests.Core.Walk
         }
 
         public Dictionary<StopId, uint> TimesBetween(IStop @from, IEnumerable<IStop> to)
+        {
+            return this.DefaultTimesBetween(from, to);
+        }
+
+        public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @from, IStop to)
         {
             return this.DefaultTimesBetween(from, to);
         }

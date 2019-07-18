@@ -54,6 +54,11 @@ namespace Itinero.Transit.OtherMode
             return this.DefaultTimesBetween(from, to);
         }
 
+        public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @from, IStop to)
+        {
+            return this.DefaultTimesBetween(from, to);
+        }
+
 
         public float Range()
         {

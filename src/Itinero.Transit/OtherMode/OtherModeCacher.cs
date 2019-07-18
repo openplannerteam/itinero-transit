@@ -85,6 +85,28 @@ namespace Itinero.Transit.OtherMode
 
             return v;
         }
+        private readonly Dictionary<(StopId Id, KeyList<StopId> tos), Dictionary<StopId, uint>> _cacheReverse =
+            new Dictionary<(StopId @from, KeyList<StopId> tos), Dictionary<StopId, uint>>();
+
+        
+        public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @from, IStop to)
+        {
+            from = from.Select(stop => new Stop(stop)).ToList();
+            var froms = new KeyList<StopId>(from.Select(stop => stop.Id));
+            var key = (to.Id, froms);
+            if (_cacheReverse.ContainsKey(key))
+            {
+                return _cacheReverse[key];
+            }
+
+            var v = Fallback.TimesBetween(@from, to);
+            if (!_cacheIsClosed)
+            {
+                _cacheReverse[key] = v;
+            }
+
+            return v;
+        }
 
         private bool _cacheIsClosed;
 
