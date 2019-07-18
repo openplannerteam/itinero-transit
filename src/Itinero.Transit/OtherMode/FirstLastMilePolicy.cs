@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
+using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.OtherMode
 {
@@ -79,7 +80,14 @@ namespace Itinero.Transit.OtherMode
 
                 foreach (var kv in a)
                 {
-                    b.Add(kv.Key, kv.Value);
+                    try
+                    {
+                        b.Add(kv.Key, kv.Value);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error($"Could not merge dictionaries: {e}. {kv.Key} --> {kv.Value}, old value {b[kv.Key]}");
+                    }
                 }
 
                 return b;
@@ -124,6 +132,5 @@ namespace Itinero.Transit.OtherMode
                 $"&lastMile={Uri.EscapeUriString(_lastMile.OtherModeIdentifier())}"
                 ;
         }
-
     }
 }
