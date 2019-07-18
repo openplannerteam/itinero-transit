@@ -52,9 +52,11 @@ namespace Itinero.Transit.OtherMode
         {
             if (_firstMileStops.Contains(from.Id))
             {
+                // The from is a firstmile stop -> Everything should be handled with the first-mile logic
                 return _firstMile.TimesBetween(from, to);
             }
 
+            // Partition the 'stops'
             var tosDefault = new List<IStop>();
             var tosLastMile = new List<IStop>();
 
@@ -75,19 +77,12 @@ namespace Itinero.Transit.OtherMode
                 var a = _lastMile.TimesBetween(from, tosLastMile);
                 var b = _defaultWalk.TimesBetween(from, tosDefault);
 
-                if (b.Count < a.Count)
+                foreach (var kv in a)
                 {
-                    var c = a;
-                    a = b;
-                    b = c;
+                    b.Add(kv.Key, kv.Value);
                 }
 
-                foreach (var kv in b)
-                {
-                    a.Add(kv.Key, kv.Value);
-                }
-
-                return a;
+                return b;
             }
 
             // ReSharper disable once ConvertIfStatementToReturnStatement
