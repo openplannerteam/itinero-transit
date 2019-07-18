@@ -160,15 +160,15 @@ namespace Itinero.Transit.OtherMode
         {
             if (_firstMileStops.Contains(from))
             {
-                return _firstMile;
+                return _firstMile.GetSource(from, to);
             }
 
             if (_lastMileStops.Contains(to))
             {
-                return _lastMile;
+                return _lastMile.GetSource(from, to);
             }
 
-            return _defaultWalk;
+            return _defaultWalk.GetSource(from, to);
         }
 
         public string OtherModeIdentifier()
