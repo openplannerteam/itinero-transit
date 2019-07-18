@@ -245,13 +245,10 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             writer.Close();
 
-            
+
             var latest = transitDb.Latest;
 
 
-          
-            
-            
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(60),
                 new CrowsFlightTransferGenerator(),
                 TransferMetric.Factory, TransferMetric.ParetoCompare);
@@ -268,7 +265,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 calculator.ConnectionEnumerator,
                 calculator.From[0].Item1
             );
-            
+
             var pcs = new ProfiledConnectionScan<TransferMetric>(calculator.GetScanSettings());
             var journeys = pcs.CalculateJourneys();
             Assert.Single(journeys);
@@ -278,7 +275,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             }
         }
 
-        
+
         [Fact]
         public void ShouldFindNoConnectionJourney()
         {
@@ -310,6 +307,47 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .AllJourneys();
 
             Assert.Null(journey);
+        }
+
+
+        /// <summary>
+        /// Regression test
+        ///
+        ///
+        /// Kristof discovered a case where a huge crows flight took 7h and fell squarely out of the search window,
+        /// even though other options were still available
+        ///
+        /// THis test tries to mimick it
+        /// 
+        /// </summary>
+        // [Fact]
+        public void OutOfWindowTest()
+        {
+            // Time window for the test:  10:00 -> 11:00
+            // Locations: loc0 -> loc2
+            // We add 
+
+            var transitDb = new TransitDb(0);
+            var writer = transitDb.GetWriter();
+
+            var loc0 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
+            var loc1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
+            var loc2 = writer.AddOrUpdateStop("https://example.com/stops/1", 2.1, 0.1);
+
+            writer.AddOrUpdateConnection(loc0, loc1,
+                "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
+                30 * 60, 0, 0, new TripId(0, 0), 0);
+
+
+            writer.AddOrUpdateConnection(loc0, loc1,
+                "https://example.com/connections/1",
+                new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
+                40 * 60, 0, 0, new TripId(0, 1), 0);
+
+
+            writer.Close();
+            Assert.True(false);
         }
     }
 }

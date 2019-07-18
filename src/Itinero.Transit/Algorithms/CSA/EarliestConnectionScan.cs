@@ -57,6 +57,11 @@ namespace Itinero.Transit.Algorithms.CSA
         /// </summary>
         private readonly Dictionary<TripId, Journey<T>> _trips = new Dictionary<TripId, Journey<T>>();
 
+        /// <summary>
+        /// Keep track of the departure journeys for a special case
+        /// </summary>
+        private Dictionary<StopId, Journey<T>> _departureJourneys;
+
 
         public EarliestConnectionScan(
             ScanSettings<T> settings)
@@ -72,7 +77,7 @@ namespace Itinero.Transit.Algorithms.CSA
             _journeyFilter = settings.Profile.JourneyFilter;
             _connectionFilter = settings.Profile.ConnectionFilter; // settings.Filter is NOT used and SHOULD NOT BE used
             _walkPolicy = settings.Profile.WalksGenerator;
-
+            _departureJourneys = new Dictionary<StopId, Journey<T>>();
 
             foreach (var (loc, j) in settings.DepartureStop)
             {
@@ -80,6 +85,7 @@ namespace Itinero.Transit.Algorithms.CSA
                               ?? new Journey<T>(
                                   loc, settings.EarliestDeparture.ToUnixTime(), settings.Profile.MetricFactory,
                                   Journey<T>.EarliestArrivalScanJourney);
+                _departureJourneys.Add(loc, journey);
 
                 JourneyFromDepartureTable.Add(loc, journey);
                 // Walk away from this departure location, to have some more departure locations
@@ -189,7 +195,6 @@ namespace Itinero.Transit.Algorithms.CSA
             var c = new Connection();
             do
             {
-                
                 // The enumerator should already be initialized on the next entry
                 _connectionsEnumerator.Current(c);
                 if (IntegrateConnection(c))
@@ -210,6 +215,28 @@ namespace Itinero.Transit.Algorithms.CSA
             return hasNext;
         }
 
+
+        private Journey<T> ChainWithTransfer(Journey<T> journeyTillDeparture, Connection c)
+        {
+            Journey<T> journeyToArrival = null;
+            if (journeyTillDeparture.SpecialConnection)
+            {
+                // We only insert a transfer after a 'normal' segment
+                return journeyTillDeparture.ChainForward(c);
+            }
+
+            // The total time needed to transfer
+            var timeNeeded =
+                _transferPolicy.TimeBetween(_stopsReader, journeyTillDeparture.Location, c.DepartureStop);
+
+            if (journeyTillDeparture.Time + timeNeeded > c.DepartureTime) return null;
+
+
+            return
+                journeyTillDeparture
+                    .ChainForwardWith(_stopsReader, _transferPolicy, c.DepartureStop)
+                    ?.ChainForward(c);
+        }
 
         /// <summary>
         /// Handle a single connection, update the stop positions with new times if possible.
@@ -247,11 +274,17 @@ namespace Itinero.Transit.Algorithms.CSA
             }
 
 
-            Journey<T> journeyToArrival;
-            // Extend trip journey: if we already are on the trip we can always stay seated on it
+            Journey<T> journeyToArrival = null;
             if (_trips.ContainsKey(trip))
             {
-                journeyToArrival = _trips[trip].ChainForward(c);
+                // Extend trip journey: if we already are on the trip we can always stay seated on it
+                if (_departureJourneys.ContainsKey(c.DepartureStop) && c.CanGetOn())
+                {
+                    // There is one special case though: if this is the departure station, we should try to get on that one directly
+                    journeyToArrival = ChainWithTransfer(_departureJourneys[c.DepartureStop], c);
+                }
+
+                journeyToArrival = journeyToArrival ?? _trips[trip].ChainForward(c);
             }
             else if (!c.CanGetOn())
             {
@@ -262,29 +295,7 @@ namespace Itinero.Transit.Algorithms.CSA
             }
             else
             {
-                if (journeyTillDeparture.SpecialConnection)
-                {
-                    // We only insert a transfer after a 'normal' segment
-                    journeyToArrival = journeyTillDeparture.ChainForward(c);
-                }
-                else
-                {
-                    // The total time needed to transfer
-                    var timeNeeded =
-                        _transferPolicy.TimeBetween(_stopsReader, journeyTillDeparture.Location, c.DepartureStop);
-
-                    if (journeyTillDeparture.Time + timeNeeded <= c.DepartureTime)
-                    {
-                        journeyToArrival =
-                            journeyTillDeparture
-                                .ChainForwardWith(_stopsReader, _transferPolicy, c.DepartureStop)
-                                ?.ChainForward(c);
-                    }
-                    else
-                    {
-                        journeyToArrival = null;
-                    }
-                }
+                journeyToArrival = ChainWithTransfer(journeyTillDeparture, c);
             }
 
             if (journeyToArrival == null)

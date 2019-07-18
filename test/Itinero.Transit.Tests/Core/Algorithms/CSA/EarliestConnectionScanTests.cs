@@ -145,7 +145,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .EarliestArrivalJourney();
 
             Assert.NotNull(j);
-            Assert.Equal(new ConnectionId(0,0), j.Connection);
+            Assert.Equal(new ConnectionId(0, 0), j.Connection);
 
 
             j = db.SelectProfile(profile)
@@ -157,7 +157,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 ;
 
             Assert.NotNull(j);
-            Assert.Equal(new ConnectionId(0,1), j.Connection);
+            Assert.Equal(new ConnectionId(0, 1), j.Connection);
         }
 
         [Fact]
@@ -331,7 +331,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             Assert.Equal(Journey<TransferMetric>.OTHERMODE, journey.Connection);
             Assert.True(journey.SpecialConnection);
             Assert.False(journey.PreviousLink.SpecialConnection);
-            Assert.Equal(new ConnectionId(0,0), journey.PreviousLink.Connection);
+            Assert.Equal(new ConnectionId(0, 0), journey.PreviousLink.Connection);
             Assert.Equal(100, journey.Metric.WalkingTime);
             Assert.Equal((uint) (10 * 60 + 100), journey.Metric.TravelTime);
         }
@@ -385,7 +385,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             Assert.NotNull(journey);
             Assert.Equal(3, journey.AllParts().Count);
-            Assert.Equal(new ConnectionId(0,0), journey.Connection);
+            Assert.Equal(new ConnectionId(0, 0), journey.Connection);
             Assert.True(journey.PreviousLink.PreviousLink.SpecialConnection);
             Assert.Equal(Journey<TransferMetric>.OTHERMODE,
                 journey.PreviousLink.Connection);
@@ -489,6 +489,79 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                         new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
                 ;
             Assert.NotNull(input.EarliestArrivalJourney());
+        }
+
+        /// <summary>
+        /// Another regression test from Kristof
+        ///
+        /// Earliest arrival scan sometimes selects the following:
+        /// Departure at location A
+        /// go to location B with train 0
+        /// get on train 1
+        /// go to A again, but stay seated
+        /// continue to Destination
+        /// 
+        /// </summary>
+        [Fact]
+        public void ViaStartLocationAgain()
+        {
+            var tdb = new TransitDb(0);
+            var wr = tdb.GetWriter();
+
+            var departure = wr.AddOrUpdateStop("departure", 0.0, 0.0);
+            var arrival = wr.AddOrUpdateStop("arrival",1.0,1.0);
+
+            var detour = wr.AddOrUpdateStop("detour", 2.0, 2.0);
+
+            var trdetour = wr.AddOrUpdateTrip("tripDetour");
+            var trdirect = wr.AddOrUpdateTrip("tripDirect");
+
+            
+            
+            var c = new Connection
+            {
+                DepartureStop = departure,
+                ArrivalStop = detour,
+                DepartureTime = 1000,
+                ArrivalTime = 1100,
+                GlobalId = "a",
+                TravelTime = 100,
+                TripId = trdetour
+            };
+            
+            wr.AddOrUpdateConnection(c);
+            c = new Connection
+            {
+                DepartureStop = detour,
+                ArrivalStop = departure,
+                DepartureTime = 1500,
+                ArrivalTime = 1600,
+                GlobalId = "b",
+                TravelTime = 100,
+                TripId = trdirect
+            };
+            wr.AddOrUpdateConnection(c);
+            
+            c = new Connection
+            {
+                DepartureStop = departure,
+                ArrivalStop = arrival,
+                DepartureTime = 1700,
+                ArrivalTime = 1800,
+                GlobalId = "c",
+                TravelTime = 100,
+                TripId = trdirect
+            };
+            wr.AddOrUpdateConnection(c);
+            wr.Close();
+
+            var j = tdb.SelectProfile(new DefaultProfile())
+                .SelectStops(departure, arrival)
+                .SelectTimeFrame(1000, 2000)
+                .EarliestArrivalJourney();
+
+            // Only one connection should be used
+            Assert.True(j.PreviousLink.Root == j.PreviousLink);
         }
     }
 }
