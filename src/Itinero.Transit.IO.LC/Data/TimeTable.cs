@@ -41,11 +41,13 @@ namespace Itinero.Transit.IO.LC.Data
 
 
             Next = new Uri(json["http://www.w3.org/ns/hydra/core#next"][0]["@id"].ToString());
-            var prevString = json["http://www.w3.org/ns/hydra/core#previous"][0]["@id"]?.ToString();
-            Prev = null;
-            if (prevString != null)
+            try
             {
-                Prev = new Uri(prevString);
+                Prev = new Uri(json["http://www.w3.org/ns/hydra/core#previous"][0]["@id"]?.ToString());
+            }
+            catch (NullReferenceException)
+            {
+                Log.Error($"Weird: this element ({Uri}) does not have a link to a previous page");
             }
 
             _startTime = _extractTime(new Uri(json["@id"].ToString()));
