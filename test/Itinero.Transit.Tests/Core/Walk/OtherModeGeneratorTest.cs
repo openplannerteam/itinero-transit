@@ -128,7 +128,7 @@ namespace Itinero.Transit.Tests.Core.Walk
             var diff0 = verySlow.TimeBetween(new DummyReader(), stop0, stop1);
             var timeEnd = DateTime.Now;
             Assert.Equal(diff, diff0);
-            Assert.True((timeEnd - timeMid).TotalMilliseconds < 10);
+            Assert.True((timeEnd - timeMid).TotalMilliseconds < 100);
         }
     }
 
