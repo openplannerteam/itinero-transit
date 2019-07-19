@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Itinero.IO.Osm.Tiles.Parsers;
 using Itinero.LocalGeo;
 using Itinero.Profiles;
@@ -114,8 +115,8 @@ namespace Itinero.Transit.IO.OSM
                 if (startPoint.IsError || endPoint.IsError)
                 {
                     errorMessage = "Could not snap to either startPoint or endPoint. \n" +
-                                   $"Startpoint error message: {startPoint.ErrorMessage}\n" +
-                                   $"Endpoint error message: {endPoint.ErrorMessage}";
+                                   $"Start point error message: {startPoint.ErrorMessage}\n" +
+                                   $"End point error message: {endPoint.ErrorMessage}";
                     Log.Information(errorMessage);
                     return null;
                 }
@@ -161,18 +162,108 @@ namespace Itinero.Transit.IO.OSM
         public Dictionary<StopId, uint> TimesBetween(IStop from,
             IEnumerable<IStop> to)
         {
-            // TODO @BEN: this is the 'forward' case of one to many
-            // Please return a dictionary where
-            // result[toStop] = <time needed to go 'from' towards 'toStop'
-            return this.DefaultTimesBetween(from, to);
+            var times = new Dictionary<StopId, uint>();
+            
+            // collect targets that are in range.
+            var targets = new List<(SnapPoint target, IStop stop)>();
+            foreach (var t in to)
+            {
+                var distance =
+                    Coordinate.DistanceEstimateInMeter(@from.Longitude, @from.Latitude, t.Longitude, t.Latitude);
+                // Small patch for small distances...
+                if (distance < 20)
+                {
+                    times[t.Id] = 0;
+                    continue;
+                }
+
+                if (distance > _searchDistance)
+                {
+                    times[t.Id] = uint.MaxValue;
+                    continue;
+                }
+                
+                targets.Add((_routerDb.Snap(
+                    t.Longitude, t.Latitude, profile: _profile), t));
+            }
+            //Log.Verbose($"TimesBetween: one-to-{targets.Count}.");
+
+            if (targets.Count == 0) return times;
+            
+            // resolve source only if we have targets.
+            var source = _routerDb.Snap(
+                @from.Longitude, @from.Latitude, profile: _profile);
+            
+            // calculate all routes using one-to-many search.
+            var routes = _routerDb.Calculate(_profile, source, targets.Select(x => x.target).ToArray());
+            for (var i = 0; i < targets.Count; i++)
+            {
+                var (_, stop) = targets[i];
+                var result = routes[i];
+                if (result.IsError)
+                {
+                    times[stop.Id] = uint.MaxValue;
+                }
+                else
+                {
+                    times[stop.Id] = (uint)result.Value.TotalTime;
+                }
+            }
+
+            return times;
         }
 
         public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @from, IStop to)
         {
-            // TODO @BEN: this is the 'backwards' case of one to many
-            // Please return a dictionary where
-            // result[fromStop] = <time needed to go 'fromStop' towards 'to'
-            return this.DefaultTimesBetween(from, to);
+            var times = new Dictionary<StopId, uint>();
+            
+            // collect targets that are in range.
+            var sources = new List<(SnapPoint target, IStop stop)>();
+            foreach (var f in from)
+            {
+                var distance =
+                    Coordinate.DistanceEstimateInMeter(@f.Longitude, @f.Latitude, to.Longitude, to.Latitude);
+                // Small patch for small distances...
+                if (distance < 20)
+                {
+                    times[f.Id] = 0;
+                    continue;
+                }
+
+                if (distance > _searchDistance)
+                {
+                    times[f.Id] = uint.MaxValue;
+                    continue;
+                }
+                
+                sources.Add((_routerDb.Snap(
+                    f.Longitude, f.Latitude, profile: _profile), f));
+            }
+            //Log.Verbose($"TimesBetween: {sources.Count}-to-one.");
+
+            if (sources.Count == 0) return times;
+            
+            // resolve source only if we have targets.
+            var source = _routerDb.Snap(
+                @to.Longitude, @to.Latitude, profile: _profile);
+            
+            // calculate all routes using one-to-many search.
+            var routes = _routerDb.Calculate(_profile, sources.Select(x => x.target).ToArray(), source);
+            for (var i = 0; i < sources.Count; i++)
+            {
+                var (_, stop) = sources[i];
+                var result = routes[i];
+                if (result.IsError)
+                {
+                    times[stop.Id] = uint.MaxValue;
+                }
+                else
+                {
+                    times[stop.Id] = (uint)result.Value.TotalTime;
+                }
+            }
+
+            return times;
         }
 
         public uint Range()
