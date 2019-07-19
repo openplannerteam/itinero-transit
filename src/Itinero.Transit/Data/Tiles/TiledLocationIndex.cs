@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using Reminiscence;
 using Reminiscence.Arrays;
+using Reminiscence.Arrays.Sparse;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
@@ -10,24 +11,27 @@ namespace Itinero.Transit.Data.Tiles
 {
     internal partial class TiledLocationIndex
     {
-        
         /// <summary>
         /// The zoom level of this tiled location index.
         /// Same as OSM-zoom levels
         /// </summary>
         public int Zoom { get; }
         
-        private const byte _defaultTileCapacityInBytes = 0; 
-        private const int _coordinateSizeInBytes = 3; // 3 bytes = 24 bits = 4096 x 4096, the needed resolution depends on the zoom-level, higher, less resolution.
-        private const int _tileResolutionInBits = _coordinateSizeInBytes * 8 / 2;
+        private const byte DefaultTileCapacityInBytes = 0; 
+        private const int CoordinateSizeInBytes = 3; // 3 bytes = 24 bits = 4096 x 4096, the needed resolution depends on the zoom-level, higher, less resolution.
+        private const int TileResolutionInBits = CoordinateSizeInBytes * 8 / 2;
+        private const int TileSizeInIndex = 9; // 4 bytes for the pointer, 1 for the size.
+        private const int BlockSize = 1024;
 
-        private readonly ArrayBase<byte> _tileIndex;
+        private readonly SparseMemoryArray<byte> _tileIndex;
+        private uint _tilesCount = 0;
+        private readonly ArrayBase<uint> _tiles;
+        
         /// <summary>
         /// holds stop locations, encoded relative to the tile they are in.
         /// </summary>
         private readonly ArrayBase<byte> _locations; 
-        private const uint _tileNotLoaded = uint.MaxValue;
-        private uint _tileIndexPointer;
+        internal const uint TileNotLoaded = uint.MaxValue;
         private uint _tileDataPointer;
         
         /// <summary>
@@ -42,17 +46,19 @@ namespace Itinero.Transit.Data.Tiles
             }
             Zoom = zoom;
             
-            _tileIndex = new MemoryArray<byte>(0);
+            _tileIndex = new SparseMemoryArray<byte>(0, blockSize: BlockSize, emptyDefault: byte.MaxValue);
             _locations = new MemoryArray<byte>(0);
+            _tiles = new MemoryArray<uint>(0);
         }
 
-        private TiledLocationIndex(ArrayBase<byte> tileIndex, ArrayBase<byte> locations, int zoom, 
-            uint tileIndexPointer, uint tileDataPointer)
+        private TiledLocationIndex(ArrayBase<uint> tiles, SparseMemoryArray<byte> tileIndex, ArrayBase<byte> locations, int zoom, 
+            uint tileCount, uint tileDataPointer)
         {
+            _tilesCount = tileCount;
+            _tiles = tiles;
             _tileIndex = tileIndex;
             _locations = locations;
             Zoom = zoom;
-            _tileIndexPointer = tileIndexPointer;
             _tileDataPointer = tileDataPointer;
         }
 
@@ -69,11 +75,11 @@ namespace Itinero.Transit.Data.Tiles
             var tileId = tile.LocalId;
 
             // try to find the tile.
-            var (tileDataPointer, tileIndexPointer, capacity) = FindTile(tileId);
-            if (tileDataPointer == _tileNotLoaded)
+            var (tileDataPointer, _, capacity) = GetTile(tileId);
+            if (tileDataPointer == TileNotLoaded)
             {
                 // create the tile if it doesn't exist yet.
-                (tileDataPointer, tileIndexPointer, capacity) = AddTile(tileId);
+                (tileDataPointer, capacity) = AddTile(tileId);
             }
 
             // find or create a place to store the location.
@@ -82,7 +88,7 @@ namespace Itinero.Transit.Data.Tiles
             if (GetEncodedLocation((uint) (tileDataPointer + capacity - 1), tile).hasData)
             {
                 // tile is maximum capacity.
-                (tileDataPointer, capacity) = IncreaseCapacityForTile(tileIndexPointer, tileDataPointer);
+                (tileDataPointer, capacity) = IncreaseCapacityForTile(tileId, tileDataPointer);
                 nextEmpty = (uint) (tileDataPointer + (capacity / 2));
             }
             else
@@ -112,7 +118,6 @@ namespace Itinero.Transit.Data.Tiles
             return (tileId, localId, nextEmpty);
         }
 
-
         /// <summary>
         /// A delegate to notify listeners that a block of locations has moved.
         /// </summary>
@@ -125,58 +130,61 @@ namespace Itinero.Transit.Data.Tiles
         /// Gets or sets the moved delegate.
         /// </summary>
         public MovedDelegate Moved { get; set; }
+
+        /// <summary>
+        /// Gets the tile for the given tile index.
+        /// </summary>
+        /// <param name="tileIndex">The index.</param>
+        /// <returns>The tile.</returns>
+        private uint GetLocalTileId(uint tileIndex)
+        {
+            if (tileIndex < _tiles.Length)
+            {
+                return _tiles[tileIndex];
+            }
+
+            return TileNotLoaded;
+        }
         
         /// <summary>
         /// Finds a tile in the tile index.
         /// </summary>
         /// <param name="localTileId">The local tile id.</param>
         /// <returns>The meta-data about the tile and its data.</returns>
-        private (uint tileDataPointer, uint tileIndexPointer, int capacity) FindTile(uint localTileId)
-        {
+        private (uint tileDataPointer, uint tileIndex, uint capacity) GetTile(uint localTileId)
+        {            
+            var tilePointerIndex = (long)localTileId * TileSizeInIndex;
+            if (tilePointerIndex + TileSizeInIndex >= _tileIndex.Length)
+            {
+                return (TileNotLoaded, TileNotLoaded, 0);
+            }
+
+            if (_tileIndex[tilePointerIndex + 0] == byte.MaxValue &&
+                _tileIndex[tilePointerIndex + 1] == byte.MaxValue &&
+                _tileIndex[tilePointerIndex + 2] == byte.MaxValue &&
+                _tileIndex[tilePointerIndex + 3] == byte.MaxValue &&
+                _tileIndex[tilePointerIndex + 4] == byte.MaxValue)
+            {
+                return (TileNotLoaded, TileNotLoaded, 0);
+            }
+            
             // find an allocation-less way of doing this:
             //   this is possible it .NET core 2.1 but not netstandard2.0,
             //   we can do this in netstandard2.1 normally.
             //   perhaps implement our own version of bitconverter.
             var tileBytes = new byte[4];
-            for (uint p = 0; p < _tileIndex.Length - 9; p += 9)
-            {
-                for (var b = 0; b < 4; b++)
-                {
-                    tileBytes[b] = _tileIndex[p + b];
-                }
-                var tileId = BitConverter.ToUInt32(tileBytes, 0);
-                if (tileId != localTileId) continue;
-                
-                for (var b = 0; b < 4; b++)
-                {
-                    tileBytes[b] = _tileIndex[p + b + 4];
-                }
-
-                return (BitConverter.ToUInt32(tileBytes, 0), p, 1 << _tileIndex[p + 8]);
-            }
-
-            return (_tileNotLoaded, uint.MaxValue, 0);
-        }
-
-        /// <summary>
-        /// Reads meta-data about a tile and its data.
-        /// </summary>
-        /// <param name="tileIndexPointer">The pointer to the tile in the index.</param>
-        /// <returns>The meta-data about the tile and its data.</returns>
-        private (uint tileDataPointer, uint localTileId, uint capacity) ReadTile(uint tileIndexPointer)
-        {
-            var tileBytes = new byte[4];
-            for (var b = 0; b < 4; b++)
-            {
-                tileBytes[b] = _tileIndex[tileIndexPointer + b];
-            }
-            var tileId = BitConverter.ToUInt32(tileBytes, 0);
-            for (var b = 0; b < 4; b++)
-            {
-                tileBytes[b] = _tileIndex[tileIndexPointer + b + 4];
-            }
-
-            return (BitConverter.ToUInt32(tileBytes, 0), tileId, (uint)(1 << _tileIndex[tileIndexPointer + 8]));
+            tileBytes[0] = _tileIndex[tilePointerIndex + 0];
+            tileBytes[1] = _tileIndex[tilePointerIndex + 1];
+            tileBytes[2] = _tileIndex[tilePointerIndex + 2];
+            tileBytes[3] = _tileIndex[tilePointerIndex + 3];
+            var tileDataPointer = BitConverter.ToUInt32(tileBytes, 0);
+            tileBytes[0] = _tileIndex[tilePointerIndex + 4 + 0];
+            tileBytes[1] = _tileIndex[tilePointerIndex + 4 + 1];
+            tileBytes[2] = _tileIndex[tilePointerIndex + 4 + 2];
+            tileBytes[3] = _tileIndex[tilePointerIndex + 4 + 3];
+            var tileIndex = BitConverter.ToUInt32(tileBytes, 0);
+            
+            return (tileDataPointer, tileIndex, (uint)1 << _tileIndex[tilePointerIndex + 8]);
         }
 
         /// <summary>
@@ -184,45 +192,66 @@ namespace Itinero.Transit.Data.Tiles
         /// </summary>
         /// <param name="localTileId">The local tile id.</param>
         /// <returns>The meta-data about the tile and its data.</returns>
-        private (uint tileDataPointer, uint tileIndexPointer, int capacity) AddTile(uint localTileId)
+        private (uint tileDataPointer, uint capacity) AddTile(uint localTileId)
         {
-            if (_tileIndexPointer + 9 >= _tileIndex.Length)
+            // store the tile in the index, we need this for enumeration.
+            if (_tilesCount >= _tiles.Length)
             {
-                _tileIndex.Resize(_tileIndex.Length + 1024);
+                var sizeBefore = _tiles.Length;
+                _tiles.Resize(_tilesCount + 1024);
+                var sizeAfter = _tiles.Length;
+                for (var t = sizeBefore; t < sizeAfter; t++)
+                {
+                    _tiles[t] = TileNotLoaded;
+                }
+            }
+            _tiles[_tilesCount] = localTileId;
+            _tilesCount++;
+            
+            // store the tile pointer.
+            var tilePointerIndex = (long)localTileId * TileSizeInIndex;
+            if (tilePointerIndex + TileSizeInIndex >= _tileIndex.Length)
+            {
+                _tileIndex.Resize(tilePointerIndex + TileSizeInIndex + 1024);
             }
             
-            var tileBytes = BitConverter.GetBytes(localTileId);
-            for (var b = 0; b < 4; b++)
-            {
-                _tileIndex[_tileIndexPointer + b] = tileBytes[b];
-            }
-            tileBytes = BitConverter.GetBytes(_tileDataPointer);
-            for (var b = 0; b < 4; b++)
-            {
-                _tileIndex[_tileIndexPointer + 4 + b] = tileBytes[b];
-            }
-            _tileIndex[_tileIndexPointer + 9] = _defaultTileCapacityInBytes;
-            var tilePointer = _tileIndexPointer;
-            _tileIndexPointer += 9;
-            const int capacity = 1 << _defaultTileCapacityInBytes;
+            // TODO: find an allocation-less way of doing this:
+            //   this is possible it .NET core 2.1 but not netstandard2.0,
+            //   we can do this in netstandard2.1 normally.
+            //   perhaps implement our own version of bitconverter.
+            var tileBytes = BitConverter.GetBytes(_tileDataPointer);
+            _tileIndex[tilePointerIndex + 0] = tileBytes[0];
+            _tileIndex[tilePointerIndex + 1] = tileBytes[1];
+            _tileIndex[tilePointerIndex + 2] = tileBytes[2];
+            _tileIndex[tilePointerIndex + 3] = tileBytes[3];
+            tileBytes = BitConverter.GetBytes(_tilesCount - 1);
+            _tileIndex[tilePointerIndex + 4 + 0] = tileBytes[0];
+            _tileIndex[tilePointerIndex + 4 + 1] = tileBytes[1];
+            _tileIndex[tilePointerIndex + 4 + 2] = tileBytes[2];
+            _tileIndex[tilePointerIndex + 4 + 3] = tileBytes[3];
+            _tileIndex[tilePointerIndex + 8] = DefaultTileCapacityInBytes;
+            
+            const int capacity = 1 << DefaultTileCapacityInBytes;
             var pointer = _tileDataPointer;
             _tileDataPointer += capacity;
-            return (pointer, tilePointer, capacity);
+            return (pointer, capacity);
         }
         
         /// <summary>
         /// Increase capacity for the given tile.
         /// </summary>
-        /// <param name="tileIndexPointer"></param>
-        /// <param name="tileDataPointer"></param>
-        /// <returns></returns>
-        private (uint tileDataPointer, int capacity) IncreaseCapacityForTile(uint tileIndexPointer, uint tileDataPointer)
+        /// <param name="localTileId">The local tile id.</param>
+        /// <param name="tileDataPointer">The pointer to the data associated with this tile.</param>
+        /// <returns>The new pointer and capacity.</returns>
+        private (uint tileDataPointer, uint capacity) IncreaseCapacityForTile(uint localTileId, uint tileDataPointer)
         {
+            var tilePointerIndex = (long)localTileId * TileSizeInIndex;
+            
             // copy current data, we assume current capacity is at max.
             
             // get current capacity and double it.
-            var capacityInBits = _tileIndex[tileIndexPointer + 8];
-            _tileIndex[tileIndexPointer + 8] = (byte)(capacityInBits + 1);
+            var capacityInBits = _tileIndex[tilePointerIndex + 8];
+            _tileIndex[tilePointerIndex + 8] = (byte)(capacityInBits + 1);
             var oldCapacity = 1 << capacityInBits;
 
             // get the current pointer and update it.
@@ -231,14 +260,14 @@ namespace Itinero.Transit.Data.Tiles
             
             // update the tile data pointer in the tile index.
             var pointerBytes = BitConverter.GetBytes(newTileDataPointer); 
-            for (var b = 0; b < 4; b++)
-            {
-                _tileIndex[tileIndexPointer + 4 + b] = pointerBytes[b];
-            }
+            _tileIndex[tilePointerIndex + 0] = pointerBytes[0];
+            _tileIndex[tilePointerIndex + 1] = pointerBytes[1];
+            _tileIndex[tilePointerIndex + 2] = pointerBytes[2];
+            _tileIndex[tilePointerIndex + 3] = pointerBytes[3];
             
             // make sure locations array is the proper size.
             var length = _locations.Length;
-            while ((_tileDataPointer + (oldCapacity * 2)) * _coordinateSizeInBytes >= length)
+            while ((_tileDataPointer + (oldCapacity * 2)) * CoordinateSizeInBytes >= length)
             {
                 length += 1024;
             }
@@ -261,15 +290,15 @@ namespace Itinero.Transit.Data.Tiles
             // notify any listeners of copied blocks.
             Moved?.Invoke(tileDataPointer, newTileDataPointer, (uint)oldCapacity);
 
-            return (newTileDataPointer, oldCapacity * 2);
+            return (newTileDataPointer, (uint)(oldCapacity * 2));
         }
 
         private void CopyLocations(uint pointer1, uint pointer2)
         {
-            var locationPointer1 = pointer1 * _coordinateSizeInBytes;
-            var locationPointer2 = pointer2 * _coordinateSizeInBytes;
+            var locationPointer1 = pointer1 * CoordinateSizeInBytes;
+            var locationPointer2 = pointer2 * CoordinateSizeInBytes;
 
-            for (var b = 0; b < _coordinateSizeInBytes; b++)
+            for (var b = 0; b < CoordinateSizeInBytes; b++)
             {
                 _locations[locationPointer2 + b] = _locations[locationPointer1 + b];
             }
@@ -279,8 +308,8 @@ namespace Itinero.Transit.Data.Tiles
         private (double longitude, double latitude, bool hasData) 
             GetEncodedLocation(uint pointer, Tile tile)
         {
-            const int tileResolutionInBits = _coordinateSizeInBytes * 8 / 2;
-            var locationPointer = pointer * (long)_coordinateSizeInBytes;
+            const int tileResolutionInBits = CoordinateSizeInBytes * 8 / 2;
+            var locationPointer = pointer * (long)CoordinateSizeInBytes;
 
             if (locationPointer + 4 > _locations.Length)
             {
@@ -288,7 +317,7 @@ namespace Itinero.Transit.Data.Tiles
             }
             
             var bytes = new byte[4];
-            for (var b = 0; b < _coordinateSizeInBytes; b++)
+            for (var b = 0; b < CoordinateSizeInBytes; b++)
             {
                 bytes[b] = _locations[locationPointer + b];
             }
@@ -308,11 +337,11 @@ namespace Itinero.Transit.Data.Tiles
         
         private void SetEncodedLocation(uint pointer, Tile tile, double longitude, double latitude)
         {
-            var localCoordinates = tile.ToLocalCoordinates(longitude, latitude, 1 << _tileResolutionInBits);
-            var localCoordinatesEncoded = (localCoordinates.x << _tileResolutionInBits) + localCoordinates.y;
+            var localCoordinates = tile.ToLocalCoordinates(longitude, latitude, 1 << TileResolutionInBits);
+            var localCoordinatesEncoded = (localCoordinates.x << TileResolutionInBits) + localCoordinates.y;
             var localCoordinatesBits = BitConverter.GetBytes(localCoordinatesEncoded);
-            var tileDataPointer = pointer * (long)_coordinateSizeInBytes;
-            if (tileDataPointer + _coordinateSizeInBytes > _locations.Length)
+            var tileDataPointer = pointer * (long)CoordinateSizeInBytes;
+            if (tileDataPointer + CoordinateSizeInBytes > _locations.Length)
             {
                 var p = _locations.Length;
                 _locations.Resize(_locations.Length + 1024);
@@ -321,7 +350,7 @@ namespace Itinero.Transit.Data.Tiles
                     _locations[i] = byte.MaxValue;
                 }
             }
-            for (var b = 0; b < _coordinateSizeInBytes; b++)
+            for (var b = 0; b < CoordinateSizeInBytes; b++)
             {
                 _locations[tileDataPointer + b] = localCoordinatesBits[b];
             }
@@ -334,12 +363,14 @@ namespace Itinero.Transit.Data.Tiles
         public TiledLocationIndex Clone()
         {
             // it is up to the user to make sure not to clone when writing. 
-            var tileIndex = new MemoryArray<byte>(_tileIndex.Length);
+            var tileIndex = new SparseMemoryArray<byte>(_tileIndex.Length, blockSize: BlockSize, emptyDefault: byte.MaxValue);
             tileIndex.CopyFrom(_tileIndex, _tileIndex.Length);
             var locations = new MemoryArray<byte>(_locations.Length);
             locations.CopyFrom(_locations, _locations.Length);
+            var tiles = new MemoryArray<uint>(_tiles.Length);
+            tiles.CopyFrom(_tiles, _tiles.Length);
 
-            return new TiledLocationIndex(tileIndex, locations, Zoom, _tileIndexPointer, _tileDataPointer);
+            return new TiledLocationIndex(tiles, tileIndex, locations, Zoom, _tilesCount, _tileDataPointer);
         }
 
         internal long WriteTo(Stream stream)
@@ -347,7 +378,7 @@ namespace Itinero.Transit.Data.Tiles
             var length = 0L;
             
             // write version #.
-            stream.WriteByte(1);
+            stream.WriteByte(2);
             length++;
             
             // write zoom.
@@ -355,9 +386,13 @@ namespace Itinero.Transit.Data.Tiles
             length++;
             
             // write tile index.
-            stream.Write(BitConverter.GetBytes(_tileIndexPointer), 0, 4);
+            stream.Write(BitConverter.GetBytes(_tilesCount), 0, 4);
             length += 4;
-            length += _tileIndex.CopyToWithSize(stream);
+            _tiles.Resize(_tilesCount); // reduce the size, no need to store empty entries.
+            length += _tiles.CopyToWithSize(stream);
+            
+            // write tile pointers.
+            length += _tileIndex.CopyToWithHeader(stream);
             
             // write tile data.
             stream.Write(BitConverter.GetBytes(_tileDataPointer), 0, 4);
@@ -372,19 +407,77 @@ namespace Itinero.Transit.Data.Tiles
             var buffer = new byte[4];
             
             var version = stream.ReadByte();
-            if (version != 1) throw new InvalidDataException($"Cannot read {nameof(TiledLocationIndex)}, invalid version #.");
+            if (version == 1)
+            {
+                var zoom = stream.ReadByte();
 
-            var zoom = stream.ReadByte();
-            
-            stream.Read(buffer, 0, 4);
-            var tileIndexPointer = BitConverter.ToUInt32(buffer, 0);
-            var tileIndex = MemoryArray<byte>.CopyFromWithSize(stream);
+                stream.Read(buffer, 0, 4);
+                var tileIndexPointer = BitConverter.ToUInt32(buffer, 0);
+                var tileIndex = MemoryArray<byte>.CopyFromWithSize(stream);
 
-            stream.Read(buffer, 0, 4);
-            var tileDataPointer = BitConverter.ToUInt32(buffer, 0);
-            var locations = MemoryArray<byte>.CopyFromWithSize(stream);
-            
-            return new TiledLocationIndex(tileIndex, locations, zoom, tileIndexPointer, tileDataPointer);
+                stream.Read(buffer, 0, 4);
+                var tileDataPointer = BitConverter.ToUInt32(buffer, 0);
+                var locations = MemoryArray<byte>.CopyFromWithSize(stream);
+                
+                const int OldTileSizeInIndex = 9;
+                
+                // convert to the new format.
+                var tileCount = tileIndexPointer / OldTileSizeInIndex;
+                var tiles = new MemoryArray<uint>(tileCount);
+                var newTileIndex = new SparseMemoryArray<byte>(0, blockSize: BlockSize, emptyDefault: byte.MaxValue);
+                for (var t = 0L; t < tileIndexPointer / OldTileSizeInIndex; t++)
+                {
+                    var p = t * OldTileSizeInIndex;
+                    buffer[0] = tileIndex[p + 0];
+                    buffer[1] = tileIndex[p + 1];
+                    buffer[2] = tileIndex[p + 2];
+                    buffer[3] = tileIndex[p + 3];
+                    var tileId = BitConverter.ToUInt32(buffer, 0);
+                    tiles[t] = tileId;
+
+                    var tilePointer = (long)tileId * TileSizeInIndex;
+                    if (newTileIndex.Length <= tilePointer + TileSizeInIndex)
+                    {
+                        newTileIndex.Resize(tilePointer + TileSizeInIndex + 1);
+                    }
+                    
+                    newTileIndex[tilePointer + 0] =  tileIndex[p + 4 + 0];
+                    newTileIndex[tilePointer + 1] =  tileIndex[p + 4 + 1];
+                    newTileIndex[tilePointer + 2] =  tileIndex[p + 4 + 2];
+                    newTileIndex[tilePointer + 3] =  tileIndex[p + 4 + 3];
+
+                    var tileIndexBytes = BitConverter.GetBytes((uint) t);
+                    newTileIndex[tilePointer + 4 + 0] =  tileIndexBytes[0];
+                    newTileIndex[tilePointer + 4 + 1] =  tileIndexBytes[1];
+                    newTileIndex[tilePointer + 4 + 2] =  tileIndexBytes[2];
+                    newTileIndex[tilePointer + 4 + 3] =  tileIndexBytes[3];
+                    
+                    newTileIndex[tilePointer + 4 + 4] =  tileIndex[p + 4 + 4];
+                }
+
+                return new TiledLocationIndex(tiles, newTileIndex, locations, zoom, tileCount, tileDataPointer);
+            }
+            else if (version == 2)
+            {
+                var zoom = stream.ReadByte();
+                
+                stream.Read(buffer, 0, 4);
+                var tilesCount = BitConverter.ToUInt32(buffer, 0);
+                
+                var tiles = MemoryArray<uint>.CopyFromWithSize(stream);
+
+                var tileIndex = SparseMemoryArray<byte>.CopyFromWithHeader(stream);
+
+                stream.Read(buffer, 0, 4);
+                var tileDataPointer = BitConverter.ToUInt32(buffer, 0);
+                var locations = MemoryArray<byte>.CopyFromWithSize(stream);
+                
+                return new TiledLocationIndex(tiles, tileIndex, locations, zoom, tilesCount, tileDataPointer);
+            }
+            else
+            {
+                throw new InvalidDataException($"Cannot read {nameof(TiledLocationIndex)}, invalid version #.");
+            }
         }
 
         /// <summary>
