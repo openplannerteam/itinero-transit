@@ -8,14 +8,21 @@ namespace Itinero.Transit.Tests.Functional
         public static DateTime TestDate = new DateTime(2019, 07, 11, 09, 00, 00).ToUniversalTime().Date;
 
 
+        public const string OsmNearStationBruggeLatLon = "https://www.openstreetmap.org/#map=19/51.19764/3.21847";
+
+        public const string OsmNearStationBruggeLatLonRijselse =
+            "https://www.openstreetmap.org/#map=17/51.19335/3.21378";
+
+        public const string OsmBruggeHome = "https://www.openstreetmap.org/#map=19/51.21576/3.22048";
+        public const string OsmDeSterre = "https://www.openstreetmap.org/#map=18/51.02260/3.71108";
+        public const string OsmHermanTeirlinck = "https://www.openstreetmap.org/#map=18/50.86621/4.35104";
+        public const string OsmWechel = " https://www.openstreetmap.org/#map=15/51.2626/4.8038";
+
+
         public const string ZandStraat = "https://data.delijn.be/stops/500562";
         public const string AzSintJan = "https://data.delijn.be/stops/502083";
         public const string Moereind = "https://data.delijn.be/stops/107455";
 
-
-        public const string NearStationBruggeLatLon = "https://www.openstreetmap.org/#map=19/51.19764/3.21847";
-        public const string NearStationBruggeLatLonRijselse = "https://www.openstreetmap.org/#map=17/51.19335/3.21378";
-        public const string BruggeHome = "https://www.openstreetmap.org/#map=19/51.21576/3.22048";
 
         public const string Brugge = "http://irail.be/stations/NMBS/008891009";
         public const string Poperinge = "http://irail.be/stations/NMBS/008896735";
@@ -38,7 +45,7 @@ namespace Itinero.Transit.Tests.Functional
         public const string OsmCentrumShuttle = "testdata/fixed-test-cases-osm-CentrumbusBrugge2019-07-11.transitdb";
         public const string Nmbs = "testdata/fixed-test-cases-sncb-2019-07-11.transitdb";
         public const string NmbsLongPeriod = "testdata/nmbs-long.transitdb";
-        public static readonly DateTime NmbsLongPeriodDate = new DateTime(2019,07,13) ;
+        public static readonly DateTime NmbsLongPeriodDate = new DateTime(2019, 07, 13);
 
         public const string DelijnWvl = "testdata/fixed-test-cases-de-lijn-wvl-2019-07-11.transitdb";
         public const string DelijnOVl = "testdata/fixed-test-cases-de-lijn-ovl-2019-07-11.transitdb";

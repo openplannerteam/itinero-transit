@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Data;
@@ -10,23 +11,41 @@ using Itinero.Transit.Tests.Functional.Staging;
 
 namespace Itinero.Transit.Tests.Functional.FullStack
 {
-    public class FullStackTest : FunctionalTest<object, object>
+    public class FullStackTest : FunctionalTest<object, (string from, string to, uint range)>
     {
-        protected override object Execute(object input)
+        public List<(string, string, uint)> TestLocations = new List<(string, string, uint)>
         {
-            var from = Constants.NearStationBruggeLatLon;
-            var to = Constants.Gent;
+            (Constants.OsmNearStationBruggeLatLon, Constants.OsmDeSterre, 5000),
+            (Constants.OsmNearStationBruggeLatLon, Constants.OsmHermanTeirlinck, 5000),
+            (Constants.OsmHermanTeirlinck, Constants.OsmDeSterre, 5000),
+            (Constants.OsmWechel, Constants.OsmDeSterre, 25000),
+        };
+
+
+        public void TestAll()
+        {
+            foreach (var input in TestLocations)
+            {
+                Execute(input);
+            }
+        }
+
+        protected override object Execute((string from, string to, uint range) input)
+        {
+            var from = input.from;
+            var to = input.to;
 
             var tdbsNmbs = TransitDb.ReadFrom(Constants.Nmbs, 0);
 
-            var osmGen = new OsmTransferGenerator(RouterDbStaging.RouterDb).UseCache();
+            var osmGen = new OsmTransferGenerator(RouterDbStaging.RouterDb, input.range).UseCache();
             // osmGen.PreCalculateCache(tdbsNmbs.Latest.StopsDb.GetReader());
 
-            var stopsReader = (IStopsReader) new OsmLocationStopReader(1);
+            
+            
+            var stopsReader = tdbsNmbs.Latest.StopsDb.GetReader().AddOsmReader();
             stopsReader.MoveTo(from);
             var fromStop = new Stop(stopsReader);
 
-            stopsReader = tdbsNmbs.Latest.StopsDb.GetReader();
             stopsReader.MoveTo(to);
             var toStop = new Stop(stopsReader);
 

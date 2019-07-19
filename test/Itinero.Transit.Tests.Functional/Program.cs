@@ -42,7 +42,8 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
-           //     return;
+                new FullStackTest().TestAll();
+                return;
             }
 
             // These are all the tests, and will be run in full on the build server
@@ -100,7 +101,7 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Running NoDuplicationTest");
 
             new DelayTest().Run(true);
-            new FullStackTest().Run();
+            new FullStackTest().TestAll();
 
             Log.Information("Running single TransitDb tests");
             new TestAllAlgorithms().ExecuteDefault();

@@ -24,7 +24,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
                 .UseCache()
                 .AddOsmReader();
 
-            var from = Constants.NearStationBruggeLatLonRijselse;
+            var from = Constants.OsmNearStationBruggeLatLonRijselse;
             var to = Constants.Brugge;
 
             stopsReader.MoveTo(from);
