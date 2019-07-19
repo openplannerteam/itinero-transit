@@ -5,29 +5,35 @@ using Itinero.Transit.Data.Core;
 
 namespace Itinero.Transit.Data.Aggregators
 {
-
     public class StopSearchCaching : IStopsReader
     {
         private readonly IStopsReader _stopsReader;
 
-        private Dictionary<(double, double, double, double), IEnumerable<IStop>>
-            cache = new Dictionary<(double, double, double, double), IEnumerable<IStop>>();
+        private readonly Dictionary<(double, double, double, double), IEnumerable<IStop>> _cache;
 
         public StopSearchCaching(IStopsReader stopsReader)
         {
+            _cache = new Dictionary<(double, double, double, double), IEnumerable<IStop>>();
             _stopsReader = stopsReader;
+        }
+
+        // ReSharper disable once UnusedMember.Global
+        public StopSearchCaching(IStopsReader stopsReader, StopSearchCaching shareCacheWith)
+        {
+            _stopsReader = stopsReader;
+            _cache = shareCacheWith._cache;
         }
 
 
         public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
         {
-            if (cache.ContainsKey(box))
+            if (_cache.ContainsKey(box))
             {
-                return cache[box];
+                return _cache[box];
             }
 
             var v = _stopsReader.SearchInBox(box).ToList();
-            cache[box] = v;
+            _cache[box] = v;
             return v;
         }
 
