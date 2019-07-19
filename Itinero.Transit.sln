@@ -27,8 +27,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.SNCB", "samples\Samp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Itinero.Transit.Processor", "src\Itinero.Transit.Processor\Itinero.Transit.Processor.csproj", "{75B416D1-1893-40CB-8891-C3895A5534A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reminiscence", "..\..\itinero\reminiscence\src\Reminiscence\Reminiscence.csproj", "{BEA50471-8AEB-41B3-B91B-5B622A8D95FF}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,10 +61,6 @@ Global
 		{75B416D1-1893-40CB-8891-C3895A5534A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75B416D1-1893-40CB-8891-C3895A5534A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75B416D1-1893-40CB-8891-C3895A5534A4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BEA50471-8AEB-41B3-B91B-5B622A8D95FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BEA50471-8AEB-41B3-B91B-5B622A8D95FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BEA50471-8AEB-41B3-B91B-5B622A8D95FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BEA50471-8AEB-41B3-B91B-5B622A8D95FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D0EFE6FE-1456-48AB-9821-FE990CD62302} = {1F782339-952A-4E13-A2BF-736D5B0A2A6C}
@@ -76,6 +70,5 @@ Global
 		{4B1CCEDD-BEF2-47AD-A167-F2F43B51AEC8} = {1F782339-952A-4E13-A2BF-736D5B0A2A6C}
 		{3C87AC45-82D6-41D6-8ECF-18107BE2079A} = {FE66A191-ED0A-47FD-A162-58F21B984C90}
 		{75B416D1-1893-40CB-8891-C3895A5534A4} = {1F782339-952A-4E13-A2BF-736D5B0A2A6C}
-		{BEA50471-8AEB-41B3-B91B-5B622A8D95FF} = {1F782339-952A-4E13-A2BF-736D5B0A2A6C}
 	EndGlobalSection
 EndGlobal

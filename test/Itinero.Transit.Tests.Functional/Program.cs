@@ -49,31 +49,40 @@ namespace Itinero.Transit.Tests.Functional
             // These are all the tests, and will be run in full on the build server
             // Tests for devving are below this block
             LocalTests();
-//            try
-//            {
-//                InternetTests();
-//                SlowTests();
-//            }
-//            catch (OperationCanceledException)
-//            {
-//                Log.Warning("Some website is down... Skipping internet tests");
-//            }
-//            catch (ArgumentException e)
-//            {
-//                if (!(e.InnerException is OperationCanceledException))
-//                {
-//                    throw;
-//                }
-//
-//                Log.Warning("Some website is down... Skipping internet tests");
-//            }
+            try
+            {
+                InternetTests();
+                SlowTests();
+            }
+            catch (OperationCanceledException)
+            {
+                Log.Warning("Some website is down... Skipping internet tests");
+            }
+            catch (ArgumentException e)
+            {
+                if (!(e.InnerException is OperationCanceledException))
+                {
+                    throw;
+                }
+
+                Log.Warning("Some website is down... Skipping internet tests");
+            }
         }
 
 
         private static void LocalTests()
         {
-            new MixedDestinationTest().Run();
             var nmbs = TransitDb.ReadFrom(TestAllAlgorithms._nmbs, 0);
+
+            // test read/write transit db.
+            using (var memoryStream = WriteTransitDbTest.Default.Run(nmbs))
+            {
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                nmbs = ReadTransitDbTest.Default.Run(memoryStream);
+            }
+            
+            new MixedDestinationTest().Run();
             new ConnectionsDbDepartureEnumeratorTest().Run(nmbs);
             var db = new TestAllAlgorithms().ExecuteDefault();
             var wvl = TransitDb.ReadFrom(TestAllAlgorithms._delijnWvl, 1);

@@ -37,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\itinero\reminiscence\src\Reminiscence\Reminiscence.csproj" />
+    <PackageReference Include="Reminiscence" Version="1.4.0-pre002" />
   </ItemGroup>
 
 </Project>

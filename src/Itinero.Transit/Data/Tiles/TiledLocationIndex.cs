@@ -21,6 +21,7 @@ namespace Itinero.Transit.Data.Tiles
         private const int CoordinateSizeInBytes = 3; // 3 bytes = 24 bits = 4096 x 4096, the needed resolution depends on the zoom-level, higher, less resolution.
         private const int TileResolutionInBits = CoordinateSizeInBytes * 8 / 2;
         private const int TileSizeInIndex = 9; // 4 bytes for the pointer, 1 for the size.
+        private const int BlockSize = 1024;
 
         private readonly SparseMemoryArray<byte> _tileIndex;
         private uint _tilesCount = 0;
@@ -45,7 +46,7 @@ namespace Itinero.Transit.Data.Tiles
             }
             Zoom = zoom;
             
-            _tileIndex = new SparseMemoryArray<byte>(0, emptyDefault: byte.MaxValue);
+            _tileIndex = new SparseMemoryArray<byte>(0, blockSize: BlockSize, emptyDefault: byte.MaxValue);
             _locations = new MemoryArray<byte>(0);
             _tiles = new MemoryArray<uint>(0);
         }
@@ -362,7 +363,7 @@ namespace Itinero.Transit.Data.Tiles
         public TiledLocationIndex Clone()
         {
             // it is up to the user to make sure not to clone when writing. 
-            var tileIndex = new SparseMemoryArray<byte>(_tileIndex.Length, emptyDefault: byte.MaxValue);
+            var tileIndex = new SparseMemoryArray<byte>(_tileIndex.Length, blockSize: BlockSize, emptyDefault: byte.MaxValue);
             tileIndex.CopyFrom(_tileIndex, _tileIndex.Length);
             var locations = new MemoryArray<byte>(_locations.Length);
             locations.CopyFrom(_locations, _locations.Length);
@@ -423,7 +424,7 @@ namespace Itinero.Transit.Data.Tiles
                 // convert to the new format.
                 var tileCount = tileIndexPointer / OldTileSizeInIndex;
                 var tiles = new MemoryArray<uint>(tileCount);
-                var newTileIndex = new SparseMemoryArray<byte>(0, emptyDefault: byte.MaxValue);
+                var newTileIndex = new SparseMemoryArray<byte>(0, blockSize: BlockSize, emptyDefault: byte.MaxValue);
                 for (var t = 0L; t < tileIndexPointer / OldTileSizeInIndex; t++)
                 {
                     var p = t * OldTileSizeInIndex;
