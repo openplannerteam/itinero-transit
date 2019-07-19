@@ -5,14 +5,14 @@ namespace Itinero.Transit.Utils
 {
     public class KeyList<T>
     {
-        private List<T> _keys;
+        private readonly List<T> _keys;
 
         public KeyList(IEnumerable<T> keys)
         {
             _keys = keys.ToList();
         }
 
-        protected bool Equals(KeyList<T> other)
+        private bool Equals(KeyList<T> other)
         {
             return _keys.SequenceEqual(other._keys);
         }
@@ -21,7 +21,7 @@ namespace Itinero.Transit.Utils
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((KeyList<T>) obj);
         }
 

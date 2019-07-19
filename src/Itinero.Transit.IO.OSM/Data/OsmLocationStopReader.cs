@@ -4,6 +4,7 @@ using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data.Core;
 using Itinero.Transit.IO.OSM.Data.Parser;
+using Itinero.Transit.Utils;
 using static Itinero.Transit.IO.OSM.Data.Parser.DefaultRdParsers;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
@@ -160,6 +161,20 @@ namespace Itinero.Transit.IO.OSM.Data
             }
 
             return results;
+        }
+
+
+        public IEnumerable<Stop> StopsAround(Stop stop, uint range)
+        {
+            foreach (var location in _searchableLocations)
+            {
+                MoveTo(location);
+                if (DistanceEstimate.DistanceEstimateInMeter(stop.Latitude, stop.Longitude, Latitude, Longitude) <= range)
+                {
+                    yield return new Stop(this);
+                }
+            }
+
         }
     }
 

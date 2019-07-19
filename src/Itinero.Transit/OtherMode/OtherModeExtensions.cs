@@ -40,7 +40,9 @@ namespace Itinero.Transit.OtherMode
 
 
             var reachableLocations =
-                stops.LocationsInRange(stops.Latitude, stops.Longitude, otherModeGenerator.Range());
+                stops.StopsAround(new Stop(stops), otherModeGenerator.Range());
+            
+            
 
             stops.MoveTo(journey.Location);
             var times = otherModeGenerator.TimesBetween( /*from Istop journey.Location*/stops, reachableLocations);
@@ -91,7 +93,7 @@ namespace Itinero.Transit.OtherMode
 
             var l = new Stop(stops);
             var reachableLocations =
-                stops.LocationsInRange(l.Latitude, l.Longitude, otherModeGenerator.Range());
+                stops.StopsAround(l,otherModeGenerator.Range());
 
             var times = otherModeGenerator.TimesBetween(l, reachableLocations);
 

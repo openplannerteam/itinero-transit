@@ -42,7 +42,7 @@ namespace Itinero.Transit.OtherMode
         /// the implementation can choose to either return a valid transfer or to return null
         /// </summary>
         /// <returns></returns>
-        float Range();
+        uint Range();
 
 
       

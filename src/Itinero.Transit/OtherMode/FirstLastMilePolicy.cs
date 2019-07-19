@@ -14,7 +14,7 @@ namespace Itinero.Transit.OtherMode
         private readonly IOtherModeGenerator _defaultWalk;
         private readonly IOtherModeGenerator _firstMile;
         private readonly IOtherModeGenerator _lastMile;
-        private readonly float _range;
+        private readonly uint _range;
         private readonly HashSet<StopId> _firstMileStops;
         private readonly HashSet<StopId> _lastMileStops;
 
@@ -139,7 +139,7 @@ namespace Itinero.Transit.OtherMode
                 return defaultWalks;
             }
 
-            if (defaultWalks == null || defaultWalks.Count == null)
+            if (defaultWalks == null)
             {
                 return firstMileWalks;
             }
@@ -152,7 +152,7 @@ namespace Itinero.Transit.OtherMode
             return defaultWalks;
         }
 
-        public float Range()
+        public uint Range()
         {
             return _range;
         }

@@ -15,7 +15,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
             var tdb = TransitDb.ReadFrom(TestAllAlgorithms._nmbs, 0);
             
             var gen = new OsmTransferGenerator(RouterDbStaging.RouterDb, 2000,
-                Itinero.Profiles.Lua.Osm.OsmProfiles.Bicycle
+                Profiles.Lua.Osm.OsmProfiles.Bicycle
             );
             
             var cached = gen.UseCache();

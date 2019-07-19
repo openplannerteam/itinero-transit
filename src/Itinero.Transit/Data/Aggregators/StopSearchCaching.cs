@@ -9,11 +9,19 @@ namespace Itinero.Transit.Data.Aggregators
     {
         private readonly IStopsReader _stopsReader;
 
-        private readonly Dictionary<(double, double, double, double), IEnumerable<IStop>> _cache;
+        private readonly Dictionary<(Stop, uint), HashSet<Stop>> _stopsCache;
+
+        private readonly IEnumerable<Stop> _empty = new Stop[0];
+
+        /// <summary>
+        /// IF the cache is closed, NO NEW VALUES will be calculated.
+        /// Instead, the cached values will be returned
+        /// </summary>
+        private bool _cacheIsClosed;
 
         public StopSearchCaching(IStopsReader stopsReader)
         {
-            _cache = new Dictionary<(double, double, double, double), IEnumerable<IStop>>();
+            _stopsCache = new Dictionary<(Stop, uint), HashSet<Stop>>();
             _stopsReader = stopsReader;
         }
 
@@ -21,20 +29,60 @@ namespace Itinero.Transit.Data.Aggregators
         public StopSearchCaching(IStopsReader stopsReader, StopSearchCaching shareCacheWith)
         {
             _stopsReader = stopsReader;
-            _cache = shareCacheWith._cache;
+            _stopsCache = shareCacheWith._stopsCache;
         }
 
 
-        public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
+        public IEnumerable<Stop> StopsAround(Stop stop, uint range)
         {
-            if (_cache.ContainsKey(box))
+            var key = (stop, range);
+            if (_stopsCache.ContainsKey(key))
             {
-                return _cache[box];
+                return _stopsCache[key];
             }
 
-            var v = _stopsReader.SearchInBox(box).ToList();
-            _cache[box] = v;
-            return v;
+            if (_cacheIsClosed)
+            {
+                return _empty;
+            }
+
+            var set = new HashSet<Stop>();
+            foreach (var s in _stopsReader.StopsAround(stop, range))
+            {
+                set.Add(new Stop(s));
+            }
+            _stopsCache[key] = set;
+            return set;
+        }
+
+        public void MakeComplete()
+        {
+            foreach (var inRange in _stopsCache)
+            {
+                // This only concerns 'crows flight' in range
+                // so if A is in range of B, B is also in range of A
+                var a = inRange.Key.Item1;
+                var range = inRange.Key.Item2;
+                var bs = inRange.Value;
+
+                foreach (var b in bs)
+                {
+                    var key = (b, range);
+                    if (!_stopsCache.ContainsKey(key))
+                    {
+                        _stopsCache[key] = new HashSet<Stop>
+                        {
+                            a
+                        };
+                    }
+                    else
+                    {
+                        _stopsCache[key].Add(a);
+                    }
+                }
+            }
+
+            _cacheIsClosed = true;
         }
 
 

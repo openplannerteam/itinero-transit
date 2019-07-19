@@ -24,14 +24,14 @@ namespace Itinero.Transit.IO.OSM
         private readonly RouterDb _routerDb;
         private readonly Profile _profile;
 
-        private readonly float _searchDistance;
+        private readonly uint _searchDistance;
 
-        private static TilesDownloadHelper downloadHelper;
+        private static TilesDownloadHelper _downloadHelper;
 
         public static void EnableCaching(string cachingDirectory)
         {
-            downloadHelper = new TilesDownloadHelper(cachingDirectory);
-            TileParser.DownloadFunc = downloadHelper.Download;
+            _downloadHelper = new TilesDownloadHelper(cachingDirectory);
+            TileParser.DownloadFunc = _downloadHelper.Download;
         }
 
         ///  <summary>
@@ -43,7 +43,7 @@ namespace Itinero.Transit.IO.OSM
         ///  <param name="routerDb">The router db to use.</param>
         ///  <param name="searchDistance">The maximum distance that the traveller takes this route</param>
         ///  <param name="profile">The vehicle profile, default is pedestrian.</param>
-        public OsmTransferGenerator(RouterDb routerDb, float searchDistance = 1000,
+        public OsmTransferGenerator(RouterDb routerDb, uint searchDistance = 1000,
             Profile profile = null)
         {
             _routerDb = routerDb ?? throw new ArgumentNullException(nameof(routerDb));
@@ -175,7 +175,7 @@ namespace Itinero.Transit.IO.OSM
             return this.DefaultTimesBetween(from, to);
         }
 
-        public float Range()
+        public uint Range()
         {
             return _searchDistance;
         }

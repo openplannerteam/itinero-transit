@@ -1,14 +1,15 @@
+using System;
 using System.Collections.Generic;
 using Itinero.Transit.Algorithms.Search;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data.Core;
 using Itinero.Transit.Data.Tiles;
+using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Data
 {
     public partial class StopsDb
     {
-        
         public class StopsDbReader : IStopsReader
         {
             private readonly TiledLocationIndex.Enumerator _locationEnumerator;
@@ -17,7 +18,6 @@ namespace Itinero.Transit.Data
             {
                 StopsDb = stopsDb;
                 _locationEnumerator = StopsDb._stopLocations.GetEnumerator();
-                
             }
 
             /// <summary>
@@ -34,7 +34,7 @@ namespace Itinero.Transit.Data
             /// </summary>
             /// <param name="box">The box to enumerate in.</param>
             /// <returns>An enumerator with all the stops.</returns>
-            public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
+            public IEnumerable<Stop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
             {
                 var rangeStops = new TileRangeStopEnumerable(StopsDb, box);
                 using (var rangeStopsEnumerator = rangeStops.GetEnumerator())
@@ -57,6 +57,59 @@ namespace Itinero.Transit.Data
                         }
 
                         yield return rangeStopsEnumerator.Current;
+                    }
+                }
+            }
+
+            public IEnumerable<Stop> StopsAround(Stop stop, uint range)
+            {
+                if (range == 0)
+                {
+                    throw new ArgumentException("Oops, distance is zero");
+                }
+
+                var lat = stop.Latitude;
+                var lon = stop.Longitude;
+
+                if (double.IsNaN(range) || double.IsInfinity(range) ||
+                    double.IsNaN(lat) || double.IsInfinity(lat) ||
+                    double.IsNaN(lon) || double.IsInfinity(lon) ||
+                    // ReSharper disable once CompareOfFloatsByEqualityOperator
+                    lat == double.MaxValue ||
+                    // ReSharper disable once CompareOfFloatsByEqualityOperator
+                    lon == double.MaxValue
+                )
+                {
+                    throw new ArgumentException(
+                        "Oops, either lat, lon or maxDistance are invalid (such as NaN or Infinite)");
+                }
+
+                var box = (
+                    DistanceEstimate.MoveEast(lat, lon, -range), // minLon
+                    DistanceEstimate.MoveNorth(lat, lon, +range), // MinLat
+                    DistanceEstimate.MoveEast(lat, lon, +range), // MaxLon
+                    DistanceEstimate.MoveNorth(lat, lon, -range) //maxLat
+                );
+
+                if (double.IsNaN(box.Item1) ||
+                    double.IsNaN(box.Item2) ||
+                    double.IsNaN(box.Item3) ||
+                    double.IsNaN(box.Item4) ||
+                    box.Item1 > 180 || box.Item1 < -180 ||
+                    box.Item3 > 180 || box.Item3 < -180 ||
+                    box.Item2 > 90 || box.Item2 < -90 ||
+                    box.Item4 > 90 || box.Item4 < -90
+                )
+                {
+                    throw new Exception("Bounding box has NaN or is out of range");
+                }
+
+                foreach (var s in SearchInBox(box))
+                {
+                    if (DistanceEstimate.DistanceEstimateInMeter(
+                            s.Latitude, s.Longitude, lat, lon) < range)
+                    {
+                        yield return s;
                     }
                 }
             }
@@ -152,7 +205,5 @@ namespace Itinero.Transit.Data
 
             public StopsDb StopsDb { get; }
         }
-
-      
     }
 }

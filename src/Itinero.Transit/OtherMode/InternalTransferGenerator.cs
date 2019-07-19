@@ -46,9 +46,9 @@ namespace Itinero.Transit.OtherMode
             return this.DefaultTimesBetween(from, to);
         }
 
-        public float Range()
+        public uint Range()
         {
-            return 1.0f;
+            return 0;
         }
 
         public string OtherModeIdentifier()

@@ -12,7 +12,7 @@ namespace Itinero.Transit.OtherMode
     /// </summary>
     public class CrowsFlightTransferGenerator : IOtherModeGenerator
     {
-        private readonly int _maxDistance;
+        private readonly uint _maxDistance;
         private readonly float _speed;
 
         ///  <summary>
@@ -29,7 +29,7 @@ namespace Itinero.Transit.OtherMode
         ///  </summary>
         /// <param name="maxDistance">The maximum walkable distance in meter</param>
         ///  <param name="speed">In meter per second. According to Wikipedia, about 1.4m/s is preferred average</param>
-        public CrowsFlightTransferGenerator(int maxDistance = 500, float speed = 1.4f)
+        public CrowsFlightTransferGenerator(uint maxDistance = 500, float speed = 1.4f)
         {
             _maxDistance = maxDistance;
             _speed = speed;
@@ -60,7 +60,7 @@ namespace Itinero.Transit.OtherMode
         }
 
 
-        public float Range()
+        public uint Range()
         {
             return _maxDistance;
         }

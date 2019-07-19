@@ -9,7 +9,7 @@ namespace Itinero.Transit.Algorithms.Search
     /// <summary>
     /// An enumerator that enumerates all stops in a tile range.
     /// </summary>
-    internal class TileRangeStopEnumerable : IEnumerable<IStop>
+    internal class TileRangeStopEnumerable : IEnumerable<Stop>
     {
         private readonly StopsDb _stopsDb;
         private readonly (double minLon, double minLat, double maxLon, double maxLat) _box;
@@ -21,12 +21,12 @@ namespace Itinero.Transit.Algorithms.Search
             _box = box;
         }
 
-        public IEnumerator<IStop> GetEnumerator()
+        public IEnumerator<Stop> GetEnumerator()
         {
             return new TileRangeStopEnumerator(_stopsDb, _box);
         }
 
-        IEnumerator<IStop> IEnumerable<IStop>.GetEnumerator()
+        IEnumerator<Stop> IEnumerable<Stop>.GetEnumerator()
         {
             return GetEnumerator();
         }
@@ -37,7 +37,7 @@ namespace Itinero.Transit.Algorithms.Search
         }
 
 
-        private class TileRangeStopEnumerator : IEnumerator<IStop>
+        private class TileRangeStopEnumerator : IEnumerator<Stop>
         {
             private readonly StopsDb.StopsDbReader _stopsDbReader;
             private readonly TileRangeLocationEnumerable.TileRangeLocationEnumerator _tileRangeLocationEnumerator;
@@ -67,7 +67,7 @@ namespace Itinero.Transit.Algorithms.Search
                 _stopsDbReader.Reset();
             }
 
-            public IStop Current => new Stop(_stopsDbReader); // enumerator and enumerable expect unique clones.
+            public Stop Current => new Stop(_stopsDbReader); // enumerator and enumerable expect unique clones.
 
             object IEnumerator.Current => Current;
 

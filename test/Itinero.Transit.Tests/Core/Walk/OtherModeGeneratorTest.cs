@@ -151,9 +151,9 @@ namespace Itinero.Transit.Tests.Core.Walk
             return this.DefaultTimesBetween(from, to);
         }
 
-        public float Range()
+        public uint Range()
         {
-            return 1000.0f;
+            return 1000;
         }
 
         public string OtherModeIdentifier()
@@ -191,9 +191,9 @@ namespace Itinero.Transit.Tests.Core.Walk
             return this.DefaultTimesBetween(from, to);
         }
 
-        public float Range()
+        public uint Range()
         {
-            return float.MaxValue;
+            return uint.MaxValue;
         }
 
         public string OtherModeIdentifier()

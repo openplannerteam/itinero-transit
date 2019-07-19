@@ -1,6 +1,7 @@
 ﻿using System;
 using Itinero.Transit;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.IO.LC;
 
 namespace Sample.SNCB
@@ -20,8 +21,8 @@ namespace Sample.SNCB
             var snapshot = transitDb.Latest;
 
             // look up departure/arrival stops.
-            var departureStop = snapshot.FindClosestStop(4.9376678466796875, 51.322734170650484);
-            var arrivalStop = snapshot.FindClosestStop(4.715280532836914, 50.88132251839807);
+            var departureStop = snapshot.FindClosestStop(new Stop(4.9376678466796875, 51.322734170650484));
+            var arrivalStop = snapshot.FindClosestStop(new Stop(4.715280532836914, 50.88132251839807));
             // Create a traveller profile
             var profile = new DefaultProfile();
 

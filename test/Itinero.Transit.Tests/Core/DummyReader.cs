@@ -50,5 +50,10 @@ namespace Itinero.Transit.Tests.Core
         {
             throw new Exception("Not implemented - should not be called");
         }
+
+        public IEnumerable<Stop> StopsAround(Stop stop, uint range)
+        {
+            throw new Exception("Not implemented - should not be called");
+        }
     }
 }

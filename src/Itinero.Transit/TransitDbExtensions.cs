@@ -53,34 +53,30 @@ namespace Itinero.Transit
         }
 
         /// <summary>
-        /// Finds the closest stop.
+        /// Finds the closest stop near 'around.
         /// </summary>
         /// <param name="snapShot">The snapshot.</param>
-        /// <param name="longitude">The longitude.</param>
-        /// <param name="latitude">The latitude.</param>
+        /// <param name="around">Search around this stop</param>
         /// <param name="maxDistanceInMeters">The maximum distance in meters.</param>
         /// <returns>The closest stop.</returns>
-        public static IStop FindClosestStop(this TransitDb.TransitDbSnapShot snapShot, double longitude,
-            double latitude,
-            double maxDistanceInMeters = 1000)
+        public static IStop FindClosestStop(this TransitDb.TransitDbSnapShot snapShot, IStop around,
+            uint maxDistanceInMeters = 1000)
         {
-            return snapShot.StopsDb.GetReader().FindClosest(latitude, longitude, maxDistanceInMeters);
+            return snapShot.StopsDb.GetReader().FindClosest(around, maxDistanceInMeters);
         }
 
         /// <summary>
         /// Finds the closest stop.
         /// </summary>
         /// <param name="snapShot">The snapshot.</param>
-        /// <param name="longitude">The longitude.</param>
-        /// <param name="latitude">The latitude.</param>
+        /// <param name="around">The stop to search around.</param>
         /// <param name="maxDistanceInMeters">The maximum distance in meters.</param>
         /// <returns>The closest stop.</returns>
-        public static Stop FindClosestStop(this IEnumerable<TransitDb.TransitDbSnapShot> snapShot, double longitude,
-            double latitude,
-            double maxDistanceInMeters = 1000)
+        public static Stop FindClosestStop(this IEnumerable<TransitDb.TransitDbSnapShot> snapShot, IStop around,
+            uint maxDistanceInMeters = 1000)
         {
             var reader = StopsReaderAggregator.CreateFrom(snapShot);
-            return reader.FindClosest(latitude, longitude, maxDistanceInMeters);
+            return reader.FindClosest(around, maxDistanceInMeters);
         }
 
         public static StopId FindStop(this TransitDb.TransitDbSnapShot snapshot, string locationId,

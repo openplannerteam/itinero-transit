@@ -101,12 +101,12 @@ namespace Itinero.Transit.Data.Aggregators
                 }
 
                 _currentIndex++;
-                if (_currentIndex == _underlyingDatabases.Length)
+                if (_currentIndex == _uniqueUnderlyingDatabases.Count)
                 {
                     return false;
                 }
 
-                _currentStop = _underlyingDatabases[_currentIndex];
+                _currentStop = _uniqueUnderlyingDatabases[_currentIndex];
             }
 
             return false;
@@ -136,18 +136,19 @@ namespace Itinero.Transit.Data.Aggregators
         public void Reset()
         {
             _currentIndex = 0;
-            foreach (var reader in _uniqueUnderlyingDatabases)
+            foreach (var uniqueUnderlyingDatabase in _uniqueUnderlyingDatabases)
             {
-                reader.Reset();
+                uniqueUnderlyingDatabase.Reset();
             }
         }
 
-        public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
+
+        public IEnumerable<Stop> StopsAround(Stop stop, uint range)
         {
-            var stops = new HashSet<IStop>();
+            var stops = new HashSet<Stop>();
             foreach (var db in _uniqueUnderlyingDatabases)
             {
-                stops.UnionWith(db.SearchInBox(box));
+                stops.UnionWith(db.StopsAround(stop, range));
             }
 
             return stops;

@@ -561,7 +561,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .EarliestArrivalJourney();
 
             // Only one connection should be used
-            Assert.True(j.PreviousLink.Root == j.PreviousLink);
+            Assert.True(Equals(j.PreviousLink.Root, j.PreviousLink));
         }
     }
 }

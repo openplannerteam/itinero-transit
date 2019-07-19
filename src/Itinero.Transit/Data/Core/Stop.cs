@@ -32,7 +32,14 @@ namespace Itinero.Transit.Data.Core
                 Attributes = new AttributeCollection(Attributes);
             }
         }
-        
+
+        public Stop(double latitude, double longitude)
+        {
+            Latitude = latitude;
+            Longitude = longitude;
+            Id= StopId.Invalid;
+        }
+
         /// <summary>
         /// Gets the global id.
         /// </summary>
@@ -61,6 +68,24 @@ namespace Itinero.Transit.Data.Core
         public override string ToString()
         {
             return $"{GlobalId} ({Id}-[{Longitude},{Latitude}]) {Attributes}";
+        }
+
+        protected bool Equals(Stop other)
+        {
+            return Id.Equals(other.Id);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Stop) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
         }
     }
 }

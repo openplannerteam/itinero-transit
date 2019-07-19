@@ -85,10 +85,11 @@ namespace Itinero.Transit.OtherMode
 
             return v;
         }
+
         private readonly Dictionary<(StopId Id, KeyList<StopId> tos), Dictionary<StopId, uint>> _cacheReverse =
             new Dictionary<(StopId @from, KeyList<StopId> tos), Dictionary<StopId, uint>>();
 
-        
+
         public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @from, IStop to)
         {
             from = from.Select(stop => new Stop(stop)).ToList();
@@ -137,13 +138,10 @@ namespace Itinero.Transit.OtherMode
             var done = 0;
             while (withCache.MoveNext())
             {
-                var start = DateTime.Now;
                 var current = (IStop) withCache;
                 Log.Information($"Searching around {current.GlobalId}");
                 done++;
-                var inRange = withCache.LocationsInRange(
-                    current.Latitude, current.Longitude,
-                    Range());
+                var inRange = withCache.StopsAround(new Stop(current), Range());
                 TimesBetween(withCache, inRange);
 
                 for (var i = 0; i < skiprate; i++)
@@ -151,13 +149,10 @@ namespace Itinero.Transit.OtherMode
                     withCache.MoveNext();
                 }
 
-                var end = DateTime.Now;
-                Log.Information($"Filling cache: {done}/{c} took {(end - start).TotalMilliseconds}ms");
-
             }
         }
 
-        public float Range()
+        public uint Range()
         {
             return Fallback.Range();
         }
@@ -184,6 +179,5 @@ namespace Itinero.Transit.OtherMode
         {
             _cacheIsClosed = true;
         }
-        
     }
 }
