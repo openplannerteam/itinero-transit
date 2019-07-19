@@ -18,7 +18,6 @@ namespace Itinero.Transit.Data.Core
             LocalId = localId;
         }
 
-
         [Pure]
         public bool Equals(StopId other)
         {

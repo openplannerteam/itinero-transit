@@ -102,7 +102,7 @@ namespace Itinero.Transit.OtherMode
 
             return _defaultWalk.TimesBetween(@from, tosDefault);
         }
-        
+
         public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @from,
             IStop to)
         {
@@ -123,7 +123,7 @@ namespace Itinero.Transit.OtherMode
 
             var firstMileWalks = _firstMile.TimesBetween(firstMiles, to);
 
-                Dictionary<StopId, uint> defaultWalks;
+            Dictionary<StopId, uint> defaultWalks;
             if (_lastMileStops.Contains(to.Id))
             {
                 defaultWalks = _lastMile.TimesBetween(defaults, to);
@@ -138,6 +138,7 @@ namespace Itinero.Transit.OtherMode
             {
                 return defaultWalks;
             }
+
             if (defaultWalks == null || defaultWalks.Count == null)
             {
                 return firstMileWalks;
@@ -147,8 +148,8 @@ namespace Itinero.Transit.OtherMode
             {
                 defaultWalks[walk.Key] = walk.Value;
             }
-            return defaultWalks;
 
+            return defaultWalks;
         }
 
         public float Range()
@@ -173,7 +174,6 @@ namespace Itinero.Transit.OtherMode
             {
                 return _lastMile;
             }
-
             return _defaultWalk;
         }
 
