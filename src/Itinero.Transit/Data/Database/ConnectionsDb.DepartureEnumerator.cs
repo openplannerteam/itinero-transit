@@ -43,7 +43,7 @@ namespace Itinero.Transit.Data
             /// This array keeps track of that
             /// 
             /// </summary>
-            private uint[] _alreadyUsed;
+            private readonly uint[] _alreadyUsed;
 
 
             public DepartureEnumerator(
@@ -82,9 +82,46 @@ namespace Itinero.Transit.Data
                     _connectionsDb.WindowSizeInSeconds;
                 _indexInWindow = _alreadyUsed[_connectionsDb.WindowFor(CurrentDateTime)];
             }
-            
+
             public int NextWindowCounter = 0;
 
+
+            /// <summary>
+            /// Searches the index of the first connection within the structure, so that:
+            /// this connection is the first to depart at (or later then) the given dateTime, in the given window
+            /// </summary>
+            /// <returns></returns>
+            private uint BinarySearch(uint window, ulong dateTime)
+            {
+                // https://en.wikipedia.org/wiki/Binary_search_algorithm#Procedure_for_finding_the_leftmost_element
+                var windowPointer = _connectionsDb.DepartureWindowPointers[window * 2 + 0];
+                var windowSize = _connectionsDb.DepartureWindowPointers[window * 2 + 1];
+
+                if (windowSize <= 1)
+                {
+                    return 0;
+                }
+
+
+                uint left = 0;
+                var right = windowSize - 1;
+                var c = new Connection();
+                while (left <= right)
+                {
+                    var m = (left + right) / 2;
+                    var connId = _connectionsDb.DeparturePointers[windowPointer + m];
+                    var connDepTime = _connectionsDb.GetConnectionDeparture(connId);
+                    if (connDepTime < dateTime)
+                    {
+                        left = m + 1;
+                    }else
+                    {
+                        right = m;
+                    }
+                }
+
+                return left;
+            }
 
             public bool HasNext()
             {
@@ -114,13 +151,7 @@ namespace Itinero.Transit.Data
                 // For starters, what is the wanted window and does it exist?
                 var window = _connectionsDb.WindowFor(CurrentDateTime);
 
-                if (_indexInWindow == uint.MaxValue)
-                {
-                    // Needs some initialization
-                    _indexInWindow = 0;
-                    _alreadyUsed[window] = 0;
-                }
-
+              
                 var windowPointer = _connectionsDb.DepartureWindowPointers[window * 2 + 0];
 
                 if (windowPointer == _noData)
@@ -131,6 +162,13 @@ namespace Itinero.Transit.Data
                     NextWindow();
 
                     goto hasNext; // === return HasNext();
+                }
+                if (_indexInWindow == uint.MaxValue)
+                {
+                    // Needs some initialization
+                    // We search the first element in the window in the current dateTime
+                    _indexInWindow = BinarySearch(window, CurrentDateTime);
+                    _alreadyUsed[window] = _indexInWindow;
                 }
 
 
