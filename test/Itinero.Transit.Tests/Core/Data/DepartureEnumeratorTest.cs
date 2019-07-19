@@ -87,7 +87,7 @@ namespace Itinero.Transit.Tests.Core.Data
             Assert.Equal("g", c.GlobalId);
             Assert.False(enumerator.HasNext());
 
-            
+
             enumerator.MoveTo(1460);
             Assert.True(enumerator.HasPrevious());
             enumerator.Current(c);
@@ -317,6 +317,41 @@ namespace Itinero.Transit.Tests.Core.Data
 
             Assert.Equal(6, count);
             Assert.Equal(63, tt);
+        }
+
+        [Fact]
+        public void TestEnumeratorNoOvershoot()
+        {
+            var tdb = new TransitDb(0);
+
+
+            var wr = tdb.GetWriter();
+
+            var stop0 = wr.AddOrUpdateStop("a", 0, 0);
+            var stop1 = wr.AddOrUpdateStop("b", 0, 0);
+
+            for (uint i = 0; i < 100; i++)
+            {
+                wr.AddOrUpdateConnection(
+                    new Connection(new ConnectionId(0, i), "a" + i,
+                        stop0, stop1, 
+                        50+i*1000, 10, 0, 0, 0,
+                        new TripId(0, 0)));
+            }
+
+            wr.Close();
+
+
+            var enumerator = tdb.Latest.ConnectionsDb.GetDepartureEnumerator();
+
+            enumerator.MoveTo(90000);
+            var count = 0;
+            while (enumerator.HasNext() && enumerator.CurrentDateTime < 100000)
+            {
+                count++;
+            }
+            Assert.Equal(2, count);
+           
         }
     }
 }

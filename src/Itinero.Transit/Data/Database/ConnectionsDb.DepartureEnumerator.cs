@@ -76,12 +76,14 @@ namespace Itinero.Transit.Data
             private void NextWindow()
             {
                 // We increase the dateTime so that it is exactly the start of the next window
-
+                NextWindowCounter++;
                 CurrentDateTime =
                     ((CurrentDateTime / _connectionsDb.WindowSizeInSeconds) + 1) *
                     _connectionsDb.WindowSizeInSeconds;
                 _indexInWindow = _alreadyUsed[_connectionsDb.WindowFor(CurrentDateTime)];
             }
+            
+            public int NextWindowCounter = 0;
 
 
             public bool HasNext()
