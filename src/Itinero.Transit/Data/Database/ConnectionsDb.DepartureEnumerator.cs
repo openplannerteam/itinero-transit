@@ -93,6 +93,8 @@ namespace Itinero.Transit.Data
             /// <returns></returns>
             private uint BinarySearch(uint window, ulong dateTime)
             {
+
+                return 0;
                 // https://en.wikipedia.org/wiki/Binary_search_algorithm#Procedure_for_finding_the_leftmost_element
                 var windowPointer = _connectionsDb.DepartureWindowPointers[window * 2 + 0];
                 var windowSize = _connectionsDb.DepartureWindowPointers[window * 2 + 1];
@@ -106,7 +108,7 @@ namespace Itinero.Transit.Data
                 uint left = 0;
                 var right = windowSize - 1;
                 var c = new Connection();
-                while (left <= right)
+                while (left < right)
                 {
                     var m = (left + right) / 2;
                     var connId = _connectionsDb.DeparturePointers[windowPointer + m];

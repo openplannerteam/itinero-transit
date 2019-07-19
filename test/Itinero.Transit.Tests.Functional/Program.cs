@@ -42,8 +42,8 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
-                new TestAllAlgorithms().ExecuteLongPeriod();
-                return;
+           //     new TestAllAlgorithms().ExecuteLongPeriod();
+           //     return;
             }
 
             // These are all the tests, and will be run in full on the build server

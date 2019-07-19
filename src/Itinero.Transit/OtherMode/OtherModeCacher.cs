@@ -139,7 +139,6 @@ namespace Itinero.Transit.OtherMode
             while (withCache.MoveNext())
             {
                 var current = (IStop) withCache;
-                Log.Information($"Searching around {current.GlobalId}");
                 done++;
                 var inRange = withCache.StopsAround(new Stop(current), Range());
                 TimesBetween(withCache, inRange);

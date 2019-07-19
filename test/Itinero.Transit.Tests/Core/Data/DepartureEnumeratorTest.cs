@@ -1,7 +1,9 @@
+using System;
 using System.IO;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Data.Core;
+using Itinero.Transit.Logging;
 using Xunit;
 
 namespace Itinero.Transit.Tests.Core.Data
@@ -319,7 +321,7 @@ namespace Itinero.Transit.Tests.Core.Data
             Assert.Equal(63, tt);
         }
 
-       // [Fact]
+        [Fact]
         public void TestEnumeratorNoOvershoot()
         {
             var tdb = new TransitDb(0);
@@ -344,14 +346,19 @@ namespace Itinero.Transit.Tests.Core.Data
 
             var enumerator = tdb.Latest.ConnectionsDb.GetDepartureEnumerator();
 
-            enumerator.MoveTo(900000);
+            var start = DateTime.Now;
+            enumerator.MoveTo(100000000 - 2000);
             var count = 0;
             while (enumerator.HasNext() && enumerator.CurrentDateTime < 100000000)
             {
                 count++;
             }
 
+            var end = DateTime.Now;
+            Log.Information($"{(end - start).TotalMilliseconds}ms needed");
+
             Assert.Equal(2, count);
+            Assert.True((end-start).TotalMilliseconds < 5.0);
             Assert.True(enumerator.NextWindowCounter < 100);
         }
     }
