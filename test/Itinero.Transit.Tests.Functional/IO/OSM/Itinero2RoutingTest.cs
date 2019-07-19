@@ -7,7 +7,6 @@ using Itinero.Transit.IO.OSM;
 using Itinero.Transit.IO.OSM.Data;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
-using Itinero.Transit.Tests.Functional.Algorithms;
 using Itinero.Transit.Tests.Functional.Staging;
 
 namespace Itinero.Transit.Tests.Functional.IO.OSM
@@ -19,7 +18,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
             // We create a transitDB with testdata from _nmbs.
             // Note that this database only contains connections of a certain date, namely TestAllAlgorithms.TestDate
             // Testing outside this range will give an error ("no connections loaded")
-            var tdb = TransitDb.ReadFrom(TestAllAlgorithms._nmbs, 0);
+            var tdb = TransitDb.ReadFrom(Constants.Nmbs, 0);
 
             var stopsReader = tdb.Latest.StopsDb.GetReader()
                 .UseCache()

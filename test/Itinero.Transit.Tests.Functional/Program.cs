@@ -42,8 +42,8 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
-                new Itinero2RoutingTest().Run();
-            //   return;
+                new TestAllAlgorithms().ExecuteLongPeriod();
+                return;
             }
 
             // These are all the tests, and will be run in full on the build server
@@ -72,7 +72,7 @@ namespace Itinero.Transit.Tests.Functional
 
         private static void LocalTests()
         {
-            var nmbs = TransitDb.ReadFrom(TestAllAlgorithms._nmbs, 0);
+            var nmbs = TransitDb.ReadFrom(Constants.Nmbs, 0);
 
             // test read/write transit db.
             using (var memoryStream = WriteTransitDbTest.Default.Run(nmbs))
@@ -81,11 +81,11 @@ namespace Itinero.Transit.Tests.Functional
 
                 nmbs = ReadTransitDbTest.Default.Run(memoryStream);
             }
-            
+
             new MixedDestinationTest().Run();
             new ConnectionsDbDepartureEnumeratorTest().Run(nmbs);
             var db = new TestAllAlgorithms().ExecuteDefault();
-            var wvl = TransitDb.ReadFrom(TestAllAlgorithms._delijnWvl, 1);
+            var wvl = TransitDb.ReadFrom(Constants.DelijnWvl, 1);
 
             new StopEnumerationTest().Run(new List<TransitDb>()
             {

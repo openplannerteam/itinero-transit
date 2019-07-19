@@ -37,6 +37,9 @@ namespace Itinero.Transit.Tests.Functional
 
         public const string OsmCentrumShuttle = "testdata/fixed-test-cases-osm-CentrumbusBrugge2019-07-11.transitdb";
         public const string Nmbs = "testdata/fixed-test-cases-sncb-2019-07-11.transitdb";
+        public const string NmbsLongPeriod = "testdata/fixed-test-cases-sncb-2019-07-11.transitdb";
+        public static readonly DateTime NmbsLongPeriodDate = new DateTime(2019,07,13) ;
+
         public const string DelijnWvl = "testdata/fixed-test-cases-de-lijn-wvl-2019-07-11.transitdb";
         public const string DelijnOVl = "testdata/fixed-test-cases-de-lijn-ovl-2019-07-11.transitdb";
         public const string DelijnVlB = "testdata/fixed-test-cases-de-lijn-vlb-2019-07-11.transitdb";

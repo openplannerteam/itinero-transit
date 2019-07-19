@@ -12,7 +12,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
     {
         protected override object Execute((string start, string destination) input)
         {
-            var tdb = TransitDb.ReadFrom(TestAllAlgorithms._nmbs, 0);
+            var tdb = TransitDb.ReadFrom(Constants.Nmbs, 0);
             
             var gen = new OsmTransferGenerator(RouterDbStaging.RouterDb, 2000,
                 Profiles.Lua.Osm.OsmProfiles.Bicycle

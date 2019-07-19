@@ -2,7 +2,6 @@ using Itinero.Transit.Data;
 using Itinero.Transit.IO.OSM.Data;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
-using Itinero.Transit.Tests.Functional.Algorithms;
 
 namespace Itinero.Transit.Tests.Functional.IO.OSM
 {
@@ -10,7 +9,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
     {
         protected override object Execute(object input)
         {
-            var tdb = TransitDb.ReadFrom(TestAllAlgorithms._nmbs, 0);
+            var tdb = TransitDb.ReadFrom(Constants.Nmbs, 0);
 
 
             // We create a router from the TDB and amend it with an OSM-Locations-Reader to decode OSM-coordinates
