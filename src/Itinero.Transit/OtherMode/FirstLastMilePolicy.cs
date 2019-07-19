@@ -45,7 +45,7 @@ namespace Itinero.Transit.OtherMode
 
         public uint TimeBetween(IStop from, IStop to)
         {
-            return GetSource(from.Id, to.Id).TimeBetween(from, to);
+            return SelectSource(from.Id, to.Id).TimeBetween(from, to);
         }
 
         public Dictionary<StopId, uint> TimesBetween(IStop @from,
@@ -156,19 +156,38 @@ namespace Itinero.Transit.OtherMode
             return _range;
         }
 
-        public IOtherModeGenerator GetSource(StopId from, StopId to)
+        /// <summary>
+        /// Selects the immediately underlying IOtherModeGenerator, which is needed for calculations
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        public IOtherModeGenerator SelectSource(StopId from, StopId to)
         {
             if (_firstMileStops.Contains(from))
             {
-                return _firstMile.GetSource(from, to);
+                return _firstMile;
             }
 
             if (_lastMileStops.Contains(to))
             {
-                return _lastMile.GetSource(from, to);
+                return _lastMile;
             }
 
-            return _defaultWalk.GetSource(from, to);
+            return _defaultWalk;
+        }
+
+        /// <summary>
+        /// Gets the OtherModeGenerator which -in the end- is used to generate the actual route.
+        /// Useful reconstructing the actual route in a frontend.
+        /// Equivalent to 'SelectSource(from, to).GetSource(from, to)'
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        public IOtherModeGenerator GetSource(StopId from, StopId to)
+        {
+            return SelectSource(from, to).GetSource(from, to);
         }
 
         public string OtherModeIdentifier()
