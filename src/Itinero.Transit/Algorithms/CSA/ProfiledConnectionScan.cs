@@ -160,7 +160,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             _connections = settings.ConnectionsEnumerator;
 
-             _empty = new ProfiledParetoFrontier<T>(_comparator, _journeyFilter);
+            _empty = new ProfiledParetoFrontier<T>(_comparator, _journeyFilter);
             _metricFactory = settings.Profile.MetricFactory;
             _transferPolicy = settings.Profile.InternalTransferGenerator;
             _walkPolicy = settings.Profile.WalksGenerator;
