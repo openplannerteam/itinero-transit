@@ -66,12 +66,12 @@ namespace Itinero.Transit.Data
             return new Stop(reader);
         }
 
-        public static IStopsReader UseCache(this IStopsReader stopsReader)
+        public static StopSearchCaching UseCache(this IStopsReader stopsReader)
         {
             // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (stopsReader is StopSearchCaching)
+            if (stopsReader is StopSearchCaching c)
             {
-                return stopsReader;
+                return c;
             }
 
             return new StopSearchCaching(stopsReader);
