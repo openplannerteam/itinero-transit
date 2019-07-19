@@ -4,7 +4,6 @@ using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Data.Core;
-using Itinero.Transit.Logging;
 using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.OtherMode
@@ -77,21 +76,57 @@ namespace Itinero.Transit.OtherMode
                 return _cache[key];
             }
 
-            var v = Fallback.TimesBetween(@from, to);
+            // The end result... Empty for now
+            var v = new Dictionary<StopId, uint>();
+
+            // What do we _actually_ have to search. A few values might be available already
+            var toSearch = new List<IStop>();
+
+            foreach (var t in to)
+            {
+                var keySingle = (from.Id, t.Id);
+                if (_cacheSingle.ContainsKey(keySingle))
+                {
+                    // Found!
+                    v.Add(from.Id, _cacheSingle[keySingle]);
+                }
+                else if (!from.Id.Equals(t.Id))
+                {
+                    // This one should still be searched
+
+                    toSearch.Add(t);
+                }
+            }
+
+            if (toSearch.Count != 0)
+            {
+                var rawSearch = Fallback.TimesBetween(@from, to);
+                foreach (var found in rawSearch)
+                {
+                    v[found.Key] = found.Value;
+                }
+
+                // Add those individual searches to the _cacheSingle as well
+                if (!_cacheIsClosed)
+                {
+                    foreach (var t in to)
+                    {
+                        if (v.ContainsKey(t.Id))
+                        {
+                            _cacheSingle[(from.Id, t.Id)] = v[t.Id];
+                        }
+                        else
+                        {
+                            _cacheSingle[(from.Id, t.Id)] = uint.MaxValue;
+                        }
+                    }
+                }
+            }
+
+
             if (!_cacheIsClosed)
             {
                 _cache[key] = v;
-                foreach (var t in to)
-                {
-                    if (v.ContainsKey(t.Id))
-                    {
-                        _cacheSingle[(from.Id, t.Id)] = v[t.Id];
-                    }
-                    else
-                    {
-                        _cacheSingle[(from.Id, t.Id)] = uint.MaxValue;
-                    }
-                }
             }
 
             return v;
@@ -101,31 +136,71 @@ namespace Itinero.Transit.OtherMode
             new Dictionary<(StopId @from, KeyList<StopId> tos), Dictionary<StopId, uint>>();
 
 
-        public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @from, IStop to)
+        public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @fromEnum, IStop to)
         {
-            from = from.Select(stop => new Stop(stop)).ToList();
+            var from = fromEnum.Select(stop => new Stop(stop)).ToList();
             var froms = new KeyList<StopId>(from.Select(stop => stop.Id));
             var key = (to.Id, froms);
+
+            // Already found in the cache
             if (_cacheReverse.ContainsKey(key))
             {
                 return _cacheReverse[key];
             }
 
-            var v = Fallback.TimesBetween(@from, to);
+            // The end result... Empty for now
+            var v = new Dictionary<StopId, uint>();
+
+
+            // What do we _actually_ have to search. A few values might be available already
+            var toSearch = new List<Stop>();
+            foreach (var f in from)
+            {
+                var keySingle = (f.Id, to.Id);
+                if (_cacheSingle.ContainsKey(keySingle))
+                {
+                    // This value already exists
+                    v.Add(f.Id, _cacheSingle[keySingle]);
+                }
+                else if (!f.Id.Equals(to.Id))
+                {
+                    // This one should still be searched
+                    toSearch.Add(f);
+                }
+            }
+
+
+            if (toSearch.Count != 0)
+            {
+                // There are still values to search for. Lets do that now
+                var rawSearch = Fallback.TimesBetween(@toSearch, to);
+                foreach (var found in rawSearch)
+                {
+                    v[found.Key] = found.Value;
+                }
+
+                // Add those individual searches to the _cacheSingle as well
+                if (!_cacheIsClosed)
+                {
+                    foreach (var fr in from)
+                    {
+                        if (v.ContainsKey(fr.Id))
+                        {
+                            _cacheSingle[(fr.Id, to.Id)] = v[fr.Id];
+                        }
+                        else
+                        {
+                            _cacheSingle[(fr.Id, to.Id)] = uint.MaxValue;
+                        }
+                    }
+                }
+            }
+
+
+            // And add to the final cache
             if (!_cacheIsClosed)
             {
                 _cacheReverse[key] = v;
-                foreach (var fr in from)
-                {
-                    if (v.ContainsKey(fr.Id))
-                    {
-                        _cacheSingle[(fr.Id, to.Id)] = v[fr.Id];
-                    }
-                    else
-                    {
-                        _cacheSingle[(fr.Id, to.Id)] = uint.MaxValue;
-                    }
-                }
             }
 
             return v;
