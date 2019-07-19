@@ -53,6 +53,7 @@ namespace Itinero.Transit.Data.Tiles
         private TiledLocationIndex(ArrayBase<uint> tiles, SparseMemoryArray<byte> tileIndex, ArrayBase<byte> locations, int zoom, 
             uint tileCount, uint tileDataPointer)
         {
+            _tilesCount = tileCount;
             _tiles = tiles;
             _tileIndex = tileIndex;
             _locations = locations;
@@ -136,7 +137,7 @@ namespace Itinero.Transit.Data.Tiles
         /// <returns>The tile.</returns>
         private uint GetLocalTileId(uint tileIndex)
         {
-            if (_tiles.Length < tileIndex)
+            if (tileIndex < _tiles.Length)
             {
                 return _tiles[tileIndex];
             }
@@ -386,6 +387,7 @@ namespace Itinero.Transit.Data.Tiles
             // write tile index.
             stream.Write(BitConverter.GetBytes(_tilesCount), 0, 4);
             length += 4;
+            _tiles.Resize(_tilesCount); // reduce the size, no need to store empty entries.
             length += _tiles.CopyToWithSize(stream);
             
             // write tile pointers.
@@ -404,7 +406,7 @@ namespace Itinero.Transit.Data.Tiles
             var buffer = new byte[4];
             
             var version = stream.ReadByte();
-            if (version != 1)
+            if (version == 1)
             {
                 var zoom = stream.ReadByte();
 
