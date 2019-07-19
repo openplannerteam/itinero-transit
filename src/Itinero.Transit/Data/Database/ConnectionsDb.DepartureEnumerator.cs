@@ -93,8 +93,6 @@ namespace Itinero.Transit.Data
             /// <returns></returns>
             private uint BinarySearch(uint window, ulong dateTime)
             {
-
-                return 0;
                 // https://en.wikipedia.org/wiki/Binary_search_algorithm#Procedure_for_finding_the_leftmost_element
                 var windowPointer = _connectionsDb.DepartureWindowPointers[window * 2 + 0];
                 var windowSize = _connectionsDb.DepartureWindowPointers[window * 2 + 1];
@@ -107,7 +105,6 @@ namespace Itinero.Transit.Data
 
                 uint left = 0;
                 var right = windowSize - 1;
-                var c = new Connection();
                 while (left < right)
                 {
                     var m = (left + right) / 2;
@@ -229,6 +226,37 @@ namespace Itinero.Transit.Data
                 CurrentDateTime = depTime;
                 return true;
             }
+            
+            private uint BinarySearchLast(uint window, ulong dateTime)
+            {
+                //https://en.wikipedia.org/wiki/Binary_search_algorithm#Procedure_for_finding_the_rightmost_element
+                var windowPointer = _connectionsDb.DepartureWindowPointers[window * 2 + 0];
+                var windowSize = _connectionsDb.DepartureWindowPointers[window * 2 + 1];
+
+                if (windowSize <= 1)
+                {
+                    return 0;
+                }
+
+
+                uint left = 0;
+                var right = windowSize;
+                while (left < right)
+                {
+                    var m = (left + right) / 2;
+                    var connId = _connectionsDb.DeparturePointers[windowPointer + m];
+                    var connDepTime = _connectionsDb.GetConnectionDeparture(connId);
+                    if (connDepTime <= dateTime)
+                    {
+                        left = m + 1;
+                    }else
+                    {
+                        right = m;
+                    }
+                }
+
+                return left-1;
+            }
 
             private void PreviousWindow()
             {
@@ -256,15 +284,7 @@ namespace Itinero.Transit.Data
                 {
                     return false;
                 }
-
-                if (_indexInWindow == uint.MaxValue)
-                {
-                    // Needs some initialization
-                    var w = _connectionsDb.WindowFor(CurrentDateTime);
-                    var size = _connectionsDb.DepartureWindowPointers[w * 2 + 1];
-
-                    _indexInWindow = size;
-                }
+                
 
                 // ALL RIGHT FOLKS
                 // Time to figure things out!
@@ -292,6 +312,15 @@ namespace Itinero.Transit.Data
                     PreviousWindow();
                     goto hasPrevious; // === return HasPrevious();
                 }
+                
+                if (_indexInWindow == uint.MaxValue)
+                {
+                    // Needs some initialization
+                    // We search the last element in the window in the current dateTime
+                    _indexInWindow = BinarySearchLast(window, CurrentDateTime)+1;
+                    _alreadyUsed[window] = _indexInWindow;
+                }
+
 
 
                 ulong depTime;

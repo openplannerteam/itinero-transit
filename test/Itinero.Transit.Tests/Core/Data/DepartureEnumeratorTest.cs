@@ -357,8 +357,27 @@ namespace Itinero.Transit.Tests.Core.Data
             var end = DateTime.Now;
             Log.Information($"{(end - start).TotalMilliseconds}ms needed");
 
+
+            // Same, but in the other direction
+
+
             Assert.Equal(2, count);
-            Assert.True((end-start).TotalMilliseconds < 5.0);
+            Assert.True((end - start).TotalMilliseconds < 5.0);
+            Assert.True(enumerator.NextWindowCounter < 100);
+
+            start = DateTime.Now;
+            enumerator.MoveTo(100000000);
+            count = 0;
+            while (enumerator.HasPrevious() && enumerator.CurrentDateTime >= 100000000 - 2000)
+            {
+                count++;
+            }
+
+            end = DateTime.Now;
+            Log.Information($"{(end - start).TotalMilliseconds}ms needed (backwards)");
+
+            Assert.Equal(2, count);
+            Assert.True((end - start).TotalMilliseconds < 5.0);
             Assert.True(enumerator.NextWindowCounter < 100);
         }
     }

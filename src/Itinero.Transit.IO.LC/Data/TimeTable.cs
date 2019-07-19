@@ -41,7 +41,13 @@ namespace Itinero.Transit.IO.LC.Data
 
 
             Next = new Uri(json["http://www.w3.org/ns/hydra/core#next"][0]["@id"].ToString());
-            Prev = new Uri(json["http://www.w3.org/ns/hydra/core#previous"][0]["@id"].ToString());
+            var prevString = json["http://www.w3.org/ns/hydra/core#previous"][0]["@id"]?.ToString();
+            Prev = null;
+            if (prevString != null)
+            {
+                Prev = new Uri(prevString);
+            }
+
             _startTime = _extractTime(new Uri(json["@id"].ToString()));
             _endTime = _extractTime(Next);
 
