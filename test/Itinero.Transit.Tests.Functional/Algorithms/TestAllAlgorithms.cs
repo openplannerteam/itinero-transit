@@ -51,10 +51,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
             return tdbCache[Constants.Nmbs];
         }
 
-        public TransitDb ExecuteLongPeriod()
+        public void ExecuteLongPeriod()
         {
             Execute(new List<string> {Constants.NmbsLongPeriod}, Constants.NmbsLongPeriodDate, CreateInputs, AllTests);
-            return tdbCache[Constants.Nmbs];
         }
 
         public void ExecuteMultiModal(int input = -1)

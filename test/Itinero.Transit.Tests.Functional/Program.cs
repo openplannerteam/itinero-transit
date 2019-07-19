@@ -42,7 +42,6 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
-           //     new TestAllAlgorithms().ExecuteLongPeriod();
            //     return;
             }
 
@@ -85,6 +84,9 @@ namespace Itinero.Transit.Tests.Functional
             new MixedDestinationTest().Run();
             new ConnectionsDbDepartureEnumeratorTest().Run(nmbs);
             var db = new TestAllAlgorithms().ExecuteDefault();
+            new TestAllAlgorithms().ExecuteLongPeriod();
+            new TestAllAlgorithms().ExecuteMultiModal();
+
             var wvl = TransitDb.ReadFrom(Constants.DelijnWvl, 1);
 
             new StopEnumerationTest().Run(new List<TransitDb>()
@@ -105,7 +107,6 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Running multi TransitDb tests");
 
 
-            new TestAllAlgorithms().ExecuteMultiModal();
         }
 
         public static void InternetTests()

@@ -81,6 +81,17 @@ namespace Itinero.Transit.OtherMode
             if (!_cacheIsClosed)
             {
                 _cache[key] = v;
+                foreach (var t in to)
+                {
+                    if (v.ContainsKey(t.Id))
+                    {
+                        _cacheSingle[(from.Id, t.Id)] = v[t.Id];
+                    }
+                    else
+                    {
+                        _cacheSingle[(from.Id, t.Id)] = uint.MaxValue;
+                    }
+                }
             }
 
             return v;
@@ -104,10 +115,22 @@ namespace Itinero.Transit.OtherMode
             if (!_cacheIsClosed)
             {
                 _cacheReverse[key] = v;
+                foreach (var fr in from)
+                {
+                    if (v.ContainsKey(fr.Id))
+                    {
+                        _cacheSingle[(fr.Id, to.Id)] = v[fr.Id];
+                    }
+                    else
+                    {
+                        _cacheSingle[(fr.Id, to.Id)] = uint.MaxValue;
+                    }
+                }
             }
 
             return v;
         }
+
 
         private bool _cacheIsClosed;
 
@@ -147,7 +170,6 @@ namespace Itinero.Transit.OtherMode
                 {
                     withCache.MoveNext();
                 }
-
             }
         }
 
