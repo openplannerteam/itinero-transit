@@ -423,7 +423,7 @@ namespace Itinero.Transit.Data.Tiles
                 // convert to the new format.
                 var tileCount = tileIndexPointer / OldTileSizeInIndex;
                 var tiles = new MemoryArray<uint>(tileCount);
-                var newTileIndex = new SparseMemoryArray<byte>((tileIndexPointer / OldTileSizeInIndex) * TileSizeInIndex);
+                var newTileIndex = new SparseMemoryArray<byte>(0, emptyDefault: byte.MaxValue);
                 for (var t = 0L; t < tileIndexPointer / OldTileSizeInIndex; t++)
                 {
                     var p = t * OldTileSizeInIndex;
@@ -435,11 +435,23 @@ namespace Itinero.Transit.Data.Tiles
                     tiles[t] = tileId;
 
                     var tilePointer = (long)tileId * TileSizeInIndex;
+                    if (newTileIndex.Length <= tilePointer + TileSizeInIndex)
+                    {
+                        newTileIndex.Resize(tilePointer + TileSizeInIndex + 1);
+                    }
+                    
                     newTileIndex[tilePointer + 0] =  tileIndex[p + 4 + 0];
                     newTileIndex[tilePointer + 1] =  tileIndex[p + 4 + 1];
                     newTileIndex[tilePointer + 2] =  tileIndex[p + 4 + 2];
                     newTileIndex[tilePointer + 3] =  tileIndex[p + 4 + 3];
-                    newTileIndex[tilePointer + 4] =  tileIndex[p + 4 + 4];
+
+                    var tileIndexBytes = BitConverter.GetBytes((uint) t);
+                    newTileIndex[tilePointer + 4 + 0] =  tileIndexBytes[0];
+                    newTileIndex[tilePointer + 4 + 1] =  tileIndexBytes[1];
+                    newTileIndex[tilePointer + 4 + 2] =  tileIndexBytes[2];
+                    newTileIndex[tilePointer + 4 + 3] =  tileIndexBytes[3];
+                    
+                    newTileIndex[tilePointer + 4 + 4] =  tileIndex[p + 4 + 4];
                 }
 
                 return new TiledLocationIndex(tiles, newTileIndex, locations, zoom, tileCount, tileDataPointer);
