@@ -152,7 +152,7 @@ namespace Itinero.Transit.Tests.Core.Data.Tiles
             var location7 = index.Add(4.783945083618164, 51.26970207394979);
             
             // load the data as it would have been serialized in v1.
-            var v1Data = TestDataHelper.LoadEmbeddedResource("Itinero.Transit.Tests.test_data.v1.transitdb");
+            var v1Data = TestDataHelper.LoadEmbeddedResource("Itinero.Transit.Tests.test_data.v1.tileidx");
 
             using (var stream = new MemoryStream(v1Data))
             {
