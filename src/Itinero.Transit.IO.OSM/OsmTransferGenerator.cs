@@ -161,11 +161,17 @@ namespace Itinero.Transit.IO.OSM
         public Dictionary<StopId, uint> TimesBetween(IStop from,
             IEnumerable<IStop> to)
         {
+            // TODO @BEN: this is the 'forward' case of one to many
+            // Please return a dictionary where
+            // result[toStop] = <time needed to go 'from' towards 'toStop'
             return this.DefaultTimesBetween(from, to);
         }
 
         public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @from, IStop to)
         {
+            // TODO @BEN: this is the 'backwards' case of one to many
+            // Please return a dictionary where
+            // result[fromStop] = <time needed to go 'fromStop' towards 'to'
             return this.DefaultTimesBetween(from, to);
         }
 
