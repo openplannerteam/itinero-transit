@@ -51,7 +51,7 @@ namespace Itinero.Transit.OtherMode
                 var reachableLocation = v.Key;
                 var time = v.Value;
 
-                if (reachableLocation.Equals(location))
+                if (time == uint.MaxValue)
                 {
                     continue;
                 }
@@ -104,13 +104,18 @@ namespace Itinero.Transit.OtherMode
                 // A backwards journey j. The head element of j represents a departure:
                 // If the traveller gets to j.Location before j.Time, they can continue their journey towards the departure
 
-
                 foreach (var v in times)
                 {
                     // We should arrive in 'to' at 'j.Time' if we walk from 'from'
                     var from = v.Key;
                     // Time needed to walk
                     var time = v.Value;
+
+                    if (time == uint.MaxValue)
+                    {
+                        continue;
+                    }
+
 
                     // Biggest difference: subtraction instead of addition
                     // We walk towards j.Location, which equals 'to' location
