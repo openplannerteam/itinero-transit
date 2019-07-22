@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Data.Attributes;
@@ -51,12 +52,15 @@ namespace Itinero.Transit.Data.Aggregators
             {
                 set.Add(new Stop(s));
             }
+
             _stopsCache[key] = set;
             return set;
         }
 
         public void MakeComplete()
         {
+            _cacheIsClosed = true;
+            var toAdd = new Dictionary<(Stop, uint), HashSet<Stop>>();
             foreach (var inRange in _stopsCache)
             {
                 // This only concerns 'crows flight' in range
@@ -70,19 +74,22 @@ namespace Itinero.Transit.Data.Aggregators
                     var key = (b, range);
                     if (!_stopsCache.ContainsKey(key))
                     {
-                        _stopsCache[key] = new HashSet<Stop>
+                        toAdd[key] = new HashSet<Stop>
                         {
                             a
                         };
                     }
                     else
                     {
-                        _stopsCache[key].Add(a);
+                        toAdd[key].Add(a);
                     }
                 }
             }
 
-            _cacheIsClosed = true;
+            foreach (var kv in toAdd)
+            {
+                _stopsCache[kv.Key] = kv.Value;
+            }
         }
 
 
