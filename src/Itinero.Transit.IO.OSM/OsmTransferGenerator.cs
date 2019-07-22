@@ -128,8 +128,12 @@ namespace Itinero.Transit.IO.OSM
                     errorMessage = "Start and end-point are the same";
                     return null;
                 }
-
-                var route = _routerDb.Calculate(_profile, startPoint.Value, endPoint.Value);
+                var config = new RoutingSettings
+                {
+                    Profile =  _profile,
+                    MaxDistance = Range()
+                };
+                var route = _routerDb.Calculate(config, startPoint.Value, endPoint.Value);
 
                 if (route.IsError)
                 {
@@ -195,7 +199,13 @@ namespace Itinero.Transit.IO.OSM
                 @from.Longitude, @from.Latitude, profile: _profile);
             
             // calculate all routes using one-to-many search.
-            var routes = _routerDb.Calculate(_profile, source, targets.Select(x => x.target).ToArray());
+            var config = new RoutingSettings
+            {
+                Profile =  _profile,
+                MaxDistance = Range()
+            };
+            var routes = _routerDb.Calculate(config, source, targets.Select(x => x.target).ToArray());
+                
             for (var i = 0; i < targets.Count; i++)
             {
                 var (_, stop) = targets[i];
@@ -248,7 +258,12 @@ namespace Itinero.Transit.IO.OSM
                 @to.Longitude, @to.Latitude, profile: _profile);
             
             // calculate all routes using one-to-many search.
-            var routes = _routerDb.Calculate(_profile, sources.Select(x => x.target).ToArray(), source);
+            var config = new RoutingSettings
+            {
+                Profile =  _profile,
+                MaxDistance = Range()
+            };
+            var routes = _routerDb.Calculate(config, sources.Select(x => x.target).ToArray(), source);
             for (var i = 0; i < sources.Count; i++)
             {
                 var (_, stop) = sources[i];
