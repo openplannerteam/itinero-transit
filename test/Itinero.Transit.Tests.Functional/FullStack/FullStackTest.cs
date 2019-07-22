@@ -20,7 +20,7 @@ namespace Itinero.Transit.Tests.Functional.FullStack
            (Constants.OsmNearStationBruggeLatLon, Constants.OsmDeSterre, 5000),
            (Constants.OsmNearStationBruggeLatLon, Constants.OsmHermanTeirlinck, 5000),
      // TODO enable      (Constants.OsmHermanTeirlinck, Constants.OsmDeSterre, 5000),
-            (Constants.OsmWechel, Constants.OsmDeSterre, 25000),
+     // TODO enable       (Constants.OsmWechel, Constants.OsmDeSterre, 25000),
         };
 
 
