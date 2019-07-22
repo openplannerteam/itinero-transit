@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data.Core;
 

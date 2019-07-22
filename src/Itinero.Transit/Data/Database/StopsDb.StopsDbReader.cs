@@ -106,11 +106,18 @@ namespace Itinero.Transit.Data
 
                 foreach (var s in SearchInBox(box))
                 {
-                    if (DistanceEstimate.DistanceEstimateInMeter(
-                            s.Latitude, s.Longitude, lat, lon) < range)
+                    if (!(DistanceEstimate.DistanceEstimateInMeter(
+                              s.Latitude, s.Longitude, lat, lon) < range))
                     {
-                        yield return s;
+                        // To far away
+                        continue;
                     }
+                    if (s.Id .Equals(stop.Id))
+                    {
+                        // We don't care about the self
+                        continue;
+                    }
+                    yield return s;
                 }
             }
 

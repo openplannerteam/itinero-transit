@@ -38,14 +38,13 @@ namespace Itinero.Transit.OtherMode
                 throw new ArgumentException($"Location {location} not found, could not move to it");
             }
 
-
+            var self = new Stop(stops);
             var reachableLocations =
-                stops.StopsAround(new Stop(stops), otherModeGenerator.Range());
-            
-            
+                stops.StopsAround(self, otherModeGenerator.Range());
 
             stops.MoveTo(journey.Location);
             var times = otherModeGenerator.TimesBetween( /*from Istop journey.Location*/stops, reachableLocations);
+
 
             foreach (var v in times)
             {
@@ -57,6 +56,7 @@ namespace Itinero.Transit.OtherMode
                     continue;
                 }
 
+                // We come from the journey, and walks towards the reachable location
                 var walkingJourney =
                     journey.ChainSpecial(Journey<T>.OTHERMODE, journey.Time + time, reachableLocation,
                         new TripId(otherModeGenerator));
@@ -82,7 +82,7 @@ namespace Itinero.Transit.OtherMode
         /// </summary>
         public static IEnumerable<Journey<T>> WalkTowards<T>(
             this IEnumerable<Journey<T>> journeys,
-            StopId location,
+            StopId location, // The target location
             IOtherModeGenerator otherModeGenerator,
             IStopsReader stops) where T : IJourneyMetric<T>
         {
@@ -91,29 +91,41 @@ namespace Itinero.Transit.OtherMode
                 throw new ArgumentException($"Location {location} not found, could not move to it");
             }
 
-            var l = new Stop(stops);
-            var reachableLocations =
-                stops.StopsAround(l,otherModeGenerator.Range());
 
-            var times = otherModeGenerator.TimesBetween(l, reachableLocations);
+            var to = new Stop(stops);
+            var reachableLocations =
+                stops.StopsAround(to, otherModeGenerator.Range());
+         
+            var times = otherModeGenerator.TimesBetween(reachableLocations, to);
 
             foreach (var j in journeys)
             {
+                // So: what do we have:
+                // A backwards journey j. The head element of j represents a departure:
+                // If the traveller gets to j.Location before j.Time, they can continue their journey towards the departure
+
+
                 foreach (var v in times)
                 {
-                    var reachableLocation = v.Key;
+                    // We should arrive in 'to' at 'j.Time' if we walk from 'from'
+                    var from = v.Key;
+                    // Time needed to walk
                     var time = v.Value;
 
-                    if (reachableLocation.Equals(location))
-                    {
-                        continue;
-                    }
-
                     // Biggest difference: subtraction instead of addition
-                    var walkingJourney =
-                        j.ChainSpecial(Journey<T>.OTHERMODE, j.Time - time, reachableLocation,
-                            new TripId(otherModeGenerator));
+                    // We walk towards j.Location, which equals 'to' location
 
+                    // Based on that, we create a new journey, with a walk on top
+                    // The new 'arrive before' time is a little sooner - the time needed to walk
+                    // The new 'arrive at to continue' is where we could walk from 
+
+                    var walkingJourney =
+                        j.ChainSpecial(
+                            Journey<T>.OTHERMODE,
+                            j.Time - time,
+                            from,
+                            new TripId(otherModeGenerator)
+                        );
                     yield return walkingJourney;
                 }
             }

@@ -1,3 +1,4 @@
+using System;
 using Itinero.Transit.Journey.Metric;
 
 // ReSharper disable UnusedMember.Local
@@ -8,6 +9,10 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
     {
         protected override bool Execute(WithTime<TransferMetric> input)
         {
+            if (input == null)
+            {
+                throw new Exception("No transit-db input given - multiTransitDbTest needs some input to run! Use .run(WithTime)");
+            }
             input.IsochroneFrom();
 
             var journeys = input.AllJourneys();

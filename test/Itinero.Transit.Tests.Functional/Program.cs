@@ -42,8 +42,8 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
-                new FullStackTest().TestAll();
-                return;
+               // TODO Fix this test: new FullStackTest().TestAll();
+                //     return;
             }
 
             // These are all the tests, and will be run in full on the build server
@@ -126,6 +126,7 @@ namespace Itinero.Transit.Tests.Functional
 
             new CachingTest().Run(true);
             new Itinero2RoutingTest().Run();
+            new FullStackTest().TestAll();
         }
 
         public static void SlowTests()

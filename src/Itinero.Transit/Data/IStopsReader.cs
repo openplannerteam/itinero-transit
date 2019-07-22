@@ -18,6 +18,14 @@ namespace Itinero.Transit.Data
         bool MoveTo(string globalId);
         void Reset();
         
+        /// <summary>
+        /// Searches locations around the given stop.
+        /// The given stop itself should not be included
+        /// </summary>
+        /// <param name="stop"></param>
+        /// <param name="range"></param>
+        /// <returns></returns>
+        
         IEnumerable<Stop> StopsAround(Stop stop, uint range);
 
     }

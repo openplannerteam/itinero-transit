@@ -108,7 +108,7 @@ namespace Itinero.Transit.IO.OSM.Data
 
         public HashSet<uint> DatabaseIndexes()
         {
-            return new HashSet<uint>(){_databaseId};
+            return new HashSet<uint>() {_databaseId};
         }
 
         public bool MoveNext()
@@ -169,12 +169,19 @@ namespace Itinero.Transit.IO.OSM.Data
             foreach (var location in _searchableLocations)
             {
                 MoveTo(location);
-                if (DistanceEstimate.DistanceEstimateInMeter(stop.Latitude, stop.Longitude, Latitude, Longitude) <= range)
+                if (!(DistanceEstimate.DistanceEstimateInMeter(stop.Latitude, stop.Longitude, Latitude, Longitude) <=
+                      range))
                 {
-                    yield return new Stop(this);
+                    continue;
                 }
-            }
 
+                if (location.Equals(stop.Id))
+                {
+                    continue;
+                }
+
+                yield return new Stop(this);
+            }
         }
     }
 

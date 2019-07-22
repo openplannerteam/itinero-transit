@@ -88,7 +88,7 @@ namespace Itinero.Transit.OtherMode
                 if (_cacheSingle.ContainsKey(keySingle))
                 {
                     // Found!
-                    v.Add(from.Id, _cacheSingle[keySingle]);
+                    v.Add(t.Id, _cacheSingle[keySingle]);
                 }
                 else if (!from.Id.Equals(t.Id))
                 {

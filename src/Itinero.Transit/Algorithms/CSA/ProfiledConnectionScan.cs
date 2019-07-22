@@ -361,8 +361,11 @@ namespace Itinero.Transit.Algorithms.CSA
 
             // Let's calculate the various times to walk towards each possible destination
             _stopsReader.MoveTo(c.ArrivalStop);
+            var walkDeparture = new Stop(_stopsReader);
+            
+            // Gives a dictionary from c.Arrival to the targetLocations, where the key is the targetLocation
             var walkingTimes =
-                _walkPolicy?.TimesBetween( /* IStop from */ _stopsReader, _targetLocations);
+                _walkPolicy?.TimesBetween( /* IStop from */ walkDeparture, _targetLocations);
             if (walkingTimes == null || walkingTimes.Count == 0)
             {
                 return null;
@@ -388,8 +391,8 @@ namespace Itinero.Transit.Algorithms.CSA
                 return null;
             }
 
-            return
-                // The 'genesis' indicating when we arrive ... 
+            var j =
+            // The 'genesis' indicating when we arrive ... 
                 new Journey<T>
                     (fastestTarget.Value, c.ArrivalTime + fastestTime,
                         _metricFactory.Zero(),
@@ -400,6 +403,7 @@ namespace Itinero.Transit.Algorithms.CSA
                     // ... the connection part ...
                     .ChainBackward(c)
                 ;
+            return j;
         }
 
         /// <summary>
@@ -479,8 +483,9 @@ namespace Itinero.Transit.Algorithms.CSA
                 return;
             }
 
+            // For all the possible journeys from a stop towards the destination
+            // extend the journey on the top
             var withWalks = journeys.WalkTowards(cDepartureStop, _walkPolicy, _stopsReader);
-
 
             foreach (var j in withWalks)
             {

@@ -44,6 +44,10 @@ namespace Itinero.Transit.Data.Core
 
         public bool Get(TId id, T objectToWrite)
         {
+            if (id.DatabaseId >= _underlyingDatabases.Length)
+            {
+                return false;
+            }
             return _underlyingDatabases[id.DatabaseId].Get(id, objectToWrite);
         }
 

@@ -15,13 +15,12 @@ namespace Itinero.Transit.Tests.Functional.FullStack
     {
         public List<(string, string, uint)> TestLocations = new List<(string, string, uint)>
         {
-            
-            (Constants.OsmNearStationBruggeLatLon, Constants.Gent, 1000),
-            (Constants.Brugge, Constants.OsmDeSterre, 2500),
-         /*   (Constants.OsmNearStationBruggeLatLon, Constants.OsmDeSterre, 5000),
-            (Constants.OsmNearStationBruggeLatLon, Constants.OsmHermanTeirlinck, 5000),
+           (Constants.OsmNearStationBruggeLatLon, Constants.Gent, 1000),
+           (Constants.Brugge, Constants.OsmDeSterre, 2500),
+           (Constants.OsmNearStationBruggeLatLon, Constants.OsmDeSterre, 5000),
+           (Constants.OsmNearStationBruggeLatLon, Constants.OsmHermanTeirlinck, 5000),
             (Constants.OsmHermanTeirlinck, Constants.OsmDeSterre, 5000),
-            (Constants.OsmWechel, Constants.OsmDeSterre, 25000),*/
+            (Constants.OsmWechel, Constants.OsmDeSterre, 25000),
         };
 
 
@@ -30,9 +29,12 @@ namespace Itinero.Transit.Tests.Functional.FullStack
             var i = 0;
             foreach (var input in TestLocations)
             {
+                Information($"Starting {i}/{TestLocations.Count}");
                 Execute(input);
-                Information($"Fullstacktest {i}/{TestLocations.Count}");
+                Information($"Done with {i}/{TestLocations.Count}");
+                i++;
             }
+            Information("We made it!");
         }
 
         protected override object Execute((string from, string to, uint range) input)
@@ -73,8 +75,8 @@ namespace Itinero.Transit.Tests.Functional.FullStack
                 .SelectTimeFrame(Constants.TestDate.AddHours(9), Constants.TestDate.AddHours(14));
 
             NotNull(calculator.EarliestArrivalJourney());
-           // NotNull(calculator.LatestDepartureJourney());
-            
+            NotNull(calculator.LatestDepartureJourney());
+
             var all = calculator.AllJourneys();
             NotNull(all);
             True(all.Any());

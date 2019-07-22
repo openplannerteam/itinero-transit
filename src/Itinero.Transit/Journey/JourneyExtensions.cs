@@ -36,7 +36,7 @@ namespace Itinero.Transit.Journey
             Reversed(j, new Journey<T>(j.Location, j.Time, j.Metric.Zero(), j.Root.TripId /* <- This is the debug tag*/), addTo);
         }
 
-        private static void Reversed<T>(this Journey<T> j, Journey<T> buildOn, List<Journey<T>> addTo)
+        private static void Reversed<T>(this Journey<T> j, Journey<T> buildOn, ICollection<Journey<T>> addTo)
             where T : IJourneyMetric<T>
         {
             if (j.SpecialConnection && Equals(j.Connection, Journey<T>.GENESIS))

@@ -20,13 +20,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 
             // verify result.
             NotNull(journeys);
-            var withLoop = new List<Journey<TransferMetric>>();
             foreach (var journey in journeys)
             {
-                if (ContainsLoop(journey))
-                {
-                    withLoop.Add(journey);
-                }
+               NoLoops(journey, input);
             }
 
             True(journeys.Any());

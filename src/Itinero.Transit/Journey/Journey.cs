@@ -458,6 +458,13 @@ namespace Itinero.Transit.Journey
                 location = stops.GlobalId + " " + stops.Attributes;
                 dbOperator = stops.Id.DatabaseId;
             }
+            
+            if (SpecialConnection)
+            {
+                // First: is this a special connection?
+                // attempt to read this before trying to decode the connection
+                return SpecialPartToString(location);
+            }
 
             var md = "";
             if (connectionReader != null)
@@ -485,10 +492,7 @@ namespace Itinero.Transit.Journey
                 }
             }
 
-            if (SpecialConnection)
-            {
-                return SpecialPartToString(location);
-            }
+           
 
             return
                 $"Connection {Connection} to {location}, arriving at {Time.FromUnixTime():s}; operator is {dbOperator}{md}";

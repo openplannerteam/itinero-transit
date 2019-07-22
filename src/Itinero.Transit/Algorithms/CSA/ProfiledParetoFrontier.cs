@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Journey;
+using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
@@ -302,8 +303,8 @@ namespace Itinero.Transit.Algorithms.CSA
                         // No conclusions can be made
                         continue;
                     }
-                    
-                    
+
+
                     // Even _with_ a teleport, the intermediate journey could not beat any
                     // already existing journey to the destination...
                     // This means that this intermediate journey can never ever be optimal

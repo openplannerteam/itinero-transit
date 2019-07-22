@@ -188,7 +188,7 @@ namespace Itinero.Transit.IO.OSM
             }
 
             if (targets.Count == 0) return times;
-            Log.Information($"TimesBetween: from {from.GlobalId} one-to-{targets.Count}.");
+            Log.Information($"TimesBetween: from {from.GlobalId} one-to-{targets.Count} within {Range()}m. Targets are: {string.Join("\n", to.Select(t => t.GlobalId))}");
             
             // resolve source only if we have targets.
             var source = _routerDb.Snap(
@@ -240,7 +240,7 @@ namespace Itinero.Transit.IO.OSM
                     f.Longitude, f.Latitude, profile: _profile), f));
             }
             if (sources.Count == 0) return times;
-            Log.Information($"TimesBetween: {sources.Count}-to-one {to.GlobalId}.");
+            Log.Information($"TimesBetween: {sources.Count}-to-one {to.GlobalId} within range {Range()}m.");
 
             
             // resolve source only if we have targets.
