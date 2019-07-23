@@ -42,8 +42,7 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
-               // TODO Fix this test: new FullStackTest().TestAll();
-                //     return;
+                return;
             }
 
             // These are all the tests, and will be run in full on the build server
@@ -106,8 +105,6 @@ namespace Itinero.Transit.Tests.Functional
             Log.Information("Running single TransitDb tests");
             new TestAllAlgorithms().ExecuteDefault();
             Log.Information("Running multi TransitDb tests");
-
-
         }
 
         public static void InternetTests()

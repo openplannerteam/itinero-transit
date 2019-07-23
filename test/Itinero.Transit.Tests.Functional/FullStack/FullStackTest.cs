@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Algorithms.Filter;
@@ -15,12 +16,12 @@ namespace Itinero.Transit.Tests.Functional.FullStack
     {
         public List<(string, string, uint)> TestLocations = new List<(string, string, uint)>
         {
-           (Constants.OsmNearStationBruggeLatLon, Constants.Gent, 1000),
-           (Constants.Brugge, Constants.OsmDeSterre, 2500),
-           (Constants.OsmNearStationBruggeLatLon, Constants.OsmDeSterre, 5000),
-           (Constants.OsmNearStationBruggeLatLon, Constants.OsmHermanTeirlinck, 5000),
-     // TODO enable      (Constants.OsmHermanTeirlinck, Constants.OsmDeSterre, 5000),
-     // TODO enable       (Constants.OsmWechel, Constants.OsmDeSterre, 25000),
+            (Constants.OsmNearStationBruggeLatLon, Constants.Gent, 1000),
+            (Constants.Brugge, Constants.OsmDeSterre, 2500),
+            (Constants.OsmNearStationBruggeLatLon, Constants.OsmDeSterre, 5000),
+            (Constants.OsmNearStationBruggeLatLon, Constants.OsmHermanTeirlinck, 5000),
+            (Constants.OsmHermanTeirlinck, Constants.OsmDeSterre, 5000),
+            (Constants.OsmWechel, Constants.OsmDeSterre, 25000),
         };
 
 
@@ -29,11 +30,14 @@ namespace Itinero.Transit.Tests.Functional.FullStack
             var i = 0;
             foreach (var input in TestLocations)
             {
+                var start = DateTime.Now;
                 Information($"Starting {i}/{TestLocations.Count}");
                 Execute(input);
-                Information($"Done with {i}/{TestLocations.Count}");
                 i++;
+                var end = DateTime.Now;
+                Information($"Done with {i}/{TestLocations.Count} and took {(end - start).TotalMilliseconds}ms");
             }
+
             Information("We made it!");
         }
 
@@ -54,7 +58,7 @@ namespace Itinero.Transit.Tests.Functional.FullStack
 
             stopsReader.MoveTo(to);
             var toStop = new Stop(stopsReader);
-
+            
             var defaultRealLifeProfile = new Profile<TransferMetric>(
                 new InternalTransferGenerator(),
                 new FirstLastMilePolicy(
