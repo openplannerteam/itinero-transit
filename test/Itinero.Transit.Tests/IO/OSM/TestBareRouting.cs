@@ -56,13 +56,13 @@ namespace Itinero.Transit.Tests.IO.OSM
             Assert.True(route.Value.Shape.Count > 10);
             var distance = route.Value.TotalDistance;
             var dEst = DistanceEstimate.DistanceEstimateInMeter(
-                    51.21459999999999, 3.218109999999996, 51.197229555160746, 3.2167249917984009);
-                
+                51.21459999999999, 3.218109999999996, 51.197229555160746, 3.2167249917984009);
+
             Assert.True(dEst < distance);
-            
-            
+
+
             var time = route.Value.TotalTime;
-// TODO Fix            Assert.True(time > distance);
+            Assert.True(time > 1700);
         }
 
 

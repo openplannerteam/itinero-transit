@@ -70,7 +70,7 @@ namespace Itinero.Transit.Data.Aggregators
                 foreach (var b in bs)
                 {
                     var key = (b, range);
-                    if (!_stopsCache.ContainsKey(key))
+                    if (!toAdd.ContainsKey(key))
                     {
                         toAdd[key] = new HashSet<Stop>
                         {
@@ -90,6 +90,10 @@ namespace Itinero.Transit.Data.Aggregators
             }
         }
 
+        public uint CacheCount()
+        {
+            return (uint) _stopsCache.Count;
+        }
 
         // ----------- Only boring, generated code below ------------ //        
 

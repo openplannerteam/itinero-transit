@@ -74,6 +74,12 @@ namespace Itinero.Transit.Data
             return new Stop(reader);
         }
 
+        public static IEnumerable<Stop> StopsAround(this IStopsReader reader, string globalId, uint range)
+        {
+            reader.MoveTo(globalId);
+            return reader.StopsAround(new Stop(reader), range);
+        }
+
         public static StopSearchCaching UseCache(this IStopsReader stopsReader)
         {
             // ReSharper disable once ConvertIfStatementToReturnStatement
