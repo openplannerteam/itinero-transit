@@ -35,6 +35,11 @@ namespace Itinero.Transit.IO.OSM
             TileParser.DownloadFunc = _downloadHelper.Download;
         }
 
+        public static uint LoadedTilesCount()
+        {
+            return _downloadHelper.CachedTilesCount();
+        }
+
         ///  <summary>
         ///  Generate a new transfer generator, which takes into account
         ///  the time needed to transfer, walk, ...

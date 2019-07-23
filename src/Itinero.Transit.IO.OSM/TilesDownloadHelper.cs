@@ -92,10 +92,10 @@ namespace Itinero.Transit.IO.OSM
             return cachedFileStream;
         }
 
-        public int CachedTilesCount()
+        public uint CachedTilesCount()
         {
             var d = new DirectoryInfo(_cachingDir);
-            var count = 0;
+            uint count = 0;
             foreach (var _ in d.GetFiles("*.tile"))
             {
                 count++;

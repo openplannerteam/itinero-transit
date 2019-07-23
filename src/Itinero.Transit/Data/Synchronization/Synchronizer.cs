@@ -65,7 +65,7 @@ namespace Itinero.Transit.Data.Synchronization
                 txt += $"    Freq: 1/{policy.Frequency}sec: {policy}\n";
             }
 
-            Log.Information(
+            Log.Verbose(
                 $"Started an automated task timer with clockrate {_clockRate} sec. Included policies are:\n{txt}");
         }
 
@@ -96,9 +96,9 @@ namespace Itinero.Transit.Data.Synchronization
                 var triggerDate = date.FromUnixTime();
 
                 CurrentlyRunning = policy;
-                Log.Information($"Currently running automated task (via initialRun) :{policy}");
+                Log.Verbose($"Currently running automated task (via initialRun) :{policy}");
                 policy.Run(triggerDate, _db);
-                Log.Information($"Done running automated task (via initialRun) :{policy}");
+                Log.Verbose($"Done running automated task (via initialRun) :{policy}");
             }
 
             CurrentlyRunning = null;
@@ -117,7 +117,7 @@ namespace Itinero.Transit.Data.Synchronization
 
             if (CurrentlyRunning != null)
             {
-                Log.Information("Tasks are already running... Skipping automated tasks for this tick");
+                Log.Verbose("Tasks are already running... Skipping automated tasks for this tick");
                 return;
             }
 
@@ -132,9 +132,9 @@ namespace Itinero.Transit.Data.Synchronization
                 try
                 {
                     CurrentlyRunning = policy;
-                    Log.Information($"Currently running automated task:{policy}");
+                    Log.Verbose($"Currently running automated task:{policy}");
                     policy.Run(triggerDate, _db);
-                    Log.Information($"Done running automated task:{policy}");
+                    Log.Verbose($"Done running automated task:{policy}");
                 }
                 catch (Exception e)
                 {
