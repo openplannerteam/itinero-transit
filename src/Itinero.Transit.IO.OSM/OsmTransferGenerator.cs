@@ -87,6 +87,7 @@ namespace Itinero.Transit.IO.OSM
             {
                 msg = "Failed with " + errMessage;
             }
+
             Log.Information($"From: {@from.GlobalId} to: {to.GlobalId} finished. {msg}");
 
             if (isEmpty)
@@ -128,9 +129,10 @@ namespace Itinero.Transit.IO.OSM
                     errorMessage = "Start and end-point are the same";
                     return null;
                 }
+
                 var config = new RoutingSettings
                 {
-                    Profile =  _profile,
+                    Profile = _profile,
                     MaxDistance = Range()
                 };
                 var route = _routerDb.Calculate(config, startPoint.Value, endPoint.Value);
@@ -166,119 +168,149 @@ namespace Itinero.Transit.IO.OSM
         public Dictionary<StopId, uint> TimesBetween(IStop from,
             IEnumerable<IStop> to)
         {
-            var times = new Dictionary<StopId, uint>();
-            
-            // collect targets that are in range.
-            var targets = new List<(SnapPoint target, IStop stop)>();
-            foreach (var t in to)
+            try
             {
-                var distance =
-                    Coordinate.DistanceEstimateInMeter(@from.Longitude, @from.Latitude, t.Longitude, t.Latitude);
-                // Small patch for small distances...
-                if (distance < 20)
+                var times = new Dictionary<StopId, uint>();
+
+                // collect targets that are in range.
+                var targets = new List<(SnapPoint target, IStop stop)>();
+                foreach (var t in to)
                 {
-                    times[t.Id] = 0;
-                    continue;
+                    var distance =
+                        Coordinate.DistanceEstimateInMeter(@from.Longitude, @from.Latitude, t.Longitude, t.Latitude);
+                    // Small patch for small distances...
+                    if (distance < 20)
+                    {
+                        times[t.Id] = 0;
+                        continue;
+                    }
+
+                    if (distance > _searchDistance)
+                    {
+                        times[t.Id] = uint.MaxValue;
+                        continue;
+                    }
+
+                    targets.Add((_routerDb.Snap(
+                        t.Longitude, t.Latitude, profile: _profile), t));
                 }
 
-                if (distance > _searchDistance)
+                if (targets.Count == 0) return times;
+                Log.Information(
+                    $"TimesBetween: from {from.GlobalId} one-to-{targets.Count} within {Range()}m. Targets are: {string.Join("\n", to.Select(t => t.GlobalId))}");
+
+                // resolve source only if we have targets.
+                var source = _routerDb.Snap(
+                    @from.Longitude, @from.Latitude, profile: _profile);
+
+                // calculate all routes using one-to-many search.
+                var config = new RoutingSettings
                 {
-                    times[t.Id] = uint.MaxValue;
-                    continue;
+                    Profile = _profile,
+                    MaxDistance = Range()
+                };
+                var routes = _routerDb.Calculate(config, source, targets.Select(x => x.target).ToArray());
+
+                for (var i = 0; i < targets.Count; i++)
+                {
+                    var (_, stop) = targets[i];
+                    var result = routes[i];
+                    if (result.IsError)
+                    {
+                        times[stop.Id] = uint.MaxValue;
+                    }
+                    else
+                    {
+                        times[stop.Id] = (uint) result.Value.TotalTime;
+                    }
                 }
-                
-                targets.Add((_routerDb.Snap(
-                    t.Longitude, t.Latitude, profile: _profile), t));
+
+                return times;
             }
-
-            if (targets.Count == 0) return times;
-            Log.Information($"TimesBetween: from {from.GlobalId} one-to-{targets.Count} within {Range()}m. Targets are: {string.Join("\n", to.Select(t => t.GlobalId))}");
-            
-            // resolve source only if we have targets.
-            var source = _routerDb.Snap(
-                @from.Longitude, @from.Latitude, profile: _profile);
-            
-            // calculate all routes using one-to-many search.
-            var config = new RoutingSettings
+            catch (Exception e)
             {
-                Profile =  _profile,
-                MaxDistance = Range()
-            };
-            var routes = _routerDb.Calculate(config, source, targets.Select(x => x.target).ToArray());
-                
-            for (var i = 0; i < targets.Count; i++)
-            {
-                var (_, stop) = targets[i];
-                var result = routes[i];
-                if (result.IsError)
-                {
-                    times[stop.Id] = uint.MaxValue;
-                }
-                else
-                {
-                    times[stop.Id] = (uint)result.Value.TotalTime;
-                }
+                var arrivalPoints = string.Join("\n",
+                    to.Select(t => t.GlobalId + "(" + t.Latitude + "," + t.Longitude + ")"));
+                Log.Error(
+                    $"Could not calculate one-to-many route: weird exception: {e.Message}\n" +
+                    $"Departure point is {@from.GlobalId} {(@from.Latitude, @from.Longitude)}\n" +
+                    $"Arrival points are {arrivalPoints}\n" +
+                    $"Stack trace is {e}");
+                throw;
             }
-
-            return times;
         }
 
         public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @from, IStop to)
         {
-            var times = new Dictionary<StopId, uint>();
-            
-            // collect targets that are in range.
-            var sources = new List<(SnapPoint target, IStop stop)>();
-            foreach (var f in from)
+            try
             {
-                var distance =
-                    Coordinate.DistanceEstimateInMeter(@f.Longitude, @f.Latitude, to.Longitude, to.Latitude);
-                // Small patch for small distances...
-                if (distance < 20)
+                var times = new Dictionary<StopId, uint>();
+
+                // collect targets that are in range.
+                var sources = new List<(SnapPoint target, IStop stop)>();
+                foreach (var f in from)
                 {
-                    times[f.Id] = 0;
-                    continue;
+                    var distance =
+                        Coordinate.DistanceEstimateInMeter(@f.Longitude, @f.Latitude, to.Longitude, to.Latitude);
+                    // Small patch for small distances...
+                    if (distance < 20)
+                    {
+                        times[f.Id] = 0;
+                        continue;
+                    }
+
+                    if (distance > _searchDistance)
+                    {
+                        times[f.Id] = uint.MaxValue;
+                        continue;
+                    }
+
+                    sources.Add((_routerDb.Snap(
+                        f.Longitude, f.Latitude, profile: _profile), f));
                 }
 
-                if (distance > _searchDistance)
+                if (sources.Count == 0) return times;
+                Log.Information($"TimesBetween: {sources.Count}-to-one {to.GlobalId} within range {Range()}m.");
+
+
+                // resolve source only if we have targets.
+                var source = _routerDb.Snap(
+                    @to.Longitude, @to.Latitude, profile: _profile);
+
+                // calculate all routes using one-to-many search.
+                var config = new RoutingSettings
                 {
-                    times[f.Id] = uint.MaxValue;
-                    continue;
+                    Profile = _profile,
+                    MaxDistance = Range()
+                };
+                var routes = _routerDb.Calculate(config, sources.Select(x => x.target).ToArray(), source);
+                for (var i = 0; i < sources.Count; i++)
+                {
+                    var (_, stop) = sources[i];
+                    var result = routes[i];
+                    if (result.IsError)
+                    {
+                        times[stop.Id] = uint.MaxValue;
+                    }
+                    else
+                    {
+                        times[stop.Id] = (uint) result.Value.TotalTime;
+                    }
                 }
-                
-                sources.Add((_routerDb.Snap(
-                    f.Longitude, f.Latitude, profile: _profile), f));
+
+                return times;
             }
-            if (sources.Count == 0) return times;
-            Log.Information($"TimesBetween: {sources.Count}-to-one {to.GlobalId} within range {Range()}m.");
-
-            
-            // resolve source only if we have targets.
-            var source = _routerDb.Snap(
-                @to.Longitude, @to.Latitude, profile: _profile);
-            
-            // calculate all routes using one-to-many search.
-            var config = new RoutingSettings
+            catch (Exception e)
             {
-                Profile =  _profile,
-                MaxDistance = Range()
-            };
-            var routes = _routerDb.Calculate(config, sources.Select(x => x.target).ToArray(), source);
-            for (var i = 0; i < sources.Count; i++)
-            {
-                var (_, stop) = sources[i];
-                var result = routes[i];
-                if (result.IsError)
-                {
-                    times[stop.Id] = uint.MaxValue;
-                }
-                else
-                {
-                    times[stop.Id] = (uint)result.Value.TotalTime;
-                }
+                var departurePoints = string.Join("\n",
+                    from.Select(t => t.GlobalId + "(" + t.Latitude + "," + t.Longitude + ")"));
+                Log.Error(
+                    $"Could not calculate one-to-many route: weird exception: {e.Message}\n" +
+                    $"Departure points are {departurePoints}\n" +
+                    $"Arrival point is {to.GlobalId} {(to.Latitude, to.Longitude)}\n" +
+                    $"Stack trace is {e}");
+                throw;
             }
-
-            return times;
         }
 
         public uint Range()
