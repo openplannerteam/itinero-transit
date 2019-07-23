@@ -235,10 +235,10 @@ namespace Itinero.Transit.IO.OSM
             catch (Exception e)
             {
                 var arrivalPoints = string.Join("\n",
-                    to.Select(t => t.GlobalId + "(" + t.Latitude + "," + t.Longitude + ")"));
+                    to.Select(t => $"{t.GlobalId} {(t.Longitude,t.Latitude)}"));
                 Log.Error(
                     $"Could not calculate one-to-many route: weird exception: {e.Message}\n" +
-                    $"Departure point is {@from.GlobalId} {(@from.Latitude, @from.Longitude)}\n" +
+                    $"Departure point is {@from.GlobalId} {(@from.Longitude, @from.Latitude)}\n" +
                     $"Arrival points are {arrivalPoints}\n" +
                     $"Stack trace is {e}");
                 throw;
@@ -308,11 +308,11 @@ namespace Itinero.Transit.IO.OSM
             catch (Exception e)
             {
                 var departurePoints = string.Join("\n",
-                    from.Select(t => t.GlobalId + "(" + t.Latitude + "," + t.Longitude + ")"));
+                    from.Select(t => $"{t.GlobalId} {(t.Longitude,t.Latitude)}"));
                 Log.Error(
-                    $"Could not calculate one-to-many route: weird exception: {e.Message}\n" +
+                    $"Could not calculate many-to-to route: weird exception: {e.Message}\n" +
                     $"Departure points are {departurePoints}\n" +
-                    $"Arrival point is {to.GlobalId} {(to.Latitude, to.Longitude)}\n" +
+                    $"Arrival point is {to.GlobalId} {(to.Longitude, to.Latitude)}\n" +
                     $"Stack trace is {e}");
                 throw;
             }
