@@ -30,7 +30,7 @@ namespace Itinero.Transit.Data.Aggregators
         }
 
         // ReSharper disable once UnusedMember.Global
-        public StopSearchCache(IStopsReader stopsReader, StopSearchCache shareCacheWith, IEnumerable<Stop> empty)
+        public StopSearchCache(IStopsReader stopsReader, StopSearchCache shareCacheWith)
         {
             _fallback = stopsReader;
             _stopsCache = shareCacheWith._stopsCache;
