@@ -297,11 +297,19 @@ namespace Itinero.Transit.OtherMode
 
 
         /// <summary>
-        /// Consider the following situation: you have a big cache of all the timings between all the public transport stops.
-        /// You need to add in a few extra floating points, which you'll only shortly need.
+        /// When the cache is closed, NO NEW VALUES will be cached.
+        /// If a request is not in the cache, it will be passed to the fallback provider.
         ///
-        /// For this, you can create a small, extra cache, add the needed stuff and let the others delegate to the fallback
-        /// 
+        ///
+        /// This is meant for multi-level caches:
+        ///
+        /// There is one long-living cache A, which keeps track of data 99% of the users will need 
+        /// There is one short-living cache B which is only useful for one single request (but will often be needed during the request).
+        /// Then, B will use A as fallback.
+        /// The needed values for B are precomputed and B is closed.
+        /// B can then be passed into the requesting algorithm.
+        /// The user-specific requests (which were precomputed) will be answered by B, whereas the rest will be answered by A
+        ///
         /// </summary>
         public void CloseCache()
         {

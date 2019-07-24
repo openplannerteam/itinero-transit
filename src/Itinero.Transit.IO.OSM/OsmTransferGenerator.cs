@@ -220,7 +220,7 @@ namespace Itinero.Transit.IO.OSM
                 {
                     var (_, stop) = targets[i];
                     var result = routes[i];
-                    if (result.IsError)
+                    if (result.IsError || result.Value.TotalDistance > Range())
                     {
                         times[stop.Id] = uint.MaxValue;
                     }
@@ -293,7 +293,7 @@ namespace Itinero.Transit.IO.OSM
                 {
                     var (_, stop) = sources[i];
                     var result = routes[i];
-                    if (result.IsError)
+                    if (result.IsError  || result.Value.TotalDistance > Range())
                     {
                         times[stop.Id] = uint.MaxValue;
                     }
