@@ -23,7 +23,7 @@ namespace Itinero.Transit.Data.Aggregators
         /// </summary>
         private bool _cacheIsClosed;
 
-        public StopSearchCache(IStopsReader stopsReader, IEnumerable<Stop> empty)
+        public StopSearchCache(IStopsReader stopsReader)
         {
             _stopsCache = new Dictionary<(Stop, uint), HashSet<Stop>>();
             _fallback = stopsReader;
