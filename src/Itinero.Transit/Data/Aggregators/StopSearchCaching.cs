@@ -4,10 +4,17 @@ using Itinero.Transit.Data.Core;
 
 namespace Itinero.Transit.Data.Aggregators
 {
-    public class StopSearchCaching : IStopsReader
+    public class StopSearchCache : IStopsReader
     {
+        /// <summary>
+        /// The fallback stops reader
+        /// </summary>
         private readonly IStopsReader _stopsReader;
 
+        /// <summary>
+        /// The cache of what stops are in range of the given stop
+        /// {(Stop, range to search) --> these stops are closeby}
+        /// </summary>
         private readonly Dictionary<(Stop, uint), HashSet<Stop>> _stopsCache;
 
         private readonly IEnumerable<Stop> _empty = new Stop[0];
@@ -18,14 +25,14 @@ namespace Itinero.Transit.Data.Aggregators
         /// </summary>
         private bool _cacheIsClosed;
 
-        public StopSearchCaching(IStopsReader stopsReader)
+        public StopSearchCache(IStopsReader stopsReader)
         {
             _stopsCache = new Dictionary<(Stop, uint), HashSet<Stop>>();
             _stopsReader = stopsReader;
         }
 
         // ReSharper disable once UnusedMember.Global
-        public StopSearchCaching(IStopsReader stopsReader, StopSearchCaching shareCacheWith)
+        public StopSearchCache(IStopsReader stopsReader, StopSearchCache shareCacheWith)
         {
             _stopsReader = stopsReader;
             _stopsCache = shareCacheWith._stopsCache;
@@ -51,42 +58,49 @@ namespace Itinero.Transit.Data.Aggregators
                 set.Add(new Stop(s));
             }
 
-            _stopsCache[key] = set;
+            lock (_stopsCache)
+            {
+                _stopsCache[key] = set;
+            }
+
             return set;
         }
 
         public void MakeComplete()
         {
-            _cacheIsClosed = true;
-            var toAdd = new Dictionary<(Stop, uint), HashSet<Stop>>();
-            foreach (var inRange in _stopsCache)
+            lock (_stopsCache)
             {
-                // This only concerns 'crows flight' in range
-                // so if A is in range of B, B is also in range of A
-                var a = inRange.Key.Item1;
-                var range = inRange.Key.Item2;
-                var bs = inRange.Value;
-
-                foreach (var b in bs)
+                _cacheIsClosed = true;
+                var toAdd = new Dictionary<(Stop, uint), HashSet<Stop>>();
+                foreach (var inRange in _stopsCache)
                 {
-                    var key = (b, range);
-                    if (!toAdd.ContainsKey(key))
+                    // This only concerns 'crows flight' in range
+                    // so if A is in range of B, B is also in range of A
+                    var a = inRange.Key.Item1;
+                    var range = inRange.Key.Item2;
+                    var bs = inRange.Value;
+
+                    foreach (var b in bs)
                     {
-                        toAdd[key] = new HashSet<Stop>
+                        var key = (b, range);
+                        if (!toAdd.ContainsKey(key))
                         {
-                            a
-                        };
-                    }
-                    else
-                    {
-                        toAdd[key].Add(a);
+                            toAdd[key] = new HashSet<Stop>
+                            {
+                                a
+                            };
+                        }
+                        else
+                        {
+                            toAdd[key].Add(a);
+                        }
                     }
                 }
-            }
 
-            foreach (var kv in toAdd)
-            {
-                _stopsCache[kv.Key] = kv.Value;
+                foreach (var kv in toAdd)
+                {
+                    _stopsCache[kv.Key] = kv.Value;
+                }
             }
         }
 

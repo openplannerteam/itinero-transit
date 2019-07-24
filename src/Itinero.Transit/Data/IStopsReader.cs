@@ -80,15 +80,15 @@ namespace Itinero.Transit.Data
             return reader.StopsAround(new Stop(reader), range);
         }
 
-        public static StopSearchCaching UseCache(this IStopsReader stopsReader)
+        public static StopSearchCache UseCache(this IStopsReader stopsReader)
         {
             // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (stopsReader is StopSearchCaching c)
+            if (stopsReader is StopSearchCache c)
             {
                 return c;
             }
 
-            return new StopSearchCaching(stopsReader);
+            return new StopSearchCache(stopsReader);
         }
     }
 }

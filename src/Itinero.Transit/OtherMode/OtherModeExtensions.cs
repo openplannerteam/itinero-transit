@@ -8,9 +8,9 @@ namespace Itinero.Transit.OtherMode
 {
     public static class OtherModeExtensions
     {
-        public static OtherModeCacher UseCache(this IOtherModeGenerator fallback)
+        public static OtherModeCache UseCache(this IOtherModeGenerator fallback)
         {
-            return new OtherModeCacher(fallback);
+            return new OtherModeCache(fallback);
         }
 
         public static uint TimeBetween(this IOtherModeGenerator modeGenerator, IStopsReader reader, StopId from,

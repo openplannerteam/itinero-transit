@@ -8,36 +8,57 @@ using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.OtherMode
 {
-    public class OtherModeCacher : IOtherModeGenerator
+    public class OtherModeCache : IOtherModeGenerator
     {
         // ReSharper disable once MemberCanBePrivate.Global
         public IOtherModeGenerator Fallback { get; }
 
-        public OtherModeCacher(IOtherModeGenerator fallback)
+        public OtherModeCache(IOtherModeGenerator fallback)
         {
             Fallback = fallback;
         }
 
 
+        /// <summary>
+        /// Keeps track of single instances: from A to B: how long does it take (or MaxValue if not possible)
+        /// </summary>
         private readonly Dictionary<(StopId, StopId tos), uint> _cacheSingle =
             new Dictionary<(StopId, StopId tos), uint>();
+
+        /// <summary>
+        /// Keeps track of how long it takes to go from A to multiple B's
+        /// </summary>
+        private readonly Dictionary<(StopId Id, KeyList<StopId> tos), Dictionary<StopId, uint>> _cacheForward =
+            new Dictionary<(StopId @from, KeyList<StopId> tos), Dictionary<StopId, uint>>();
+
+
+        /// <summary>
+        /// Keeps track of how long it takes to go from multiple As to one single locations
+        /// This makes sense to do: the access pattern will often need the same closeby stops
+        /// </summary>
+        private readonly Dictionary<(KeyList<StopId> froms, StopId to), Dictionary<StopId, uint>> _cacheReverse =
+            new Dictionary<(KeyList<StopId> froms, StopId to), Dictionary<StopId, uint>>();
+
 
         public uint TimeBetween(IStop from, IStop to)
         {
             var key = (from.Id, to.Id);
+            // ReSharper disable once InconsistentlySynchronizedField
             if (_cacheSingle.ContainsKey(key))
             {
+                // ReSharper disable once InconsistentlySynchronizedField
                 return _cacheSingle[key];
             }
 
             var v = Fallback.TimeBetween(@from, to);
-            _cacheSingle[key] = v;
+            lock (_cacheSingle)
+            {
+                _cacheSingle[key] = v;
+            }
+
             return v;
         }
 
-
-        private readonly Dictionary<(StopId Id, KeyList<StopId> tos), Dictionary<StopId, uint>> _cache =
-            new Dictionary<(StopId @from, KeyList<StopId> tos), Dictionary<StopId, uint>>();
 
         public Dictionary<StopId, uint> TimesBetween(IStop from,
             IEnumerable<IStop> to)
@@ -71,9 +92,9 @@ namespace Itinero.Transit.OtherMode
             to = to.Select(stop => new Stop(stop)).ToList();
             var tos = new KeyList<StopId>(to.Select(stop => stop.Id));
             var key = (from.Id, tos);
-            if (_cache.ContainsKey(key))
+            if (_cacheForward.ContainsKey(key))
             {
-                return _cache[key];
+                return _cacheForward[key];
             }
 
             // The end result... Empty for now
@@ -109,38 +130,42 @@ namespace Itinero.Transit.OtherMode
                 // Add those individual searches to the _cacheSingle as well
                 if (!_cacheIsClosed)
                 {
-                    foreach (var t in to)
+                    lock (_cacheSingle)
                     {
-                        if (v.ContainsKey(t.Id))
+                        foreach (var t in to)
                         {
-                            _cacheSingle[(from.Id, t.Id)] = v[t.Id];
-                        }
-                        else
-                        {
-                            _cacheSingle[(from.Id, t.Id)] = uint.MaxValue;
+                            if (v.ContainsKey(t.Id))
+                            {
+                                _cacheSingle[(from.Id, t.Id)] = v[t.Id];
+                            }
+                            else
+                            {
+                                _cacheSingle[(from.Id, t.Id)] = uint.MaxValue;
+                            }
                         }
                     }
                 }
             }
 
 
+            // ReSharper disable once InvertIf
             if (!_cacheIsClosed)
             {
-                _cache[key] = v;
+                lock (_cacheForward)
+                {
+                    _cacheForward[key] = v;
+                }
             }
 
             return v;
         }
-
-        private readonly Dictionary<(StopId Id, KeyList<StopId> tos), Dictionary<StopId, uint>> _cacheReverse =
-            new Dictionary<(StopId @from, KeyList<StopId> tos), Dictionary<StopId, uint>>();
 
 
         public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @fromEnum, IStop to)
         {
             var from = fromEnum.Select(stop => new Stop(stop)).ToList();
             var froms = new KeyList<StopId>(from.Select(stop => stop.Id));
-            var key = (to.Id, froms);
+            var key = (froms, to.Id);
 
             // Already found in the cache
             if (_cacheReverse.ContainsKey(key))
@@ -182,15 +207,18 @@ namespace Itinero.Transit.OtherMode
                 // Add those individual searches to the _cacheSingle as well
                 if (!_cacheIsClosed)
                 {
-                    foreach (var fr in from)
+                    lock (_cacheSingle)
                     {
-                        if (v.ContainsKey(fr.Id))
+                        foreach (var fr in from)
                         {
-                            _cacheSingle[(fr.Id, to.Id)] = v[fr.Id];
-                        }
-                        else
-                        {
-                            _cacheSingle[(fr.Id, to.Id)] = uint.MaxValue;
+                            if (v.ContainsKey(fr.Id))
+                            {
+                                _cacheSingle[(fr.Id, to.Id)] = v[fr.Id];
+                            }
+                            else
+                            {
+                                _cacheSingle[(fr.Id, to.Id)] = uint.MaxValue;
+                            }
                         }
                     }
                 }
@@ -198,9 +226,13 @@ namespace Itinero.Transit.OtherMode
 
 
             // And add to the final cache
+            // ReSharper disable once InvertIf
             if (!_cacheIsClosed)
             {
-                _cacheReverse[key] = v;
+                lock (_cacheReverse)
+                {
+                    _cacheReverse[key] = v;
+                }
             }
 
             return v;
@@ -210,7 +242,7 @@ namespace Itinero.Transit.OtherMode
         private bool _cacheIsClosed;
 
         // ReSharper disable once UnusedMember.Global
-        public OtherModeCacher PreCalculateCache(IStopsReader withCache)
+        public OtherModeCache PreCalculateCache(IStopsReader withCache)
         {
             // ReSharper disable once RedundantArgumentDefaultValue
             PreCalculateCache(withCache, 0, 0);
@@ -227,7 +259,7 @@ namespace Itinero.Transit.OtherMode
                 withCache.MoveNext();
             }
 
-            if (!(withCache is StopSearchCaching))
+            if (!(withCache is StopSearchCache))
             {
                 throw new Exception("You'll really want to use a caching stops reader here!");
             }
