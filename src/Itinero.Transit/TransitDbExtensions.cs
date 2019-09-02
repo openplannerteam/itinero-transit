@@ -198,29 +198,25 @@ namespace Itinero.Transit
     public class WithProfile<T> where T : IJourneyMetric<T>
     {
         public readonly IStopsReader StopsReader;
-        public readonly Func<IStopsReader> CreateStopsReader;
         public readonly IConnectionEnumerator ConnectionEnumerator;
         public readonly IDatabaseReader<ConnectionId, Connection> ConnectionReader;
         public readonly Profile<T> Profile;
 
         internal WithProfile(
-            Func<IStopsReader> stops,
+            IStopsReader stops,
             IConnectionEnumerator connections,
             IDatabaseReader<ConnectionId, Connection> connectionsReaders,
             Profile<T> profile)
         {
-            CreateStopsReader = stops;
-            StopsReader = stops();
+            StopsReader = stops;
             ConnectionEnumerator = connections;
             ConnectionReader = connectionsReaders;
             Profile = profile;
-            CreateStopsReader = stops;
         }
 
         internal WithProfile(IEnumerable<TransitDb.TransitDbSnapShot> tdbs, Profile<T> profile)
         {
-            CreateStopsReader = () => StopsReaderAggregator.CreateFrom(tdbs);
-            StopsReader = CreateStopsReader();
+            StopsReader = StopsReaderAggregator.CreateFrom(tdbs);
             ConnectionEnumerator =
                 ConnectionEnumeratorAggregator.CreateFrom(
                     tdbs.Select(tdb => tdb.ConnectionsDb.GetDepartureEnumerator()));
@@ -270,7 +266,7 @@ namespace Itinero.Transit
             var end = DateTime.Now;
             Log.Information($"Caching reachable locations took {(end - start).TotalMilliseconds}ms");
             return new WithProfile<T>(
-                () => withCache,
+                 withCache,
                 ConnectionEnumerator,
                 ConnectionReader,
                 new Profile<T>(
@@ -293,9 +289,9 @@ namespace Itinero.Transit
         public WithProfile<T> AddStopsReader(IStopsReader stopsReader)
         {
             return new WithProfile<T>(
-                () => StopsReaderAggregator.CreateFrom(new List<IStopsReader>
+                StopsReaderAggregator.CreateFrom(new List<IStopsReader>
                 {
-                    stopsReader, CreateStopsReader()
+                    stopsReader, StopsReader
                 }),
                 ConnectionEnumerator,
                 ConnectionReader,
@@ -304,7 +300,7 @@ namespace Itinero.Transit
         }
 
         [Pure]
-        public WithProfile<T> SetStopsReader(Func<IStopsReader> stopsReader)
+        public WithProfile<T> SetStopsReader(IStopsReader stopsReader)
         {
             return new WithProfile<T>(
                 stopsReader,
