@@ -182,7 +182,7 @@ namespace Itinero.Transit.IO.OSM
                 foreach (var t in to)
                 {
                     var distance =
-                        Coordinate.DistanceEstimateInMeter(@from.Longitude, @from.Latitude, t.Longitude, t.Latitude);
+                        Coordinate.DistanceEstimateInMeter(@from.Latitude, @from.Longitude, t.Latitude, t.Longitude);
                     // Small patch for small distances...
                     if (distance < 20)
                     {
