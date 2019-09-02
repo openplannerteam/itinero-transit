@@ -14,7 +14,80 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
     public class EarliestConnectionScanTests
     {
         [Fact]
-        public void WithBeginWalk()
+        public void EarliestArrivalJourney_SingleConnectionDb_RouteWithOneConnection()
+        {
+            // build a one-connection db.
+            var transitDb = new TransitDb(0);
+            var writer = transitDb.GetWriter();
+
+            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
+            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
+
+            writer.AddOrUpdateConnection(
+                stop1, stop2, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+
+            // Prevent depletion of the DB
+            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
+                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 1), 0);
+
+            writer.Close();
+
+            var latest = transitDb.Latest;
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
+                null,
+                TransferMetric.Factory,
+                TransferMetric.ParetoCompare);
+
+
+            var journey = latest.SelectProfile(profile)
+                .SelectStops(stop1, stop2)
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
+                    new DateTime(2018, 12, 04, 19, 00, 00, DateTimeKind.Utc))
+                .EarliestArrivalJourney();
+
+            Assert.NotNull(journey);
+            Assert.Equal(2, journey.AllParts().Count());
+        }
+
+        [Fact]
+        public void EarliestArrivalJourney_SmallDb_RouteFromStopToStop()
+        {
+            var tdb = Db.GetDefaultTestDb(out var stop0, out var stop1, out var stop2, out var _, out var _, out var _);
+            var db = tdb.Latest;
+
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
+                null,
+                TransferMetric.Factory,
+                TransferMetric.ParetoCompare
+            );
+
+
+            var j = db
+                .SelectProfile(profile)
+                .SelectStops(stop0, stop1)
+                .SelectTimeFrame(db.GetConn(0).DepartureTime.FromUnixTime(),
+                    (db.GetConn(0).DepartureTime + 60 * 60 * 6).FromUnixTime())
+                .EarliestArrivalJourney();
+
+            Assert.NotNull(j);
+            Assert.Equal(new ConnectionId(0, 0), j.Connection);
+
+
+            j = db.SelectProfile(profile)
+                    .SelectStops(stop0, stop2)
+                    .SelectTimeFrame(
+                        db.GetConn(0).DepartureTime.FromUnixTime(),
+                        (db.GetConn(0).DepartureTime + 60 * 60 * 2).FromUnixTime())
+                    .EarliestArrivalJourney()
+                ;
+
+            Assert.NotNull(j);
+            Assert.Equal(new ConnectionId(0, 1), j.Connection);
+        }
+        
+        [Fact]
+        public void EarliestArrivalJourney_SmallDb_RouteWithFirstMileWalk()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -52,7 +125,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
 
         [Fact]
-        public void WithEndWalk()
+        public void EarliestArrivalJourney_SingleConnectionDb_RouteWithLastMileWalk()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -88,7 +161,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         }
 
         [Fact]
-        public void WithStartEndWalk()
+        public void EarliestArrivalJourney_SingleConnectionDb_RouteWithFirstAndLastMileWalk()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -123,88 +196,9 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .EarliestArrivalJourney();
             Assert.NotNull(journey);
         }
-
+        
         [Fact]
-        public void SimpleEasTest()
-        {
-            var tdb = Db.GetDefaultTestDb(out var stop0, out var stop1, out var stop2, out var _, out var _, out var _);
-            var db = tdb.Latest;
-
-            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
-                null,
-                TransferMetric.Factory,
-                TransferMetric.ParetoCompare
-            );
-
-
-            var j = db
-                .SelectProfile(profile)
-                .SelectStops(stop0, stop1)
-                .SelectTimeFrame(db.GetConn(0).DepartureTime.FromUnixTime(),
-                    (db.GetConn(0).DepartureTime + 60 * 60 * 6).FromUnixTime())
-                .EarliestArrivalJourney();
-
-            Assert.NotNull(j);
-            Assert.Equal(new ConnectionId(0, 0), j.Connection);
-
-
-            j = db.SelectProfile(profile)
-                    .SelectStops(stop0, stop2)
-                    .SelectTimeFrame(
-                        db.GetConn(0).DepartureTime.FromUnixTime(),
-                        (db.GetConn(0).DepartureTime + 60 * 60 * 2).FromUnixTime())
-                    .EarliestArrivalJourney()
-                ;
-
-            Assert.NotNull(j);
-            Assert.Equal(new ConnectionId(0, 1), j.Connection);
-        }
-
-        [Fact]
-        public void SimpleNotGettingOffTest()
-        {
-            // build a one-connection db.
-            var transitDb = new TransitDb(0);
-            var writer = transitDb.GetWriter();
-
-            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0, 0.0);
-            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/2", 0.001, 0.001); // very walkable distance
-            var stop3 = writer.AddOrUpdateStop("https://example.com/stops/3", 60.1, 60.1);
-
-            // Note that all connections have mode '3', indicating neither getting on or of the connection
-            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 10, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 3);
-            writer.AddOrUpdateConnection(stop2, stop3, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 10, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 1), 3);
-
-            // Prevent depletion of the DB
-            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/2",
-                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 2), 3);
-
-            writer.Close();
-
-            var latest = transitDb.Latest;
-
-            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
-                new CrowsFlightTransferGenerator(),
-                TransferMetric.Factory,
-                TransferMetric.ParetoCompare);
-
-            var journey = latest.SelectProfile(profile)
-                .SelectStops(stop0, stop3)
-                .SelectTimeFrame(new DateTime(2018, 12, 04, 10, 00, 00, DateTimeKind.Utc),
-                    new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
-                .EarliestArrivalJourney();
-
-            // It is not possible to get on or off any connection
-            // So we should not find anything
-            Assert.Null(journey);
-        }
-
-
-        [Fact]
-        public void WithIntermediateWalk()
+        public void EarliestArrivalJourney_FourConnectionsTransitDb_RouteWithIntermediateMileWalk_()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -246,45 +240,9 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             Assert.True(journey.PreviousLink.SpecialConnection);
         }
 
-        [Fact]
-        public void ShouldFindOneConnectionJourney()
-        {
-            // build a one-connection db.
-            var transitDb = new TransitDb(0);
-            var writer = transitDb.GetWriter();
-
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
-            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
-
-            writer.AddOrUpdateConnection(
-                stop1, stop2, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
-
-            // Prevent depletion of the DB
-            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 1), 0);
-
-            writer.Close();
-
-            var latest = transitDb.Latest;
-            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
-                null,
-                TransferMetric.Factory,
-                TransferMetric.ParetoCompare);
-
-
-            var journey = latest.SelectProfile(profile)
-                .SelectStops(stop1, stop2)
-                .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
-                    new DateTime(2018, 12, 04, 19, 00, 00, DateTimeKind.Utc))
-                .EarliestArrivalJourney();
-
-            Assert.NotNull(journey);
-            Assert.Equal(2, journey.AllParts().Count());
-        }
 
         [Fact]
-        public void ShouldFindOneConnectionJourneyWithArrivalTravelTime()
+        public void EarliestArrivalJourney_TwoConnectionTransitDb_RouteWithIntermediateMileWalk()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -337,7 +295,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         }
 
         [Fact]
-        public void ShouldFindOneConnectionJourneyWithDepartureTravelTime()
+        public void EarliestArrivalJourney_TwoConnectionTransitDb_RouteWithOneConnection()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -437,7 +395,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         }
 
         [Fact]
-        public void TestModes()
+        public void EarliestArrivalJourney_ConnectionsWithModes_TwoFailedRoutesOneSuccessfulRoute()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -481,6 +439,9 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                         new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
                 ;
             Assert.Null(input.EarliestArrivalJourney());
+            
+            
+            
             input = latest
                     .SelectProfile(profile)
                     .SelectStops(stop0, stop2)
@@ -490,6 +451,49 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 ;
             Assert.NotNull(input.EarliestArrivalJourney());
         }
+        
+              [Fact]
+        public void EarliestArrivalJourney_ConnectionsWithNoGettingOff_NoRouteFound()
+        {
+            // build a one-connection db.
+            var transitDb = new TransitDb(0);
+            var writer = transitDb.GetWriter();
+
+            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
+            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0, 0.0);
+            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/2", 0.001, 0.001); // very walkable distance
+            var stop3 = writer.AddOrUpdateStop("https://example.com/stops/3", 60.1, 60.1);
+
+            // Note that all connections have mode '3', indicating neither getting on or of the connection
+            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 10, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 3);
+            writer.AddOrUpdateConnection(stop2, stop3, "https://example.com/connections/1",
+                new DateTime(2018, 12, 04, 10, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 1), 3);
+
+            // Prevent depletion of the DB
+            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/2",
+                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 2), 3);
+
+            writer.Close();
+
+            var latest = transitDb.Latest;
+
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
+                new CrowsFlightTransferGenerator(),
+                TransferMetric.Factory,
+                TransferMetric.ParetoCompare);
+
+            var journey = latest.SelectProfile(profile)
+                .SelectStops(stop0, stop3)
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 10, 00, 00, DateTimeKind.Utc),
+                    new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
+                .EarliestArrivalJourney();
+
+            // It is not possible to get on or off any connection
+            // So we should not find anything
+            Assert.Null(journey);
+        }
+
 
         /// <summary>
         /// Another regression test from Kristof
@@ -503,7 +507,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         /// 
         /// </summary>
         [Fact]
-        public void ViaStartLocationAgain()
+        public void EarliestArrivalJourney_TransitDbGoingViaStart_JourneyWithoutDetour()
         {
             var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
