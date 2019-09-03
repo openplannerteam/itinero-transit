@@ -1,13 +1,14 @@
 using Itinero.Data.Attributes;
 using Itinero.Transit.Data;
+using Itinero.Transit.Tests.Functional.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Data
 {
-    public class TripHeadsignTest : FunctionalTest<uint, TransitDb>
+    public class TripHeadsignTest : FunctionalTestWithInput<TransitDb>
     {
-        protected override uint Execute(TransitDb input)
+        protected override void Execute()
         {
-            var latest = input.Latest;
+            var latest = Input.Latest;
 
             Information("Testing headsign attribute");
             var tripDb = latest.TripsDb;
@@ -34,7 +35,6 @@ namespace Itinero.Transit.Tests.Functional.Data
             Information($"Headsign test: failed: {failed}, found {found}, total {total}");
             True(failed == 0);
             True(found > 0);
-            return failed;
         }
     }
 

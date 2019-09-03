@@ -1,11 +1,12 @@
 using System;
 using Itinero.Transit.IO.LC.Data;
+using Itinero.Transit.Tests.Functional.Utils;
 
 namespace Itinero.Transit.Tests.Functional.IO.LC
 {
-    public class CachingTest : FunctionalTest<bool, bool>
+    public class CachingTest : FunctionalTest
     {
-        protected override bool Execute(bool input)
+        protected override void Execute()
         {
             var cons = new ConnectionProvider(new Uri(Belgium.SncbConnections),
                 Belgium.SncbConnections + "{?departureTime}");
@@ -14,9 +15,7 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
                 cons.GetTimeTable(
                     new Uri("https://graph.irail.be/sncb/connections"));
 
-
             var uri = tt.Uri;
-
 
             cons.GetTimeTable(
                 uri);
@@ -24,7 +23,6 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
                 cons.GetTimeTable(
                     uri);
             True(!changed);
-            return input;
         }
     }
 }

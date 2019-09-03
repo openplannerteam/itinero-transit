@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Itinero.Data.Graphs.Coders;
 using Itinero.IO.Osm.Tiles;
 using Itinero.Transit.Data;

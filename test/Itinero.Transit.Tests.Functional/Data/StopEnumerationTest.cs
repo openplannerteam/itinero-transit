@@ -2,14 +2,15 @@ using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Aggregators;
+using Itinero.Transit.Tests.Functional.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Data
 {
-    public class StopEnumerationTest : FunctionalTest<bool, List<TransitDb>>
+    public class StopEnumerationTest : FunctionalTestWithInput<List<TransitDb>>
     {
-        protected override bool Execute(List<TransitDb> input)
+        protected override void Execute()
         {
-            var reader = StopsReaderAggregator.CreateFrom(input.Select(a => a.Latest));
+            var reader = StopsReaderAggregator.CreateFrom(Input.Select(a => a.Latest));
 
             True(reader.MoveTo("https://data.delijn.be/stops/502132"));
 
@@ -24,7 +25,6 @@ namespace Itinero.Transit.Tests.Functional.Data
             n.TryGetValue("name", out name);
             NotNull(name);
 
-            return true;
         }
     }
 }

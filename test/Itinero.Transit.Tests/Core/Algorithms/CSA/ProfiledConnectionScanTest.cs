@@ -320,7 +320,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         /// THis test tries to mimick it
         /// 
         /// </summary>
-       // [Fact]
+        // [Fact]
         public void OutOfWindowTest()
         {
             // Time window for the test:  10:00 -> 11:00
@@ -332,7 +332,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             var loc0 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
             var loc1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
-            var loc2 = writer.AddOrUpdateStop("https://example.com/stops/1", 2.1, 0.1);
+            writer.AddOrUpdateStop("https://example.com/stops/1", 2.1, 0.1);
 
             writer.AddOrUpdateConnection(loc0, loc1,
                 "https://example.com/connections/0",

@@ -83,7 +83,7 @@ namespace Itinero.Transit.Data
                 _indexInWindow = _alreadyUsed[_connectionsDb.WindowFor(CurrentDateTime)];
             }
 
-            public int NextWindowCounter = 0;
+            public int NextWindowCounter;
 
 
             /// <summary>

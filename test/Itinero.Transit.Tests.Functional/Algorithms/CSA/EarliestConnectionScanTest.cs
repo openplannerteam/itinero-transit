@@ -1,15 +1,15 @@
 using Itinero.Transit.Journey.Metric;
+using Itinero.Transit.Tests.Functional.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
-    public class EarliestConnectionScanTest : DefaultFunctionalTest<TransferMetric>
+    public class EarliestConnectionScanTest : FunctionalTestWithInput<WithTime<TransferMetric>>
     {
-        protected override bool Execute(WithTime<TransferMetric> input)
+        protected override void Execute()
         {
-            var journey = input.EarliestArrivalJourney();
+            var journey = Input.EarliestArrivalJourney();
             NotNull(journey);
-            NoLoops(journey, input);
-            return true;
+            AssertNoLoops(journey, Input);
         }
     }
 }

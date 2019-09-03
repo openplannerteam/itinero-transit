@@ -218,7 +218,6 @@ namespace Itinero.Transit.Algorithms.CSA
 
         private Journey<T> ChainWithTransfer(Journey<T> journeyTillDeparture, Connection c)
         {
-            Journey<T> journeyToArrival = null;
             if (journeyTillDeparture.SpecialConnection)
             {
                 // We only insert a transfer after a 'normal' segment

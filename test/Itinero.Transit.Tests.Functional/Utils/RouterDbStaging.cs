@@ -2,8 +2,11 @@ using Itinero.Data.Graphs.Coders;
 using Itinero.IO.Osm.Tiles;
 using Itinero.Transit.IO.OSM;
 
-namespace Itinero.Transit.Tests.Functional.Staging
+namespace Itinero.Transit.Tests.Functional.Utils
 {
+    /// <summary>
+    /// Initializes a routerDB that can be used by the other tests
+    /// </summary>
     public static class RouterDbStaging
     {
         public static RouterDb RouterDb { get; private set; }

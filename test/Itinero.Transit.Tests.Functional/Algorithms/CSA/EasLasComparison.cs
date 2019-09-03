@@ -1,4 +1,5 @@
 using Itinero.Transit.Journey.Metric;
+using Itinero.Transit.Tests.Functional.Utils;
 using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
@@ -7,42 +8,39 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
     /// When running PCS (without pruning), the earliest route should equal the one calculated by EAS.
     /// If not  something is wrong
     /// </summary>
-    public class EasLasComparison : DefaultFunctionalTest<TransferMetric>
+    public class EasLasComparison : FunctionalTestWithInput<WithTime<TransferMetric>>
     {
-        protected override bool Execute(WithTime<TransferMetric> input)
+        protected override void Execute( )
         {
             var easJ =
-                input.EarliestArrivalJourney();
+                Input.EarliestArrivalJourney();
 
             NotNull(easJ);
-            NoLoops(easJ, input);
+            AssertNoLoops(easJ, Input);
 
-            input.ResetFilter();
+            Input.ResetFilter();
 
             var lasJ =
-                input
+                Input
                     .DifferentTimes(easJ.Root.DepartureTime().FromUnixTime(),
                        easJ.ArrivalTime().FromUnixTime())
                     .LatestDepartureJourney();
 
 
-            var stop = input.StopsReader;
-            stop.MoveTo(input.From[0].Item1);
+            var stop = Input.StopsReader;
+            stop.MoveTo(Input.From[0].Item1);
             var id0 = stop.GlobalId;
-            stop.MoveTo(input.To[0].Item1);
+            stop.MoveTo(Input.To[0].Item1);
             var id1 = stop.GlobalId;
             stop.Attributes.TryGetValue("name", out var name);
             NotNull(lasJ,
-                $"No latest journey found for {id0} {input.Start:s} --> {id1}({name}). However, the earliest arrival journey has been found:" +
-                $"\n{easJ.ToString(input)}");
-            NoLoops(lasJ, input);
+                $"No latest journey found for {id0} {Input.Start:s} --> {id1}({name}). However, the earliest arrival journey has been found:" +
+                $"\n{easJ.ToString(Input)}");
+            AssertNoLoops(lasJ, Input);
 
             // Eas is bound by the first departing train, while las is not
             True(easJ.Root.DepartureTime() <= lasJ.Root.DepartureTime());
             True(easJ.ArrivalTime() == lasJ.ArrivalTime());
-
-
-            return true;
         }
     }
 }

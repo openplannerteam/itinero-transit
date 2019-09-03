@@ -1,27 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
 using Itinero.Transit.Tests.Functional.Data;
-using Itinero.Transit.Tests.Functional.FullStack;
 using Itinero.Transit.Tests.Functional.IO;
 using Itinero.Transit.Tests.Functional.IO.LC;
 using Itinero.Transit.Tests.Functional.IO.LC.Synchronization;
 using Itinero.Transit.Tests.Functional.IO.OSM;
-using Itinero.Transit.Tests.Functional.Staging;
+using Itinero.Transit.Tests.Functional.Utils;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
 using Log = Serilog.Log;
-
-// ReSharper disable InconsistentNaming
-
-// ReSharper disable UnusedMember.Local
-
-// ReSharper disable PossibleMultipleEnumeration
 
 namespace Itinero.Transit.Tests.Functional
 {
@@ -35,117 +29,72 @@ namespace Itinero.Transit.Tests.Functional
             var devTestsOnly = args.Length == 0 ||
                                !new List<string> {"--full-test-suite", "--full", "--test"}.Contains(args[0].ToLower());
 
-            // use one router db globally.
+
+            // Setup...
             RouterDbStaging.Setup();
+            var nmbs = TransitDbCache.Get(StringConstants.Nmbs, 0);
+            var wvl = TransitDbCache.Get(StringConstants.DelijnWvl, 1);
+            var all = TransitDbCache.GetAll(StringConstants.TestDbs.ToList());
 
 
             // do some local caching.
             if (devTestsOnly)
             {
-                
-                
                 Logging.Log.Information("Ran the devtests. Exiting now. Use --full-test-suite to run everything");
                 return;
             }
 
-            // These are all the tests, and will be run in full on the build server
-            // Tests for devving are below this block
-            LocalTests();
-            try
-            {
-                InternetTests();
-                SlowTests();
-            }
-            catch (OperationCanceledException)
-            {
-                Log.Warning("Some website is down... Skipping internet tests");
-            }
-            catch (ArgumentException e)
-            {
-                if (!(e.InnerException is OperationCanceledException))
-                {
-                    throw;
-                }
+            // Crows flight
+            var nmbsProfile = nmbs.SelectProfile(TestConstants.DefaultProfile(5000)).PrecalculateClosestStops();
 
-                Log.Warning("Some website is down... Skipping internet tests");
-            }
-        }
+            new IntermodalTestWithOtherTransport(nmbsProfile)
+                .RunOverMultiple(TestConstants.WithWalkTestCases);
+
+            
+            new IntermodalTestWithOtherTransport(nmbsProfile, TestConstants.WithWalk(5000))
+                .RunOverMultiple(TestConstants.WithWalkTestCases);//*/
+            // TODO         new MultipleLoadTest().Run();
+/*
+
+            new ConnectionsDbDepartureEnumeratorTest().Run((nmbs, 63155));
+            new ReadWriteTest().Run((nmbs, 63155));
 
 
-        private static void LocalTests()
-        {
-            var nmbs = TransitDb.ReadFrom(Constants.Nmbs, 0);
+            MultiTestRunner.NmbsOnlyTester().RunAllTests();
+            MultiTestRunner.DelijnNmbsTester().RunAllTests();
 
-            // test read/write transit db.
-            using (var memoryStream = WriteTransitDbTest.Default.Run(nmbs))
-            {
-                memoryStream.Seek(0, SeekOrigin.Begin);
 
-                nmbs = ReadTransitDbTest.Default.Run(memoryStream);
-            }
-
-            new MixedDestinationTest().Run();
-            new ConnectionsDbDepartureEnumeratorTest().Run(nmbs);
-            var db = new TestAllAlgorithms().ExecuteDefault();
-            new TestAllAlgorithms().ExecuteLongPeriod();
-            new TestAllAlgorithms().ExecuteMultiModal();
-
-            var wvl = TransitDb.ReadFrom(Constants.DelijnWvl, 1);
-
-            new StopEnumerationTest().Run(new List<TransitDb>()
+            new StopEnumerationTest().Run(new List<TransitDb>
             {
                 nmbs, wvl
             });
 
-            new TripHeadsignTest().Run(db);
+            new TripHeadsignTest().RunOverMultiple(all);
 
-            TestClosestStopsAndRouting(db);
-            Log.Information("Running NoDuplicationTest");
 
-            new DelayTest().Run(true);
-            new FullStackTest().TestAll();
-
-            Log.Information("Running single TransitDb tests");
-            new TestAllAlgorithms().ExecuteDefault();
-            Log.Information("Running multi TransitDb tests");
-        }
-
-        public static void InternetTests()
-        {
-            foreach (var r in OsmTest.TestRelations)
+            new StopSearchTest().RunOverMultiple(new List<(TransitDb db, double lon, double lat, double distance)>
             {
-                var t = new OsmTest();
-                t.Run(r);
-            }
+                (wvl, 4.336209297180176, 50.83567623496864, 1000),
+                (wvl, 4.436824321746825, 50.41119778957908, 1000),
+                (wvl, 3.329758644104004, 50.99052927907061, 1000)
+            });
 
-            new OsmRouteTest().Run();
+
+            new DelayTest().Run();
+
+            new TestOsmLoadingIntoTransitDb().RunOverMultiple(TestConstants.OsmRelationsToTest);
+
+            new UpdateTransitDbTest().Run();
 
             new InitialSynchronizationTest().Run();
 
             new NoDuplicationTest().Run();
 
-            new CachingTest().Run(true);
-            new Itinero2RoutingTest().Run();
-            new FullStackTest().TestAll();
-        }
+            new CachingTest().Run();
 
-        public static void SlowTests()
-        {
-            new MultipleLoadTest().Run();
 
-            // This tests starts a timer which reloads a lot
             new TestAutoUpdating().Run();
-        }
-
-
-        private static void TestClosestStopsAndRouting(TransitDb db)
-        {
-            StopSearchTest.Default.RunPerformance((db, 4.336209297180176,
-                50.83567623496864, 1000));
-            StopSearchTest.Default.RunPerformance((db, 4.436824321746825,
-                50.41119778957908, 1000));
-            StopSearchTest.Default.RunPerformance((db, 3.329758644104004,
-                50.99052927907061, 1000));
+            //*/
         }
 
 

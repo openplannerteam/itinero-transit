@@ -1,13 +1,14 @@
 using System;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Synchronization;
+using Itinero.Transit.Tests.Functional.Utils;
 using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Data
 {
-    public class MultipleLoadTest : FunctionalTest<uint, uint>
+    public class MultipleLoadTest : FunctionalTest
     {
-        protected override uint Execute(uint _)
+        protected override void Execute()
         {
             var sncb = Belgium.Sncb();
 
@@ -36,8 +37,6 @@ namespace Itinero.Transit.Tests.Functional.Data
             dbUpdater.UpdateTimeFrame(DateTime.Today.AddHours(-hours).ToUniversalTime(),
                 DateTime.Today.AddHours(0).ToUniversalTime());
             Test(db);
-
-            return 1;
         }
 
         private void Test(TransitDb db)

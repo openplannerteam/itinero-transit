@@ -3,27 +3,37 @@ using System.Threading;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Synchronization;
 using Itinero.Transit.IO.LC;
+using Itinero.Transit.Tests.Functional.Utils;
 
 namespace Itinero.Transit.Tests.Functional.IO.LC.Synchronization
 {
-    public class TestWriteToDisk : FunctionalTest<TransitDb, (TransitDb db, string name) >
+    public class TestWriteToDisk : FunctionalTestWithInput<TransitDb>
     {
-        protected override TransitDb Execute((TransitDb db, string name) input)
+        protected override void Execute()
         {
-            var path = $"test-write-to-disk-{input.name}.transitdb";
-            var syncer = input.db.AddSyncPolicy(new WriteToDisk(1, path));
+            var path = $"test-write-to-disk-nmbs.transitdb";
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
 
+            var syncer = Input.AddSyncPolicy(new WriteToDisk(1, path));
+            syncer.Start();
             Thread.Sleep(1200);
             syncer.Stop();
 
             // Wait till the other thread is done writing
             Thread.Sleep(10000);
-
+            True(File.Exists(path));
 
             using (var stream = File.OpenRead(path))
             {
-                return ReadTransitDbTest.Default.Run(stream);
+                // can we read this stuff again?
+                var read = TransitDb.ReadFrom(stream, 0);
+                NotNull(read);
             }
+
+            File.Delete(path);
         }
     }
 }

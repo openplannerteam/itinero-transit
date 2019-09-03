@@ -7,12 +7,12 @@ namespace Itinero.Transit.Tests.Core.Data.Tiles
     public class TiledLocationIndexTests
     {
         // Accuracy which is used for comparisons
-        private const int P = 4; // TODO: this is not good enough!
+        private const int _p = 4; // TODO: this is not good enough!
 
         [Fact]
         public void TiledLocationIndex_ShouldStoreLocationInOwnTile()
         {
-            var index = new TiledLocationIndex(14);
+            var index = new TiledLocationIndex();
             var location = index.Add(4.786863327026367, 51.26277419739382);
 
             var tile = Tile.WorldToTile(4.786863327026367, 51.26277419739382, 14);
@@ -23,7 +23,7 @@ namespace Itinero.Transit.Tests.Core.Data.Tiles
         [Fact]
         public void TiledLocationIndex_ShouldStoreConsecutiveLocationsInTheirOwnTile()
         {
-            var index = new TiledLocationIndex(14);
+            var index = new TiledLocationIndex();
             var location1 = index.Add(4.78686332702636700, 51.26277419739382);
             var location2 = index.Add(-1.3842773437499998, 47.96050238891509);
             var location3 = index.Add(12.0410156250000000, 50.16282433381728);
@@ -49,7 +49,7 @@ namespace Itinero.Transit.Tests.Core.Data.Tiles
         [Fact]
         public void TiledLocationIndex_ShouldStoreLocationsInTheSameTileInTheSameTile()
         {
-            var index = new TiledLocationIndex(14);
+            var index = new TiledLocationIndex();
             var location1 = index.Add(4.78686332702636700, 51.26277419739382);
             var location2 = index.Add(4.780426025390625, 51.26900396316538);
             var location3 = index.Add(4.7783660888671875, 51.2664799356903);
@@ -69,13 +69,13 @@ namespace Itinero.Transit.Tests.Core.Data.Tiles
         [Fact]
         public void TiledLocationIndexEnumerator_ShouldEnumerateLocation()
         {
-            var index = new TiledLocationIndex(14);
+            var index = new TiledLocationIndex();
             var location1 = index.Add(4.78686332702636700, 51.26277419739382);
 
             var enumerator = index.GetEnumerator();
             Assert.True(enumerator.MoveNext());
-            Assert.Equal(4.78686332702636700, enumerator.Longitude, P);
-            Assert.Equal(51.26277419739382, enumerator.Latitude, P);
+            Assert.Equal(4.78686332702636700, enumerator.Longitude, _p);
+            Assert.Equal(51.26277419739382, enumerator.Latitude, _p);
             Assert.Equal(location1.tileId, enumerator.TileId);
             Assert.Equal(location1.localId, enumerator.LocalId);
             Assert.Equal(location1.dataPointer, enumerator.DataPointer);
@@ -84,7 +84,7 @@ namespace Itinero.Transit.Tests.Core.Data.Tiles
         [Fact]
         public void TiledLocationIndexEnumerator_ShouldEnumerateAllLocationsPerTile()
         {
-            var index = new TiledLocationIndex(14);
+            var index = new TiledLocationIndex();
             var location1 = index.Add(4.78686332702636700, 51.26277419739382);
             var location2 = index.Add(-1.3842773437499998, 47.96050238891509);
             var location3 = index.Add(12.0410156250000000, 50.16282433381728);
@@ -95,44 +95,44 @@ namespace Itinero.Transit.Tests.Core.Data.Tiles
 
             var enumerator = index.GetEnumerator();
             Assert.True(enumerator.MoveNext()); // should be location1.
-            Assert.Equal(4.78686332702636700, enumerator.Longitude, P);
-            Assert.Equal(51.26277419739382, enumerator.Latitude, P);
+            Assert.Equal(4.78686332702636700, enumerator.Longitude, _p);
+            Assert.Equal(51.26277419739382, enumerator.Latitude, _p);
             Assert.Equal(location1.tileId, enumerator.TileId);
             Assert.Equal(location1.localId, enumerator.LocalId);
 
             Assert.True(enumerator.MoveNext()); // should be location5.
-            Assert.Equal(4.780426025390625, enumerator.Longitude, P);
-            Assert.Equal(51.26900396316538, enumerator.Latitude, P);
+            Assert.Equal(4.780426025390625, enumerator.Longitude, _p);
+            Assert.Equal(51.26900396316538, enumerator.Latitude, _p);
             Assert.Equal(location5.tileId, enumerator.TileId);
             Assert.Equal(location5.localId, enumerator.LocalId);
 
             Assert.True(enumerator.MoveNext()); // should be location6.
-            Assert.Equal(4.7783660888671875, enumerator.Longitude, P);
-            Assert.Equal(51.2664799356903, enumerator.Latitude, P);
+            Assert.Equal(4.7783660888671875, enumerator.Longitude, _p);
+            Assert.Equal(51.2664799356903, enumerator.Latitude, _p);
             Assert.Equal(location6.tileId, enumerator.TileId);
             Assert.Equal(location6.localId, enumerator.LocalId);
 
             Assert.True(enumerator.MoveNext()); // should be location7.
-            Assert.Equal(4.783945083618164, enumerator.Longitude, P);
-            Assert.Equal(51.26970207394979, enumerator.Latitude, P);
+            Assert.Equal(4.783945083618164, enumerator.Longitude, _p);
+            Assert.Equal(51.26970207394979, enumerator.Latitude, _p);
             Assert.Equal(location7.tileId, enumerator.TileId);
             Assert.Equal(location7.localId, enumerator.LocalId);
 
             Assert.True(enumerator.MoveNext()); // should be location2.
-            Assert.Equal(-1.3842773437499998, enumerator.Longitude, P);
-            Assert.Equal(47.96050238891509, enumerator.Latitude, P);
+            Assert.Equal(-1.3842773437499998, enumerator.Longitude, _p);
+            Assert.Equal(47.96050238891509, enumerator.Latitude, _p);
             Assert.Equal(location2.tileId, enumerator.TileId);
             Assert.Equal(location2.localId, enumerator.LocalId);
 
             Assert.True(enumerator.MoveNext()); // should be location3.
-            Assert.Equal(12.0410156250000000, enumerator.Longitude, P);
-            Assert.Equal(50.16282433381728, enumerator.Latitude, P);
+            Assert.Equal(12.0410156250000000, enumerator.Longitude, _p);
+            Assert.Equal(50.16282433381728, enumerator.Latitude, _p);
             Assert.Equal(location3.tileId, enumerator.TileId);
             Assert.Equal(location3.localId, enumerator.LocalId);
 
             Assert.True(enumerator.MoveNext()); // should be location4.
-            Assert.Equal(-2.2631835937500000, enumerator.Longitude, P);
-            Assert.Equal(53.37022057395678, enumerator.Latitude, P);
+            Assert.Equal(-2.2631835937500000, enumerator.Longitude, _p);
+            Assert.Equal(53.37022057395678, enumerator.Latitude, _p);
             Assert.Equal(location4.tileId, enumerator.TileId);
             Assert.Equal(location4.localId, enumerator.LocalId);
 
@@ -142,7 +142,7 @@ namespace Itinero.Transit.Tests.Core.Data.Tiles
         [Fact]
         public void TiledLocationIndex_ShouldReadV1()
         {
-            var index = new TiledLocationIndex(14);
+            var index = new TiledLocationIndex();
             var location1 = index.Add(4.78686332702636700, 51.26277419739382);
             var location2 = index.Add(-1.3842773437499998, 47.96050238891509);
             var location3 = index.Add(12.0410156250000000, 50.16282433381728);
@@ -160,44 +160,44 @@ namespace Itinero.Transit.Tests.Core.Data.Tiles
 
                 var enumerator = copy.GetEnumerator();
                 Assert.True(enumerator.MoveNext()); // should be location1.
-                Assert.Equal(4.78686332702636700, enumerator.Longitude, P);
-                Assert.Equal(51.26277419739382, enumerator.Latitude, P);
+                Assert.Equal(4.78686332702636700, enumerator.Longitude, _p);
+                Assert.Equal(51.26277419739382, enumerator.Latitude, _p);
                 Assert.Equal(location1.tileId, enumerator.TileId);
                 Assert.Equal(location1.localId, enumerator.LocalId);
 
                 Assert.True(enumerator.MoveNext()); // should be location5.
-                Assert.Equal(4.780426025390625, enumerator.Longitude, P);
-                Assert.Equal(51.26900396316538, enumerator.Latitude, P);
+                Assert.Equal(4.780426025390625, enumerator.Longitude, _p);
+                Assert.Equal(51.26900396316538, enumerator.Latitude, _p);
                 Assert.Equal(location5.tileId, enumerator.TileId);
                 Assert.Equal(location5.localId, enumerator.LocalId);
 
                 Assert.True(enumerator.MoveNext()); // should be location6.
-                Assert.Equal(4.7783660888671875, enumerator.Longitude, P);
-                Assert.Equal(51.2664799356903, enumerator.Latitude, P);
+                Assert.Equal(4.7783660888671875, enumerator.Longitude, _p);
+                Assert.Equal(51.2664799356903, enumerator.Latitude, _p);
                 Assert.Equal(location6.tileId, enumerator.TileId);
                 Assert.Equal(location6.localId, enumerator.LocalId);
 
                 Assert.True(enumerator.MoveNext()); // should be location7.
-                Assert.Equal(4.783945083618164, enumerator.Longitude, P);
-                Assert.Equal(51.26970207394979, enumerator.Latitude, P);
+                Assert.Equal(4.783945083618164, enumerator.Longitude, _p);
+                Assert.Equal(51.26970207394979, enumerator.Latitude, _p);
                 Assert.Equal(location7.tileId, enumerator.TileId);
                 Assert.Equal(location7.localId, enumerator.LocalId);
 
                 Assert.True(enumerator.MoveNext()); // should be location2.
-                Assert.Equal(-1.3842773437499998, enumerator.Longitude, P);
-                Assert.Equal(47.96050238891509, enumerator.Latitude, P);
+                Assert.Equal(-1.3842773437499998, enumerator.Longitude, _p);
+                Assert.Equal(47.96050238891509, enumerator.Latitude, _p);
                 Assert.Equal(location2.tileId, enumerator.TileId);
                 Assert.Equal(location2.localId, enumerator.LocalId);
 
                 Assert.True(enumerator.MoveNext()); // should be location3.
-                Assert.Equal(12.0410156250000000, enumerator.Longitude, P);
-                Assert.Equal(50.16282433381728, enumerator.Latitude, P);
+                Assert.Equal(12.0410156250000000, enumerator.Longitude, _p);
+                Assert.Equal(50.16282433381728, enumerator.Latitude, _p);
                 Assert.Equal(location3.tileId, enumerator.TileId);
                 Assert.Equal(location3.localId, enumerator.LocalId);
 
                 Assert.True(enumerator.MoveNext()); // should be location4.
-                Assert.Equal(-2.2631835937500000, enumerator.Longitude, P);
-                Assert.Equal(53.37022057395678, enumerator.Latitude, P);
+                Assert.Equal(-2.2631835937500000, enumerator.Longitude, _p);
+                Assert.Equal(53.37022057395678, enumerator.Latitude, _p);
                 Assert.Equal(location4.tileId, enumerator.TileId);
                 Assert.Equal(location4.localId, enumerator.LocalId);
 
@@ -208,7 +208,7 @@ namespace Itinero.Transit.Tests.Core.Data.Tiles
         [Fact]
         public void TiledLocationIndex_WriteToReadFromShouldBeCopy()
         {
-            var index = new TiledLocationIndex(14);
+            var index = new TiledLocationIndex();
             var location1 = index.Add(4.78686332702636700, 51.26277419739382);
             var location2 = index.Add(-1.3842773437499998, 47.96050238891509);
             var location3 = index.Add(12.0410156250000000, 50.16282433381728);
@@ -227,44 +227,44 @@ namespace Itinero.Transit.Tests.Core.Data.Tiles
 
                 var enumerator = copy.GetEnumerator();
                 Assert.True(enumerator.MoveNext()); // should be location1.
-                Assert.Equal(4.78686332702636700, enumerator.Longitude, P);
-                Assert.Equal(51.26277419739382, enumerator.Latitude, P);
+                Assert.Equal(4.78686332702636700, enumerator.Longitude, _p);
+                Assert.Equal(51.26277419739382, enumerator.Latitude, _p);
                 Assert.Equal(location1.tileId, enumerator.TileId);
                 Assert.Equal(location1.localId, enumerator.LocalId);
 
                 Assert.True(enumerator.MoveNext()); // should be location5.
-                Assert.Equal(4.780426025390625, enumerator.Longitude, P);
-                Assert.Equal(51.26900396316538, enumerator.Latitude, P);
+                Assert.Equal(4.780426025390625, enumerator.Longitude, _p);
+                Assert.Equal(51.26900396316538, enumerator.Latitude, _p);
                 Assert.Equal(location5.tileId, enumerator.TileId);
                 Assert.Equal(location5.localId, enumerator.LocalId);
 
                 Assert.True(enumerator.MoveNext()); // should be location6.
-                Assert.Equal(4.7783660888671875, enumerator.Longitude, P);
-                Assert.Equal(51.2664799356903, enumerator.Latitude, P);
+                Assert.Equal(4.7783660888671875, enumerator.Longitude, _p);
+                Assert.Equal(51.2664799356903, enumerator.Latitude, _p);
                 Assert.Equal(location6.tileId, enumerator.TileId);
                 Assert.Equal(location6.localId, enumerator.LocalId);
 
                 Assert.True(enumerator.MoveNext()); // should be location7.
-                Assert.Equal(4.783945083618164, enumerator.Longitude, P);
-                Assert.Equal(51.26970207394979, enumerator.Latitude, P);
+                Assert.Equal(4.783945083618164, enumerator.Longitude, _p);
+                Assert.Equal(51.26970207394979, enumerator.Latitude, _p);
                 Assert.Equal(location7.tileId, enumerator.TileId);
                 Assert.Equal(location7.localId, enumerator.LocalId);
 
                 Assert.True(enumerator.MoveNext()); // should be location2.
-                Assert.Equal(-1.3842773437499998, enumerator.Longitude, P);
-                Assert.Equal(47.96050238891509, enumerator.Latitude, P);
+                Assert.Equal(-1.3842773437499998, enumerator.Longitude, _p);
+                Assert.Equal(47.96050238891509, enumerator.Latitude, _p);
                 Assert.Equal(location2.tileId, enumerator.TileId);
                 Assert.Equal(location2.localId, enumerator.LocalId);
 
                 Assert.True(enumerator.MoveNext()); // should be location3.
-                Assert.Equal(12.0410156250000000, enumerator.Longitude, P);
-                Assert.Equal(50.16282433381728, enumerator.Latitude, P);
+                Assert.Equal(12.0410156250000000, enumerator.Longitude, _p);
+                Assert.Equal(50.16282433381728, enumerator.Latitude, _p);
                 Assert.Equal(location3.tileId, enumerator.TileId);
                 Assert.Equal(location3.localId, enumerator.LocalId);
 
                 Assert.True(enumerator.MoveNext()); // should be location4.
-                Assert.Equal(-2.2631835937500000, enumerator.Longitude, P);
-                Assert.Equal(53.37022057395678, enumerator.Latitude, P);
+                Assert.Equal(-2.2631835937500000, enumerator.Longitude, _p);
+                Assert.Equal(53.37022057395678, enumerator.Latitude, _p);
                 Assert.Equal(location4.tileId, enumerator.TileId);
                 Assert.Equal(location4.localId, enumerator.LocalId);
 

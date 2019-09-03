@@ -3,12 +3,13 @@ using System.Threading;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Synchronization;
 using Itinero.Transit.IO.LC;
+using Itinero.Transit.Tests.Functional.Utils;
 
 namespace Itinero.Transit.Tests.Functional.IO.LC.Synchronization
 {
-    public class TestAutoUpdating : FunctionalTest<object, object>
+    public class TestAutoUpdating : FunctionalTest
     {
-        protected override object Execute(object input)
+        protected override void Execute()
         {
             var tdb = new TransitDb(0);
 
@@ -26,10 +27,6 @@ namespace Itinero.Transit.Tests.Functional.IO.LC.Synchronization
             
             Thread.Sleep(1000);
             syncer.Stop();
-
-            
-            
-            return input;
         }
     }
 }

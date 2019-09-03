@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Journey;
-using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.Algorithms.CSA
 {

@@ -27,17 +27,17 @@ namespace Itinero.Transit.IO.OSM
 
         private readonly uint _searchDistance;
 
-        private static TilesDownloadHelper _downloadHelper;
+        private static TilesDownloadHelper DownloadHelper;
 
         public static void EnableCaching(string cachingDirectory)
         {
-            _downloadHelper = new TilesDownloadHelper(cachingDirectory);
-            TileParser.DownloadFunc = _downloadHelper.Download;
+            DownloadHelper = new TilesDownloadHelper(cachingDirectory);
+            TileParser.DownloadFunc = DownloadHelper.Download;
         }
 
         public static uint LoadedTilesCount()
         {
-            return _downloadHelper.CachedTilesCount();
+            return DownloadHelper.CachedTilesCount();
         }
 
         ///  <summary>

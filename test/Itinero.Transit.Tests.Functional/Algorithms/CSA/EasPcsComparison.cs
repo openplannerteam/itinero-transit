@@ -1,5 +1,6 @@
 using System.Linq;
 using Itinero.Transit.Journey.Metric;
+using Itinero.Transit.Tests.Functional.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
@@ -7,26 +8,25 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
     /// When running PCS (without pruning), the earliest route should equal the one calculated by EAS.
     /// If not  something is wrong
     /// </summary>
-    public class EasPcsComparison : DefaultFunctionalTest<TransferMetric>
+    public class EasPcsComparison : FunctionalTestWithInput<WithTime<TransferMetric>>
     {
-        protected override bool Execute(WithTime<TransferMetric> input)
+        protected override void Execute()
         {
-            var easJ = input.EarliestArrivalJourney(
-                (tuple => input.End));
+            var easJ = Input.EarliestArrivalJourney(
+                (tuple => Input.End));
             
-            var pcsJs = input.AllJourneys();
+            var pcsJs = Input.AllJourneys();
             var pcsJ = pcsJs.Last();
 
             // PCS could find a route which arrives at the same time, but departs later
             True(easJ.Root.DepartureTime() <= pcsJ.Root.DepartureTime());
             True(easJ.ArrivalTime() <= pcsJ.ArrivalTime());
-            NoLoops(easJ, input);
+            AssertNoLoops(easJ, Input);
             foreach (var j in pcsJs)
             {
-                NoLoops(j, input);
+                AssertNoLoops(j, Input);
             }
 
-            return true;
         }
     }
 }

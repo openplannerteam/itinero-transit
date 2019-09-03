@@ -4,12 +4,13 @@ using System.Threading;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Synchronization;
 using Itinero.Transit.IO.LC;
+using Itinero.Transit.Tests.Functional.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Data
 {
-    public class InitialSynchronizationTest : FunctionalTest<bool, bool>
+    public class InitialSynchronizationTest : FunctionalTest
     {
-        protected override bool Execute(bool input)
+        protected override void Execute()
         {
             var tdb = new TransitDb(0);
             var connections = "https://graph.irail.be/sncb/connections";
@@ -39,9 +40,6 @@ namespace Itinero.Transit.Tests.Functional.Data
                     throw new Exception("We should have seen the task running by now...");
                 }
             }
-
-
-            return true;
         }
     }
 }

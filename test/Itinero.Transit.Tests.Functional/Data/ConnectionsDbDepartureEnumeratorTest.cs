@@ -2,14 +2,15 @@ using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
+using Itinero.Transit.Tests.Functional.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Data
 {
-    public class ConnectionsDbDepartureEnumeratorTest : FunctionalTest<int, TransitDb>
+    public class ConnectionsDbDepartureEnumeratorTest : FunctionalTestWithInput<(TransitDb, uint expectedNumberOfConnections)>
     {
-        protected override int Execute(TransitDb input)
+        protected override void Execute()
         {
-            var latest = input.Latest;
+            var latest = Input.Item1.Latest;
 
             // enumerate connections by departure time.
             var tt = 0;
@@ -25,12 +26,9 @@ namespace Itinero.Transit.Tests.Functional.Data
                 forwardCount++;
             } while (enumerator.HasNext(index, out index));
 
-            Information($"Enumerated {forwardCount} connections!");
-
             var departureEnumerator = latest.ConnectionsDb.GetDepartureEnumerator();
 
 
-            Information("Starting Forwards enumeration");
             // enumerate connections by departure time, but in reverse.
             tt = 0;
             forwardCount = 0;
@@ -51,7 +49,6 @@ namespace Itinero.Transit.Tests.Functional.Data
                 forwardCount++;
             }
 
-            Information("Starting backwards enumeration");
             // enumerate connections by departure time, but in reverse.
             var backwardsCount = 0;
             departureEnumerator.MoveTo(latest.ConnectionsDb.LatestDate);
@@ -97,18 +94,12 @@ namespace Itinero.Transit.Tests.Functional.Data
                 }
             }
 
-            Information($"All contains {all.Count}");
-            Information($"Enumerated forward, {seenInForward.Count}");
-            Information($"Enumerated backwardd, {seenInBackwards.Count}");
-
 
             True(backwardsCount == forwardCount);
+            True(backwardsCount == Input.expectedNumberOfConnections);
             True(all.Count == backwardsCount);
             True(!oneMissed);
             True(tt == 0);
-
-
-            return forwardCount;
         }
     }
 }

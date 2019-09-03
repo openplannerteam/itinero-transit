@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Itinero.Transit.Tests.Functional
+namespace Itinero.Transit.Tests.Functional.Utils
 {
-    public class Constants
+    public static class StringConstants
     {
         public static DateTime TestDate = new DateTime(2019, 07, 11, 09, 00, 00).ToUniversalTime().Date;
 
@@ -44,6 +44,7 @@ namespace Itinero.Transit.Tests.Functional
 
         public const string OsmCentrumShuttle = "testdata/fixed-test-cases-osm-CentrumbusBrugge2019-07-11.transitdb";
         public const string Nmbs = "testdata/fixed-test-cases-sncb-2019-07-11.transitdb";
+        
         public const string NmbsLongPeriod = "testdata/nmbs-long.transitdb";
         public static readonly DateTime NmbsLongPeriodDate = new DateTime(2019, 07, 13);
 

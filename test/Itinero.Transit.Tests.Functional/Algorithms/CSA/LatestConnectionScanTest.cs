@@ -1,18 +1,17 @@
 using Itinero.Transit.Journey.Metric;
+using Itinero.Transit.Tests.Functional.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
-    public class LatestConnectionScanTest :
-        DefaultFunctionalTest<TransferMetric>
+    public class LatestConnectionScanTest :FunctionalTestWithInput<WithTime<TransferMetric>>
     {
-        protected override bool Execute(WithTime<TransferMetric> input)
+        protected override void Execute()
         {
-            var lasJ = input.LatestDepartureJourney();
+            var lasJ = Input.LatestDepartureJourney();
             NotNull(lasJ);
             // NoLoops(lasJ, input);
             // LAS can possible create a transfer which could have been taken sooner,
             // but that is just how LAS works
-            return true;
         }
     }
 }

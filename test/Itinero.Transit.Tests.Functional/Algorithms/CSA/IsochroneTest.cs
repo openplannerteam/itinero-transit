@@ -1,19 +1,17 @@
 using Itinero.Transit.Journey.Metric;
+using Itinero.Transit.Tests.Functional.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
-    public class IsochroneTest : DefaultFunctionalTest<TransferMetric>
+    public class IsochroneTest :FunctionalTestWithInput<WithTime<TransferMetric>>
     {
-
-        protected override bool Execute(WithTime<TransferMetric> input)
+        protected override void Execute()
         {
-            var found = input.IsochroneFrom();
+            var found = Input.IsochroneFrom();
             True(found.Count > 10);
 
-            found = input.IsochroneTo();
+            found = Input.IsochroneTo();
             True(found.Count > 10);
-            
-            return true;
         }
 
 

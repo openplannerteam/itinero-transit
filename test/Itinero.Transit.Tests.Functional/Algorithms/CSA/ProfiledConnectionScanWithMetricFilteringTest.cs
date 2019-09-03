@@ -5,13 +5,13 @@ using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Metric;
+using Itinero.Transit.Tests.Functional.Utils;
 
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
-    public class ProfiledConnectionScanWithMetricFilteringTest :
-        DefaultFunctionalTest<TransferMetric>
+    public class ProfiledConnectionScanWithMetricFilteringTest :FunctionalTestWithInput<WithTime<TransferMetric>>
     {
         private void AreSame(ICollection<Journey<TransferMetric>> js, ICollection<Journey<TransferMetric>> bs)
         {
@@ -34,12 +34,12 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             }
         }
 
-        protected override bool Execute(WithTime<TransferMetric> input)
+        protected override void Execute()
         {
-            input.IsochroneFrom(); // Calculating the isochrone lines makes sure this is reused as filter - in some cases, testing goes from ~26 seconds to ~6
+            Input.IsochroneFrom(); // Calculating the isochrone lines makes sure this is reused as filter - in some cases, testing goes from ~26 seconds to ~6
 
             var start = DateTime.Now;
-            var pcs = new ProfiledConnectionScan<TransferMetric>(input.GetScanSettings());
+            var pcs = new ProfiledConnectionScan<TransferMetric>(Input.GetScanSettings());
             var journeys = pcs.CalculateJourneys();
             var end = DateTime.Now;
             var noFilterTime = (end - start).TotalMilliseconds;
@@ -51,7 +51,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             Information($"Found {journeys.Count} profiles without filter in {noFilterTime}ms");
 
 
-            var settings = input.GetScanSettings();
+            var settings = Input.GetScanSettings();
             start = DateTime.Now;
             settings.MetricGuesser = new SimpleMetricGuesser<TransferMetric>(
                 settings.ConnectionsEnumerator, settings.DepartureStop[0].Item1);
@@ -68,7 +68,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             AreSame(journeysF, journeys);
 
 
-            settings = input.GetScanSettings();
+            settings = Input.GetScanSettings();
             start = DateTime.Now;
             settings.MetricGuesser = new SimpleMetricGuesser<TransferMetric>(
                 settings.ConnectionsEnumerator, settings.DepartureStop[0].Item1);
@@ -84,9 +84,6 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             Information(
                 $"Found {journeysFEarliest.Count} profiles in {filteredTimeEarliest}ms with earliest (difference: {noFilterTime - filteredTimeEarliest}ms faster then no filter at all)");
             AreSame(journeysFEarliest, journeys);
-
-
-            return true;
         }
     }
 }

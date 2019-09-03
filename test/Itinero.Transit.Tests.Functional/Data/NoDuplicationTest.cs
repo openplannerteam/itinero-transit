@@ -2,11 +2,12 @@ using System;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Synchronization;
 using Itinero.Transit.IO.LC;
+using Itinero.Transit.Tests.Functional.Utils;
 using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Data
 {
-    public class NoDuplicationTest : FunctionalTest<bool, bool>
+    public class NoDuplicationTest : FunctionalTest
     {
         private static int CountConnections(DateTime now, TransitDb tdb)
         {
@@ -22,7 +23,7 @@ namespace Itinero.Transit.Tests.Functional.Data
             return count;
         }
 
-        protected override bool Execute(bool _)
+        protected override void Execute()
         {
             var now = DateTime.Now.ToUniversalTime();
 
@@ -43,8 +44,6 @@ namespace Itinero.Transit.Tests.Functional.Data
                     throw new ArgumentException("Duplicates are building in the database");
                 }
             }
-
-            return true;
         }
     }
 }

@@ -1,18 +1,15 @@
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
+using Itinero.Transit.Tests.Functional.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.Search
 {
-    public class StopSearchTest : FunctionalTest<IStop, (TransitDb db, double lon, double lat, double distance)>
+    public class StopSearchTest : 
+        FunctionalTestWithInput<(TransitDb db, double lon, double lat, double distance)>
     {
-        /// <summary>
-        /// Gets the default test.
-        /// </summary>
-        public static StopSearchTest Default => new StopSearchTest();
-        
-        protected override IStop Execute((TransitDb db, double lon, double lat, double distance) input)
+        protected override void Execute()
         {
-            return input.db.Latest.StopsDb.GetReader().FindClosest(new Stop(input.lon, input.lat), (uint) input.distance);
+            Input.db.Latest.StopsDb.GetReader().FindClosest(new Stop(Input.lon, Input.lat), (uint) Input.distance);
         }
     }
 }

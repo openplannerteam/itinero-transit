@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Itinero.Transit.IO.LC.Data;
 using Itinero.Transit.IO.LC.Utils;
+using Itinero.Transit.Tests.Functional.Utils;
 using JsonLD.Core;
 using Newtonsoft.Json.Linq;
 
@@ -11,9 +12,9 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
     /// One issue that seems to exist is lacking delay data
     /// Here, we load a bunch of LC-jsons and see if delays are coming through
     /// </summary>
-    public class DelayTest : FunctionalTest<bool, bool>
+    public class DelayTest : FunctionalTest
     {
-        protected override bool Execute(bool input)
+        protected override void Execute()
         {
             var contents = File.ReadAllText("testdata/connections0.json");
 
@@ -39,8 +40,6 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
             
             // According to a quick grep on connections 0, there should be 271 delayed connections
             True(271 == delayed);
-
-            return true;
         }
     }
 }

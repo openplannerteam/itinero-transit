@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using Reminiscence;
 using Reminiscence.Arrays;
 using Reminiscence.Arrays.Sparse;
+// ReSharper disable InconsistentNaming
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
@@ -24,7 +25,7 @@ namespace Itinero.Transit.Data.Tiles
         private const int BlockSize = 1024;
 
         private readonly SparseMemoryArray<byte> _tileIndex;
-        private uint _tilesCount = 0;
+        private uint _tilesCount;
         private readonly ArrayBase<uint> _tiles;
         
         /// <summary>
@@ -85,16 +86,16 @@ namespace Itinero.Transit.Data.Tiles
             // find or create a place to store the location.
             uint nextEmpty;
             
-            if (GetEncodedLocation((uint) (tileDataPointer + capacity - 1), tile).hasData)
+            if (GetEncodedLocation(tileDataPointer + capacity - 1, tile).hasData)
             {
                 // tile is maximum capacity.
                 (tileDataPointer, capacity) = IncreaseCapacityForTile(tileId, tileDataPointer);
-                nextEmpty = (uint) (tileDataPointer + (capacity / 2));
+                nextEmpty = tileDataPointer + (capacity / 2);
             }
             else
             {
                 // find the last empty slot.
-                nextEmpty = (uint) (tileDataPointer + capacity - 1);
+                nextEmpty = tileDataPointer + capacity - 1;
                 if (nextEmpty > tileDataPointer)
                 {
                     for (var p = nextEmpty - 1; p >= tileDataPointer; p--)
@@ -457,7 +458,8 @@ namespace Itinero.Transit.Data.Tiles
 
                 return new TiledLocationIndex(tiles, newTileIndex, locations, zoom, tileCount, tileDataPointer);
             }
-            else if (version == 2)
+
+            if (version == 2)
             {
                 var zoom = stream.ReadByte();
                 
@@ -474,10 +476,8 @@ namespace Itinero.Transit.Data.Tiles
                 
                 return new TiledLocationIndex(tiles, tileIndex, locations, zoom, tilesCount, tileDataPointer);
             }
-            else
-            {
-                throw new InvalidDataException($"Cannot read {nameof(TiledLocationIndex)}, invalid version #.");
-            }
+
+            throw new InvalidDataException($"Cannot read {nameof(TiledLocationIndex)}, invalid version #.");
         }
 
         /// <summary>

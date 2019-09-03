@@ -1,30 +1,27 @@
 using System;
 using Itinero.Transit.Data;
+using Itinero.Transit.Tests.Functional.Utils;
 
 namespace Itinero.Transit.Tests.Functional.IO.LC
 {
     /// <summary>
     /// Tests the updating of connections.
     /// </summary>
-    public class UpdateTransitDbTest : FunctionalTest<TransitDb,
-        (TransitDb transitDb, DateTime date, TimeSpan window)>
+    public class UpdateTransitDbTest : FunctionalTest
     {
-        /// <summary>
-        /// Gets the default update connections test.
-        /// </summary>
-        public static UpdateTransitDbTest Default => new UpdateTransitDbTest();
-
-        protected override TransitDb Execute((TransitDb transitDb, DateTime date, TimeSpan window) input)
+        protected override void Execute()
         {
+            var tdb = new TransitDb(0);
             // setup profile.
             var profile = Belgium.Sncb();
+            
+            
 
             // load connections for the current day.
-            var w = input.transitDb.GetWriter();
+            var w = tdb.GetWriter();
             profile.AddAllLocationsTo(w);
-            profile.AddAllConnectionsTo(w, input.date, input.date + input.window);
+            profile.AddAllConnectionsTo(w, DateTime.Now.ToUniversalTime(), DateTime.Now.ToUniversalTime().AddHours(10));
             w.Close();
-            return input.transitDb;
         }
     }
 }

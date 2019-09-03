@@ -1,35 +1,27 @@
 using System.Linq;
-using Itinero.Transit.Algorithms.CSA;
-using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Metric;
-using Reminiscence.Collections;
+using Itinero.Transit.Tests.Functional.Utils;
 
 // ReSharper disable PossibleMultipleEnumeration
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
-    public class ProfiledConnectionScanTest :
-        DefaultFunctionalTest<TransferMetric>
+    public class ProfiledConnectionScanTest :FunctionalTestWithInput<WithTime<TransferMetric>>
     {
-        protected override bool Execute(WithTime<TransferMetric> input)
+        protected override void Execute()
         {
-            input.IsochroneFrom(); // Calculating the isochrone lines makes sure this is reused as filter - in some cases, testing goes from ~26 seconds to ~6
+            Input.IsochroneFrom(); // Calculating the isochrone lines makes sure this is reused as filter - in some cases, testing goes from ~26 seconds to ~6
 
-            var pcs = new ProfiledConnectionScan<TransferMetric>(input.GetScanSettings());
-            var journeys = pcs.CalculateJourneys();
+            var journeys = Input.AllJourneys();
 
             // verify result.
             NotNull(journeys);
             foreach (var journey in journeys)
             {
-               NoLoops(journey, input);
+               AssertNoLoops(journey, Input);
             }
 
             True(journeys.Any());
-
-            Information($"Found {journeys.Count} profiles");
-
-            return true;
         }
     }
 }

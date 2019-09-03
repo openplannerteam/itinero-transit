@@ -5,6 +5,7 @@ using Itinero.Transit.Data;
 using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Data.Core;
 using Itinero.Transit.Utils;
+// ReSharper disable InconsistentlySynchronizedField
 
 namespace Itinero.Transit.OtherMode
 {
@@ -241,42 +242,19 @@ namespace Itinero.Transit.OtherMode
 
         private bool _cacheIsClosed;
 
-        // ReSharper disable once UnusedMember.Global
-        public OtherModeCache PreCalculateCache(IStopsReader withCache)
-        {
-            // ReSharper disable once RedundantArgumentDefaultValue
-            PreCalculateCache(withCache, 0, 0);
-            return this;
-        }
-
-        // ReSharper disable once MemberCanBePrivate.Global
-        public void PreCalculateCache(IStopsReader withCache, int offset, int skiprate = 0)
+        public void PreCalculateCache(IStopsReader withCache)
         {
             withCache.Reset();
-
-            for (var i = 0; i < offset; i++)
-            {
-                withCache.MoveNext();
-            }
-
             if (!(withCache is StopSearchCache))
             {
                 throw new Exception("You'll really want to use a caching stops reader here!");
             }
 
-            var c = 0; // withCache.Count();
-            var done = 0;
             while (withCache.MoveNext())
             {
                 var current = (IStop) withCache;
-                done++;
                 var inRange = withCache.StopsAround(new Stop(current), Range());
                 TimesBetween(withCache, inRange);
-
-                for (var i = 0; i < skiprate; i++)
-                {
-                    withCache.MoveNext();
-                }
             }
         }
 

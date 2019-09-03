@@ -62,7 +62,7 @@ namespace Itinero.Transit.Data.Tiles
                 }
 
                 _currentTile = tile;
-                _currentTileCapacity = (uint)capacity;
+                _currentTileCapacity = capacity;
                 _currentTileDataPointer = tileDataPointer;
                 Latitude = latitude;
                 Longitude = longitude;
@@ -79,7 +79,7 @@ namespace Itinero.Transit.Data.Tiles
             /// <returns>True if there is a location available, false otherwise.</returns>
             public bool MoveNext()
             {
-                if (_currentTileDataPointer == TiledLocationIndex.TileNotLoaded)
+                if (_currentTileDataPointer == TileNotLoaded)
                 { // first move, move to first tile and first pointer.
                     if (_index._tilesCount == 0)
                     { // no data.
@@ -96,7 +96,7 @@ namespace Itinero.Transit.Data.Tiles
                     {
                         _t++;
                         localTileId = _index.GetLocalTileId(_t);
-                        if (localTileId == TiledLocationIndex.TileNotLoaded) return false; // this was the last tile.
+                        if (localTileId == TileNotLoaded) return false; // this was the last tile.
                         (_currentTileDataPointer, localTileId, _currentTileCapacity) = _index.GetTile(localTileId);
                     }
 
@@ -113,7 +113,7 @@ namespace Itinero.Transit.Data.Tiles
                         {
                             _t++;
                             localTileId = _index.GetLocalTileId(_t);
-                            if (localTileId == TiledLocationIndex.TileNotLoaded) return false; // this was the last tile.
+                            if (localTileId == TileNotLoaded) return false; // this was the last tile.
                             (_currentTileDataPointer, _, _currentTileCapacity) = _index.GetTile(localTileId);
                         } while (_currentTileCapacity <= 0);
 
