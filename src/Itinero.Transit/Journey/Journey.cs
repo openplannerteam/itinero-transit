@@ -175,8 +175,8 @@ namespace Itinero.Transit.Journey
         /// Genesis constructor.
         /// This constructor creates a root journey
         /// </summary>
-        public Journey(StopId location, ulong departureTime, T initialMetric)
-            : this(location, departureTime, initialMetric, new TripId(uint.MaxValue, uint.MaxValue))
+        public Journey(StopId location, ulong time, T initialMetric)
+            : this(location, time, initialMetric, new TripId(uint.MaxValue, uint.MaxValue))
         {
         }
 
@@ -184,7 +184,7 @@ namespace Itinero.Transit.Journey
         /// Genesis constructor.
         /// This constructor creates a root journey
         /// </summary>
-        public Journey(StopId location, ulong departureTime, T initialMetric,
+        public Journey(StopId location, ulong time, T initialMetric,
             TripId debuggingFreeformTag)
         {
             Root = this;
@@ -192,7 +192,7 @@ namespace Itinero.Transit.Journey
             Connection = GENESIS;
             SpecialConnection = true;
             Location = location;
-            Time = departureTime;
+            Time = time;
             Metric = initialMetric;
             TripId = debuggingFreeformTag;
             _hashCode = CalculateHashCode();

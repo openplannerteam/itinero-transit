@@ -320,34 +320,82 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         /// THis test tries to mimick it
         /// 
         /// </summary>
-        // [Fact]
-        public void OutOfWindowTest()
+        [Fact]
+        public void OutOfWindowAtDepartureTest()
         {
-            // Time window for the test:  10:00 -> 11:00
             // Locations: loc0 -> loc2
-            // We add 
 
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var loc0 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
-            var loc1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
-            writer.AddOrUpdateStop("https://example.com/stops/1", 2.1, 0.1);
+            var loc0 = writer.AddOrUpdateStop("https://example.com/stops/0", 3.1904983520507812,
+                51.256758449834216);
+            var loc1 = writer.AddOrUpdateStop("https://example.com/stops/1", 3.216590881347656,
+                51.197848510420464);
+            var loc2 = writer.AddOrUpdateStop("https://example.com/stops/2", 3.7236785888671875,
+                51.05348088381823);
 
-            writer.AddOrUpdateConnection(loc0, loc1,
+            writer.AddOrUpdateConnection(loc1, loc2,
                 "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
+                new DateTime(2018, 12, 04, 16, 01, 00, DateTimeKind.Utc),
                 30 * 60, 0, 0, new TripId(0, 0), 0);
-
-
-            writer.AddOrUpdateConnection(loc0, loc1,
-                "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
-                40 * 60, 0, 0, new TripId(0, 1), 0);
-
-
+            
             writer.Close();
-            Assert.True(false);
+            
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
+                new CrowsFlightTransferGenerator(10000),
+                TransferMetric.Factory,
+                TransferMetric.ParetoCompare);
+            var journeys = transitDb.SelectProfile(profile).SelectStops(loc0, loc2)
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
+                    new DateTime(2018, 12, 04, 17, 00, 00, DateTimeKind.Utc))
+                .AllJourneys();
+            
+            Assert.Null(journeys);
+        }
+
+        /// <summary>
+        /// Regression test
+        ///
+        ///
+        /// Kristof discovered a case where a huge crows flight took 7h and fell squarely out of the search window,
+        /// even though other options were still available
+        ///
+        /// THis test tries to mimick it
+        /// 
+        /// </summary>
+        [Fact]
+        public void OutOfWindowAtArrivalTest()
+        {
+            // Locations: loc0 -> loc2
+
+            var transitDb = new TransitDb(0);
+            var writer = transitDb.GetWriter();
+
+            var loc0 = writer.AddOrUpdateStop("https://example.com/stops/0", 3.1904983520507812,
+                51.256758449834216);
+            var loc1 = writer.AddOrUpdateStop("https://example.com/stops/1", 3.216590881347656,
+                51.197848510420464);
+            var loc2 = writer.AddOrUpdateStop("https://example.com/stops/2", 3.7236785888671875,
+                51.05348088381823);
+
+            writer.AddOrUpdateConnection(loc2, loc1,
+                "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 16, 01, 00, DateTimeKind.Utc),
+                30 * 60, 0, 0, new TripId(0, 0), 0);
+            
+            writer.Close();
+            
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
+                new CrowsFlightTransferGenerator(10000),
+                TransferMetric.Factory,
+                TransferMetric.ParetoCompare);
+            var journeys = transitDb.SelectProfile(profile).SelectStops(loc2, loc0)
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
+                    new DateTime(2018, 12, 04, 17, 00, 00, DateTimeKind.Utc))
+                .AllJourneys();
+            
+            Assert.Null(journeys);
         }
     }
 }

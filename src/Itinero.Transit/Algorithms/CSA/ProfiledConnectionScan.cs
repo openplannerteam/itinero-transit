@@ -391,10 +391,16 @@ namespace Itinero.Transit.Algorithms.CSA
                 return null;
             }
 
+            var arrivalTime = c.ArrivalTime + fastestTime;
+            if (arrivalTime > _lastArrival)
+            {
+                return null;
+            }
+            
             var j =
             // The 'genesis' indicating when we arrive ... 
                 new Journey<T>
-                    (fastestTarget.Value, c.ArrivalTime + fastestTime,
+                    (fastestTarget.Value, arrivalTime,
                         _metricFactory.Zero(),
                         Journey<T>.ProfiledScanJourney)
                     // ... the walking part ...
@@ -498,7 +504,12 @@ namespace Itinero.Transit.Algorithms.CSA
                     continue;
                 }
 
-
+                if (j.Time < _earliestDeparture)
+                { 
+                    // this journey departs too early.
+                    continue;
+                }
+                
                 // And add this journey with walk to the pareto frontier
                 if (!_stationJourneys.ContainsKey(stopId))
                 {
