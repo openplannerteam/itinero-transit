@@ -84,7 +84,7 @@ namespace Itinero.Transit.Processor.Switch
             var c = new Connection();
             var copied = 0;
             
-            while (connsEnumerator.HasNext() && connsEnumerator.CurrentDateTime <= end)
+            while (connsEnumerator.MoveNext() && connsEnumerator.CurrentDateTime <= end)
             {
                 connsEnumerator.Current(c);
                 wr.AddOrUpdateConnection(c);

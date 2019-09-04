@@ -30,7 +30,7 @@ namespace Itinero.Transit.Data.Aggregators
         }
 
 
-        public bool HasNext()
+        public bool MoveNext()
         {
             // Actual initialization
             if (_currentBest == uint.MaxValue)
@@ -40,7 +40,7 @@ namespace Itinero.Transit.Data.Aggregators
                 for (var i = 0; i < _enumerators.Length; i++)
                 {
                     var ei = _enumerators[i];
-                    var found = ei.HasNext();
+                    var found = ei.MoveNext();
                     oneFound |= found;
                     _canContinue[i] = found;
                     // ReSharper disable once InvertIf
@@ -59,7 +59,7 @@ namespace Itinero.Transit.Data.Aggregators
             // We keep track of its date though...
             var curLow = _enumerators[_currentBest];
             var oldDate = curLow.CurrentDateTime;
-            if (!curLow.HasNext())
+            if (!curLow.MoveNext())
             {
                 _canContinue[_currentBest] = false;
             }

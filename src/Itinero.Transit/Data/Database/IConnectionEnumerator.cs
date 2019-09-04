@@ -31,9 +31,9 @@ namespace Itinero.Transit.Data
         /// If not found, returns true
         /// </summary>
         /// <returns></returns>
-        bool HasNext();
+        bool MoveNext();
 
-        bool HasPrevious();
+        bool MovePrevious();
 
         /// <summary>
         /// THe current time this enumerator points to. Only valid after calling 

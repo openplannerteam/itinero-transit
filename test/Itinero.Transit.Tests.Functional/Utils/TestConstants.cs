@@ -73,9 +73,9 @@ namespace Itinero.Transit.Tests.Functional.Utils
                 (StringConstants.OsmNearStationBruggeLatLon, StringConstants.Gent, 1000),
                 (StringConstants.Brugge, StringConstants.OsmDeSterre, 2500),
                 (StringConstants.OsmNearStationBruggeLatLon, StringConstants.OsmDeSterre, 5000),
-                (StringConstants.OsmNearStationBruggeLatLon, StringConstants.OsmHermanTeirlinck, 5000),
+                (StringConstants.OsmNearStationBruggeLatLon, StringConstants.OsmHermanTeirlinck, 5000), 
                 (StringConstants.OsmHermanTeirlinck, StringConstants.OsmDeSterre, 5000),
-                (StringConstants.OsmWechel, StringConstants.OsmDeSterre, 25000),
+             //   (StringConstants.OsmWechel, StringConstants.Gent, 10000),
             };
 
         public static readonly List<FunctionalTestWithInput<WithTime<TransferMetric>>> AllAlgorithmicTests =

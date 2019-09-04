@@ -48,7 +48,7 @@ namespace Itinero.Transit.Tests.Functional.Data
 
             enumerator.MoveTo(DateTime.Today.AddHours(10).ToUniversalTime().ToUnixTime());
             var endTime = DateTime.Today.AddHours(11).ToUniversalTime().ToUnixTime();
-            while (enumerator.HasNext() && enumerator.CurrentDateTime < endTime)
+            while (enumerator.MoveNext() && enumerator.CurrentDateTime < endTime)
             {
                 count++;
             }

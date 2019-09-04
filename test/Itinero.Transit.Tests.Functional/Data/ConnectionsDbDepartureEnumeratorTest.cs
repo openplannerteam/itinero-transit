@@ -35,7 +35,7 @@ namespace Itinero.Transit.Tests.Functional.Data
             departureEnumerator.MoveTo(latest.ConnectionsDb.EarliestDate);
             var seenInForward = new HashSet<uint>();
 
-            while (departureEnumerator.HasNext())
+            while (departureEnumerator.MoveNext())
             {
                 var c = departureEnumerator.Current();
                 if (seenInForward.Contains(c.Id.InternalId))

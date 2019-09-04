@@ -51,7 +51,7 @@ namespace Itinero.Transit.Tests.Functional
                 .RunOverMultiple(TestConstants.WithWalkTestCases);
 
             
-            new IntermodalTestWithOtherTransport(nmbsProfile, TestConstants.WithWalk(5000))
+            new IntermodalTestWithOtherTransport(nmbsProfile)
                 .RunOverMultiple(TestConstants.WithWalkTestCases);//*/
             // TODO         new MultipleLoadTest().Run();
 /*

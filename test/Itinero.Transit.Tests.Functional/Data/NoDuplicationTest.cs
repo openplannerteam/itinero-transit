@@ -15,7 +15,7 @@ namespace Itinero.Transit.Tests.Functional.Data
             var count = 0;
             var enumerator = latest.ConnectionsDb.GetDepartureEnumerator();
             enumerator.MoveTo(now.ToUnixTime());
-            while (enumerator.HasNext())
+            while (enumerator.MoveNext())
             {
                 count++;
             }

@@ -69,25 +69,25 @@ namespace Itinero.Transit.Tests.Core.Data
 
             enumerator.MoveTo(1100);
             var c = new Connection();
-            Assert.True(enumerator.HasNext());
+            Assert.True(enumerator.MoveNext());
             enumerator.Current(c);
             Assert.Equal((ulong) 1100, c.DepartureTime);
             Assert.Equal("d", c.GlobalId);
-            Assert.True(enumerator.HasNext());
+            Assert.True(enumerator.MoveNext());
             enumerator.Current(c);
             Assert.Equal("e", c.GlobalId);
-            Assert.True(enumerator.HasNext());
+            Assert.True(enumerator.MoveNext());
             enumerator.Current(c);
 
 
             Assert.Equal("f", c.GlobalId);
 
-            Assert.True(enumerator.HasNext());
+            Assert.True(enumerator.MoveNext());
             enumerator.Current(c);
 
 
             Assert.Equal("g", c.GlobalId);
-            Assert.False(enumerator.HasNext());
+            Assert.False(enumerator.MoveNext());
 
 
             enumerator.MoveTo(1460);
@@ -116,7 +116,7 @@ namespace Itinero.Transit.Tests.Core.Data
             Assert.False(enumerator.HasPrevious());
 
             enumerator.MoveTo(1001);
-            Assert.True(enumerator.HasNext());
+            Assert.True(enumerator.MoveNext());
             enumerator.Current(c);
             Assert.Equal((ulong) 1100, c.DepartureTime);
             Assert.Equal("d", c.GlobalId);
@@ -157,7 +157,7 @@ namespace Itinero.Transit.Tests.Core.Data
             var count = 0;
             var tt = 0;
             var c = new Connection();
-            while (enumerator.HasNext())
+            while (enumerator.MoveNext())
             {
                 enumerator.Current(c);
                 tt += c.TravelTime;
@@ -225,7 +225,7 @@ namespace Itinero.Transit.Tests.Core.Data
             var count = 0;
             var tt = 0;
             var c = new Connection();
-            while (enumerator.HasNext())
+            while (enumerator.MoveNext())
             {
                 enumerator.Current(c);
                 tt += c.TravelTime;
@@ -295,7 +295,7 @@ namespace Itinero.Transit.Tests.Core.Data
             var count = 0;
             var tt = 0;
             var c = new Connection();
-            while (enumerator.HasNext())
+            while (enumerator.MoveNext())
             {
                 enumerator.Current(c);
                 tt += c.TravelTime;
@@ -349,7 +349,7 @@ namespace Itinero.Transit.Tests.Core.Data
             var start = DateTime.Now;
             enumerator.MoveTo(100000000 - 2000);
             var count = 0;
-            while (enumerator.HasNext() && enumerator.CurrentDateTime < 100000000)
+            while (enumerator.MoveNext() && enumerator.CurrentDateTime < 100000000)
             {
                 count++;
             }

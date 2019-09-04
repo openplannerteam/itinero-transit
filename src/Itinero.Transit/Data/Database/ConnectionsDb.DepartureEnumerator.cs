@@ -122,7 +122,7 @@ namespace Itinero.Transit.Data
                 return left;
             }
 
-            public bool HasNext()
+            public bool MoveNext()
             {
                 // We put everything in one big loop, to avoid tail recursion
                 // Note that the loop is written as a GOTO-label

@@ -116,7 +116,7 @@ namespace Itinero.Transit.Algorithms.CSA
             var currentConnection = new Connection();
 
             enumerator.MoveTo(ScanBeginTime);
-            if (!enumerator.HasNext())
+            if (!enumerator.MoveNext())
             {
                 throw new Exception("Empty enumerator, can not calculate EAS");
             }
@@ -202,7 +202,7 @@ namespace Itinero.Transit.Algorithms.CSA
                     improvedLocations.Add(c.ArrivalStop);
                 }
 
-                hasNext = _connectionsEnumerator.HasNext();
+                hasNext = _connectionsEnumerator.MoveNext();
             } while (hasNext && _connectionsEnumerator.CurrentDateTime == lastDepartureTime);
 
 

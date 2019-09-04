@@ -16,7 +16,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
         public const string OsmBruggeHome = "https://www.openstreetmap.org/#map=19/51.21576/3.22048";
         public const string OsmDeSterre = "https://www.openstreetmap.org/#map=18/51.02260/3.71108";
         public const string OsmHermanTeirlinck = "https://www.openstreetmap.org/#map=18/50.86621/4.35104";
-        public const string OsmWechel = "https://www.openstreetmap.org/#map=15/51.2626/4.8038";
+        public const string OsmWechel = "https://www.openstreetmap.org/#map=19/51.26290/4.80125";
 
 
         public const string ZandStraat = "https://data.delijn.be/stops/500562";
