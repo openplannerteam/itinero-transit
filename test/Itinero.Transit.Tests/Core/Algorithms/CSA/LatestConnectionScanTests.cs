@@ -222,8 +222,81 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .LatestDepartureJourney();
             Assert.NotNull(journey);
         }
-        
-        
+
+        /// <summary>
+        /// Regression test to test if journeys that are outside of the selected time frame aren't returned.
+        /// </summary>
+        [Fact]
+        public void Latest_ConnectionScan_DepartureWalkOutOfWindow_NoJourneyFound()
+        {
+            // Locations: loc0 -> loc2
+
+            var transitDb = new TransitDb(0);
+            var writer = transitDb.GetWriter();
+
+            var loc0 = writer.AddOrUpdateStop("https://example.com/stops/0", 3.1904983520507812,
+                51.256758449834216);
+            var loc1 = writer.AddOrUpdateStop("https://example.com/stops/1", 3.216590881347656,
+                51.197848510420464);
+            var loc2 = writer.AddOrUpdateStop("https://example.com/stops/2", 3.7236785888671875,
+                51.05348088381823);
+
+            writer.AddOrUpdateConnection(loc1, loc2,
+                "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 16, 01, 00, DateTimeKind.Utc),
+                30 * 60, 0, 0, new TripId(0, 0), 0);
+            
+            writer.Close();
+            
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
+                new CrowsFlightTransferGenerator(10000),
+                TransferMetric.Factory,
+                TransferMetric.ParetoCompare);
+            var journey = transitDb.SelectProfile(profile).SelectStops(loc0, loc2)
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
+                    new DateTime(2018, 12, 04, 17, 00, 00, DateTimeKind.Utc))
+                .LatestDepartureJourney();
+            
+            Assert.Null(journey);
+        }
+
+        /// <summary>
+        /// Regression test to test if journeys that are outside of the selected time frame aren't returned.to mimick it
+        /// 
+        /// </summary>
+        [Fact]
+        public void Latest_ConnectionScan_ArrivalWalkOutOfWindow_NoJourneyFound()
+        {
+            // Locations: loc0 -> loc2
+
+            var transitDb = new TransitDb(0);
+            var writer = transitDb.GetWriter();
+
+            var loc0 = writer.AddOrUpdateStop("https://example.com/stops/0", 3.1904983520507812,
+                51.256758449834216);
+            var loc1 = writer.AddOrUpdateStop("https://example.com/stops/1", 3.216590881347656,
+                51.197848510420464);
+            var loc2 = writer.AddOrUpdateStop("https://example.com/stops/2", 3.7236785888671875,
+                51.05348088381823);
+
+            writer.AddOrUpdateConnection(loc2, loc1,
+                "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 16, 01, 00, DateTimeKind.Utc),
+                30 * 60, 0, 0, new TripId(0, 0), 0);
+            
+            writer.Close();
+            
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
+                new CrowsFlightTransferGenerator(10000),
+                TransferMetric.Factory,
+                TransferMetric.ParetoCompare);
+            var journey = transitDb.SelectProfile(profile).SelectStops(loc2, loc0)
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
+                    new DateTime(2018, 12, 04, 17, 00, 00, DateTimeKind.Utc))
+                .LatestDepartureJourney();
+            
+            Assert.Null(journey);
+        }
         
     }
 }

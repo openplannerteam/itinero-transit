@@ -349,6 +349,12 @@ namespace Itinero.Transit.Algorithms.CSA
 
             foreach (var walkingJourney in journey.WalkTowards(_walkPolicy, _stopsReader))
             {
+                if (walkingJourney.Time < _earliestDeparture)
+                {
+                    // this journey departs too soon.
+                    continue;
+                }
+                
                 var id = walkingJourney.Location;
                 if (id.Equals(location))
                 {
