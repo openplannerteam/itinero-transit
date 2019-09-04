@@ -277,7 +277,7 @@ namespace Itinero.Transit.Data
                 _indexInWindow = _alreadyUsed[_connectionsDb.WindowFor(CurrentDateTime)];
             }
 
-            public bool HasPrevious()
+            public bool MovePrevious()
             {
                 hasPrevious:
                 if (CurrentDateTime == 0)

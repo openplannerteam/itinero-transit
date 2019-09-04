@@ -209,7 +209,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             var c = new Connection();
             while (
-                enumerator.HasPrevious() &&
+                enumerator.MovePrevious() &&
                 enumerator.CurrentDateTime >= _earliestDeparture)
             {
                 enumerator.Current(c);

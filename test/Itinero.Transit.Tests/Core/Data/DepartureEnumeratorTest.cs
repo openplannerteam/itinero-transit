@@ -91,29 +91,29 @@ namespace Itinero.Transit.Tests.Core.Data
 
 
             enumerator.MoveTo(1460);
-            Assert.True(enumerator.HasPrevious());
+            Assert.True(enumerator.MovePrevious());
             enumerator.Current(c);
             Assert.Equal("g", c.GlobalId);
-            Assert.True(enumerator.HasPrevious());
+            Assert.True(enumerator.MovePrevious());
             enumerator.Current(c);
             Assert.Equal("f", c.GlobalId);
 
-            Assert.True(enumerator.HasPrevious());
+            Assert.True(enumerator.MovePrevious());
             enumerator.Current(c);
             Assert.Equal("e", c.GlobalId);
-            Assert.True(enumerator.HasPrevious());
+            Assert.True(enumerator.MovePrevious());
             enumerator.Current(c);
             Assert.Equal("d", c.GlobalId);
-            Assert.True(enumerator.HasPrevious());
+            Assert.True(enumerator.MovePrevious());
             enumerator.Current(c);
             Assert.Equal("c", c.GlobalId);
-            Assert.True(enumerator.HasPrevious());
+            Assert.True(enumerator.MovePrevious());
             enumerator.Current(c);
             Assert.Equal("b", c.GlobalId);
-            Assert.True(enumerator.HasPrevious());
+            Assert.True(enumerator.MovePrevious());
             enumerator.Current(c);
             Assert.Equal("a", c.GlobalId);
-            Assert.False(enumerator.HasPrevious());
+            Assert.False(enumerator.MovePrevious());
 
             enumerator.MoveTo(1001);
             Assert.True(enumerator.MoveNext());
@@ -171,7 +171,7 @@ namespace Itinero.Transit.Tests.Core.Data
 
             tt = 0;
             count = 0;
-            while (enumerator.HasPrevious())
+            while (enumerator.MovePrevious())
             {
                 enumerator.Current(c);
                 tt += c.TravelTime;
@@ -238,7 +238,7 @@ namespace Itinero.Transit.Tests.Core.Data
             enumerator.MoveTo(tdb.Latest.ConnectionsDb.LatestDate);
             tt = 0;
             count = 0;
-            while (enumerator.HasPrevious())
+            while (enumerator.MovePrevious())
             {
                 enumerator.Current(c);
                 tt += c.TravelTime;
@@ -309,7 +309,7 @@ namespace Itinero.Transit.Tests.Core.Data
 
             tt = 0;
             count = 0;
-            while (enumerator.HasPrevious())
+            while (enumerator.MovePrevious())
             {
                 enumerator.Current(c);
                 tt += c.TravelTime;
@@ -368,7 +368,7 @@ namespace Itinero.Transit.Tests.Core.Data
             start = DateTime.Now;
             enumerator.MoveTo(100000000);
             count = 0;
-            while (enumerator.HasPrevious() && enumerator.CurrentDateTime >= 100000000 - 2000)
+            while (enumerator.MovePrevious() && enumerator.CurrentDateTime >= 100000000 - 2000)
             {
                 count++;
             }

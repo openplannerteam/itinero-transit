@@ -123,7 +123,7 @@ namespace Itinero.Transit.Algorithms.CSA
         {
             var enumerator = _connectionsEnumerator;
             enumerator.MoveTo(ScanEndTime);
-            if (!enumerator.HasPrevious())
+            if (!enumerator.MovePrevious())
             {
                 throw new Exception("Could not calculate the latest arriving country: enumerator is empty");
             }
@@ -209,7 +209,7 @@ namespace Itinero.Transit.Algorithms.CSA
                     improvedLocations.Add(c.DepartureStop);
                 }
 
-                hasNext = _connectionsEnumerator.HasPrevious();
+                hasNext = _connectionsEnumerator.MovePrevious();
             } while (hasNext && lastDepartureTime == _connectionsEnumerator.CurrentDateTime);
 
             foreach (var improvedLocation in improvedLocations)

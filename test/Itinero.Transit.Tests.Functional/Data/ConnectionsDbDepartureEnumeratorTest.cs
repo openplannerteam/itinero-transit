@@ -53,7 +53,7 @@ namespace Itinero.Transit.Tests.Functional.Data
             var backwardsCount = 0;
             departureEnumerator.MoveTo(latest.ConnectionsDb.LatestDate);
             var seenInBackwards = new HashSet<uint>();
-            while (departureEnumerator.HasPrevious())
+            while (departureEnumerator.MovePrevious())
             {
                 var c = departureEnumerator.Current();
                 if (seenInBackwards.Contains(c.Id.InternalId))
