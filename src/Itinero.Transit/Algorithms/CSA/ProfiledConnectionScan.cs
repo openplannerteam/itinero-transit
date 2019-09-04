@@ -498,7 +498,12 @@ namespace Itinero.Transit.Algorithms.CSA
                     continue;
                 }
 
-
+                if (j.Time < _earliestDeparture)
+                { 
+                    // this journey departs too early.
+                    continue;
+                }
+                
                 // And add this journey with walk to the pareto frontier
                 if (!_stationJourneys.ContainsKey(stopId))
                 {
