@@ -361,6 +361,12 @@ namespace Itinero.Transit.Algorithms.CSA
 
             foreach (var walkingJourney in journey.WalkAwayFrom(_walkPolicy, _stopsReader))
             {
+                if (walkingJourney.Time > _lastArrival)
+                {
+                    // this journey arrives too late.
+                    continue;
+                }
+                
                 var id = walkingJourney.Location;
 
                 if (!JourneyFromDepartureTable.ContainsKey(id))
