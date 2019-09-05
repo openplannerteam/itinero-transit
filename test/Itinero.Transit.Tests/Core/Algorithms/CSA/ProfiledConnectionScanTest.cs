@@ -15,7 +15,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
     public class ProfiledConnectionScanTest
     {
         [Fact]
-        public void WithBeginWalk()
+        public void AllJourneysTest_SingleConnectionTdb_JourneyWithBeginWalk()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -54,7 +54,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
 
         [Fact]
-        public void WithEndWalk()
+        public void AllJourneysTest_SingleConnectionTdb_JourneyWithEndWalk()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -91,7 +91,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         }
 
         [Fact]
-        public void WithStartEndWalk()
+        public void AllJourneysTest_SingleConnectionTdb_JourneyWithBeginAndEndWalk()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -130,7 +130,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
 
         [Fact]
-        public void TestPcsSimple()
+        public void AllJourneysTest_SmallTdb_2Journeys()
         {
             var tdb = Db.GetDefaultTestDb(out var stop0, out _, out _, out var stop3, out var _, out var _);
 
@@ -164,7 +164,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         /// one which is clearly better then the other.
         /// </summary>
         [Fact]
-        public static void TestFiltering()
+        public static void AllJourneysTest_4ConnectionTdb_ExpectsOneOptimalJourney()
         {
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
@@ -197,9 +197,11 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             var latest = transitDb.Latest;
 
-            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(60),
+            var profile = new Profile<TransferMetric>(
+                new InternalTransferGenerator(60),
                 new CrowsFlightTransferGenerator(),
-                TransferMetric.Factory, TransferMetric.ParetoCompare);
+                TransferMetric.Factory, 
+                TransferMetric.ParetoCompare);
 
             var journeys = latest.SelectProfile(profile)
                 .SelectStops(loc0, loc1)
@@ -214,7 +216,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         }
 
         [Fact]
-        public static void TestMetricFiltering()
+        public static void AllJourneysTest_4ConnectionTdbWithMetricGuesser_ExpectsOneOptimalJourney()
         {
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
@@ -277,7 +279,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
 
         [Fact]
-        public void ShouldFindNoConnectionJourney()
+        public void AllJourneysTest_1ConnectionTdbWithNoGettingOfMode_ExpectsNoJourneys()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -290,9 +292,6 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0),
                 3); // MODE 3 - cant get on or off
 
-            // Prevent depletion of the DB
-            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 3);
             writer.Close();
             var latest = transitDb.Latest;
 
@@ -321,7 +320,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         /// 
         /// </summary>
         [Fact]
-        public void OutOfWindowAtDepartureTest()
+        public void AllJourneysTest_1ConnectionTdbWalkRequired_ExpectsNoJourneyAsWalkFallsBeforeTimeWindow()
         {
             // Locations: loc0 -> loc2
 
@@ -365,7 +364,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         /// 
         /// </summary>
         [Fact]
-        public void OutOfWindowAtArrivalTest()
+        public void AllJourneysTest_1ConnectionTdbWalkRequired_ExpectsNoJourneyAsWalkFallsAfterTimeWindow()
         {
             // Locations: loc0 -> loc2
 
