@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.IO.OSM.Data;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.Tests.Functional.Utils;
-using OsmSharp.IO.PBF;
 
 namespace Itinero.Transit.Tests.Functional.IO.OSM
 {
@@ -12,20 +11,28 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
     // test EAS, LAS and PCS return something
 
     public class
-        IntermodalTestWithOtherTransport : FunctionalTestWithInput<(string start, string destination, uint
-            maxSearchDistance)>
+        IntermodalTestWithOtherTransport : FunctionalTestWithInput<(string start, string destination, uint maxDistance)>
     {
-        private readonly WithProfile<TransferMetric> _withProfile;
+        private readonly TransitDb _tdb;
+        private readonly Func<uint, Stop, Stop, Profile<TransferMetric>> _profile;
 
-        public IntermodalTestWithOtherTransport(WithProfile<TransferMetric> withProfile)
+        public IntermodalTestWithOtherTransport(
+            TransitDb tdb,
+           Func<uint, Stop, Stop, Profile<TransferMetric>> profile)
         {
-            _withProfile = withProfile;
+            _tdb = tdb;
+            _profile = profile;
         }
 
         protected override void Execute()
         {
             // We create a router from the TDB and amend it with an OSM-Locations-Reader to decode OSM-coordinates
-            var calculator = _withProfile
+
+          
+            
+            var profile = _profile(Input.maxDistance, null, null);
+            var calculator =
+                _tdb.SelectProfile(profile)
                 .UseOsmLocations()
                 .SelectStops(
                     Input.start,
@@ -44,7 +51,9 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
             end = DateTime.Now;
             Information($"Calculating EAS took {(end - start).TotalMilliseconds}ms");
             start = DateTime.Now;
-            True(calculator.AllJourneys().Count > 0);
+            var journeys = calculator.AllJourneys();
+            NotNull(journeys);
+            True(journeys.Count > 0);
             end = DateTime.Now;
             Information($"Calculating PCS took {(end - start).TotalMilliseconds}ms");
         }

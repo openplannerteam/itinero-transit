@@ -28,7 +28,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
             ShuttleBrugge
         };
 
-        public static Profile<TransferMetric> DefaultProfile(uint maxSearch)
+        public static Profile<TransferMetric> DefaultProfile(uint maxSearch, object _, object __)
         {
             return new DefaultProfile(maxSearch);
         }
@@ -36,8 +36,8 @@ namespace Itinero.Transit.Tests.Functional.Utils
         public static Profile<TransferMetric> WithWalk(uint maxSearch = 500)
         {
             return new Profile<TransferMetric>(
-                new OsmTransferGenerator(RouterDbStaging.RouterDb, maxSearch).UseCache(),
                 new InternalTransferGenerator(),
+                new OsmTransferGenerator(RouterDbStaging.RouterDb, maxSearch).UseCache(),
                 TransferMetric.Factory,
                 TransferMetric.ParetoCompare,
                 new CancelledConnectionFilter(),
@@ -45,14 +45,18 @@ namespace Itinero.Transit.Tests.Functional.Utils
             );
         }
 
-        public static Profile<TransferMetric> WithFirstLastMile(IStop firstMile, IStop lastMile)
+        public static Profile<TransferMetric> WithFirstLastMile(uint maxSearchDistance,IStop firstMile, IStop lastMile)
         {
             var router = RouterDbStaging.RouterDb;
-            var gen = new FirstLastMilePolicy(new CrowsFlightTransferGenerator(),
-                new OsmTransferGenerator(router),
-                firstMile,
-                new OsmTransferGenerator(router),
-                lastMile).UseCache();
+            IOtherModeGenerator gen = new CrowsFlightTransferGenerator(1000);
+            if (firstMile != null && lastMile != null)
+            {
+                gen = new FirstLastMilePolicy(gen,
+                        new OsmTransferGenerator(router, maxSearchDistance),
+                        firstMile,
+                        new OsmTransferGenerator(router, maxSearchDistance),
+                        lastMile).UseCache();
+            }
 
             return new Profile<TransferMetric>(
                 gen,
@@ -65,17 +69,17 @@ namespace Itinero.Transit.Tests.Functional.Utils
         }
 
 
-        public static List<(string departure, string arrival, uint maxSearchDistance)> WithWalkTestCases =
-            new List<(string departure, string arrival, uint maxSearchDistance)>
+        public static List<(string departure, string arrival, uint maxDistance)> WithWalkTestCases =
+            new List<(string departure, string arrival, uint maxDistance)>
             {
-                (StringConstants.OsmNearStationBruggeLatLon, StringConstants.Brugge, 1000),
+                (StringConstants.OsmNearStationBruggeLatLon, StringConstants.Brugge, 10000),
                 (StringConstants.Brugge, StringConstants.Gent, 1000),
                 (StringConstants.OsmNearStationBruggeLatLon, StringConstants.Gent, 1000),
-                (StringConstants.Brugge, StringConstants.OsmDeSterre, 2500),
+                (StringConstants.Brugge, StringConstants.OsmDeSterre, 5000),
                 (StringConstants.OsmNearStationBruggeLatLon, StringConstants.OsmDeSterre, 5000),
-                (StringConstants.OsmNearStationBruggeLatLon, StringConstants.OsmHermanTeirlinck, 5000), 
+                (StringConstants.OsmNearStationBruggeLatLon, StringConstants.OsmHermanTeirlinck, 5000),
                 (StringConstants.OsmHermanTeirlinck, StringConstants.OsmDeSterre, 5000),
-             //   (StringConstants.OsmWechel, StringConstants.Gent, 10000),
+                (StringConstants.OsmWechel, StringConstants.Gent, 10000)
             };
 
         public static readonly List<FunctionalTestWithInput<WithTime<TransferMetric>>> AllAlgorithmicTests =
@@ -145,7 +149,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
                     StringConstants.Kortrijk,
                     StringConstants.Vielsalm).SelectTimeFrame(
                     date.Date.AddHours(9),
-                    date.Date.AddHours(18)) //*/
+                    date.Date.AddHours(18))
             };
         }
 

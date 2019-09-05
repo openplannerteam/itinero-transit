@@ -40,25 +40,20 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
+                //    new IntermodalTestWithOtherTransport(nmbs, TestConstants.WithFirstLastMile).Run(TestConstants.WithWalkTestCases[0]);
                 Logging.Log.Information("Ran the devtests. Exiting now. Use --full-test-suite to run everything");
+
                 return;
             }
 
-            // Crows flight
-            var nmbsProfile = nmbs.SelectProfile(TestConstants.DefaultProfile(5000)).PrecalculateClosestStops();
+            // TODO make sure IRail can handle this one          new MultipleLoadTest().Run();
 
-            new IntermodalTestWithOtherTransport(nmbsProfile)
+
+            new IntermodalTestWithOtherTransport(nmbs, TestConstants.DefaultProfile)
                 .RunOverMultiple(TestConstants.WithWalkTestCases);
-
-            
-            new IntermodalTestWithOtherTransport(nmbsProfile)
-                .RunOverMultiple(TestConstants.WithWalkTestCases);//*/
-            // TODO         new MultipleLoadTest().Run();
-/*
 
             new ConnectionsDbDepartureEnumeratorTest().Run((nmbs, 63155));
             new ReadWriteTest().Run((nmbs, 63155));
-
 
             MultiTestRunner.NmbsOnlyTester().RunAllTests();
             MultiTestRunner.DelijnNmbsTester().RunAllTests();

@@ -24,7 +24,7 @@ namespace Itinero.Transit.Tests.Functional.Data
             sncb.AddAllLocationsTo(writer);
             writer.Close();
 
-            var hours = 24;
+            var hours = 1;
 
             dbUpdater.UpdateTimeFrame(DateTime.Today.ToUniversalTime(),
                 DateTime.Today.AddHours(hours).ToUniversalTime());
