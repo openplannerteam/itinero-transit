@@ -33,9 +33,9 @@ namespace Itinero.Transit.Tests.Functional.IO
 
             foreach (var stopPosition in route.StopPositions)
             {
-                var (_, coor, _) = stopPosition;
-                True(coor.Latitude > 49); // Lat
-                True(coor.Longitude < 6); // Lon
+                var (_, lon, lat, _) = stopPosition;
+                True(lat > 49); // Lat
+                True(lon < 6); // Lon
             }
         }
     }

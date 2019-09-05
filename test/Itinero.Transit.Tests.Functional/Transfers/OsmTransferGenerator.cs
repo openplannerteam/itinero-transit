@@ -10,7 +10,7 @@ using Itinero.Transit.Data.Core;
 using Itinero.Transit.Logging;
 using Itinero.Transit.OtherMode;
 
-namespace Itinero.Transit.IO.OSM
+namespace Itinero.Transit.Tests.Functional.Transfers
 {
     /// <inheritdoc />
     /// <summary>

@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Xml;
 using GeoTimeZone;
-using Itinero.LocalGeo;
 using Itinero.Transit.IO.OSM.Data.Parser;
 using Itinero.Transit.Utils;
 using OsmSharp;
@@ -23,7 +22,7 @@ namespace Itinero.Transit.IO.OSM.Data
     /// </summary>
     internal class OsmRoute
     {
-        public readonly List<(string, Coordinate, TagsCollectionBase)> StopPositions;
+        public readonly List<(string, double lon, double lat, TagsCollectionBase)> StopPositions;
         public readonly bool RoundTrip;
         public TimeSpan Duration;
         public TimeSpan Interval;
@@ -61,9 +60,9 @@ namespace Itinero.Transit.IO.OSM.Data
         }
 
 
-        private static List<(string, Coordinate, TagsCollectionBase)> ExtractStopPositions(CompleteRelation relation)
+        private static List<(string, double lon, double lat, TagsCollectionBase)> ExtractStopPositions(CompleteRelation relation)
         {
-            var stopPositions = new List<(string, Coordinate, TagsCollectionBase)>();
+            var stopPositions = new List<(string,  double lon, double lat, TagsCollectionBase)>();
             // First pass: explicitly located stop positions
             foreach (var member in relation.Members)
             {
@@ -77,9 +76,8 @@ namespace Itinero.Transit.IO.OSM.Data
                     throw new ArgumentNullException();
                 }
 
-                var coordinate = new Coordinate((float) node.Longitude, (float) node.Latitude);
                 var nodeId = $"https://www.openstreetmap.org/node/{node.Id}";
-                stopPositions.Add((nodeId, coordinate, el.Tags));
+                stopPositions.Add((nodeId, node.Longitude.Value, node.Latitude.Value, el.Tags));
             }
 
 
@@ -113,17 +111,13 @@ namespace Itinero.Transit.IO.OSM.Data
                 }
 
 
-                var coordinate = new Coordinate((float) lon, (float) lat);
                 var nodeId = $"https://www.openstreetmap.org/{id}";
 
                 // We make sure that there is no stop closeby
 
                 var inRange = false;
-                foreach (var (_, coor0, _) in stopPositions)
+                foreach (var (_, lon0, lat0, _) in stopPositions)
                 {
-                    var lat0 = coor0.Latitude;
-                    var lon0 = coor0.Longitude;
-
                     // ReSharper disable once InvertIf
                     if (DistanceEstimate.DistanceEstimateInMeter(lat, lon, lat0, lon0) < 25)
                     {
@@ -134,7 +128,7 @@ namespace Itinero.Transit.IO.OSM.Data
 
                 if (!inRange)
                 {
-                    stopPositions.Add((nodeId, coordinate, el.Tags));
+                    stopPositions.Add((nodeId, lon, lat, el.Tags));
                 }
             }
 
@@ -149,8 +143,7 @@ namespace Itinero.Transit.IO.OSM.Data
         /// </summary>
         public string GetTimeZone()
         {
-            var coordinate = StopPositions[0].Item2;
-            return TimeZoneLookup.GetTimeZone(coordinate.Latitude, coordinate.Longitude).Result;
+            return TimeZoneLookup.GetTimeZone(StopPositions[0].lat, StopPositions[0].lon).Result;
         }
 
 

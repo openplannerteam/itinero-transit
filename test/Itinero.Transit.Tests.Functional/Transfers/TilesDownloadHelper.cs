@@ -3,9 +3,9 @@ using System.IO;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Web;
-using Itinero.Transit.Logging;
+using Serilog;
 
-namespace Itinero.Transit.IO.OSM
+namespace Itinero.Transit.Tests.Functional.Transfers
 {
     /// <summary>
     /// Copies the http-response to file.
@@ -81,8 +81,7 @@ namespace Itinero.Transit.IO.OSM
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(nameof(TilesDownloadHelper), TraceEventType.Warning,
-                        $"Failed to download from {url}: {ex}.");
+                    Log.Warning(ex, $"Failed to download from {url}: {ex}.");
                     return null;
                 }
             }

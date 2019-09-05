@@ -6,6 +6,7 @@ using Itinero.Transit.IO.OSM;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Tests.Functional.Algorithms.CSA;
+using Itinero.Transit.Tests.Functional.Transfers;
 
 namespace Itinero.Transit.Tests.Functional.Utils
 {

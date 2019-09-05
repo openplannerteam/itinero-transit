@@ -32,7 +32,7 @@ namespace Itinero.Transit.IO.OSM.Data
 
             var stopIds = new List<StopId>();
 
-            foreach (var (id, coordinate, tags) in route.StopPositions)
+            foreach (var (id, lon, lat, tags) in route.StopPositions)
             {
                 var attr = new List<Attribute>();
 
@@ -41,9 +41,8 @@ namespace Itinero.Transit.IO.OSM.Data
                     attr.Add(new Attribute(tag.Key, tag.Value));
                 }
 
-                stopIds.Add(wr.AddOrUpdateStop(id, coordinate.Longitude, coordinate.Latitude, attr));
+                stopIds.Add(wr.AddOrUpdateStop(id, lon, lat, attr));
             }
-
 
             var allRuns = new List<(uint, Connection)>();
 
@@ -92,7 +91,6 @@ namespace Itinero.Transit.IO.OSM.Data
                 wr.AddOrUpdateConnection(connection);
             }
 
-
             wr.Close();
         }
 
@@ -124,10 +122,10 @@ namespace Itinero.Transit.IO.OSM.Data
                 // This implies that, if the route does do a loop (`roundtrip=yes`) the first and last element in the osmRoute should be the same
 
                 var l0 = locations[i];
-                var l0Coor = route.StopPositions[i].Item2;
+                (double lon, double lat) l0Coor = (route.StopPositions[i].lon, route.StopPositions[i].lat);
                 var l0Id = Uri.EscapeDataString(route.StopPositions[i].Item1);
                 var l1 = locations[i + 1];
-                var l1Coor = route.StopPositions[i + 1].Item2;
+                (double lon, double lat) l1Coor = (route.StopPositions[i + 1].lon, route.StopPositions[i + 1].lat);
                 var l1Id = Uri.EscapeDataString(route.StopPositions[i + 1].Item1);
 
                 var depTime = startMoment.AddSeconds(travelTime * i);
@@ -151,7 +149,7 @@ namespace Itinero.Transit.IO.OSM.Data
 
                 var con = new Connection(
                     new ConnectionId(dbId, 0),
-                    $"https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route={l0Coor.Latitude}%2C{l0Coor.Longitude}%3B{l1Coor.Latitude}%2C{l1Coor.Longitude}" +
+                    $"https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route={l0Coor.lat}%2C{l0Coor.lon}%3B{l1Coor.lat}%2C{l1Coor.lon}" +
                     $"&from={l0Id}&to={l1Id}",
                     l0, l1, depTime.ToUnixTime(), travelTime, 0, 0, mode, tripId);
                 conns.AddLast((vehicleId, con));
