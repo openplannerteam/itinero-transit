@@ -40,7 +40,6 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
-                //    new IntermodalTestWithOtherTransport(nmbs, TestConstants.WithFirstLastMile).Run(TestConstants.WithWalkTestCases[0]);
                 Logging.Log.Information("Ran the devtests. Exiting now. Use --full-test-suite to run everything");
 
                 return;
@@ -50,6 +49,8 @@ namespace Itinero.Transit.Tests.Functional
 
 
             new IntermodalTestWithOtherTransport(nmbs, TestConstants.DefaultProfile)
+                .RunOverMultiple(TestConstants.WithWalkTestCases);
+            new IntermodalTestWithOtherTransport(nmbs, TestConstants.WithFirstLastMile)
                 .RunOverMultiple(TestConstants.WithWalkTestCases);
 
             new ConnectionsDbDepartureEnumeratorTest().Run((nmbs, 63155));
