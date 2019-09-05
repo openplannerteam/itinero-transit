@@ -35,7 +35,7 @@ namespace Itinero.Transit.IO.LC.Utils
             _client.DefaultRequestHeaders.Add("user-agent",
                 "Itinero-Transit-dev/0.0.2 (anyways.eu; pieter@anyways.eu)");
             _client.DefaultRequestHeaders.Add("accept", "application/ld+json");
-            _client.Timeout = TimeSpan.FromMilliseconds(5000);
+            _client.Timeout = TimeSpan.FromSeconds(20);
         }
 
         public JToken LoadDocument(Uri uri)
