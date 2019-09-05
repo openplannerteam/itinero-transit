@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Itinero.Transit.Algorithms.Search;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data.Core;
 using Itinero.Transit.Data.Tiles;
+using Itinero.Transit.Logging;
 using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Data
@@ -65,7 +67,8 @@ namespace Itinero.Transit.Data
             {
                 if (range == 0)
                 {
-                    throw new ArgumentException("Oops, distance is zero");
+                    Log.Error("Search distance is zero in StopsDBReader.StopsAround. This is highly suspicious and should be investigated");
+                    yield break;
                 }
 
                 var lat = stop.Latitude;
@@ -112,11 +115,13 @@ namespace Itinero.Transit.Data
                         // To far away
                         continue;
                     }
-                    if (s.Id .Equals(stop.Id))
+
+                    if (s.Id.Equals(stop.Id))
                     {
                         // We don't care about the self
                         continue;
                     }
+
                     yield return s;
                 }
             }

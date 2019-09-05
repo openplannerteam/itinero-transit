@@ -244,6 +244,10 @@ namespace Itinero.Transit.OtherMode
 
         public void PreCalculateCache(IStopsReader withCache)
         {
+            if (Range() == 0)
+            {
+                throw new Exception("Range is 0. It has no use to precalculate a cache of stops within 0 meter of other stops...");
+            }
             withCache.Reset();
             if (!(withCache is StopSearchCache))
             {
