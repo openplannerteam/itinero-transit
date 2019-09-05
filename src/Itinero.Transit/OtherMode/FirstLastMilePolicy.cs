@@ -34,12 +34,11 @@ namespace Itinero.Transit.OtherMode
 
         public FirstLastMilePolicy(
             IOtherModeGenerator otherModeGeneratorImplementation,
-            IOtherModeGenerator firstMile, IStop firstMileStop,
-            IOtherModeGenerator lastMile, IStop lastMileStop) : this(
-            otherModeGeneratorImplementation, firstMile, new[]
-            {
-                firstMileStop.Id
-            }, lastMile, new[] {lastMileStop.Id})
+            IOtherModeGenerator firstMile, StopId firstMileStopId,
+            IOtherModeGenerator lastMile, StopId lastMileStopId) : this(
+            otherModeGeneratorImplementation,
+            firstMile, new[] {firstMileStopId},
+            lastMile, new[] {lastMileStopId})
         {
         }
 
@@ -174,6 +173,7 @@ namespace Itinero.Transit.OtherMode
             {
                 return _lastMile;
             }
+
             return _defaultWalk;
         }
 

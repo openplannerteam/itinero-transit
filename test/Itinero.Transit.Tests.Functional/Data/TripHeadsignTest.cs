@@ -1,4 +1,3 @@
-using Itinero.Data.Attributes;
 using Itinero.Transit.Data;
 using Itinero.Transit.Tests.Functional.Utils;
 
@@ -35,15 +34,6 @@ namespace Itinero.Transit.Tests.Functional.Data
             Information($"Headsign test: failed: {failed}, found {found}, total {total}");
             True(failed == 0);
             True(found > 0);
-        }
-    }
-
-    internal static class Helpers
-    {
-        public static string Get(this IAttributeCollection attributes, string name)
-        {
-            attributes.TryGetValue(name, out var result);
-            return result;
         }
     }
 }

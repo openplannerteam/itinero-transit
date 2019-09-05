@@ -14,10 +14,6 @@ namespace Itinero.Transit.Processor
             {
                 Console.WriteLine("[{0}-{3}] {1} - {2}", origin, level, message, DateTime.Now.ToString(CultureInfo.InvariantCulture));
             };
-            Itinero.Logging.Logger.LogAction = (origin, level, message, parameters) =>
-            {
-                Console.WriteLine("[{0}-{3}] {1} - {2}", origin, level, message, DateTime.Now.ToString(CultureInfo.InvariantCulture));
-            };
             
             Log.Information("Starting Transit Data Preprocessor 0.1");
 

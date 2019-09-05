@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.IO.OSM;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Tests.Functional.Algorithms.CSA;
+using Itinero.Transit.Tests.Functional.Transfers;
 
 namespace Itinero.Transit.Tests.Functional.Utils
 {
@@ -28,7 +30,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
             ShuttleBrugge
         };
 
-        public static Profile<TransferMetric> DefaultProfile(uint maxSearch, object _, object __)
+        public static Profile<TransferMetric> DefaultProfile(uint maxSearch, StopId _, StopId __)
         {
             return new DefaultProfile(maxSearch);
         }
@@ -45,22 +47,20 @@ namespace Itinero.Transit.Tests.Functional.Utils
             );
         }
 
-        public static Profile<TransferMetric> WithFirstLastMile(uint maxSearchDistance,IStop firstMile, IStop lastMile)
+        public static Profile<TransferMetric> WithFirstLastMile(uint maxSearchDistance, StopId firstMile,
+            StopId lastMile)
         {
             var router = RouterDbStaging.RouterDb;
-            IOtherModeGenerator gen = new CrowsFlightTransferGenerator(1000);
-            if (firstMile != null && lastMile != null)
-            {
-                gen = new FirstLastMilePolicy(gen,
-                        new OsmTransferGenerator(router, maxSearchDistance),
-                        firstMile,
-                        new OsmTransferGenerator(router, maxSearchDistance),
-                        lastMile).UseCache();
-            }
+            IOtherModeGenerator gen = new CrowsFlightTransferGenerator(maxSearchDistance);
+            gen = new FirstLastMilePolicy(gen,
+                new OsmTransferGenerator(router, maxSearchDistance),
+                firstMile,
+                new OsmTransferGenerator(router, maxSearchDistance),
+                lastMile).UseCache();
 
             return new Profile<TransferMetric>(
-                gen,
                 new InternalTransferGenerator(),
+                gen,
                 TransferMetric.Factory,
                 TransferMetric.ParetoCompare,
                 new CancelledConnectionFilter(),

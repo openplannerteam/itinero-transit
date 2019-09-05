@@ -4,6 +4,8 @@ namespace Itinero.Transit.Utils
 {
     public static class DistanceEstimate
     {
+        // TODO: make this either internal or use lon/lat.
+        
         private const double _radiusOfEarth = 6371000;
 
         /// <summary>

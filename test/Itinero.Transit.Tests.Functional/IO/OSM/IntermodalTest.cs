@@ -14,11 +14,11 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
         IntermodalTestWithOtherTransport : FunctionalTestWithInput<(string start, string destination, uint maxDistance)>
     {
         private readonly TransitDb _tdb;
-        private readonly Func<uint, Stop, Stop, Profile<TransferMetric>> _profile;
+        private readonly Func<uint, StopId, StopId, Profile<TransferMetric>> _profile;
 
         public IntermodalTestWithOtherTransport(
             TransitDb tdb,
-           Func<uint, Stop, Stop, Profile<TransferMetric>> profile)
+           Func<uint, StopId, StopId, Profile<TransferMetric>> profile)
         {
             _tdb = tdb;
             _profile = profile;
@@ -27,17 +27,20 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
         protected override void Execute()
         {
             // We create a router from the TDB and amend it with an OSM-Locations-Reader to decode OSM-coordinates
+            var reader = _tdb.Latest.StopsDb.GetReader().AddOsmReader();
+            reader.MoveTo(Input.start);
+            var startStopId = reader.Id;
+            reader.MoveTo(Input.destination);
+            var destinationStopId = reader.Id;
 
-          
-            
-            var profile = _profile(Input.maxDistance, null, null);
+            var profile = _profile(Input.maxDistance, startStopId, destinationStopId);
             var calculator =
                 _tdb.SelectProfile(profile)
-                .UseOsmLocations()
-                .SelectStops(
-                    Input.start,
-                    Input.destination)
-                .SelectTimeFrame(StringConstants.TestDate, StringConstants.TestDate.AddHours(10));
+                    .UseOsmLocations()
+                    .SelectStops(
+                        Input.start,
+                        Input.destination)
+                    .SelectTimeFrame(StringConstants.TestDate, StringConstants.TestDate.AddHours(10));
 
             var start = DateTime.Now;
             NotNull(calculator.LatestDepartureJourney());
@@ -50,6 +53,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
             NotNull(easJ);
             end = DateTime.Now;
             Information($"Calculating EAS took {(end - start).TotalMilliseconds}ms");
+            
             start = DateTime.Now;
             var journeys = calculator.AllJourneys();
             NotNull(journeys);

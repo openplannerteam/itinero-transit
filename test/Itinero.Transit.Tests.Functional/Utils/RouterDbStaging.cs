@@ -1,6 +1,6 @@
 using Itinero.Data.Graphs.Coders;
 using Itinero.IO.Osm.Tiles;
-using Itinero.Transit.IO.OSM;
+using Itinero.Transit.Tests.Functional.Transfers;
 
 namespace Itinero.Transit.Tests.Functional.Utils
 {
