@@ -90,7 +90,9 @@ namespace Itinero.Transit.Tests.Functional
 
 
             new TestAutoUpdating().Run();
-            //*/
+            
+            Logging.Log.Information("All tests done");
+
         }
 
 

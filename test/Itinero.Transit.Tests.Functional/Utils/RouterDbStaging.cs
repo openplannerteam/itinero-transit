@@ -22,7 +22,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
                     ("bicycle.weight", EdgeDataType.UInt32) // add one for each profile that is going to be used with name (profile).weight.
                 })
             });
-            routerDb.DataProvider = new DataProvider(routerDb);
+            routerDb.DataProvider = new DataProvider();
             OsmTransferGenerator.EnableCaching("cache");
 
             RouterDb = routerDb;
