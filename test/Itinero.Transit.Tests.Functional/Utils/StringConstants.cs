@@ -17,11 +17,16 @@ namespace Itinero.Transit.Tests.Functional.Utils
         public const string OsmDeSterre = "https://www.openstreetmap.org/#map=18/51.02260/3.71108";
         public const string OsmHermanTeirlinck = "https://www.openstreetmap.org/#map=18/50.86621/4.35104";
         public const string OsmWechel = "https://www.openstreetmap.org/#map=19/51.26290/4.80125";
-
+            
+        public const string OsmTielen =    "https://www.openstreetmap.org/#map=19/51.244726870748565/4.895057698232279";
+        public const string OsmHerentals =    "https://www.openstreetmap.org/#map=19/51.179504427782405/4.827641884654639";
+        
 
         public const string ZandStraat = "https://data.delijn.be/stops/500562";
         public const string AzSintJan = "https://data.delijn.be/stops/502083";
         public const string Moereind = "https://data.delijn.be/stops/107455";
+        public const string GentZwijnaardeDeLijn = "https://data.delijn.be/stops/200657";
+        public const string Howest = "https://data.delijn.be/stops/502132";
 
 
         public const string Brugge = "http://irail.be/stations/NMBS/008891009";
@@ -32,15 +37,13 @@ namespace Itinero.Transit.Tests.Functional.Utils
         public const string Oostende = "http://irail.be/stations/NMBS/008891702";
         public const string SintJorisWeert = "http://irail.be/stations/NMBS/008833159"; // Antwerpen centraal
         public const string Leuven = "http://irail.be/stations/NMBS/008833001"; // Antwerpen centraal
-        public const string GentZwijnaardeDeLijn = "https://data.delijn.be/stops/200657";
-
-
-        public const string StationBruggeOsm = "https://www.openstreetmap.org/node/6348496391";
-        public const string CoiseauKaaiOsm = "https://www.openstreetmap.org/node/6348562147";
-        public const string Howest = "https://data.delijn.be/stops/502132";
-        public const string Antwerpen = "http://irail.be/stations/NMBS/008821006"; // Antwerpen centraal
-
         public const string Gent = "http://irail.be/stations/NMBS/008892007";
+        public const string Antwerpen = "http://irail.be/stations/NMBS/008821006"; // Antwerpen centraal
+        
+
+        public const string CoiseauKaaiOsmNode = "https://www.openstreetmap.org/node/6348562147";
+        public const string StationBruggeOsmNode = "https://www.openstreetmap.org/node/6348496391";
+
 
         public const string OsmCentrumShuttle = "testdata/fixed-test-cases-osm-CentrumbusBrugge2019-07-11.transitdb";
         public const string Nmbs = "testdata/fixed-test-cases-sncb-2019-07-11.transitdb";
@@ -48,6 +51,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
         public const string NmbsLongPeriod = "testdata/nmbs-long.transitdb";
         public static readonly DateTime NmbsLongPeriodDate = new DateTime(2019, 07, 13);
 
+        
         public const string DelijnWvl = "testdata/fixed-test-cases-de-lijn-wvl-2019-07-11.transitdb";
         public const string DelijnOVl = "testdata/fixed-test-cases-de-lijn-ovl-2019-07-11.transitdb";
         public const string DelijnVlB = "testdata/fixed-test-cases-de-lijn-vlb-2019-07-11.transitdb";

@@ -11,6 +11,7 @@ using Itinero.Transit.Tests.Functional.IO;
 using Itinero.Transit.Tests.Functional.IO.LC;
 using Itinero.Transit.Tests.Functional.IO.LC.Synchronization;
 using Itinero.Transit.Tests.Functional.IO.OSM;
+using Itinero.Transit.Tests.Functional.Regression;
 using Itinero.Transit.Tests.Functional.Utils;
 using Serilog;
 using Serilog.Events;
@@ -40,8 +41,8 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
+              
                 Logging.Log.Information("Ran the devtests. Exiting now. Use --full-test-suite to run everything");
-
                 return;
             }
 
@@ -52,6 +53,14 @@ namespace Itinero.Transit.Tests.Functional
                 .RunOverMultiple(TestConstants.WithWalkTestCases);
             new IntermodalTestWithOtherTransport(nmbs, TestConstants.WithFirstLastMile)
                 .RunOverMultiple(TestConstants.WithWalkTestCases);
+            
+            
+                // The default setup - no arrival time given. A window will be constructed, but in some cases no journeys will be found if walking is significantly faster
+            new ProductionServerMimickTest(nmbs, StringConstants.TestDate, null)
+                .RunOverMultiple(TestConstants.WithWalkAndPTTestCases);
+
+            new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(5))
+                .RunOverMultiple(TestConstants.WithWalkAndPTTestCases);
 
             new ConnectionsDbDepartureEnumeratorTest().Run((nmbs, 63155));
             new ReadWriteTest().Run((nmbs, 63155));
@@ -90,9 +99,8 @@ namespace Itinero.Transit.Tests.Functional
 
 
             new TestAutoUpdating().Run();
-            
-            Logging.Log.Information("All tests done");
 
+            Logging.Log.Information("All tests done");
         }
 
 

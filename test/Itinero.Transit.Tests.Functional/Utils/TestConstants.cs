@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
@@ -69,29 +70,49 @@ namespace Itinero.Transit.Tests.Functional.Utils
         }
 
 
-        public static List<(string departure, string arrival, uint maxDistance)> WithWalkTestCases =
+        /// <summary>
+        /// Test cases where the expected journey is to _not_ take public transport at all
+        /// </summary>
+        public static List<(string departure, string arrival, uint maxDistance)> WithDirectWalkTestCases =
             new List<(string departure, string arrival, uint maxDistance)>
             {
                 (StringConstants.OsmNearStationBruggeLatLon, StringConstants.Brugge, 10000),
+            };
+
+
+        /// <summary>
+        /// Test cases where one has to take public transport, possible with an obligatory walk before- or afterwards
+        /// </summary>
+        public static List<(string departure, string arrival, uint maxDistance)> WithWalkAndPTTestCases =
+            new List<(string departure, string arrival, uint maxDistance)>
+            {
                 (StringConstants.Brugge, StringConstants.Gent, 1000),
                 (StringConstants.OsmNearStationBruggeLatLon, StringConstants.Gent, 1000),
                 (StringConstants.Brugge, StringConstants.OsmDeSterre, 5000),
                 (StringConstants.OsmNearStationBruggeLatLon, StringConstants.OsmDeSterre, 5000),
                 (StringConstants.OsmNearStationBruggeLatLon, StringConstants.OsmHermanTeirlinck, 5000),
                 (StringConstants.OsmHermanTeirlinck, StringConstants.OsmDeSterre, 5000),
-                (StringConstants.OsmWechel, StringConstants.Gent, 10000)
+                (StringConstants.OsmWechel, StringConstants.Gent, 15000),
+                (StringConstants.OsmTielen, StringConstants.OsmHerentals, 10000)
             };
+
+        /// <summary>
+        /// A big pile of test cases
+        /// </summary>
+        public static List<(string departure, string arrival, uint maxDistance)> WithWalkTestCases =
+            WithDirectWalkTestCases.Concat(WithWalkAndPTTestCases).ToList();
+
 
         public static readonly List<FunctionalTestWithInput<WithTime<TransferMetric>>> AllAlgorithmicTests =
             new List<FunctionalTestWithInput<WithTime<TransferMetric>>>
             {
                 new EarliestConnectionScanTest(),
                 new LatestConnectionScanTest(),
-                new ProfiledConnectionScanTest(), //*/
+                new ProfiledConnectionScanTest(),
                 new EasPcsComparison(),
                 new EasLasComparison(),
                 new IsochroneTest(),
-                // TODO Fix this test      new ProfiledConnectionScanWithMetricFilteringTest(),
+                new ProfiledConnectionScanWithMetricFilteringTest()
             };
 
 
@@ -165,11 +186,11 @@ namespace Itinero.Transit.Tests.Functional.Utils
 
             return new List<WithTime<TransferMetric>>
             {
-                withProfile.SelectStops(StringConstants.CoiseauKaaiOsm,
+                withProfile.SelectStops(StringConstants.CoiseauKaaiOsmNode,
                     StringConstants.Gent).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(12)),
-                withProfile.SelectStops(StringConstants.CoiseauKaaiOsm,
+                withProfile.SelectStops(StringConstants.CoiseauKaaiOsmNode,
                     StringConstants.GentZwijnaardeDeLijn).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(12)),

@@ -10,8 +10,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
     // Test with the bicycle profile: from start, to end, with tdb given + OSM reader
     // test EAS, LAS and PCS return something
 
-    public class
-        IntermodalTestWithOtherTransport : FunctionalTestWithInput<(string start, string destination, uint maxDistance)>
+    public class IntermodalTestWithOtherTransport : FunctionalTestWithInput<(string start, string destination, uint maxDistance)>
     {
         private readonly TransitDb _tdb;
         private readonly Func<uint, StopId, StopId, Profile<TransferMetric>> _profile;
