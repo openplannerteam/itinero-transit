@@ -84,12 +84,17 @@ namespace Itinero.Transit.Data.Aggregators
         {
             _cacheIsClosed = true;
         }
+
         
+        /// <summary>
+        /// Should ONLY be used for preprocessing OSM -> PT-stops
+        ///
+        /// </summary>
         public void MakeComplete()
         {
             lock (_stopsCache)
             {
-                _cacheIsClosed = true;
+                CloseCache();
                 var toAdd = new Dictionary<(Stop, uint), HashSet<Stop>>();
                 foreach (var inRange in _stopsCache)
                 {
@@ -118,7 +123,14 @@ namespace Itinero.Transit.Data.Aggregators
 
                 foreach (var kv in toAdd)
                 {
-                    _stopsCache[kv.Key] = kv.Value;
+                    if (_stopsCache.ContainsKey(kv.Key))
+                    {
+                        _stopsCache[kv.Key].UnionWith(kv.Value);
+                    }
+                    else
+                    {
+                        _stopsCache[kv.Key] = kv.Value;
+                    }
                 }
             }
         }
