@@ -113,7 +113,6 @@ namespace Itinero.Transit.Algorithms.CSA
         public Journey<T> CalculateJourney(Func<ulong, ulong, ulong> depArrivalToTimeout = null)
         {
             var enumerator = _connectionsEnumerator;
-            var currentConnection = new Connection();
 
             enumerator.MoveTo(ScanBeginTime);
             if (!enumerator.MoveNext())
@@ -124,7 +123,7 @@ namespace Itinero.Transit.Algorithms.CSA
             var lastDeparture = _lastArrival;
             Journey<T> bestJourney = null;
             var depleted = false;
-            while (!depleted && currentConnection.DepartureTime <= lastDeparture)
+            while (!depleted && enumerator.CurrentDateTime <= lastDeparture)
             {
                 if (!IntegrateBatch())
                 {
