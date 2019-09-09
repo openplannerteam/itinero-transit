@@ -19,7 +19,7 @@ namespace Itinero.Transit.Algorithms.CSA
     internal class LatestConnectionScan<T>
         where T : IJourneyMetric<T>
     {
-        private readonly List<(StopId, Journey<T>)> _userDepartureLocation;
+        private readonly List<StopId> _userDepartureLocation;
 
         private readonly IConnectionEnumerator _connectionsEnumerator;
         private readonly IStopsReader _stopsReader;
@@ -90,10 +90,9 @@ namespace Itinero.Transit.Algorithms.CSA
             _walkPolicy = settings.Profile.WalksGenerator;
 
 
-            foreach (var (loc, j) in settings.TargetStop)
+            foreach (var loc in settings.TargetStop)
             {
-                var journey = j?.SetTag(Journey<T>.LatestArrivalScanJourney)
-                              ?? new Journey<T>(loc, settings.LastArrival.ToUnixTime(),
+                var journey =  new Journey<T>(loc, settings.LastArrival.ToUnixTime(),
                                   settings.Profile.MetricFactory,
                                   Journey<T>.LatestArrivalScanJourney);
                 JourneysToArrivalStopTable.Add(loc, journey);
@@ -383,14 +382,14 @@ namespace Itinero.Transit.Algorithms.CSA
         private Journey<T> GetBestJourney()
         {
             var currentBestJourney = Journey<T>.NegativeInfiniteJourney;
-            foreach (var (targetLoc, restingJourney) in _userDepartureLocation)
+            foreach (var targetLoc in _userDepartureLocation)
             {
                 if (!JourneysToArrivalStopTable.ContainsKey(targetLoc))
                 {
                     continue;
                 }
 
-                var journey = JourneysToArrivalStopTable[targetLoc].Append(restingJourney);
+                var journey = JourneysToArrivalStopTable[targetLoc];
 
                 if (journey.Time < _earliestDeparture)
                 {

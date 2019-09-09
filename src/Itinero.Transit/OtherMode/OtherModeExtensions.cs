@@ -95,7 +95,7 @@ namespace Itinero.Transit.OtherMode
             var to = new Stop(stops);
             var reachableLocations =
                 stops.StopsAround(to, otherModeGenerator.Range());
-         
+
             var times = otherModeGenerator.TimesBetween(reachableLocations, to);
 
             foreach (var j in journeys)
@@ -176,6 +176,38 @@ namespace Itinero.Transit.OtherMode
             }
 
             return times;
+        }
+
+        public static Dictionary<(StopId from, StopId to), uint> TimesBetween(
+            this IOtherModeGenerator gen,
+            List<Stop> from, List<Stop> to)
+        {
+            var result = new Dictionary<(StopId @from, StopId to), uint>();
+
+            if (from.Count < to.Count)
+            {
+                foreach (var fr in from)
+                {
+                    var times = gen.TimesBetween(fr, to);
+                    foreach (var arr in times.Keys)
+                    {
+                        result.Add((fr.Id, arr), times[arr]);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var t in to)
+                {
+                    var times = gen.TimesBetween(from, t);
+                    foreach (var fr in times.Keys)
+                    {
+                        result.Add((fr, t.Id), times[fr]);
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }

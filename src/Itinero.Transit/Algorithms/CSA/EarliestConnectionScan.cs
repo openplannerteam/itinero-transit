@@ -19,7 +19,7 @@ namespace Itinero.Transit.Algorithms.CSA
     internal class EarliestConnectionScan<T>
         where T : IJourneyMetric<T>
     {
-        private readonly List<(StopId, Journey<T>)> _userTargetLocations;
+        private readonly List<StopId> _userTargetLocations;
 
         private readonly IConnectionEnumerator _connectionsEnumerator;
         private readonly IStopsReader _stopsReader;
@@ -79,10 +79,9 @@ namespace Itinero.Transit.Algorithms.CSA
             _walkPolicy = settings.Profile.WalksGenerator;
             _departureJourneys = new Dictionary<StopId, Journey<T>>();
 
-            foreach (var (loc, j) in settings.DepartureStop)
+            foreach (var loc in settings.DepartureStop)
             {
-                var journey = j
-                              ?? new Journey<T>(
+                var journey =  new Journey<T>(
                                   loc, settings.EarliestDeparture.ToUnixTime(), settings.Profile.MetricFactory,
                                   Journey<T>.EarliestArrivalScanJourney);
                 _departureJourneys.Add(loc, journey);
@@ -388,7 +387,7 @@ namespace Itinero.Transit.Algorithms.CSA
         private Journey<T> GetBestJourney()
         {
             var currentBestJourney = Journey<T>.InfiniteJourney;
-            foreach (var (targetLoc, restingJourney) in _userTargetLocations)
+            foreach (var targetLoc in _userTargetLocations)
             {
                 if (!JourneyFromDepartureTable.ContainsKey(targetLoc))
                 {
@@ -396,7 +395,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 }
 
                 // The journey to 'targetLoc' according to the algorithm + the resting journey to 'go home'
-                var journey = JourneyFromDepartureTable[targetLoc].Append(restingJourney);
+                var journey = JourneyFromDepartureTable[targetLoc];
 
                 if (journey.Time > _lastArrival)
                 {

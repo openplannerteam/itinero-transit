@@ -54,7 +54,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var settings = Input.GetScanSettings();
             start = DateTime.Now;
             settings.MetricGuesser = new SimpleMetricGuesser<TransferMetric>(
-                settings.ConnectionsEnumerator, settings.DepartureStop[0].Item1);
+                settings.ConnectionsEnumerator, settings.DepartureStop[0]);
             var pcsF = new ProfiledConnectionScan<TransferMetric>(settings);
             var journeysF = pcsF.CalculateJourneys();
             end = DateTime.Now;
@@ -71,7 +71,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             settings = Input.GetScanSettings();
             start = DateTime.Now;
             settings.MetricGuesser = new SimpleMetricGuesser<TransferMetric>(
-                settings.ConnectionsEnumerator, settings.DepartureStop[0].Item1);
+                settings.ConnectionsEnumerator, settings.DepartureStop[0]);
             var pcsFEarliest = new ProfiledConnectionScan<TransferMetric>(settings);
             var journeysFEarliest = pcsFEarliest.CalculateJourneys();
             end = DateTime.Now;

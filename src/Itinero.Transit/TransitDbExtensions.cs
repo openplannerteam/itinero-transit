@@ -266,7 +266,7 @@ namespace Itinero.Transit
             var end = DateTime.Now;
             Log.Information($"Caching reachable locations took {(end - start).TotalMilliseconds}ms");
             return new WithProfile<T>(
-                 withCache,
+                withCache,
                 ConnectionEnumerator,
                 ConnectionReader,
                 new Profile<T>(
@@ -311,26 +311,10 @@ namespace Itinero.Transit
         }
 
 
-        public IWithSingleLocation<T> SelectSingleStop(IEnumerable<(StopId, Journey<T>)> stop)
+        public IWithSingleLocation<T> SelectSingleStop(IEnumerable<StopId> stop)
         {
             return new WithLocation<T>(StopsReader, ConnectionEnumerator, ConnectionReader, Profile, stop,
                 stop);
-        }
-
-        /// <summary>
-        /// In some cases the traveller has multiple options to depart or arrive,
-        /// and only wants to know the fastest route between any two of them.
-        ///
-        /// This constructor allows to perform such queries.
-        ///
-        /// E.g. Departures are {A, B, C}, arrivals are {X, Y, Z}.
-        /// The earliest arrival scan at a certain time could be for example some journey from A to Y,
-        /// whereas the 'AllJourneys' (profiled search) could give one option C to X and another option B to Y, ignoring A and Z altogether.
-        /// 
-        /// </summary>
-        public IWithSingleLocation<T> SelectSingleStop(IEnumerable<StopId> stop)
-        {
-            return SelectSingleStop(AddNullJourneys(stop));
         }
 
         /// <summary>
@@ -387,16 +371,10 @@ namespace Itinero.Transit
         }
 
 
-        public WithLocation<T> SelectStops(IEnumerable<(StopId, Journey<T>)> from,
-            IEnumerable<(StopId, Journey<T>)> to)
-        {
-            return new WithLocation<T>(StopsReader, ConnectionEnumerator, ConnectionReader, Profile, @from, to);
-        }
-
         public WithLocation<T> SelectStops(IEnumerable<StopId> from,
             IEnumerable<StopId> to)
         {
-            return SelectStops(AddNullJourneys(from), AddNullJourneys(to));
+            return new WithLocation<T>(StopsReader, ConnectionEnumerator, ConnectionReader, Profile, from, to);
         }
 
         public WithLocation<T> SelectStops(IEnumerable<string> from, IEnumerable<string> to)
@@ -432,20 +410,15 @@ namespace Itinero.Transit
                 StopsReader.FindStop(to, $"Arrival stop {to} was not found")
             );
         }
-
-
-        private static List<(StopId, Journey<T>)> AddNullJourneys(IEnumerable<StopId> locs)
-        {
-            var l = new List<(StopId, Journey<T>)>();
-            foreach (var loc in locs)
-            {
-                l.Add((loc, null));
-            }
-
-            return l;
-        }
     }
 
+    /// <summary>
+    /// A 'WithSingleLocation' is a calculator object that has only a single location,
+    /// which is used as either the departure or the arrival location.
+    ///
+    /// It can only be used to calculate isochrones
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface IWithSingleLocation<T> where T : IJourneyMetric<T>
     {
         IWithTimeSingleLocation<T> SelectTimeFrame(
@@ -467,15 +440,16 @@ namespace Itinero.Transit
 
         private readonly Profile<T> _profile;
 
-        private readonly List<(StopId, Journey<T>)> _from;
-        private readonly List<(StopId, Journey<T>)> _to;
+        private readonly List<StopId> _from;
+        private readonly List<StopId> _to;
 
 
         internal WithLocation(IStopsReader stopsReader,
             IConnectionEnumerator connectionEnumerator,
             IDatabaseReader<ConnectionId, Connection> connectionReader,
             Profile<T> profile,
-            IEnumerable<(StopId, Journey<T>)> @from, IEnumerable<(StopId, Journey<T>)> to)
+            IEnumerable<StopId> from,
+            IEnumerable<StopId> to)
         {
             _profile = profile;
             ConnectionEnumerator = connectionEnumerator;
@@ -511,6 +485,32 @@ namespace Itinero.Transit
         {
             return SelectTimeFrame(start, end);
         }
+
+
+        /// <summary>
+        /// Calculates a walk between the given departure and arrival locations.
+        /// This will not use public transport at all.
+        /// </summary>
+        /// <returns>A dictionary with timings. The key is a tuple of globalIds (fromGlobalId, toGlobalId), the value is how much seconds it takes. There will be no entry if that walk is not possible. If no walk is possible, the dictionary will be null.</returns>
+        public Dictionary<(StopId from, StopId to), uint> CalculateDirectJourney()
+        {
+            var from = new List<Stop>();
+            foreach (var fr in _from)
+            {
+                StopsReader.MoveTo(fr);
+                from.Add(new Stop(StopsReader));
+            }
+
+            var to = new List<Stop>();
+
+            foreach (var t in _to)
+            {
+                StopsReader.MoveTo(t);
+                to.Add(new Stop(StopsReader));
+            }
+
+            return _profile.WalksGenerator.TimesBetween(from, to);
+        }
     }
 
     public interface IWithTimeSingleLocation<T> where T : IJourneyMetric<T>
@@ -539,8 +539,8 @@ namespace Itinero.Transit
         internal readonly IConnectionEnumerator ConnectionEnumerator;
 
         internal readonly Profile<T> Profile;
-        internal readonly List<(StopId, Journey<T>)> From;
-        internal readonly List<(StopId, Journey<T>)> To;
+        internal readonly List<StopId> From;
+        internal readonly List<StopId> To;
 
         public DateTime Start { get; private set; }
         public DateTime End { get; private set; }
@@ -555,8 +555,8 @@ namespace Itinero.Transit
             IConnectionEnumerator connectionEnumerator,
             IDatabaseReader<ConnectionId, Connection> connectionReader,
             Profile<T> profile,
-            List<(StopId, Journey<T>)> from,
-            List<(StopId, Journey<T>)> to,
+            List<StopId> from,
+            List<StopId> to,
             DateTime start,
             DateTime end)
         {
@@ -637,7 +637,7 @@ namespace Itinero.Transit
                 Start, End,
                 Profile,
                 From,
-                new List<(StopId, Journey<T>)>() // EMPTY LIST
+                new List<StopId>() // EMPTY LIST
             );
             var eas = new EarliestConnectionScan<T>(settings);
             eas.CalculateJourney();
@@ -662,7 +662,7 @@ namespace Itinero.Transit
                 Start,
                 End,
                 Profile,
-                new List<(StopId, Journey<T>)>(), // EMPTY LIST
+                new List<StopId>(), // EMPTY LIST
                 To
             );
             var las = new LatestConnectionScan<T>(settings);
@@ -790,7 +790,7 @@ namespace Itinero.Transit
                 Start,
                 End,
                 Profile,
-                new List<(StopId, Journey<T>)>(), // We don't pass any departure stop, as we want them all
+                new List<StopId>(), // We don't pass any departure stop, as we want them all
                 To
             )
             {

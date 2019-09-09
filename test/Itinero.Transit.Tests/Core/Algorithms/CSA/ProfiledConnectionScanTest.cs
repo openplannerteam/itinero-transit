@@ -265,7 +265,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             settings.MetricGuesser = new SimpleMetricGuesser<TransferMetric>(
                 calculator.ConnectionEnumerator,
-                calculator.From[0].Item1
+                calculator.From[0]
             );
 
             var pcs = new ProfiledConnectionScan<TransferMetric>(calculator.GetScanSettings());

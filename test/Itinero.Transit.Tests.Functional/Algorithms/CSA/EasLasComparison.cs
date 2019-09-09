@@ -28,9 +28,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 
 
             var stop = Input.StopsReader;
-            stop.MoveTo(Input.From[0].Item1);
+            stop.MoveTo(Input.From[0]);
             var id0 = stop.GlobalId;
-            stop.MoveTo(Input.To[0].Item1);
+            stop.MoveTo(Input.To[0]);
             var id1 = stop.GlobalId;
             stop.Attributes.TryGetValue("name", out var name);
             NotNull(lasJ,

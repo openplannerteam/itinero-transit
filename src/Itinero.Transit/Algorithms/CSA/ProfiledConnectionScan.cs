@@ -121,26 +121,16 @@ namespace Itinero.Transit.Algorithms.CSA
             _targetLocations = new HashSet<IStop>();
             _targetLocationsIds = new HashSet<StopId>();
             _stopsReader = settings.StopsReader;
-            foreach (var (target, journey) in settings.TargetStop)
+            foreach (var target in settings.TargetStop)
             {
-                if (journey != null)
-                {
-                    throw new ArgumentException("PCS does not support target location journeys.");
-                }
-
                 _stopsReader.MoveTo(target);
                 _targetLocations.Add(new Stop(_stopsReader));
                 _targetLocationsIds.Add(target);
             }
 
             _departureLocations = new HashSet<StopId>();
-            foreach (var (target, journey) in settings.DepartureStop)
+            foreach (var target in settings.DepartureStop)
             {
-                if (journey != null)
-                {
-                    throw new ArgumentException("PCS does not support departure location journeys.");
-                }
-
                 _departureLocations.Add(target);
                 // We already create a frontier for each of the destinations...
                 var frontier = new ProfiledParetoFrontier<T>(_comparator, _journeyFilter);
