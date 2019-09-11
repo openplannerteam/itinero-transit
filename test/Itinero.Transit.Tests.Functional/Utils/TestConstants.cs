@@ -4,7 +4,6 @@ using System.Linq;
 using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
-using Itinero.Transit.IO.OSM;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Tests.Functional.Algorithms.CSA;
@@ -83,7 +82,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
         /// <summary>
         /// Test cases where one has to take public transport, possible with an obligatory walk before- or afterwards
         /// </summary>
-        public static List<(string departure, string arrival, uint maxDistance)> WithWalkAndPTTestCases =
+        public static readonly List<(string departure, string arrival, uint maxDistance)> WithWalkAndPtTestCases =
             new List<(string departure, string arrival, uint maxDistance)>
             {
                 (StringConstants.Brugge, StringConstants.Gent, 1000),
@@ -100,7 +99,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
         /// A big pile of test cases
         /// </summary>
         public static List<(string departure, string arrival, uint maxDistance)> WithWalkTestCases =
-            WithDirectWalkTestCases.Concat(WithWalkAndPTTestCases).ToList();
+            WithDirectWalkTestCases.Concat(WithWalkAndPtTestCases).ToList();
 
 
         public static readonly List<FunctionalTestWithInput<WithTime<TransferMetric>>> AllAlgorithmicTests =

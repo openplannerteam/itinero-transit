@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Data;

@@ -255,7 +255,7 @@ namespace Itinero.Transit.Tests.Functional.Regression
 
 
             var walksGenerator = new FirstLastMilePolicy(
-                new CrowsFlightTransferGenerator(0, 1.4f),
+                new CrowsFlightTransferGenerator(0),
                 new OsmTransferGenerator(RouterDbStaging.RouterDb, Input.maxSearch, OsmProfiles.Pedestrian).UseCache(),
                 fromId,
                 new OsmTransferGenerator(RouterDbStaging.RouterDb, Input.maxSearch, OsmProfiles.Pedestrian).UseCache(),

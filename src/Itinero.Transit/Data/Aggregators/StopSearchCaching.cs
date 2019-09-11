@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data.Core;
+// ReSharper disable InconsistentlySynchronizedField
 
 namespace Itinero.Transit.Data.Aggregators
 {

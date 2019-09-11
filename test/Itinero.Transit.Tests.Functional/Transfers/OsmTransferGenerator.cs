@@ -179,6 +179,7 @@ namespace Itinero.Transit.Tests.Functional.Transfers
 
                 // collect targets that are in range.
                 var targets = new List<(SnapPoint target, IStop stop)>();
+                to = to.ToList();
                 foreach (var t in to)
                 {
                     var distance =

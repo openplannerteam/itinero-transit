@@ -9,10 +9,10 @@ using Xunit;
 
 namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 {
-    public class TestForwardBackwardsWalks
+    public class ConnectionScansWithDirectWalksTest
     {
         [Fact]
-        public void ForwardBackwardsWalksTest()
+        public void LAS_vs_EAS_NoConnection_ExpectsSameDirectWalk()
         {
             // During functional testing, it turned out that walking from a stop was quicker then walking towards a stop
             // That was ofc an error, which caused EAS-LAS-comparison to fail in a very specific circumstance (if there was only a small window)
@@ -72,7 +72,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         /// In some scenarios, the only option is to walk directly from A to B
         /// </summary>
         [Fact]
-        public void DirectWalks()
+        public void EAS_TdbWithOneConnection_WalkingIsFaster_JourneyWithDirectWalk()
         {
             // During functional testing, it turned out that walking from a stop was quicker then walking towards a stop
             // That was ofc an error, which caused EAS-LAS-comparison to fail in a very specific circumstance (if there was only a small window)
@@ -86,6 +86,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var stop1 = wr.AddOrUpdateStop("1", 3.00001, 50.00001);
 
 
+            // Note that this connections falls out of the requested window
             wr.AddOrUpdateConnection(
                 stop1, stop0, "qsdf", DateTime.Now.ToUniversalTime().AddMinutes(10),
                 10 * 60, 0, 0, new TripId(0, 0), 0);

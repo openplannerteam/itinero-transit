@@ -11,7 +11,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
     public class JourneyFilterTest
     {
         [Fact]
-        public void TestFiltering()
+        public void CalculateJourneys_SmallTdb_MaxNumberOfTransferFilter_ExpextsOneJourneyWithoutTransfers()
         {
             var tdb = new TransitDb(0);
 
@@ -73,7 +73,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         }
 
         [Fact]
-        public void TestFilteringCancelled()
+        public void CalculateJourneys_SmallTdb_CancelledConnectionFilter_ExpextsJourneyWithoutCancelledConnections()
         {
             var tdb = new TransitDb(0);
 

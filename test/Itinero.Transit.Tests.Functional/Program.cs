@@ -7,7 +7,6 @@ using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
 using Itinero.Transit.Tests.Functional.Data;
-using Itinero.Transit.Tests.Functional.IO;
 using Itinero.Transit.Tests.Functional.IO.LC;
 using Itinero.Transit.Tests.Functional.IO.LC.Synchronization;
 using Itinero.Transit.Tests.Functional.IO.OSM;
@@ -57,10 +56,10 @@ namespace Itinero.Transit.Tests.Functional
             
                 // The default setup - no arrival time given. A window will be constructed, but in some cases no journeys will be found if walking is significantly faster
             new ProductionServerMimickTest(nmbs, StringConstants.TestDate, null)
-                .RunOverMultiple(TestConstants.WithWalkAndPTTestCases);
+                .RunOverMultiple(TestConstants.WithWalkAndPtTestCases);
 
             new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(5))
-                .RunOverMultiple(TestConstants.WithWalkAndPTTestCases);
+                .RunOverMultiple(TestConstants.WithWalkAndPtTestCases);
 
             new ConnectionsDbDepartureEnumeratorTest().Run((nmbs, 63155));
             new ReadWriteTest().Run((nmbs, 63155));

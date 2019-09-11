@@ -13,7 +13,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
     public class LatestConnectionScanTests
     {
         [Fact]
-        public void SimpleLasTest()
+        public void LatestConnectionScan_SmallTdb_ExpectsJourney()
         {
             var tdb = Db.GetDefaultTestDb(out var stop0, out var stop1, out var stop2, out _, out _, out _);
             var db = tdb.Latest;

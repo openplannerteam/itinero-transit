@@ -5,7 +5,7 @@ using Itinero.Transit.Tests.Functional.Utils;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace Itinero.Transit.Tests.Functional.IO
+namespace Itinero.Transit.Tests.Functional.IO.OSM
 {
     /// <summary>
     /// Tests loading of an osm relation
