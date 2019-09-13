@@ -9,8 +9,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.Search
 {
     public class StopSearchTest
     {
-        public static (StopsDb.StopsDbReader, StopId howest, StopId sintClara, StopId station)
-            CreateTestReader()
+        private static (StopsDb.StopsDbReader, StopId howest, StopId sintClara, StopId station) CreateTestReader()
         {
             var tdb = new TransitDb(0);
 
@@ -30,7 +29,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.Search
 
 
         [Fact]
-        public void TestDistance()
+        public void CalculateDistanceBetween_MultipleStops_ExpectsCorrectDistances()
         {
             var distanceHowest = StopSearch.DistanceEstimateInMeter(3.22121f, 51.21538f, 3.2227f, 51.2153f);
             Assert.True(100 < distanceHowest && distanceHowest < 110);
@@ -50,7 +49,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.Search
 
 
         [Fact]
-        public void TestClosest()
+        public void FindCLossest_FewStopsInReader_ExpectsClosestStop()
         {
             var (stops, howest, sintClara, station ) = CreateTestReader();
 
@@ -66,7 +65,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.Search
         }
 
         [Fact]
-        public void TestSearchInBox()
+        public void SearchInBox_TestReader_ExpectsHowest()
         {
             var (stops, howest, _, _ ) = CreateTestReader();
 
@@ -83,7 +82,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.Search
         }
 
         [Fact]
-        public void StopsSearch_ShouldEnumerateAllInBBox()
+        public void SearchInBox_SmallReader_Expects6Stops()
         {
             var db = new StopsDb(0);
             db.Add("http://irail.be/stations/NMBS/008863354", 4.786863327026367, 51.262774197393820);
@@ -101,7 +100,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.Search
         }
 
         [Fact]
-        public void StopsSearch_ShouldFindClosest()
+        public void FindClosest_SmallReader_ExpectsNo1()
         {
             var db = new StopsDb(0);
             var id1 = db.Add("http://irail.be/stations/NMBS/008863354", 4.786863327026367, 51.262774197393820);
@@ -118,7 +117,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.Search
 
 
         [Fact]
-        public void StopsSearchCachedTest()
+        public void FindClosest_CachedReader_ExpectsNo1()
         {
             var db = new StopsDb(0);
             var id1 = db.Add("http://irail.be/stations/NMBS/008863354", 4.786863327026367, 51.262774197393820);
