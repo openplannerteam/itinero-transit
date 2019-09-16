@@ -24,9 +24,65 @@ namespace Itinero.Transit.Tests.Functional
 {
     public static class Program
     {
+
+        public static void LogExtract()
+        {
+
+            var lines = File.ReadAllLines("Fixed.csv");
+            
+            var from = new List<(string coordinate, DateTime time)>();
+            var to = new List<(string coordinate, DateTime time)>();
+
+            
+            foreach (var line in lines)
+            {
+                var splitted = line.Split(',');
+                var dt = DateTime.Parse(splitted[0]);
+                var mode = splitted[1].Trim().ToLower();
+                var dest = splitted[2].Trim();
+                if (mode.Equals("from"))
+                {
+                    from.Add((dest, dt));
+                }
+                else
+                {
+                    to.Add((dest, dt));
+                }
+
+            }
+
+            var pairs = new List<(string from, string to)>();
+            foreach (var (fr, dt) in from)
+            {
+                if (to.Count == 0)
+                {
+                    break;
+                }
+
+                while (to[0].time < dt)
+                {
+                    // To lookup before from - throw away
+                    to.RemoveAt(0);
+                }
+
+                if (to[0].time > dt.AddMinutes(2))
+                {
+                    // The 'from' has no match
+                    continue;
+                }
+                pairs.Add((fr, to[0].coordinate));
+                to.RemoveAt(0);
+            }
+
+            File.WriteAllLines("TestCases.csv",
+                pairs.Select(pair => $"{pair.from},{pair.to}"));
+
+        }
+        
         public static void Main(string[] args)
         {
             EnableLogging();
+            
 
             Log.Information("Starting the functional tests...");
             var devTestsOnly = args.Length == 0 ||
