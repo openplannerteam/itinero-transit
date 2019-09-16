@@ -111,7 +111,9 @@ namespace Itinero.Transit.Tests.Functional.Utils
                 new EasPcsComparison(),
                 new EasLasComparison(),
                 new IsochroneTest(),
-                new ProfiledConnectionScanWithMetricFilteringTest()
+                new ProfiledConnectionScanWithIsochroneFilteringTest(),
+                new ProfiledConnectionScanWithMetricFilteringTest(),
+                new ProfiledConnectionScanWithMetricAndIsochroneFilteringTest()
             };
 
 

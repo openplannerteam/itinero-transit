@@ -4,6 +4,7 @@ using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey;
+using Itinero.Transit.Logging;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Utils;
 
@@ -245,6 +246,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <param name="c"></param>
         private void IntegrateConnection(Connection c)
         {
+           
             if (c.ArrivalTime > _lastArrival)
             {
                 return;

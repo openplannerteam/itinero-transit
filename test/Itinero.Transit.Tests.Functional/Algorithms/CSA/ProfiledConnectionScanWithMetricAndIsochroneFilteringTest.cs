@@ -12,7 +12,7 @@ using Itinero.Transit.Tests.Functional.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
-    public class ProfiledConnectionScanWithMetricFilteringTest : FunctionalTestWithInput<WithTime<TransferMetric>>
+    public class ProfiledConnectionScanWithMetricAndIsochroneFilteringTest : FunctionalTestWithInput<WithTime<TransferMetric>>
     {
         
         protected override void Execute()
@@ -25,8 +25,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var pcs0 = new ProfiledConnectionScan<TransferMetric>(Input.GetScanSettings());
             var journeys0 = pcs0.CalculateJourneys();
 
-            var start = DateTime.Now;
+            
             Input.ResetFilter();
+            var start = DateTime.Now;
             var pcs = new ProfiledConnectionScan<TransferMetric>(Input.GetScanSettings());
             var journeys = pcs.CalculateJourneys();
             var end = DateTime.Now;
@@ -42,9 +43,12 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             Input.ResetFilter();
             var settings = Input.GetScanSettings();
             start = DateTime.Now;
+            
+            Input.IsochroneFrom();
             settings.MetricGuesser = new SimpleMetricGuesser<TransferMetric>(
                 settings.ConnectionsEnumerator, settings.DepartureStop[0]);
             var pcsF = new ProfiledConnectionScan<TransferMetric>(settings);
+            
             var journeysF = pcsF.CalculateJourneys();
             end = DateTime.Now;
             var filteredTime = (end - start).TotalMilliseconds;

@@ -12,9 +12,10 @@ using Itinero.Transit.Tests.Functional.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
-    public class ProfiledConnectionScanWithMetricFilteringTest : FunctionalTestWithInput<WithTime<TransferMetric>>
+    public class ProfiledConnectionScanWithIsochroneFilteringTest : FunctionalTestWithInput<WithTime<TransferMetric>>
     {
-        
+       
+
         protected override void Execute()
         {
             Input.IsochroneFrom(); // Calculating the isochrone lines makes sure this is reused as filter - in some cases, testing goes from ~26 seconds to ~6
@@ -27,6 +28,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 
             var start = DateTime.Now;
             Input.ResetFilter();
+            
             var pcs = new ProfiledConnectionScan<TransferMetric>(Input.GetScanSettings());
             var journeys = pcs.CalculateJourneys();
             var end = DateTime.Now;
@@ -40,10 +42,10 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 
 
             Input.ResetFilter();
+            
             var settings = Input.GetScanSettings();
             start = DateTime.Now;
-            settings.MetricGuesser = new SimpleMetricGuesser<TransferMetric>(
-                settings.ConnectionsEnumerator, settings.DepartureStop[0]);
+            Input.IsochroneFrom();
             var pcsF = new ProfiledConnectionScan<TransferMetric>(settings);
             var journeysF = pcsF.CalculateJourneys();
             end = DateTime.Now;

@@ -3,6 +3,7 @@ using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey;
+using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.Algorithms.Filter
 {
@@ -41,7 +42,8 @@ namespace Itinero.Transit.Algorithms.Filter
 
         public Journey<T> LeastTheoreticalConnection(Journey<T> intermediate)
         {
-            var teleportation = new Connection(ConnectionId.Invalid, 
+            
+            var teleportation = new Connection(ConnectionId.Invalid,
                 "https://en.wikipedia.org/wiki/Teleportation",
                 _departureStop, intermediate.Location,
                 _clock.CurrentDateTime, // The current connection scan is here, future departures will only be sooner

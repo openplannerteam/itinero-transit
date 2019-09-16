@@ -122,6 +122,34 @@ namespace Itinero.Transit.Tests.Functional.Utils
                 throw new Exception("Loop detected in the journey: " + journey.ToString(50, stops, conn));
             }
         }
+        
+        public void AssertAreSame(ICollection<Journey<TransferMetric>> js, ICollection<Journey<TransferMetric>> bs,
+            IStopsReader reader)
+        {
+            bool oneMissing = false;
+            foreach (var a in js)
+            {
+                if (!bs.Contains(a))
+                {
+                    Logging.Log.Error($"Missing journey: {a.ToString(100, reader)}");
+                    oneMissing = true;
+                }
+            }
+
+            int bi = 0;
+            foreach (var b in bs)
+            {
+                if (!js.Contains(b))
+                {
+                    Logging.Log.Error($"Missing journey {bi}: {b.ToString(100, reader)}");
+                    oneMissing = true;
+                }
+
+                bi++;
+            }
+
+            True(!oneMissing);
+        }
 
         /// <summary>
         /// Write a log event with the Informational level.

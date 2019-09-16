@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
+using Itinero.Transit.IO.OSM.Data;
+using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms;
+using Itinero.Transit.Tests.Functional.Algorithms.CSA;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
 using Itinero.Transit.Tests.Functional.Data;
 using Itinero.Transit.Tests.Functional.IO.LC;
@@ -40,7 +44,28 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
-              
+                var withTimes = new List<WithTime<TransferMetric>>();
+
+                foreach (var testCase in TestConstants.WithWalkTestCases)
+                {
+                    var r = nmbs.Latest.StopsDb.GetReader().AddOsmReader();
+                    r.MoveTo(testCase.departure);
+                    var depStop = r.Id;
+                    r.MoveTo(testCase.arrival);
+                    var arrStop = r.Id;
+
+                    var withTime = nmbs
+                        .SelectProfile(TestConstants.DefaultProfile(testCase.maxDistance, depStop, arrStop))
+                        .UseOsmLocations()
+                        .SelectStops(testCase.departure, testCase.arrival)
+                        .SelectTimeFrame(StringConstants.TestDate.AddHours(1), StringConstants.TestDate.AddHours(10));
+                    withTimes.Add(withTime);
+                }
+
+                new ProfiledConnectionScanWithIsochroneFilteringTest().RunOverMultiple(withTimes);
+                new ProfiledConnectionScanWithMetricFilteringTest().RunOverMultiple(withTimes);
+                new ProfiledConnectionScanWithMetricAndIsochroneFilteringTest().RunOverMultiple(withTimes);
+
                 Logging.Log.Information("Ran the devtests. Exiting now. Use --full-test-suite to run everything");
                 return;
             }
@@ -52,9 +77,9 @@ namespace Itinero.Transit.Tests.Functional
                 .RunOverMultiple(TestConstants.WithWalkTestCases);
             new IntermodalTestWithOtherTransport(nmbs, TestConstants.WithFirstLastMile)
                 .RunOverMultiple(TestConstants.WithWalkTestCases);
-            
-            
-                // The default setup - no arrival time given. A window will be constructed, but in some cases no journeys will be found if walking is significantly faster
+
+
+            // The default setup - no arrival time given. A window will be constructed, but in some cases no journeys will be found if walking is significantly faster
             new ProductionServerMimickTest(nmbs, StringConstants.TestDate, null)
                 .RunOverMultiple(TestConstants.WithWalkAndPtTestCases);
 

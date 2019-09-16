@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Journey;
+using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.Algorithms.CSA
 {
@@ -212,22 +213,21 @@ namespace Itinero.Transit.Algorithms.CSA
                 if (j.Time <= guard.Time && guard.Root.Time <= j.Root.Time)
                 {
                     // Guard completely falls within 'j' or has a same time period
-                    // Note that guard has an edge here
+                    // Note that guard (mostly) has an edge here
                     var duel = Comparator.ADominatesB(guard, j);
                     switch (duel)
                     {
                         case -1: return false;
                         case 0:
-                            // Identical to the above big switch cases, but compacted
-                            if (j.Time == guard.Time && guard.Root.Time == j.Root.Time)
-                            {
-                                return !j.Equals(guard);
-                            }
-                            else
+                            if (j.Time != guard.Time || guard.Root.Time != j.Root.Time)
                             {
                                 // Both have equally good stats... But the guard strictly falls within considered
                                 // Thus: considered takes a longer time and is worse
                                 return false;
+                            }
+                            else
+                            {
+                                return !j.Equals(guard);
                             }
 
                         default:
@@ -235,9 +235,10 @@ namespace Itinero.Transit.Algorithms.CSA
                             continue;
                     }
                 }
-                else if (guard.Time <= j.Time && j.Root.Time <= guard.Root.Time)
+                
+                if (guard.Time <= j.Time && j.Root.Time <= guard.Root.Time)
                 {
-                    // j falls completely within guard
+                    // j falls completely and strictly within guard
 
                     var duel = Comparator.ADominatesB(guard, j);
                     switch (duel)
@@ -302,8 +303,7 @@ namespace Itinero.Transit.Algorithms.CSA
                         // No conclusions can be made
                         continue;
                     }
-
-
+                    
                     // Even _with_ a teleport, the intermediate journey could not beat any
                     // already existing journey to the destination...
                     // This means that this intermediate journey can never ever be optimal
