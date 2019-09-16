@@ -11,11 +11,15 @@ namespace Sample.SNCB
         // ReSharper disable once UnusedParameter.Local
         private static void Main(string[] args)
         {
-            // create an empty transit db and specify where to get data from, in this case linked connections.
+            // create an empty transit db
+            // Note that every transitDB has an unique identifier, in this case '0'.
             var transitDb = new TransitDb(0);
             Console.WriteLine("Loading connections...");
+            
+            // specify where to get data from, in this case linked connections for the Belgian rail operator.
             transitDb.UseLinkedConnections("https://graph.irail.be/sncb/connections",
-                "https://irail.be/stations", DateTime.Now, DateTime.Now.AddHours(5));
+                "https://irail.be/stations", 
+                DateTime.Now, DateTime.Now.AddHours(5));
 
             // get a snapshot of the db to use.
             var snapshot = transitDb.Latest;
@@ -33,7 +37,7 @@ namespace Sample.SNCB
                 .SelectProfile(profile)
                 .SelectStops(departureStop, arrivalStop)
                 .SelectTimeFrame(DateTime.Now, DateTime.Now.AddHours(3));
-            var journeys = router.AllJourneys();
+            var journeys = router.CalculateAllJourneys();
             if (journeys == null || journeys.Count == 0)
             {
                 Console.WriteLine("No journeys found.");

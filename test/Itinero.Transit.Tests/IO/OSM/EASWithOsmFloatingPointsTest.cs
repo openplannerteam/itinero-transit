@@ -33,7 +33,7 @@ namespace Itinero.Transit.Tests.IO.OSM
                     new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 10, 00, 00, DateTimeKind.Utc));
 
-            var eas = input.EarliestArrivalJourney();
+            var eas = input.CalculateEarliestArrivalJourney();
             Assert.NotNull(eas);
 
         }
@@ -79,13 +79,13 @@ namespace Itinero.Transit.Tests.IO.OSM
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc));
 
 
-            var journey = input.EarliestArrivalJourney();
+            var journey = input.CalculateEarliestArrivalJourney();
             Assert.NotNull(journey);
             input.ResetFilter();
-            var las = input.LatestDepartureJourney();
+            var las = input.CalculateLatestDepartureJourney();
             Assert.NotNull(las);
             input.ResetFilter();
-            var pcs = input.AllJourneys();
+            var pcs = input.CalculateAllJourneys();
             Assert.NotNull(pcs);
             Assert.Single(pcs);
         }
@@ -132,13 +132,13 @@ namespace Itinero.Transit.Tests.IO.OSM
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc));
 
 
-            var journey = input.EarliestArrivalJourney();
+            var journey = input.CalculateEarliestArrivalJourney();
             Assert.NotNull(journey);
             input.ResetFilter();
-            var las = input.LatestDepartureJourney();
+            var las = input.CalculateLatestDepartureJourney();
             Assert.NotNull(las);
             input.ResetFilter();
-            var pcs = input.AllJourneys();
+            var pcs = input.CalculateAllJourneys();
             Assert.NotNull(pcs);
             Assert.Single(pcs);
         }
@@ -185,13 +185,13 @@ namespace Itinero.Transit.Tests.IO.OSM
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc));
 
 
-            var journey = input.EarliestArrivalJourney();
+            var journey = input.CalculateEarliestArrivalJourney();
             Assert.NotNull(journey);
             input.ResetFilter();
-            var las = input.LatestDepartureJourney();
+            var las = input.CalculateLatestDepartureJourney();
             Assert.NotNull(las);
             input.ResetFilter();
-            var pcs = input.AllJourneys();
+            var pcs = input.CalculateAllJourneys();
             Assert.NotNull(pcs);
             Assert.Single(pcs);
         }

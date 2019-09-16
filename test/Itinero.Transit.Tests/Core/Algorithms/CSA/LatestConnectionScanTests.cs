@@ -29,7 +29,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                     .SelectStops(stop0, stop1)
                     .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00),
                         new DateTime(2018, 12, 04, 18, 00, 00))
-                    .LatestDepartureJourney();
+                    .CalculateLatestDepartureJourney();
                 
             Assert.NotNull(j);
             Assert.Equal(new ConnectionId(0,0), j.Connection);
@@ -38,7 +38,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(stop0, stop2)
                 .SelectTimeFrame(db.GetConn(0).DepartureTime.FromUnixTime(),
                     (db.GetConn(0).DepartureTime + 60 * 60 * 2).FromUnixTime())
-                .LatestDepartureJourney();
+                .CalculateLatestDepartureJourney();
                 
                 
             Assert.NotNull(j);
@@ -74,7 +74,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(stop1, stop2)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 19, 00, 00, DateTimeKind.Utc))
-                .LatestDepartureJourney();
+                .CalculateLatestDepartureJourney();
 
             Assert.Null(journey);
         }
@@ -106,7 +106,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(stop1, stop2)
                 .SelectTimeFrame(        new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 19, 00, 00, DateTimeKind.Utc))
-                .LatestDepartureJourney();
+                .CalculateLatestDepartureJourney();
 
             Assert.NotNull(journey);
             Assert.Equal(2, journey.AllParts().Count());
@@ -145,7 +145,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(w0, stop1)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
-                .LatestDepartureJourney();
+                .CalculateLatestDepartureJourney();
             Assert.NotNull(journey);
         }
         
@@ -182,7 +182,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(stop0, w1)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
-                .LatestDepartureJourney();
+                .CalculateLatestDepartureJourney();
             Assert.NotNull(journey);
         }
         
@@ -219,7 +219,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(w0, w1)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
-                .LatestDepartureJourney();
+                .CalculateLatestDepartureJourney();
             Assert.NotNull(journey);
         }
 
@@ -255,7 +255,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var journey = transitDb.SelectProfile(profile).SelectStops(loc0, loc2)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 17, 00, 00, DateTimeKind.Utc))
-                .LatestDepartureJourney();
+                .CalculateLatestDepartureJourney();
             
             Assert.Null(journey);
         }
@@ -293,7 +293,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var journey = transitDb.SelectProfile(profile).SelectStops(loc2, loc0)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 17, 00, 00, DateTimeKind.Utc))
-                .LatestDepartureJourney();
+                .CalculateLatestDepartureJourney();
             
             Assert.Null(journey);
         }

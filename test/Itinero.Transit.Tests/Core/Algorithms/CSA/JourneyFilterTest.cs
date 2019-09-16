@@ -62,12 +62,12 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectTimeFrame(date, date.AddHours(1));
 
 
-            var pcsTr = routerWithTransfer.AllJourneys();
+            var pcsTr = routerWithTransfer.CalculateAllJourneys();
             Assert.Equal(2, pcsTr.Count);
             Assert.Equal((uint) 1, pcsTr[0].Metric.NumberOfTransfers);
             Assert.Equal((uint) 0, pcsTr[1].Metric.NumberOfTransfers);
 
-            var pcs = router.AllJourneys();
+            var pcs = router.CalculateAllJourneys();
             Assert.Single(pcs);
             Assert.Equal((uint) 0, pcs[0].Metric.NumberOfTransfers);
         }
@@ -111,12 +111,12 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectTimeFrame(date, date.AddHours(1));
 
 
-            var easTr = routerWithTransfer.EarliestArrivalJourney();
+            var easTr = routerWithTransfer.CalculateEarliestArrivalJourney();
             Assert.Equal((uint) 1, easTr.Metric.NumberOfTransfers);
 
             routerWithTransfer.ResetFilter();
 
-            var pcsTr = routerWithTransfer.AllJourneys();
+            var pcsTr = routerWithTransfer.CalculateAllJourneys();
             Assert.Single(pcsTr);
             Assert.Equal((uint) 1, pcsTr[0].Metric.NumberOfTransfers);
 
@@ -133,7 +133,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(stop0, stop2)
                 .SelectTimeFrame(date, date.AddHours(1));
 
-            var pcs = router.AllJourneys();
+            var pcs = router.CalculateAllJourneys();
             Assert.Equal(2,pcs.Count);
             Assert.Equal((uint) 0, pcs[0].Metric.NumberOfTransfers);
             Assert.Equal((uint) 1, pcs[1].Metric.NumberOfTransfers);

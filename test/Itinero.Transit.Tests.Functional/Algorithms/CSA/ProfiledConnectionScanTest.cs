@@ -10,9 +10,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
     {
         protected override void Execute()
         {
-            Input.IsochroneFrom(); // Calculating the isochrone lines makes sure this is reused as filter - in some cases, testing goes from ~26 seconds to ~6
+            Input.CalculateIsochroneFrom(); // Calculating the isochrone lines makes sure this is reused as filter - in some cases, testing goes from ~26 seconds to ~6
 
-            var journeys = Input.AllJourneys();
+            var journeys = Input.CalculateAllJourneys();
 
             // verify result.
             NotNull(journeys);

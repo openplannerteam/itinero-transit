@@ -42,19 +42,19 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
                     .SelectTimeFrame(StringConstants.TestDate, StringConstants.TestDate.AddHours(10));
 
             var start = DateTime.Now;
-            NotNull(calculator.LatestDepartureJourney());
+            NotNull(calculator.CalculateLatestDepartureJourney());
             calculator.ResetFilter();
             var end = DateTime.Now;
             Information($"Calculating LAS took {(end - start).TotalMilliseconds}ms");
 
             start = DateTime.Now;
-            var easJ = calculator.EarliestArrivalJourney();
+            var easJ = calculator.CalculateEarliestArrivalJourney();
             NotNull(easJ);
             end = DateTime.Now;
             Information($"Calculating EAS took {(end - start).TotalMilliseconds}ms");
             
             start = DateTime.Now;
-            var journeys = calculator.AllJourneys();
+            var journeys = calculator.CalculateAllJourneys();
             NotNull(journeys);
             True(journeys.Count > 0);
             end = DateTime.Now;

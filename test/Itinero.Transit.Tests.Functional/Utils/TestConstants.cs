@@ -113,7 +113,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
                 new IsochroneTest(),
                 new ProfiledConnectionScanWithIsochroneFilteringTest(),
                 new ProfiledConnectionScanWithMetricFilteringTest(),
-                new ProfiledConnectionScanWithMetricAndIsochroneFilteringTest()
+                new ProfiledConnectionScanWithMetricAndIsochroneFilteringTest()    
             };
 
 

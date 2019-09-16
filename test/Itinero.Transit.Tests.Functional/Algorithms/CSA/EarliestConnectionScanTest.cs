@@ -7,7 +7,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
     {
         protected override void Execute()
         {
-            var journey = Input.EarliestArrivalJourney();
+            var journey = Input.CalculateEarliestArrivalJourney();
             NotNull(journey);
             AssertNoLoops(journey, Input);
         }

@@ -12,10 +12,10 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
     {
         protected override void Execute()
         {
-            var easJ = Input.EarliestArrivalJourney(
+            var easJ = Input.CalculateEarliestArrivalJourney(
                 (tuple => Input.End));
             
-            var pcsJs = Input.AllJourneys();
+            var pcsJs = Input.CalculateAllJourneys();
             var pcsJ = pcsJs.Last();
 
             // PCS could find a route which arrives at the same time, but departs later

@@ -97,7 +97,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                     new DefaultProfile())
                 .SelectStops(stop0, stop1)
                 .SelectTimeFrame(DateTime.Now.ToUniversalTime(), DateTime.Now.AddHours(1).ToUniversalTime())
-                .EarliestArrivalJourney();
+                .CalculateEarliestArrivalJourney();
             Assert.NotNull(easJ);
         }
     }

@@ -7,7 +7,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
     {
         protected override void Execute()
         {
-            var lasJ = Input.LatestDepartureJourney();
+            var lasJ = Input.CalculateLatestDepartureJourney();
             NotNull(lasJ);
             // NoLoops(lasJ, input);
             // LAS can possible create a transfer which could have been taken sooner,

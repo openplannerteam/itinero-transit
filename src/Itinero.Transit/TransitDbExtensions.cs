@@ -428,35 +428,26 @@ namespace Itinero.Transit
         IWithTimeSingleLocation<T> SelectTimeFrame(
             ulong start,
             ulong end);
+
     }
 
-    public class WithLocation<T> : IWithSingleLocation<T>
+    public class WithLocation<T> :
+        WithProfile<T>,
+        IWithSingleLocation<T>
         where T : IJourneyMetric<T>
     {
-        internal readonly IStopsReader StopsReader;
-        internal readonly IConnectionEnumerator ConnectionEnumerator;
-        internal readonly IDatabaseReader<ConnectionId, Connection> ConnectionReader;
 
-
-        private readonly Profile<T> _profile;
-
-        private readonly List<StopId> _from;
-        private readonly List<StopId> _to;
-
+        public readonly List<StopId> From, To;
 
         internal WithLocation(IStopsReader stopsReader,
             IConnectionEnumerator connectionEnumerator,
             IDatabaseReader<ConnectionId, Connection> connectionReader,
             Profile<T> profile,
             IEnumerable<StopId> from,
-            IEnumerable<StopId> to)
+            IEnumerable<StopId> to) : base(stopsReader, connectionEnumerator, connectionReader, profile)
         {
-            _profile = profile;
-            ConnectionEnumerator = connectionEnumerator;
-            ConnectionReader = connectionReader;
-            StopsReader = stopsReader;
-            _from = from.ToList();
-            _to = to.ToList();
+            From = from.ToList();
+            To = to.ToList();
         }
 
 
@@ -464,7 +455,7 @@ namespace Itinero.Transit
             DateTime start,
             DateTime end)
         {
-            return new WithTime<T>(StopsReader, ConnectionEnumerator, ConnectionReader, _profile, _from, _to, start,
+            return new WithTime<T>(StopsReader, ConnectionEnumerator, ConnectionReader, Profile, From, To, start,
                 end);
         }
 
@@ -495,7 +486,7 @@ namespace Itinero.Transit
         public Dictionary<(StopId from, StopId to), uint> CalculateDirectJourney()
         {
             var from = new List<Stop>();
-            foreach (var fr in _from)
+            foreach (var fr in From)
             {
                 StopsReader.MoveTo(fr);
                 from.Add(new Stop(StopsReader));
@@ -503,13 +494,13 @@ namespace Itinero.Transit
 
             var to = new List<Stop>();
 
-            foreach (var t in _to)
+            foreach (var t in To)
             {
                 StopsReader.MoveTo(t);
                 to.Add(new Stop(StopsReader));
             }
 
-            return _profile.WalksGenerator.TimesBetween(from, to);
+            return Profile.WalksGenerator.TimesBetween(from, to);
         }
     }
 
@@ -518,29 +509,24 @@ namespace Itinero.Transit
         ///  <summary>
         ///  Calculates all journeys which depart at 'from' at the given departure time and arrive before the specified 'end'-time of the timeframe.
         ///  </summary>
-        IReadOnlyDictionary<StopId, Journey<T>> IsochroneFrom();
+        IReadOnlyDictionary<StopId, Journey<T>> CalculateIsochroneFrom();
 
         ///  <summary>
         ///  Calculates all journeys which arrive at 'to' at the given arrival time and departarter the specified 'start'-time of the timeframe.
         ///  </summary>
-        IReadOnlyDictionary<StopId, Journey<T>> IsochroneTo();
+        IReadOnlyDictionary<StopId, Journey<T>> CalculateIsochroneTo();
 
         /// <summary>
         /// Calculates all journeys which are optimal for their given timeframe and which go to the destination stop.
         /// </summary>
-        Dictionary<StopId, List<Journey<T>>> AllProfileJourneysTowards();
+        Dictionary<StopId, List<Journey<T>>> CalculateAllProfileJourneysTowards();
     }
 
-    public class WithTime<T> : IWithTimeSingleLocation<T>
+    public class WithTime<T> :
+        WithLocation<T>,
+        IWithTimeSingleLocation<T>
         where T : IJourneyMetric<T>
     {
-        internal readonly IStopsReader StopsReader;
-        internal readonly IDatabaseReader<ConnectionId, Connection> ConnectionReader;
-        internal readonly IConnectionEnumerator ConnectionEnumerator;
-
-        internal readonly Profile<T> Profile;
-        internal readonly List<StopId> From;
-        internal readonly List<StopId> To;
 
         public DateTime Start { get; private set; }
         public DateTime End { get; private set; }
@@ -555,17 +541,11 @@ namespace Itinero.Transit
             IConnectionEnumerator connectionEnumerator,
             IDatabaseReader<ConnectionId, Connection> connectionReader,
             Profile<T> profile,
-            List<StopId> from,
-            List<StopId> to,
+            IEnumerable<StopId> from,
+            IEnumerable<StopId> to,
             DateTime start,
-            DateTime end)
+            DateTime end) : base(stopsReader, connectionEnumerator, connectionReader, profile, from, to)
         {
-            StopsReader = stopsReader;
-            ConnectionEnumerator = connectionEnumerator;
-            ConnectionReader = connectionReader;
-            Profile = profile;
-            From = from;
-            To = to;
             Start = start.ToUniversalTime();
             End = end.ToUniversalTime();
 
@@ -595,31 +575,33 @@ namespace Itinero.Transit
         }
 
 
+        
         /// <summary>
-        /// Creates a copy of this withTime-object, but with different times.
+        /// These are the scanSettings with all data.
+        /// They can be used e.g. for EAS, LAS and PCS not for others.
+        /// The main usage is testing though
         /// </summary>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
         /// <returns></returns>
-        public WithTime<T> DifferentTimes(DateTime start, DateTime end)
+        internal ScanSettings<T> GetScanSettings()
         {
-            return new WithTime<T>(
+            return new ScanSettings<T>(
                 StopsReader,
                 ConnectionEnumerator,
-                ConnectionReader,
+                Start,
+                End,
                 Profile,
-                From,
-                To,
-                start,
-                end
-            );
+                From, To
+            )
+            {
+                Filter = TimedFilter
+            };
         }
-
+        
         ///  <summary>
         ///  Calculates all journeys which depart at 'from' at the given departure time and arrive before the specified 'end'-time of the timeframe.
         /// This ignores the given 'to'-location
         ///  </summary>
-        public IReadOnlyDictionary<StopId, Journey<T>> IsochroneFrom()
+        public IReadOnlyDictionary<StopId, Journey<T>> CalculateIsochroneFrom()
         {
             CheckHasFrom();
             /*
@@ -650,7 +632,7 @@ namespace Itinero.Transit
         ///  Calculates all journeys which arrive at 'to' at the given arrival time and departarter the specified 'start'-time of the timeframe.
         /// This ignores the given 'from'-location
         ///  </summary>
-        public IReadOnlyDictionary<StopId, Journey<T>> IsochroneTo()
+        public IReadOnlyDictionary<StopId, Journey<T>> CalculateIsochroneTo()
         {
             CheckHasTo();
             /*
@@ -671,26 +653,6 @@ namespace Itinero.Transit
             return las.Isochrone();
         }
 
-        /// <summary>
-        /// These are the scanSettings with all data.
-        /// They can be used e.g. for EAS, LAS and PCS not for others.
-        /// The main usage is testing though
-        /// </summary>
-        /// <returns></returns>
-        internal ScanSettings<T> GetScanSettings()
-        {
-            return new ScanSettings<T>(
-                StopsReader,
-                ConnectionEnumerator,
-                Start,
-                End,
-                Profile,
-                From, To
-            )
-            {
-                Filter = TimedFilter
-            };
-        }
 
         ///  <summary>
         ///  Calculates the journey which departs at 'from' and arrives at 'to' as early as possible.
@@ -700,7 +662,7 @@ namespace Itinero.Transit
         /// This function indicates a new timeframe-end to calculate PCS with later on.</param>
         /// <returns>A journey which is guaranteed to arrive as early as possible (or null if none was found)</returns>
         // ReSharper disable once UnusedMember.Global
-        public Journey<T> EarliestArrivalJourney(
+        public Journey<T> CalculateEarliestArrivalJourney(
             Func<(DateTime journeyStart, DateTime journeyEnd), DateTime> expandSearch = null)
         {
             CheckAll();
@@ -737,7 +699,7 @@ namespace Itinero.Transit
         /// </param>
         /// <returns>A journey which is guaranteed to arrive as early as possible (or null if none was found)</returns>
         // ReSharper disable once UnusedMember.Global
-        public Journey<T> LatestDepartureJourney(
+        public Journey<T> CalculateLatestDepartureJourney(
             Func<(DateTime journeyStart, DateTime journeyEnd), DateTime> expandSearch = null)
         {
             CheckAll();
@@ -769,7 +731,7 @@ namespace Itinero.Transit
         /// Note that this list might contain families of very similar journeys, e.g. journeys which differ only in the transfer station taken.
         /// To prune them, use `PruneInAlternatives`
         /// </summary>
-        public List<Journey<T>> AllJourneys()
+        public List<Journey<T>> CalculateAllJourneys()
         {
             CheckAll();
             var settings = GetScanSettings();
@@ -781,7 +743,7 @@ namespace Itinero.Transit
         /// <summary>
         /// Calculates all journeys which are optimal for their given timeframe and which go to the destination stop.
         /// </summary>
-        public Dictionary<StopId, List<Journey<T>>> AllProfileJourneysTowards()
+        public Dictionary<StopId, List<Journey<T>>> CalculateAllProfileJourneysTowards()
         {
             CheckAll();
             var settings = new ScanSettings<T>(

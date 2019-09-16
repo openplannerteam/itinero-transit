@@ -1,10 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Algorithms.Filter;
-using Itinero.Transit.Data;
-using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.Tests.Functional.Utils;
 
@@ -17,13 +14,13 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         
         protected override void Execute()
         {
-            Input.IsochroneFrom(); // Calculating the isochrone lines makes sure this is reused as filter - in some cases, testing goes from ~26 seconds to ~6
+            Input.CalculateIsochroneFrom(); // Calculating the isochrone lines makes sure this is reused as filter - in some cases, testing goes from ~26 seconds to ~6
 
 
             // Make sure that the walks are cached
             Input.ResetFilter();
             var pcs0 = new ProfiledConnectionScan<TransferMetric>(Input.GetScanSettings());
-            var journeys0 = pcs0.CalculateJourneys();
+            pcs0.CalculateJourneys();
 
             var start = DateTime.Now;
             Input.ResetFilter();

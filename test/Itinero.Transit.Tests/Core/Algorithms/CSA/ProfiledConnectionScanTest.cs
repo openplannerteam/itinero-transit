@@ -47,7 +47,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(w0, stop1)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
-                .AllJourneys();
+                .CalculateAllJourneys();
             Assert.NotNull(journeys);
             Assert.Single(journeys);
         }
@@ -85,7 +85,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(stop0, w1)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
-                .AllJourneys();
+                .CalculateAllJourneys();
             Assert.NotNull(journeys);
             Assert.Single(journeys);
         }
@@ -123,7 +123,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(w0, w1)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
-                .AllJourneys();
+                .CalculateAllJourneys();
             Assert.NotNull(journeys);
             Assert.Single(journeys);
         }
@@ -146,7 +146,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectTimeFrame(
                     new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 18, 00, 00, DateTimeKind.Utc)
-                ).AllJourneys();
+                ).CalculateAllJourneys();
 
             //Pr("---------------- DONE ----------------");
             foreach (var j in journeys)
@@ -207,7 +207,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(loc0, loc1)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 18, 00, 00, DateTimeKind.Utc))
-                .AllJourneys();
+                .CalculateAllJourneys();
             Assert.Single(journeys);
             foreach (var j in journeys)
             {
@@ -303,7 +303,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(stop1, stop2)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 19, 00, 00, DateTimeKind.Utc))
-                .AllJourneys();
+                .CalculateAllJourneys();
 
             Assert.Null(journey);
         }
@@ -348,7 +348,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var journeys = transitDb.SelectProfile(profile).SelectStops(loc0, loc2)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 17, 00, 00, DateTimeKind.Utc))
-                .AllJourneys();
+                .CalculateAllJourneys();
             
             Assert.Null(journeys);
         }
@@ -392,7 +392,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var journeys = transitDb.SelectProfile(profile).SelectStops(loc2, loc0)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 17, 00, 00, DateTimeKind.Utc))
-                .AllJourneys();
+                .CalculateAllJourneys();
             
             Assert.Null(journeys);
         }

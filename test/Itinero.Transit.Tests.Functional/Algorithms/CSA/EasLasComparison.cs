@@ -13,7 +13,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
         protected override void Execute( )
         {
             var easJ =
-                Input.EarliestArrivalJourney();
+                Input.CalculateEarliestArrivalJourney();
 
             NotNull(easJ);
             AssertNoLoops(easJ, Input);
@@ -22,9 +22,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 
             var lasJ =
                 Input
-                    .DifferentTimes(easJ.Root.DepartureTime().FromUnixTime(),
+                    .SelectTimeFrame(easJ.Root.DepartureTime().FromUnixTime(),
                        easJ.ArrivalTime().FromUnixTime())
-                    .LatestDepartureJourney();
+                    .CalculateLatestDepartureJourney();
 
 
             var stop = Input.StopsReader;

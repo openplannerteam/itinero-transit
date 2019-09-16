@@ -7,10 +7,10 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
     {
         protected override void Execute()
         {
-            var found = Input.IsochroneFrom();
+            var found = Input.CalculateIsochroneFrom();
             True(found.Count > 10);
 
-            found = Input.IsochroneTo();
+            found = Input.CalculateIsochroneTo();
             True(found.Count > 10);
         }
 

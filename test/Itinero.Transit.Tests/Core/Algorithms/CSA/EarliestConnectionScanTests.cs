@@ -44,7 +44,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(stop1, stop2)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 19, 00, 00, DateTimeKind.Utc))
-                .EarliestArrivalJourney();
+                .CalculateEarliestArrivalJourney();
 
             Assert.NotNull(journey);
             Assert.Equal(2, journey.AllParts().Count());
@@ -68,7 +68,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(stop0, stop1)
                 .SelectTimeFrame(db.GetConn(0).DepartureTime.FromUnixTime(),
                     (db.GetConn(0).DepartureTime + 60 * 60 * 6).FromUnixTime())
-                .EarliestArrivalJourney();
+                .CalculateEarliestArrivalJourney();
 
             Assert.NotNull(j);
             Assert.Equal(new ConnectionId(0, 0), j.Connection);
@@ -79,7 +79,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                     .SelectTimeFrame(
                         db.GetConn(0).DepartureTime.FromUnixTime(),
                         (db.GetConn(0).DepartureTime + 60 * 60 * 2).FromUnixTime())
-                    .EarliestArrivalJourney()
+                    .CalculateEarliestArrivalJourney()
                 ;
 
             Assert.NotNull(j);
@@ -119,7 +119,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(w0, stop1)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
-                .EarliestArrivalJourney();
+                .CalculateEarliestArrivalJourney();
             Assert.NotNull(journey);
         }
 
@@ -156,7 +156,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(stop0, w1)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
-                .EarliestArrivalJourney();
+                .CalculateEarliestArrivalJourney();
             Assert.NotNull(journey);
         }
 
@@ -193,7 +193,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(w0, w1)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
-                .EarliestArrivalJourney();
+                .CalculateEarliestArrivalJourney();
             Assert.NotNull(journey);
         }
 
@@ -234,7 +234,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(stop0, stop3)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
-                .EarliestArrivalJourney();
+                .CalculateEarliestArrivalJourney();
             Assert.NotNull(journey);
             Assert.Equal(Journey<TransferMetric>.OTHERMODE, journey.PreviousLink.Connection);
             Assert.True(journey.PreviousLink.SpecialConnection);
@@ -274,7 +274,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                     .SelectStops(sources, targets)
                     .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
                         new DateTime(2018, 12, 04, 19, 00, 00, DateTimeKind.Utc))
-                    .EarliestArrivalJourney()
+                    .CalculateEarliestArrivalJourney()
                 ;
 
             Assert.NotNull(journey);
@@ -321,7 +321,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var journey = latest.SelectProfile(profile)
                     .SelectStops(sources, targets)
                     .SelectTimeFrame(startTime, new DateTime(2018, 12, 04, 19, 00, 00, DateTimeKind.Utc))
-                    .EarliestArrivalJourney()
+                    .CalculateEarliestArrivalJourney()
                 ;
 
             Assert.NotNull(journey);
@@ -368,7 +368,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(stop1, stop2)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 19, 00, 00, DateTimeKind.Utc))
-                .EarliestArrivalJourney();
+                .CalculateEarliestArrivalJourney();
             Assert.NotNull(journey);
             Assert.Equal(2, journey.AllParts().Count);
         }
@@ -408,7 +408,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                         new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                         new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
                 ;
-            Assert.Null(input.EarliestArrivalJourney());
+            Assert.Null(input.CalculateEarliestArrivalJourney());
 
             input = latest
                     .SelectProfile(profile)
@@ -417,7 +417,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                         new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                         new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
                 ;
-            Assert.Null(input.EarliestArrivalJourney());
+            Assert.Null(input.CalculateEarliestArrivalJourney());
 
 
             input = latest
@@ -427,7 +427,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                         new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                         new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
                 ;
-            Assert.NotNull(input.EarliestArrivalJourney());
+            Assert.NotNull(input.CalculateEarliestArrivalJourney());
         }
 
         [Fact]
@@ -465,7 +465,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(stop0, stop3)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 10, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
-                .EarliestArrivalJourney();
+                .CalculateEarliestArrivalJourney();
 
             // It is not possible to get on or off any connection
             // So we should not find anything
@@ -539,7 +539,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var j = tdb.SelectProfile(new DefaultProfile())
                 .SelectStops(departure, arrival)
                 .SelectTimeFrame(1000, 2000)
-                .EarliestArrivalJourney();
+                .CalculateEarliestArrivalJourney();
 
             // Only one connection should be used
             Assert.True(Equals(j.PreviousLink.Root, j.PreviousLink));
@@ -577,7 +577,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var journey = transitDb.SelectProfile(profile).SelectStops(loc0, loc2)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 17, 00, 00, DateTimeKind.Utc))
-                .EarliestArrivalJourney();
+                .CalculateEarliestArrivalJourney();
 
             Assert.Null(journey);
         }
@@ -615,7 +615,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var journey = transitDb.SelectProfile(profile).SelectStops(loc2, loc0)
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 17, 00, 00, DateTimeKind.Utc))
-                .EarliestArrivalJourney();
+                .CalculateEarliestArrivalJourney();
 
             Assert.Null(journey);
         }

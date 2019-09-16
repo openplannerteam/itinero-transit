@@ -95,7 +95,7 @@ namespace Itinero.Transit.Tests.Functional.Regression
                 calculator = precalculator.SelectTimeFrame(arrival.Value.AddDays(-1), arrival.Value);
                 // This will set the time frame correctly
                 var latest = calculator
-                    .LatestDepartureJourney(tuple =>
+                    .CalculateLatestDepartureJourney(tuple =>
                         tuple.journeyStart - DefaultSearchLengthSearcher(2, TimeSpan.FromHours(1))(tuple.journeyStart, tuple.journeyEnd));
                 if (!multipleOptions)
                 {
@@ -112,7 +112,7 @@ namespace Itinero.Transit.Tests.Functional.Regression
                 // This scan is extended for some time, in order to have both
                 // - the automatically calculated latest arrival time
                 // - an isochrone line in order to optimize later on
-                var earliestArrivalJourney = calculator.EarliestArrivalJourney(
+                var earliestArrivalJourney = calculator.CalculateEarliestArrivalJourney(
                     tuple => tuple.journeyStart + DefaultSearchLengthSearcher(2, TimeSpan.FromHours(1))(tuple.journeyStart, tuple.journeyEnd));
                 if (earliestArrivalJourney == null)
                 {
@@ -130,11 +130,11 @@ namespace Itinero.Transit.Tests.Functional.Regression
             {
                 calculator = precalculator.SelectTimeFrame(departure.Value, arrival.Value);
                 // Perform isochrone to speed up 'all journeys'
-                calculator.IsochroneFrom();
+                calculator.CalculateIsochroneFrom();
             }
 
 
-            return (calculator.AllJourneys(), calculator.Start, calculator.End);
+            return (calculator.CalculateAllJourneys(), calculator.Start, calculator.End);
         }
         
         private static void DetectFirstMileWalks<T>(
@@ -174,6 +174,7 @@ namespace Itinero.Transit.Tests.Functional.Regression
             if (foundRoutes == null)
             {
                 CreateAndThrowErrorMessage(p, stop, isLastMile, name, inRange);
+                return;
             }
 
             if (!foundRoutes.Any())

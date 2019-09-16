@@ -41,7 +41,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
                 .SelectTimeFrame(
                     new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
-                .IsochroneFrom();
+                .CalculateIsochroneFrom();
 
             var filter = new IsochroneFilter<TransferMetric>(iso, true,
                 new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc).ToUnixTime(),
@@ -89,7 +89,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
                 .SelectTimeFrame(
                     new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
-                .IsochroneTo();
+                .CalculateIsochroneTo();
 
             var filter = new IsochroneFilter<TransferMetric>(iso, false,
                 new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc).ToUnixTime(),
@@ -147,10 +147,10 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
                         new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
                         new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
                 ;
-            input.IsochroneFrom();
+            input.CalculateIsochroneFrom();
             Assert.NotNull(input.TimedFilter);
 
-            var journeys = input.AllJourneys();
+            var journeys = input.CalculateAllJourneys();
             Assert.NotNull(journeys);
             Assert.Single(journeys);
         }
@@ -197,14 +197,14 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
                         new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
                 ;
 
-            var eas = input.EarliestArrivalJourney();
+            var eas = input.CalculateEarliestArrivalJourney();
             Assert.NotNull(eas);
             input.ResetFilter();
 
-            input.IsochroneFrom();
+            input.CalculateIsochroneFrom();
             Assert.NotNull(input.TimedFilter);
 
-            var journeys = input.AllJourneys();
+            var journeys = input.CalculateAllJourneys();
             Assert.NotNull(journeys);
             Assert.Single(journeys);
         }
