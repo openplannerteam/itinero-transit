@@ -93,7 +93,8 @@ namespace Itinero.Transit.Tests.Functional.Utils
                 (StringConstants.OsmNearStationBruggeLatLon, StringConstants.OsmHermanTeirlinck, 5000),
                 (StringConstants.OsmHermanTeirlinck, StringConstants.OsmDeSterre, 5000),
                 (StringConstants.OsmWechel, StringConstants.Gent, 15000),
-                (StringConstants.OsmTielen, StringConstants.OsmHerentals, 10000)
+                (StringConstants.OsmTielen, StringConstants.OsmHerentals, 10000),
+                (StringConstants.Aywaille, StringConstants.Florenville, 0)
             };
 
 

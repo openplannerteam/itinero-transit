@@ -35,11 +35,13 @@ namespace Itinero.Transit.Tests.Functional.Utils
         public const string BrusselZuid = "http://irail.be/stations/NMBS/008814001";
         public const string Kortrijk = "http://irail.be/stations/NMBS/008896008";
         public const string Oostende = "http://irail.be/stations/NMBS/008891702";
-        public const string SintJorisWeert = "http://irail.be/stations/NMBS/008833159"; // Antwerpen centraal
-        public const string Leuven = "http://irail.be/stations/NMBS/008833001"; // Antwerpen centraal
+        public const string SintJorisWeert = "http://irail.be/stations/NMBS/008833159"; 
+        public const string Leuven = "http://irail.be/stations/NMBS/008833001";
         public const string Gent = "http://irail.be/stations/NMBS/008892007";
-        public const string Antwerpen = "http://irail.be/stations/NMBS/008821006"; // Antwerpen centraal
-        
+        public const string Antwerpen = "http://irail.be/stations/NMBS/008821006"; 
+        public const string Aywaille = "http://irail.be/stations/NMBS/008842754";
+        public const string Florenville = "http://irail.be/stations/NMBS/008866845";
+
 
         public const string CoiseauKaaiOsmNode = "https://www.openstreetmap.org/node/6348562147";
         public const string StationBruggeOsmNode = "https://www.openstreetmap.org/node/6348496391";

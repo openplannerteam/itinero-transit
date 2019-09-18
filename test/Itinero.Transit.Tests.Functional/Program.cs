@@ -37,7 +37,6 @@ namespace Itinero.Transit.Tests.Functional
             var wvl = TransitDbCache.Get(StringConstants.DelijnWvl, 1);
             var all = TransitDbCache.GetAll(StringConstants.TestDbs.ToList());
 
-
             // do some local caching.
             if (devTestsOnly)
             {
