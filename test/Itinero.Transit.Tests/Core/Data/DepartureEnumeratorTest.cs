@@ -11,7 +11,7 @@ namespace Itinero.Transit.Tests.Core.Data
     public class DepartureEnumeratorTest
     {
         [Fact]
-        public void TestReadWrite()
+        public void Enumeration_TestFirst_ExpectsFirstElement()
         {
             var tdb = new TransitDb(1);
 
@@ -38,7 +38,7 @@ namespace Itinero.Transit.Tests.Core.Data
         }
 
         [Fact]
-        public void TestEnumeration()
+        public void MoveNext_7Connections_AssertEnumeratesCorrectly()
         {
             var tdb = new TransitDb(0);
 
@@ -123,7 +123,7 @@ namespace Itinero.Transit.Tests.Core.Data
         }
 
         [Fact]
-        public void TestEnumeration0()
+        public void MoveNextMovePrevious_7Connections_AssertEnumeratesAll()
         {
             var tdb = new TransitDb(0);
             var d = (ulong) 24 * 60 * 60;
@@ -184,7 +184,7 @@ namespace Itinero.Transit.Tests.Core.Data
         }
 
         [Fact]
-        public void TestEnumerationAggregator()
+        public void MoveNextMovePrevious_MoveToDateFirst_AssertEnumeratesCorrectly()
         {
             var tdb = new TransitDb(0);
             var tdb1 = new TransitDb(0);
@@ -251,7 +251,7 @@ namespace Itinero.Transit.Tests.Core.Data
         }
 
         [Fact]
-        public void TestEnumerationAfterRead()
+        public void MoveNextMovePrevious_FromDiskTransitDb_AssertEnumeratesCorrectly()
         {
             var tdb = new TransitDb(0);
             var d = (ulong) 24 * 60 * 60;
@@ -322,7 +322,7 @@ namespace Itinero.Transit.Tests.Core.Data
         }
 
         [Fact]
-        public void TestEnumeratorNoOvershoot()
+        public void MoveNextMovePrevious_MoveToDateFirst_AssertEnumeratesStopsAtEnd()
         {
             var tdb = new TransitDb(0);
 

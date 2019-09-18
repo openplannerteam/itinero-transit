@@ -20,10 +20,6 @@ namespace Sample.SNCB
     /// </summary>
     public class LongestOptimalTravel
     {
-        public const string Brugge = "http://irail.be/stations/NMBS/008891009";
-        public const string Poperinge = "http://irail.be/stations/NMBS/008896735";
-        public const string Gent = "http://irail.be/stations/NMBS/008892007";
-
 
         public static void Run()
         {
@@ -97,7 +93,6 @@ namespace Sample.SNCB
                 }
 
                 i++;
-                Console.WriteLine($"Calculating departure station {i}");
                 var pathI = "output/"+i + "_" + path;
 
                 if (File.Exists(pathI))
@@ -105,8 +100,12 @@ namespace Sample.SNCB
                     continue;
                 }
 
+                Console.WriteLine($"Calculating departure station {i}");
                 var from = new Stop(stopsReader);
                 CalculateAllForSingleFrom(i,pathI, stopsReader0, @from, router, depTime, arrTime, numberOfStops);
+
+
+                break;
             }
         }
 
@@ -171,7 +170,7 @@ namespace Sample.SNCB
                 toWrite.Add(
                     $"{@from.GlobalId},{to.GlobalId}," +
                     $"{DistanceEstimate.DistanceEstimateInMeter(@from.Latitude, @from.Longitude, to.Latitude, to.Longitude)},{timeNeeded}," +
-                    $"{journeys.Count}" +
+                    $"{journeys.Count}," +
                     $"{bestPick.DepartureTime().FromUnixTime():s},{bestTime}," +
                     $"{worstPick.DepartureTime().FromUnixTime():s},{worstTime}"
                 );
