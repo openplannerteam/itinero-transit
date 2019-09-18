@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Data;
@@ -95,12 +96,23 @@ namespace Itinero.Transit.Tests.Functional.Utils
                 (StringConstants.OsmTielen, StringConstants.OsmHerentals, 10000)
             };
 
+
         /// <summary>
         /// A big pile of test cases
         /// </summary>
         public static List<(string departure, string arrival, uint maxDistance)> WithWalkTestCases =
             WithDirectWalkTestCases.Concat(WithWalkAndPtTestCases).ToList();
 
+
+        public static List<(string departure, string arrival, uint maxDistance)> OpenHopperTestCases()
+        {
+            return File.ReadAllLines("testdata/TestCasesFromOpenHopperLogs.csv")
+                .Select(testCase =>
+                {
+                    var splitted = testCase.Split(",");
+                    return (splitted[0], splitted[1], (uint) 25000);
+                }).ToList();
+        }
 
         public static readonly List<FunctionalTestWithInput<WithTime<TransferMetric>>> AllAlgorithmicTests =
             new List<FunctionalTestWithInput<WithTime<TransferMetric>>>
@@ -113,7 +125,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
                 new IsochroneTest(),
                 new ProfiledConnectionScanWithIsochroneFilteringTest(),
                 new ProfiledConnectionScanWithMetricFilteringTest(),
-                new ProfiledConnectionScanWithMetricAndIsochroneFilteringTest()    
+                new ProfiledConnectionScanWithMetricAndIsochroneFilteringTest()
             };
 
 

@@ -21,6 +21,7 @@ namespace Itinero.Transit.Tests.Functional.Regression
         private readonly TransitDb _transitDb;
         private readonly DateTime? _departureTime;
         private readonly DateTime? _arrivalTime;
+        private readonly IStopsReader _reader;
 
 
         public ProductionServerMimickTest(TransitDb transitDb, DateTime? departureTime, DateTime? arrivalTime)
@@ -28,13 +29,18 @@ namespace Itinero.Transit.Tests.Functional.Regression
             _transitDb = transitDb;
             _departureTime = departureTime;
             _arrivalTime = arrivalTime;
+            _reader = StopsReaderAggregator.CreateFrom(
+                new List<IStopsReader>
+                {
+                    _transitDb.Latest.StopsDb.GetReader()
+                }).UseCache();
+            
         }
 
         protected override void Execute()
         {
-            var profile = CreateProfile(Input.from, Input.to);
-
-            var foundJourneys = BuildJourneys(profile, Input.from, Input.to, _departureTime, _arrivalTime, true);
+            var profile = CreateProfile(Input.@from, Input.to);
+            var foundJourneys = BuildJourneys(profile, Input.@from, Input.to, _departureTime, _arrivalTime, true);
             NotNull(foundJourneys);
             NotNull(foundJourneys.Item1);
             True(foundJourneys.Item1.Count > 0);
@@ -50,7 +56,7 @@ namespace Itinero.Transit.Tests.Functional.Regression
             departure = departure?.ToUniversalTime();
             arrival = arrival?.ToUniversalTime();
 
-            var reader = GetStopsReader();
+            var reader = _reader;
             var osmIndex = reader.DatabaseIndexes().Max() + 1u;
 
             var stopsReader = StopsReaderAggregator.CreateFrom(new List<IStopsReader>
@@ -247,7 +253,7 @@ namespace Itinero.Transit.Tests.Functional.Regression
             bool allowCancelled = false
         )
         {
-            var stops = GetStopsReader().AddOsmReader();
+            var stops = _reader.AddOsmReader();
 
             stops.MoveTo(from);
             var fromId = stops.Id;
@@ -275,14 +281,6 @@ namespace Itinero.Transit.Tests.Functional.Regression
                 new MaxNumberOfTransferFilter(uint.MaxValue));
         }
 
-        private IStopsReader GetStopsReader()
-        {
-            return StopsReaderAggregator.CreateFrom(
-                new List<IStopsReader>
-                {
-                    _transitDb.Latest.StopsDb.GetReader()
-                }).UseCache();
-        }
 
         public static Func<DateTime, DateTime, TimeSpan> DefaultSearchLengthSearcher(
             double factor, TimeSpan minimumTime)

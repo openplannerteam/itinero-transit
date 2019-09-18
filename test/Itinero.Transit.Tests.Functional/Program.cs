@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Itinero.Transit.Data;
-using Itinero.Transit.IO.OSM.Data;
-using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms;
-using Itinero.Transit.Tests.Functional.Algorithms.CSA;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
 using Itinero.Transit.Tests.Functional.Data;
 using Itinero.Transit.Tests.Functional.IO.LC;
@@ -24,65 +21,10 @@ namespace Itinero.Transit.Tests.Functional
 {
     public static class Program
     {
-
-        public static void LogExtract()
-        {
-
-            var lines = File.ReadAllLines("Fixed.csv");
-            
-            var from = new List<(string coordinate, DateTime time)>();
-            var to = new List<(string coordinate, DateTime time)>();
-
-            
-            foreach (var line in lines)
-            {
-                var splitted = line.Split(',');
-                var dt = DateTime.Parse(splitted[0]);
-                var mode = splitted[1].Trim().ToLower();
-                var dest = splitted[2].Trim();
-                if (mode.Equals("from"))
-                {
-                    from.Add((dest, dt));
-                }
-                else
-                {
-                    to.Add((dest, dt));
-                }
-
-            }
-
-            var pairs = new List<(string from, string to)>();
-            foreach (var (fr, dt) in from)
-            {
-                if (to.Count == 0)
-                {
-                    break;
-                }
-
-                while (to[0].time < dt)
-                {
-                    // To lookup before from - throw away
-                    to.RemoveAt(0);
-                }
-
-                if (to[0].time > dt.AddMinutes(2))
-                {
-                    // The 'from' has no match
-                    continue;
-                }
-                pairs.Add((fr, to[0].coordinate));
-                to.RemoveAt(0);
-            }
-
-            File.WriteAllLines("TestCases.csv",
-                pairs.Select(pair => $"{pair.from},{pair.to}"));
-
-        }
-        
         public static void Main(string[] args)
         {
             EnableLogging();
-            
+
 
             Log.Information("Starting the functional tests...");
             var devTestsOnly = args.Length == 0 ||
@@ -99,27 +41,8 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
-                var withTimes = new List<WithTime<TransferMetric>>();
-
-                foreach (var testCase in TestConstants.WithWalkTestCases)
-                {
-                    var r = nmbs.Latest.StopsDb.GetReader().AddOsmReader();
-                    r.MoveTo(testCase.departure);
-                    var depStop = r.Id;
-                    r.MoveTo(testCase.arrival);
-                    var arrStop = r.Id;
-
-                    var withTime = nmbs
-                        .SelectProfile(TestConstants.DefaultProfile(testCase.maxDistance, depStop, arrStop))
-                        .UseOsmLocations()
-                        .SelectStops(testCase.departure, testCase.arrival)
-                        .SelectTimeFrame(StringConstants.TestDate.AddHours(1), StringConstants.TestDate.AddHours(10));
-                    withTimes.Add(withTime);
-                }
-
-                new ProfiledConnectionScanWithIsochroneFilteringTest().RunOverMultiple(withTimes);
-                new ProfiledConnectionScanWithMetricFilteringTest().RunOverMultiple(withTimes);
-                new ProfiledConnectionScanWithMetricAndIsochroneFilteringTest().RunOverMultiple(withTimes);
+                new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(12))
+                    .RunOverMultiple(TestConstants.OpenHopperTestCases());
 
                 Logging.Log.Information("Ran the devtests. Exiting now. Use --full-test-suite to run everything");
                 return;

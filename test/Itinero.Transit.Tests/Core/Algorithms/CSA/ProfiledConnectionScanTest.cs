@@ -396,5 +396,45 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             
             Assert.Null(journeys);
         }
+        
+        [Fact]
+        public void AllJourneysTest_SingleConnectionTdb_JourneyWithNoWalkAndNoSearch()
+        {
+            // build a one-connection db.
+            var transitDb = new TransitDb(0);
+            var writer = transitDb.GetWriter();
+
+            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
+            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.000001,
+                0.00001); // very walkable distance
+
+
+            var w0 = writer.AddOrUpdateStop("https://example.com/stops/2", 50.00001, 50.00001);
+
+            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+
+
+            writer.Close();
+
+            var latest = transitDb.Latest;
+
+            var profile = new Profile<TransferMetric>(
+                new InternalTransferGenerator(),
+                new CrowsFlightTransferGenerator(0),
+                TransferMetric.Factory,
+                TransferMetric.ParetoCompare);
+
+
+            // Walk from start
+            var journeys = latest.SelectProfile(profile)
+                .SelectStops(stop0, stop1)
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
+                    new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc))
+                .CalculateAllJourneys();
+            Assert.NotNull(journeys);
+            Assert.Single(journeys);
+        }
+
     }
 }

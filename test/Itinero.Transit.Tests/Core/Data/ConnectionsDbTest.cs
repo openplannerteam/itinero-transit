@@ -7,10 +7,10 @@ using Xunit;
 
 namespace Itinero.Transit.Tests.Core.Data
 {
-    public class TestReadWrite
+    public class ConnectionsDbTest
     {
         [Fact]
-        public void TestConnectionsDbReadWrite()
+        public void ConnectionsDb_WriteTo_ReadFrom_ExpectsSameResult()
         {
             var conn = new ConnectionsDb(1);
 

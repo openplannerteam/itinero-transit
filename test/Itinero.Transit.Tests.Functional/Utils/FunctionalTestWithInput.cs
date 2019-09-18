@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.Tests.Functional.Utils
 {
@@ -37,11 +38,12 @@ namespace Itinero.Transit.Tests.Functional.Utils
                 try
                 {
                     Run(input);
+                    Log.Information($"Test {i}/{inputs.Count} finished successful");
                 }
                 catch (Exception e)
                 {
                     failed++;
-                    var msg = $"Test {Name} failed for input {i} with message {e}";
+                    var msg = $"Test {Name} failed for input {i} {input.ToString()}"; // with message {e}";
                     if (input is FunctionalTest ft)
                     {
                         msg = $"Test {ft.Name} ({i}/{inputs.Count}) failed with message {e}";

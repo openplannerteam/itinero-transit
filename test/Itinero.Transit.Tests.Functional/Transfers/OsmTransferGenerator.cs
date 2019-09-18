@@ -84,7 +84,6 @@ namespace Itinero.Transit.Tests.Functional.Transfers
                 return uint.MaxValue;
             }
 
-            Log.Information("From: " + from.GlobalId + " to: " + to.GlobalId);
             var route = CreateRoute(((float) from.Latitude, (float) from.Longitude),
                 ((float) to.Latitude, (float) to.Longitude), out var isEmpty, out var errMessage);
             var msg = "Success!";
@@ -93,7 +92,6 @@ namespace Itinero.Transit.Tests.Functional.Transfers
                 msg = "Failed with " + errMessage;
             }
 
-            Log.Information($"From: {@from.GlobalId} to: {to.GlobalId} finished. {msg}");
 
             if (isEmpty)
             {
@@ -202,9 +200,7 @@ namespace Itinero.Transit.Tests.Functional.Transfers
                 }
 
                 if (targets.Count == 0) return times;
-                Log.Information(
-                    $"TimesBetween: from {from.GlobalId} one-to-{targets.Count} within {Range()}m. Targets are: {string.Join("\n", to.Select(t => t.GlobalId))}");
-
+             
                 // resolve source only if we have targets.
                 var source = _routerDb.Snap(
                     @from.Longitude, @from.Latitude, profile: _profile);
@@ -276,7 +272,6 @@ namespace Itinero.Transit.Tests.Functional.Transfers
                 }
 
                 if (sources.Count == 0) return times;
-                Log.Information($"TimesBetween: {sources.Count}-to-one {to.GlobalId} within range {Range()}m.");
 
 
                 // resolve source only if we have targets.
