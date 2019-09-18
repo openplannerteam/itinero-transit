@@ -28,7 +28,7 @@ namespace Itinero.Transit.Tests.Core.Data
         }
 
         [Fact]
-        public void TestEnumerator()
+        public void Enumerate_6Stops_AssertAllHaveName()
         {
             var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();

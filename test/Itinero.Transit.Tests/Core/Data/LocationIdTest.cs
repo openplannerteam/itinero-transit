@@ -7,7 +7,7 @@ namespace Itinero.Transit.Tests.Core.Data
     public class LocationIdTest
     {
         [Fact]
-        public void TestLocationId()
+        public void Hashcode_AssertAreSame()
         {
             var lid0 = new StopId(0, 0, 0);
             var lid1 = new StopId(0, 0, 1);

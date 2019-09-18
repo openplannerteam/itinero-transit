@@ -11,7 +11,7 @@ namespace Itinero.Transit.Tests.IO.OSM
     public class EasWithOsmFloatingPointsTest
     {
         [Fact]
-        public void WithOsmWalk()
+        public void EarliestArrival_WithBeginWalk_ExpectsJourney()
         {
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
@@ -40,7 +40,7 @@ namespace Itinero.Transit.Tests.IO.OSM
 
 
         [Fact]
-        public void WithBeginOsmWalk()
+        public void EarliestLatestAll_WithBeginWalk_ExpectsJourney()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -92,7 +92,7 @@ namespace Itinero.Transit.Tests.IO.OSM
 
 
         [Fact]
-        public void WithEndWalk()
+        public void EarliestLatestAll_WithEndWalk_ExpectsJourney()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -144,7 +144,7 @@ namespace Itinero.Transit.Tests.IO.OSM
         }
 
         [Fact]
-        public void WithStartEndWalk()
+        public void EarliestLatestAll_WithBeginAndEndWalk_ExpectsJourney()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);

@@ -40,9 +40,7 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
-                new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(12))
-                    .RunOverMultiple(TestConstants.OpenHopperTestCases());
-
+               
                 Logging.Log.Information("Ran the devtests. Exiting now. Use --full-test-suite to run everything");
                 return;
             }
@@ -63,6 +61,10 @@ namespace Itinero.Transit.Tests.Functional
             new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(5))
                 .RunOverMultiple(TestConstants.WithWalkAndPtTestCases);
 
+       //     new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(12))
+       //         .RunOverMultiple(TestConstants.OpenHopperTestCases());
+
+            
             new ConnectionsDbDepartureEnumeratorTest().Run((nmbs, 63155));
             new ReadWriteTest().Run((nmbs, 63155));
 
@@ -70,13 +72,9 @@ namespace Itinero.Transit.Tests.Functional
             MultiTestRunner.DelijnNmbsTester().RunAllTests();
 
 
-            new StopEnumerationTest().Run(new List<TransitDb>
-            {
-                nmbs, wvl
-            });
+            new StopEnumerationTest().Run(new List<TransitDb>{nmbs, wvl});
 
             new TripHeadsignTest().RunOverMultiple(all);
-
 
             new StopSearchTest().RunOverMultiple(new List<(TransitDb db, double lon, double lat, double distance)>
             {
@@ -97,7 +95,6 @@ namespace Itinero.Transit.Tests.Functional
             new NoDuplicationTest().Run();
 
             new CachingTest().Run();
-
 
             new TestAutoUpdating().Run();
 

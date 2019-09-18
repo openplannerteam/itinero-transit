@@ -8,7 +8,7 @@ namespace Itinero.Transit.Tests.IO.OSM.OpeningHours
     {
 
         [Fact]
-        public void TestDefaults()
+        public void Parse_Numbers_ExpectsNumber()
         {
 
             Assert.Equal(42, DefaultRdParsers.Int().ParseFull("42"));

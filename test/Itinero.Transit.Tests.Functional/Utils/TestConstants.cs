@@ -107,7 +107,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
 
         public static List<(string departure, string arrival, uint maxDistance)> OpenHopperTestCases()
         {
-            return File.ReadAllLines("testdata/TestCasesFromOpenHopperLogs.csv")
+            return File.ReadAllLines("testdata/OpenHopperLogsSuccessful.csv")
                 .Select(testCase =>
                 {
                     var splitted = testCase.Split(",");

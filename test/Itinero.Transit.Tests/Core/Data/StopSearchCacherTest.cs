@@ -8,7 +8,7 @@ namespace Itinero.Transit.Tests.Core.Data
     public class StopSearchCacherTest
     {
         [Fact]
-        public void TestMakeComplete()
+        public void MakeComplete_FixedStops_AllStopsAreKnown()
         {
             var osmReader = new OsmLocationStopReader(0, hoard: true);
             var stationBrugge = "https://www.openstreetmap.org/#map=19/51.19714/3.21795";

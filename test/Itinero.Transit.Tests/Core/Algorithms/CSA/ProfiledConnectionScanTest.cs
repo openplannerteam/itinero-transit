@@ -200,7 +200,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var profile = new Profile<TransferMetric>(
                 new InternalTransferGenerator(60),
                 new CrowsFlightTransferGenerator(),
-                TransferMetric.Factory, 
+                TransferMetric.Factory,
                 TransferMetric.ParetoCompare);
 
             var journeys = latest.SelectProfile(profile)
@@ -338,9 +338,9 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 01, 00, DateTimeKind.Utc),
                 30 * 60, 0, 0, new TripId(0, 0), 0);
-            
+
             writer.Close();
-            
+
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(10000),
                 TransferMetric.Factory,
@@ -349,7 +349,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 17, 00, 00, DateTimeKind.Utc))
                 .CalculateAllJourneys();
-            
+
             Assert.Null(journeys);
         }
 
@@ -382,9 +382,9 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 01, 00, DateTimeKind.Utc),
                 30 * 60, 0, 0, new TripId(0, 0), 0);
-            
+
             writer.Close();
-            
+
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(10000),
                 TransferMetric.Factory,
@@ -393,10 +393,10 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
                     new DateTime(2018, 12, 04, 17, 00, 00, DateTimeKind.Utc))
                 .CalculateAllJourneys();
-            
+
             Assert.Null(journeys);
         }
-        
+
         [Fact]
         public void AllJourneysTest_SingleConnectionTdb_JourneyWithNoWalkAndNoSearch()
         {
@@ -436,5 +436,89 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             Assert.Single(journeys);
         }
 
+
+        [Fact]
+        public void AllJourneysTest_TwoConnectionDifferentTrip_JourneyWithTransfer()
+        {
+            // build a one-connection db.
+            var transitDb = new TransitDb(0);
+            var writer = transitDb.GetWriter();
+
+            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
+            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.000001,
+                0.00001); // very walkable distance
+            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/2", 0.08, 0.00001); // very walkable distance
+
+
+            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+
+            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
+                new DateTime(2018, 12, 04, 10, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 1), 0);
+
+            writer.Close();
+
+            var latest = transitDb.Latest;
+
+            var profile = new Profile<TransferMetric>(
+                new InternalTransferGenerator(),
+                new CrowsFlightTransferGenerator(0),
+                TransferMetric.Factory,
+                TransferMetric.ParetoCompare);
+
+
+            // Walk from start
+            var journeys = latest.SelectProfile(profile)
+                .SelectStops(stop0, stop2)
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
+                    new DateTime(2018, 12, 04, 12, 00, 00, DateTimeKind.Utc))
+                .CalculateAllJourneys();
+            Assert.NotNull(journeys);
+            Assert.Single(journeys);
+            Assert.Equal((uint) 1, journeys[0].Metric.NumberOfTransfers);
+        }
+
+
+        [Fact]
+        public void AllJourneysTest_TwoConnectionSameTrip_JourneyWithExtendedTrip()
+        {
+            // build a one-connection db.
+            var transitDb = new TransitDb(0);
+            var writer = transitDb.GetWriter();
+
+            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
+            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.000001,
+                0.00001); // very walkable distance
+            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/2", 0.08, 0.00001); // very walkable distance
+
+
+            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+
+            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
+                new DateTime(2018, 12, 04, 10, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+
+            writer.Close();
+
+            var latest = transitDb.Latest;
+
+            var profile = new Profile<TransferMetric>(
+                new InternalTransferGenerator(),
+                new CrowsFlightTransferGenerator(0),
+                TransferMetric.Factory,
+                TransferMetric.ParetoCompare);
+
+
+            // Walk from start
+            var journeys = latest.SelectProfile(profile)
+                .SelectStops(stop0, stop2)
+                .SelectTimeFrame(new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc),
+                    new DateTime(2018, 12, 04, 12, 00, 00, DateTimeKind.Utc))
+                .CalculateAllJourneys();
+            Assert.NotNull(journeys);
+            Assert.Single(journeys);
+            Assert.Equal((uint) 0, journeys[0].Metric.NumberOfTransfers);
+
+        }
     }
 }

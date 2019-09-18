@@ -49,7 +49,7 @@ namespace Itinero.Transit.Data.Synchronization
             }
             else
             {
-                gaps = _loadedTimeWindows.Gaps(start, end);
+                gaps = _loadedTimeWindows.CalculateGaps(start, end);
             }
 
             if (gaps.Count == 0)

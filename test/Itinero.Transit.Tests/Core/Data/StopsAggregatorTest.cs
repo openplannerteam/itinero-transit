@@ -10,7 +10,7 @@ namespace Itinero.Transit.Tests.Core.Data
     public class StopsAggregatorTest
     {
         [Fact]
-        public void TestAggregator()
+        public void StopsAround_TwoStopsReaders_TwoStops()
         {
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
@@ -39,7 +39,7 @@ namespace Itinero.Transit.Tests.Core.Data
         }
 
         [Fact]
-        public void TestAggregator1()
+        public void SearchInBox_ThreeStopsReaders_OneStop()
         {
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
@@ -89,7 +89,7 @@ namespace Itinero.Transit.Tests.Core.Data
         }
 
         [Fact]
-        public void TestAggregatorSearchAround()
+        public void StopsAround_ThreeStopsReaders_ExpectsThreeStops()
         {
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
@@ -116,7 +116,7 @@ namespace Itinero.Transit.Tests.Core.Data
                         tdb2.Latest.StopsDb.GetReader()
                     })
                 ;
-            var results = stopsReader.StopsAround(new Stop(4.1,4.1),250000 );
+            var results = stopsReader.StopsAround(new Stop(4.1, 4.1), 250000);
             Assert.Equal(3, results.Count());
 
             var ids = new HashSet<string>();
@@ -124,11 +124,10 @@ namespace Itinero.Transit.Tests.Core.Data
             Assert.Contains("a", ids);
             Assert.Contains("b", ids);
             Assert.Contains("c", ids);
-
-
         }
+
         [Fact]
-        public void TestAggregator3()
+        public void Enumerate_TwoStopsReaders_Expects2Stops()
         {
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
@@ -140,7 +139,6 @@ namespace Itinero.Transit.Tests.Core.Data
             var wr1 = tdb1.GetWriter();
             wr1.AddOrUpdateStop("b", 4.1, 4.1);
             wr1.Close();
-
 
 
             var stopsReader = StopsReaderAggregator.CreateFrom(
@@ -161,9 +159,9 @@ namespace Itinero.Transit.Tests.Core.Data
 
             Assert.Equal(2, sum);
         }
-        
+
         [Fact]
-        public void TestAggregatorEnumeratorWeirdStructure()
+        public void Enumerate_ThreeReaders_Expects3Stops()
         {
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
@@ -190,6 +188,44 @@ namespace Itinero.Transit.Tests.Core.Data
                         tdb2.Latest.StopsDb.GetReader()
                     })
                 ;
+
+
+            var sum = 0;
+            stopsReader.Reset();
+            while (stopsReader.MoveNext())
+            {
+                sum++;
+            }
+
+            Assert.Equal(3, sum);
+        }
+
+        [Fact]
+        public void Enumerate_ThreeReadersInAdvancedStructure_Expects3Stops()
+        {
+            var tdb0 = new TransitDb(0);
+            var wr0 = tdb0.GetWriter();
+            wr0.AddOrUpdateStop("a", 4.0001, 4.100001);
+            wr0.Close();
+
+
+            var tdb1 = new TransitDb(1);
+            var wr1 = tdb1.GetWriter();
+            wr1.AddOrUpdateStop("b", 4.1, 4.1);
+            wr1.Close();
+
+            var tdb2 = new TransitDb(2);
+            var wr2 = tdb2.GetWriter();
+            wr2.AddOrUpdateStop("c", 4.2, 4.2);
+            wr2.Close();
+
+
+            var stopsReader = StopsReaderAggregator.CreateFrom(
+                StopsReaderAggregator.CreateFrom(
+                    tdb0.Latest.StopsDb.GetReader(),
+                    tdb1.Latest.StopsDb.GetReader().UseCache()),
+                tdb2.Latest.StopsDb.GetReader()
+            );
 
 
             var sum = 0;

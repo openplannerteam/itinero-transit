@@ -9,7 +9,7 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
     public class SynchronizerTest
     {
         [Fact]
-        public void TestLoading()
+        public void Synchronizer_ExpectsTrigger()
         {
             var triggered = false;
 
@@ -34,7 +34,7 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
 
 
         [Fact]
-        public void TestLoading0()
+        public void Synchronizer_ExpectsTwoTriggers()
         {
             var triggered5 = 0;
             var triggered10 = 0;

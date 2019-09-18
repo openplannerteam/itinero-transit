@@ -31,7 +31,7 @@ namespace Itinero.Transit.Tests.IO.LC
 
 
         [Fact]
-        public void TestCancelledConnectionParsing()
+        public void ConnectionParse_TestString_ExpectsCancelledConnection()
         {
             var conn = new Connection(JObject.Parse(_testString));
             Assert.True(conn.IsCancelled);

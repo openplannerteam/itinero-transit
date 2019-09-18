@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Itinero.Transit.Utils
@@ -98,6 +99,7 @@ namespace Itinero.Transit.Utils
         }
 
 
+        [Pure]
         public List<(DateTime start, DateTime end)> TimeWindows()
         {
             return _allWindows;
@@ -111,7 +113,8 @@ namespace Itinero.Transit.Utils
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <returns></returns>
-        public List<(DateTime start, DateTime end)> Gaps(DateTime start, DateTime end)
+        [Pure]
+        public List<(DateTime start, DateTime end)> CalculateGaps(DateTime start, DateTime end)
         {
             var result = new List<(DateTime start, DateTime end)>();
 

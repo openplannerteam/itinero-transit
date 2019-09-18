@@ -14,7 +14,7 @@ namespace Itinero.Transit.Tests.Core.Walk
     public class OtherModeGeneratorTest
     {
         [Fact]
-        public void TestMixedModes()
+        public void FirstLastMilePolicy_TimeBetween_MultipleStops_ExpectsCorrectTimings()
         {
             var stop0 = new Stop("0", new StopId(0, 0, 0), 0, 0, null);
             var stop1 = new Stop("1", new StopId(0, 0, 1), 0.0001, 0, null);
@@ -65,7 +65,7 @@ namespace Itinero.Transit.Tests.Core.Walk
         }
 
         [Fact]
-        public void TestCrowsFlight()
+        public void CrowsFlight_TImesBetween_ExpectsCorrectTimes()
         {
             var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
@@ -89,7 +89,7 @@ namespace Itinero.Transit.Tests.Core.Walk
         }
 
         [Fact]
-        public void TestCrowsFlightJourneyBuilding()
+        public void ChainForward_WithCrowsFlight_ExpectsCorrectTime()
         {
             var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
@@ -112,7 +112,7 @@ namespace Itinero.Transit.Tests.Core.Walk
 
 
         [Fact]
-        public void TestCaching()
+        public void UseCache_TImeBetween_ExpectsCacheIsUsed()
         {
             var verySlow = new VerySlowOtherModeGenerator().UseCache();
 
