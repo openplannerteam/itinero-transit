@@ -31,6 +31,7 @@ namespace Itinero.Transit.Data.Core
             return obj is StopId other && Equals(other);
         }
 
+        [Pure]
         public override int GetHashCode()
         {
             unchecked
@@ -42,6 +43,7 @@ namespace Itinero.Transit.Data.Core
             }
         }
 
+        [Pure]
         public override string ToString()
         {
             return $"{(DatabaseId, LocalTileId, LocalId)}";

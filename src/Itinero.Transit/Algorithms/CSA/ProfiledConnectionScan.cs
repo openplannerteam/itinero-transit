@@ -476,6 +476,7 @@ namespace Itinero.Transit.Algorithms.CSA
         {
             if (_walkPolicy == null || _walkPolicy.Range() <= 0f)
             {
+                foreach (var _ in journeys.ToList()); // Make sure to consume the enumerator
                 return;
             }
 

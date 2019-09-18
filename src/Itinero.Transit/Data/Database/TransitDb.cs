@@ -149,6 +149,14 @@ namespace Itinero.Transit.Data
 
                 return length;
             }
+
+            public void WriteTo(String filePath)
+            {
+                using (var stream = File.OpenWrite(filePath))
+                {
+                    WriteTo(stream);
+                }
+            }
         }
 
         /// <summary>

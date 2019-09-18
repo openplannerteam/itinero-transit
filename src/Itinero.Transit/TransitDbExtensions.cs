@@ -428,7 +428,6 @@ namespace Itinero.Transit
         IWithTimeSingleLocation<T> SelectTimeFrame(
             ulong start,
             ulong end);
-
     }
 
     public class WithLocation<T> :
@@ -436,7 +435,6 @@ namespace Itinero.Transit
         IWithSingleLocation<T>
         where T : IJourneyMetric<T>
     {
-
         public readonly List<StopId> From, To;
 
         internal WithLocation(IStopsReader stopsReader,
@@ -527,7 +525,6 @@ namespace Itinero.Transit
         IWithTimeSingleLocation<T>
         where T : IJourneyMetric<T>
     {
-
         public DateTime Start { get; private set; }
         public DateTime End { get; private set; }
 
@@ -575,7 +572,6 @@ namespace Itinero.Transit
         }
 
 
-        
         /// <summary>
         /// These are the scanSettings with all data.
         /// They can be used e.g. for EAS, LAS and PCS not for others.
@@ -596,7 +592,7 @@ namespace Itinero.Transit
                 Filter = TimedFilter
             };
         }
-        
+
         ///  <summary>
         ///  Calculates all journeys which depart at 'from' at the given departure time and arrive before the specified 'end'-time of the timeframe.
         /// This ignores the given 'to'-location
@@ -727,14 +723,22 @@ namespace Itinero.Transit
 
         /// <summary>
         /// Calculates all journeys between departure and arrival stop during this timeframe.
-        ///
+        /// Every journey returned will have at least one public transport segment
+        /// </summary>
+        /// <remarks>
         /// Note that this list might contain families of very similar journeys, e.g. journeys which differ only in the transfer station taken.
         /// To prune them, use `PruneInAlternatives`
-        /// </summary>
+        /// </remarks>
         public List<Journey<T>> CalculateAllJourneys()
         {
             CheckAll();
             var settings = GetScanSettings();
+            if (settings.DepartureStop.Count == 1)
+            {
+                settings.MetricGuesser =
+                    new SimpleMetricGuesser<T>(settings.ConnectionsEnumerator, settings.DepartureStop[0]);
+            }
+
             var pcs = new ProfiledConnectionScan<T>(settings);
             return pcs.CalculateJourneys();
         }

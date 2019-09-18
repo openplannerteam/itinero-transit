@@ -31,17 +31,23 @@ namespace Itinero.Transit.Journey.Metric
 
         public readonly uint NumberOfTransfers;
 
+        /// <summary>
+        /// The total travel time, including 'in-vehicle'-time, walking time and waiting time
+        /// </summary>
         public readonly TimeSpan TravelTime;
 
+        /// <summary>
+        /// The amount of time spent in 'other modes'
+        /// </summary>
         public readonly float WalkingTime;
 
         private TransferMetric(uint numberOfTransfers,
             TimeSpan travelTime,
-            float walkingDistance)
+            float walkingWaitingTime)
         {
             NumberOfTransfers = numberOfTransfers;
             TravelTime = travelTime;
-            WalkingTime = walkingDistance;
+            WalkingTime = walkingWaitingTime;
         }
 
         public TransferMetric Zero()

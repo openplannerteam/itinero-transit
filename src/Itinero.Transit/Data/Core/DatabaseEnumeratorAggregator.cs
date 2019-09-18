@@ -67,9 +67,7 @@ namespace Itinero.Transit.Data.Core
         public static IDatabaseReader<TId, T> CreateFrom(IDatabaseReader<TId, T> a, IDatabaseReader<TId, T> b)
         {
 
-            return CreateFrom(
-                new []{a, b}
-                );
+            return CreateFrom(new []{a, b});
         }
 
         public static IDatabaseReader<TId, T> CreateFrom(IEnumerable<IDatabaseReader<TId, T>> sources)

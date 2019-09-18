@@ -15,8 +15,9 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// Creates a profile with default settings.
         /// </summary>
-        public DefaultProfile(uint maxSearch = 500)
-        : base(new InternalTransferGenerator(180), 
+        public DefaultProfile(uint maxSearch = 500, uint connectionTime = 180)
+        : base(
+            new InternalTransferGenerator(connectionTime), 
             new CrowsFlightTransferGenerator(maxDistance: maxSearch /*meter*/,  speed: 1.4f /*meter/second*/),
             TransferMetric.Factory,
             TransferMetric.ParetoCompare,

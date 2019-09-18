@@ -10,6 +10,13 @@ namespace Itinero.Transit.Data
         /// </summary>
         uint DatabaseId { get; }
     }
+    
+    /// <summary>
+    /// The DatabaseReader is an object which, given an internal or global id, fetches the corresponding piece of data.
+    /// 
+    /// </summary>
+    /// <typeparam name="TId"></typeparam>
+    /// <typeparam name="T"></typeparam>
     public interface IDatabaseReader<in TId, in T>
         where TId : InternalId, new()
     {
@@ -55,6 +62,12 @@ namespace Itinero.Transit.Data
             return default(T);
         }
     }
+    
+    
+    /// <summary>
+    /// THe DatabaseEnumerator is an object which enumerates the identifiers of all data pieces in the database
+    /// </summary>
+    /// <typeparam name="TId"></typeparam>
     public interface IDatabaseEnumerator<TId> where TId : struct
     {
         /// <summary>
@@ -65,7 +78,7 @@ namespace Itinero.Transit.Data
         TId? First();
         /// <summary>
         /// Gives the next index based on the current
-        /// SHould be Pure
+        /// Should be Pure
         /// </summary>
         /// <param name="current"></param>
         /// <param name="next"></param>
