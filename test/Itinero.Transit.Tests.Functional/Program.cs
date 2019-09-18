@@ -40,7 +40,8 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
-               
+                           new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(6))
+                .RunOverMultiple(TestConstants.WithWalkAndPtTestCases);
                 Logging.Log.Information("Ran the devtests. Exiting now. Use --full-test-suite to run everything");
                 return;
             }
@@ -58,7 +59,7 @@ namespace Itinero.Transit.Tests.Functional
             new ProductionServerMimickTest(nmbs, StringConstants.TestDate, null)
                 .RunOverMultiple(TestConstants.WithWalkAndPtTestCases);
 
-            new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(5))
+            new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(6))
                 .RunOverMultiple(TestConstants.WithWalkAndPtTestCases);
 
        //     new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(12))
