@@ -1,4 +1,7 @@
-﻿namespace Itinero.Transit.Journey
+﻿using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
+
+namespace Itinero.Transit.Journey
 {
     ///  <summary>
     ///  Every journey carries a 'journeyMetric'-object.
@@ -19,12 +22,12 @@
         /// </summary>
         T Zero();
 
+      
         /// <summary>
         /// A new metrics object that represents the new metrics when this connection is taken.
         /// nextPiece.PreviousLink should not be null
         /// </summary>
-        T Add(Journey<T> journey);
-        
+        T Add(Journey<T> previousJourney, StopId currentLocation, ulong currentTime, TripId currentTripId, bool currentIsSpecial);
 
     }
 }

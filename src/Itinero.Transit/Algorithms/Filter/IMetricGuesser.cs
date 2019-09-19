@@ -22,7 +22,7 @@ namespace Itinero.Transit.Algorithms.Filter
         /// If the constructed journey can not be optimal, the intermediate journey can be pruned from the algorithm.
         /// </summary>
         /// <returns></returns>
-        Journey<T> LeastTheoreticalConnection(Journey<T> intermediate);
+        T LeastTheoreticalConnection(Journey<T> intermediate, out ulong departureTime);
 
         /// <summary>
         /// Returns whether or not it is useful to check this pareto frontier.

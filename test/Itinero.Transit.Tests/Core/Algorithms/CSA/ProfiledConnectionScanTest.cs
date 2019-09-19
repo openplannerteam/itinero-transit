@@ -475,7 +475,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .CalculateAllJourneys();
             Assert.NotNull(journeys);
             Assert.Single(journeys);
-            Assert.Equal((uint) 1, journeys[0].Metric.NumberOfTransfers);
+            Assert.Equal((uint) 2, journeys[0].Metric.NumberOfVehiclesTaken);
         }
 
 
@@ -517,7 +517,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .CalculateAllJourneys();
             Assert.NotNull(journeys);
             Assert.Single(journeys);
-            Assert.Equal((uint) 0, journeys[0].Metric.NumberOfTransfers);
+            Assert.Equal((uint) 1, journeys[0].Metric.NumberOfVehiclesTaken);
 
         }
     }

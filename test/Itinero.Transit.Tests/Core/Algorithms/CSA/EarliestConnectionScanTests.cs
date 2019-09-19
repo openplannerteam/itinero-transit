@@ -329,7 +329,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             Assert.Equal(new ConnectionId(0, 0), journey.Connection);
             Assert.True(journey.PreviousLink.SpecialConnection);
 
-            Assert.Equal((uint) 0, journey.Metric.NumberOfTransfers);
+            Assert.Equal((uint) 1, journey.Metric.NumberOfVehiclesTaken);
             Assert.Equal((uint) 10 * 60, journey.Metric.TravelTime);
         }
 

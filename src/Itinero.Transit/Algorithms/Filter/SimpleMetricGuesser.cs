@@ -39,21 +39,11 @@ namespace Itinero.Transit.Algorithms.Filter
             _departureStop = departureStop;
         }
 
-        public Journey<T> LeastTheoreticalConnection(Journey<T> intermediate)
+        public T LeastTheoreticalConnection(Journey<T> intermediate, out ulong departureTime)
         {
-            
-            var teleportation = new Connection(ConnectionId.Invalid,
-                "https://en.wikipedia.org/wiki/Teleportation",
-                _departureStop, intermediate.Location,
-                _clock.CurrentDateTime, // The current connection scan is here, future departures will only be sooner
-                0, // Traveltime is 0 - we are talking about Teleportation after all!
-                0,
-                0,
-                0,
-                intermediate.TripId
-            );
-
-            return intermediate.ChainBackward(teleportation);
+            departureTime = _clock.CurrentDateTime;
+            return intermediate.Metric.Add(intermediate, _departureStop, _clock.CurrentDateTime, intermediate.TripId,
+                false);
         }
 
         public bool ShouldBeChecked(ProfiledParetoFrontier<T> frontier)

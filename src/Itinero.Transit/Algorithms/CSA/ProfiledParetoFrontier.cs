@@ -82,13 +82,12 @@ namespace Itinero.Transit.Algorithms.CSA
                 // Does one completely overlap the other?
 
 
-                if (
-                    considered.Time <= guard.Time && guard.Root.Time <= considered.Root.Time)
+                if (considered.Time <= guard.Time && guard.Root.Time <= considered.Root.Time)
                 {
                     // Guard completely falls within considered or has a same time period
 
                     // It might kill considered
-                    var duel = Comparator.ADominatesB(guard, considered);
+                    var duel = Comparator.ADominatesB(guard.Metric, considered.Metric);
 
                     switch (duel)
                     {
@@ -145,7 +144,7 @@ namespace Itinero.Transit.Algorithms.CSA
                     // Considered completely and strictly falls within guard
                     // It might kill the guard
 
-                    var duel = Comparator.ADominatesB(guard, considered);
+                    var duel = Comparator.ADominatesB(guard.Metric, considered.Metric);
                     switch (duel)
                     {
                         case int.MaxValue: // Both are better then the other on some different dimension
@@ -188,37 +187,22 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
-        internal void IsSorted()
-        {
-            var lastDep = Frontier[0];
-            foreach (var journey in Frontier)
-            {
-                if (lastDep.Time >= journey.Time)
-                {
-                    lastDep = journey;
-                }
-                else
-                {
-                    throw new Exception("Not sorted. A journey departs earlier then its predecessor");
-                }
-            }
-        }
-
-
-        public bool IsOnFrontier(Journey<T> j)
+        public bool IsOnFrontier(
+            ulong journeyTime, ulong journeyRootTime,
+            T journeyMetric)
         {
             foreach (var guard in Frontier)
             {
-                if (j.Time <= guard.Time && guard.Root.Time <= j.Root.Time)
+                if (journeyTime <= guard.Time && guard.Root.Time <= journeyRootTime)
                 {
                     // Guard completely falls within 'j' or has a same time period
                     // Note that guard (mostly) has an edge here
-                    var duel = Comparator.ADominatesB(guard, j);
+                    var duel = Comparator.ADominatesB(guard.Metric, journeyMetric);
                     switch (duel)
                     {
                         case -1: return false;
                         case 0:
-                            if (j.Time != guard.Time || guard.Root.Time != j.Root.Time)
+                            if (journeyTime != guard.Time || guard.Root.Time != journeyRootTime)
                             {
                                 // Both have equally good stats... But the guard strictly falls within considered
                                 // Thus: considered takes a longer time and is worse
@@ -226,7 +210,7 @@ namespace Itinero.Transit.Algorithms.CSA
                             }
                             else
                             {
-                                return !j.Equals(guard);
+                                return true;
                             }
 
                         default:
@@ -235,11 +219,11 @@ namespace Itinero.Transit.Algorithms.CSA
                     }
                 }
                 
-                if (guard.Time <= j.Time && j.Root.Time <= guard.Root.Time)
+                if (guard.Time <= journeyTime && journeyRootTime <= guard.Root.Time)
                 {
                     // j falls completely and strictly within guard
 
-                    var duel = Comparator.ADominatesB(guard, j);
+                    var duel = Comparator.ADominatesB(guard.Metric, journeyMetric);
                     switch (duel)
                     {
                         case int.MaxValue: // Both are better then the other on some different dimension
@@ -294,10 +278,10 @@ namespace Itinero.Transit.Algorithms.CSA
 
             for (var i = Frontier.Count - 1; i >= 0; i--)
             {
-                var teleported = metricGuess.LeastTheoreticalConnection(Frontier[i]);
+                var teleportedMetric = metricGuess.LeastTheoreticalConnection(Frontier[i], out var teleportedTime);
                 foreach (var testFrontier in stopsToReach)
                 {
-                    if (testFrontier.IsOnFrontier(teleported))
+                    if (testFrontier.IsOnFrontier(teleportedTime, Frontier[i].Root.Time, teleportedMetric))
                     {
                         // No conclusions can be made
                         continue;

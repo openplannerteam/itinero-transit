@@ -64,12 +64,13 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             var pcsTr = routerWithTransfer.CalculateAllJourneys();
             Assert.Equal(2, pcsTr.Count);
-            Assert.Equal((uint) 1, pcsTr[0].Metric.NumberOfTransfers);
-            Assert.Equal((uint) 0, pcsTr[1].Metric.NumberOfTransfers);
+            Assert.Equal((uint) 2, pcsTr[0].Metric.NumberOfVehiclesTaken);
+            Assert.Equal((uint) 1, pcsTr[1].Metric.NumberOfVehiclesTaken);
 
             var pcs = router.CalculateAllJourneys();
+            Assert.NotNull(pcs);
             Assert.Single(pcs);
-            Assert.Equal((uint) 0, pcs[0].Metric.NumberOfTransfers);
+            Assert.Equal((uint) 1, pcs[0].Metric.NumberOfVehiclesTaken);
         }
 
         [Fact]
@@ -112,13 +113,13 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
 
             var easTr = routerWithTransfer.CalculateEarliestArrivalJourney();
-            Assert.Equal((uint) 1, easTr.Metric.NumberOfTransfers);
+            Assert.Equal((uint) 2, easTr.Metric.NumberOfVehiclesTaken);
 
             routerWithTransfer.ResetFilter();
 
             var pcsTr = routerWithTransfer.CalculateAllJourneys();
             Assert.Single(pcsTr);
-            Assert.Equal((uint) 1, pcsTr[0].Metric.NumberOfTransfers);
+            Assert.Equal((uint) 2, pcsTr[0].Metric.NumberOfVehiclesTaken);
 
 
             var profile = new Profile<TransferMetric>(
@@ -135,8 +136,8 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             var pcs = router.CalculateAllJourneys();
             Assert.Equal(2,pcs.Count);
-            Assert.Equal((uint) 0, pcs[0].Metric.NumberOfTransfers);
-            Assert.Equal((uint) 1, pcs[1].Metric.NumberOfTransfers);
+            Assert.Equal((uint) 1, pcs[0].Metric.NumberOfVehiclesTaken);
+            Assert.Equal((uint) 2, pcs[1].Metric.NumberOfVehiclesTaken);
         }
     }
 }

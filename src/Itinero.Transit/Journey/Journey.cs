@@ -166,7 +166,7 @@ namespace Itinero.Transit.Journey
             Location = location;
             Time = time;
             TripId = tripId;
-            Metric = metric.Add(this);
+            Metric = metric.Add(previousLink, location, time, tripId, specialLink);
             _hashCode = CalculateHashCode();
         }
 

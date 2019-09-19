@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using Itinero.Transit.Data.Core;
 
 // ReSharper disable BuiltInTypeReferenceStyle
 
@@ -17,7 +18,6 @@ namespace Itinero.Transit.Journey.Metric
     /// </summary>
     public class TransferMetric : IJourneyMetric<TransferMetric>
     {
-
         public static readonly MinimizeAll ParetoCompare = new MinimizeAll();
 
 
@@ -29,7 +29,7 @@ namespace Itinero.Transit.Journey.Metric
 
         // ---------------- ACTUAL METRICS -------------------------
 
-        public readonly uint NumberOfTransfers;
+        public readonly uint NumberOfVehiclesTaken;
 
         /// <summary>
         /// The total travel time, including 'in-vehicle'-time, walking time and waiting time
@@ -41,11 +41,11 @@ namespace Itinero.Transit.Journey.Metric
         /// </summary>
         public readonly float WalkingTime;
 
-        private TransferMetric(uint numberOfTransfers,
+        private TransferMetric(uint numberOfVehiclesTaken,
             TimeSpan travelTime,
             float walkingWaitingTime)
         {
-            NumberOfTransfers = numberOfTransfers;
+            NumberOfVehiclesTaken = numberOfVehiclesTaken;
             TravelTime = travelTime;
             WalkingTime = walkingWaitingTime;
         }
@@ -55,31 +55,40 @@ namespace Itinero.Transit.Journey.Metric
             return Factory;
         }
 
-        public TransferMetric Add(Journey<TransferMetric> journey)
+        public TransferMetric Add(Journey<TransferMetric> previousJourney, StopId currentLocation, ulong currentTime,
+            TripId currentTripId,
+            bool currentIsSpecial)
         {
-            var transferred = !journey.PreviousLink.LastTripId().Equals(journey.LastTripId())
-                              && !(journey.PreviousLink.SpecialConnection &&
-                                   Equals(journey.PreviousLink.Connection, Journey<TransferMetric>.GENESIS));
+            // We are in a new vehicle if...
+            var newVehicle =
+                // THis is _not_ a special journey
+                !currentIsSpecial &&
+                (
+                    // the tripID of the previous journey is different from the current trip ID
+                    !Equals(previousJourney.TripId, currentTripId)
+                    // Or if the previous was a special connection. (Note that 
+                    || previousJourney.SpecialConnection);
+
 
             ulong travelTime;
 
-            if (journey.Time > journey.PreviousLink.Time)
+            if (currentTime > previousJourney.Time)
             {
-                travelTime = journey.Time - journey.PreviousLink.Time;
+                travelTime = currentTime - previousJourney.Time;
             }
             else
             {
-                travelTime = journey.PreviousLink.Time - journey.Time;
+                travelTime = previousJourney.Time - currentTime;
             }
 
 
             ulong walkingTime = 0;
-            if (journey.SpecialConnection && Equals(journey.Connection, Journey<TransferMetric>.OTHERMODE))
+            if (currentIsSpecial)
             {
                 walkingTime = travelTime;
             }
 
-            return new TransferMetric((uint) (NumberOfTransfers + (transferred ? 1 : 0)),
+            return new TransferMetric((uint) (NumberOfVehiclesTaken + (newVehicle ? 1 : 0)),
                 (uint) (TravelTime + travelTime),
                 WalkingTime + walkingTime);
         }
@@ -93,12 +102,12 @@ namespace Itinero.Transit.Journey.Metric
             seconds = seconds % 60;
 
             return
-                $"Metric: {NumberOfTransfers} transfers, {hours}:{minutes}:{seconds} total time), {WalkingTime} seconds to walk";
+                $"Metric: {NumberOfVehiclesTaken} vehicles taken, {hours}:{minutes}:{seconds} total time), {WalkingTime} seconds to walk";
         }
 
         private bool Equals(TransferMetric other)
         {
-            return NumberOfTransfers == other.NumberOfTransfers
+            return NumberOfVehiclesTaken == other.NumberOfVehiclesTaken
                    && TravelTime == other.TravelTime
                    && WalkingTime.Equals(other.WalkingTime);
         }
@@ -115,7 +124,7 @@ namespace Itinero.Transit.Journey.Metric
         {
             unchecked
             {
-                var hashCode = (int) NumberOfTransfers;
+                var hashCode = (int) NumberOfVehiclesTaken;
                 hashCode = (hashCode * 397) ^ (int) TravelTime;
                 hashCode = (hashCode * 397) ^ WalkingTime.GetHashCode();
                 return hashCode;
@@ -127,24 +136,20 @@ namespace Itinero.Transit.Journey.Metric
     public class MinimizeAll : MetricComparator<TransferMetric>
     {
         [SuppressMessage("ReSharper", "RedundantIfElseBlock")]
-        public override int ADominatesB(Journey<TransferMetric> a, Journey<TransferMetric> b)
+        public override int ADominatesB(TransferMetric am, TransferMetric bm)
         {
             // Returns (-1) if A is smaller (and thus more optimized),
             // Return 1 if B is smaller (and thus more optimized)
             // Return 0 if they are equally optimal
-            
-            var am = a.Metric;
-            var bm = b.Metric;
 
 
-
-            if (am.NumberOfTransfers == bm.NumberOfTransfers)
+            if (am.NumberOfVehiclesTaken == bm.NumberOfVehiclesTaken)
             {
-
                 if (am.TravelTime < bm.TravelTime)
                 {
                     return -1;
-                }else if (am.TravelTime > bm.TravelTime)
+                }
+                else if (am.TravelTime > bm.TravelTime)
                 {
                     return 1;
                 }
@@ -153,12 +158,11 @@ namespace Itinero.Transit.Journey.Metric
                     return 0;
                 }
             }
-            else if(am.NumberOfTransfers < bm.NumberOfTransfers)
+            else if (am.NumberOfVehiclesTaken < bm.NumberOfVehiclesTaken)
             {
-                
                 // a is clearly better on this dimension...
                 // Is it also better on the other dimension?
-                
+
                 if (am.TravelTime <= bm.TravelTime)
                 {
                     // A is better (or equally good) on the other aspect too
@@ -174,7 +178,7 @@ namespace Itinero.Transit.Journey.Metric
             {
                 // b is clearly better on this dimension...
                 // Is it also better on the other dimension?
-                
+
                 if (am.TravelTime >= bm.TravelTime)
                 {
                     // B is better (or equally good) on the other aspect too
@@ -192,6 +196,5 @@ namespace Itinero.Transit.Journey.Metric
         {
             return 2;
         }
-
     }
 }

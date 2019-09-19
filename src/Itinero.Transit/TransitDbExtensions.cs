@@ -175,7 +175,7 @@ namespace Itinero.Transit
                 var jS = j.MeasureWith(newMetric);
                 // ... and we compare
 
-                var comparison = newComparer.ADominatesB(lastS, jS);
+                var comparison = newComparer.ADominatesB(lastS.Metric, jS.Metric);
                 if (comparison < 0)
                 {
                     // lastS is better

@@ -14,12 +14,12 @@ namespace Itinero.Transit.Algorithms.Filter
 
         public bool CanBeTaken(Journey<TransferMetric> journey)
         {
-            return journey.Metric.NumberOfTransfers <= _maxNumberOfTransfers;
+            return journey.Metric.NumberOfVehiclesTaken - 1 <= _maxNumberOfTransfers;
         }
 
         public bool CanBeTakenBackwards(Journey<TransferMetric> journey)
         {
-            return journey.Metric.NumberOfTransfers <= _maxNumberOfTransfers;
+            return journey.Metric.NumberOfVehiclesTaken - 1 <= _maxNumberOfTransfers;
         }
     }
 }

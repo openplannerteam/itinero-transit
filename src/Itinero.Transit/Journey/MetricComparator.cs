@@ -24,7 +24,7 @@
         /// <param name="a">The first metric to compare</param>
         /// <param name="b">The second metric to compare</param>
         /// <returns></returns>
-        public abstract int ADominatesB(Journey<T> a, Journey<T> b);
+        public abstract int ADominatesB(T a, T b);
 
         public abstract int NumberOfDimension();
 
