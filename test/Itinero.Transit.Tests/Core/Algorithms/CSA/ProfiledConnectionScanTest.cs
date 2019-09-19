@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Algorithms.Filter;
@@ -7,6 +8,7 @@ using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
 using Xunit;
+using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
 // ReSharper disable PossibleMultipleEnumeration
 
@@ -15,7 +17,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
     public class ProfiledConnectionScanTest
     {
         [Fact]
-        public void AllJourneysTest_SingleConnectionTdb_JourneyWithBeginWalk()
+        public void AllJourneys_SingleConnectionTdb_JourneyWithBeginWalk()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -54,7 +56,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
 
         [Fact]
-        public void AllJourneysTest_SingleConnectionTdb_JourneyWithEndWalk()
+        public void AllJourneys_SingleConnectionTdb_JourneyWithEndWalk()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -91,7 +93,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         }
 
         [Fact]
-        public void AllJourneysTest_SingleConnectionTdb_JourneyWithBeginAndEndWalk()
+        public void AllJourneys_SingleConnectionTdb_JourneyWithBeginAndEndWalk()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -130,7 +132,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
 
         [Fact]
-        public void AllJourneysTest_SmallTdb_2Journeys()
+        public void AllJourneys_SmallTdb_2Journeys()
         {
             var tdb = Db.GetDefaultTestDb(out var stop0, out _, out _, out var stop3, out var _, out var _);
 
@@ -164,7 +166,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         /// one which is clearly better then the other.
         /// </summary>
         [Fact]
-        public static void AllJourneysTest_4ConnectionTdb_ExpectsOneOptimalJourney()
+        public static void AllJourneys_4ConnectionTdb_ExpectsOneOptimalJourney()
         {
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
@@ -216,7 +218,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         }
 
         [Fact]
-        public static void AllJourneysTest_4ConnectionTdbWithMetricGuesser_ExpectsOneOptimalJourney()
+        public static void AllJourneys_4ConnectionTdbWithMetricGuesser_ExpectsOneOptimalJourney()
         {
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
@@ -279,7 +281,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
 
         [Fact]
-        public void AllJourneysTest_1ConnectionTdbWithNoGettingOfMode_ExpectsNoJourneys()
+        public void AllJourneys_1ConnectionTdbWithNoGettingOfMode_ExpectsNoJourneys()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -320,7 +322,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         /// 
         /// </summary>
         [Fact]
-        public void AllJourneysTest_1ConnectionTdbWalkRequired_ExpectsNoJourneyAsWalkFallsBeforeTimeWindow()
+        public void AllJourneys_1ConnectionTdbWalkRequired_ExpectsNoJourneyAsWalkFallsBeforeTimeWindow()
         {
             // Locations: loc0 -> loc2
 
@@ -364,7 +366,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         /// 
         /// </summary>
         [Fact]
-        public void AllJourneysTest_1ConnectionTdbWalkRequired_ExpectsNoJourneyAsWalkFallsAfterTimeWindow()
+        public void AllJourneys_1ConnectionTdbWalkRequired_ExpectsNoJourneyAsWalkFallsAfterTimeWindow()
         {
             // Locations: loc0 -> loc2
 
@@ -398,7 +400,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         }
 
         [Fact]
-        public void AllJourneysTest_SingleConnectionTdb_JourneyWithNoWalkAndNoSearch()
+        public void AllJourneys_SingleConnectionTdb_JourneyWithNoWalkAndNoSearch()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -438,7 +440,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
 
         [Fact]
-        public void AllJourneysTest_TwoConnectionDifferentTrip_JourneyWithTransfer()
+        public void AllJourneys_TwoConnectionDifferentTrip_JourneyWithTransfer()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -480,7 +482,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
 
         [Fact]
-        public void AllJourneysTest_TwoConnectionSameTrip_JourneyWithExtendedTrip()
+        public void AllJourneys_TwoConnectionSameTrip_JourneyWithExtendedTrip()
         {
             // build a one-connection db.
             var transitDb = new TransitDb(0);
@@ -518,7 +520,65 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             Assert.NotNull(journeys);
             Assert.Single(journeys);
             Assert.Equal((uint) 1, journeys[0].Metric.NumberOfVehiclesTaken);
+        }
 
+
+        [Fact]
+        public void AllJourneys_ThreeTransfersTwoFamilies_WithFiltering_Expects4Journeys()
+        {
+            var tdb = new TransitDb(0);
+
+            var wr = tdb.GetWriter();
+
+            var stops = new List<StopId>();
+            for (int i = 0; i < 10; i++)
+            {
+                stops.Add(wr.AddOrUpdateStop("stop" + i, i, i, null));
+            }
+            
+            // Trip A: stop 0 -> 3
+            // Trip B: stop 2 -> 4 (only B has 4) -> 6
+            // Trip C: stop 5 -> 8
+            var tripA = new TripId(0, 0);
+            for (int i = 0; i < 3; i++)
+            {
+                // Departs at: 0, 1, 2
+                // Arrives at: 1, 2, 3
+                wr.AddOrUpdateConnection(new Connection(new ConnectionId(0, (uint) i), "A" + i, 
+                    stops[i], stops[i + 1],
+                    (ulong) (1000 + i * 60), 60, 0, 0, 0,tripA));
+            }
+            
+            var tripB = new TripId(0, 1);
+            for (int i = 2; i < 6; i++)
+            {
+                // Departs at: 2, 3, 4, 5
+                // Arrives at: 3, 4, 5, 6
+                wr.AddOrUpdateConnection(new Connection(new ConnectionId(0, (uint) i), "B" + i, stops[i], stops[i + 1],
+                    (ulong) (1000 + 240 + i * 60), 60, 0, 0, 0,tripB));
+            }
+            
+            var tripC = new TripId(0, 2);
+            for (int i = 5; i < 8; i++)
+            {
+                wr.AddOrUpdateConnection(new Connection(new ConnectionId(0, (uint) i), "C" + i, stops[i], stops[i + 1],
+                    (ulong) (1000 + 241 + i * 60), 60, 0, 0, 0,tripC));
+            }
+            wr.Close();
+            
+            
+            
+            var pr = new DefaultProfile(0, 0);
+
+            var calc = tdb.SelectProfile(pr)
+                .SelectStops(stops[0], stops[8])
+                .SelectTimeFrame(0, 2000);
+
+            var journeys = calc.CalculateAllJourneys(true);
+            
+            Assert.NotNull(journeys);
+            Assert.Equal(4, journeys.Count);
+            
         }
     }
 }

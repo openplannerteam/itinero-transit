@@ -5,6 +5,7 @@ using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms;
+using Itinero.Transit.Tests.Functional.Algorithms.CSA;
 using Itinero.Transit.Tests.Functional.Algorithms.Search;
 using Itinero.Transit.Tests.Functional.Data;
 using Itinero.Transit.Tests.Functional.IO.LC;
@@ -40,11 +41,18 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
-                           new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(6))
-                .RunOverMultiple(TestConstants.WithWalkAndPtTestCases);
+
+                var withTime = nmbs.SelectProfile(new DefaultProfile(0))
+                    .SelectStops("http://irail.be/stations/NMBS/008811262", "http://irail.be/stations/NMBS/008811197")
+                    .SelectTimeFrame(StringConstants.TestDate.AddHours(1), StringConstants.TestDate.AddHours(10));
+                
+                new ProfiledConnectionScanWithMetricAndIsochroneFilteringTest().Run(withTime);
+                
                 Logging.Log.Information("Ran the devtests. Exiting now. Use --full-test-suite to run everything");
                 return;
             }
+            
+            
 
             // TODO make sure IRail can handle this one          new MultipleLoadTest().Run();
 

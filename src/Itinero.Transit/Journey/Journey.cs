@@ -281,21 +281,6 @@ namespace Itinero.Transit.Journey
         }
 
         /// <summary>
-        /// Extends this journey with the given connection. If there is waiting time between this journey and the next,
-        /// a 'Transfer' link is included.
-        /// Transfer links _should not_ be used to calculate the number of transfers, the differences in trip-ids should be used for this! 
-        /// </summary>
-        [Pure]
-        public Journey<T> Transfer(ulong departureTime)
-        {
-            // Creating the transfer
-            return new Journey<T>(
-                // ReSharper disable once ArrangeThisQualifier
-                Root, this, true, OTHERMODE, this.Location, departureTime, new TripId(uint.MaxValue, uint.MaxValue),
-                Metric);
-        }
-
-        /// <summary>
         /// Chains an 'othermode' link to this journey, using a forward (with time) logic.
         /// </summary>
         [Pure]
@@ -398,25 +383,21 @@ namespace Itinero.Transit.Journey
         }
 
         [Pure]
-        internal string ToString(TransitDb.TransitDbSnapShot snapshot)
+        internal string ToString(TransitDb.TransitDbSnapShot snapshot, uint truncateAt = 15)
         {
             return ToString(15, snapshot.StopsDb.GetReader());
         }
 
+
         [Pure]
-        public string ToString(WithTime<T> withTime)
+        public string ToString(WithProfile<TransferMetric> withProfile, uint truncateAt = 15)
         {
-            return ToString(15, withTime.StopsReader);
-        }
-
-
-        public string ToString(WithProfile<TransferMetric> withProfile)
-        {
-            return ToString(15, withProfile.StopsReader);
+            return ToString(truncateAt, withProfile.StopsReader);
         }
 
         [Pure]
-        public string ToString(uint truncateAt, IStopsReader stops = null, IDatabaseReader<ConnectionId, Connection> connection = null)
+        public string ToString(uint truncateAt, IStopsReader stops = null,
+            IDatabaseReader<ConnectionId, Connection> connection = null)
         {
             if (Equals(InfiniteJourney))
             {
@@ -458,7 +439,7 @@ namespace Itinero.Transit.Journey
                 location = stops.GlobalId + " " + stops.Attributes;
                 dbOperator = stops.Id.DatabaseId;
             }
-            
+
             if (SpecialConnection)
             {
                 // First: is this a special connection?
@@ -492,7 +473,6 @@ namespace Itinero.Transit.Journey
                 }
             }
 
-           
 
             return
                 $"Connection {Connection} to {location}, arriving at {Time.FromUnixTime():s}; operator is {dbOperator}{md}";

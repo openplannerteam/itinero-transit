@@ -187,7 +187,18 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
-        public bool IsOnFrontier(
+        /// <summary>
+        /// Checks that a journey with departure time 'journeyTime', arrival time 'journeyRootTime' and metric 'journeyMetric'
+        /// could be added on this frontier.
+        ///
+        /// THis method is only used to check against optimizations
+        /// </summary>
+        /// <param name="journeyTime"></param>
+        /// <param name="journeyRootTime"></param>
+        /// <param name="journeyMetric"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        private bool IsOnFrontier(
             ulong journeyTime, ulong journeyRootTime,
             T journeyMetric)
         {
@@ -212,13 +223,15 @@ namespace Itinero.Transit.Algorithms.CSA
                             {
                                 return true;
                             }
-
+                        case int.MaxValue: 
+                            // No comparison is possible
+                            continue;
                         default:
                             // No comparison is possible
                             continue;
                     }
                 }
-                
+
                 if (guard.Time <= journeyTime && journeyRootTime <= guard.Root.Time)
                 {
                     // j falls completely and strictly within guard
@@ -278,15 +291,17 @@ namespace Itinero.Transit.Algorithms.CSA
 
             for (var i = Frontier.Count - 1; i >= 0; i--)
             {
-                var teleportedMetric = metricGuess.LeastTheoreticalConnection(Frontier[i], out var teleportedTime);
+                var teleportedMetric =
+                    metricGuess.LeastTheoreticalConnection(Frontier[i], out var teleportedDepartureTime);
+                
                 foreach (var testFrontier in stopsToReach)
                 {
-                    if (testFrontier.IsOnFrontier(teleportedTime, Frontier[i].Root.Time, teleportedMetric))
+                    if (testFrontier.IsOnFrontier(teleportedDepartureTime, Frontier[i].Root.Time, teleportedMetric))
                     {
                         // No conclusions can be made
                         continue;
                     }
-                    
+
                     // Even _with_ a teleport, the intermediate journey could not beat any
                     // already existing journey to the destination...
                     // This means that this intermediate journey can never ever be optimal

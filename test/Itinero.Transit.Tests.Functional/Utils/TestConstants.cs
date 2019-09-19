@@ -81,11 +81,12 @@ namespace Itinero.Transit.Tests.Functional.Utils
 
 
         /// <summary>
-        /// Test cases where one has to take public transport, possible with an obligatory walk before- or afterwards
+        /// Test cases where one has to take public transport, possibly with an obligatory walk before- or afterwards
         /// </summary>
         public static readonly List<(string departure, string arrival, uint maxDistance)> WithWalkAndPtTestCases =
             new List<(string departure, string arrival, uint maxDistance)>
             {
+                ("http://irail.be/stations/NMBS/008811262", "http://irail.be/stations/NMBS/008811197", 0),
                 (StringConstants.Brugge, StringConstants.Gent, 1000),
                 (StringConstants.OsmNearStationBruggeLatLon, StringConstants.Gent, 1000),
                 (StringConstants.Brugge, StringConstants.OsmDeSterre, 5000),

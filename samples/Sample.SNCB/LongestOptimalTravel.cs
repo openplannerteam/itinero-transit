@@ -20,12 +20,14 @@ namespace Sample.SNCB
     /// </summary>
     public class LongestOptimalTravel
     {
+        private const string outputDir = "output-filteroptimized";
 
         public static void Run()
         {
             Console.WriteLine("Calculating the longest optimal journey (for science) ");
 
-            var date = DateTime.Now.ToUniversalTime().Date;
+            var date = new DateTime(2019, 09, 18, 10, 00, 00).ToUniversalTime()
+                .Date; // DateTime.Now.ToUniversalTime().Date;
             var filePath = $"nmbs.{date:yyyy-MM-dd}.transitdb";
 
             var depTime = date.AddHours(1);
@@ -38,6 +40,7 @@ namespace Sample.SNCB
             }
             else
             {
+                Console.WriteLine("Downloading data for today");
                 transitDb.UseLinkedConnections(
                     "https://graph.irail.be/sncb/connections",
                     "https://irail.be/stations",
@@ -66,7 +69,7 @@ namespace Sample.SNCB
                     CalculateAll(i1, cpuCount, transitDb, profile, depTime, arrTime));
             }
 
-            Thread.Sleep(TimeSpan.FromMinutes(60*5));
+            Thread.Sleep(TimeSpan.FromMinutes(60 * 5));
 
             Console.WriteLine("All done!");
         }
@@ -82,8 +85,10 @@ namespace Sample.SNCB
             stopsReader.Reset();
             var stopsReader0 = transitDb.Latest.StopsDb.GetReader();
             var numberOfStops = 663;
-            var path = "AllCombinations.csv";
+            var path = "output.csv";
             var i = 0;
+
+            var startOffset = 100;
             while (stopsReader.MoveNext())
             {
                 if (i % cpuCount != offset)
@@ -93,25 +98,32 @@ namespace Sample.SNCB
                 }
 
                 i++;
-                var pathI = "output/"+i + "_" + path;
+
+
+                if (i < startOffset)
+                {
+                    continue;
+                }
+
+                var pathI = outputDir + "/" + i + "_" + path;
 
                 if (File.Exists(pathI))
                 {
+                    Console.WriteLine($"Skipping departure station {i} - already exists");
                     continue;
                 }
 
                 Console.WriteLine($"Calculating departure station {i}");
                 var from = new Stop(stopsReader);
-                CalculateAllForSingleFrom(i,pathI, stopsReader0, @from, router, depTime, arrTime, numberOfStops);
-
-
-                break;
+                CalculateAllForSingleFrom(i, 100,110,
+                    pathI, stopsReader0, @from, router, depTime, arrTime, numberOfStops);
             }
         }
 
 
         private static void CalculateAllForSingleFrom(
             int i,
+            int rangeStart, int rangeStop,
             string path, StopsDb.StopsDbReader stopsReader0,
             Stop @from,
             WithProfile<TransferMetric> router, DateTime depTime, DateTime arrTime, int numberOfStops)
@@ -121,7 +133,8 @@ namespace Sample.SNCB
 
             var toWrite = new List<string>();
             toWrite.Add(
-                "From, to, distance in meters, calcTime, journeysFound, bestPickDeparture,bestPickTime, worstPickDeparture, worstPickTime");
+                "From, to, distance in meters, calcTimeNoFilter, calcTimeWithFilter," +
+                " journeysFoundNoFilter, journeysFoundWithFilter, bestPickDeparture,bestPickTime, worstPickDeparture, worstPickTime");
             stopsReader0.Reset();
             var j = 0;
 
@@ -129,6 +142,16 @@ namespace Sample.SNCB
             {
                 j++;
 
+                if (j < rangeStart)
+                {
+                    continue;
+                }
+
+                if (j > rangeStop)
+                {
+                    break;
+                }
+                
                 var to = new Stop(stopsReader0);
 
                 if (@from.Id.Equals(to.Id))
@@ -136,48 +159,85 @@ namespace Sample.SNCB
                     continue;
                 }
 
-                var start = DateTime.Now;
-                var calculator = router
-                    .SelectStops(@from, to)
-                    .SelectTimeFrame(depTime, arrTime);
-                calculator.CalculateIsochroneFrom();
-                var journeys =
-                    calculator.CalculateAllJourneys();
-                var end = DateTime.Now;
-                var timeNeeded = (uint) (end - start).TotalMilliseconds;
-                calcSum += timeNeeded;
-                calcTimes.Add(timeNeeded);
 
+                var str = AnalyzeSingleFromTo(router, from, to, depTime, arrTime);
 
-                if (j % 25 == 0)
+                toWrite.Add(str);
+
+                if (j % 5 == 0)
                 {
                     Console.WriteLine(
                         $"{i}/{numberOfStops}, {j}/{numberOfStops}, {@from.GlobalId} --> {to.GlobalId} ");
                 }
-
-                if (journeys == null)
-                {
-                    toWrite.Add($"{@from.GlobalId},{to.GlobalId}," +
-                                $"{DistanceEstimate.DistanceEstimateInMeter(@from.Latitude, @from.Longitude, to.Latitude, to.Longitude)},{timeNeeded},0"
-                    );
-                    continue;
-                }
-
-
-                var ((bestPick, bestTime), (worstPick, worstTime) ) = PickJourneys(journeys);
-
-                // From, to, distance in meters, calcTime,bestPickDeparture,bestPickTime, worstPickDeparture, worstPickTime
-                toWrite.Add(
-                    $"{@from.GlobalId},{to.GlobalId}," +
-                    $"{DistanceEstimate.DistanceEstimateInMeter(@from.Latitude, @from.Longitude, to.Latitude, to.Longitude)},{timeNeeded}," +
-                    $"{journeys.Count}," +
-                    $"{bestPick.DepartureTime().FromUnixTime():s},{bestTime}," +
-                    $"{worstPick.DepartureTime().FromUnixTime():s},{worstTime}"
-                );
             }
-            File.AppendAllLines(path,toWrite );
+
+            File.AppendAllLines(path, toWrite);
             Console.WriteLine(
                 $"Done: {from.GlobalId} Took {calcSum}ms, min:{calcTimes.Min()}, avg:{calcSum / calcTimes.Count}, max:{calcTimes.Max()}");
+        }
+
+        private static string AnalyzeSingleFromTo(WithProfile<TransferMetric> router,
+            Stop @from, Stop to, DateTime depTime, DateTime arrTime)
+        {
+            var start = DateTime.Now;
+            
+            var calculator = router
+                .SelectStops(from, to)
+                .SelectTimeFrame(depTime, arrTime);
+            calculator.CalculateIsochroneFrom();
+            var journeys =
+                calculator.CalculateAllJourneys(enableFiltering: false);
+            var end = DateTime.Now;
+            var timeNeededNoFilter = (uint) (end - start).TotalMilliseconds;
+
+            start = DateTime.Now;
+            calculator = router
+                .SelectStops(from, to)
+                .SelectTimeFrame(depTime, arrTime);
+            calculator.CalculateIsochroneFrom();
+            var journeysWithFiltering =
+                calculator.CalculateAllJourneys(enableFiltering: true);
+            end = DateTime.Now;
+            var timeNeededWithFilter = (uint) (end - start).TotalMilliseconds;
+            
+            
+            if (journeys == null)
+            {
+                return $"{@from.GlobalId},{to.GlobalId}," +
+                       $"{DistanceEstimate.DistanceEstimateInMeter(@from.Latitude, @from.Longitude, to.Latitude, to.Longitude)},{timeNeededNoFilter},{timeNeededWithFilter}," +
+                       $"{journeys?.Count ?? 0},{journeysWithFiltering?.Count ?? 0}";
+            }
+            var ((bestPick, bestTime), (worstPick, worstTime) ) = PickJourneys(journeys);
+
+            if (journeys.Count != journeysWithFiltering.Count)
+            {
+                Console.WriteLine("--------------------------------------------");
+                Console.WriteLine($"From {from.GlobalId} to {to.GlobalId} yielded a different number of journeys");
+                Console.WriteLine( $"{@from.GlobalId},{to.GlobalId}," +
+                                   $"{DistanceEstimate.DistanceEstimateInMeter(@from.Latitude, @from.Longitude, to.Latitude, to.Longitude)}," +
+                                   $"{timeNeededNoFilter},{timeNeededWithFilter}," +
+                                   $"{journeys?.Count ?? 0},{journeysWithFiltering?.Count ?? 0}," +
+                                   $"{bestPick.DepartureTime().FromUnixTime():s},{bestTime}," +
+                                   $"{worstPick.DepartureTime().FromUnixTime():s},{worstTime}");
+                AssertAreSame(journeys, journeysWithFiltering, calculator.StopsReader);
+                Console.WriteLine(" - - - - - - - - - - - - - - -  - - - - - - - - -  - - - - - - - -  - - - - - - - - - - - - ");
+                foreach (var j in journeys)
+                {
+                    Console.WriteLine(j.ToString(calculator, 100)+"\n");
+                }
+                throw new Exception("Crash");
+
+            }
+            
+
+            // From, to, distance in meters, calcTime,bestPickDeparture,bestPickTime, worstPickDeparture, worstPickTime
+            return
+                $"{@from.GlobalId},{to.GlobalId}," +
+                $"{DistanceEstimate.DistanceEstimateInMeter(@from.Latitude, @from.Longitude, to.Latitude, to.Longitude)}," +
+                $"{timeNeededNoFilter},{timeNeededWithFilter}," +
+                $"{journeys?.Count ?? 0},{journeysWithFiltering?.Count ?? 0}," +
+                $"{bestPick.DepartureTime().FromUnixTime():s},{bestTime}," +
+                $"{worstPick.DepartureTime().FromUnixTime():s},{worstTime}";
         }
 
         private static
@@ -209,6 +269,35 @@ namespace Sample.SNCB
             }
 
             return ((bestPick, bestPickTime), (worstPick, worstPickTime));
+        }
+        
+        
+        // TODO REMOVE
+        public static void AssertAreSame(ICollection<Journey<TransferMetric>> js, ICollection<Journey<TransferMetric>> bs,
+            IStopsReader reader)
+        {
+            bool oneMissing = false;
+            foreach (var a in js)
+            {
+                if (!bs.Contains(a))
+                {
+                    Console.WriteLine($"Missing journey: {a.ToString(100, reader)}");
+                    oneMissing = true;
+                }
+            }
+
+            int bi = 0;
+            foreach (var b in bs)
+            {
+                if (!js.Contains(b))
+                {
+                   Console.WriteLine($"Missing journey {bi}: {b.ToString(100, reader)}");
+                    oneMissing = true;
+                }
+
+                bi++;
+            }
+
         }
     }
 }

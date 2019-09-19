@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
-using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.OtherMode
 {
@@ -21,16 +20,12 @@ namespace Itinero.Transit.OtherMode
 
         public uint TimeBetween(IStop from, IStop to)
         {
-            // The distance should be small enough
-            // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (DistanceEstimate.DistanceEstimateInMeter(from.Latitude, from.Longitude, to.Latitude, to.Longitude) >
-                Range())
+            if (from.Id.Equals(to.Id))
             {
-                return uint.MaxValue;
+                return _internalTransferTime;
             }
 
-            return
-                _internalTransferTime;
+            return uint.MaxValue;
         }
 
         public Dictionary<StopId, uint> TimesBetween(IStop from,
