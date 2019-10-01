@@ -1,11 +1,11 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
-using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Itinero.Transit.Tests.Core.Journey
@@ -94,7 +94,8 @@ namespace Itinero.Transit.Tests.Core.Journey
         }
     }
 
-    class DummyReader : IStopsReader
+    [SuppressMessage("ReSharper", "UnassignedGetOnlyAutoProperty")]
+    internal class DummyReader : IStopsReader
     {
         public string GlobalId { get; }
         public StopId Id { get; set; }

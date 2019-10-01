@@ -10,7 +10,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
     public class ParetoFrontierTest
     {
         [Fact]
-        public void AddToFrontier_OneSlowOneFasterJourney_SlowJourneyIsRemovedFromFrontier()
+        public void AddToFrontier_OneSlowOneFasterJourney_JourneysAreMerged()
         {
             // In some cases, journeys which perform equally good are merged as to save needed comparisons
             // A typical real-life example is a train stopping in A, B, C and a second train stopping in B, C, D. A traveller going from A to D has the choice to transfer in B and C
@@ -30,10 +30,12 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var atLocB =
                 genesis.ChainBackward(new Connection(new ConnectionId(0,1), "1", locDep, locB, 10, 10, 0, 0, 0, new TripId(0, 1)));
 
+            var commonConnection = new Connection(new ConnectionId(0, 2), "2", locA, locDest, 00, 10, 0, 0, 0,
+                new TripId(0, 2));
             var atDestA =
-                atLocA.ChainBackward(new Connection(new ConnectionId(0,2), "2", locA, locDest, 00, 10, 0, 0, 0, new TripId(0, 2)));
+                atLocA.ChainBackward(commonConnection);
             var atDestB =
-                atLocB.ChainBackward(new Connection(new ConnectionId(0,3), "3", locA, locDest, 00, 10, 0, 0, 0, new TripId(0, 3)));
+                atLocB.ChainBackward(commonConnection);
 
             var frontier = new ProfiledParetoFrontier<TransferMetric>(TransferMetric.ParetoCompare, null);
 
@@ -42,7 +44,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             
             Assert.Single(frontier.Frontier);
             Assert.Equal(atDestA, frontier.Frontier[0].PreviousLink); // Should not really be regarded as 'previouslink', but rather as 'Left leg' and 'right leg' of a binary tree
-            Assert.Equal(atDestB, frontier.Frontier[0].AlternativePreviousLink);
+            Assert.Equal(atDestB.PreviousLink, frontier.Frontier[0].AlternativePreviousLink);
 
         }
 
@@ -125,7 +127,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                     .PreviousLink // The actual journey
             );
             // -------------------------------------- lest connection -------- transferObject - directjourney
-            Assert.Equal(direct, extended.Frontier[0].AlternativePreviousLink.PreviousLink.PreviousLink);
+            Assert.Equal(direct, extended.Frontier[0].AlternativePreviousLink.PreviousLink);
         }
 
         [Fact]

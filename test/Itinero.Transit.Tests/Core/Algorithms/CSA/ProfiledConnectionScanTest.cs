@@ -8,7 +8,6 @@ using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
 using Xunit;
-using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
 // ReSharper disable PossibleMultipleEnumeration
 
@@ -411,7 +410,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 0.00001); // very walkable distance
 
 
-            var w0 = writer.AddOrUpdateStop("https://example.com/stops/2", 50.00001, 50.00001);
+            writer.AddOrUpdateStop("https://example.com/stops/2", 50.00001, 50.00001);
 
             writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
@@ -533,9 +532,9 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var stops = new List<StopId>();
             for (int i = 0; i < 10; i++)
             {
-                stops.Add(wr.AddOrUpdateStop("stop" + i, i, i, null));
+                stops.Add(wr.AddOrUpdateStop("stop" + i, i, i));
             }
-            
+
             // Trip A: stop 0 -> 3
             // Trip B: stop 2 -> 4 (only B has 4) -> 6
             // Trip C: stop 5 -> 8
@@ -544,30 +543,30 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             {
                 // Departs at: 0, 1, 2
                 // Arrives at: 1, 2, 3
-                wr.AddOrUpdateConnection(new Connection(new ConnectionId(0, (uint) i), "A" + i, 
+                wr.AddOrUpdateConnection(new Connection(new ConnectionId(0, (uint) i), "A" + i,
                     stops[i], stops[i + 1],
-                    (ulong) (1000 + i * 60), 60, 0, 0, 0,tripA));
+                    (ulong) (1000 + i * 60), 60, 0, 0, 0, tripA));
             }
-            
+
             var tripB = new TripId(0, 1);
             for (int i = 2; i < 6; i++)
             {
                 // Departs at: 2, 3, 4, 5
                 // Arrives at: 3, 4, 5, 6
                 wr.AddOrUpdateConnection(new Connection(new ConnectionId(0, (uint) i), "B" + i, stops[i], stops[i + 1],
-                    (ulong) (1000 + 240 + i * 60), 60, 0, 0, 0,tripB));
+                    (ulong) (1000 + 240 + i * 60), 60, 0, 0, 0, tripB));
             }
-            
+
             var tripC = new TripId(0, 2);
             for (int i = 5; i < 8; i++)
             {
                 wr.AddOrUpdateConnection(new Connection(new ConnectionId(0, (uint) i), "C" + i, stops[i], stops[i + 1],
-                    (ulong) (1000 + 241 + i * 60), 60, 0, 0, 0,tripC));
+                    (ulong) (1000 + 241 + i * 60), 60, 0, 0, 0, tripC));
             }
+
             wr.Close();
-            
-            
-            
+
+
             var pr = new DefaultProfile(0, 0);
 
             var calc = tdb.SelectProfile(pr)
@@ -575,10 +574,322 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectTimeFrame(0, 2000);
 
             var journeys = calc.CalculateAllJourneys(true);
+
+            Assert.NotNull(journeys);
+            Assert.Equal(4, journeys.Count);
+        }
+
+        [Fact]
+        public void AllJourneys_TripsGoAndReturn4Stops_ExpectsTwoOptions()
+        {
+            var tdb = new TransitDb(0);
+            var wr = tdb.GetWriter();
+            var stops = new List<StopId>();
+            for (var i = 0; i < 5; i++)
+            {
+                stops.Add(wr.AddOrUpdateStop("stop" + i, i, i));
+            }
+
+
+            // Trip A
+            wr.AddOrUpdateConnection(stops[0], stops[1], "a0", 1000, 60, new TripId(0, 0));
+            wr.AddOrUpdateConnection(stops[1], stops[2], "a1", 1060, 60, new TripId(0, 0));
+
+            // Trip B
+            wr.AddOrUpdateConnection(stops[2], stops[1], "b1", 2060, 60, new TripId(0, 1));
+            wr.AddOrUpdateConnection(stops[1], stops[3], "b2", 2120, 60, new TripId(0, 1));
+
+            wr.Close();
+
+            var pr = new DefaultProfile(0, 60);
+
+            var calc = tdb.SelectProfile(pr)
+                .SelectStops(stops[0], stops[3])
+                .SelectTimeFrame(0, 5000);
+
+            var journeys = calc.CalculateAllJourneys();
+
+            // Expected options - they are the same to the transfermetric
+            // stop0 -> stop1, transfer, stop1 -> stop4
+            // stop0 -> stop1 -> stop2, transfer, stop2 -> stop1 -> stop4
+
+            Assert.NotNull(journeys);
+            Assert.Equal(2, journeys.Count);
+        }
+
+        [Fact]
+        public void AllJourneys_TripsGoAndReturn5stops_ExpectsThreeOptions()
+        {
+            var tdb = new TransitDb(0);
+            var wr = tdb.GetWriter();
+            var stops = new List<StopId>();
+            for (var i = 0; i < 5; i++)
+            {
+                stops.Add(wr.AddOrUpdateStop("stop" + i, i, i));
+            }
+
+
+            // Trip A
+            wr.AddOrUpdateConnection(stops[0], stops[1], "a0", 1000, 60, new TripId(0, 0));
+            wr.AddOrUpdateConnection(stops[1], stops[2], "a1", 1060, 60, new TripId(0, 0));
+            wr.AddOrUpdateConnection(stops[2], stops[3], "a2", 1120, 60, new TripId(0, 0));
+
+            // Trip B
+            wr.AddOrUpdateConnection(stops[3], stops[2], "b0", 2000, 60, new TripId(0, 1));
+            wr.AddOrUpdateConnection(stops[2], stops[1], "b1", 2060, 60, new TripId(0, 1));
+            wr.AddOrUpdateConnection(stops[1], stops[4], "b2", 2120, 60, new TripId(0, 1));
+
+            wr.Close();
+
+            var pr = new DefaultProfile(0, 60);
+
+            var calc = tdb.SelectProfile(pr)
+                .SelectStops(stops[0], stops[4])
+                .SelectTimeFrame(0, 5000);
+
+            var journeys = calc.CalculateAllJourneys();
+
+            // Expected options - they are the same to the transfermetric
+            // stop0 -> stop1, transfer, stop1 -> stop4
+            // stop0 -> stop1 -> stop2, transfer, stop2 -> stop1 -> stop4
+
+            Assert.NotNull(journeys);
+            Assert.Equal(3, journeys.Count);
+        }
+
+        [Fact]
+        public void AllJourneys_TripsGoAndReturn6stops_ExpectsThreeOptions()
+        {
+            var tdb = new TransitDb(0);
+            var wr = tdb.GetWriter();
+            var stops = new List<StopId>();
+            for (var i = 0; i < 6; i++)
+            {
+                stops.Add(wr.AddOrUpdateStop("stop" + i, i, i));
+            }
+
+
+            // Trip A
+            wr.AddOrUpdateConnection(stops[0], stops[1], "a0", 1000, 60, new TripId(0, 0));
+            wr.AddOrUpdateConnection(stops[1], stops[2], "a1", 1060, 60, new TripId(0, 0));
+            wr.AddOrUpdateConnection(stops[2], stops[3], "a2", 1120, 60, new TripId(0, 0));
+
+            // Trip B
+            wr.AddOrUpdateConnection(stops[3], stops[2], "b0", 2000, 60, new TripId(0, 1));
+            wr.AddOrUpdateConnection(stops[2], stops[1], "b1", 2060, 60, new TripId(0, 1));
+            wr.AddOrUpdateConnection(stops[1], stops[4], "b2", 2120, 60, new TripId(0, 1));
+            wr.AddOrUpdateConnection(stops[4], stops[5], "b3", 2180, 60, new TripId(0, 1));
+
+            wr.Close();
+
+            var pr = new DefaultProfile(0, 60);
+
+            var calc = tdb.SelectProfile(pr)
+                .SelectStops(stops[0], stops[5])
+                .SelectTimeFrame(0, 5000);
+
+            var journeys = calc.CalculateAllJourneys();
+
+            // Expected options - they are the same to the transfermetric
+            // stop0 -> stop1, transfer, stop1 -> stop4
+            // stop0 -> stop1 -> stop2, transfer, stop2 -> stop1 -> stop4
+
+            Assert.NotNull(journeys);
+            Assert.Equal(3, journeys.Count);
+        }
+
+
+        [Fact]
+        public void AllJourneys_TripsGoAndParallel5stops_ExpectsThreeOptions()
+        {
+            var tdb = new TransitDb(0);
+            var wr = tdb.GetWriter();
+            var stops = new List<StopId>();
+            for (var i = 0; i < 5; i++)
+            {
+                stops.Add(wr.AddOrUpdateStop("stop" + i, i, i));
+            }
+
+
+            // Trip A
+            wr.AddOrUpdateConnection(stops[0], stops[1], "a0", 1000, 60, new TripId(0, 0));
+            wr.AddOrUpdateConnection(stops[1], stops[2], "a1", 1060, 60, new TripId(0, 0));
+            wr.AddOrUpdateConnection(stops[2], stops[3], "a2", 1120, 60, new TripId(0, 0));
+
+            // Trip B
+            wr.AddOrUpdateConnection(stops[1], stops[2], "b0", 2000, 60, new TripId(0, 1));
+            wr.AddOrUpdateConnection(stops[2], stops[3], "b1", 2060, 60, new TripId(0, 1));
+            wr.AddOrUpdateConnection(stops[3], stops[4], "b2", 2120, 60, new TripId(0, 1));
+
+            wr.Close();
+
+            var pr = new DefaultProfile(0, 60);
+
+            var calc = tdb.SelectProfile(pr)
+                .SelectStops(stops[0], stops[4])
+                .SelectTimeFrame(0, 5000);
+
+            var journeys = calc.CalculateAllJourneys();
+
+            Assert.NotNull(journeys);
+            Assert.Equal(3, journeys.Count);
+        }
+
+        [Fact]
+        public void AllJourneys_ConnectionTransferTwoOptions_ShouldReturn2()
+        {
+            var tdb = new TransitDb(0);
+            var wr = tdb.GetWriter();
+
+
+            var stops = new List<StopId>();
+            for (var i = 0; i < 12; i++)
+            {
+                stops.Add(wr.AddOrUpdateStop("stop" + i, i, i));
+            }
+
+            var departure = wr.AddOrUpdateStop("departure", 3.05, 9.05);
+            var arrival = wr.AddOrUpdateStop("arrival", 2.55, 9.05);
+
+            var commonStop = wr.AddOrUpdateStop("commonStop", 4.55, 9.55);
+
+            var commonTrip = new TripId(0, 0);
+            wr.AddOrUpdateConnection(departure, commonStop, "commonConn", 1000, 60, commonTrip);
+
+            // Slow family, but less transfers. IT waits at the common stop for a longer time
+            var slowA = wr.AddOrUpdateStop("slowA", 13.55, 0.95);
+            var slowB = wr.AddOrUpdateStop("slowB", 13.55, 0.05);
+            var slowTrip0 = new TripId(0, 4);
+
+            wr.AddOrUpdateConnection(commonStop, stops[10], "slow0", 2500, 60, slowTrip0);
+            wr.AddOrUpdateConnection(stops[10], slowA, "slow1", 2600, 60, slowTrip0);
+            wr.AddOrUpdateConnection(slowA, slowB, "slow2", 2700, 60, slowTrip0);
+
+
+            var slowTrip1 = new TripId(0, 5);
+
+            wr.AddOrUpdateConnection(slowA, slowB, "slowA0", 2800, 60, slowTrip1);
+            wr.AddOrUpdateConnection(slowB, stops[11], "slowA1", 2900, 60, slowTrip1);
+
+            wr.AddOrUpdateConnection(stops[11], arrival, "slowA2", 3000, 60, slowTrip1);
+
+            wr.Close();
+
+            var pr = new DefaultProfile(0, 60);
+
+            var calc = tdb.SelectProfile(pr)
+                .SelectStops(commonStop, arrival)
+                .SelectTimeFrame(0, 10000);
+
+            var journeys = calc.CalculateAllJourneys();
+            Assert.NotNull(journeys);
+            Assert.Equal(2, journeys.Count);
             
+            calc = tdb.SelectProfile(pr)
+                .SelectStops(departure, arrival)
+                .SelectTimeFrame(0, 10000);
+            journeys = calc.CalculateAllJourneys();
+            Assert.NotNull(journeys);
+            Assert.Equal(2, journeys.Count);
+            
+             calc = tdb.SelectProfile(pr)
+                            .SelectStops(departure, arrival)
+                            .SelectTimeFrame(0, 10000);
+                        journeys = calc.CalculateAllJourneys(true);
+                        Assert.NotNull(journeys);
+                        Assert.Equal(2, journeys.Count);
+        }
+
+        [Fact]
+        public void AllJourneys_SpecialTransferSequence_ShouldReturn4()
+        {
+            var tdb = new TransitDb(0);
+            var wr = tdb.GetWriter();
+
+
+            var stops = new List<StopId>();
+            for (var i = 0; i < 12; i++)
+            {
+                stops.Add(wr.AddOrUpdateStop("stop" + i, i, i));
+            }
+
+            var departure = wr.AddOrUpdateStop("departure", 3.05, 0.05);
+            var arrival = wr.AddOrUpdateStop("arrival", 2.55, 0.05);
+
+            var commonStop = wr.AddOrUpdateStop("commonStop", 4.55, 0.55);
+
+
+            // There are a few possible journeys from 
+            // There is one 'fast' family with an extra vehicle (3), and one slower family with 2 transfers.
+            // Both depart at the same time
+
+            // They both arrive at the same intermediate stop, where they both transfer and continue on a common edge
+
+            // Common part
+            var commonTrip = new TripId(0, 0);
+            wr.AddOrUpdateConnection(departure, commonStop, "commonConn", 1000, 60, commonTrip);
+
+            // Fast family, but with a few extra transfers
+
+            var fastA = wr.AddOrUpdateStop("fastA", 1.55, 0.05);
+            var fastB = wr.AddOrUpdateStop("fastB", 1.55, 0.35);
+
+            // The extra stop
+            var fastC = wr.AddOrUpdateStop("fastC", 1.55, 0.95);
+
+
+            var fastTrip0 = new TripId(0, 1);
+            wr.AddOrUpdateConnection(commonStop, stops[0], "fast0", 1500, 60, fastTrip0);
+            wr.AddOrUpdateConnection(stops[0], fastA, "fast1", 1600, 60, fastTrip0);
+            wr.AddOrUpdateConnection(fastA, fastB, "fast2", 1700, 60, fastTrip0);
+
+
+            var fastTrip1 = new TripId(0, 2);
+            wr.AddOrUpdateConnection(fastA, fastB, "fastA0", 1800, 60, fastTrip1);
+            wr.AddOrUpdateConnection(fastB, stops[1], "fastA1", 1900, 60, fastTrip1);
+            wr.AddOrUpdateConnection(stops[1], fastC, "fastA2", 2000, 60, fastTrip1);
+
+            var fastTrip2 = new TripId(0, 3);
+            wr.AddOrUpdateConnection(fastC, stops[2], "fastB0", 2100, 60, fastTrip2);
+            wr.AddOrUpdateConnection(stops[2], arrival, "fastB1", 2200, 60, fastTrip2);
+
+            // Slow family, but less transfers. IT waits at the common stop for a longer time
+            var slowA = wr.AddOrUpdateStop("slowA", 13.55, 0.95);
+            var slowB = wr.AddOrUpdateStop("slowB", 13.55, 0.05);
+            var slowTrip0 = new TripId(0, 4);
+
+            wr.AddOrUpdateConnection(commonStop, stops[10], "slow0", 2500, 60, slowTrip0);
+            wr.AddOrUpdateConnection(stops[10], slowA, "slow1", 2600, 60, slowTrip0);
+            wr.AddOrUpdateConnection(slowA, slowB, "slow2", 2700, 60, slowTrip0);
+
+
+            var slowTrip1 = new TripId(0, 5);
+
+            wr.AddOrUpdateConnection(slowA, slowB, "slowA0", 2800, 60, slowTrip1);
+            wr.AddOrUpdateConnection(slowB, stops[11], "slowA1", 2900, 60, slowTrip1);
+
+            wr.AddOrUpdateConnection(stops[11], arrival, "slowA2", 3000, 60, slowTrip1);
+
+            wr.Close();
+
+            var pr = new DefaultProfile(0, 60);
+
+            var calc = tdb.SelectProfile(pr)
+                .SelectStops(commonStop, arrival)
+                .SelectTimeFrame(0, 10000);
+
+            var journeys = calc.CalculateAllJourneys();
             Assert.NotNull(journeys);
             Assert.Equal(4, journeys.Count);
             
+            
+            calc = tdb.SelectProfile(pr)
+                .SelectStops(commonStop, arrival)
+                .SelectTimeFrame(0, 10000);
+
+            journeys = calc.CalculateAllJourneys(true);
+            Assert.NotNull(journeys);
+            Assert.Equal(4, journeys.Count);
         }
     }
 }
