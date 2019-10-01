@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
-using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.Tests.Functional.Utils;
 
@@ -38,7 +37,6 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 
 
             Input.ResetFilter();
-            var settings = Input.GetScanSettings();
             start = DateTime.Now;
 
             Input.CalculateIsochroneFrom();
