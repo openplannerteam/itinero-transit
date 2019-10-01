@@ -66,7 +66,7 @@ namespace Itinero.Transit.Processor
         /// 
         /// </summary>
         /// <returns></returns>
-        internal Dictionary<string, string> ParseExtraParams(IEnumerable<string> arguments)
+        internal Dictionary<string, string> ParseExtraParams(List<string> arguments)
         {
             var result = new Dictionary<string, string>();
 
@@ -168,9 +168,9 @@ namespace Itinero.Transit.Processor
                 while (result.ContainsKey(name))
                 {
                     index++;
-                    if (index > expected.Count)
+                    if (index >= expected.Count)
                     {
-                        throw new ArgumentException("Too many arguments are given");
+                        throw new ArgumentException($"Too many arguments are given for the switch {Names[0]}, only expects {expected.Count} but got {arguments.Count()} instead");
                     }
 
                     name = expected[index].argNames[0];
