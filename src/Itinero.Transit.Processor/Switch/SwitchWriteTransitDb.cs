@@ -20,9 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Itinero.Transit.Data;
+using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Processor.Switch
 {
@@ -32,7 +34,7 @@ namespace Itinero.Transit.Processor.Switch
     class SwitchWriteTransitDb : DocumentedSwitch, ITransitDbSink
     {
         private static readonly string[] _names =
-            {"--write-transit-db", "--write-transitdb", "--write-transit", "--wt"};
+            {"--write-transit-db", "--write-transitdb", "--write-transit", "--write", "--wt"};
 
         private static readonly string _about = "Write a transitDB to disk";
 
@@ -59,7 +61,8 @@ namespace Itinero.Transit.Processor.Switch
 
             using (var stream = File.OpenWrite(fileName))
             {
-                tdb.Latest.WriteTo(stream);
+                var bytesWritten = tdb.Latest.WriteTo(stream);
+                Console.WriteLine($"Written {fileName}: {bytesWritten} bytes written, transitDb is valid from {tdb.Latest.ConnectionsDb.EarliestDate.FromUnixTime():s} till {tdb.Latest.ConnectionsDb.LatestDate.FromUnixTime():s} ");
             }
         }
     }

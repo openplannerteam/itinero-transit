@@ -29,10 +29,10 @@ namespace Itinero.Transit.Processor.Switch
                     SwitchesExtensions.obl("locations", "lurl",
                         "The URL where the location can be downloaded"),
                     SwitchesExtensions.opt("window-start", "start",
-                            "The start of the timewindow to load. Specify 'now' to take the current date and time.")
+                            "The start of the timewindow to load. Specify 'now' to take the current date and time. Otherwise provide a timestring of the format 'YYYY-MM-DDThh:mm:ss' (where T is a literal T). Special values: 'now' and 'today'")
                         .SetDefault("now"),
                     SwitchesExtensions.opt("window-duration", "duration",
-                            "The length of the window to load, in seconds. If zero is specified, no connections will be downloaded.")
+                            "The length of the window to load, in seconds. If zero is specified, no connections will be downloaded. Special values: 'xhour', 'xday'")
                         .SetDefault("3600")
                 };
 
@@ -58,9 +58,29 @@ namespace Itinero.Transit.Processor.Switch
             var curl = arguments["connections"];
             var lurl = arguments["locations"];
             var wStart = arguments["window-start"];
-            var time = wStart.Equals("now") ? DateTime.Now : DateTime.Parse(wStart);
+            var time = wStart.Equals("now")
+                ? DateTime.Now
+                : wStart.Equals("today")
+                    ? DateTime.Now.Date
+                    : DateTime.Parse(wStart);
+
             time = time.ToUniversalTime();
-            var duration = int.Parse(arguments["window-duration"]);
+            // In seconds
+            var duration = 0;
+            var durationStr = arguments["window-duration"];
+
+            if (durationStr.EndsWith("day"))
+            {
+                duration = 24 * 60 * 60 * int.Parse(durationStr.Substring(0, durationStr.Length - 3));
+            }
+            else if (durationStr.EndsWith("hour"))
+            {
+                duration = 60 * 60 * int.Parse(durationStr.Substring(0, durationStr.Length - 4));
+            }
+            else
+            {
+                duration = int.Parse(durationStr);
+            }
 
 
             Logger.LogAction =
