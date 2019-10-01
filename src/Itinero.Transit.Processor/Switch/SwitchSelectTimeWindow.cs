@@ -40,7 +40,7 @@ namespace Itinero.Transit.Processor.Switch
         {
         }
 
-        public void Modify(Dictionary<string, string> arguments, TransitDb transitDb)
+        public TransitDb Modify(Dictionary<string, string> arguments, TransitDb transitDb)
         {
             var start = DateTime.ParseExact(arguments["window-start"], "yyyy-MM-dd_HH:mm:ss", null);
             start = start.ToUniversalTime();
@@ -103,6 +103,7 @@ namespace Itinero.Transit.Processor.Switch
 
 
             Console.WriteLine($"There are {copied} connections in the filtered transitDB");
+            return filtered;
         }
     }
 }

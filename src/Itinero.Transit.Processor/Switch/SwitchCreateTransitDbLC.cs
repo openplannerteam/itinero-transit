@@ -26,7 +26,7 @@ namespace Itinero.Transit.Processor.Switch
                 {
                     SwitchesExtensions.obl("connections", "curl",
                         "The URL where connections can be downloaded"),
-                    SwitchesExtensions.obl("locations", "lurl",
+                    SwitchesExtensions.obl("locations", "stops","lurl",
                         "The URL where the location can be downloaded"),
                     SwitchesExtensions.opt("window-start", "start",
                             "The start of the timewindow to load. Specify 'now' to take the current date and time. Otherwise provide a timestring of the format 'YYYY-MM-DDThh:mm:ss' (where T is a literal T). Special values: 'now' and 'today'")
@@ -53,7 +53,7 @@ namespace Itinero.Transit.Processor.Switch
             return tdb;
         }
 
-        public void Modify(Dictionary<string, string> arguments, TransitDb tdb)
+        public TransitDb Modify(Dictionary<string, string> arguments, TransitDb tdb)
         {
             var curl = arguments["connections"];
             var lurl = arguments["locations"];
@@ -88,6 +88,7 @@ namespace Itinero.Transit.Processor.Switch
                     Console.WriteLine($"[{DateTime.Now:O}] [{level}] [{origin}]: {message}");
 
             tdb.UseLinkedConnections(curl, lurl, time, time.AddSeconds(duration));
+            return tdb;
         }
     }
 }

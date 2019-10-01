@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.SymbolStore;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
 

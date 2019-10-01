@@ -35,7 +35,7 @@ namespace Itinero.Transit.Processor
 
                 var generatorOrModifier = 0;
                 var sinks = 0;
-                foreach (var (swtch , _) in switches)
+                foreach (var (swtch, _) in switches)
                 {
                     if (swtch is ITransitDbModifier || swtch is ITransitDbSource)
                     {
@@ -50,14 +50,15 @@ namespace Itinero.Transit.Processor
 
                 if (generatorOrModifier == 0)
                 {
-                    throw new ArgumentException("Not a single switch generates or modifies a transitDB - you'll wont have a lot of output this way...");
+                    throw new ArgumentException(
+                        "Not a single switch generates or modifies a transitDB - you'll wont have a lot of output this way...");
                 }
 
                 if (sinks == 0)
                 {
-                    throw new ArgumentException("Not a single switch does something with the transitDB - perhaps you forgot '--write outputfile' or similar?");
+                    throw new ArgumentException(
+                        "Not a single switch does something with the transitDB - perhaps you forgot '--write outputfile' or similar?");
                 }
-                
             }
             catch (ArgumentException e)
             {
@@ -82,7 +83,7 @@ namespace Itinero.Transit.Processor
             {
                 if (swtch is ITransitDbModifier modif)
                 {
-                    modif.Modify(parameters, tdb);
+                    tdb = modif.Modify(parameters, tdb);
                     continue;
                 }
 

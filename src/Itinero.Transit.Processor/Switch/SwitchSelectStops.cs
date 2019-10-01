@@ -29,7 +29,8 @@ namespace Itinero.Transit.Processor.Switch
                     SwitchesExtensions.obl("bottom", "down",
                         "Specifies the maximal longitude of the output."),
 
-                    SwitchesExtensions.opt("allow-empty", "If flagged, the program will not crash if no stops are retained")
+                    SwitchesExtensions.opt("allow-empty",
+                            "If flagged, the program will not crash if no stops are retained")
                         .SetDefault("false"),
                     SwitchesExtensions.opt("allow-empty-connections",
                             "If flagged, the program will not crash if no connections are retained")
@@ -43,7 +44,7 @@ namespace Itinero.Transit.Processor.Switch
         {
         }
 
-        public void Modify(Dictionary<string, string> arguments, TransitDb transitDb)
+        public TransitDb Modify(Dictionary<string, string> arguments, TransitDb old)
 
         {
             var minLon = float.Parse(arguments["left"]);
@@ -55,9 +56,8 @@ namespace Itinero.Transit.Processor.Switch
             var allowEmpty = bool.Parse(arguments["allow-empty"]);
             var allowEmptyCon = bool.Parse(arguments["allow-empty-connections"]);
 
-            var old = transitDb;
 
-            var filtered = new TransitDb(0);
+            var filtered = new TransitDb(old.DatabaseId);
             var wr = filtered.GetWriter();
 
 
@@ -93,34 +93,36 @@ namespace Itinero.Transit.Processor.Switch
             var stopCount = copied;
             copied = 0;
 
-
-            var index = consDb.First().Value;
-
-            do
+            var first = consDb.First();
+            if (first.HasValue)
             {
-                var con = consDb.Get(index);
-                if (!(stopIdMapping.ContainsKey(con.DepartureStop) && stopIdMapping.ContainsKey(con.ArrivalStop)))
+                var index = first.Value;
+                do
                 {
-                    // One of the stops is outside of the bounding box
-                    continue;
-                }
+                    var con = consDb.Get(index);
+                    if (!(stopIdMapping.ContainsKey(con.DepartureStop) && stopIdMapping.ContainsKey(con.ArrivalStop)))
+                    {
+                        // One of the stops is outside of the bounding box
+                        continue;
+                    }
 
-                var trip = tripsDb.Get(con.TripId); // The old trip
-                var newTripId = wr.AddOrUpdateTrip(trip.GlobalId, trip.Attributes);
+                    var trip = tripsDb.Get(con.TripId); // The old trip
+                    var newTripId = wr.AddOrUpdateTrip(trip.GlobalId, trip.Attributes);
 
-                wr.AddOrUpdateConnection(
-                    stopIdMapping[con.DepartureStop],
-                    stopIdMapping[con.ArrivalStop],
-                    con.GlobalId,
-                    con.DepartureTime.FromUnixTime(),
-                    con.TravelTime,
-                    con.DepartureDelay,
-                    con.ArrivalDelay,
-                    newTripId,
-                    con.Mode
-                );
-                copied++;
-            } while (consDb.HasNext(index, out index));
+                    wr.AddOrUpdateConnection(
+                        stopIdMapping[con.DepartureStop],
+                        stopIdMapping[con.ArrivalStop],
+                        con.GlobalId,
+                        con.DepartureTime.FromUnixTime(),
+                        con.TravelTime,
+                        con.DepartureDelay,
+                        con.ArrivalDelay,
+                        newTripId,
+                        con.Mode
+                    );
+                    copied++;
+                } while (consDb.HasNext(index, out index));
+            }
 
             wr.Close();
 
@@ -132,6 +134,7 @@ namespace Itinero.Transit.Processor.Switch
 
 
             Console.WriteLine($"There are {stopCount} stops and {copied} connections in the bounding box");
+            return filtered;
         }
     }
 }

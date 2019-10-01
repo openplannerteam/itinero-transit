@@ -52,7 +52,7 @@ namespace Itinero.Transit.Processor.Switch
             return tdb;
         }
 
-        public void Modify(Dictionary<string, string> arguments, TransitDb tdb)
+        public TransitDb Modify(Dictionary<string, string> arguments, TransitDb tdb)
         {
             var wStart = arguments["window-start"];
 
@@ -68,7 +68,7 @@ namespace Itinero.Transit.Processor.Switch
 
             tdb.UseOsmRoute(arg, start, end);
 
-
+            return tdb;
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+
 // ReSharper disable InconsistentNaming
 
 namespace Itinero.Transit.Processor
@@ -16,6 +17,12 @@ namespace Itinero.Transit.Processor
         {
             return (new List<string> {argName, argName0}, true, comment, "");
         }
+        
+        public static (List<string> args, bool isObligated, string comment, string defaultValue) obl(string argName,
+            string argName0, string argname1, string comment)
+        {
+            return (new List<string> {argName, argName0, argname1}, true, comment, "");
+        }
 
 
         public static (List<string> args, bool isObligated, string comment, string defaultValue) opt(string argName,
@@ -29,6 +36,7 @@ namespace Itinero.Transit.Processor
         {
             return (new List<string> {argName, argName0}, false, comment, "");
         }
+        
 
         public static (List<string>argName, bool isObligated, string comment, string defaultValue) SetDefault(
             this (List<string> args, bool isObligated, string comment, string def) tuple, string defaultValue)

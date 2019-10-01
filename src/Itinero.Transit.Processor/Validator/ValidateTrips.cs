@@ -49,8 +49,8 @@ namespace Itinero.Transit.Processor.Validator
                     var nextStop = new Stop(stops);
                     var distance = DistanceEstimate.DistanceEstimateInMeter(currStop.Latitude, currStop.Longitude,
                         nextStop.Latitude, nextStop.Longitude);
-                    var speedMS = distance / (c.ArrivalTime - c.DepartureTime);
-                    var speedKmH = speedMS * 6 * 6 / 10;
+                    var speedMs = distance / (c.ArrivalTime - c.DepartureTime);
+                    var speedKmH = speedMs * 6 * 6 / 10;
 
 
                     if (!oldConnection.ArrivalStop.Equals(c.DepartureStop))

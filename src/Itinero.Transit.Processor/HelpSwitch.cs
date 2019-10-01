@@ -29,9 +29,10 @@ namespace Itinero.Transit.Processor
         }
 
 
-        public void Modify(Dictionary<string, string> parameters, TransitDb transitDb)
+        public TransitDb Modify(Dictionary<string, string> parameters, TransitDb transitDb)
         {
             PrintHelp(parameters);
+            return transitDb;
         }
 
         public TransitDb Generate(Dictionary<string, string> parameters)

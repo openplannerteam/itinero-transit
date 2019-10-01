@@ -20,6 +20,6 @@ namespace Itinero.Transit.Processor
         /// <summary>
         /// Modifies the transitdb
         /// </summary>
-        void Modify(Dictionary<string, string> parameters, TransitDb transitDb);
+        TransitDb Modify(Dictionary<string, string> parameters, TransitDb transitDb);
     }
 }

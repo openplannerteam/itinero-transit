@@ -31,7 +31,7 @@ namespace Itinero.Transit.Processor.Switch
     /// </summary>
     class SwitchReadTransitDb : DocumentedSwitch, ITransitDbSource
     {
-        private static readonly string[] _names = {"--read-transit-db", "--read-transit", "--read-tdb", "--rt"};
+        private static readonly string[] _names = {"--read-transit-db", "--read-transit", "--read-tdb", "--rt", "--read"};
 
         private static string _about =
             "Read a transitDB file as input to do all the data processing. A transitDB is a database containing connections between multiple stops";

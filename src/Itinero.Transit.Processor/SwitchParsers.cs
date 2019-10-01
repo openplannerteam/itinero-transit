@@ -41,6 +41,7 @@ namespace Itinero.Transit.Processor
                     new SwitchCalculateAll(),
                     new SwitchAnalyze(),
                     new SwitchCheckAssumptions(),
+                    new SwitchNmbsFilter(),
                     new HelpSwitch()
                 })
             };
@@ -77,6 +78,7 @@ namespace Itinero.Transit.Processor
         public static List<(DocumentedSwitch, Dictionary<string, string>)>
             ParseSwitches(string[] args)
         {
+            CheckNoDuplicateNames();
             var result = new List<(DocumentedSwitch, Dictionary<string, string>)>();
 
             var currentArgs = new List<string>();
@@ -106,6 +108,27 @@ namespace Itinero.Transit.Processor
             }
 
             return result;
+        }
+
+        private static void CheckNoDuplicateNames()
+        {
+            var knownNames = new HashSet<string>();
+            foreach (var (_, swtchs) in Documented)
+            {
+                foreach (var swtch in swtchs)
+                {
+                    foreach (var name in swtch.Names)
+                    {
+                        if (!knownNames.Contains(name))
+                        {
+                            knownNames.Add(name);
+                            continue;
+                        }
+
+                        throw new ArgumentException($"Bug in Processor: Name {name} already exists. If you can read this, something went very wrong.");
+                    }
+                }
+            }
         }
     }
 }
