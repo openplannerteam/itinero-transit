@@ -36,7 +36,13 @@ namespace Itinero.Transit.Processor
                 }),
 
                 ("Misc", new List<DocumentedSwitch>
-                    {new HelpSwitch()})
+
+                {
+                    new SwitchCalculateAll(),
+                    new SwitchAnalyze(),
+                    new SwitchCheckAssumptions(),
+                    new HelpSwitch()
+                })
             };
 
 
@@ -65,7 +71,7 @@ namespace Itinero.Transit.Processor
             }
 
 
-            throw new Exception($"Cannot find switch with name: {name}.");
+            throw new ArgumentException($"Cannot find switch with name: {name}.");
         }
 
         public static List<(DocumentedSwitch, Dictionary<string, string>)>
@@ -93,10 +99,12 @@ namespace Itinero.Transit.Processor
                     currentArgs.Add(arg);
                 }
             }
+
             if (currentSwitch != null)
             {
                 result.Add((currentSwitch, currentSwitch.ParseExtraParams(currentArgs)));
             }
+
             return result;
         }
     }
