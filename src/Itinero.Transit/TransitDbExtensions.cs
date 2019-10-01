@@ -730,7 +730,7 @@ namespace Itinero.Transit
         /// To prune them, use `PruneInAlternatives`
         /// </remarks>
         public List<Journey<T>> CalculateAllJourneys(bool enableFiltering = false)
-        {
+         {
             CheckAll();
             var settings = GetScanSettings();
             if (enableFiltering && settings.DepartureStop.Count == 1)
@@ -815,7 +815,7 @@ namespace Itinero.Transit
             CheckNoOverlap();
         }
 
-        internal void ResetFilter()
+        public void ResetFilter()
         {
             TimedFilter = null;
         }
