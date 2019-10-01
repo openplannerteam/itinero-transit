@@ -46,7 +46,7 @@ namespace Itinero.Transit.Journey
                 return;
             }
 
-            if (j.SpecialConnection && Equals(j.Connection, Journey<T>.JOINED_JOURNEYS))
+            if (j.AlternativePreviousLink != null)
             {
                 j.PreviousLink.Reversed(buildOn, addTo);
                 j.AlternativePreviousLink.Reversed(buildOn, addTo);
@@ -140,7 +140,22 @@ namespace Itinero.Transit.Journey
             return allElements;
         }
 
+        /// <summary>
+        /// Counts how many journeys this journey-family represents
+        /// </summary>
+        /// <param name="j"></param>
+        /// <returns></returns>
+        [Pure]
+        public static uint CountLeaves<T>(this Journey<T> j) where T : IJourneyMetric<T>
+        {
+            if (j.PreviousLink == null)
+            {
+                return 1;
+            }
 
+            return (j.AlternativePreviousLink?.CountLeaves() ?? 0) + j.PreviousLink.CountLeaves();
+        }
+        
         [Pure]
         public static Journey<T> SetTag<T>(this Journey<T> j, TripId tag) where T : IJourneyMetric<T>
         {

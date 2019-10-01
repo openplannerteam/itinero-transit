@@ -199,28 +199,29 @@ namespace Itinero.Transit.Journey
         }
 
 
+        /// <summary>
+        /// Creates a copy of 'optionA', with one difference: the AlternativeLink is set
+        /// </summary>
+        /// <param name="optionA"></param>
+        /// <param name="optionB"></param>
+        /// <exception cref="ArgumentException"></exception>
         public Journey(Journey<T> optionA, Journey<T> optionB)
         {
-            if (optionA == null)
-            {
-                throw new ArgumentNullException("optionA");
-            }
-
-            if (optionB == null)
-            {
-                throw new ArgumentNullException("optionB");
-            }
-
-            AlternativePreviousLink = optionB;
             // Option A is seen as the 'true' predecessor'
+            PreviousLink = optionA ?? throw new ArgumentNullException(nameof(optionA));
+            AlternativePreviousLink = optionB?.PreviousLink ?? throw new ArgumentNullException(nameof(optionB));
+            if (!Equals(optionA.Connection, optionB.Connection))
+            {
+                throw new ArgumentException("To merge journeys, the connections should be the same");
+            }
+            
             Root = optionA.Root;
-            PreviousLink = optionA;
-            Connection = JOINED_JOURNEYS;
-            SpecialConnection = true;
+            Connection = optionA.Connection;
+            SpecialConnection = optionA.SpecialConnection;
             Location = optionA.Location;
             Time = optionA.Time;
             Metric = optionA.Metric;
-            TripId = optionA.Root.TripId;
+            TripId = optionA.TripId;
             _hashCode = optionA._hashCode + optionB._hashCode;
         }
 
@@ -395,6 +396,45 @@ namespace Itinero.Transit.Journey
             return ToString(truncateAt, withProfile.StopsReader);
         }
 
+        public string Summary(WithProfile<T> stops)
+        {
+            return Summary(stops.StopsReader);
+        }
+
+        public string Summary(IStopsReader stops)
+        {
+            stops.MoveTo(Root.Location);
+            if (!stops.Attributes.TryGetValue("name", out var depname))
+            {
+                depname = stops.GlobalId;
+            }
+            
+            stops.MoveTo(Location);
+            if (!stops.Attributes.TryGetValue("name", out var arrname))
+            {
+                arrname = stops.GlobalId;
+            }
+
+            string via = "";
+            var j = this;
+            while (j.PreviousLink != null)
+            {
+                j = j.PreviousLink;
+                if (j.SpecialConnection)
+                {
+                    stops.MoveTo(j.Location);
+                    if (!stops.Attributes.TryGetValue("name", out var nm))
+                    {
+                        nm = stops.GlobalId;
+                    }
+
+                    via += nm+", ";
+                }
+            }
+            
+            return $"Journey {depname} {Root.Time.FromUnixTime():s} -> {arrname} {Time.FromUnixTime():s} (via {via})";
+        }
+
         [Pure]
         public string ToString(uint truncateAt, IStopsReader stops = null,
             IDatabaseReader<ConnectionId, Connection> connection = null)
@@ -473,9 +513,18 @@ namespace Itinero.Transit.Journey
                 }
             }
 
+            string tm;
+            if (Time < 100000)
+            {
+                tm = "Unixtime " + Time;
+            }
+            else
+            {
+                tm = $"{Time.FromUnixTime():s}";
+            }
 
             return
-                $"Connection {Connection} to {location}, arriving at {Time.FromUnixTime():s}; operator is {dbOperator}{md}";
+                $"Connection {Connection} to {location}, arriving at {tm}; operator is {dbOperator}{md}";
         }
 
         private string SpecialPartToString(string location)
