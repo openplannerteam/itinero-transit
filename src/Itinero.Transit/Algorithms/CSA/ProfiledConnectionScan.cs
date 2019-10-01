@@ -238,14 +238,14 @@ namespace Itinero.Transit.Algorithms.CSA
             return sorted;
         }
 
-
+        
         /// <summary>
         /// Looks to this single connection, the actual PCS step
         /// </summary>
         /// <param name="c"></param>
         private void IntegrateConnection(Connection c)
         {
-           
+
             if (c.ArrivalTime > _lastArrival)
             {
                 return;
@@ -300,6 +300,7 @@ namespace Itinero.Transit.Algorithms.CSA
             // And ofc, we have a pretty good way out from the departure stop as well
             if (!_stationJourneys.ContainsKey(c.DepartureStop))
             {
+                // This should always be a different pareto frontier as from the trip-journeys, as the trip journeys get extended
                 _stationJourneys[c.DepartureStop] = new ProfiledParetoFrontier<T>(_comparator, _journeyFilter);
             }
 
@@ -472,11 +473,10 @@ namespace Itinero.Transit.Algorithms.CSA
         ///
         /// Note that every journey should have 'Location' to be equal 'cDepartureLocation'
         /// </summary>
-        private void UpdateFootpaths(IEnumerable<Journey<T>> journeys, StopId cDepartureStop)
+        private void UpdateFootpaths(List<Journey<T>> journeys, StopId cDepartureStop)
         {
             if (_walkPolicy == null || _walkPolicy.Range() <= 0f)
             {
-                foreach (var _ in journeys.ToList()); // Make sure to consume the enumerator
                 return;
             }
 

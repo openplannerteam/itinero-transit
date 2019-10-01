@@ -104,10 +104,18 @@ namespace Itinero.Transit.Algorithms.CSA
                                 {
                                     return false;
                                 }
+
                                 // Both journeys are not identical, but parts of a family of closely related solutions
                                 // We merge the journeys into one object to optimize
+                                if (guard.Connection.Equals(considered.Connection))
+                                {
+                                    Frontier[i] = new Journey<T>(guard, considered);
+                                }
+                                else
+                                {
+                                    Frontier.Add(considered);
+                                }
 
-                                Frontier[i] = new Journey<T>(guard, considered);
                                 return true;
                             }
                             else
@@ -223,7 +231,8 @@ namespace Itinero.Transit.Algorithms.CSA
                             {
                                 return true;
                             }
-                        case int.MaxValue: 
+
+                        case int.MaxValue:
                             // No comparison is possible
                             continue;
                         default:
@@ -293,7 +302,7 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 var teleportedMetric =
                     metricGuess.LeastTheoreticalConnection(Frontier[i], out var teleportedDepartureTime);
-                
+
                 foreach (var testFrontier in stopsToReach)
                 {
                     if (testFrontier.IsOnFrontier(teleportedDepartureTime, Frontier[i].Root.Time, teleportedMetric))
@@ -320,16 +329,19 @@ namespace Itinero.Transit.Algorithms.CSA
         /// IMPORTANT: Make sure to consume the iterator! Otherwise the 'yield returns' won't execute everything
         /// 
         /// </summary>
-        public IEnumerable<Journey<T>> AddAllToFrontier(IEnumerable<Journey<T>> journeys)
+        public List<Journey<T>> AddAllToFrontier(IEnumerable<Journey<T>> journeys)
         {
+            var l = new List<Journey<T>>();
             foreach (var journey in journeys)
             {
                 var wasAdded = AddToFrontier(journey);
                 if (wasAdded)
                 {
-                    yield return journey;
+                    l.Add(journey);
                 }
             }
+
+            return l;
         }
 
 

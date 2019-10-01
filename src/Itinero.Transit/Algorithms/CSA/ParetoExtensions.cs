@@ -1,4 +1,3 @@
-using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey;
@@ -101,8 +100,7 @@ namespace Itinero.Transit.Algorithms.CSA
             // AddAllToFrontier uses 'yield return'.
             // Consuming the enumerator with 'toList' makes sure every yield is executed and thus that every journey is added
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            biggest.AddAllToFrontier(smallest.Frontier).ToList();
-
+            biggest.AddAllToFrontier(smallest.Frontier);
             return biggest;
         }
         
