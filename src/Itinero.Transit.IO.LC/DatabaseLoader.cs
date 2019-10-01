@@ -116,21 +116,7 @@ namespace Itinero.Transit.IO.LC
         /// </summary>
         private void AddTimeTable(TimeTable tt, LocationProvider locations)
         {
-            tt.Validate(locations, (connection, uri) =>
-                {
-                    _onError($"A connection uses an unknown location {uri}\nThe connection is {connection}");
-                    return false;
-                },
-                connection =>
-                {
-                    _onError($"A connection is mentioned multiple times: {connection.Uri}");
-                    return true;
-                },
-                (connection, errorMsg) =>
-                {
-                    _onError(errorMsg);
-                    return false;
-                }
+            tt.Validate(locations
             );
             foreach (var connection in tt.Connections())
             {
