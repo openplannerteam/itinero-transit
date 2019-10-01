@@ -51,32 +51,5 @@ namespace Itinero.Transit.Tests.Functional
             );
         }
 
-        public static LinkedConnectionDataset WestVlaanderen()
-        {
-            return CreateDeLijnProfile("West-Vlaanderen");
-        }
-
-
-        public static LinkedConnectionDataset OostVlaanderen()
-        {
-            return CreateDeLijnProfile("Oost-Vlaanderen");
-        }
-
-
-        public static LinkedConnectionDataset Limburg()
-        {
-            return CreateDeLijnProfile("Limburg");
-        }
-
-
-        public static LinkedConnectionDataset VlaamsBrabant()
-        {
-            return CreateDeLijnProfile("Vlaams-Brabant");
-        }
-
-        private static LinkedConnectionDataset Antwerpen()
-        {
-            return CreateDeLijnProfile("Antwerpen");
-        }
     }
 }

@@ -5,6 +5,7 @@ using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Metric;
+using Itinero.Transit.Logging;
 
 // ReSharper disable UnusedMember.Global
 namespace Itinero.Transit.Tests.Functional.Utils
@@ -131,7 +132,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
             {
                 if (!bs.Contains(a))
                 {
-                    Logging.Log.Error($"Missing journey: {a.ToString(100, reader)}");
+                    Log.Error($"Missing journey: {a.ToString(100, reader)}");
                     oneMissing = true;
                 }
             }
@@ -141,7 +142,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
             {
                 if (!js.Contains(b))
                 {
-                    Logging.Log.Error($"Missing journey {bi}: {b.ToString(100, reader)}");
+                    Log.Error($"Missing journey {bi}: {b.ToString(100, reader)}");
                     oneMissing = true;
                 }
 

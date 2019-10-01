@@ -1,8 +1,8 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Itinero.Transit.Data;
+using Itinero.Transit.IO.LC;
 using Itinero.Transit.IO.LC.Data;
 using Itinero.Transit.IO.LC.Utils;
 using JsonLD.Core;
@@ -22,14 +22,28 @@ namespace Itinero.Transit.Tests.IO.LC
             var expectedCount = JObject.Parse(testData)["@graph"].Count();
             Assert.Equal(2628, expectedCount);
 
-            var allLocations = new LocationProvider(new Uri("http://example.com"));
+            var allLocations = new LocationFragment(new Uri("http://example.com"));
             allLocations.Download(new JsonLdProcessor(downloader, new Uri("https://graph.irail.be/sncb/")));
             var list = allLocations.Locations;
             Assert.Equal(expectedCount, list.Count);
 
+            var transitDb = new TransitDb(0);
+            var wr = transitDb.GetWriter();
+            wr.AddAllLocations(allLocations);
+            wr.Close();
 
-            var tdb = new TransitDb(0);
-            var writer = tdb.GetWriter();
+            var stops = transitDb.Latest.StopsDb.GetReader();
+            stops.Reset();
+            var i = 0;
+            while (stops.MoveNext())
+            {
+                i++;
+            }
+
+            Assert.Equal(expectedCount, i);
+
+
+
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Itinero.Transit.Data;
@@ -109,7 +110,7 @@ namespace Itinero.Transit.Tests.Core.Journey
 
         public bool MoveNext()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public bool MoveTo(StopId stop)
@@ -120,17 +121,17 @@ namespace Itinero.Transit.Tests.Core.Journey
 
         public bool MoveTo(string globalId)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public void Reset()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public IEnumerable<Stop> StopsAround(Stop stop, uint range)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

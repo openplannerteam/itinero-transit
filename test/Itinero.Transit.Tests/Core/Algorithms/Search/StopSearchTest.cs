@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
-using Itinero.Transit.Data;
-using Xunit;
 using Itinero.Transit.Algorithms.Search;
+using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
+using Xunit;
 
 namespace Itinero.Transit.Tests.Core.Algorithms.Search
 {
