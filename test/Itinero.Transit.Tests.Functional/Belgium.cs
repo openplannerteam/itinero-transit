@@ -43,19 +43,6 @@ namespace Itinero.Transit.Tests.Functional
         }
 
 
-        public static LinkedConnectionDataset DeLijn()
-        {
-            return new LinkedConnectionDataset(new List<LinkedConnectionDataset>
-            {
-                WestVlaanderen(),
-                OostVlaanderen(),
-                VlaamsBrabant(),
-                Limburg(),
-                Antwerpen()
-            });
-        }
-
-
         private static LinkedConnectionDataset CreateDeLijnProfile(string province)
         {
             return new LinkedConnectionDataset(

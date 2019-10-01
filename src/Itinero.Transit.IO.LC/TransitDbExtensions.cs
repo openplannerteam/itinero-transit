@@ -39,6 +39,7 @@ namespace Itinero.Transit.IO.LC
         /// <summary>
         /// Adds a 'Linked Connection' dataset to the transitDB. The transitdb will automatically update as is specified by the syncPolicies
         /// </summary>
+        // ReSharper disable once UnusedTupleComponentInReturnValue
         public static (Synchronizer, LinkedConnectionDataset) UseLinkedConnections(this TransitDb tdb,
             string connectionsUri,
             string locationsUri,

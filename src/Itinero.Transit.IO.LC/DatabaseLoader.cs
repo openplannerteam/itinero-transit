@@ -4,6 +4,7 @@ using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data.Core;
 using Itinero.Transit.IO.LC.Data;
 using Itinero.Transit.IO.LC.Utils;
+using Itinero.Transit.Logging;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 using Connection = Itinero.Transit.IO.LC.Data.Connection;
 
@@ -14,71 +15,62 @@ namespace Itinero.Transit.IO.LC
     /// </summary>
     internal class DatabaseLoader
     {
-        private readonly LoggingOptions _locationsLogger, _connectionsLogger;
-        private readonly Action<string> _onError;
-
         private readonly TransitDb.TransitDbWriter _writer;
 
         /// <inheritdoc />
-        public DatabaseLoader(TransitDb.TransitDbWriter writer, LoggingOptions locationsLogger,
-            LoggingOptions connectionsLogger, Action<string> onError)
+        public DatabaseLoader(TransitDb.TransitDbWriter writer)
         {
             _writer = writer;
-
-            _locationsLogger = locationsLogger;
-            _connectionsLogger = connectionsLogger;
-            _onError = onError;
-            if (onError == null)
-            {
-                throw new ArgumentNullException(nameof(onError));
-            }
         }
 
 
         public void AddAllLocations(LinkedConnectionDataset linkedConnectionDataset)
         {
-            var count = 0;
-            var batchCount = 1;
-            foreach (var locationsFragment in linkedConnectionDataset.LocationProvider)
-            {
-                batchCount++;
-                foreach (var location in locationsFragment.Locations)
-                {
-                    AddLocation(location);
-                    count++;
-                    _locationsLogger?.Ping(count, locationsFragment.Locations.Count, batchCount,
-                        linkedConnectionDataset.LocationProvider.Count);
-                }
-
-                _locationsLogger?.Ping(count, locationsFragment.Locations.Count, batchCount,
-                    linkedConnectionDataset.LocationProvider.Count);
-            }
+            AddAllLocations(linkedConnectionDataset.LocationProvider);
         }
 
-        public (int loaded, int reused) AddAllConnections(LinkedConnectionDataset p, DateTime startDate, DateTime endDate)
+        internal void AddAllLocations(LocationProvider locationsFragment)
+        {
+            var count = 0;
+            foreach (var location in locationsFragment.Locations)
+            {
+                AddLocation(location);
+                count++;
+
+
+                if (count % 100 == 0)
+                {
+                    Log.Information(
+                        $"Importing locations: Importing location {count}/{locationsFragment.Locations.Count}");
+                }
+            }
+
+            Log.Information(
+                $"Importing locations: All {locationsFragment.Locations.Count} locations imported");
+        }
+
+        public (int loaded, int reused) AddAllConnections(LinkedConnectionDataset p, DateTime startDate,
+            DateTime endDate)
         {
             if (startDate.Kind != DateTimeKind.Utc || endDate.Kind != DateTimeKind.Utc)
             {
                 throw new ArgumentException("Please provide all dates in UTC");
             }
-            
+
             var loaded = 0;
             var reused = 0;
-            for (var i = 0; i < p.ConnectionsProvider.Count; i++)
-            {
-                var cons = p.ConnectionsProvider[i];
-                var loc = p.LocationProvider[i];
-                var (l, r) = AddTimeTableWindow(cons, loc, startDate, endDate, i, p.ConnectionsProvider.Count);
-                loaded += l;
-                reused += r;
-            }
+            var cons = p.ConnectionsProvider;
+            var loc = p.LocationProvider;
+            var (l, r) = AddTimeTableWindow(cons, loc, startDate, endDate);
+            loaded += l;
+            reused += r;
 
             return (loaded, reused);
         }
 
 
         private (int loaded, int ofWhichReused) AddTimeTableWindow(ConnectionProvider cons, LocationProvider locations,
-            DateTime startDate, DateTime endDate, int batchNr, int totalBatches)
+            DateTime startDate, DateTime endDate)
         {
             var currentTimeTableUri = cons.TimeTableIdFor(startDate);
 
@@ -94,34 +86,36 @@ namespace Itinero.Transit.IO.LC
 
                 if (wasChanged)
                 {
-                    AddTimeTable(timeTable, locations);
+                    var connectionCount = AddTimeTable(timeTable, locations);
+                    Log.Information(
+                        $"Imported timetable #{count} with {connectionCount} connections)");
                 }
                 else
                 {
                     reused++;
                 }
 
-                var estimatedCount = (float) (timeTable.EndTime().Ticks - startDate.Ticks) /
-                                     (endDate.Ticks - startDate.Ticks);
-                _connectionsLogger?.Ping(count, (int) (count / estimatedCount), batchNr, totalBatches);
-
                 currentTimeTableUri = timeTable.NextTable();
             } while (timeTable.EndTime() < endDate);
 
+            Log.Information($"Imported {count} timetable, skipped {reused} timetables (no changes)");
             return (count, reused);
         }
 
         /// <summary>
         /// Adds the entire time table.
         /// </summary>
-        private void AddTimeTable(TimeTable tt, LocationProvider locations)
+        private int AddTimeTable(TimeTable tt, LocationProvider locations)
         {
-            tt.Validate(locations
-            );
+            var count = 0;
+            tt.Validate(locations);
             foreach (var connection in tt.Connections())
             {
                 AddConnection(connection, locations);
+                count++;
             }
+
+            return count;
         }
 
 
@@ -179,7 +173,7 @@ namespace Itinero.Transit.IO.LC
 
             var connectionUri = connection.Uri.ToString();
 
-            
+
             ushort mode = 0;
             if (!connection.GetOff)
             {

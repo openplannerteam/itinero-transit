@@ -24,6 +24,9 @@
     <EmbeddedResource Remove="Data\**" />
     <None Remove="test-data\v1.transitdb" />
     <EmbeddedResource Include="test-data\v1.tileidx" />
+    <None Update="test-data\stops.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Remove="Data\**" />

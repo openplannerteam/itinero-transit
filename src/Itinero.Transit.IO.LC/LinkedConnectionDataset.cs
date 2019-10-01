@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.IO.LC.Data;
 using Itinero.Transit.IO.LC.Utils;
@@ -15,54 +14,17 @@ namespace Itinero.Transit.IO.LC
     /// </summary>
     public class LinkedConnectionDataset
     {
-        public readonly List<ConnectionProvider> ConnectionsProvider;
-        public readonly List<LocationProvider> LocationProvider;
+        public readonly ConnectionProvider ConnectionsProvider;
+        public readonly LocationProvider LocationProvider;
 
 
         private readonly Action<string> _onError;
-        private readonly LoggingOptions _onLocationLoaded;
-        private readonly LoggingOptions _onTimeTableLoaded;
 
 
         // Small helper constructor which handles the default values
-        private LinkedConnectionDataset(LoggingOptions onLocationLoaded = null,
-            LoggingOptions onTimeTableLoaded = null,
-            Action<string> onError = null)
+        private LinkedConnectionDataset(Action<string> onError = null)
         {
-            // Note the differences between _onTimeTableLoaded (the field), onTimeTableLoaded (the parameter) and onTimeTableLoaded (the function)
-            _onLocationLoaded = onLocationLoaded ??
-                                new LoggingOptions(OnLocationLoaded, 500);
-            _onTimeTableLoaded = onTimeTableLoaded ??
-                                  new LoggingOptions(OnTimeTableLoaded, 250);
             _onError = onError ?? Log.Verbose;
-        }
-
-
-        public LinkedConnectionDataset(ConnectionProvider[] connectionsProvider,
-            LocationProvider[] locationProvider,
-            LoggingOptions onLocationLoaded = null,
-            LoggingOptions onTimeTableLoaded = null,
-            Action<string> onError = null
-        ) : this(onLocationLoaded, onTimeTableLoaded, onError)
-        {
-            ConnectionsProvider = new List<ConnectionProvider>(connectionsProvider);
-            LocationProvider = new List<LocationProvider>(locationProvider);
-        }
-
-        public LinkedConnectionDataset(List<LinkedConnectionDataset> sources,
-            LoggingOptions onLocationLoaded = null,
-            LoggingOptions onTimeTableLoaded = null,
-            Action<string> onError = null
-        ) : this(onLocationLoaded, onTimeTableLoaded, onError)
-        {
-            ConnectionsProvider = new List<ConnectionProvider>();
-            LocationProvider = new List<LocationProvider>();
-
-            foreach (var p in sources)
-            {
-                ConnectionsProvider.AddRange(p.ConnectionsProvider);
-                LocationProvider.AddRange(p.LocationProvider);
-            }
         }
 
 
@@ -73,23 +35,21 @@ namespace Itinero.Transit.IO.LC
         public LinkedConnectionDataset(
             Uri connectionsLink,
             Uri locationsUri,
-            LoggingOptions onLocationLoaded = null,
             LoggingOptions onTimeTableLoaded = null,
             Action<string> onError = null
-        ) : this(onLocationLoaded, onTimeTableLoaded, onError)
+        ) : this(onError)
         {
-
             var conProv = new ConnectionProvider
             (connectionsLink,
                 connectionsLink + "{?departureTime}");
-            ConnectionsProvider = new List<ConnectionProvider> {conProv};
+            ConnectionsProvider = conProv;
 
             // Create the locations provider
 
             var proc = new JsonLdProcessor(new Downloader(), locationsUri);
             var loc = new LocationProvider(locationsUri);
             loc.Download(proc);
-            LocationProvider = new List<LocationProvider> {loc};
+            LocationProvider = loc;
         }
 
 
@@ -100,7 +60,7 @@ namespace Itinero.Transit.IO.LC
         public (int loaded, int reused) AddAllConnectionsTo(TransitDb.TransitDbWriter writer,
             DateTime start, DateTime end)
         {
-            var dbs = new DatabaseLoader(writer, _onLocationLoaded, _onTimeTableLoaded, _onError);
+            var dbs = new DatabaseLoader(writer);
             return dbs.AddAllConnections(this, start, end);
         }
 
@@ -109,25 +69,11 @@ namespace Itinero.Transit.IO.LC
         /// </summary>
         public void AddAllLocationsTo(TransitDb.TransitDbWriter writer)
         {
-            var dbs = new DatabaseLoader(writer, _onLocationLoaded, _onTimeTableLoaded, _onError);
+            var dbs = new DatabaseLoader(writer);
             dbs.AddAllLocations(this);
         }
 
 
-        private static void OnLocationLoaded((int, int, int, int) status)
-        {
-            var (currentCount, batchTarget, batchCount, nrOfBatches) = status;
-            Log.Information(
-                $"Importing locations: Running batch {batchCount + 1}/{nrOfBatches}: Importing location {currentCount}/{batchTarget}");
-        }
-
-
-        private static void OnTimeTableLoaded((int, int, int, int) status)
-        {
-            var (currentCount, batchTarget, batchCount, nrOfBatches) = status;
-            Log.Information(
-                $"Importing connections: Running batch {batchCount + 1}/{nrOfBatches}: Importing timetable {currentCount} (out of an estimated {batchTarget})");
-        }
 
         public void UpdateTimeFrame(TransitDb.TransitDbWriter w, DateTime start, DateTime end
         )

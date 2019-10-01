@@ -68,18 +68,6 @@ namespace Itinero.Transit.IO.LC.Data
             return $"{GetCoordinateFor(uri).Name} ({uri.Segments.Last()})";
         }
 
-        public override string ToString()
-        {
-//            var overview = "";
-//            foreach (var location in Locations)
-//            {
-//                overview += "  " + location + "\n";
-//            }
-//
-//            return $"Location dump with {Locations.Count} locations:\n{overview}";
-            return string.Empty;
-        }
-
         public Location GetCoordinateFor(Uri locationId)
         {
             if (_locationMapping.TryGetValue(locationId.ToString(), out var value))
