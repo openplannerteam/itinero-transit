@@ -11,7 +11,7 @@ namespace Itinero.Transit.IO.LC.Data
     /// This class is meant to handle providers which offer their station data as a single big dump (such as the SNCB)
     /// </summary>
     [Serializable]
-    public class LocationProvider : ILinkedObject
+    public class LocationFragment : ILinkedObject
     {
         public Uri Uri { get; }
         public readonly List<Location> Locations = new List<Location>();
@@ -23,7 +23,7 @@ namespace Itinero.Transit.IO.LC.Data
 
         private float _minLat, _maxLat, _minLon, _maxLon;
 
-        public LocationProvider(Uri uri)
+        public LocationFragment(Uri uri)
         {
             Uri = uri;
         }

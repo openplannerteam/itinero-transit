@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using JsonLD.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-// ReSharper disable MemberCanBePrivate.Global
 
 namespace Itinero.Transit.IO.LC.Data
 {
@@ -89,7 +87,7 @@ namespace Itinero.Transit.IO.LC.Data
         }
 
 
-        public string ToString(LocationProvider locationDecoder)
+        private string ToString(LocationFragment locationDecoder)
         {
             return
                 $"Linked Connection {locationDecoder?.GetNameOf(_departureStop) ?? _departureStop.ToString()} {_departureTime:HH:mm}" +
@@ -174,16 +172,6 @@ namespace Itinero.Transit.IO.LC.Data
         }
 
 
-        public Uri Operator()
-        {
-            return new Uri(GtfsTrip.AbsoluteUri);
-        }
-
-        public string Mode()
-        {
-            return GtfsTrip.AbsoluteUri;
-        }
-
         public Uri Trip()
         {
             return GtfsTrip;
@@ -214,37 +202,6 @@ namespace Itinero.Transit.IO.LC.Data
             return _departureTime;
         }
 
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj is Connection lc)
-            {
-                return Equals(lc);
-            }
 
-            return false;
-        }
-
-        private bool Equals(Connection other)
-        {
-            return Equals(_departureStop, other._departureStop)
-                   && Equals(_arrivalStop, other._arrivalStop)
-                   && DepartureTime().Equals(other.DepartureTime())
-                   && ArrivalTime().Equals(other.ArrivalTime())
-                ;
-        }
-
-        [SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode")]
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = (_departureStop != null ? _departureStop.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (_arrivalStop != null ? _arrivalStop.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ DepartureTime().GetHashCode();
-                hashCode = (hashCode * 397) ^ ArrivalTime().GetHashCode();
-                return hashCode;
-            }
-        }
     }
 }

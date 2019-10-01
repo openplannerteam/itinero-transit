@@ -15,16 +15,12 @@ namespace Itinero.Transit.IO.LC
     public class LinkedConnectionDataset
     {
         public readonly ConnectionProvider ConnectionsProvider;
-        public readonly LocationProvider LocationProvider;
-
-
-        private readonly Action<string> _onError;
+        public readonly LocationFragment LocationProvider;
 
 
         // Small helper constructor which handles the default values
-        private LinkedConnectionDataset(Action<string> onError = null)
+        private LinkedConnectionDataset()
         {
-            _onError = onError ?? Log.Verbose;
         }
 
 
@@ -35,9 +31,8 @@ namespace Itinero.Transit.IO.LC
         public LinkedConnectionDataset(
             Uri connectionsLink,
             Uri locationsUri,
-            LoggingOptions onTimeTableLoaded = null,
             Action<string> onError = null
-        ) : this(onError)
+        ) : this()
         {
             var conProv = new ConnectionProvider
             (connectionsLink,
@@ -47,7 +42,7 @@ namespace Itinero.Transit.IO.LC
             // Create the locations provider
 
             var proc = new JsonLdProcessor(new Downloader(), locationsUri);
-            var loc = new LocationProvider(locationsUri);
+            var loc = new LocationFragment(locationsUri);
             loc.Download(proc);
             LocationProvider = loc;
         }
@@ -60,8 +55,7 @@ namespace Itinero.Transit.IO.LC
         public (int loaded, int reused) AddAllConnectionsTo(TransitDb.TransitDbWriter writer,
             DateTime start, DateTime end)
         {
-            var dbs = new DatabaseLoader(writer);
-            return dbs.AddAllConnections(this, start, end);
+            return writer.AddAllConnections(this, start, end);
         }
 
         /// <summary>
@@ -69,8 +63,7 @@ namespace Itinero.Transit.IO.LC
         /// </summary>
         public void AddAllLocationsTo(TransitDb.TransitDbWriter writer)
         {
-            var dbs = new DatabaseLoader(writer);
-            dbs.AddAllLocations(this);
+            writer.AddAllLocations(this);
         }
 
 

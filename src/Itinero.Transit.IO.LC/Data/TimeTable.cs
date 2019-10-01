@@ -58,7 +58,7 @@ namespace Itinero.Transit.IO.LC.Data
                 }
                 catch (ArgumentException e)
                 {
-                    Log.Information($"Connection ignored due to exceptions {e}");
+                    Log.Warning($"Connection could not be parsed: {e}");
                 }
             }
         }
@@ -82,12 +82,12 @@ namespace Itinero.Transit.IO.LC.Data
             return ToString(null);
         }
 
-        public string ToString(LocationProvider locationDecoder)
+        public string ToString(LocationFragment locationDecoder)
         {
             return ToString(locationDecoder, null);
         }
 
-        public string ToString(LocationProvider locationDecoder, List<Uri> whitelist)
+        public string ToString(LocationFragment locationDecoder, List<Uri> whitelist)
         {
             var omitted = 0;
             var cons = "  ";

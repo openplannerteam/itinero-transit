@@ -1,8 +1,6 @@
 using System;
 using Itinero.Transit.IO.LC.Utils;
-using Itinero.Transit.Logging;
 using JsonLD.Core;
-using Newtonsoft.Json.Linq;
 
 namespace Itinero.Transit.IO.LC.Data
 {
@@ -20,33 +18,12 @@ namespace Itinero.Transit.IO.LC.Data
         private readonly Downloader _loader = new Downloader();
 
 
-        /// <summary>
-        /// Creates a new Connections-provider, based on a 'hydra-search' field.
-        /// The 'hydra-search' should already be expanded JSON-LD
-        /// </summary>
-        public ConnectionProvider(JToken hydraSearch)
-        {
-            _searchTemplate = hydraSearch.GetLDValue("http://www.w3.org/ns/hydra/core#template");
-
-            Log.Verbose($"Search template is {_searchTemplate}");
-            // TODO Softcode departure time argument
-            var baseString = _searchTemplate.Replace("{?departureTime}", "");
-            Log.Verbose($"Base string is {baseString}");
-            var baseUri = new Uri(baseString);
-            _processor = new JsonLdProcessor(_loader, baseUri);
-        }
-
         public ConnectionProvider(Uri baseUri, string searchUri)
         {
             _searchTemplate = searchUri;
             _processor = new JsonLdProcessor(_loader, baseUri);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         public (TimeTable, bool hasChanged) GetTimeTable(Uri id)
         {
             var tt = new TimeTable(id);

@@ -7,7 +7,7 @@ namespace Itinero.Transit.IO.LC.Utils
 {
     internal static class TimeTableExtensions
     {
-        internal static void Validate(this TimeTable tt, LocationProvider locations)
+        internal static void Validate(this TimeTable tt, LocationFragment locations)
         {
             var validator = new Validator(tt, locations);
             validator.Validate();
@@ -26,9 +26,9 @@ namespace Itinero.Transit.IO.LC.Utils
     internal class Validator
     {
         private readonly TimeTable _connections;
-        private readonly LocationProvider _locations;
+        private readonly LocationFragment _locations;
 
-        public Validator(TimeTable connections, LocationProvider locations)
+        public Validator(TimeTable connections, LocationFragment locations)
         {
             _connections = connections;
             _locations = locations;

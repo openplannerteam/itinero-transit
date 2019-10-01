@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data.Core;
@@ -8,48 +9,31 @@ using Itinero.Transit.Logging;
 using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 using Connection = Itinero.Transit.IO.LC.Data.Connection;
 
+[assembly: InternalsVisibleTo("Itinero.Transit.Tests.IO.LC")]
+
 namespace Itinero.Transit.IO.LC
 {
-    /// <summary>
-    /// Small helper class to bundle all the databases together
-    /// </summary>
-    internal class DatabaseLoader
+    internal static class WriterExtensions
     {
-        private readonly TransitDb.TransitDbWriter _writer;
-
-        /// <inheritdoc />
-        public DatabaseLoader(TransitDb.TransitDbWriter writer)
+        public static void AddAllLocations(this TransitDb.TransitDbWriter writer,
+            LinkedConnectionDataset linkedConnectionDataset)
         {
-            _writer = writer;
+            writer.AddAllLocations(linkedConnectionDataset.LocationProvider);
         }
 
-
-        public void AddAllLocations(LinkedConnectionDataset linkedConnectionDataset)
+        internal static void AddAllLocations(this TransitDb.TransitDbWriter writer, LocationFragment locationsFragment)
         {
-            AddAllLocations(linkedConnectionDataset.LocationProvider);
-        }
-
-        internal void AddAllLocations(LocationProvider locationsFragment)
-        {
-            var count = 0;
             foreach (var location in locationsFragment.Locations)
             {
-                AddLocation(location);
-                count++;
-
-
-                if (count % 100 == 0)
-                {
-                    Log.Information(
-                        $"Importing locations: Importing location {count}/{locationsFragment.Locations.Count}");
-                }
+                writer.AddLocation(location);
             }
 
             Log.Information(
                 $"Importing locations: All {locationsFragment.Locations.Count} locations imported");
         }
 
-        public (int loaded, int reused) AddAllConnections(LinkedConnectionDataset p, DateTime startDate,
+        public static (int loaded, int reused) AddAllConnections(this TransitDb.TransitDbWriter writer,
+            LinkedConnectionDataset p, DateTime startDate,
             DateTime endDate)
         {
             if (startDate.Kind != DateTimeKind.Utc || endDate.Kind != DateTimeKind.Utc)
@@ -61,7 +45,7 @@ namespace Itinero.Transit.IO.LC
             var reused = 0;
             var cons = p.ConnectionsProvider;
             var loc = p.LocationProvider;
-            var (l, r) = AddTimeTableWindow(cons, loc, startDate, endDate);
+            var (l, r) = writer.AddTimeTableWindow(cons, loc, startDate, endDate);
             loaded += l;
             reused += r;
 
@@ -69,7 +53,8 @@ namespace Itinero.Transit.IO.LC
         }
 
 
-        private (int loaded, int ofWhichReused) AddTimeTableWindow(ConnectionProvider cons, LocationProvider locations,
+        private static (int loaded, int ofWhichReused) AddTimeTableWindow(this TransitDb.TransitDbWriter writer,
+            ConnectionProvider cons, LocationFragment locations,
             DateTime startDate, DateTime endDate)
         {
             var currentTimeTableUri = cons.TimeTableIdFor(startDate);
@@ -86,7 +71,7 @@ namespace Itinero.Transit.IO.LC
 
                 if (wasChanged)
                 {
-                    var connectionCount = AddTimeTable(timeTable, locations);
+                    var connectionCount = writer.AddTimeTable(timeTable, locations);
                     Log.Information(
                         $"Imported timetable #{count} with {connectionCount} connections)");
                 }
@@ -102,29 +87,20 @@ namespace Itinero.Transit.IO.LC
             return (count, reused);
         }
 
-        /// <summary>
-        /// Adds the entire time table.
-        /// </summary>
-        private int AddTimeTable(TimeTable tt, LocationProvider locations)
+        private static int AddTimeTable(this TransitDb.TransitDbWriter writer, TimeTable tt, LocationFragment locations)
         {
             var count = 0;
             tt.Validate(locations);
             foreach (var connection in tt.Connections())
             {
-                AddConnection(connection, locations);
+                writer.AddConnection(connection, locations);
                 count++;
             }
 
             return count;
         }
 
-
-        /// <summary>
-        /// Adds the location metadata to the StopsDB
-        /// </summary>
-        /// <param name="location"></param>
-        /// <returns></returns>
-        private StopId AddLocation(Location location)
+        private static StopId AddLocation(this TransitDb.TransitDbWriter writer, Location location)
         {
             var globalId = location.Uri;
             var stopId = globalId.ToString();
@@ -140,15 +116,11 @@ namespace Itinero.Transit.IO.LC
                 }
             }
 
-            return _writer.AddOrUpdateStop(stopId, location.Lon, location.Lat, attributes);
+            return writer.AddOrUpdateStop(stopId, location.Lon, location.Lat, attributes);
         }
 
-        /// <summary>
-        /// Adds the given stop to the DB. Returns the internal ID
-        /// </summary>
-        /// <returns></returns>
-        private StopId
-            AddStop(LocationProvider profile, Uri stopUri)
+        private static StopId
+            AddStop(this TransitDb.TransitDbWriter writer, LocationFragment profile, Uri stopUri)
         {
             var location = profile.GetCoordinateFor(stopUri);
             if (location == null)
@@ -156,20 +128,18 @@ namespace Itinero.Transit.IO.LC
                 throw new ArgumentException($"Location {stopUri} not found. Run validation first please!");
             }
 
-            return AddLocation(location);
+            return writer.AddLocation(location);
         }
 
 
-        /// <summary>
-        /// Adds the connection to the connectionsDB
-        /// </summary>
-        private void AddConnection(Connection connection,
-            LocationProvider locations)
+        private static void AddConnection(this TransitDb.TransitDbWriter writer, Connection connection,
+            LocationFragment locations)
         {
-            var stop1Id = AddStop(locations, connection.DepartureLocation());
-            var stop2Id = AddStop(locations, connection.ArrivalLocation());
+            
+            var stop1Id = writer.AddStop(locations, connection.DepartureLocation());
+            var stop2Id = writer.AddStop(locations, connection.ArrivalLocation());
 
-            var tripId = AddTrip(connection);
+            var tripId = writer.AddTrip(connection);
 
             var connectionUri = connection.Uri.ToString();
 
@@ -190,19 +160,14 @@ namespace Itinero.Transit.IO.LC
                 mode += 4;
             }
 
-            _writer.AddOrUpdateConnection(stop1Id, stop2Id, connectionUri,
+            writer.AddOrUpdateConnection(stop1Id, stop2Id, connectionUri,
                 connection.DepartureTime(),
                 (ushort) (connection.ArrivalTime() - connection.DepartureTime()).TotalSeconds,
                 connection.DepartureDelay, connection.ArrivalDelay, tripId, mode);
         }
 
 
-        /// <summary>
-        /// Adds the TRIP metadata to the trip db
-        /// </summary>
-        /// <param name="connection"></param>
-        /// <returns></returns>
-        private TripId AddTrip(Connection connection)
+        private static TripId AddTrip(this TransitDb.TransitDbWriter writer, Connection connection)
         {
             var tripUri = connection.Trip().ToString();
 
@@ -211,7 +176,7 @@ namespace Itinero.Transit.IO.LC
                 new Attribute("trip", $"{connection.Trip()}"),
                 new Attribute("route", $"{connection.Route()}")
             );
-            return _writer.AddOrUpdateTrip(tripUri, attributes);
+            return writer.AddOrUpdateTrip(tripUri, attributes);
         }
     }
 }
