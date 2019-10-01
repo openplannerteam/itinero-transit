@@ -87,5 +87,20 @@ namespace Itinero.Transit.Data.Core
         {
             return Id.GetHashCode();
         }
+
+        /// <summary>
+        /// Returns the name of this stop, if 'name' is given in the attributes.
+        /// If missing, the empty string is returned
+        /// </summary>
+        /// <returns></returns>
+        public string GetName()
+        {
+            if (Attributes == null)
+            {
+                return "";
+            }
+            Attributes.TryGetValue("name", out var name);
+            return name ?? "";
+        }
     }
 }

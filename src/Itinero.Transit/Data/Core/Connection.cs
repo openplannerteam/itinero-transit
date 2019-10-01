@@ -22,6 +22,19 @@ namespace Itinero.Transit.Data.Core
             StopId arrivalStop,
             ulong departureTime,
             ushort travelTime,
+            TripId tripId
+        ):this(id, globalId, departureStop, arrivalStop,departureTime, travelTime,0,0,0, tripId)
+        {
+            
+        }
+
+        public Connection(
+            ConnectionId id,
+            string globalId,
+            StopId departureStop,
+            StopId arrivalStop,
+            ulong departureTime,
+            ushort travelTime,
             ushort arrivalDelay,
             ushort departureDelay,
             ushort mode,

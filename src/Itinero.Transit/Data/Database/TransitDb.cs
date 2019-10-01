@@ -264,6 +264,11 @@ namespace Itinero.Transit.Data
                 _parent._latestSnapshot = latest;
                 _parent._writer = null;
             }
+
+            public void AddOrUpdateConnection(StopId stop1, StopId stop2, string globalId, ulong departureTime, ushort travelTime, TripId tripId)
+            {
+                AddOrUpdateConnection(stop1, stop2, globalId, departureTime.FromUnixTime(), travelTime, 0, 0, tripId, 0);
+            }
         }
     }
 }
