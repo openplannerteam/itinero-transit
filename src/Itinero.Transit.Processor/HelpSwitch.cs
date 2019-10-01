@@ -6,7 +6,7 @@ using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Processor
 {
-    internal class HelpSwitch : DocumentedSwitch, ITransitDbModifier, ITransitDbSource
+    internal class HelpSwitch : DocumentedSwitch, ITransitDbModifier, ITransitDbSource, ITransitDbSink
     {
         private static readonly string[] _names = {"--help", "--?"};
 
@@ -37,8 +37,12 @@ namespace Itinero.Transit.Processor
         public TransitDb Generate(Dictionary<string, string> parameters)
         {
             PrintHelp(parameters);
-
             return new TransitDb(0);
+        }
+
+        public void Use(Dictionary<string, string> parameters, TransitDb _)
+        {
+            PrintHelp(parameters);
         }
 
         public void PrintHelp(Dictionary<string, string> arguments)
