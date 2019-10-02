@@ -25,9 +25,9 @@ namespace Itinero.Transit.Processor.Switch
                 new List<(List<string> args, bool isObligated, string comment, string defaultValue)>
                 {
                     SwitchesExtensions.obl("connections", "curl",
-                        "The URL where connections can be downloaded"),
+                        "The URL where connections can be downloaded. Special value: 'nmbs'"),
                     SwitchesExtensions.obl("locations", "stops","lurl",
-                        "The URL where the location can be downloaded"),
+                        "The URL where the location can be downloaded. Special value: 'nmbs'"),
                     SwitchesExtensions.opt("window-start", "start",
                             "The start of the timewindow to load. Specify 'now' to take the current date and time. Otherwise provide a timestring of the format 'YYYY-MM-DDThh:mm:ss' (where T is a literal T). Special values: 'now' and 'today'")
                         .SetDefault("now"),
@@ -56,7 +56,17 @@ namespace Itinero.Transit.Processor.Switch
         public TransitDb Modify(Dictionary<string, string> arguments, TransitDb tdb)
         {
             var curl = arguments["connections"];
+
+            if (curl.Equals("nmbs"))
+            {
+                curl = "https://graph.irail.be/sncb/connections";
+            }
+            
             var lurl = arguments["locations"];
+            if (lurl.Equals("nmbs"))
+            {
+                lurl = "https://graph.irail.be/sncb/stops";
+            }
             var wStart = arguments["window-start"];
             var time = wStart.Equals("now")
                 ? DateTime.Now
@@ -66,7 +76,7 @@ namespace Itinero.Transit.Processor.Switch
 
             time = time.ToUniversalTime();
             // In seconds
-            var duration = 0;
+            int duration;
             var durationStr = arguments["window-duration"];
 
             if (durationStr.EndsWith("day"))

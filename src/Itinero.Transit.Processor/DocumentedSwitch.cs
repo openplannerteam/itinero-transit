@@ -46,7 +46,7 @@ namespace Itinero.Transit.Processor
             string[] names, string about,
             List<(List<string> argName, bool isObligated, string comment, string defaultValue)> extraParams,
             bool isStable
-        ) 
+        )
         {
             Names = names;
             About = about;
@@ -73,12 +73,13 @@ namespace Itinero.Transit.Processor
             var expected = _extraParams;
             var index = 0;
 
-            var used = new HashSet<string>();
+            var used = new HashSet<int>();
 
             // First, handle all the named arguments, thus every element containing '='
             // We _translate_ the argument name to the first index in the according list
-            foreach (var argument in arguments)
+            for (var i = 0; i < arguments.Count; i++)
             {
+                var argument = arguments[i];
                 if (!SplitKeyValue(argument, out var key, out var value)) continue;
                 // The argument is of the format 'file=abc'
 
@@ -111,16 +112,17 @@ namespace Itinero.Transit.Processor
 
 
                 result.Add(key, value);
-                used.Add(argument);
+                used.Add(i);
             }
-            
-            
+
+
             // Now, we handle all the boolean arguments, thus every element starting with '-', e.g. '-some-flag'
             // We _translate_ the argument name to the first index in the according list
-            foreach (var argument in arguments)
+            for (var i = 0; i < arguments.Count; i++)
             {
-                if(used.Contains(argument)) continue;
-                
+                var argument = arguments[i];
+                if (used.Contains(i)) continue;
+
                 if (!argument.StartsWith("-")) continue;
                 // The argument is of the format '-flag'
 
@@ -153,14 +155,15 @@ namespace Itinero.Transit.Processor
 
 
                 result.Add(key, "true");
-                used.Add(argument);
+                used.Add(i);
             }
 
 
             // Now, we handle the resting elements without a name
-            foreach (var argument in arguments)
+            for (var i = 0; i < arguments.Count; i++)
             {
-                if (used.Contains(argument)) continue;
+                var argument = arguments[i];
+                if (used.Contains(i)) continue;
 
                 // We found an argument which does not use "="
                 // Was it used already?
@@ -170,31 +173,24 @@ namespace Itinero.Transit.Processor
                     index++;
                     if (index >= expected.Count)
                     {
-                        throw new ArgumentException($"Too many arguments are given for the switch {Names[0]}, only expects {expected.Count} but got {arguments.Count()} instead");
+                        throw new ArgumentException(
+                            $"Too many arguments are given for the switch {Names[0]}, only expects {expected.Count} but got {arguments.Count()} instead");
                     }
 
                     name = expected[index].argNames[0];
                 }
 
                 result.Add(name, argument);
-                used.Add(argument);
+                used.Add(i);
             }
 
 
             // Did we use all arguments?
-            if (arguments.Count() != used.Count)
+            if (arguments.Count > used.Count)
             {
-                var unused = "";
-                foreach (var argument in arguments)
-                {
-                    if (!used.Contains(argument))
-                    {
-                        unused += argument + ", ";
-                    }
-                }
-
-                unused = unused.Substring(unused.Length - 2);
-                throw new ArgumentException($"Some arguments were not used: \n  {unused}");
+                var unused = string.Join(", ", 
+                    arguments.Where((str, i) => !used.Contains(i)));
+                throw new ArgumentException($"{arguments.Count - used.Count} arguments in switch {Names[0]} were not used: \n  {unused}");
             }
 
 
@@ -207,7 +203,7 @@ namespace Itinero.Transit.Processor
                     throw new ArgumentException($"The argument '{name[0]}' is missing");
                 }
 
-                if(!result.ContainsKey(name[0]))
+                if (!result.ContainsKey(name[0]))
                 {
                     // Add default of optional parameter
                     result.Add(name[0], defaultValue);
@@ -310,6 +306,7 @@ namespace Itinero.Transit.Processor
 
             return text;
         }
+
         /// <summary>
         /// Returns true if the given string contains a key value like 'key=value'.
         /// </summary>
@@ -340,7 +337,7 @@ namespace Itinero.Transit.Processor
             values = valuesArray.Split(',');
             return true;
         }
-        
+
         /// <summary>
         /// Returns true if the given string value represent true.
         /// </summary>
@@ -350,7 +347,7 @@ namespace Itinero.Transit.Processor
                    (value.ToLowerInvariant() == "yes" ||
                     value.ToLowerInvariant() == "true");
         }
-        
+
         /// <summary>
         /// Parses an integer from the given value.
         /// </summary>
@@ -365,6 +362,5 @@ namespace Itinero.Transit.Processor
 
             return null;
         }
-
     }
 }
