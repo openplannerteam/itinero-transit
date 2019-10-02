@@ -573,7 +573,15 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(stops[0], stops[8])
                 .SelectTimeFrame(0, 2000);
 
-            var journeys = calc.CalculateAllJourneys(true);
+
+            calc.CheckAll();
+            var settings = calc.GetScanSettings();
+
+            settings.MetricGuesser =
+                new SimpleMetricGuesser<TransferMetric>(settings.ConnectionsEnumerator, settings.DepartureStop);
+
+            var pcs = new ProfiledConnectionScan<TransferMetric>(settings);
+            var journeys = pcs.CalculateJourneys();
 
             Assert.NotNull(journeys);
             Assert.Equal(4, journeys.Count);
@@ -784,20 +792,28 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var journeys = calc.CalculateAllJourneys();
             Assert.NotNull(journeys);
             Assert.Equal(2, journeys.Count);
-            
+
             calc = tdb.SelectProfile(pr)
                 .SelectStops(departure, arrival)
                 .SelectTimeFrame(0, 10000);
             journeys = calc.CalculateAllJourneys();
             Assert.NotNull(journeys);
             Assert.Equal(2, journeys.Count);
-            
-             calc = tdb.SelectProfile(pr)
-                            .SelectStops(departure, arrival)
-                            .SelectTimeFrame(0, 10000);
-                        journeys = calc.CalculateAllJourneys(true);
-                        Assert.NotNull(journeys);
-                        Assert.Equal(2, journeys.Count);
+
+            calc = tdb.SelectProfile(pr)
+                .SelectStops(departure, arrival)
+                .SelectTimeFrame(0, 10000);
+
+            calc.CheckAll();
+            var settings = calc.GetScanSettings();
+
+            settings.MetricGuesser =
+                new SimpleMetricGuesser<TransferMetric>(settings.ConnectionsEnumerator, settings.DepartureStop);
+
+            var pcs = new ProfiledConnectionScan<TransferMetric>(settings);
+            journeys = pcs.CalculateJourneys();
+            Assert.NotNull(journeys);
+            Assert.Equal(2, journeys.Count);
         }
 
         [Fact]
@@ -878,16 +894,35 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .SelectStops(commonStop, arrival)
                 .SelectTimeFrame(0, 10000);
 
-            var journeys = calc.CalculateAllJourneys();
+
+            calc.CheckAll();
+            var settings = calc.GetScanSettings();
+
+            settings.MetricGuesser = null;
+
+            var pcs = new ProfiledConnectionScan<TransferMetric>(settings);
+            var journeys = pcs.CalculateJourneys();
+
+
             Assert.NotNull(journeys);
             Assert.Equal(4, journeys.Count);
-            
-            
+
+
             calc = tdb.SelectProfile(pr)
                 .SelectStops(commonStop, arrival)
                 .SelectTimeFrame(0, 10000);
 
-            journeys = calc.CalculateAllJourneys(true);
+
+            calc.CheckAll();
+            settings = calc.GetScanSettings();
+
+            settings.MetricGuesser =
+                new SimpleMetricGuesser<TransferMetric>(settings.ConnectionsEnumerator, settings.DepartureStop);
+
+            pcs = new ProfiledConnectionScan<TransferMetric>(settings);
+            journeys = pcs.CalculateJourneys();
+
+
             Assert.NotNull(journeys);
             Assert.Equal(4, journeys.Count);
         }

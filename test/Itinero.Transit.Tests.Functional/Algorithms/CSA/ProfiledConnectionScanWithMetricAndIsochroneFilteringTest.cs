@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
+using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.Tests.Functional.Utils;
 
@@ -41,14 +42,14 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 
             Input.CalculateIsochroneFrom();
 
-            /*
-            settings.MetricGuesser = new SimpleMetricGuesser<TransferMetric>(
-                settings.ConnectionsEnumerator, settings.DepartureStop[0]);
+            Input.CheckAll();
+            var settings = Input.GetScanSettings();
+
+            settings.MetricGuesser =
+                new SimpleMetricGuesser<TransferMetric>(settings.ConnectionsEnumerator, settings.DepartureStop);
+
             var pcsF = new ProfiledConnectionScan<TransferMetric>(settings);
-            
             var journeysF = pcsF.CalculateJourneys();
-            /*/
-            var journeysF = Input.CalculateAllJourneys(true);//*/
 
             end = DateTime.Now;
             var filteredTime = (end - start).TotalMilliseconds;
