@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
+using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Processor.Validator
 {
@@ -17,7 +18,10 @@ namespace Itinero.Transit.Processor.Validator
 
         public override string ToString()
         {
-            return $"{Connection?.GlobalId ?? ""} \t[{Type}]: {MessageText}";
+            return $"[{Type}]\n" +
+                   $"    {MessageText.Replace("\n","\n    ")}\n" +
+                   $"    > Live timetable element probably is https://graph.irail.be/sncb/connections?departureTime={Connection?.DepartureTime.FromUnixTime():s}\n" +
+                   $"    > {Connection.ToJson()}\n";
         }
     }
 
