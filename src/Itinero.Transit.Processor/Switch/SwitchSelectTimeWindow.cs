@@ -27,7 +27,8 @@ namespace Itinero.Transit.Processor.Switch
                     //   opt("interpretation",
                     //           "How the departure times are interpreted. Options are: `actual`, `planned` or `both`. If `planned` is specified, the connection will only be kept if the planned departure time is within the window (thus as if there would not have been a delay). With `actual`, only the actual (with delays) departure time is used. Both will keep the connection if either the actual or planned departure time are within the window.")
                     //      .SetDefault("both"),
-                    SwitchesExtensions.opt("allow-empty", "If flagged, the program will not crash if no connections are retained")
+                    SwitchesExtensions.opt("allow-empty",
+                            "If flagged, the program will not crash if no connections are retained")
                         .SetDefault("false")
                 };
 
@@ -56,9 +57,8 @@ namespace Itinero.Transit.Processor.Switch
                 endDate = endDate.ToUniversalTime();
                 duration = (int) (endDate - start).TotalSeconds;
             }
+
             var allowEmpty = bool.Parse(arguments["allow-empty"]);
-
-
 
             endDate = start.AddSeconds(duration);
             var end = endDate.ToUnixTime();
@@ -68,14 +68,10 @@ namespace Itinero.Transit.Processor.Switch
             var wr = filtered.GetWriter();
 
 
-            var stopIdMapping = new Dictionary<StopId, StopId>();
-
             var stops = old.Latest.StopsDb.GetReader();
             while (stops.MoveNext())
             {
-                var newId = wr.AddOrUpdateStop(stops.GlobalId, stops.Longitude, stops.Latitude, stops.Attributes);
-                var oldId = stops.Id;
-                stopIdMapping.Add(oldId, newId);
+                wr.AddOrUpdateStop(stops.GlobalId, stops.Longitude, stops.Latitude, stops.Attributes);
             }
 
 
@@ -83,10 +79,15 @@ namespace Itinero.Transit.Processor.Switch
             connsEnumerator.MoveTo(start.ToUnixTime());
             var c = new Connection();
             var copied = 0;
-            
+
+            var trips = old.Latest.TripsDb;
+
             while (connsEnumerator.MoveNext() && connsEnumerator.CurrentDateTime <= end)
             {
                 connsEnumerator.Current(c);
+                var tr = trips.Get(c.TripId);
+                var newTripId = wr.AddOrUpdateTrip(tr.GlobalId);
+                c.TripId = newTripId;
                 wr.AddOrUpdateConnection(c);
 
                 copied++;
