@@ -44,7 +44,6 @@ namespace Itinero.Transit.Processor.Switch
                     SwitchesExtensions.opt("skip",
                             "[integer] If specified, only calculate (startAt + n * skip). Used to partition the calculations on multiple threads")
                         .SetDefault("0"),
-                    
                 };
 
         private const bool _isStable = true;
@@ -152,6 +151,7 @@ namespace Itinero.Transit.Processor.Switch
                         {
                             percStr += (j < perc) ? "-" : " ";
                         }
+
                         Console.Write(
                             $"\r{iStr}/{count} {foundJourneys} journeys, {secNeeded:F1}s, avg {avg:F3}s, eta {(int) (avg * (count - i))}s [{percStr}]    ");
                         if (reader.GlobalId.Equals(fixedFrom))
@@ -166,7 +166,9 @@ namespace Itinero.Transit.Processor.Switch
 
                         foundJourneys += CalculateSingleEntry(fixedFrom, reader.GlobalId, calculator, withArgs);
                     }
-                    Console.Write("\r                                                                                                                                     ");
+
+                    Console.Write(
+                        "\r                                                                                                                                     ");
                 }
                 else
                 {
@@ -184,8 +186,6 @@ namespace Itinero.Transit.Processor.Switch
             int CalculateSingleEntry(string fromUri, string toUri, WithTime<TransferMetric> calculator,
                 WithArguments fileWriter)
             {
-
-                
                 var fromClean = fromUri.Replace("/", "_")
                     .Replace(":", "_")
                     .Replace(" ", "_");
@@ -200,10 +200,20 @@ namespace Itinero.Transit.Processor.Switch
                 {
                     Console.Write("\rSKIP - already exists");
                     return 0;
-                } 
+                }
+
                 var start = DateTime.Now;
-                calculator.CalculateIsochroneFrom();
-                var journeys = calculator.CalculateAllJourneys();
+                var isochrone = calculator.CalculateIsochroneFrom();
+                List<Journey<TransferMetric>> journeys;
+                if (isochrone == null || isochrone.Count == 1)
+                {
+                    journeys = null;
+                }
+                else
+                {
+                    journeys = calculator.CalculateAllJourneys();
+                }
+
                 var end = DateTime.Now;
                 fileWriter.WriteToFile(fileName, journeys, (uint) (end - start).TotalMilliseconds);
                 return journeys?.Count ?? 0;
@@ -230,6 +240,7 @@ namespace Itinero.Transit.Processor.Switch
             }
 
             private Dictionary<string, string[]> _cache = new Dictionary<string, string[]>();
+
             public bool DoesAlreadyExist(string fileName, string from, string to)
             {
                 if (!_cache.ContainsKey(fileName))
@@ -238,6 +249,7 @@ namespace Itinero.Transit.Processor.Switch
                     {
                         return false;
                     }
+
                     _cache[fileName] = File.ReadAllLines(fileName);
                 }
 
@@ -311,7 +323,7 @@ namespace Itinero.Transit.Processor.Switch
                        string.Join(" ", viasHuman) + "," +
                        string.Join(" ", vias);
             }
-            
+
             private const string _headerSummarized =
                 "from, from-name, to, to-name, distance in meters, " +
                 "calculationTime (ms),journeysFound, " +
@@ -341,8 +353,6 @@ namespace Itinero.Transit.Processor.Switch
                     $"{worstPickTime},{worstPick.DepartureTime().FromUnixTime():s}," +
                     $"{bestTransferCount},{bestTransfer.DepartureTime().FromUnixTime():s}," +
                     $"{worstTransferCount},{worstTransfer.DepartureTime().FromUnixTime():s}";
-                
-                
             }
 
             private static
