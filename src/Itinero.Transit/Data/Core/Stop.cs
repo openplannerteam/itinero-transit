@@ -14,9 +14,9 @@ namespace Itinero.Transit.Data.Core
             Id = stop.Id;
             Longitude = stop.Longitude;
             Latitude = stop.Latitude;
-            if (Attributes != null)
+            if (stop.Attributes != null)
             {
-                Attributes = new AttributeCollection(Attributes);
+                Attributes = new AttributeCollection(stop.Attributes);
             }
         }
         
@@ -29,7 +29,7 @@ namespace Itinero.Transit.Data.Core
             Latitude = latitude;
             if (attributes != null)
             {
-                Attributes = new AttributeCollection(Attributes);
+                Attributes = new AttributeCollection(attributes);
             }
         }
 
