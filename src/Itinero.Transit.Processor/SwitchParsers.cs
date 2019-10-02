@@ -127,7 +127,8 @@ namespace Itinero.Transit.Processor
                             continue;
                         }
 
-                        throw new ArgumentException($"Bug in Processor: Name {name} already exists. If you can read this, something went very wrong.");
+                        throw new ArgumentException(
+                            $"Bug in Processor: Name {name} already exists. If you can read this, something went very wrong.");
                     }
                 }
             }
