@@ -120,7 +120,7 @@ namespace Itinero.Transit.Processor.Validator
                                 "The speed of this connection is negative. Probably a timetraveller as well");
                         }
 
-                        if (speedKmH <= 1.0 && speedKmH >= 0 && distance > 2000)
+                        if (speedKmH <= 1.0 && speedKmH >= 0 && distance > 10000)
                         {
                             Emit("slow", $"This vehicle only goes about 1 km/h between {stationInfo}");
                         }
