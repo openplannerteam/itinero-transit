@@ -729,15 +729,12 @@ namespace Itinero.Transit
         /// Note that this list might contain families of very similar journeys, e.g. journeys which differ only in the transfer station taken.
         /// To prune them, use `PruneInAlternatives`
         /// </remarks>
-        public List<Journey<T>> CalculateAllJourneys(bool enableFiltering = false)
-         {
+        public List<Journey<T>> CalculateAllJourneys()
+        {
             CheckAll();
             var settings = GetScanSettings();
-            if (enableFiltering && settings.DepartureStop.Count == 1)
-            {
-                settings.MetricGuesser =
-                    new SimpleMetricGuesser<T>(settings.ConnectionsEnumerator, settings.DepartureStop[0]);
-            }
+
+        // TODO enable   settings.MetricGuesser =new SimpleMetricGuesser<T>(settings.ConnectionsEnumerator, settings.DepartureStop);
 
             var pcs = new ProfiledConnectionScan<T>(settings);
             return pcs.CalculateJourneys();
@@ -808,7 +805,7 @@ namespace Itinero.Transit
             }
         }
 
-        private void CheckAll()
+        internal void CheckAll()
         {
             CheckHasFrom();
             CheckHasTo();
