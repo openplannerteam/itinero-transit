@@ -1,0 +1,10 @@
+title: 1;; workdir: ~/werk/itinero-transit/src/Itinero.Transit.Processor;; command: dotnet run -c release --read nmbs.2019-1001.transitdb --calculate-all -summarize file=output/output-{from}.csv skip=10 startAt=1
+title: 2;; workdir: ~/werk/itinero-transit/src/Itinero.Transit.Processor;; command: dotnet run -c release --read nmbs.2019-1001.transitdb --calculate-all -summarize file=output/output-{from}.csv skip=10 startAt=2
+title: 3;; workdir: ~/werk/itinero-transit/src/Itinero.Transit.Processor;; command: dotnet run -c release --read nmbs.2019-1001.transitdb --calculate-all -summarize file=output/output-{from}.csv skip=10 startAt=3
+title: 4;; workdir: ~/werk/itinero-transit/src/Itinero.Transit.Processor;; command: dotnet run -c release --read nmbs.2019-1001.transitdb --calculate-all -summarize file=output/output-{from}.csv skip=10 startAt=4
+title: 5;; workdir: ~/werk/itinero-transit/src/Itinero.Transit.Processor;; command: dotnet run -c release --read nmbs.2019-1001.transitdb --calculate-all -summarize file=output/output-{from}.csv skip=10 startAt=5
+title: 6;; workdir: ~/werk/itinero-transit/src/Itinero.Transit.Processor;; command: dotnet run -c release --read nmbs.2019-1001.transitdb --calculate-all -summarize file=output/output-{from}.csv skip=10 startAt=6
+title: 7;; workdir: ~/werk/itinero-transit/src/Itinero.Transit.Processor;; command: dotnet run -c release --read nmbs.2019-1001.transitdb --calculate-all -summarize file=output/output-{from}.csv skip=10 startAt=7
+title: 8;; workdir: ~/werk/itinero-transit/src/Itinero.Transit.Processor;; command: dotnet run -c release --read nmbs.2019-1001.transitdb --calculate-all -summarize file=output/output-{from}.csv skip=10 startAt=8
+title: 9;; workdir: ~/werk/itinero-transit/src/Itinero.Transit.Processor;; command: dotnet run -c release --read nmbs.2019-1001.transitdb --calculate-all -summarize file=output/output-{from}.csv skip=10 startAt=9
+title: 10;; workdir: ~/werk/itinero-transit/src/Itinero.Transit.Processor;; command: dotnet run -c release --read nmbs.2019-1001.transitdb --calculate-all -summarize file=output/output-{from}.csv skip=10 startAt=10
