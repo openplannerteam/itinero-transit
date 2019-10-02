@@ -157,18 +157,6 @@ namespace Itinero.Transit.IO.LC.Data
             GetOff = (getOff.IsString() && getOff.ToString().Equals(_gtfsRegular))
                      || getOff.GetId().ToString().Equals(_gtfsRegular);
 
-            // ReSharper disable once InvertIf
-            if (_arrivalTime <= _departureTime)
-            {
-                // Sometimes, a departure delay is already known but the arrival delay is not known yet
-                // Thus, the arrivalDelay defaults to 0
-                // This can lead to departure times which lie _after_ the arrival time,
-                // especially on short connections of only a few minutes.
-                // We attempt to fix this by estimating the arrival delay to be equal to the departureDelay
-                // If that still ain't enough, the upstream code is responsible of handling the case (e.g. by logging, crashing or dropping this connection)
-                depDel += arrDel;
-                _arrivalTime = _arrivalTime.AddSeconds(depDel);
-            }
         }
 
 
