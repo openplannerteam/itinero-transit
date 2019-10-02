@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Itinero.Transit.Data.Core;
 
 namespace Itinero.Transit.Data
 {
@@ -55,6 +56,17 @@ namespace Itinero.Transit.Data
         {
             var t = new T();
             if (db.Get(id, t))
+            {
+                return t;
+            }
+
+            return default(T);
+        }
+
+        public static T Get<TId, T>(this IDatabaseReader<TId, T> db, string uri) where TId : InternalId, new() where T : new()
+        {
+            var t = new T();
+            if (db.Get(uri, t))
             {
                 return t;
             }
