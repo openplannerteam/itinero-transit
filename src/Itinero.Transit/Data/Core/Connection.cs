@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Data.Core
 {
@@ -52,6 +53,12 @@ namespace Itinero.Transit.Data.Core
             DepartureStop = departureStop;
             ArrivalStop = arrivalStop;
             ArrivalTime = departureTime + travelTime;
+        }
+        
+        public string ToJson()
+        {
+            return $"{{id: {GlobalId}, departureTime:{DepartureTime.FromUnixTime():s}, arrivalTime:{ArrivalTime.FromUnixTime():s}, mode:{Mode}" +
+                   $", depDelay:{DepartureDelay}, arrDelay:{ArrivalDelay} }}";
         }
 
         public ConnectionId Id { get; set; }
@@ -138,5 +145,7 @@ namespace Itinero.Transit.Data.Core
             }
         }
 
+        
+        
     }
 }
