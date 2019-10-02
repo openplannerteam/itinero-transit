@@ -47,13 +47,7 @@ namespace Itinero.Transit.Data.Attributes
         /// <summary>
         /// Gets the count.
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return _attributes.Count;
-            }
-        }
+        public int Count => _attributes.Count;
 
         /// <summary>
         /// Clears all data.
@@ -66,13 +60,7 @@ namespace Itinero.Transit.Data.Attributes
         /// <summary>
         /// Gets the readonly flag.
         /// </summary>
-        public bool IsReadonly
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool IsReadonly => false;
 
         /// <summary>
         /// Tries to get the value for the given key.
