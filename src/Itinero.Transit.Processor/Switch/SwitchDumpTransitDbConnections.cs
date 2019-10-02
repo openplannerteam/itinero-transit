@@ -19,7 +19,9 @@ namespace Itinero.Transit.Processor.Switch
                 new List<(List<string> args, bool isObligated, string comment, string defaultValue)>()
                 {
                     SwitchesExtensions.opt("file", "The file to write the data to, in .csv format")
-                        .SetDefault("")
+                        .SetDefault(""),
+                    SwitchesExtensions.opt("human", "Use less exact but more human-friendly output")
+                        .SetDefault("false")
                 };
 
         private const bool _isStable = true;
@@ -35,13 +37,20 @@ namespace Itinero.Transit.Processor.Switch
         public void Use(Dictionary<string, string> arguments, TransitDb tdb)
         {
             var writeTo = arguments["file"];
+            var humanFormat = bool.Parse(arguments["human"]);
 
             using (var outStream =
                 string.IsNullOrEmpty(writeTo) ? Console.Out : new StreamWriter(File.OpenWrite(writeTo)))
             {
-                const string header = "GlobalId,DepartureStop,DepartureStopName,ArrivalStop,ArrivalStopName," +
-                                      "DepartureTime,DepartureDelay,ArrivalTime,ArrivalDelay,TravelTime,Mode,TripId,TripHeadSign";
-                outStream.WriteLine(header);
+                const string header = "GlobalId,DepartureStop,DepartureStopName,DepartureTime,DepartureDelay,ArrivalStop,ArrivalStopName," +
+                                      "ArrivalTime,ArrivalDelay,TravelTime,Mode,TripId,TripHeadSign";
+                const string headerHuman = 
+                    "GlobalId,DepartureStopName,DepartureTime,DepartureDelay,ArrivalStopName," +
+                                      "ArrivalTime,ArrivalDelay,TravelTime,Mode,TripId,TripHeadSign";
+
+                
+                
+                outStream.WriteLine(humanFormat ? headerHuman : header);
 
 
                 var consDb = tdb.Latest.ConnectionsDb;
@@ -68,18 +77,31 @@ namespace Itinero.Transit.Processor.Switch
                     var value = $"{cons.GlobalId}," +
                                 $"{dep.GlobalId}," +
                                 $"{dep.Attributes.Get("name")}," +
-                                $"{arr.GlobalId}," +
-                                $"{arr.Attributes.Get("name")}," +
                                 $"{cons.DepartureTime.FromUnixTime():O}," +
                                 $"{cons.DepartureDelay}," +
+                                $"{arr.GlobalId}," +
+                                $"{arr.Attributes.Get("name")}," +
                                 $"{cons.ArrivalTime.FromUnixTime():O}," +
                                 $"{cons.ArrivalDelay}," +
                                 $"{(cons.ArrivalTime.FromUnixTime() - cons.DepartureTime.FromUnixTime()).TotalSeconds}," +
                                 $"{cons.Mode}," +
                                 $"{trip.GlobalId}," +
                                 $"{trip.Attributes.Get("headsign")}";
+                    
+                    var valueHuman =
+                                $"{cons.GlobalId}," +
+                                $"{dep.Attributes.Get("name")}," +
+                                $"{cons.DepartureTime.FromUnixTime():hh:mm}," +
+                                $"{cons.DepartureDelay}," +
+                                $"{arr.Attributes.Get("name")}," +
+                                $"{cons.ArrivalTime.FromUnixTime():hh:mm}," +
+                                $"{cons.ArrivalDelay}," +
+                                $"{(cons.ArrivalTime.FromUnixTime() - cons.DepartureTime.FromUnixTime()).TotalSeconds}," +
+                                $"{cons.Mode}," +
+                                $"{trip.GlobalId}," +
+                                $"{trip.Attributes.Get("headsign")}";
 
-                    outStream.WriteLine(value);
+                    outStream.WriteLine(humanFormat ? valueHuman : value);
 
                 } while (consDb.HasNext(index, out index));
             }
