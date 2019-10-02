@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
@@ -35,8 +36,13 @@ namespace Itinero.Transit.Algorithms.Filter
         public SimpleMetricGuesser(IConnectionEnumerator clock, StopId departureStop)
         {
             _clock = clock;
-            // It doesn't matter a whole lot what the exact destination stop is
             _departureStop = departureStop;
+        }
+
+        public SimpleMetricGuesser(IConnectionEnumerator clock, IEnumerable<StopId> departureStops)
+            :this(clock, departureStops.First())
+            // It doesn't matter what the exact comparison stop is - it is just used to 'teleport' there and to be considered
+        {
         }
 
         public T LeastTheoreticalConnection(Journey<T> intermediate, out ulong departureTime)
