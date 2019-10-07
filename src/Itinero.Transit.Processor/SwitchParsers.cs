@@ -44,7 +44,8 @@ namespace Itinero.Transit.Processor
                     new SwitchAnalyze(),
                     new SwitchValidate(),
                     new SwitchNmbsFilter(),
-                    new HelpSwitch()
+                    new HelpSwitch(),
+                    new Shell()
                 })
             };
 

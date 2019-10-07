@@ -61,24 +61,23 @@ namespace Itinero.Transit.Processor.Switch
 
             var from = arguments["from"];
             var to = arguments["to"];
-            var summarize = bool.Parse(arguments["summarize"]);
-            var startAt = int.Parse(arguments["startAt"]);
-            var stopAt = int.Parse(arguments["stopAt"]);
-            var skip = int.Parse(arguments["skip"]);
+            var summarize = arguments.Bool("summarize");
+            var startAt = arguments.Int("startAt");
+            var stopAt = arguments.Int("stopAt");
+            var skip = arguments.Int("skip");
 
             var snapshot = tdb.Latest;
 
             var departureTime = snapshot.ConnectionsDb.EarliestDate;
             if (!arguments["departureTime"].Equals(""))
             {
-                departureTime =
-                    DateTimeExtensions.ToUnixTime(DateTime.Parse(arguments["departureTime"]).ToUniversalTime());
+                departureTime = arguments.Date("departureTime").ToUnixTime();
             }
 
             var arrivalTime = snapshot.ConnectionsDb.LatestDate;
             if (!arguments["arrivalTime"].Equals(""))
             {
-                arrivalTime = DateTimeExtensions.ToUnixTime(DateTime.Parse(arguments["arrivalTime"]).ToUniversalTime());
+                arrivalTime = arguments.Date("arrivalTime").ToUnixTime();
             }
 
 

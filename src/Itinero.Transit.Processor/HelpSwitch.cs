@@ -51,6 +51,10 @@ namespace Itinero.Transit.Processor
             if (!String.IsNullOrEmpty(arguments["about"]))
             {
                 var needed = arguments["about"];
+                if (!needed.StartsWith("--"))
+                {
+                    needed = "--" + needed;
+                }
                 var allSwitches = SwitchParsers.Documented;
                 foreach (var (_, switches) in allSwitches)
                 {
@@ -58,6 +62,7 @@ namespace Itinero.Transit.Processor
                     {
                         foreach (var name in documentedSwitch.Names)
                         {
+                            
                             if (needed.Equals(name))
                             {
                                 Console.WriteLine(documentedSwitch.Help());
@@ -68,7 +73,7 @@ namespace Itinero.Transit.Processor
                 }
 
                 throw new ArgumentException(
-                    $"Did not find documentation for switch {needed}. Don't worry, the switch probably exists but is not documented yet");
+                    $"Did not find documentation for switch {needed}.");
             }
 
             if (String.IsNullOrEmpty(arguments["markdown"]))

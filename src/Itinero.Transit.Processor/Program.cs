@@ -98,7 +98,7 @@ namespace Itinero.Transit.Processor
                     throw new ArgumentException("A generator can only be the first argument");
                 }
 
-                throw new ArgumentException("Unknown switch: " + swtch.Names[0]);
+                throw new ArgumentException("Unknown switch type: " + swtch.Names[0]);
             }
         }
     }

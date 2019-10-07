@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 // ReSharper disable InconsistentNaming
 
@@ -42,6 +44,39 @@ namespace Itinero.Transit.Processor
             this (List<string> args, bool isObligated, string comment, string def) tuple, string defaultValue)
         {
             return (tuple.args, tuple.isObligated, tuple.comment, defaultValue);
+        }
+
+        public static bool Bool(this Dictionary<string, string> dict, string key)
+        {
+            return dict.Map(key, bool.Parse);
+        }
+        
+        public static int Int(this Dictionary<string, string> dict, string key)
+        {
+            return dict.Map(key, int.Parse);
+        }
+        
+        public static DateTime Date(this Dictionary<string, string> dict, string key)
+        {
+            return dict.Map(key, value => DateTime.Parse(value).ToUniversalTime());
+        }
+
+        public static T Map<T>(this Dictionary<string, string> dict, string key, Func<string, T> parser)
+        {
+            if (!dict.TryGetValue(key, out var value))
+            {
+                return default(T);
+            }
+
+            try
+            {
+
+                return parser(value);
+            }
+            catch (Exception e)
+            {
+                throw new ArgumentException($"Error in argument '{key}': {e.Message}");
+            }
         }
     }
 }
