@@ -182,7 +182,7 @@ namespace Itinero.Transit.Data.Attributes
         /// <summary>
         /// Adds new attributes.
         /// </summary>
-        public uint Add(IAttributeCollection tags)
+        public uint Add(IReadonlyAttributeCollection tags)
         {
             if (tags == null)
             {
