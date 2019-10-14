@@ -5,7 +5,7 @@ using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Processor
 {
-    internal class Shell : DocumentedSwitch, ITransitDbSource, ITransitDbSink
+    internal class Shell : DocumentedSwitch, ITransitDbSource, ITransitDbSink, ITransitDbModifier
     {
         private static readonly string[] _names = {"--shell", "--interactive", "--i"};
 
@@ -17,7 +17,7 @@ namespace Itinero.Transit.Processor
             _extraParams =
                 new List<(List<string> args, bool isObligated, string comment, string defaultValue)>();
 
-        private const bool _isStable = false;
+        private const bool _isStable = true;
 
         public Shell() : base(_names, _about, _extraParams, _isStable)
         {
@@ -40,19 +40,22 @@ namespace Itinero.Transit.Processor
                 $"Transitdb spans {snapshot.ConnectionsDb.EarliestDate.FromUnixTime():s} to {snapshot.ConnectionsDb.LatestDate.FromUnixTime():s}";
         }
 
-        private TransitDb RunShell()
+        private TransitDb RunShell(TransitDb transitDb)
         {
-            var transitDb = new TransitDb(0);
             using (var inStr = Console.In)
             {
                 while (true)
                 {
                     Console.WriteLine("\n\n"+StateMsg(transitDb));
-                    Console.Write("> ");
+                    Console.Write("--");
                     var line = inStr.ReadLine();
                     if (line == null || line.Equals("q"))
                     {
-                        Console.WriteLine("Received end-of-file, quitting");
+                        
+                  
+                        var r = new Random();
+                        var i = r.Next(_endings.Length);
+                        Console.WriteLine($"Quitting IDP-shell. {_endings[i]}");
                         break;
                     }
 
@@ -115,12 +118,28 @@ namespace Itinero.Transit.Processor
 
         public TransitDb Generate(Dictionary<string, string> parameters)
         {
-            return RunShell();
+            return RunShell(new TransitDb(0));
         }
 
         public void Use(Dictionary<string, string> parameters, TransitDb transitDb)
         {
-            RunShell();
+            RunShell(transitDb);
         }
+
+        public TransitDb Modify(Dictionary<string, string> parameters, TransitDb transitDb)
+        {
+            return RunShell(transitDb);
+        }
+
+        private readonly string[] _endings = {
+            "Have a pleasant day",
+            "See you next time!",
+            "Over and out.",
+            "Computers follow your orders, not your intentions.",
+            "How did the locomotive get so good at it’s job? Training",
+            "How do you find a missing train? Follow the tracks",
+            "What happened to the man that took the train home?He had to give it back!",
+            "Why was the train late? It kept getting side tracked."
+        };
     }
 }

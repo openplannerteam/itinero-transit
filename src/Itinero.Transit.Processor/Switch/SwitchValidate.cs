@@ -23,9 +23,11 @@ namespace Itinero.Transit.Processor.Switch
                         .SetDefault("*"),
                     SwitchesExtensions.opt("cutoff", "Only show this many messages. Default: 25")
                         .SetDefault("10"),
+                    SwitchesExtensions.opt("relax", "Use more relaxed parameters for real-world data, if they should not be a problem for journey planning. For example, teleportations <10km are ignored, very fast trains <10km are ignored. Notice that I would expect those to cases to cause regular delays though!")
+                        .SetDefault("false")
                 };
 
-        private const bool _isStable = false;
+        private const bool _isStable = true;
 
         public SwitchValidate() : base(_names, _about, _extraParams, _isStable)
         {
@@ -40,12 +42,18 @@ namespace Itinero.Transit.Processor.Switch
 
         public void Use(Dictionary<string, string> parameters, TransitDb transitDb)
         {
-            var cutoff = uint.Parse(parameters["cutoff"]);
+            var cutoff = parameters.Int("cutoff");
             var typesToPrint = parameters["type"];
+            var relax = parameters.Bool("relax");
 
             foreach (var validation in Validators)
             {
-                var msgs = validation.Validate(transitDb);
+                var msgs = validation.Validate(transitDb, relax);
+
+                if (msgs.Count == 0)
+                {
+                    Console.WriteLine("No errors or warnings in validation. This is nearly impossible!");
+                }
                 var hist = msgs.CountTypes();
 
 
@@ -59,13 +67,19 @@ namespace Itinero.Transit.Processor.Switch
                     }
 
                     var count = hist[type];
-                    msgs.PrintType(type, (int) count, (int) cutoff);
+                    msgs.PrintType(type,  (int) count.count, (int) cutoff);
                 }
 
-                foreach (var (type, count) in hist)
+                foreach (var (type, (count, isHardError)) in hist)
                 {
-                    Console.WriteLine($"Found {count} errors of type {type}");
+                    var err = isHardError ? "error" : "warning";
+                    if (count != 1)
+                    {
+                        err += "s";
+                    }
+                    Console.WriteLine($"Found {count} {err} of type {type}");
                 }
+                
             }
         }
     }

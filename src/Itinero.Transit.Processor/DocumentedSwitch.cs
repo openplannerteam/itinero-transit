@@ -35,6 +35,8 @@ namespace Itinero.Transit.Processor
         private readonly List<(List<string> argNames, bool isObligated, string comment, string defaultValue)>
             _extraParams;
 
+        public List<string> OptionNames => _extraParams.SelectMany(param => param.argNames).ToList();
+
 
         /// <summary>
         /// Should this switch be clearly showed in the documentation?

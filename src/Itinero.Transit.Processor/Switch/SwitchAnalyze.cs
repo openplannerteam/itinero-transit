@@ -26,7 +26,7 @@ namespace Itinero.Transit.Processor.Switch
                         .SetDefault("calculationTime (ms)"),
                 };
 
-        private const bool _isStable = false;
+        private const bool _isStable = SwitchCalculateAll._isStable && false;
 
         public SwitchAnalyze() :
             base(_names, _about, _extraParams, _isStable)

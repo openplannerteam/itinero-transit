@@ -24,13 +24,13 @@ namespace Itinero.Transit.Processor.Switch
                 {
                     SwitchesExtensions.opt("file",
                             "The file to write the data to, in .csv format. The strings '{from}' and '{to}' in the name will be replaced by the actual name. If they are not given, the results will instead be appended")
-                        .SetDefault("output-{from}.csv"),
+                        .SetDefault("output/output-{from}.csv"),
                     SwitchesExtensions.opt("from", "The URI of the departure station. Use * for all")
                         .SetDefault("*"),
                     SwitchesExtensions.opt("to", "The URI of the arrival station. Use * for all")
                         .SetDefault("*"),
                     SwitchesExtensions.opt("summarize", "If this flag is set, only statistics are kept.")
-                        .SetDefault("false"),
+                        .SetDefault("true"),
                     SwitchesExtensions.opt("departureTime",
                         "The earliest allowed departure time. If unset, the entire time of the database will be used"),
                     SwitchesExtensions.opt("arrivalTime",
@@ -46,7 +46,7 @@ namespace Itinero.Transit.Processor.Switch
                         .SetDefault("0"),
                 };
 
-        private const bool _isStable = true;
+        internal const bool _isStable = false;
 
 
         public SwitchCalculateAll
@@ -213,6 +213,8 @@ namespace Itinero.Transit.Processor.Switch
                     journeys = calculator.CalculateAllJourneys();
                 }
 
+                journeys = journeys ?? new List<Journey<TransferMetric>>();
+
                 var end = DateTime.Now;
                 fileWriter.WriteToFile(fileName, journeys, (uint) (end - start).TotalMilliseconds);
                 return journeys?.Count ?? 0;
@@ -266,6 +268,12 @@ namespace Itinero.Transit.Processor.Switch
 
             public void WriteToFile(string fileName, List<Journey<TransferMetric>> js, uint timeNeededMs)
             {
+
+                var dir = Path.GetDirectoryName(fileName);
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
                 if (!File.Exists(fileName))
                 {
                     File.WriteAllText(fileName, (_summarize ? _headerSummarized : _header) + "\n");

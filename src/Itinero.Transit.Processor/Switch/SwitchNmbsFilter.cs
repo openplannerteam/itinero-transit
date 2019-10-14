@@ -12,7 +12,7 @@ namespace Itinero.Transit.Processor.Switch
         private static readonly string[] _names = {"--sncb-filter", "--nmbs-filter"};
 
         private static string _about =
-            "Legacy for NMBS. NMBS currently (anno 2019) doesn't correctly support platforms. This filter throws out all the useless locations which represent a single platform (URL which ends with _1, _2, ...)";
+            "Remove useless stop-identifiers from NMBS/SNCB. NMBS currently (anno 2019) doesn't correctly support platforms. This filter throws out all the useless locations which represent a single platform (URL which ends with _1, _2, ...)";
 
 
         private static readonly List<(List<string> args, bool isObligated, string comment, string defaultValue)>
