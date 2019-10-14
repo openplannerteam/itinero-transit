@@ -14,7 +14,7 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
             var triggered = false;
 
 
-            void Update(TransitDb.TransitDbWriter wr, DateTime start, DateTime end)
+            void Update(TransitDbWriter wr, DateTime start, DateTime end)
             {
                 triggered = true;
                 Assert.Equal(TimeSpan.FromSeconds(3), end - start);
@@ -39,7 +39,7 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
             var triggered5 = 0;
             var triggered10 = 0;
 
-            void Update(TransitDb.TransitDbWriter wr, DateTime start, DateTime end)
+            void Update(TransitDbWriter wr, DateTime start, DateTime end)
             {
                 var diff = (int) (end - start).TotalSeconds;
                 if (diff == 5)

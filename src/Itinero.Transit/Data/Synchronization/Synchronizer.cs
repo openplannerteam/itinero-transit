@@ -25,7 +25,7 @@ namespace Itinero.Transit.Data.Synchronization
 
 
         public Synchronizer(TransitDb db,
-            Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb,
+            Action<TransitDbWriter, DateTime, DateTime> updateDb,
             IReadOnlyCollection<ISynchronizationPolicy> policies,
             uint initialDelaySeconds = 1)
         {
@@ -69,14 +69,14 @@ namespace Itinero.Transit.Data.Synchronization
                 $"Started an automated task timer with clockrate {_clockRate} sec. Included policies are:\n{txt}");
         }
 
-        public Synchronizer(TransitDb db, Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb,
+        public Synchronizer(TransitDb db, Action<TransitDbWriter, DateTime, DateTime> updateDb,
             uint initialDelaySeconds,
             params ISynchronizationPolicy[] policies) :
             this(db, updateDb, new List<ISynchronizationPolicy>(policies), initialDelaySeconds)
         {
         }
 
-        public Synchronizer(TransitDb db, Action<TransitDb.TransitDbWriter, DateTime, DateTime> updateDb,
+        public Synchronizer(TransitDb db, Action<TransitDbWriter, DateTime, DateTime> updateDb,
             params ISynchronizationPolicy[] policies) :
             this(db, updateDb, new List<ISynchronizationPolicy>(policies))
         {

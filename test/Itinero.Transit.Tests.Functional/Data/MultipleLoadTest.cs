@@ -12,7 +12,7 @@ namespace Itinero.Transit.Tests.Functional.Data
         {
             var sncb = Belgium.Sncb();
 
-            void UpdateTimeFrame(TransitDb.TransitDbWriter w, DateTime start, DateTime end)
+            void UpdateTimeFrame(TransitDbWriter w, DateTime start, DateTime end)
             {
                 sncb.AddAllConnectionsTo(w, start, end);
             }

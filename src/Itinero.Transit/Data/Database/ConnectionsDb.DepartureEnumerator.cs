@@ -1,9 +1,20 @@
+using System.Diagnostics.Contracts;
 using Itinero.Transit.Data.Core;
 
 namespace Itinero.Transit.Data
 {
     public partial class ConnectionsDb
     {
+        /// <summary>
+        /// Gets an enumerator enumerating connections sorted by their departure time.
+        /// </summary>
+        /// <returns>The departure enumerator.</returns>
+        [Pure]
+        public DepartureEnumerator GetDepartureEnumerator()
+        {
+            return new DepartureEnumerator(this);
+        }
+
         /// <summary>
         /// The departureEnumerator uses the departureWindowIndexes to crawl through the connectionsDB
         ///
@@ -76,14 +87,11 @@ namespace Itinero.Transit.Data
             private void NextWindow()
             {
                 // We increase the dateTime so that it is exactly the start of the next window
-                NextWindowCounter++;
                 CurrentDateTime =
                     ((CurrentDateTime / _connectionsDb.WindowSizeInSeconds) + 1) *
                     _connectionsDb.WindowSizeInSeconds;
                 _indexInWindow = _alreadyUsed[_connectionsDb.WindowFor(CurrentDateTime)];
             }
-
-            public int NextWindowCounter;
 
 
             /// <summary>
@@ -113,7 +121,8 @@ namespace Itinero.Transit.Data
                     if (connDepTime < dateTime)
                     {
                         left = m + 1;
-                    }else
+                    }
+                    else
                     {
                         right = m;
                     }
@@ -150,7 +159,7 @@ namespace Itinero.Transit.Data
                 // For starters, what is the wanted window and does it exist?
                 var window = _connectionsDb.WindowFor(CurrentDateTime);
 
-              
+
                 var windowPointer = _connectionsDb.DepartureWindowPointers[window * 2 + 0];
 
                 if (windowPointer == _noData)
@@ -162,6 +171,7 @@ namespace Itinero.Transit.Data
 
                     goto hasNext; // === return HasNext();
                 }
+
                 if (_indexInWindow == uint.MaxValue)
                 {
                     // Needs some initialization
@@ -226,7 +236,7 @@ namespace Itinero.Transit.Data
                 CurrentDateTime = depTime;
                 return true;
             }
-            
+
             private uint BinarySearchLast(uint window, ulong dateTime)
             {
                 //https://en.wikipedia.org/wiki/Binary_search_algorithm#Procedure_for_finding_the_rightmost_element
@@ -249,13 +259,14 @@ namespace Itinero.Transit.Data
                     if (connDepTime <= dateTime)
                     {
                         left = m + 1;
-                    }else
+                    }
+                    else
                     {
                         right = m;
                     }
                 }
 
-                return left-1;
+                return left - 1;
             }
 
             private void PreviousWindow()
@@ -284,7 +295,7 @@ namespace Itinero.Transit.Data
                 {
                     return false;
                 }
-                
+
 
                 // ALL RIGHT FOLKS
                 // Time to figure things out!
@@ -312,15 +323,14 @@ namespace Itinero.Transit.Data
                     PreviousWindow();
                     goto hasPrevious; // === return HasPrevious();
                 }
-                
+
                 if (_indexInWindow == uint.MaxValue)
                 {
                     // Needs some initialization
                     // We search the last element in the window in the current dateTime
-                    _indexInWindow = BinarySearchLast(window, CurrentDateTime)+1;
+                    _indexInWindow = BinarySearchLast(window, CurrentDateTime) + 1;
                     _alreadyUsed[window] = _indexInWindow;
                 }
-
 
 
                 ulong depTime;

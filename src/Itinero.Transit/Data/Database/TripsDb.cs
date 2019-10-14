@@ -18,7 +18,7 @@ namespace Itinero.Transit.Data
     /// </summary>
     public class TripsDb : IDatabaseReader<TripId, Trip>
     {
-        private readonly ArrayBase<string> _tripIds; // holds the trip ids.
+        private readonly ArrayBase<string> _tripIds; // holds the trip global ids (the URIs).
         private readonly ArrayBase<uint> _tripAttributeIds; // holds the trip attribute ids.
 
         private readonly int _tripIdHashSize = ushort.MaxValue;

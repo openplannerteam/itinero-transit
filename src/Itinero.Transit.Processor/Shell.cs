@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
-using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Processor

@@ -384,7 +384,7 @@ namespace Itinero.Transit.Journey
         }
 
         [Pure]
-        internal string ToString(TransitDb.TransitDbSnapShot snapshot, uint truncateAt = 15)
+        internal string ToString(TransitDbSnapShot snapshot, uint truncateAt = 15)
         {
             return ToString(15, snapshot.StopsDb.GetReader());
         }

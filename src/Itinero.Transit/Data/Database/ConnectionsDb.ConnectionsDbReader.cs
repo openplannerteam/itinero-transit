@@ -6,9 +6,7 @@ namespace Itinero.Transit.Data
     /// <summary>
     /// A connections DB reader is an object which allows accessing properties of a single connection contained in the DB
     /// </summary>
-    public partial class ConnectionsDb :
-        IDatabaseReader<ConnectionId, Connection>,
-        IDatabaseEnumerator<ConnectionId>
+    public partial class ConnectionsDb
     {
         public bool Get(string globalId, Connection objectToWrite)
         {

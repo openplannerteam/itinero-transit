@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Itinero.Transit.Data.Core;
+using System.IO;
 
 namespace Itinero.Transit.Data
 {
@@ -10,6 +10,18 @@ namespace Itinero.Transit.Data
         /// Gives the internal DatabaseId
         /// </summary>
         uint DatabaseId { get; }
+    }
+
+    public interface IDatabase<TId, in T> :
+        IDatabaseEnumerator<TId>, 
+        IDatabaseReader<TId, T>,
+        IDatabaseSerializer
+        where TId : struct, InternalId
+    {
+        IDatabase<TId, T> Clone();
+
+        TId Add(T value);
+        TId AddOrUpdate(T value);
     }
     
     /// <summary>
@@ -98,5 +110,12 @@ namespace Itinero.Transit.Data
         bool HasNext(TId current, out TId next);
     }
 
+    public interface IDatabaseSerializer
+    {
+
+        long WriteTo(Stream stream);
+       
+        
+    }
 
 }

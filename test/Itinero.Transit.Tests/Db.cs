@@ -60,7 +60,7 @@ namespace Itinero.Transit.Tests
             return transitDb;
         }
 
-        public static Connection GetConn(this TransitDb.TransitDbSnapShot db, uint id)
+        public static Connection GetConn(this TransitDbSnapShot db, uint id)
         {
             var reader = db.ConnectionsDb;
             return reader.Get(new ConnectionId(0, id));

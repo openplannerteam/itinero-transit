@@ -78,7 +78,7 @@ namespace Itinero.Transit.Tests.Functional.Data
                     var c = cdb.Get(
                         new ConnectionId(0, cid));
                     Information(
-                        $"{i} The forwards enumerator did not contain {cid} (dep time {c.DepartureTime} ({cdb.WindowFor(c.DepartureTime)})");
+                        $"{i} The forwards enumerator did not contain {cid} (dep time {c.DepartureTime} ({((ConnectionsDb) cdb).WindowFor(c.DepartureTime)})");
                     i++;
                 }
             }

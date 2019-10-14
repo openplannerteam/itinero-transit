@@ -29,7 +29,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
             Func<WithProfile<TransferMetric>, DateTime, List<WithTime<TransferMetric>>> createInputs,
             Profile<TransferMetric> profile = null)
         {
-            var tdbs = new List<TransitDb.TransitDbSnapShot>();
+            var tdbs = new List<TransitDbSnapShot>();
             for (uint i = 0; i < transitDbs.Count; i++)
             {
                 var path = transitDbs[(int) i];

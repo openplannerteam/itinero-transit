@@ -19,7 +19,7 @@ namespace Itinero.Transit.IO.OSM.Data
             tdb.GetWriter().UseOsmRoute(tdb.DatabaseId, route, start, end);
         }
 
-        internal static void UseOsmRoute(this TransitDb.TransitDbWriter wr, uint dbId, OsmRoute route, DateTime start,
+        internal static void UseOsmRoute(this TransitDbWriter wr, uint dbId, OsmRoute route, DateTime start,
             DateTime end)
         {
             Log.Information($"Adding route {route.Id} to the transitdb in frame {start} --> {end}. " +

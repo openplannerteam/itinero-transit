@@ -363,7 +363,6 @@ namespace Itinero.Transit.Tests.Core.Data
 
             Assert.Equal(2, count);
             Assert.True((end - start).TotalMilliseconds < 5.0);
-            Assert.True(enumerator.NextWindowCounter < 100);
 
             start = DateTime.Now;
             enumerator.MoveTo(100000000);
@@ -378,7 +377,6 @@ namespace Itinero.Transit.Tests.Core.Data
 
             Assert.Equal(2, count);
             Assert.True((end - start).TotalMilliseconds < 5.0);
-            Assert.True(enumerator.NextWindowCounter < 100);
         }
     }
 }

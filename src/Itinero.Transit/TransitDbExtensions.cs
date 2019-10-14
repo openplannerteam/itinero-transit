@@ -26,7 +26,7 @@ namespace Itinero.Transit
     /// </summary>
     public static class TransitDbExtensions
     {
-        public static WithProfile<T> SelectProfile<T>(this IEnumerable<TransitDb.TransitDbSnapShot> tdbs,
+        public static WithProfile<T> SelectProfile<T>(this IEnumerable<TransitDbSnapShot> tdbs,
             Profile<T> profile)
             where T : IJourneyMetric<T>
         {
@@ -46,10 +46,10 @@ namespace Itinero.Transit
             return tdb.Latest.SelectProfile(profile);
         }
 
-        public static WithProfile<T> SelectProfile<T>(this TransitDb.TransitDbSnapShot tdb, Profile<T> profile)
+        public static WithProfile<T> SelectProfile<T>(this TransitDbSnapShot tdb, Profile<T> profile)
             where T : IJourneyMetric<T>
         {
-            return SelectProfile(new List<TransitDb.TransitDbSnapShot> {tdb}, profile);
+            return SelectProfile(new List<TransitDbSnapShot> {tdb}, profile);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Itinero.Transit
         /// <param name="around">Search around this stop</param>
         /// <param name="maxDistanceInMeters">The maximum distance in meters.</param>
         /// <returns>The closest stop.</returns>
-        public static IStop FindClosestStop(this TransitDb.TransitDbSnapShot snapShot, IStop around,
+        public static IStop FindClosestStop(this TransitDbSnapShot snapShot, IStop around,
             uint maxDistanceInMeters = 1000)
         {
             return snapShot.StopsDb.GetReader().FindClosest(around, maxDistanceInMeters);
@@ -72,26 +72,26 @@ namespace Itinero.Transit
         /// <param name="around">The stop to search around.</param>
         /// <param name="maxDistanceInMeters">The maximum distance in meters.</param>
         /// <returns>The closest stop.</returns>
-        public static Stop FindClosestStop(this IEnumerable<TransitDb.TransitDbSnapShot> snapShot, IStop around,
+        public static Stop FindClosestStop(this IEnumerable<TransitDbSnapShot> snapShot, IStop around,
             uint maxDistanceInMeters = 1000)
         {
             var reader = StopsReaderAggregator.CreateFrom(snapShot);
             return reader.FindClosest(around, maxDistanceInMeters);
         }
 
-        public static StopId FindStop(this TransitDb.TransitDbSnapShot snapshot, string locationId,
+        public static StopId FindStop(this TransitDbSnapShot snapshot, string locationId,
             string errMsg = null)
         {
             return snapshot.StopsDb.GetReader().FindStop(locationId, errMsg);
         }
 
-        public static StopId FindStop(this IEnumerable<TransitDb.TransitDbSnapShot> snapshot, string locationId,
+        public static StopId FindStop(this IEnumerable<TransitDbSnapShot> snapshot, string locationId,
             string errMsg = null)
         {
             return StopsReaderAggregator.CreateFrom(snapshot).FindStop(locationId, errMsg);
         }
 
-        public static IEnumerable<StopId> FindStops(this IEnumerable<TransitDb.TransitDbSnapShot> snapshot,
+        public static IEnumerable<StopId> FindStops(this IEnumerable<TransitDbSnapShot> snapshot,
             IEnumerable<string> locationIds,
             Func<string, string> errMsg = null)
         {
@@ -214,12 +214,12 @@ namespace Itinero.Transit
             Profile = profile;
         }
 
-        internal WithProfile(IEnumerable<TransitDb.TransitDbSnapShot> tdbs, Profile<T> profile)
+        internal WithProfile(IEnumerable<TransitDbSnapShot> tdbs, Profile<T> profile)
         {
             StopsReader = StopsReaderAggregator.CreateFrom(tdbs);
             ConnectionEnumerator =
                 ConnectionEnumeratorAggregator.CreateFrom(
-                    tdbs.Select(tdb => tdb.ConnectionsDb.GetDepartureEnumerator()));
+                    tdbs.Select(tdb => ((ConnectionsDb) tdb.ConnectionsDb).GetDepartureEnumerator()));
             ConnectionReader = DatabaseEnumeratorAggregator<ConnectionId, Connection>.CreateFrom(
                 tdbs.Select(tdb => tdb.ConnectionsDb));
             Profile = new Profile<T>(
@@ -734,7 +734,7 @@ namespace Itinero.Transit
             CheckAll();
             var settings = GetScanSettings();
 
-        // TODO enable   settings.MetricGuesser =new SimpleMetricGuesser<T>(settings.ConnectionsEnumerator, settings.DepartureStop);
+            // TODO enable   settings.MetricGuesser =new SimpleMetricGuesser<T>(settings.ConnectionsEnumerator, settings.DepartureStop);
 
             var pcs = new ProfiledConnectionScan<T>(settings);
             return pcs.CalculateJourneys();

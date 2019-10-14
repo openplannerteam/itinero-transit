@@ -15,7 +15,7 @@ namespace Itinero.Transit.Data.Aggregators
             return CreateFrom(new List<IStopsReader> {a, b});
         }
 
-        public static IStopsReader CreateFrom(IEnumerable<TransitDb.TransitDbSnapShot> snapShot)
+        public static IStopsReader CreateFrom(IEnumerable<TransitDbSnapShot> snapShot)
         {
             var enumerators = new List<IStopsReader>();
 

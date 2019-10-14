@@ -30,8 +30,7 @@ namespace Itinero.Transit.IO.LC
         /// <returns></returns>
         public LinkedConnectionDataset(
             Uri connectionsLink,
-            Uri locationsUri,
-            Action<string> onError = null
+            Uri locationsUri
         ) : this()
         {
             var conProv = new ConnectionProvider
@@ -52,7 +51,7 @@ namespace Itinero.Transit.IO.LC
         /// Adds all connection data between the given dates into the databases.
         /// Locations are only added as needed
         /// </summary>
-        public (int loaded, int reused) AddAllConnectionsTo(TransitDb.TransitDbWriter writer,
+        public (int loaded, int reused) AddAllConnectionsTo(TransitDbWriter writer,
             DateTime start, DateTime end)
         {
             return writer.AddAllConnections(this, start, end);
@@ -61,14 +60,14 @@ namespace Itinero.Transit.IO.LC
         /// <summary>
         /// Adds all location data into the database
         /// </summary>
-        public void AddAllLocationsTo(TransitDb.TransitDbWriter writer)
+        public void AddAllLocationsTo(TransitDbWriter writer)
         {
             writer.AddAllLocations(this);
         }
 
 
 
-        public void UpdateTimeFrame(TransitDb.TransitDbWriter w, DateTime start, DateTime end
+        public void UpdateTimeFrame(TransitDbWriter w, DateTime start, DateTime end
         )
         {
             Log.Information($"Loading time window {start}->{end}");
