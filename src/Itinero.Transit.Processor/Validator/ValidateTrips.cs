@@ -8,7 +8,7 @@ namespace Itinero.Transit.Processor.Validator
 {
     public class ValidateTrips : IValidation
     {
-        public List<Message> Validate(TransitDb tdb)
+        public List<Message> Validate(TransitDb tdb, bool relax = false)
         {
             var errors = new List<Message>();
 
@@ -19,7 +19,7 @@ namespace Itinero.Transit.Processor.Validator
             var enumerator = conns.GetDepartureEnumerator();
             enumerator.MoveTo(conns.EarliestDate);
 
-            void Emit(string type, string message)
+            void Err(string type, string message)
             {
                 var conn = new Connection();
                 enumerator.Current(conn);
@@ -27,7 +27,21 @@ namespace Itinero.Transit.Processor.Validator
                 {
                     Connection = conn,
                     MessageText = message,
-                    Type = type
+                    Type = type,
+                    IsHardError = true
+                });
+            }
+
+            void Wrn(string type, string message)
+            {
+                var conn = new Connection();
+                enumerator.Current(conn);
+                errors.Add(new Message
+                {
+                    Connection = conn,
+                    MessageText = message,
+                    Type = type,
+                    IsHardError = false
                 });
             }
 
@@ -41,11 +55,11 @@ namespace Itinero.Transit.Processor.Validator
                 var c = new Connection();
                 enumerator.Current(c);
 
-                
-                
+
                 if (prevConnection != null && prevConnection.DepartureTime > c.DepartureTime)
                 {
-                    throw new Exception($"ERROR IN DEPARTURE ENUMERATOR! PANIC PANIC PANIC! {prevConnection.DepartureTime} > {c.DepartureTime}");
+                    throw new Exception(
+                        $"ERROR IN DEPARTURE ENUMERATOR! PANIC PANIC PANIC! {prevConnection.DepartureTime} > {c.DepartureTime}");
                 }
 
                 prevConnection = c;
@@ -70,70 +84,84 @@ namespace Itinero.Transit.Processor.Validator
 
                     var stationInfo =
                         $"{currStop.GlobalId} {currStop.GetName()} and {nextStop.GlobalId} {nextStop.GetName()} (totaldistance {(int) distance})";
-                    
+
                     if (!oldConnection.ArrivalStop.Equals(c.DepartureStop))
                     {
-                        Emit("jump",
-                            $"Error in trip {trip.GlobalId}" +
-                            $"The trip arrived in {prevStop.GetName()} at {oldConnection.ArrivalTime.FromUnixTime():s} (incl {oldConnection.ArrivalDelay}s delay) from {prevprevStop.GetName()}\n" +
-                            $"The trip now departs in {currStop.GetName()} at {c.DepartureTime.FromUnixTime():s} (incl {c.DepartureDelay}s delay)\n" +
-                            $"The trip should arrive in {nextStop.GetName()} at {c.ArrivalTime.FromUnixTime():s} (incl {c.ArrivalDelay}s delay)" +
-                            $"Previous trip data {prevConnection.ToJson()}")
+                        Err("jump",
+                                $"Error in trip {trip.GlobalId}" +
+                                $"The trip arrived in {prevStop.GetName()} at {oldConnection.ArrivalTime.FromUnixTime():s} (incl {oldConnection.ArrivalDelay}s delay) from {prevprevStop.GetName()}\n" +
+                                $"The trip now departs in {currStop.GetName()} at {c.DepartureTime.FromUnixTime():s} (incl {c.DepartureDelay}s delay)\n" +
+                                $"The trip should arrive in {nextStop.GetName()} at {c.ArrivalTime.FromUnixTime():s} (incl {c.ArrivalDelay}s delay)" +
+                                $"Previous trip data {prevConnection.ToJson()}")
                             ;
                     }
 
                     if (c.DepartureStop.Equals(c.ArrivalStop))
                     {
-                        Emit("stall",
+                        Err("stall",
                             $"This train stays in the same place");
                     }
 
                     if (c.ArrivalTime < c.DepartureTime)
                     {
-                        Emit("timetravel between station",
+                        Err("timetravel between station",
                             $"This train travels back in time, it arrives {c.DepartureTime - c.ArrivalTime}s before it departs");
                     }
 
                     if (oldConnection.ArrivalTime > c.DepartureTime)
                     {
                         var delta = oldConnection.ArrivalTime - c.DepartureTime;
-                        Emit("timetravel in station",
+                        Err("timetravel in station",
                             $"Connection departs {delta} seconds before its arrival. Departure time is {c.DepartureTime}, arrival time is {oldConnection.ArrivalTime} (note: the previous connection has {oldConnection.ArrivalDelay}s delay arriving)\n" +
                             $"OldConnection data: {oldConnection.ToJson()}");
                     }
 
                     if (c.ArrivalTime == c.DepartureTime)
                     {
-                        Emit("teleportation",
-                            "This trip needs no time to reach the next station");
+                        if (!relax || distance >= 10000)
+                        {
+                            Wrn("teleportation",
+                                $"This trip needs no time to reach the next station: {stationInfo}");
+                        }
                     }
-                    else if (distance < 1)
+                    else if (
+                        (!relax && distance < 50) ||
+                        (relax && distance < 1))
                     {
-                        Emit("Closeby stations",
+                        Err("Closeby stations",
                             $"These stations are less then 1m apart: {currStop.GlobalId} and {nextStop.GlobalId}");
                     }
                     else
                     {
                         if (speedKmH < 0)
                         {
-                            Emit("reverse",
+                            Err("reverse",
                                 "The speed of this connection is negative. Probably a timetraveller as well");
                         }
 
-                        if (speedKmH <= 1.0 && speedKmH >= 0 && distance > 10000)
+                        if (speedKmH <= 1.0 && speedKmH >= 0 &&
+                            !(relax && distance < 10000))
                         {
-                            Emit("slow", $"This vehicle only goes about 1 km/h between {stationInfo}");
+                            Wrn("slow", $"This vehicle only goes about 1 km/h between {stationInfo}");
                         }
 
-                        if (speedKmH > 150)
+
+                        if (
+                            !(relax && distance < 10000)  // Free pass for anything under 10km
+                            &&
+                            (distance < 10000 && speedKmH > 100 ||
+                             distance < 50000 && speedKmH > 150 ||
+                             distance < 100000 && speedKmH > 200))
+
                         {
-                            Emit("fast",
+                            Wrn("fast",
                                 $"This is a very fast train driving {speedKmH}km/h in {c.ArrivalTime - c.DepartureTime}s between {stationInfo}. (This can be correct in the case of TGV/ICE/...");
                         }
 
                         if (speedKmH >= 574)
                         {
-                            Emit("world-record", $"This train drives {speedKmH}km/h between {stationInfo}. The current world record is 574");
+                            Err("world-record",
+                                $"This train drives {speedKmH}km/h between {stationInfo}. The current world record is 574");
                         }
                     }
                 }

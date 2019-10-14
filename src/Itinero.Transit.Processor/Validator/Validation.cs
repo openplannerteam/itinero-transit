@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
-using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Processor.Validator
 {
@@ -15,30 +14,31 @@ namespace Itinero.Transit.Processor.Validator
 
         public string MessageText;
         public string Type;
+        public bool IsHardError;
 
         public override string ToString()
         {
             return $"[{Type}]\n" +
                    $"    {MessageText.Replace("\n","\n    ")}\n" +
-                   $"    > Live timetable element probably is https://graph.irail.be/sncb/connections?departureTime={Connection?.DepartureTime.FromUnixTime():s}\n" +
                    $"    > {Connection.ToJson()}\n";
         }
     }
 
     public static class MessageExtensions
     {
-        public static Dictionary<string, uint> CountTypes(this IEnumerable<Message> msgs)
+        public static Dictionary<string, (uint count, bool isHardError)> CountTypes(this IEnumerable<Message> msgs)
         {
-            var allTypes = new Dictionary<string, uint>();
+            var allTypes = new Dictionary<string, (uint count, bool isHardError)>();
             foreach (var msg in msgs)
             {
                 if (!allTypes.ContainsKey(msg.Type))
                 {
-                    allTypes[msg.Type] = 1;
+                    allTypes[msg.Type] = (1, msg.IsHardError);
                 }
                 else
                 {
-                    allTypes[msg.Type]++;
+                    var (count, isHardError) = allTypes[msg.Type];
+                    allTypes[msg.Type] = (count + 1, isHardError || msg.IsHardError);
                 }
             }
 
@@ -75,7 +75,7 @@ namespace Itinero.Transit.Processor.Validator
         /// Generates a list of warnings/errors for the transitDb
         /// </summary>
         /// <returns></returns>
-        List<Message> Validate(TransitDb tdb);
+        List<Message> Validate(TransitDb tdb, bool relax);
 
         /// <summary>
         /// Gives information about the validation
