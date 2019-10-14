@@ -12,7 +12,7 @@ using Reminiscence.Arrays;
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Functional")]
 
-namespace Itinero.Transit.Data
+namespace Itinero.Transit.Data.ReminiscenceConnectionsDb
 {
     public partial class ConnectionsDb : IConnectionsDb
     {
@@ -106,7 +106,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// The unix-time of the earliest departure time seen
         /// </summary>
-        public ulong EarliestDate { get; private set; }= ulong.MaxValue;
+        public ulong EarliestDate { get; private set; } = ulong.MaxValue;
 
         /// <summary>
         /// The unix-time of the latest departure time seen
@@ -646,13 +646,17 @@ namespace Itinero.Transit.Data
         {
             var windowPointer = DepartureWindowPointers[window * 2 + 0];
             var windowSize = DepartureWindowPointers[window * 2 + 1];
-            QuickSort.Sort(i => GetConnectionDeparture(DeparturePointers[i]),
-                (i1, i2) =>
-                {
-                    var temp = DeparturePointers[i1];
-                    DeparturePointers[i1] = DeparturePointers[i2];
-                    DeparturePointers[i2] = temp;
-                }, windowPointer, windowPointer + windowSize - 1);
+            Action<long, long> swap = (i1, i2) =>
+            {
+                var temp = DeparturePointers[i1];
+                DeparturePointers[i1] = DeparturePointers[i2];
+                DeparturePointers[i2] = temp;
+            };
+            Sorting.Sort(i => GetConnectionDeparture(DeparturePointers[i]), swap
+                , windowPointer, windowPointer + windowSize - 1);
+
+
+          // TODO Add sort based on assumptions, see https://github.com/openplannerteam/itinero-transit/issues/82
         }
 
 

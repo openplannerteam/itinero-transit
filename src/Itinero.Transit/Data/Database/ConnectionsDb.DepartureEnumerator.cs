@@ -1,7 +1,7 @@
 using System.Diagnostics.Contracts;
 using Itinero.Transit.Data.Core;
 
-namespace Itinero.Transit.Data
+namespace Itinero.Transit.Data.ReminiscenceConnectionsDb
 {
     public partial class ConnectionsDb
     {
@@ -202,10 +202,6 @@ namespace Itinero.Transit.Data
 
                     // Ok, so we have the right window and the connection exists! Hooray!
                     _connectionInternalId = _connectionsDb.DeparturePointers[windowPointer + _indexInWindow];
-
-                    // We update the DTI
-                    _indexInWindow++;
-
                     // and get the departure time of the index because...
                     depTime = _connectionsDb.GetConnectionDeparture(_connectionInternalId);
 
@@ -213,6 +209,10 @@ namespace Itinero.Transit.Data
                     // Either just because of the specified dateTime
                     // or because a window has connections from multiple days
                     // If that happens, we just restart everything:
+                    
+                    
+                    // We update the DTI
+                    _indexInWindow++;
                 } while (depTime < CurrentDateTime);
 
 

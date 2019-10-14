@@ -126,7 +126,7 @@ namespace Itinero.Transit.Data.Attributes
         public void Optimize()
         {
             // sort array.
-            QuickSort.Sort(i => _data[i * 2], (i, j) =>
+            Sorting.Sort(i => _data[i * 2], (i, j) =>
             {
                 var t1 = _data[i * 2 + 0];
                 var t2 = _data[i * 2 + 1];

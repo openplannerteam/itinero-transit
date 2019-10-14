@@ -5,12 +5,10 @@ namespace Itinero.Transit.Data.Core
 {
     public class Connection
     {
-        public const ushort ModeNormal = 0;
         public const ushort ModeGetOnOnly = 1;
         public const ushort ModeGetOffOnly = 2;
-        public const ushort ModeCantGetOnOff = 3;
 
-        public const ushort ModeCancelled = 4;
+        private const ushort ModeCancelled = 4;
 
         public Connection()
         {
