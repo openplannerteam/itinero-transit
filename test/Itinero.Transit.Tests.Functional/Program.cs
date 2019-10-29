@@ -64,7 +64,7 @@ namespace Itinero.Transit.Tests.Functional
 
 
             // The default setup - no arrival time given. A window will be constructed, but in some cases no journeys will be found if walking is significantly faster
-            new ProductionServerMimickTest(nmbs, StringConstants.TestDate, null)
+         /*   new ProductionServerMimickTest(nmbs, StringConstants.TestDate, null)
                 .RunOverMultiple(TestConstants.WithWalkAndPtTestCases);
 
             new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(6))
@@ -72,7 +72,7 @@ namespace Itinero.Transit.Tests.Functional
 
        // TODO why does this not work?     new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(12))
        //         .RunOverMultiple(TestConstants.OpenHopperTestCases());
-
+*/
             
             new ConnectionsDbDepartureEnumeratorTest().Run((nmbs, 63155));
             new ReadWriteTest().Run((nmbs, 63155));
