@@ -54,28 +54,6 @@ namespace Itinero.Transit.Tests.Functional
 
             // TODO make sure IRail can handle this one          new MultipleLoadTest().Run();
 
-            new IntermodalTestWithOtherTransport(nmbs, TestConstants.DefaultProfile)
-                .RunOverMultiple(TestConstants.WithWalkTestCases);
-            new IntermodalTestWithOtherTransport(nmbs, TestConstants.WithFirstLastMile)
-                .RunOverMultiple(TestConstants.WithWalkTestCases);
-
-            // The default setup - no arrival time given. A window will be constructed, but in some cases no journeys will be found if walking is significantly faster
-            new ProductionServerMimickTest(nmbs, StringConstants.TestDate, null)
-                .RunOverMultiple(TestConstants.WithWalkAndPtTestCases);
-
-            new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(12))
-                .RunOverMultiple(TestConstants.WithWalkAndPtTestCases);
-
-            new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(12))
-                .RunOverMultiple(TestConstants.OpenHopperTestCases());
-
-
-            new ConnectionsDbDepartureEnumeratorTest().Run((nmbs, 63155));
-            new ReadWriteTest().Run((nmbs, 63155));
-
-            MultiTestRunner.NmbsOnlyTester().RunAllTests();
-            MultiTestRunner.DelijnNmbsTester().RunAllTests();
-
 
             new StopEnumerationTest().Run(new List<TransitDb> {nmbs, wvl});
 
@@ -88,13 +66,6 @@ namespace Itinero.Transit.Tests.Functional
                 (wvl, 3.329758644104004, 50.99052927907061, 1000)
             });
 
-
-            new DelayTest().Run();
-
-            new TestOsmLoadingIntoTransitDb().RunOverMultiple(TestConstants.OsmRelationsToTest);
-
-            new UpdateTransitDbTest().Run();
-
             new InitialSynchronizationTest().Run();
 
             new NoDuplicationTest().Run();
@@ -102,6 +73,40 @@ namespace Itinero.Transit.Tests.Functional
             new CachingTest().Run();
 
             new TestAutoUpdating().Run();
+
+            new ConnectionsDbDepartureEnumeratorTest().Run((nmbs, 65677));
+            new ReadWriteTest().Run((nmbs, 65677));
+
+            new DelayTest().Run();
+
+            new TestOsmLoadingIntoTransitDb().RunOverMultiple(TestConstants.OsmRelationsToTest);
+
+            new UpdateTransitDbTest().Run();
+
+
+            new IntermodalTestWithOtherTransport(nmbs, TestConstants.DefaultProfile)
+                .RunOverMultiple(TestConstants.WithWalkTestCases);
+            new IntermodalTestWithOtherTransport(nmbs, TestConstants.WithFirstLastMile)
+                .RunOverMultiple(TestConstants.WithWalkTestCases);
+
+
+            MultiTestRunner.NmbsOnlyTester().RunAllTests();
+            MultiTestRunner.DelijnNmbsTester().RunAllTests();
+
+
+            // The default setup - no arrival time given. A window will be constructed, but in some cases no journeys will be found if walking is significantly faster
+            new ProductionServerMimickTest(nmbs, StringConstants.TestDate, null)
+                .RunOverMultiple(TestConstants.WithWalkAndPtTestCases);
+
+            new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(12))
+                .RunOverMultiple(TestConstants.WithWalkAndPtTestCases);
+
+            /*
+            // KILL THE SERVER TEST
+            // Run all the OpenHopperTestCases
+            new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(12))
+                .RunOverMultiple(TestConstants.OpenHopperTestCases());
+//*/
 
             Logging.Log.Information("All tests done");
         }

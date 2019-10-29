@@ -15,7 +15,6 @@ namespace Itinero.Transit.Tests.Functional.Utils
     /// </summary>
     public abstract class FunctionalTest
     {
-        
         /// <summary>
         /// Executes this test for the given input.
         /// </summary>
@@ -29,10 +28,10 @@ namespace Itinero.Transit.Tests.Functional.Utils
             var end = DateTime.Now;
             Information($"[OK] {Name} took {(end - start).TotalMilliseconds}ms");
         }
-        
+
         public string Name => GetType().Name;
         public string LogPrefix = "";
-        
+
         /// <summary>
         /// Asserts that the given value is true.
         /// </summary>
@@ -51,6 +50,35 @@ namespace Itinero.Transit.Tests.Functional.Utils
             if (!value)
             {
                 throw new Exception("Assertion failed: " + msg);
+            }
+        }
+
+        protected static void Equal(uint expected, uint actual, string msg = null)
+        {
+            if (!expected.Equals(actual))
+            {
+                throw new Exception(msg ?? $"Assert.Equal failed: Expected {expected} but got {actual}");
+            }
+        }
+
+        protected static void Count(uint expected, IEnumerable collection, string msg = null)
+        {
+            if (collection == null)
+            {
+                throw new Exception(
+                    msg ?? $"Assert.Count failed: Expected {expected} entries but got null as collection");
+            }
+
+            var count = (uint) 0;
+            foreach (var _ in collection)
+            {
+                count++;
+            }
+
+            if (!expected.Equals(count))
+            {
+                throw new Exception(
+                    msg ?? $"Assert.Count failed: Expected {expected} entries but got {count}");
             }
         }
 
@@ -123,7 +151,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
                 throw new Exception("Loop detected in the journey: " + journey.ToString(50, stops, conn));
             }
         }
-        
+
         public void AssertAreSame(ICollection<Journey<TransferMetric>> js, ICollection<Journey<TransferMetric>> bs,
             IStopsReader reader)
         {
@@ -158,7 +186,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
         /// <param name="message">The log message.</param>
         protected void Information(string message)
         {
-            Serilog.Log.Information(LogPrefix+message);
+            Serilog.Log.Information(LogPrefix + message);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Itinero.Transit.Tests.Functional.Data
 
             // enumerate connections by departure time.
             var tt = 0;
-            var forwardCount = 0;
+            var forwardCount = (uint) 0;
             var enumerator = latest.ConnectionsDb;
             var index = enumerator.First().Value;
             var all = new List<uint>();
@@ -51,7 +51,7 @@ namespace Itinero.Transit.Tests.Functional.Data
             }
 
             // enumerate connections by departure time, but in reverse.
-            var backwardsCount = 0;
+            var backwardsCount = (uint) 0;
             departureEnumerator.MoveTo(latest.ConnectionsDb.LatestDate);
             var seenInBackwards = new HashSet<uint>();
             while (departureEnumerator.MovePrevious())
@@ -96,11 +96,11 @@ namespace Itinero.Transit.Tests.Functional.Data
             }
 
 
-            True(backwardsCount == forwardCount);
-            True(backwardsCount == Input.expectedNumberOfConnections);
-            True(all.Count == backwardsCount);
+            Equal(backwardsCount , forwardCount);
+            Equal(backwardsCount , Input.expectedNumberOfConnections);
+            Count(backwardsCount, all);
             True(!oneMissed);
-            True(tt == 0);
+            Equal(0, (uint) tt);
         }
     }
 }
