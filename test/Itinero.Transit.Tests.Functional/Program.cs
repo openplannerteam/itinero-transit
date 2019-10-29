@@ -41,39 +41,35 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
-
                 var withTime = nmbs.SelectProfile(new DefaultProfile(0))
                     .SelectStops("http://irail.be/stations/NMBS/008811262", "http://irail.be/stations/NMBS/008811197")
                     .SelectTimeFrame(StringConstants.TestDate.AddHours(1), StringConstants.TestDate.AddHours(10));
-                
+
                 new ProfiledConnectionScanWithMetricAndIsochroneFilteringTest().Run(withTime);
-                
+
                 Logging.Log.Information("Ran the devtests. Exiting now. Use --full-test-suite to run everything");
                 return;
             }
-            
-            
+
 
             // TODO make sure IRail can handle this one          new MultipleLoadTest().Run();
-
 
             new IntermodalTestWithOtherTransport(nmbs, TestConstants.DefaultProfile)
                 .RunOverMultiple(TestConstants.WithWalkTestCases);
             new IntermodalTestWithOtherTransport(nmbs, TestConstants.WithFirstLastMile)
                 .RunOverMultiple(TestConstants.WithWalkTestCases);
 
-
             // The default setup - no arrival time given. A window will be constructed, but in some cases no journeys will be found if walking is significantly faster
-         /*   new ProductionServerMimickTest(nmbs, StringConstants.TestDate, null)
+            new ProductionServerMimickTest(nmbs, StringConstants.TestDate, null)
                 .RunOverMultiple(TestConstants.WithWalkAndPtTestCases);
 
-            new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(6))
+            new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(12))
                 .RunOverMultiple(TestConstants.WithWalkAndPtTestCases);
 
-       // TODO why does this not work?     new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(12))
-       //         .RunOverMultiple(TestConstants.OpenHopperTestCases());
-*/
-            
+            new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(12))
+                .RunOverMultiple(TestConstants.OpenHopperTestCases());
+
+
             new ConnectionsDbDepartureEnumeratorTest().Run((nmbs, 63155));
             new ReadWriteTest().Run((nmbs, 63155));
 
@@ -81,7 +77,7 @@ namespace Itinero.Transit.Tests.Functional
             MultiTestRunner.DelijnNmbsTester().RunAllTests();
 
 
-            new StopEnumerationTest().Run(new List<TransitDb>{nmbs, wvl});
+            new StopEnumerationTest().Run(new List<TransitDb> {nmbs, wvl});
 
             new TripHeadsignTest().RunOverMultiple(all);
 

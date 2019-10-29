@@ -35,6 +35,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
             // Run test over all the inputs
             foreach (var input in inputs)
             {
+                i++;
                 try
                 {
                     Run(input);
@@ -43,7 +44,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
                 catch (Exception e)
                 {
                     failed++;
-                    var msg = $"Test {Name} failed for input {i} {input.ToString()}"; // with message {e}";
+                    var msg = $"Test {Name} failed for input {i} {input.ToString()} with message {e}\n{e.StackTrace}";
                     if (input is FunctionalTest ft)
                     {
                         msg = $"Test {ft.Name} ({i}/{inputs.Count}) failed with message {e}";
@@ -53,7 +54,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
                     report += msg;
                 }
 
-                i++;
+                
             }
 
             if (failed == 0)
