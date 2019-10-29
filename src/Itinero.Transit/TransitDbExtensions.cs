@@ -121,80 +121,136 @@ namespace Itinero.Transit
             return reader.FindStop(id, errMsg?.Invoke(id));
         }
 
+
         /// <summary>
-        /// When running PCS with CalculateJourneys, sometimes 'families' of journeys pop up.
+        /// Given a list of profiled journeys (sorted by departure time),
+        /// this method sifts through them and searches for families*
         ///
-        /// Such a family consists of a set of journeys, where each journey has
-        /// - The same departure time
-        /// - The same arrival time
-        /// - The same number of transfers.
+        /// From every family, one winning member is kept. The winner is selected based on the comparator,
+        /// which will attempt to select the _minimal_ journey
         ///
-        /// In other words, they are identical in terms of the already applied metrid T on a 'profileComparison'-basis.
         ///
-        /// Of course, ppl don't like too much options; this method applies another metric on a journey and filters based on this second metric.
-        ///
-        /// The list of journeys must be ordered by departure time
-        /// 
+        /// * a 'family' is a set of journeys which:
+        /// - Have identical departure and arrival times
+        /// - Have identical departure and arrival locations
+        /// - Have an identical score on the metric
         /// </summary>
-        // ReSharper disable once InconsistentNaming
-        public static List<Journey<T>> PruneInAlternatives<S, T>(
-            this IEnumerable<Journey<T>> profiledJourneys,
-            S newMetric,
-            MetricComparator<S> newComparer)
-            where T : IJourneyMetric<T>
-            where S : IJourneyMetric<S>
+        /// <returns></returns>
+        public static List<Journey<T>> PruneFamilies<T>(
+            this List<Journey<T>> journeys,
+            IComparer<Journey<T>> comparer) where T : IJourneyMetric<T>
         {
-            var result = new List<Journey<T>>();
-
-            var alreadySeen = new HashSet<Journey<T>>();
-
-            Journey<T> lastT = null;
-            Journey<S> lastS = null;
-
-            foreach (var j in profiledJourneys)
+            if (journeys.Count == 0)
             {
-                if (alreadySeen.Contains(j))
-                {
-                    // This exact journey is a duplicate
-                    continue;
-                }
-
-                alreadySeen.Add(j);
-
-                if (lastT == null || lastT.Time != j.Time || lastT.Root.Time != j.Root.Time)
-                {
-                    result.Add(j);
-                    lastT = j;
-                    lastS = null;
-                    continue;
-                }
-
-                // The previous and current journeys have the same departure and arrival time
-                // We assume they are part of a family and have the same number of transfers
-                // So, we apply the metric S...
-                lastS = lastS ?? lastT.MeasureWith(newMetric);
-                var jS = j.MeasureWith(newMetric);
-                // ... and we compare
-
-                var comparison = newComparer.ADominatesB(lastS.Metric, jS.Metric);
-                if (comparison < 0)
-                {
-                    // lastS is better
-                    // We ignore the current element
-                    continue;
-                }
-
-                // Current one is better
-                // We overwrite the previous element
-                result[result.Count - 1] = j;
-                lastT = j;
-                lastS = jS;
+                return journeys;
             }
 
+            var result = new List<Journey<T>>();
+
+            var currentTime = journeys[0].Root.Time;
+            var currentList = new List<Journey<T>>();
+
+            foreach (var j in journeys)
+            {
+                if (j.Root.Time != currentTime)
+                {
+                    result.AddRange(currentList);
+                    currentList = new List<Journey<T>>();
+                    currentTime = j.Root.Time;
+                }
+
+
+                // In what family does this journey fit?
+                var foundFamilyMember = false;
+                for (var i = 0; i < currentList.Count; i++)
+                {
+                    var representative = currentList[i];
+                    if (
+                        representative.Root.DepartureTime() == j.Root.DepartureTime() &&
+                        representative.ArrivalTime() == j.ArrivalTime() &&
+                        representative.Root.Location.Equals(j.Root.Location) &&
+                        representative.Location.Equals(j.Location) &&
+                        representative.Metric.Equals(j.Metric))
+                    {
+                        foundFamilyMember = true;
+
+                        // We found a journey with the same properties
+                        // This town is not big enough for both of them
+                        // So we have a shootout!
+                        if (comparer.Compare(representative, j) < 0)
+                        {
+                            // Representative is smaller then j, so it is the winner
+                            currentList[i] = j;
+                        }
+
+                        break;
+                    }
+                }
+
+                if (!foundFamilyMember)
+                {
+                    currentList.Add(j);
+                }
+            }
+            result.AddRange(currentList);
+
+            return result;
+        }
+
+        public static Dictionary<ulong, List<HashSet<Journey<T>>>> PartitionFamilies<T>(
+            this List<Journey<T>> journeys) where T : IJourneyMetric<T>
+        {
+            var result = new Dictionary<ulong, List<HashSet<Journey<T>>>>();
+
+            if (journeys.Count == 0)
+            {
+                return result;
+            }
+
+            var currentTime = journeys[0].Root.Time;
+            var currentList = new List<HashSet<Journey<T>>>();
+            result[currentTime] = currentList;
+
+            foreach (var j in journeys)
+            {
+                if (j.Root.Time != currentTime)
+                {
+                    currentList = new List<HashSet<Journey<T>>>();
+                    currentTime = j.Root.Time;
+                    result[currentTime] = currentList;
+                }
+
+
+                // In what family does this journey fit?
+                HashSet<Journey<T>> foundFamily = null;
+                foreach (var family in currentList)
+                {
+                    var representative = family.First();
+                    if (
+                        representative.Root.DepartureTime() == j.Root.DepartureTime() &&
+                        representative.ArrivalTime() == j.ArrivalTime() &&
+                        representative.Root.Location.Equals(j.Root.Location) &&
+                        representative.Location.Equals(j.Location) &&
+                        representative.Metric.Equals(j.Metric))
+                    {
+                        foundFamily = family;
+                        break;
+                    }
+                }
+
+                if (foundFamily == null)
+                {
+                    foundFamily = new HashSet<Journey<T>>();
+                    currentList.Add(foundFamily);
+                }
+
+                foundFamily.Add(j);
+            }
 
             return result;
         }
     }
+
 
     public class WithProfile<T> where T : IJourneyMetric<T>
     {
