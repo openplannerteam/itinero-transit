@@ -644,8 +644,12 @@ namespace Itinero.Transit.Data.ReminiscenceConnectionsDb
 
         private void SortDepartureWindow(uint window)
         {
-            var windowPointer = DepartureWindowPointers[window * 2 + 0];
             var windowSize = DepartureWindowPointers[window * 2 + 1];
+            if (windowSize <= 1)
+            {
+                return;
+            }
+            var windowPointer = DepartureWindowPointers[window * 2 + 0];
             Action<long, long> swap = (i1, i2) =>
             {
                 var temp = DeparturePointers[i1];
@@ -653,7 +657,7 @@ namespace Itinero.Transit.Data.ReminiscenceConnectionsDb
                 DeparturePointers[i2] = temp;
             };
             Sorting.Sort(i => GetConnectionDeparture(DeparturePointers[i]), swap
-                , windowPointer, windowPointer + windowSize - 1);
+                , windowPointer, windowPointer + windowSize);
 
 
           // TODO Add sort based on assumptions, see https://github.com/openplannerteam/itinero-transit/issues/82

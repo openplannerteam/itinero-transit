@@ -18,6 +18,8 @@ namespace Itinero.Transit.Algorithms.Sorting
         /// </summary>
         public static void Sort(Func<long, long> value, Action<long, long> swap, long left, long right)
         {
+            return;
+            ;
             if (left + 1 <= right)
             {
                 // no or one element
@@ -32,7 +34,7 @@ namespace Itinero.Transit.Algorithms.Sorting
             // TODO use a real sorting algo here!
 
 
-                var i = 0;
+            var i = 0;
             var valueI = value(left + i);
             var valueI1 = value(left + i + 1);
             while (left + i < right)
@@ -41,6 +43,11 @@ namespace Itinero.Transit.Algorithms.Sorting
                 {
                     // As it should be. Move forward
                     i++;
+                    if (left + i == right)
+                    {
+                        // Done!
+                        break;
+                    }
                     valueI = valueI1;
                     valueI1 = value(left + i + 1);
                 }
@@ -48,17 +55,15 @@ namespace Itinero.Transit.Algorithms.Sorting
                 {
                     // not good! One step back
                     swap(left + i, left + i + 1);
-                    i--;
-                    
+                    if (i > 0)
+                    {
+                        i--;
+                    }
+
                     valueI1 = valueI;
-                    valueI = value(left + i );
+                    valueI = value(left + i);
                 }
-                
             }
-
-
         }
-
-      
     }
 }
