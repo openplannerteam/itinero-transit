@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using Itinero.Transit.Data;
 using Itinero.Transit.Processor.Validator;
 
@@ -56,6 +57,10 @@ namespace Itinero.Transit.Processor.Switch
                 }
                 var hist = msgs.CountTypes();
 
+                if (string.IsNullOrWhiteSpace(typesToPrint))
+                {
+                    typesToPrint = "*";
+                }
 
                 var toPrint = typesToPrint.Equals("*") ? hist.Keys.ToList() : typesToPrint.Split(",").ToList();
 
@@ -63,7 +68,7 @@ namespace Itinero.Transit.Processor.Switch
                 {
                     if (!hist.ContainsKey(type))
                     {
-                        throw new Exception($"Type {type} not found in histogram. Try one of {string.Join(",", hist.Keys)}");
+                        Console.WriteLine($"Type {type} not found in histogram. Try one of {string.Join(",", hist.Keys)}");
                     }
 
                     var count = hist[type];

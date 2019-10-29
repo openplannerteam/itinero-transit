@@ -105,7 +105,7 @@ namespace Itinero.Transit.Processor.Switch
             }
 
 
-            Console.WriteLine($"There are {stopCount} stops and {copied} connections in the bounding box");
+            Console.WriteLine($"There are {stopCount} real stations and {copied} connections in the bounding box");
             return filtered;
         }
     }
