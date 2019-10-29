@@ -1,4 +1,5 @@
 ﻿using System;
+using Itinero.Transit.Logging;
 using JsonLD.Core;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -142,6 +143,14 @@ namespace Itinero.Transit.IO.LC.Data
             // Arrival time already includes delay
             _arrivalTime = GetDateFixed(json, "http://semweb.mmlab.be/ns/linkedconnections#arrivalTime");
 
+            if (_arrivalTime < _departureTime)
+            {
+                var message = $"Connection {Uri} goes back in time: {this}";
+                Log.Error(message);
+                throw new ArgumentException(message);
+                
+            }
+            
             Direction = json.GetLDValue("http://vocab.gtfs.org/terms#headsign");
             GtfsTrip = json.GetId("http://vocab.gtfs.org/terms#trip");
             GtfsRoute = json.GetId("http://vocab.gtfs.org/terms#route");
