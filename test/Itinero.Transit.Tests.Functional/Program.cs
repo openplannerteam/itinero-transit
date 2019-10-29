@@ -70,7 +70,7 @@ namespace Itinero.Transit.Tests.Functional
             new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(6))
                 .RunOverMultiple(TestConstants.WithWalkAndPtTestCases);
 
-       //     new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(12))
+       // TODO why does this not work?     new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(12))
        //         .RunOverMultiple(TestConstants.OpenHopperTestCases());
 
             
