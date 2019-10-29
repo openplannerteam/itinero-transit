@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using Itinero.Transit.Data;
 using Itinero.Transit.Utils;
 
@@ -23,36 +25,69 @@ namespace Itinero.Transit.Processor
         {
         }
 
-        private string StateMsg(TransitDb tdb)
+        private static readonly string[] units =
         {
-            var snapshot = tdb.Latest;
-            if (snapshot == null)
+            "bytes", "kb", "mb", "gb", "tb"
+        };
+
+        private static string FormatMemory(long byteCount)
+        {
+            var index = 0;
+            var rest = 0;
+            while (byteCount > 1000)
             {
-                return "No transitdb loaded";
+                index++;
+                rest = (int) (byteCount % 1000);
+                byteCount /= 1000;
             }
 
-            if (snapshot.ConnectionsDb.EarliestDate == ulong.MaxValue)
-            {
-                return "No transitdb loaded";
-            }
+            return $"{byteCount}.{rest:000}{units[index]}";
+        }
 
-            return
-                $"Transitdb spans {snapshot.ConnectionsDb.EarliestDate.FromUnixTime():s} to {snapshot.ConnectionsDb.LatestDate.FromUnixTime():s}";
+        private string StateMsg(TransitDb tdb, DateTime lastActionStart)
+        {
+            using (var proc = Process.GetCurrentProcess())
+            {
+                var end = DateTime.Now;
+                var timeNeeded = (end - lastActionStart).TotalSeconds;
+
+                var ram = proc.WorkingSet64;
+                var available = proc.VirtualMemorySize64;
+
+
+                var stats =
+                    $"Last action took {timeNeeded:000}, memory is {FormatMemory(ram)}/{FormatMemory(available)}";
+
+                var snapshot = tdb.Latest;
+                if (snapshot == null)
+                {
+                    return $"No transitdb loaded. {stats}";
+                }
+
+                if (snapshot.ConnectionsDb.EarliestDate == ulong.MaxValue)
+                {
+                    return $"No transitdb loaded. {stats}";
+                }
+
+                return
+                    $"Transitdb spans {snapshot.ConnectionsDb.EarliestDate.FromUnixTime():s} to {snapshot.ConnectionsDb.LatestDate.FromUnixTime():s}. {stats}";
+            }
         }
 
         private TransitDb RunShell(TransitDb transitDb)
         {
+            var start = DateTime.Now;
+
+
             using (var inStr = Console.In)
             {
                 while (true)
                 {
-                    Console.WriteLine("\n\n"+StateMsg(transitDb));
+                    Console.WriteLine("\n\n" + StateMsg(transitDb, start));
                     Console.Write("--");
                     var line = inStr.ReadLine();
                     if (line == null || line.Equals("q"))
                     {
-                        
-                  
                         var r = new Random();
                         var i = r.Next(_endings.Length);
                         Console.WriteLine($"Quitting IDP-shell. {_endings[i]}");
@@ -73,6 +108,7 @@ namespace Itinero.Transit.Processor
                     try
                     {
                         var sw = SwitchParsers.ParseSwitches(line.Split(" "));
+                        start = DateTime.Now;
                         foreach (var (swtch, parameters) in sw)
                         {
                             if (swtch is Shell)
@@ -81,7 +117,7 @@ namespace Itinero.Transit.Processor
                                     "Already in an interactive shell. Shell-in-shell is disabled, ignoring command");
                                 continue;
                             }
-                            
+
                             if (swtch is ITransitDbModifier modif)
                             {
                                 transitDb = modif.Modify(parameters, transitDb);
@@ -96,8 +132,8 @@ namespace Itinero.Transit.Processor
 
                             if (swtch is ITransitDbSource src)
                             {
-                               transitDb = src.Generate(parameters);
-                               continue;
+                                transitDb = src.Generate(parameters);
+                                continue;
                             }
 
                             throw new ArgumentException("Unknown switch type: " + swtch.Names[0]);
@@ -106,7 +142,8 @@ namespace Itinero.Transit.Processor
                     catch (ArgumentException e)
                     {
                         Console.WriteLine(e.Message);
-                    }catch (FormatException e)
+                    }
+                    catch (FormatException e)
                     {
                         Console.WriteLine(e.Message);
                     }
@@ -131,7 +168,8 @@ namespace Itinero.Transit.Processor
             return RunShell(transitDb);
         }
 
-        private readonly string[] _endings = {
+        private readonly string[] _endings =
+        {
             "Have a pleasant day",
             "See you next time!",
             "Over and out.",
@@ -139,7 +177,8 @@ namespace Itinero.Transit.Processor
             "How did the locomotive get so good at it’s job? Training",
             "How do you find a missing train? Follow the tracks",
             "What happened to the man that took the train home?He had to give it back!",
-            "Why was the train late? It kept getting side tracked."
+            "Why was the train late? It kept getting side tracked.",
+            "In de mobiliteitsector, daar beweegt wat!"
         };
     }
 }
