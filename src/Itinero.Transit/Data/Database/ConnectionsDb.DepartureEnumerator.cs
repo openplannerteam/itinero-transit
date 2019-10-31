@@ -1,7 +1,7 @@
 using System.Diagnostics.Contracts;
 using Itinero.Transit.Data.Core;
 
-namespace Itinero.Transit.Data.ReminiscenceConnectionsDb
+namespace Itinero.Transit.Data
 {
     public partial class ConnectionsDb
     {

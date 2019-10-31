@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.CompilerServices;
-using System.Threading;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.Benchmarks")]

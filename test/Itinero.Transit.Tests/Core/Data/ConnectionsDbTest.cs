@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
-using Itinero.Transit.Data.ReminiscenceConnectionsDb;
 using Reminiscence.Arrays;
 using Xunit;
 

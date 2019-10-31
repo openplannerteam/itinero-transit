@@ -5,7 +5,7 @@ using Itinero.Transit.Data.Core;
 using Reminiscence;
 using Reminiscence.Arrays;
 
-namespace Itinero.Transit.Data.ReminiscenceConnectionsDb
+namespace Itinero.Transit.Data
 {
     public partial class ConnectionsDb
     {

@@ -86,7 +86,7 @@ namespace Itinero.Transit.Tests.Functional.Transfers
 
             var route = CreateRoute(((float) from.Latitude, (float) from.Longitude),
                 ((float) to.Latitude, (float) to.Longitude), out var isEmpty, out var _);
-            
+
             if (isEmpty)
             {
                 return 0;
@@ -163,15 +163,15 @@ namespace Itinero.Transit.Tests.Functional.Transfers
         }
 
         public Dictionary<StopId, uint> TimesBetween(IStop from,
-            IEnumerable<IStop> to)
+            IEnumerable<IStop> toEnumerable)
         {
+            var to = toEnumerable.ToList();
             try
             {
                 var times = new Dictionary<StopId, uint>();
 
                 // collect targets that are in range.
                 var targets = new List<(SnapPoint target, IStop stop)>();
-                to = to.ToList();
                 foreach (var t in to)
                 {
                     var distance =
@@ -194,7 +194,7 @@ namespace Itinero.Transit.Tests.Functional.Transfers
                 }
 
                 if (targets.Count == 0) return times;
-             
+
                 // resolve source only if we have targets.
                 var source = _routerDb.Snap(
                     @from.Longitude, @from.Latitude, profile: _profile);
@@ -226,7 +226,7 @@ namespace Itinero.Transit.Tests.Functional.Transfers
             catch (Exception e)
             {
                 var arrivalPoints = string.Join("\n",
-                    to.Select(t => $"{t.GlobalId} {(t.Longitude,t.Latitude)}"));
+                    to.Select(t => $"{t.GlobalId} {(t.Longitude, t.Latitude)}"));
                 Log.Error(
                     $"Could not calculate one-to-many route: weird exception: {e.Message}\n" +
                     $"Departure point is {@from.GlobalId} {(@from.Longitude, @from.Latitude)}\n" +
@@ -283,7 +283,7 @@ namespace Itinero.Transit.Tests.Functional.Transfers
                 {
                     var (_, stop) = sources[i];
                     var result = routes[i];
-                    if (result.IsError  || result.Value.TotalDistance > Range())
+                    if (result.IsError || result.Value.TotalDistance > Range())
                     {
                         times[stop.Id] = uint.MaxValue;
                     }
@@ -298,7 +298,7 @@ namespace Itinero.Transit.Tests.Functional.Transfers
             catch (Exception e)
             {
                 var departurePoints = string.Join("\n",
-                    from.Select(t => $"{t.GlobalId} {(t.Longitude,t.Latitude)}"));
+                    from.Select(t => $"{t.GlobalId} {(t.Longitude, t.Latitude)}"));
                 Log.Error(
                     $"Could not calculate many-to-to route: weird exception: {e.Message}\n" +
                     $"Departure points are {departurePoints}\n" +

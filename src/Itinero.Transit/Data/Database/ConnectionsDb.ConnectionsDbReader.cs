@@ -1,7 +1,7 @@
 using System.Diagnostics.Contracts;
 using Itinero.Transit.Data.Core;
 
-namespace Itinero.Transit.Data.ReminiscenceConnectionsDb
+namespace Itinero.Transit.Data
 {
     /// <summary>
     /// A connections DB reader is an object which allows accessing properties of a single connection contained in the DB

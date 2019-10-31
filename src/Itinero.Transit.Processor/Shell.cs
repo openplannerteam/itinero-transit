@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using Itinero.Transit.Data;
 using Itinero.Transit.Utils;
@@ -25,7 +24,7 @@ namespace Itinero.Transit.Processor
         {
         }
 
-        private static readonly string[] units =
+        private static readonly string[] _units =
         {
             "bytes", "kb", "mb", "gb", "tb"
         };
@@ -41,7 +40,7 @@ namespace Itinero.Transit.Processor
                 byteCount /= 1000;
             }
 
-            return $"{byteCount}.{rest:000}{units[index]}";
+            return $"{byteCount}.{rest:000}{_units[index]}";
         }
 
         private string StateMsg(TransitDb tdb, DateTime lastActionStart)

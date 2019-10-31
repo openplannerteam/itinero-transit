@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
 using Itinero.Transit.Data;
 using Itinero.Transit.Processor.Validator;
 
@@ -72,7 +71,7 @@ namespace Itinero.Transit.Processor.Switch
                     }
 
                     var count = hist[type];
-                    msgs.PrintType(type,  (int) count.count, (int) cutoff);
+                    msgs.PrintType(type,  (int) count.count, cutoff);
                 }
 
                 foreach (var (type, (count, isHardError)) in hist)

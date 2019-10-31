@@ -1,5 +1,4 @@
 using Itinero.Transit.Data.Core;
-using Itinero.Transit.Data.ReminiscenceConnectionsDb;
 
 namespace Itinero.Transit.Data
 {

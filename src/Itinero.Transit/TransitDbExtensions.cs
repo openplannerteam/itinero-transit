@@ -7,11 +7,11 @@ using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Data.Core;
-using Itinero.Transit.Data.ReminiscenceConnectionsDb;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Logging;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Utils;
+using ConnectionsDb = Itinero.Transit.Data.ConnectionsDb;
 
 // ReSharper disable PossibleMultipleEnumeration
 

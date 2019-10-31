@@ -8,7 +8,7 @@ namespace Itinero.Transit.Data.Core
         public const ushort ModeGetOnOnly = 1;
         public const ushort ModeGetOffOnly = 2;
 
-        private const ushort ModeCancelled = 4;
+        private const ushort _modeCancelled = 4;
 
         public Connection()
         {
@@ -95,7 +95,7 @@ namespace Itinero.Transit.Data.Core
 
         public bool IsCancelled()
         {
-            return (Mode & ModeCancelled) == ModeCancelled;
+            return (Mode & _modeCancelled) == _modeCancelled;
         }
 
 

@@ -46,6 +46,7 @@ namespace Itinero.Transit.Processor.Switch
                         .SetDefault("0"),
                 };
 
+        // ReSharper disable once InconsistentNaming
         internal const bool _isStable = false;
 
 
