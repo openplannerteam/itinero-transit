@@ -24,7 +24,8 @@ namespace Itinero.Transit.Processor
                 ("Filtering to and from file", new List<DocumentedSwitch>
                 {
                     new SwitchSelectTimeWindow(),
-                    new SwitchSelectStops(),
+                    new SwitchSelectStopsByBoundingBox(),
+                    new SwitchSelectStopById(),
                     new SwitchSelectTrip()
                 }),
 
@@ -45,7 +46,8 @@ namespace Itinero.Transit.Processor
                     new SwitchValidate(),
                     new SwitchNmbsFilter(),
                     new HelpSwitch(),
-                    new Shell()
+                    new Shell(),
+                    new SwitchClear()
                 })
             };
 

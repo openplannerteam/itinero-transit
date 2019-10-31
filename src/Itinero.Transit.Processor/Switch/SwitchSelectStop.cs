@@ -6,32 +6,28 @@ using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Processor.Switch
 {
-    class SwitchSelectStops : DocumentedSwitch, ITransitDbModifier
+    class SwitchSelectStopById : DocumentedSwitch, ITransitDbModifier
     {
-        private static readonly string[] _names = {"--select-stops", "--filter-stops", "--bounding-box", "--bb"};
+        private static readonly string[] _attributesToTry =
+        {
+            "name", "name:nl", "name:en", "name:fr"
+        };
+
+        private static readonly string[] _names =
+            {"--select-stop", "--select-stops", "--filter-stop", "--filter-stops"};
 
         private static string _about =
-            "Filters the transit-db so that only stops withing the bounding box are kept. " +
+            "Filters the transit-db so that only stops with the given id(s) are kept. " +
             "All connections containing a removed location will be removed as well.\n\n" +
-            "This switch is mainly used for debugging.";
+            "This switch is mainly used for fancy statistics.";
 
 
         private static readonly List<(List<string> args, bool isObligated, string comment, string defaultValue)>
             _extraParams =
                 new List<(List<string> args, bool isObligated, string comment, string defaultValue)>
                 {
-                    SwitchesExtensions.obl("left",
-                        "Specifies the minimal latitude of the output."),
-                    SwitchesExtensions.obl("right",
-                        "Specifies the maximal latitude of the output."),
-                    SwitchesExtensions.obl("top", "up",
-                        "Specifies the minimal longitude of the output."),
-                    SwitchesExtensions.obl("bottom", "down",
-                        "Specifies the maximal longitude of the output."),
+                    SwitchesExtensions.obl("id", "ids", "The ';'-separated stops that should be kept"),
 
-                    SwitchesExtensions.opt("allow-empty",
-                            "If flagged, the program will not crash if no stops are retained")
-                        .SetDefault("false"),
                     SwitchesExtensions.opt("allow-empty-connections",
                             "If flagged, the program will not crash if no connections are retained")
                         .SetDefault("false")
@@ -39,21 +35,43 @@ namespace Itinero.Transit.Processor.Switch
 
         private const bool _isStable = true;
 
-        public SwitchSelectStops() :
+        public SwitchSelectStopById() :
             base(_names, _about, _extraParams, _isStable)
         {
+        }
+
+
+        private StopId FindStop(IStopsReader stops, string id)
+        {
+            if (stops.MoveTo(id))
+            {
+                return stops.Id;
+            }
+
+            stops.Reset();
+
+            while (stops.MoveNext())
+            {
+                foreach (var attrKey in _attributesToTry)
+                {
+                    if (!stops.Attributes.TryGetValue(attrKey, out var name)) continue;
+                    Console.WriteLine($"{attrKey} --> {name} ==? {id}");
+                    if (name.ToLower().Equals(id.ToLower()))
+                    {
+                        return stops.Id;
+                    }
+                }
+            }
+
+            throw new ArgumentException($"The stop {id} could not be found");
         }
 
         public TransitDb Modify(Dictionary<string, string> arguments, TransitDb old)
 
         {
-            var minLon = float.Parse(arguments["left"]);
-            var maxLon = float.Parse(arguments["right"]);
-            var minLat = float.Parse(arguments["bottom"]);
-            var maxLat = float.Parse(arguments["top"]);
+            var ids = arguments["id"].Split(";");
 
 
-            var allowEmpty = bool.Parse(arguments["allow-empty"]);
             var allowEmptyCon = bool.Parse(arguments["allow-empty-connections"]);
 
 
@@ -62,30 +80,37 @@ namespace Itinero.Transit.Processor.Switch
 
 
             var stopIdMapping = new Dictionary<StopId, StopId>();
+            var searchedStops = new HashSet<StopId>();
 
             var stops = old.Latest.StopsDb.GetReader();
-            var copied = 0;
-            while (stops.MoveNext())
+
+            StopId CopyStop(StopId stopId)
             {
-                var lat = stops.Latitude;
-                var lon = stops.Longitude;
-                if (
-                    !(minLat <= lat && lat <= maxLat && minLon <= lon && lon <= maxLon))
+                if (stopIdMapping.ContainsKey(stopId))
                 {
-                    continue;
+                    return stopIdMapping[stopId];
                 }
 
+                stops.MoveTo(stopId);
                 var newId = wr.AddOrUpdateStop(stops.GlobalId, stops.Longitude, stops.Latitude, stops.Attributes);
                 var oldId = stops.Id;
                 stopIdMapping.Add(oldId, newId);
+                return newId;
+            }
+
+            var copied = 0;
+            foreach (var id in ids)
+            {
+                var stopId = FindStop(stops, id);
+                CopyStop(stopId);
+                searchedStops.Add(stopId);
                 copied++;
             }
 
-            if (!allowEmpty && copied == 0)
+            if (copied == 0)
             {
-                throw new Exception("There are no stops in the selected bounding box");
+                throw new ArgumentException("No stops found");
             }
-
 
             var consDb = old.Latest.ConnectionsDb;
             var tripsDb = old.Latest.TripsDb;
@@ -100,9 +125,8 @@ namespace Itinero.Transit.Processor.Switch
                 do
                 {
                     var con = consDb.Get(index);
-                    if (!(stopIdMapping.ContainsKey(con.DepartureStop) && stopIdMapping.ContainsKey(con.ArrivalStop)))
+                    if (!(searchedStops.Contains(con.DepartureStop) || searchedStops.Contains(con.ArrivalStop)))
                     {
-                        // One of the stops is outside of the bounding box
                         continue;
                     }
 
@@ -110,8 +134,8 @@ namespace Itinero.Transit.Processor.Switch
                     var newTripId = wr.AddOrUpdateTrip(trip.GlobalId, trip.Attributes);
 
                     wr.AddOrUpdateConnection(
-                        stopIdMapping[con.DepartureStop],
-                        stopIdMapping[con.ArrivalStop],
+                        CopyStop(con.DepartureStop),
+                        CopyStop(con.ArrivalStop),
                         con.GlobalId,
                         con.DepartureTime.FromUnixTime(),
                         con.TravelTime,
@@ -129,11 +153,11 @@ namespace Itinero.Transit.Processor.Switch
 
             if (!allowEmptyCon && copied == 0)
             {
-                throw new Exception("There are no connections in this bounding box");
+                throw new ArgumentException("There are no connections which pass through this station");
             }
 
 
-            Console.WriteLine($"There are {stopCount} stops and {copied} connections in the bounding box");
+            Console.WriteLine($"There are {stopCount} stops and {copied} for the given stops");
             return filtered;
         }
     }
