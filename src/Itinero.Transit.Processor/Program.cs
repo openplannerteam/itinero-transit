@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using Itinero.Transit.Data;
-using Itinero.Transit.Logging;
+using OsmSharp.Logging;
 
 namespace Itinero.Transit.Processor
 {
@@ -11,13 +11,12 @@ namespace Itinero.Transit.Processor
         static void Main(string[] args)
         {
             // enable logging.
-            OsmSharp.Logging.Logger.LogAction = (origin, level, message, parameters) =>
+            Logger.LogAction = (origin, level, message, parameters) =>
             {
                 Console.WriteLine("[{0}-{3}] {1} - {2}", origin, level, message,
                     DateTime.Now.ToString(CultureInfo.InvariantCulture));
             };
 
-            Log.Information("Starting Transit Data Preprocessor 0.1");
 
             // register switches.
 
