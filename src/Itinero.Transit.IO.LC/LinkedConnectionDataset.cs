@@ -15,7 +15,26 @@ namespace Itinero.Transit.IO.LC
     public class LinkedConnectionDataset
     {
         public readonly ConnectionProvider ConnectionsProvider;
-        public readonly LocationFragment LocationProvider;
+
+
+        private readonly Uri _locationsUri;
+        private LocationFragment _locationProvider;
+
+        public LocationFragment LocationProvider
+        {
+            get
+            {
+                // ReSharper disable once InvertIf
+                if (_locationProvider == null)
+                {
+                    var proc = new JsonLdProcessor(new Downloader(), _locationsUri);
+                    _locationProvider = new LocationFragment(_locationsUri);
+                    _locationProvider.Download(proc);
+                }
+
+                return _locationProvider;
+            }
+        }
 
 
         // Small helper constructor which handles the default values
@@ -33,17 +52,11 @@ namespace Itinero.Transit.IO.LC
             Uri locationsUri
         ) : this()
         {
+            _locationsUri = locationsUri;
             var conProv = new ConnectionProvider
             (connectionsLink,
                 connectionsLink + "{?departureTime}");
             ConnectionsProvider = conProv;
-
-            // Create the locations provider
-
-            var proc = new JsonLdProcessor(new Downloader(), locationsUri);
-            var loc = new LocationFragment(locationsUri);
-            loc.Download(proc);
-            LocationProvider = loc;
         }
 
 
@@ -64,7 +77,6 @@ namespace Itinero.Transit.IO.LC
         {
             writer.AddAllLocations(this);
         }
-
 
 
         public void UpdateTimeFrame(TransitDbWriter w, DateTime start, DateTime end

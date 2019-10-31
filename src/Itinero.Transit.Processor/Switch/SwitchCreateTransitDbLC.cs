@@ -82,6 +82,15 @@ namespace Itinero.Transit.Processor.Switch
             if (durationStr.EndsWith("day"))
             {
                 duration = 24 * 60 * 60 * int.Parse(durationStr.Substring(0, durationStr.Length - 3));
+            }else if (durationStr.EndsWith("days"))
+            {
+                duration = 24 * 60 * 60 * int.Parse(durationStr.Substring(0, durationStr.Length - 4));
+            }else if (durationStr.EndsWith("week"))
+            {
+                duration = 7 * 24 * 60 * 60 * int.Parse(durationStr.Substring(0, durationStr.Length - 4));
+            }else if (durationStr.EndsWith("weeks"))
+            {
+                duration = 7 * 24 * 60 * 60 * int.Parse(durationStr.Substring(0, durationStr.Length - 5));
             }
             else if (durationStr.EndsWith("hour"))
             {

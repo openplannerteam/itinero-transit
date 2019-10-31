@@ -17,8 +17,6 @@ namespace Itinero.Transit.Algorithms.Sorting
         /// </summary>
         public static void Sort(Func<long, long> value, Action<long, long> swap, long left, long right)
         {
-            return;
-            ;
             if (left + 1 <= right)
             {
                 // no or one element

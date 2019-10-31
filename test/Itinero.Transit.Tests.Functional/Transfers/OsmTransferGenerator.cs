@@ -236,8 +236,9 @@ namespace Itinero.Transit.Tests.Functional.Transfers
             }
         }
 
-        public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @from, IStop to)
+        public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @fromEnum, IStop to)
         {
+            var from = fromEnum.ToList();
             try
             {
                 var times = new Dictionary<StopId, uint>();
