@@ -19,8 +19,10 @@ namespace Itinero.Transit.Data.Attributes
         private readonly ArrayBase<uint> _index;
         private bool _isReadonly;
         private readonly AttributesIndexMode _mode;
+
         // ReSharper disable once InconsistentNaming
         private const uint NULL_ATTRIBUTES = 0;
+
         // ReSharper disable once InconsistentNaming
         private const uint EMPTY_ATTRIBUTES = 1;
 
@@ -31,7 +33,7 @@ namespace Itinero.Transit.Data.Attributes
         /// Creates a new empty index.
         /// </summary>
         public AttributesIndex(AttributesIndexMode mode = AttributesIndexMode.ReverseCollectionIndex |
-            AttributesIndexMode.ReverseStringIndex)
+                                                          AttributesIndexMode.ReverseStringIndex)
         {
             _stringIndex = new Index<string>();
             _collectionIndex = new Index<int[]>();
@@ -47,10 +49,12 @@ namespace Itinero.Transit.Data.Attributes
             }
 
             if ((_mode & AttributesIndexMode.ReverseStringIndex) == AttributesIndexMode.ReverseStringIndex ||
-                (_mode & AttributesIndexMode.ReverseStringIndexKeysOnly) == AttributesIndexMode.ReverseStringIndexKeysOnly)
+                (_mode & AttributesIndexMode.ReverseStringIndexKeysOnly) ==
+                AttributesIndexMode.ReverseStringIndexKeysOnly)
             {
                 _stringReverseIndex = new Dictionary<string, int>();
             }
+
             if ((_mode & AttributesIndexMode.ReverseCollectionIndex) == AttributesIndexMode.ReverseCollectionIndex)
             {
                 _collectionReverseIndex = new Dictionary<int[], uint>(new EqualityComparer());
@@ -62,9 +66,12 @@ namespace Itinero.Transit.Data.Attributes
         /// </summary>
         public AttributesIndex(MemoryMap map,
             AttributesIndexMode mode = AttributesIndexMode.ReverseCollectionIndex |
-            AttributesIndexMode.ReverseStringIndex)
+                                       AttributesIndexMode.ReverseStringIndex)
         {
-            if (mode == AttributesIndexMode.None) { throw new ArgumentException("Cannot create a new index without a valid operating mode."); }
+            if (mode == AttributesIndexMode.None)
+            {
+                throw new ArgumentException("Cannot create a new index without a valid operating mode.");
+            }
 
             _stringIndex = new Index<string>(map);
             _collectionIndex = new Index<int[]>(map);
@@ -74,26 +81,30 @@ namespace Itinero.Transit.Data.Attributes
             _collectionReverseIndex = null;
 
             if ((_mode & AttributesIndexMode.IncreaseOne) == AttributesIndexMode.IncreaseOne)
-            { // create the increment-by-one data structures.
+            {
+                // create the increment-by-one data structures.
                 _index = new Array<uint>(map, 1024);
                 _nextId = 0;
             }
 
             if ((_mode & AttributesIndexMode.ReverseStringIndex) == AttributesIndexMode.ReverseStringIndex ||
-                (_mode & AttributesIndexMode.ReverseStringIndexKeysOnly) == AttributesIndexMode.ReverseStringIndexKeysOnly)
+                (_mode & AttributesIndexMode.ReverseStringIndexKeysOnly) ==
+                AttributesIndexMode.ReverseStringIndexKeysOnly)
             {
                 _stringReverseIndex = new Reminiscence.Collections.Dictionary<string, int>(map, 1024 * 16);
             }
+
             if ((_mode & AttributesIndexMode.ReverseCollectionIndex) == AttributesIndexMode.ReverseCollectionIndex)
             {
-                _collectionReverseIndex = new Reminiscence.Collections.Dictionary<int[], uint>(map, 1024 * 16, new EqualityComparer());
+                _collectionReverseIndex =
+                    new Reminiscence.Collections.Dictionary<int[], uint>(map, 1024 * 16, new EqualityComparer());
             }
         }
 
         /// <summary>
         /// Creates a new index.
         /// </summary>
-        internal AttributesIndex(AttributesIndexMode mode, Index<string> stringIndex, Index<int[]> tagsIndex)
+        private AttributesIndex(AttributesIndexMode mode, Index<string> stringIndex, Index<int[]> tagsIndex)
         {
             _stringIndex = stringIndex;
             _collectionIndex = tagsIndex;
@@ -109,7 +120,8 @@ namespace Itinero.Transit.Data.Attributes
         /// <summary>
         /// Creates a new index.
         /// </summary>
-        internal AttributesIndex(AttributesIndexMode mode, Index<string> stringIndex, Index<int[]> tagsIndex, ArrayBase<uint> index)
+        private AttributesIndex(AttributesIndexMode mode, Index<string> stringIndex, Index<int[]> tagsIndex,
+            ArrayBase<uint> index)
         {
             _stringIndex = stringIndex;
             _collectionIndex = tagsIndex;
@@ -125,16 +137,6 @@ namespace Itinero.Transit.Data.Attributes
         private uint _nextId;
 
         /// <summary>
-        /// Returns true if this index is readonly.
-        /// </summary>
-        public bool IsReadonly => _isReadonly;
-
-        /// <summary>
-        /// Returns true if this index checks for duplicates.
-        /// </summary>
-        public bool CheckDuplicates => _stringReverseIndex != null;
-
-        /// <summary>
         /// Gets the number of collections.
         /// </summary>
         public uint Count
@@ -142,21 +144,20 @@ namespace Itinero.Transit.Data.Attributes
             get
             {
                 if ((_mode & AttributesIndexMode.IncreaseOne) == AttributesIndexMode.IncreaseOne)
-                { // uses increase one.
+                {
+                    // uses increase one.
                     return _nextId + 2;
                 }
+
                 if ((_mode & AttributesIndexMode.None) == AttributesIndexMode.None && _index != null)
-                { // deserialized but used increase one before.
+                {
+                    // deserialized but used increase one before.
                     return _nextId + 2;
                 }
+
                 throw new Exception("Count cannot be calculated on a index that doesn't use 'IncreaseOne' mode.");
             }
         }
-
-        /// <summary>
-        /// Returns the index mode.
-        /// </summary>
-        public AttributesIndexMode IndexMode => _mode;
 
         /// <summary>
         /// Returns the attributes that belong to the given id.
@@ -167,16 +168,21 @@ namespace Itinero.Transit.Data.Attributes
             {
                 return null;
             }
-            else if (tagsId == 1)
+
+            if (tagsId == 1)
             {
                 return new AttributeCollection();
             }
+
+            tagsId -= 2;
+            
             if (_index != null)
-            { // use the index if it's there.
-                tagsId = _index[tagsId - 2];
-                return new InternalAttributeCollection(_stringIndex, _collectionIndex.Get(tagsId));
+            {
+                // use the index if it's there.
+                tagsId = _index[tagsId];
             }
-            return new InternalAttributeCollection(_stringIndex, _collectionIndex.Get(tagsId - 2));
+
+            return new InternalAttributeCollection(_stringIndex, _collectionIndex.Get(tagsId));
         }
 
         /// <summary>
@@ -194,15 +200,18 @@ namespace Itinero.Transit.Data.Attributes
             }
 
             if (_isReadonly)
-            { // this index is readonly.
+            {
+                // this index is readonly.
                 // TODO: make writeable.
                 // - set nextId.
                 // - create reverse indexes if needed.
                 if (_index != null)
-                { // this should be an increase-one index.
+                {
+                    // this should be an increase-one index.
                     if ((_mode & AttributesIndexMode.IncreaseOne) != AttributesIndexMode.IncreaseOne)
                     {
-                        throw new Exception("Invalid combination of data: There is an index but mode isn't increase one.");
+                        throw new Exception(
+                            "Invalid combination of data: There is an index but mode isn't increase one.");
                     }
 
                     _nextId = (uint) _index.Length;
@@ -210,21 +219,24 @@ namespace Itinero.Transit.Data.Attributes
 
                 // build reverse indexes if needed.
                 if ((_mode & AttributesIndexMode.ReverseStringIndex) == AttributesIndexMode.ReverseStringIndex ||
-                    (_mode & AttributesIndexMode.ReverseStringIndexKeysOnly) == AttributesIndexMode.ReverseStringIndexKeysOnly)
+                    (_mode & AttributesIndexMode.ReverseStringIndexKeysOnly) ==
+                    AttributesIndexMode.ReverseStringIndexKeysOnly)
                 {
                     _stringReverseIndex = new Reminiscence.Collections.Dictionary<string, int>(
                         new MemoryMapStream(), 1024 * 16);
 
                     // add existing data.
                     if ((_mode & AttributesIndexMode.ReverseStringIndex) == AttributesIndexMode.ReverseStringIndex)
-                    { // build reverse index for all data.
+                    {
+                        // build reverse index for all data.
                         foreach (var pair in _stringIndex)
                         {
                             _stringReverseIndex[pair.Value] = (int) pair.Key;
                         }
                     }
                     else
-                    { // build reverse index for keys only.
+                    {
+                        // build reverse index for keys only.
                         foreach (var collectionPair in _collectionIndex)
                         {
                             foreach (var stringId in collectionPair.Value)
@@ -237,7 +249,9 @@ namespace Itinero.Transit.Data.Attributes
 
                 if ((_mode & AttributesIndexMode.ReverseCollectionIndex) == AttributesIndexMode.ReverseCollectionIndex)
                 {
-                    _collectionReverseIndex = new Reminiscence.Collections.Dictionary<int[], uint>(new MemoryMapStream(), 1024 * 16, new EqualityComparer());
+                    _collectionReverseIndex =
+                        new Reminiscence.Collections.Dictionary<int[], uint>(new MemoryMapStream(), 1024 * 16,
+                            new EqualityComparer());
                     if (_index != null)
                     {
                         for (uint col = 0; col < _nextId; col++)
@@ -250,7 +264,7 @@ namespace Itinero.Transit.Data.Attributes
                     {
                         foreach (var pair in _collectionIndex)
                         {
-                            _collectionReverseIndex[pair.Value] = (uint)pair.Key;
+                            _collectionReverseIndex[pair.Value] = (uint) pair.Key;
                         }
                     }
                 }
@@ -263,7 +277,7 @@ namespace Itinero.Transit.Data.Attributes
             foreach (var tag in tags)
             {
                 sortedSet.Add(AddString(tag.Key, true) +
-                    int.MaxValue * (long) AddString(tag.Value, false));
+                              int.MaxValue * (long) AddString(tag.Value, false));
             }
 
             // sort keys.
@@ -287,15 +301,19 @@ namespace Itinero.Transit.Data.Attributes
         private int AddString(string value, bool key)
         {
             if ((_mode & AttributesIndexMode.ReverseStringIndex) == AttributesIndexMode.ReverseStringIndex ||
-                (((_mode & AttributesIndexMode.ReverseStringIndexKeysOnly) == AttributesIndexMode.ReverseStringIndexKeysOnly) && key))
+                (((_mode & AttributesIndexMode.ReverseStringIndexKeysOnly) ==
+                  AttributesIndexMode.ReverseStringIndexKeysOnly) && key))
             {
                 if (!_stringReverseIndex.TryGetValue(value, out var id))
-                { // the key doesn't exist yet.
+                {
+                    // the key doesn't exist yet.
                     id = (int) _stringIndex.Add(value);
                     _stringReverseIndex.Add(value, id);
                 }
+
                 return id;
             }
+
             return (int) _stringIndex.Add(value);
         }
 
@@ -309,14 +327,16 @@ namespace Itinero.Transit.Data.Attributes
             {
                 // check duplicates.
                 if (_collectionReverseIndex.TryGetValue(collection, out id))
-                { // collection already exists.
+                {
+                    // collection already exists.
                     return id + 2;
                 }
             }
 
             id = (uint) _collectionIndex.Add(collection);
             if (_index != null)
-            { // use next id.
+            {
+                // use next id.
                 _index.EnsureMinimumSize(_nextId + 1);
                 _index[_nextId] = id;
                 id = _nextId;
@@ -367,6 +387,7 @@ namespace Itinero.Transit.Data.Attributes
                         return true;
                     }
                 }
+
                 value = null;
                 return false;
             }
@@ -424,8 +445,10 @@ namespace Itinero.Transit.Data.Attributes
                     {
                         builder.Append('|');
                     }
+
                     builder.Append(a.ToString());
                 }
+
                 return builder.ToString();
             }
         }
@@ -435,8 +458,8 @@ namespace Itinero.Transit.Data.Attributes
         /// </summary>
         private class InternalTagsEnumerator : IEnumerator<Attribute>
         {
-            private Index<string> _stringIndex; // Holds the string index.
-            private int[] _tags; // Holds the tags.
+            private Index<string> _stringIndex;
+            private int[] _tags;
 
             /// <summary>
             /// Creates a new internal tags collection.
@@ -456,7 +479,7 @@ namespace Itinero.Transit.Data.Attributes
             /// Returns the current tag.
             /// </summary>
 
-            public Attribute Current => new Attribute()
+            public Attribute Current => new Attribute
             {
                 Key = _stringIndex.Get(_tags[_idx]),
                 Value = _stringIndex.Get(_tags[_idx + 1])
@@ -465,7 +488,7 @@ namespace Itinero.Transit.Data.Attributes
             /// <summary>
             /// Returns the current tag.
             /// </summary>
-            object IEnumerator.Current => new Attribute()
+            object IEnumerator.Current => new Attribute
             {
                 Key = _stringIndex.Get(_tags[_idx]),
                 Value = _stringIndex.Get(_tags[_idx + 1])
@@ -477,7 +500,7 @@ namespace Itinero.Transit.Data.Attributes
             public bool MoveNext()
             {
                 _idx = _idx + 2;
-                return _idx < _tags.Length;
+                return _idx + 1 < _tags.Length;
             }
 
             /// <summary>
@@ -519,14 +542,16 @@ namespace Itinero.Transit.Data.Attributes
 
             // write the actual data.
             if (_index == null)
-            { // this is a regular index.
+            {
+                // this is a regular index.
                 stream.WriteByte(0);
                 size++;
                 size += _collectionIndex.CopyToWithSize(stream);
                 size += _stringIndex.CopyToWithSize(stream);
             }
             else
-            { // this is an increase one index.
+            {
+                // this is an increase one index.
                 // compress index.
                 _index.Resize(_nextId);
 
@@ -549,18 +574,20 @@ namespace Itinero.Transit.Data.Attributes
             AttributesIndexMode defaultIndexMode = AttributesIndexMode.ReverseStringIndexKeysOnly)
         {
             var position = stream.Position;
-            
+
             // read version byte.
             var version = stream.ReadByte();
             position++;
 
             int type;
             if (version < 2)
-            { // unversioned version.
+            {
+                // unversioned version.
                 type = (byte) version;
             }
             else
-            { // versioned.
+            {
+                // versioned.
                 // read the index mode.
                 var indexModeByte = stream.ReadByte();
                 position++;
@@ -574,7 +601,8 @@ namespace Itinero.Transit.Data.Attributes
             // read the actual data.
             long size;
             if (type == 0)
-            { // regular index.
+            {
+                // regular index.
                 var tagsIndex = Index<int[]>.CreateFromWithSize(stream, out size, !copy);
                 position += size + 8;
                 stream.Seek(position, System.IO.SeekOrigin.Begin);
@@ -585,7 +613,8 @@ namespace Itinero.Transit.Data.Attributes
                 return new AttributesIndex(defaultIndexMode, stringIndex, tagsIndex);
             }
             else
-            { // increase one index.
+            {
+                // increase one index.
                 var tagsIndex = Index<int[]>.CreateFromWithSize(stream, out size, !copy);
                 position += size + 8;
                 stream.Seek(position, System.IO.SeekOrigin.Begin);
@@ -615,22 +644,27 @@ namespace Itinero.Transit.Data.Attributes
         /// No specific mode, mode is about writing, used only when readonly.
         /// </summary>
         None = 0x0,
+
         /// <summary>
         /// Increase id's by one.
         /// </summary>
         IncreaseOne = 0x1,
+
         /// <summary>
         /// Keep a reverse collection index.
         /// </summary>
         ReverseCollectionIndex = 0x2,
+
         /// <summary>
         /// Keep a reverse string index.
         /// </summary>
         ReverseStringIndex = 0x4,
+
         /// <summary>
         /// Only keep a reverse index of keys.
         /// </summary>
         ReverseStringIndexKeysOnly = 0x8,
+
         /// <summary>
         /// All reverse indexes active.
         /// </summary>
