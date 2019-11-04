@@ -77,7 +77,8 @@ namespace Itinero.Transit.Processor
         {
             var start = DateTime.Now;
 
-
+            var history = new List<string>();
+            
             using (var inStr = Console.In)
             {
                 while (true)
