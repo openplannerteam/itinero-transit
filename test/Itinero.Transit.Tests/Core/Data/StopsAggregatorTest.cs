@@ -201,6 +201,29 @@ namespace Itinero.Transit.Tests.Core.Data
         }
 
         [Fact]
+        public void MoveTo_TwoDatabasesWithBigIds_NoCrash()
+        {
+            var tdb5 = new TransitDb(5);
+
+            var wr = tdb5.GetWriter();
+            var realStop = wr.AddOrUpdateStop("stop5", 6.86, 51.684);
+            wr.Close();
+
+            var tdb10 = new TransitDb(10);
+            var reader =
+                StopsReaderAggregator.CreateFrom(tdb5.Latest.StopsDb.GetReader(), tdb10.Latest.StopsDb.GetReader());
+            Assert.False(reader.MoveTo(new StopId(5, 10, 12)));
+            Assert.False(reader.MoveTo(new StopId(0, 10, 12)));
+
+            Assert.False(reader.MoveTo(new StopId(10, 10, 12)));
+            Assert.False(reader.MoveTo(new StopId(11, 10, 12)));
+            Assert.False(reader.MoveTo("abc"));
+
+            Assert.True(reader.MoveTo(realStop));
+            Assert.True(reader.MoveTo("stop5"));
+        }
+
+        [Fact]
         public void Enumerate_ThreeReadersInAdvancedStructure_Expects3Stops()
         {
             var tdb0 = new TransitDb(0);

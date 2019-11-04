@@ -165,17 +165,19 @@ namespace Itinero.Transit.Tests.Functional.Utils
         public void AssertAreSame(ICollection<Journey<TransferMetric>> js, ICollection<Journey<TransferMetric>> bs,
             IStopsReader reader)
         {
-            bool oneMissing = false;
+            var oneMissing = false;
             foreach (var a in js)
             {
-                if (!bs.Contains(a))
+                if (bs.Contains(a))
                 {
-                    Log.Error($"Missing journey: {a.ToString(100, reader)}");
-                    oneMissing = true;
+                    continue;
                 }
+                
+                Log.Error($"Missing journey: {a.ToString(100, reader)}");
+                oneMissing = true;
             }
 
-            int bi = 0;
+            var bi = 0;
             foreach (var b in bs)
             {
                 if (!js.Contains(b))
