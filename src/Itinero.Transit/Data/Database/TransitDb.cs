@@ -21,15 +21,15 @@ namespace Itinero.Transit.Data
         public TransitDbSnapShot Latest;
 
 
-        public TransitDb(uint databaseId) : this(
+        public TransitDb(uint databaseId) : this(databaseId,
             new StopsDb(databaseId), new TripsDb(databaseId), new ConnectionsDb(databaseId))
         {
-            DatabaseId = databaseId;
         }
 
-        private TransitDb(StopsDb stopsDb, TripsDb tripsDb, ConnectionsDb connectionsDb)
+        private TransitDb(uint databaseId, StopsDb stopsDb, TripsDb tripsDb, ConnectionsDb connectionsDb)
         {
             Latest = new TransitDbSnapShot(stopsDb, tripsDb, connectionsDb);
+            DatabaseId = databaseId;
         }
 
         private readonly object _writerLock = new object();
@@ -109,7 +109,7 @@ namespace Itinero.Transit.Data
             var tripsDb = TripsDb.ReadFrom(stream, databaseId);
             var connectionsDb = ConnectionsDb.ReadFrom(stream, databaseId);
 
-            return new TransitDb(stopsDb, tripsDb, connectionsDb);
+            return new TransitDb(databaseId, stopsDb, tripsDb, connectionsDb);
         }
     }
 }
