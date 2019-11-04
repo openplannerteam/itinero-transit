@@ -14,7 +14,7 @@ namespace Itinero.Transit.Tests.Functional.Data
         {
             var tdb = new TransitDb(0);
             var connections = "https://graph.irail.be/sncb/connections";
-            var location = "https://irail.be/stations";
+            var location = "https://graph.irail.be/sncb/stops";
 
             var syncPolicies = new List<ISynchronizationPolicy>
             {

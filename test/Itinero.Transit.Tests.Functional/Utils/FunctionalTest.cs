@@ -146,6 +146,16 @@ namespace Itinero.Transit.Tests.Functional.Utils
         public static void AssertNoLoops<T>(Journey<T> journey, IStopsReader stops,
             IDatabaseReader<ConnectionId, Connection> conn) where T : IJourneyMetric<T>
         {
+            if (journey.Root.TripId.Equals(Journey<T>.EarliestArrivalScanJourney))
+            {
+                // EAS scans can generate loops, this is inherent to their nature
+                
+                // A common case of loops is:
+                // ---> A --> B ---(passing A)----> Arrival 
+                
+                return;
+            }
+            
             if (ContainsLoop(journey))
             {
                 throw new Exception("Loop detected in the journey: " + journey.ToString(50, stops, conn));

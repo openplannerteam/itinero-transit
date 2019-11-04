@@ -619,5 +619,64 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             Assert.Null(journey);
         }
+
+        /// <summary>
+        /// This is a regression test, where the EAS would:
+        ///
+        /// Arrive in a big station and get out
+        /// would take the train to a small, nearby station
+        /// Take the train to the destination, passing the big station again
+        /// </summary>
+        [Fact]
+        public void EarliestArrivalJourney_TdbWithTransferPossibility_NoLoops()
+        {
+            var tdb = new TransitDb(0);
+            var wr = tdb.GetWriter();
+
+            var departure = wr.AddOrUpdateStop("departure", 0, 0);
+            var arrival = wr.AddOrUpdateStop("arrival", 0, 0);
+            var bigstation = wr.AddOrUpdateStop("bigstation", 0, 0);
+            var smallstation = wr.AddOrUpdateStop("smallstation", 0, 0);
+
+            var tripA = wr.AddOrUpdateTrip("tripA");
+            var tripB = wr.AddOrUpdateTrip("tripB");
+            var tripC = wr.AddOrUpdateTrip("tripC");
+
+            wr.AddOrUpdateConnection(new Connection(
+                new ConnectionId(0,0), 
+                "0", departure, bigstation, 1000, 1000, tripA
+                ));
+            
+            wr.AddOrUpdateConnection(new Connection(
+                new ConnectionId(0,1), 
+                "1", bigstation, smallstation, 3000, 1000, tripB
+            ));
+            
+            wr.AddOrUpdateConnection(new Connection(
+                new ConnectionId(0,2), 
+                "2", smallstation, bigstation, 5000, 1000, tripC
+            ));
+            
+            wr.AddOrUpdateConnection(new Connection(
+                new ConnectionId(0,3), 
+                "3", bigstation, arrival, 6500, 1000, tripC
+            ));
+            
+            wr.Close();
+            
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
+                new CrowsFlightTransferGenerator(0),
+                TransferMetric.Factory,
+                TransferMetric.ParetoCompare);
+            var journey = tdb.SelectProfile(profile).SelectStops(departure, arrival)
+                .SelectTimeFrame(0, 10000)
+                .CalculateEarliestArrivalJourney();
+
+            Assert.NotNull(journey);
+            
+            
+            
+
+        }
     }
 }
