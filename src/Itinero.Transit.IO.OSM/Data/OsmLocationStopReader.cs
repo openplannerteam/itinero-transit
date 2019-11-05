@@ -72,8 +72,15 @@ namespace Itinero.Transit.IO.OSM.Data
 
         public bool MoveTo(string globalId)
         {
-            var (lat, lon) =
-                ParseOsmUrl.ParseUrl().ParseFull(globalId);
+            var result =
+                ParseOsmUrl.ParseUrl().Parse((globalId, 0));
+
+            if (!result.Success() || !string.IsNullOrEmpty(result.Rest))
+            {
+                return false;
+            }
+
+            var (lat, lon) = result.Result;
             // Slight abuse of the LocationId
             Id = new StopId(_databaseId, (uint) ((lat + 90.0) * _precision), (uint) ((lon + 180) * _precision));
             Latitude = (double) Id.LocalTileId / _precision - 90.0;
