@@ -43,5 +43,6 @@ namespace Itinero.Transit.Tests.IO.OSM
             Assert.Equal(19 , zoomLvl.Result);
             ParseOsmUrl.ParseUrl().ParseFull(loc);
         }
+        
     }
 }
