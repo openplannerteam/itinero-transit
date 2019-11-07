@@ -79,14 +79,7 @@ namespace Itinero.Transit.OtherMode
 
                 foreach (var kv in a)
                 {
-                    try
-                    {
-                        b.Add(kv.Key, kv.Value);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error($"Could not merge dictionaries: {e}. {kv.Key} --> {kv.Value}, old value {b[kv.Key]}");
-                    }
+                    b[kv.Key] = kv.Value;
                 }
 
                 return b;

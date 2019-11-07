@@ -199,6 +199,82 @@ namespace Itinero.Transit.Tests.Core.Data
 
             Assert.Equal(3, sum);
         }
+        
+        
+        [Fact]
+        public void Enumerate_ThreeReadersNonAdjacentIds_Expects3Stops()
+        {
+            var tdb0 = new TransitDb(5);
+            var wr0 = tdb0.GetWriter();
+            wr0.AddOrUpdateStop("a", 4.0001, 4.100001);
+            wr0.Close();
+
+
+            var tdb1 = new TransitDb(8);
+            var wr1 = tdb1.GetWriter();
+            wr1.AddOrUpdateStop("b", 4.1, 4.1);
+            wr1.Close();
+
+            var tdb2 = new TransitDb(3);
+            var wr2 = tdb2.GetWriter();
+            wr2.AddOrUpdateStop("c", 4.2, 4.2);
+            wr2.Close();
+
+
+            var stopsReader = StopsReaderAggregator.CreateFrom(
+                    new List<IStopsReader>
+                    {
+                        tdb0.Latest.StopsDb.GetReader(),
+                        tdb1.Latest.StopsDb.GetReader(),
+                        tdb2.Latest.StopsDb.GetReader()
+                    })
+                ;
+
+
+            var sum = 0;
+            stopsReader.Reset();
+            while (stopsReader.MoveNext())
+            {
+                sum++;
+            }
+
+            Assert.Equal(3, sum);
+        }
+        
+        [Fact]
+        public void MoveToGlobalId_ThreeReadersNonAdjacentIds_Expects3Stops()
+        {
+            var tdb0 = new TransitDb(5);
+            var wr0 = tdb0.GetWriter();
+            wr0.AddOrUpdateStop("a", 4.0001, 4.100001);
+            wr0.Close();
+
+
+            var tdb1 = new TransitDb(8);
+            var wr1 = tdb1.GetWriter();
+            wr1.AddOrUpdateStop("b", 4.1, 4.1);
+            wr1.Close();
+
+            var tdb2 = new TransitDb(3);
+            var wr2 = tdb2.GetWriter();
+            wr2.AddOrUpdateStop("c", 4.2, 4.2);
+            wr2.Close();
+
+
+            var stopsReader = StopsReaderAggregator.CreateFrom(
+                    new List<IStopsReader>
+                    {
+                        tdb0.Latest.StopsDb.GetReader(),
+                        tdb1.Latest.StopsDb.GetReader(),
+                        tdb2.Latest.StopsDb.GetReader()
+                    })
+                ;
+
+           Assert.True(stopsReader.MoveTo("a"));
+           Assert.True(stopsReader.MoveTo("b"));
+           Assert.True(stopsReader.MoveTo("c"));
+
+        }
 
         [Fact]
         public void MoveTo_TwoDatabasesWithBigIds_NoCrash()
