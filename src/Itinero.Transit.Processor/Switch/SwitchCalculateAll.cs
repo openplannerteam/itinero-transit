@@ -218,7 +218,7 @@ namespace Itinero.Transit.Processor.Switch
 
                 var end = DateTime.Now;
                 fileWriter.WriteToFile(fileName, journeys, (uint) (end - start).TotalMilliseconds);
-                return journeys?.Count ?? 0;
+                return journeys.Count;
             }
         }
 

@@ -82,7 +82,7 @@ namespace Itinero.Transit.Tests.Core.Data
 
             var allresults = stopsReader.StopsAround(new Stop(4.1, 4.1), 500000).ToList();
             Assert.Equal(3, allresults.Count);
-            var allIds = allresults.Select(r => r.GlobalId);
+            var allIds = allresults.Select(r => r.GlobalId).ToList();
             Assert.Contains("a", allIds);
             Assert.Contains("b", allIds);
             Assert.Contains("c", allIds);
