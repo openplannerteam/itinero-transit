@@ -105,7 +105,7 @@ namespace Itinero.Transit.IO.LC.Utils
             }
             catch (Exception e)
             {
-                Log.Error($"Loading {uri} failed");
+                Log.Error($"Loading {uri} failed ({e.Message})");
                 throw new ArgumentException($"Could not download {uri}", e);
             }
         }
