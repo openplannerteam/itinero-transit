@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+        <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+        <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+        <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+        <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Itinero.Transit\Itinero.Transit.csproj" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <Compile Include="..\..\SharedAssemblyVersion.cs">
+        <Link>Properties/SharedAssemblyVersion.cs</Link>
+      </Compile>
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <PackageReference Include="GTFS" Version="3.0.0-pre001" />
+    </ItemGroup>
+
+</Project>
