@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Linq;
 using Itinero.Transit.Data;
@@ -54,7 +55,7 @@ namespace Itinero.Transit.Tests.IO.GTFS
             
             var mapping = convertor.AddLocations(wr);
             
-            convertor.AddServiceForDay();
+            convertor.AddServiceForDay(new DateTime(2019,10,07), "00000");
             
             wr.Close();
             
