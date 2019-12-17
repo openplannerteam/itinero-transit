@@ -17,7 +17,7 @@ namespace Itinero.Transit.Tests.IO.OSM
 
             Assert.True(Math.Abs(51.21575 - reader.Latitude) < 0.000001);
             Assert.True(Math.Abs(3.21999 - reader.Longitude) < 0.000001);
-            Assert.Equal(loc, reader.GlobalId);
+            Assert.Equal("https://www.openstreetmap.org/#map=19/51.215750000000014/3.2199899999999957", reader.GlobalId);
         }
         
         [Fact]
@@ -30,7 +30,7 @@ namespace Itinero.Transit.Tests.IO.OSM
             Assert.True(Math.Abs(51.21575 - reader.Latitude) < 0.000001);
             Assert.True(Math.Abs(3.21999 - reader.Longitude) < 0.000001);
             Assert.Equal(id, reader.Id);
-            Assert.Equal("https://www.openstreetmap.org/#map=19/51.21575/3.21999", reader.GlobalId);
+            Assert.Equal("https://www.openstreetmap.org/#map=19/51.215750000000014/3.2199899999999957", reader.GlobalId);
             
         }
 
