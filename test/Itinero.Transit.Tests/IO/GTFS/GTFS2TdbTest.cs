@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Itinero.Transit.Tests.IO.GTFS
 {
-    public class GTFS2TdbTest
+    public class Gtfs2TdbTest
     {
         [Fact]
         public void AgencyURLS_SNCB_AContainBelgianTrain()

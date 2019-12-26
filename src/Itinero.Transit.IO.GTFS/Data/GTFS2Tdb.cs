@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using GTFS;
-using GTFS.Entities;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
-using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 
@@ -62,21 +60,21 @@ namespace Itinero.Transit.IO.GTFS.Data
             {
                 var id = stop.Url ?? IdentifierPrefix() + "stop/" + stop.Id;
 
-                var attributes = new List<(string, string)>
+                var attributes = new Dictionary<string, string>
                 {
-                    ("name", stop.Name),
-                    ("code", stop.Code),
-                    ("description", stop.Description),
-                    ("parent_station", stop.ParentStation),
-                    ("platform", stop.PlatformCode),
-                    ("levelid", stop.LevelId),
-                    ("wheelchairboarding", stop.WheelchairBoarding),
-                    ("zone", stop.Zone),
-                }.Where(attr => !string.IsNullOrEmpty(attr.Item2));
+                    {"name", stop.Name},
+                    {"code", stop.Code},
+                    {"description", stop.Description},
+                    {"parent_station", stop.ParentStation},
+                    {"platform", stop.PlatformCode},
+                    {"levelid", stop.LevelId},
+                    {"wheelchairboarding", stop.WheelchairBoarding},
+                    {"zone", stop.Zone},
+                };
 
 
-                var stopId = writer.AddOrUpdateStop(id, stop.Longitude, stop.Latitude,
-                    attributes.Select(attr => new Attribute(attr.Item1, attr.Item2)));
+                var stopId = writer.AddOrUpdateStop(
+                    new Stop(id, (stop.Longitude, stop.Latitude), attributes));
                 gtfsId2TdbId.Add(stop.Id, stopId);
             }
 

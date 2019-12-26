@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using Itinero.Transit.Data;
-using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
+using Itinero.Transit.Tests.Dummies;
 using Xunit;
 
 namespace Itinero.Transit.Tests.Core.Journey
@@ -16,9 +12,9 @@ namespace Itinero.Transit.Tests.Core.Journey
         [Fact]
         public void Chain_WithConnection_ExpectsChainedJourney()
         {
-            var j = new Journey<TransferMetric>(new StopId(0, 0, 0), 0, TransferMetric.Factory);
+            var j = new Journey<TransferMetric>(new StopId(0, 0), 0, TransferMetric.Factory);
 
-            var j0 = j.Chain(new ConnectionId(0, 0), 10, new StopId(0, 0, 1), new TripId(0, 0));
+            var j0 = j.Chain(new ConnectionId(0, 0), 10, new StopId(0, 1), new TripId(0, 0));
 
             Assert.False(j0.SpecialConnection);
             Assert.Equal(j, j0.PreviousLink);
@@ -28,10 +24,10 @@ namespace Itinero.Transit.Tests.Core.Journey
         [Fact]
         public void Reverse_Journey_ExpectsReversedJourney()
         {
-            var j = new Journey<TransferMetric>(new StopId(0, 0, 0), 0, TransferMetric.Factory);
+            var j = new Journey<TransferMetric>(new StopId(0, 0), 0, TransferMetric.Factory);
 
-            var j0 = j.Chain(new ConnectionId(0, 1), 10, new StopId(0, 0, 1), new TripId(0, 0));
-            var j1 = j0.Chain(new ConnectionId(0, 2), 20, new StopId(0, 0, 2), new TripId(0, 0));
+            var j0 = j.Chain(new ConnectionId(0, 1), 10, new StopId(0, 1), new TripId(0, 0));
+            var j1 = j0.Chain(new ConnectionId(0, 2), 20, new StopId(0, 2), new TripId(0, 0));
 
 
             var revs = j1.Reversed();
@@ -55,9 +51,9 @@ namespace Itinero.Transit.Tests.Core.Journey
         [Fact]
         public void Reverse_JourneyWithTransfer_ExpectsReversedJourneyWithCorrectTimes()
         {
-            var stop0 = new StopId(0, 0, 0);
-            var stop1 = new StopId(0, 0, 1);
-            var stop2 = new StopId(0, 0, 2);
+            var stop0 = new StopId(0, 0);
+            var stop1 = new StopId(0, 1);
+            var stop2 = new StopId(0, 2);
 
             var cid0 = new ConnectionId(0, 0);
             var cid1 = new ConnectionId(0, 1);
@@ -66,15 +62,15 @@ namespace Itinero.Transit.Tests.Core.Journey
             var tripId1 = new TripId(0, 1);
 
 
-            var c0 = new Connection(cid0, "c0", stop1, stop2, 9000, 600, 0, 0, 0, tripId0);
-            var c1 = new Connection(cid1, "c1", stop0, stop1, 8000, 600, 0, 0, 0, tripId1);
+            var c0 = new Connection( "c0", stop1, stop2, 9000, 600, 0, 0, 0, tripId0);
+            var c1 = new Connection( "c1", stop0, stop1, 8000, 600, 0, 0, 0, tripId1);
 
             var j = new Journey<TransferMetric>(stop0, 10000, TransferMetric.Factory);
-            var j0 = j.ChainBackward(c0);
+            var j0 = j.ChainBackward(cid0, c0);
             Assert.Equal((ulong) 9000, j0.Time);
             var jtrans = j0.ChainBackwardWith(
-                new DummyReader(), new InternalTransferGenerator(), c1.ArrivalStop);
-            var j1 = jtrans.ChainBackward(c1);
+                new DummyStopsDb(), new InternalTransferGenerator(), c1.ArrivalStop);
+            var j1 = jtrans.ChainBackward(cid1, c1);
             Assert.Equal((ulong) 8000, j1.Time);
 
 
@@ -95,43 +91,5 @@ namespace Itinero.Transit.Tests.Core.Journey
         }
     }
 
-    [SuppressMessage("ReSharper", "UnassignedGetOnlyAutoProperty")]
-    internal class DummyReader : IStopsReader
-    {
-        public string GlobalId { get; }
-        public StopId Id { get; set; }
-        public double Longitude { get; } = 0;
-        public double Latitude { get; } = 0;
-        public IAttributeCollection Attributes { get; }
-        public HashSet<uint> DatabaseIndexes()
-        {
-            return new HashSet<uint>{0};
-        }
-
-        public bool MoveNext()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool MoveTo(StopId stop)
-        {
-            Id = stop;
-            return true;
-        }
-
-        public bool MoveTo(string globalId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Reset()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Stop> StopsAround(Stop stop, uint range)
-        {
-            throw new NotImplementedException();
-        }
-    }
+  
 }

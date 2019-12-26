@@ -21,8 +21,8 @@ namespace Itinero.Transit.Algorithms.CSA
     /// </summary>
     internal class ProfiledConnectionScan<T> where T : IJourneyMetric<T>
     {
-        private readonly IConnectionEnumerator _connections;
-        private readonly IStopsReader _stopsReader;
+        private readonly IConnectionsDb _connections;
+        private readonly IStopsDb _stops;
         private readonly ulong _earliestDeparture;
         private readonly ulong _lastArrival;
         private readonly HashSet<StopId> _departureLocations;
@@ -30,7 +30,7 @@ namespace Itinero.Transit.Algorithms.CSA
         private readonly HashSet<ProfiledParetoFrontier<T>> _departureFrontiers =
             new HashSet<ProfiledParetoFrontier<T>>();
 
-        private readonly HashSet<IStop> _targetLocations;
+        private readonly HashSet<Stop> _targetLocations;
         private readonly HashSet<StopId> _targetLocationsIds;
 
         private readonly MetricComparator<T> _comparator;
@@ -117,23 +117,25 @@ namespace Itinero.Transit.Algorithms.CSA
             _comparator = settings.Profile.ProfileComparator;
             _journeyFilter = settings.Profile.JourneyFilter;
 
-            _targetLocations = new HashSet<IStop>();
+            _targetLocations = new HashSet<Stop>();
             _targetLocationsIds = new HashSet<StopId>();
-            _stopsReader = settings.StopsReader;
+            _stops = settings.Stops;
             foreach (var target in settings.TargetStop)
             {
-                _stopsReader.MoveTo(target);
-                _targetLocations.Add(new Stop(_stopsReader));
-                _targetLocationsIds.Add(target);
+                _targetLocations.Add(target);
+                _stops.SearchId(target.GlobalId, out var targetId);
+                _targetLocationsIds.Add(targetId);
             }
 
             _departureLocations = new HashSet<StopId>();
             foreach (var target in settings.DepartureStop)
             {
-                _departureLocations.Add(target);
+                _stops.SearchId(target.GlobalId, out var targetId);
+
+                _departureLocations.Add(targetId);
                 // We already create a frontier for each of the destinations...
                 var frontier = new ProfiledParetoFrontier<T>(_comparator, _journeyFilter);
-                _stationJourneys[target] = frontier;
+                _stationJourneys[targetId] = frontier;
                 // ...and keep track of them. This index server to compare with the metricGuessers
                 _departureFrontiers.Add(frontier);
             }
@@ -147,7 +149,7 @@ namespace Itinero.Transit.Algorithms.CSA
             _earliestDeparture = settings.EarliestDeparture.ToUnixTime();
             _lastArrival = settings.LastArrival.ToUnixTime();
 
-            _connections = settings.ConnectionsEnumerator;
+            _connections = settings.Connections;
 
             _empty = new ProfiledParetoFrontier<T>(_comparator, _journeyFilter);
             _metricFactory = settings.Profile.MetricFactory;
@@ -175,7 +177,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 // - If we are on the trip already
                 // These are handled by the SpecialCaseFilter
 
-                HashSet<StopId> whiteList = new HashSet<StopId>();
+                var whiteList = new HashSet<StopId>();
                 whiteList.UnionWith(_departureLocations);
                 whiteList.UnionWith(_targetLocationsIds);
 
@@ -192,17 +194,19 @@ namespace Itinero.Transit.Algorithms.CSA
 
         public List<Journey<T>> CalculateJourneys()
         {
-            var enumerator = _connections;
             // Move the enumerator after the last arrival time
-            enumerator.MoveTo(_lastArrival);
+            var enumerator = _connections.GetEnumeratorAt(_lastArrival);
 
-            var c = new Connection();
-            while (
-                enumerator.MovePrevious() &&
-                enumerator.CurrentDateTime >= _earliestDeparture)
+            while (enumerator.MovePrevious())
             {
-                enumerator.Current(c);
-                IntegrateConnection(c);
+                var cid = enumerator.Current;
+                var c = _connections.Get(cid);
+                if (c.DepartureTime < _earliestDeparture)
+                {
+                    break;
+                }
+
+                IntegrateConnection(cid, c);
             }
 
             // The main algorithm is done
@@ -238,14 +242,12 @@ namespace Itinero.Transit.Algorithms.CSA
             return sorted;
         }
 
-        
+
         /// <summary>
         /// Looks to this single connection, the actual PCS step
         /// </summary>
-        /// <param name="c"></param>
-        private void IntegrateConnection(Connection c)
+        private void IntegrateConnection(ConnectionId cid, Connection c)
         {
-
             if (c.ArrivalTime > _lastArrival)
             {
                 return;
@@ -262,14 +264,14 @@ namespace Itinero.Transit.Algorithms.CSA
 
 
             /*What if we went by foot after taking C?*/
-            var journeyT1 = WalkToTargetFrom(c);
+            var journeyT1 = WalkToTargetFrom(cid, c);
 
             /*What are the optimal journeys when remaining seated on this connection?*/
-            var journeyT2 = ExtendTrip(c);
+            var journeyT2 = ExtendTrip(cid, c);
 
             /*What if we transfer in this station?
              */
-            var journeyT3 = TransferAfter(c);
+            var journeyT3 = TransferAfter(cid, c);
 
             /* Lets pick out the best journeys that have C in them*/
             var journeys = PickBestJourneys(journeyT1, journeyT2, journeyT3);
@@ -320,9 +322,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// Gives the journeys that would result if we were to leave C and walk
         /// to the destination
         /// </summary>
-        /// <param name="c"></param>
-        /// <returns></returns>
-        private Journey<T> WalkToTargetFrom(Connection c)
+        private Journey<T> WalkToTargetFrom(ConnectionId cid, Connection c)
         {
             if (!c.CanGetOff())
             {
@@ -345,15 +345,14 @@ namespace Itinero.Transit.Algorithms.CSA
                 (c.ArrivalStop, c.ArrivalTime, _metricFactory.Zero(),
                     Journey<T>.ProfiledScanJourney);
                 // ... and put 'C' before it
-                var journey = arrivingJourney.ChainBackward(c);
+                var journey = arrivingJourney.ChainBackward(cid, c);
                 return journey;
             }
 
 
             // Let's calculate the various times to walk towards each possible destination
-            _stopsReader.MoveTo(c.ArrivalStop);
-            var walkDeparture = new Stop(_stopsReader);
-            
+            var walkDeparture = _stops.Get(c.ArrivalStop);
+
             // Gives a dictionary from c.Arrival to the targetLocations, where the key is the targetLocation
             var walkingTimes =
                 _walkPolicy?.TimesBetween( /* IStop from */ walkDeparture, _targetLocations);
@@ -364,7 +363,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             // Ofc, we only care about the fastest arrival:
 
-            StopId? fastestTarget = null;
+            Stop fastestTarget = null;
             var fastestTime = uint.MaxValue;
             foreach (var kvpair in walkingTimes)
             {
@@ -387,18 +386,19 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 return null;
             }
-            
+
+            _stops.SearchId(fastestTarget.GlobalId, out var fastestTargetId);
             var j =
-            // The 'genesis' indicating when we arrive ... 
-                new Journey<T>
-                    (fastestTarget.Value, arrivalTime,
-                        _metricFactory.Zero(),
-                        Journey<T>.ProfiledScanJourney)
-                    // ... the walking part ...
-                    .ChainSpecial
-                        (Journey<T>.OTHERMODE, c.ArrivalTime, c.ArrivalStop, new TripId(_walkPolicy))
-                    // ... the connection part ...
-                    .ChainBackward(c)
+                    // The 'genesis' indicating when we arrive ... 
+                    new Journey<T>
+                        (fastestTargetId, arrivalTime,
+                            _metricFactory.Zero(),
+                            Journey<T>.ProfiledScanJourney)
+                        // ... the walking part ...
+                        .ChainSpecial
+                            (Journey<T>.OTHERMODE, c.ArrivalTime, c.ArrivalStop, new TripId(_walkPolicy))
+                        // ... the connection part ...
+                        .ChainBackward(cid, c)
                 ;
             return j;
         }
@@ -406,8 +406,7 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <summary>
         /// Chains the given connection to the needed trips
         /// </summary>
-        /// <param name="c"></param>
-        private ProfiledParetoFrontier<T> ExtendTrip(Connection c)
+        private ProfiledParetoFrontier<T> ExtendTrip(ConnectionId cid, Connection c)
         {
             var key = c.TripId;
             if (!_tripJourneys.ContainsKey(key))
@@ -429,14 +428,14 @@ namespace Itinero.Transit.Algorithms.CSA
                     continue;
                 }
 
-                frontier[i] = frontier[i].ChainBackward(c);
+                frontier[i] = frontier[i].ChainBackward(cid, c);
             }
 
             return pareto;
         }
 
 
-        private ProfiledParetoFrontier<T> TransferAfter(Connection c)
+        private ProfiledParetoFrontier<T> TransferAfter(ConnectionId cid, Connection c)
         {
             // We have just taken C and are gonna transfer
             // In what possible journeys (if any) to the destination will this result?
@@ -458,10 +457,10 @@ namespace Itinero.Transit.Algorithms.CSA
             // We get all possible, pareto optimal journeys departing here...
             var pareto = _stationJourneys[c.ArrivalStop];
             // ... we try to clean up this frontier a little ...
-            pareto.Clean(_guesser, _departureFrontiers);
+            pareto.Clean(_guesser, _departureFrontiers, c.DepartureTime);
 
             // .. and we extend them with c. What is non-dominated, we return
-            return pareto.ExtendFrontierBackwards(_stopsReader, c, _transferPolicy);
+            return pareto.ExtendFrontierBackwards(_stops, cid, c, _transferPolicy);
         }
 
 
@@ -482,7 +481,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             // For all the possible journeys from a stop towards the destination
             // extend the journey on the top
-            var withWalks = journeys.WalkTowards(cDepartureStop, _walkPolicy, _stopsReader);
+            var withWalks = journeys.WalkTowards(_stops.Get(cDepartureStop), _walkPolicy, _stops);
 
             foreach (var j in withWalks)
             {
@@ -496,11 +495,11 @@ namespace Itinero.Transit.Algorithms.CSA
                 }
 
                 if (j.Time < _earliestDeparture)
-                { 
+                {
                     // this journey departs too early.
                     continue;
                 }
-                
+
                 // And add this journey with walk to the pareto frontier
                 if (!_stationJourneys.ContainsKey(stopId))
                 {

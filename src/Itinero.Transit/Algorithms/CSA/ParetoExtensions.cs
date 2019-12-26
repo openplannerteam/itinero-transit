@@ -15,14 +15,8 @@ namespace Itinero.Transit.Algorithms.CSA
         ///  The resulting pareto frontier will only contain non-dominated journeys containing C.
         ///  
         ///  </summary>
-        ///  <param name="pareto"></param>
-        /// <param name="stopsReader"></param>
-        /// <param name="c"></param>
-        /// <param name="transferPolicy"></param>
-        /// <typeparam name="T"></typeparam>
-        ///  <returns></returns>
         public static ProfiledParetoFrontier<T> ExtendFrontierBackwards<T>(this ProfiledParetoFrontier<T> pareto,
-            IStopsReader stopsReader,
+            IStopsDb stops, ConnectionId cid,
             Connection c, IOtherModeGenerator transferPolicy) where T : IJourneyMetric<T>
         {
             var newFrontier = new ProfiledParetoFrontier<T>(pareto.Comparator, pareto.JourneyFilter);
@@ -52,14 +46,14 @@ namespace Itinero.Transit.Algorithms.CSA
                 var lastTripId = journey.LastTripId();
                 if (lastTripId.HasValue && lastTripId.Value.Equals(c.TripId))
                 {
-                    extendedJourney = journey.ChainBackward(c);
+                    extendedJourney = journey.ChainBackward(cid, c);
                 }
                 else
                 {
                     extendedJourney =
                         journey
-                            .ChainBackwardWith(stopsReader, transferPolicy, c.ArrivalStop)
-                            ?.ChainBackward(c);
+                            .ChainBackwardWith(stops, transferPolicy, c.ArrivalStop)
+                            ?.ChainBackward(cid, c);
                 }
 
                 if (extendedJourney != null)

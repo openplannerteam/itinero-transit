@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
 using Itinero.Transit.Utils;
 
@@ -36,10 +35,11 @@ namespace Itinero.Transit.OtherMode
         }
 
 
-        public uint TimeBetween(IStop from, IStop to)
+        public uint TimeBetween(Stop from, Stop to)
         {
             var distance =
-                DistanceEstimate.DistanceEstimateInMeter(from.Latitude, from.Longitude, to.Latitude, to.Longitude);
+                DistanceEstimate.DistanceEstimateInMeter(
+                    (from.Longitude, from.Latitude), (to.Longitude, to.Latitude));
             if (distance > _maxDistance)
             {
                 return uint.MaxValue;
@@ -48,13 +48,13 @@ namespace Itinero.Transit.OtherMode
             return (uint) (distance * _speed);
         }
 
-        public Dictionary<StopId, uint> TimesBetween(IStop @from,
-            IEnumerable<IStop> to)
+        public Dictionary<Stop, uint> TimesBetween(Stop @from,
+            IEnumerable<Stop> to)
         {
             return this.DefaultTimesBetween(from, to);
         }
 
-        public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @from, IStop to)
+        public Dictionary<Stop, uint> TimesBetween(IEnumerable<Stop> @from, Stop to)
         {
             return this.DefaultTimesBetween(from, to);
         }
@@ -70,7 +70,7 @@ namespace Itinero.Transit.OtherMode
             return $"crowsflight&maxDistance={_maxDistance}&speed={_speed}";
         }
 
-        public IOtherModeGenerator GetSource(StopId @from, StopId to)
+        public IOtherModeGenerator GetSource(Stop from, Stop to)
         {
             return this;
         }

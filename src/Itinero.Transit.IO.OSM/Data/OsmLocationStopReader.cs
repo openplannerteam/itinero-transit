@@ -1,10 +1,11 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data.Core;
+using Itinero.Transit.Data.LocationIndexing;
 using Itinero.Transit.IO.OSM.Data.Parser;
-using Itinero.Transit.Utils;
 using static Itinero.Transit.IO.OSM.Data.Parser.DefaultRdParsers;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
@@ -17,8 +18,18 @@ namespace Itinero.Transit.IO.OSM.Data
     /// https://www.openstreetmap.org/#map=[irrelevant_zoom_level]/[lat]/[lon]
     /// E.g.:  https://www.openstreetmap.org/#map=19/51.21575/3.21999
     /// </summary>
-    public class OsmLocationStopReader : IStopsReader
+    public class OsmLocationStopReader : IStopsDb
     {
+        private readonly uint _databaseId;
+
+        private readonly TiledLocationIndexing<Stop> _locationIndex = new TiledLocationIndexing<Stop>();
+
+        public ILocationIndexing<Stop> LocationIndex => _locationIndex;
+
+
+        public IEnumerable<uint> DatabaseIds { get; }
+
+
         /// <summary>
         /// If we were to search locations close by a given location, we could return infinitely many coordinates.
         ///
@@ -30,165 +41,114 @@ namespace Itinero.Transit.IO.OSM.Data
         /// We expect this list to stay small (at most 100) so we are not gonna optimize this a lot
         /// 
         /// </summary>
-        private readonly List<StopId> _searchableLocations = new List<StopId>();
+        private readonly List<Stop> _searchableLocations = new List<Stop>();
 
 
-        private readonly uint _databaseId;
-        public string GlobalId { get; private set; }
-        public StopId Id { get; private set; }
-        public double Longitude { get; private set; }
-        public double Latitude { get; private set; }
-        public IAttributeCollection Attributes => null; //No attributes supported here
-
-        private const uint _precision = 1000000;
+        private const uint Precision = 100000;
 
         /// <summary>
-        /// If enabled, every URL that is decoded will be kept in reachable locations
-        /// </summary>
-        private readonly bool _hoard;
-
-        /// <summary>
-        /// Creates a StopsReader which is capable of decoding OSM-urls
+        /// Creates a StopsReader which is capable of decoding OSM-urls.
+        ///
+        /// While every location can be decoded, the 'searchableLocations' will be given via the LocationIndex and GetEnumerator.
+        /// This makes that they can be picked up by queries.
+        /// 
         /// </summary>
         /// <param name="databaseId"></param>
-        /// <param name="hoard">If enabled, every decoded URL will be kept as searchableLocation</param>
-        public OsmLocationStopReader(uint databaseId, bool hoard = false)
+        /// <param name="searchableLocations">Locations that can be picked up by GetEnumerator and SearchClosest</param>
+        public OsmLocationStopReader(uint databaseId, IEnumerable<(double lon, double lat)> searchableLocations)
+        : this(databaseId, searchableLocations?.Select(CreateOsmStop))
         {
-            _databaseId = databaseId;
-            _hoard = hoard;
-        }
-
-        public bool MoveTo((double latitude, double longitude) location)
-        {
-            var (lat, lon) =
-                location;
-            // Slight abuse of the LocationId
-            Id = new StopId(_databaseId, (uint) ((lat + 90.0) * _precision), (uint) ((lon + 180) * _precision));
-            Latitude = (double) Id.LocalTileId / _precision - 90.0;
-            Longitude = (double) Id.LocalId / _precision - 180.0;
-            GlobalId = $"https://www.openstreetmap.org/#map=19/{Latitude}/{Longitude}";
-            return true;
-        }
-
-        public bool MoveTo(string globalId)
-        {
-            var result =
-                ParseOsmUrl.ParseUrl().Parse((globalId, 0));
-
-            if (!result.Success() || !string.IsNullOrEmpty(result.Rest))
-            {
-                return false;
-            }
-
-            var (lat, lon) = result.Result;
-            // Slight abuse of the LocationId
-            Id = new StopId(_databaseId, (uint) ((lat + 90.0) * _precision), (uint) ((lon + 180) * _precision));
-            Latitude = (double) Id.LocalTileId / _precision - 90.0;
-            Longitude = (double) Id.LocalId / _precision - 180.0;
-            GlobalId = $"https://www.openstreetmap.org/#map=19/{Latitude}/{Longitude}";
-            if (_hoard)
-            {
-                AddSearchableLocation(Id);
-            }
-
-            return true;
-        }
-
-        public bool MoveTo(StopId stop)
-        {
-            if (stop.DatabaseId != _databaseId)
-            {
-                return false;
-            }
-
-            Latitude = (double) stop.LocalTileId / _precision - 90.0;
-            Longitude = (double) stop.LocalId / _precision - 180.0;
-            GlobalId = $"https://www.openstreetmap.org/#map=19/{Latitude}/{Longitude}";
-            Id = stop;
-            return true;
+            
         }
 
         /// <summary>
-        /// Enumerates the special 'inject locations' list
+        /// Creates a StopsReader which is capable of decoding OSM-urls.
+        ///
+        /// While every location can be decoded, the 'searchableLocations' will be given via the LocationIndex and GetEnumerator.
+        /// This makes that they can be picked up by queries.
+        /// 
         /// </summary>
-        private int _index;
-
-        public HashSet<uint> DatabaseIndexes()
+        /// <param name="databaseId"></param>
+        /// <param name="searchableLocations">Locations that can be picked up by GetEnumerator and SearchClosest</param>
+        public OsmLocationStopReader(uint databaseId, IEnumerable<Stop> searchableLocations = null)
         {
-            return new HashSet<uint>() {_databaseId};
+            _databaseId = databaseId;
+            DatabaseIds = new[] {_databaseId};
+            // ReSharper disable once InvertIf
+            if (searchableLocations != null)
+            {
+                foreach (var searchableLocation in searchableLocations)
+                {
+                    _locationIndex.Add(searchableLocation.Longitude, searchableLocation.Latitude, searchableLocation);
+                    _searchableLocations.Add(searchableLocation);
+                }
+            }
         }
 
-        public bool MoveNext()
+
+        public StopId SearchId((double lon, double lat) c)
         {
-            _index++;
-            if (_index >= _searchableLocations.Count)
+            var lonRounded = c.lon * Precision / Precision;
+            var latRounded = c.lat * Precision / Precision;
+
+            return new StopId(_databaseId,
+                (uint) ((int) (lonRounded + 180) * Precision * 10000 + (latRounded + 90) * 10000));
+        }
+
+        private static Stop CreateOsmStop((double lat, double lon) location)
+        {
+            var (lon, lat) = location;
+
+            var lonRounded = lon * Precision / Precision;
+            var latRounded = lat * Precision / Precision;
+            var globalId = $"https://www.openstreetmap.org/#map=19/{latRounded}/{lonRounded}";
+
+
+            return new Stop(globalId, latRounded, lonRounded);
+        }
+
+        public bool TryGet(StopId id, out Stop t)
+        {
+            if (_databaseId != id.DatabaseId)
             {
+                t = null;
                 return false;
             }
 
-            MoveTo(_searchableLocations[_index]);
+            var lat = (id.LocalId % 10000) / 1000.0;
+            // ReSharper disable once PossibleLossOfFraction
+            var lon = (double) (id.LocalId / 1000) / Precision;
+
+            t = CreateOsmStop((lat, lon));
             return true;
         }
 
-
-        public void Reset()
+        public bool SearchId(string globalId, out StopId id)
         {
-            _index = 0;
+            var (lat, lon) = ParseOsmUrl.ParseUrl().ParseFull(globalId);
+            id = SearchId((lon, lat));
+            return true;
         }
 
-        public void AddSearchableLocation(StopId location)
-        {
-            if (_searchableLocations.Contains(location))
-            {
-                // Already there...
-                return;
-            }
+   
 
-            _searchableLocations.Add(location);
+        public void PostProcess(uint zoomLevel)
+        {
         }
 
-        public StopId AddSearchableLocation((double latitude, double longitude) location)
+        public IStopsDb Clone()
         {
-            MoveTo(location);
-            AddSearchableLocation(Id);
-            return Id;
+            return new OsmLocationStopReader(_databaseId, _searchableLocations);
         }
 
-        public IEnumerable<IStop> SearchInBox((double minLon, double minLat, double maxLon, double maxLat) box)
+        public IEnumerator<Stop> GetEnumerator()
         {
-            var results = new List<IStop>();
-            foreach (var location in _searchableLocations)
-            {
-                MoveTo(location);
-                if (box.minLon <= Longitude && Longitude <= box.maxLon
-                                            && box.minLat <= Latitude && Latitude <= box.maxLat)
-                {
-                    results.Add(new Stop(this));
-                }
-            }
-
-            return results;
+            return _searchableLocations.GetEnumerator();
         }
 
-
-        public IEnumerable<Stop> StopsAround(Stop stop, uint range)
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            foreach (var location in _searchableLocations)
-            {
-                MoveTo(location);
-                if (!(DistanceEstimate.DistanceEstimateInMeter(stop.Latitude, stop.Longitude, Latitude, Longitude) <=
-                      range))
-                {
-                    continue;
-                }
-
-                if (location.Equals(stop.Id))
-                {
-                    continue;
-                }
-
-                yield return new Stop(this);
-            }
+            return GetEnumerator();
         }
     }
 

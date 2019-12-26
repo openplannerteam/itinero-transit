@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Data.Core;
 using Itinero.Transit.Utils;
+
 // ReSharper disable InconsistentlySynchronizedField
 
 namespace Itinero.Transit.OtherMode
@@ -23,27 +23,27 @@ namespace Itinero.Transit.OtherMode
         /// <summary>
         /// Keeps track of single instances: from A to B: how long does it take (or MaxValue if not possible)
         /// </summary>
-        private readonly Dictionary<(StopId, StopId tos), uint> _cacheSingle =
-            new Dictionary<(StopId, StopId tos), uint>();
+        private readonly Dictionary<(Stop, Stop tos), uint> _cacheSingle =
+            new Dictionary<(Stop, Stop tos), uint>();
 
         /// <summary>
         /// Keeps track of how long it takes to go from A to multiple B's
         /// </summary>
-        private readonly Dictionary<(StopId Id, KeyList<StopId> tos), Dictionary<StopId, uint>> _cacheForward =
-            new Dictionary<(StopId @from, KeyList<StopId> tos), Dictionary<StopId, uint>>();
+        private readonly Dictionary<(Stop Id, KeyList<Stop> tos), Dictionary<Stop, uint>> _cacheForward =
+            new Dictionary<(Stop Id, KeyList<Stop> tos), Dictionary<Stop, uint>>();
 
 
         /// <summary>
         /// Keeps track of how long it takes to go from multiple As to one single locations
         /// This makes sense to do: the access pattern will often need the same closeby stops
         /// </summary>
-        private readonly Dictionary<(KeyList<StopId> froms, StopId to), Dictionary<StopId, uint>> _cacheReverse =
-            new Dictionary<(KeyList<StopId> froms, StopId to), Dictionary<StopId, uint>>();
+        private readonly Dictionary<(KeyList<Stop> froms, Stop to), Dictionary<Stop, uint>> _cacheReverse =
+            new Dictionary<(KeyList<Stop> froms, Stop to), Dictionary<Stop, uint>>();
 
 
-        public uint TimeBetween(IStop from, IStop to)
+        public uint TimeBetween(Stop from, Stop to)
         {
-            var key = (from.Id, to.Id);
+            var key = (from, to);
             // ReSharper disable once InconsistentlySynchronizedField
             if (_cacheSingle.ContainsKey(key))
             {
@@ -61,8 +61,8 @@ namespace Itinero.Transit.OtherMode
         }
 
 
-        public Dictionary<StopId, uint> TimesBetween(IStop from,
-            IEnumerable<IStop> to)
+        public Dictionary<Stop, uint> TimesBetween(Stop from,
+            IEnumerable<Stop> to)
         {
             /**
              * Tricky situation ahead...
@@ -88,31 +88,29 @@ namespace Itinero.Transit.OtherMode
              *
              */
 
-
-            // FIRST select the IDs to make sure 'return yield'-enumerators run correctly on an enumerating object
-            to = to.Select(stop => new Stop(stop)).ToList();
-            var tos = new KeyList<StopId>(to.Select(stop => stop.Id));
-            var key = (from.Id, tos);
+            to = to.ToList();
+            var tos = new KeyList<Stop>(to);
+            var key = (from, tos);
             if (_cacheForward.ContainsKey(key))
             {
                 return _cacheForward[key];
             }
 
             // The end result... Empty for now
-            var v = new Dictionary<StopId, uint>();
+            var v = new Dictionary<Stop, uint>();
 
             // What do we _actually_ have to search. A few values might be available already
-            var toSearch = new List<IStop>();
+            var toSearch = new List<Stop>();
 
             foreach (var t in to)
             {
-                var keySingle = (from.Id, t.Id);
+                var keySingle = (from, t);
                 if (_cacheSingle.ContainsKey(keySingle))
                 {
                     // Found!
-                    v.Add(t.Id, _cacheSingle[keySingle]);
+                    v.Add(t, _cacheSingle[keySingle]);
                 }
-                else if (!from.Id.Equals(t.Id))
+                else if (!from.Equals(t))
                 {
                     // This one should still be searched
 
@@ -135,13 +133,13 @@ namespace Itinero.Transit.OtherMode
                     {
                         foreach (var t in to)
                         {
-                            if (v.ContainsKey(t.Id))
+                            if (v.ContainsKey(t))
                             {
-                                _cacheSingle[(from.Id, t.Id)] = v[t.Id];
+                                _cacheSingle[(from, t)] = v[t];
                             }
                             else
                             {
-                                _cacheSingle[(from.Id, t.Id)] = uint.MaxValue;
+                                _cacheSingle[(from, t)] = uint.MaxValue;
                             }
                         }
                     }
@@ -162,11 +160,11 @@ namespace Itinero.Transit.OtherMode
         }
 
 
-        public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @fromEnum, IStop to)
+        public Dictionary<Stop, uint> TimesBetween(IEnumerable<Stop> @fromEnum, Stop to)
         {
-            var from = fromEnum.Select(stop => new Stop(stop)).ToList();
-            var froms = new KeyList<StopId>(from.Select(stop => stop.Id));
-            var key = (froms, to.Id);
+            var from = fromEnum.ToList();
+            var froms = new KeyList<Stop>(from);
+            var key = (froms, to);
 
             // Already found in the cache
             if (_cacheReverse.ContainsKey(key))
@@ -175,20 +173,20 @@ namespace Itinero.Transit.OtherMode
             }
 
             // The end result... Empty for now
-            var v = new Dictionary<StopId, uint>();
+            var v = new Dictionary<Stop, uint>();
 
 
             // What do we _actually_ have to search. A few values might be available already
             var toSearch = new List<Stop>();
             foreach (var f in from)
             {
-                var keySingle = (f.Id, to.Id);
+                var keySingle = (f, to);
                 if (_cacheSingle.ContainsKey(keySingle))
                 {
                     // This value already exists
-                    v.Add(f.Id, _cacheSingle[keySingle]);
+                    v.Add(f, _cacheSingle[keySingle]);
                 }
-                else if (!f.Id.Equals(to.Id))
+                else if (!f.Equals(to))
                 {
                     // This one should still be searched
                     toSearch.Add(f);
@@ -212,13 +210,13 @@ namespace Itinero.Transit.OtherMode
                     {
                         foreach (var fr in from)
                         {
-                            if (v.ContainsKey(fr.Id))
+                            if (v.ContainsKey(fr))
                             {
-                                _cacheSingle[(fr.Id, to.Id)] = v[fr.Id];
+                                _cacheSingle[(fr, to)] = v[fr];
                             }
                             else
                             {
-                                _cacheSingle[(fr.Id, to.Id)] = uint.MaxValue;
+                                _cacheSingle[(fr, to)] = uint.MaxValue;
                             }
                         }
                     }
@@ -242,23 +240,18 @@ namespace Itinero.Transit.OtherMode
 
         private bool _cacheIsClosed;
 
-        public void PreCalculateCache(IStopsReader withCache)
+        public void PreCalculateCache(IStopsDb stopsDb)
         {
             if (Range() == 0)
             {
                 throw new Exception("Range is 0. It has no use to precalculate a cache of stops within 0 meter of other stops...");
             }
-            withCache.Reset();
-            if (!(withCache is StopSearchCache))
-            {
-                throw new Exception("You'll really want to use a caching stops reader here!");
-            }
 
-            while (withCache.MoveNext())
+            foreach (var stop in stopsDb)
             {
-                var current = (IStop) withCache;
-                var inRange = withCache.StopsAround(new Stop(current), Range());
-                TimesBetween(withCache, inRange);
+                var inRange = stopsDb.GetInRange(
+                    (stop.Longitude, stop.Latitude), Range());
+                TimesBetween(stop, inRange);
             }
         }
 
@@ -272,7 +265,7 @@ namespace Itinero.Transit.OtherMode
             return Fallback.OtherModeIdentifier();
         }
 
-        public IOtherModeGenerator GetSource(StopId @from, StopId to)
+        public IOtherModeGenerator GetSource(Stop from, Stop to)
         {
             return Fallback.GetSource(from, to);
         }

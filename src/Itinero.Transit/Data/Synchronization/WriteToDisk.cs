@@ -25,7 +25,7 @@ namespace Itinero.Transit.Data.Synchronization
             
             using (var stream = File.OpenWrite(_saveTo))
             {
-                tdb.WriteTo(stream);
+              tdb.WriteTo(stream);
             }
         }
 

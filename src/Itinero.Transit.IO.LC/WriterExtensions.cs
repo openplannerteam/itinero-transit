@@ -1,12 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Attributes;
 using Itinero.Transit.Data.Core;
 using Itinero.Transit.IO.LC.Data;
 using Itinero.Transit.IO.LC.Utils;
 using Itinero.Transit.Logging;
-using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 using Connection = Itinero.Transit.IO.LC.Data.Connection;
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests.IO.LC")]
@@ -105,18 +104,17 @@ namespace Itinero.Transit.IO.LC
             var globalId = location.Uri;
             var stopId = globalId.ToString();
 
-            var attributes = new AttributeCollection();
-            attributes.AddOrReplace("name", location.Name);
+            var attributes = new Dictionary<string, string> {["name"] = location.Name};
             // ReSharper disable once InvertIf
             if (location.Names != null)
             {
                 foreach (var (lang, name) in location.Names)
                 {
-                    attributes.AddOrReplace($"name:{lang}", name);
+                    attributes[$"name:{lang}"] = name;
                 }
             }
 
-            return writer.AddOrUpdateStop(stopId, location.Lon, location.Lat, attributes);
+            return writer.AddOrUpdateStop(new Stop(stopId, (location.Lon, location.Lat), attributes));
         }
 
         private static StopId
@@ -160,10 +158,12 @@ namespace Itinero.Transit.IO.LC
                 mode += 4;
             }
 
-            writer.AddOrUpdateConnection(stop1Id, stop2Id, connectionUri,
+            writer.AddOrUpdateConnection(
+                new Transit.Data.Core.Connection(
+                stop1Id, stop2Id, connectionUri,
                 connection.DepartureTime(),
                 (ushort) (connection.ArrivalTime() - connection.DepartureTime()).TotalSeconds,
-                connection.DepartureDelay, connection.ArrivalDelay, tripId, mode);
+                connection.DepartureDelay, connection.ArrivalDelay, tripId, mode));
         }
 
 
@@ -171,12 +171,13 @@ namespace Itinero.Transit.IO.LC
         {
             var tripUri = connection.Trip().ToString();
 
-            var attributes = new AttributeCollection(
-                new Attribute("headsign", connection.Direction),
-                new Attribute("trip", $"{connection.Trip()}"),
-                new Attribute("route", $"{connection.Route()}")
-            );
-            return writer.AddOrUpdateTrip(tripUri, attributes);
+            var attributes = new Dictionary<string, string>
+            {
+               {"headsign", connection.Direction},
+               {"trip", $"{connection.Trip()}"},
+               {"route", $"{connection.Route()}"}
+            };
+            return writer.AddOrUpdateTrip(new Trip(tripUri, attributes));
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Itinero.Transit.IO.GTFS
 {
     public static class TransitDbExtensions
     {
-        public static void UseGTFS(this TransitDb tdb, string archivePath)
+        public static void UseGtfs(this TransitDb tdb, string archivePath)
         {
             throw new NotImplementedException("Hello World");
         }

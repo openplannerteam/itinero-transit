@@ -13,15 +13,15 @@ namespace Itinero.Transit.Algorithms.CSA
     internal class ScanSettings<T> where T : IJourneyMetric<T>
     {
         public ScanSettings(
-            IStopsReader stopsReader,
-            IConnectionEnumerator connectionsEnumerator,
+            IStopsDb stopsReader,
+            IConnectionsDb connections,
             DateTime start,
             DateTime end,
             Profile<T> profile,
-            List<StopId> from, List<StopId> to)
+            List<Stop> from, List<Stop> to)
         {
-            StopsReader = stopsReader;
-            ConnectionsEnumerator = connectionsEnumerator;
+            Stops = stopsReader;
+            Connections = connections;
             EarliestDeparture = start;
             LastArrival = end;
 
@@ -32,19 +32,21 @@ namespace Itinero.Transit.Algorithms.CSA
         }
 
 
-        public IStopsReader StopsReader { get; }
-        public IConnectionEnumerator ConnectionsEnumerator { get; }
+        public IStopsDb Stops { get; }
+        public IConnectionsDb Connections { get; }
 
         public DateTime EarliestDeparture { get; }
         public DateTime LastArrival { get; }
 
-        public List<StopId> DepartureStop { get; }
-        public List<StopId> TargetStop { get; }
+        public List<Stop> DepartureStop { get; }
+        public List<Stop> TargetStop { get; }
         public Profile<T> Profile { get; }
         public IsochroneFilter<T> Filter { get; set; }
 
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public IMetricGuesser<T> MetricGuesser { get; set; }
 
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public Journey<T> ExampleJourney { get; set; }
     }
 }

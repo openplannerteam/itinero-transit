@@ -11,7 +11,6 @@ using Itinero.Transit.Journey;
 using Itinero.Transit.Logging;
 using Itinero.Transit.OtherMode;
 using Itinero.Transit.Utils;
-using ConnectionsDb = Itinero.Transit.Data.ConnectionsDb;
 
 // ReSharper disable PossibleMultipleEnumeration
 
@@ -60,10 +59,10 @@ namespace Itinero.Transit
         /// <param name="around">Search around this stop</param>
         /// <param name="maxDistanceInMeters">The maximum distance in meters.</param>
         /// <returns>The closest stop.</returns>
-        public static IStop FindClosestStop(this TransitDbSnapShot snapShot, IStop around,
+        public static Stop FindClosestStop(this TransitDbSnapShot snapShot, Stop around,
             uint maxDistanceInMeters = 1000)
         {
-            return snapShot.StopsDb.GetReader().FindClosest(around, maxDistanceInMeters);
+            return snapShot.StopsDb.FindClosest(around, maxDistanceInMeters);
         }
 
         /// <summary>
@@ -73,52 +72,53 @@ namespace Itinero.Transit
         /// <param name="around">The stop to search around.</param>
         /// <param name="maxDistanceInMeters">The maximum distance in meters.</param>
         /// <returns>The closest stop.</returns>
-        public static Stop FindClosestStop(this IEnumerable<TransitDbSnapShot> snapShot, IStop around,
+        public static Stop FindClosestStop(this IEnumerable<TransitDbSnapShot> snapShot, Stop around,
             uint maxDistanceInMeters = 1000)
         {
-            var reader = StopsReaderAggregator.CreateFrom(snapShot);
+            var reader = StopsDbAggregator.CreateFrom(snapShot);
             return reader.FindClosest(around, maxDistanceInMeters);
         }
 
-        public static StopId FindStop(this TransitDbSnapShot snapshot, string locationId,
+        public static Stop FindStop(this TransitDbSnapShot snapshot, string locationId,
             string errMsg = null)
         {
-            return snapshot.StopsDb.GetReader().FindStop(locationId, errMsg);
+            return snapshot.StopsDb.Get(locationId, errMsg);
         }
 
-        public static StopId FindStop(this IEnumerable<TransitDbSnapShot> snapshot, string locationId,
+        public static Stop FindStop(this IEnumerable<TransitDbSnapShot> snapshots, string locationId,
             string errMsg = null)
         {
-            return StopsReaderAggregator.CreateFrom(snapshot).FindStop(locationId, errMsg);
+            return StopsDbAggregator.CreateFrom(snapshots)
+                .Get(locationId, errMsg);
         }
 
-        public static IEnumerable<StopId> FindStops(this IEnumerable<TransitDbSnapShot> snapshot,
+        public static IEnumerable<Stop> FindStops(this IEnumerable<TransitDbSnapShot> snapshots,
             IEnumerable<string> locationIds,
             Func<string, string> errMsg = null)
         {
-            var reader = StopsReaderAggregator.CreateFrom(snapshot);
+            var reader = StopsDbAggregator.CreateFrom(snapshots);
             foreach (var id in locationIds)
             {
-                yield return reader.FindStop(id, errMsg?.Invoke(id));
+                yield return reader.Get(id, errMsg?.Invoke(id));
             }
         }
 
-        public static IEnumerable<StopId> FindStops(this IStopsReader reader,
+        public static IEnumerable<Stop> FindStops(this IStopsDb reader,
             IEnumerable<string> locationIds,
             Func<string, string> errMsg = null)
         {
             foreach (var id in locationIds)
             {
-                yield return reader.FindStop(id, errMsg?.Invoke(id));
+                yield return reader.Get(id, errMsg?.Invoke(id));
             }
         }
 
 
-        public static StopId FindStops(this IStopsReader reader,
+        public static Stop FindStops(this IStopsDb stops,
             string id,
             Func<string, string> errMsg = null)
         {
-            return reader.FindStop(id, errMsg?.Invoke(id));
+            return stops.Get(id, errMsg?.Invoke(id));
         }
 
 
@@ -192,6 +192,7 @@ namespace Itinero.Transit
                     currentList.Add(j);
                 }
             }
+
             result.AddRange(currentList);
 
             return result;
@@ -254,31 +255,25 @@ namespace Itinero.Transit
 
     public class WithProfile<T> where T : IJourneyMetric<T>
     {
-        public readonly IStopsReader StopsReader;
-        public readonly IConnectionEnumerator ConnectionEnumerator;
-        public readonly IDatabaseReader<ConnectionId, Connection> ConnectionReader;
+        public readonly IStopsDb StopsDb;
+        public readonly IConnectionsDb ConnectionsDb;
         public readonly Profile<T> Profile;
 
         internal WithProfile(
-            IStopsReader stops,
-            IConnectionEnumerator connections,
-            IDatabaseReader<ConnectionId, Connection> connectionsReaders,
+            IStopsDb stops,
+            IConnectionsDb connections,
             Profile<T> profile)
         {
-            StopsReader = stops;
-            ConnectionEnumerator = connections;
-            ConnectionReader = connectionsReaders;
+            StopsDb = stops;
+            ConnectionsDb = connections;
             Profile = profile;
         }
 
         internal WithProfile(IEnumerable<TransitDbSnapShot> tdbs, Profile<T> profile)
         {
-            StopsReader = StopsReaderAggregator.CreateFrom(tdbs);
-            ConnectionEnumerator =
-                ConnectionEnumeratorAggregator.CreateFrom(
-                    tdbs.Select(tdb => ((ConnectionsDb) tdb.ConnectionsDb).GetDepartureEnumerator()));
-            ConnectionReader = DatabaseEnumeratorAggregator<ConnectionId, Connection>.CreateFrom(
-                tdbs.Select(tdb => tdb.ConnectionsDb));
+            StopsDb = StopsDbAggregator.CreateFrom(tdbs);
+            ConnectionsDb =
+                ConnectionsDbAggregator.CreateFrom(tdbs.Select(tdb => tdb.ConnectionsDb).ToList());
             Profile = new Profile<T>(
                 profile.InternalTransferGenerator,
                 profile.WalksGenerator,
@@ -316,7 +311,7 @@ namespace Itinero.Transit
             Log.Information("Caching reachable locations");
             var start = DateTime.Now;
 
-            var withCache = StopsReader.UseCache();
+            var withCache = StopsDb.UseCache();
             var walksGenCache = Profile.WalksGenerator.UseCache();
             walksGenCache.PreCalculateCache(withCache);
 
@@ -324,8 +319,7 @@ namespace Itinero.Transit
             Log.Information($"Caching reachable locations took {(end - start).TotalMilliseconds}ms");
             return new WithProfile<T>(
                 withCache,
-                ConnectionEnumerator,
-                ConnectionReader,
+                ConnectionsDb,
                 new Profile<T>(
                     Profile.InternalTransferGenerator,
                     walksGenCache,
@@ -343,35 +337,60 @@ namespace Itinero.Transit
         /// will not cache the floating points.
         /// </summary>
         [Pure]
-        public WithProfile<T> AddStopsReader(IStopsReader stopsReader)
+        public WithProfile<T> AddStopsReader(IStopsDb stopsReader)
         {
             return new WithProfile<T>(
-                StopsReaderAggregator.CreateFrom(new List<IStopsReader>
+                StopsDbAggregator.CreateFrom(new List<IStopsDb>
                 {
-                    stopsReader, StopsReader
+                    stopsReader, StopsDb
                 }),
-                ConnectionEnumerator,
-                ConnectionReader,
+                ConnectionsDb,
                 Profile
             );
         }
 
         [Pure]
-        public WithProfile<T> SetStopsReader(IStopsReader stopsReader)
+        public WithProfile<T> SetStopsReader(IStopsDb stopsReader)
         {
             return new WithProfile<T>(
                 stopsReader,
-                ConnectionEnumerator,
-                ConnectionReader,
+                ConnectionsDb,
                 Profile
             );
         }
 
 
+        /// <summary>
+        /// In some cases the traveller has multiple options to depart or arrive,
+        /// and only wants to know the fastest route between any two of them.
+        ///
+        /// This constructor allows to perform such queries.
+        ///
+        /// E.g. Departures are {A, B, C}, arrivals are {X, Y, Z}.
+        /// The earliest arrival scan at a certain time could be for example some journey from A to Y,
+        /// whereas the 'AllJourneys' (profiled search) could give one option C to X and another option B to Y, ignoring A and Z altogether.
+        /// 
+        /// </summary>
+        public IWithSingleLocation<T> SelectSingleStop(IEnumerable<Stop> stop)
+        {
+            return new WithLocation<T>(StopsDb, ConnectionsDb, Profile, stop, stop);
+        }
+        
+        /// <summary>
+        /// In some cases the traveller has multiple options to depart or arrive,
+        /// and only wants to know the fastest route between any two of them.
+        ///
+        /// This constructor allows to perform such queries.
+        ///
+        /// E.g. Departures are {A, B, C}, arrivals are {X, Y, Z}.
+        /// The earliest arrival scan at a certain time could be for example some journey from A to Y,
+        /// whereas the 'AllJourneys' (profiled search) could give one option C to X and another option B to Y, ignoring A and Z altogether.
+        /// 
+        /// </summary>
         public IWithSingleLocation<T> SelectSingleStop(IEnumerable<StopId> stop)
         {
-            return new WithLocation<T>(StopsReader, ConnectionEnumerator, ConnectionReader, Profile, stop,
-                stop);
+            var stops = StopsDb.GetAll(stop.ToList());
+            return SelectSingleStop(stops);
         }
 
         /// <summary>
@@ -388,83 +407,68 @@ namespace Itinero.Transit
         public IWithSingleLocation<T> SelectSingleStop(IEnumerable<string> stop)
         {
             return SelectSingleStop(
-                StopsReader.FindStops(stop, f => $"Stop {f} was not found")
+                StopsDb.FindStops(stop, f => $"Stop {f} was not found")
             );
         }
 
-        /// <summary>
-        /// In some cases the traveller has multiple options to depart or arrive,
-        /// and only wants to know the fastest route between any two of them.
-        ///
-        /// This constructor allows to perform such queries.
-        ///
-        /// E.g. Departures are {A, B, C}, arrivals are {X, Y, Z}.
-        /// The earliest arrival scan at a certain time could be for example some journey from A to Y,
-        /// whereas the 'AllJourneys' (profiled search) could give one option C to X and another option B to Y, ignoring A and Z altogether.
-        /// 
-        /// </summary>
-        public IWithSingleLocation<T> SelectSingleStop(IEnumerable<IStop> stop)
-        {
-            return SelectSingleStop(
-                stop.Select(f => f.Id)
-            );
-        }
 
         public IWithSingleLocation<T> SelectSingleStop(StopId stop)
         {
-            return SelectSingleStop(new List<StopId> {stop});
+            return SelectSingleStop(new List<Stop> {StopsDb.Get(stop)});
         }
 
-        public IWithSingleLocation<T> SelectSingleStop(IStop stop)
+        public IWithSingleLocation<T> SelectSingleStop(Stop stop)
         {
-            return SelectSingleStop(stop.Id);
+            return SelectSingleStop(stop.GlobalId);
         }
 
         public IWithSingleLocation<T> SelectSingleStop(string stop)
         {
-            return SelectSingleStop(
-                StopsReader.FindStop(stop, $"Stop {stop} was not found")
-            );
+            if (!StopsDb.SearchId(stop, out var id))
+            {
+                throw new ArgumentException($"Stop {stop} was not found");
+            }
+
+            return SelectSingleStop(id);
         }
 
 
         public WithLocation<T> SelectStops(IEnumerable<StopId> from,
             IEnumerable<StopId> to)
         {
-            return new WithLocation<T>(StopsReader, ConnectionEnumerator, ConnectionReader, Profile, from, to);
+            return SelectStops(
+                from.Select(id => StopsDb.Get(id)),
+                to.Select(id => StopsDb.Get(id)));
         }
 
         public WithLocation<T> SelectStops(IEnumerable<string> from, IEnumerable<string> to)
         {
             return SelectStops(
-                StopsReader.FindStops(from, f => $"Departure stop {f} was not found"),
-                StopsReader.FindStops(to, t => $"Arrival stop {t} was not found")
+                StopsDb.FindStops(from, f => $"Departure stop {f} was not found"),
+                StopsDb.FindStops(to, t => $"Arrival stop {t} was not found")
             );
         }
 
-        public WithLocation<T> SelectStops(IEnumerable<IStop> from, IEnumerable<IStop> to)
+        public WithLocation<T> SelectStops(IEnumerable<Stop> from, IEnumerable<Stop> to)
         {
-            return SelectStops(
-                from.Select(f => f.Id),
-                to.Select(t => t.Id)
-            );
+            return new WithLocation<T>(StopsDb, ConnectionsDb, Profile, from,to);
         }
 
         public WithLocation<T> SelectStops(StopId from, StopId to)
         {
-            return SelectStops(new List<StopId> {from}, new List<StopId> {to});
+            return SelectStops(StopsDb.Get(from), StopsDb.Get(to));
         }
 
-        public WithLocation<T> SelectStops(IStop from, IStop to)
+        public WithLocation<T> SelectStops(Stop from, Stop to)
         {
-            return SelectStops(from.Id, to.Id);
+            return SelectStops(new []{from}, new []{to});
         }
 
         public WithLocation<T> SelectStops(string from, string to)
         {
             return SelectStops(
-                StopsReader.FindStop(from, $"Departure stop {from} was not found"),
-                StopsReader.FindStop(to, $"Arrival stop {to} was not found")
+                StopsDb.Get(from, $"Departure stop {from} was not found"),
+                StopsDb.Get(to, $"Arrival stop {to} was not found")
             );
         }
     }
@@ -492,14 +496,13 @@ namespace Itinero.Transit
         IWithSingleLocation<T>
         where T : IJourneyMetric<T>
     {
-        public readonly List<StopId> From, To;
+        public readonly List<Stop> From, To;
 
-        internal WithLocation(IStopsReader stopsReader,
-            IConnectionEnumerator connectionEnumerator,
-            IDatabaseReader<ConnectionId, Connection> connectionReader,
+        internal WithLocation(IStopsDb stopsReader,
+            IConnectionsDb connections,
             Profile<T> profile,
-            IEnumerable<StopId> from,
-            IEnumerable<StopId> to) : base(stopsReader, connectionEnumerator, connectionReader, profile)
+            IEnumerable<Stop> from,
+            IEnumerable<Stop> to) : base(stopsReader, connections, profile)
         {
             From = from.ToList();
             To = to.ToList();
@@ -510,7 +513,7 @@ namespace Itinero.Transit
             DateTime start,
             DateTime end)
         {
-            return new WithTime<T>(StopsReader, ConnectionEnumerator, ConnectionReader, Profile, From, To, start,
+            return new WithTime<T>(StopsDb, ConnectionsDb, Profile, From, To, start,
                 end);
         }
 
@@ -538,21 +541,19 @@ namespace Itinero.Transit
         /// This will not use public transport at all.
         /// </summary>
         /// <returns>A dictionary with timings. The key is a tuple of globalIds (fromGlobalId, toGlobalId), the value is how much seconds it takes. There will be no entry if that walk is not possible. If no walk is possible, the dictionary will be null.</returns>
-        public Dictionary<(StopId from, StopId to), uint> CalculateDirectJourney()
+        public Dictionary<(Stop from, Stop to), uint> CalculateDirectJourney()
         {
             var from = new List<Stop>();
             foreach (var fr in From)
             {
-                StopsReader.MoveTo(fr);
-                from.Add(new Stop(StopsReader));
+                from.Add(fr);
             }
 
             var to = new List<Stop>();
 
             foreach (var t in To)
             {
-                StopsReader.MoveTo(t);
-                to.Add(new Stop(StopsReader));
+                to.Add(t);
             }
 
             return Profile.WalksGenerator.TimesBetween(from, to);
@@ -591,14 +592,13 @@ namespace Itinero.Transit
         /// </summary>
         internal IsochroneFilter<T> TimedFilter;
 
-        internal WithTime(IStopsReader stopsReader,
-            IConnectionEnumerator connectionEnumerator,
-            IDatabaseReader<ConnectionId, Connection> connectionReader,
+        internal WithTime(IStopsDb stopsReader,
+            IConnectionsDb connectionEnumerator,
             Profile<T> profile,
-            IEnumerable<StopId> from,
-            IEnumerable<StopId> to,
+            IEnumerable<Stop> from,
+            IEnumerable<Stop> to,
             DateTime start,
-            DateTime end) : base(stopsReader, connectionEnumerator, connectionReader, profile, from, to)
+            DateTime end) : base(stopsReader, connectionEnumerator, profile, from, to)
         {
             Start = start.ToUniversalTime();
             End = end.ToUniversalTime();
@@ -638,8 +638,8 @@ namespace Itinero.Transit
         internal ScanSettings<T> GetScanSettings()
         {
             return new ScanSettings<T>(
-                StopsReader,
-                ConnectionEnumerator,
+                StopsDb,
+                ConnectionsDb,
                 Start,
                 End,
                 Profile,
@@ -667,12 +667,12 @@ namespace Itinero.Transit
            * And it is exactly that which we need!
            */
             var settings = new ScanSettings<T>(
-                StopsReader,
-                ConnectionEnumerator,
+                StopsDb,
+                ConnectionsDb,
                 Start, End,
                 Profile,
                 From,
-                new List<StopId>() // EMPTY LIST
+                new List<Stop>() // EMPTY LIST
             );
             var eas = new EarliestConnectionScan<T>(settings);
             eas.CalculateJourney();
@@ -692,12 +692,12 @@ namespace Itinero.Transit
              * Same principle as the other IsochroneFunction
              */
             var settings = new ScanSettings<T>(
-                StopsReader,
-                ConnectionEnumerator,
+                StopsDb,
+                ConnectionsDb,
                 Start,
                 End,
                 Profile,
-                new List<StopId>(), // EMPTY LIST
+                new List<Stop>(), // EMPTY LIST
                 To
             );
             var las = new LatestConnectionScan<T>(settings);
@@ -805,12 +805,12 @@ namespace Itinero.Transit
         {
             CheckAll();
             var settings = new ScanSettings<T>(
-                StopsReader,
-                ConnectionEnumerator,
+                StopsDb,
+                ConnectionsDb,
                 Start,
                 End,
                 Profile,
-                new List<StopId>(), // We don't pass any departure stop, as we want them all
+                new List<Stop>(), // We don't pass any departure stop, as we want them all
                 To
             )
             {

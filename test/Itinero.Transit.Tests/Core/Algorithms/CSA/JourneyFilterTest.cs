@@ -17,27 +17,27 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             var writer = tdb.GetWriter();
 
-            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 1.1);
-            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/2", 0.5, 0.5);
+            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 0, 0.0));
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.1, 1.1));
+            var stop2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/2", 0.5, 0.5));
             var date = new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc);
 
 
-            writer.AddOrUpdateConnection(stop0, stop1,
+            writer.AddOrUpdateConnection(new Connection(stop0, stop1,
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc),
-                10 * 60, 0, 0, new TripId(0, 0), 0);
+                10 * 60, 0, 0, new TripId(0, 0), 0));
 
-            writer.AddOrUpdateConnection(stop1, stop2,
+            writer.AddOrUpdateConnection(new Connection(stop1, stop2,
                 "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 16, 33, 00, DateTimeKind.Utc),
-                10 * 60, 0, 0, new TripId(0, 1), 0);
+                10 * 60, 0, 0, new TripId(0, 1), 0));
 
 
-            writer.AddOrUpdateConnection(stop0, stop2,
+            writer.AddOrUpdateConnection(new Connection(stop0, stop2,
                 "https://example.com/connections/2",
                 new DateTime(2018, 12, 04, 16, 25, 00, DateTimeKind.Utc),
-                30 * 60, 0, 0, new TripId(0, 2), 0);
+                30 * 60, 0, 0, new TripId(0, 2), 0));
 
             writer.Close();
 
@@ -80,28 +80,28 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             var writer = tdb.GetWriter();
 
-            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 1.1);
-            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/2", 0.5, 0.5);
+            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 0, 0.0));
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.1, 1.1));
+            var stop2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/2", 0.5, 0.5));
             var date = new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc);
 
 
-            writer.AddOrUpdateConnection(stop0, stop1,
+            writer.AddOrUpdateConnection(new Connection(stop0, stop1,
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc),
-                10 * 60, 0, 0, new TripId(0, 0), 0);
+                10 * 60, 0, 0, new TripId(0, 0), 0));
 
-            writer.AddOrUpdateConnection(stop1, stop2,
+            writer.AddOrUpdateConnection(new Connection(stop1, stop2,
                 "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 16, 33, 00, DateTimeKind.Utc),
-                10 * 60, 0, 0, new TripId(0, 1), 0);
+                10 * 60, 0, 0, new TripId(0, 1), 0));
 
 
             // Faster, better, stronger... but cancelled
-            writer.AddOrUpdateConnection(stop0, stop2,
+            writer.AddOrUpdateConnection(new Connection(stop0, stop2,
                 "https://example.com/connections/2",
                 new DateTime(2018, 12, 04, 16, 10, 00, DateTimeKind.Utc),
-                10 * 60, 0, 0, new TripId(0, 2), 4);
+                10 * 60, 0, 0, new TripId(0, 2), 4));
 
             writer.Close();
 

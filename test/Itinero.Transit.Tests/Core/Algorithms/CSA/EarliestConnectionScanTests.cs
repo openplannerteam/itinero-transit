@@ -20,16 +20,16 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
-            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 0, 0.0));
+            var stop2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.1, 0.1));
 
-            writer.AddOrUpdateConnection(
+            writer.AddOrUpdateConnection(new Connection(
                 stop1, stop2, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
 
             // Prevent depletion of the DB
-            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 1), 0);
+            writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/1",
+                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 1), 0));
 
             writer.Close();
 
@@ -93,15 +93,15 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.000001,
-                0.00001); // very walkable distance
+            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 50, 50.0));
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.000001,
+                0.00001)); // very walkable distance
 
 
-            var w0 = writer.AddOrUpdateStop("https://example.com/stops/2", 50.00001, 50.00001);
+            var w0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/2", 50.00001, 50.00001));
 
-            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+            writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
 
 
             writer.Close();
@@ -131,14 +131,15 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.000001,
-                0.00001); // very walkable distance
+            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 50, 50.0));
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.000001,
+                0.00001)); // very walkable distance
 
-            var w1 = writer.AddOrUpdateStop("https://example.com/stops/3", 0.000002, 0.00002); // very walkable distance
+            var w1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/3", 0.000002,
+                0.00002)); // very walkable distance
 
-            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+            writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
 
 
             writer.Close();
@@ -167,15 +168,16 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.000001,
-                0.00001); // very walkable distance
-            var w0 = writer.AddOrUpdateStop("https://example.com/stops/2", 50.00001, 50.00001);
+            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 50, 50.0));
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.000001,
+                0.00001)); // very walkable distance
+            var w0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/2", 50.00001, 50.00001));
 
-            var w1 = writer.AddOrUpdateStop("https://example.com/stops/3", 0.000002, 0.00002); // very walkable distance
+            var w1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/3", 0.000002,
+                0.00002)); // very walkable distance
 
-            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+            writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
 
 
             writer.Close();
@@ -204,23 +206,23 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0, 0.0);
-            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/2", 0.000001,
-                0.00001); // very walkable distance
-            var stop3 = writer.AddOrUpdateStop("https://example.com/stops/3", 60.1, 60.1);
+            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 50, 50.0));
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0, 0.0));
+            var stop2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/2", 0.000001,
+                0.00001)); // very walkable distance
+            var stop3 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/3", 60.1, 60.1));
 
-            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+            writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
 
-            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 10, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
-            writer.AddOrUpdateConnection(stop2, stop3, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 10, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 1), 0);
+            writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 10, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+            writer.AddOrUpdateConnection(new Connection(stop2, stop3, "https://example.com/connections/1",
+                new DateTime(2018, 12, 04, 10, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 1), 0));
 
             // Prevent depletion of the DB
-            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/2",
-                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 2), 0);
+            writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/2",
+                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 2), 0));
 
             writer.Close();
 
@@ -248,15 +250,15 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
-            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 0, 0.0));
+            var stop2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.1, 0.1));
 
-            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+            writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
 
             // Prevent depletion of the DB
-            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+            writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/1",
+                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
 
             writer.Close();
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
@@ -292,15 +294,15 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
-            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.5, 0.5);
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 0, 0.0));
+            var stop2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.5, 0.5));
 
-            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+            writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
 
             // Prevent depletion of the DB
-            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+            writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/1",
+                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
 
             writer.Close();
             var latest = transitDb.Latest;
@@ -339,22 +341,22 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/0", 0, 0.0);
-            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.1, 0.1);
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 0, 0.0));
+            var stop2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.1, 0.1));
 
-            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+            writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
 
-            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
-            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 17, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
-            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/2",
-                new DateTime(2018, 12, 04, 18, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
-            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/3",
-                new DateTime(2018, 12, 04, 19, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
-            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/4",
-                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+            writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+            writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/1",
+                new DateTime(2018, 12, 04, 17, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+            writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/2",
+                new DateTime(2018, 12, 04, 18, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+            writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/3",
+                new DateTime(2018, 12, 04, 19, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+            writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/4",
+                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
 
             writer.Close();
 
@@ -380,17 +382,17 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.0, 0);
-            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/2", 5, 10);
+            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 50, 50.0));
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.0, 0));
+            var stop2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/2", 5, 10));
 
 
-            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
+            writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 9, 10, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0),
-                Connection.ModeGetOnOnly);
-            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
+                Connection.ModeGetOnOnly));
+            writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0),
-                Connection.ModeGetOffOnly);
+                Connection.ModeGetOffOnly));
 
             writer.Close();
 
@@ -437,20 +439,21 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0, 0.0);
-            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/2", 0.001, 0.001); // very walkable distance
-            var stop3 = writer.AddOrUpdateStop("https://example.com/stops/3", 60.1, 60.1);
+            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 50, 50.0));
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0, 0.0));
+            var stop2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/2", 0.001,
+                0.001)); // very walkable distance
+            var stop3 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/3", 60.1, 60.1));
 
             // Note that all connections have mode '3', indicating neither getting on or of the connection
-            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 10, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 3);
-            writer.AddOrUpdateConnection(stop2, stop3, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 10, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 1), 3);
+            writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 10, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 3));
+            writer.AddOrUpdateConnection(new Connection(stop2, stop3, "https://example.com/connections/1",
+                new DateTime(2018, 12, 04, 10, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 1), 3));
 
             // Prevent depletion of the DB
-            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/2",
-                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 2), 3);
+            writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/2",
+                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 2), 3));
 
             writer.Close();
 
@@ -490,50 +493,18 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
 
-            var departure = wr.AddOrUpdateStop("departure", 0.0, 0.0);
-            var arrival = wr.AddOrUpdateStop("arrival", 1.0, 1.0);
+            var departure = wr.AddOrUpdateStop(new Stop("departure", 0.0, 0.0));
+            var arrival = wr.AddOrUpdateStop(new Stop("arrival", 1.0, 1.0));
 
-            var detour = wr.AddOrUpdateStop("detour", 2.0, 2.0);
+            var detour = wr.AddOrUpdateStop(new Stop("detour", 2.0, 2.0));
 
             var trdetour = wr.AddOrUpdateTrip("tripDetour");
             var trdirect = wr.AddOrUpdateTrip("tripDirect");
 
 
-            var c = new Connection
-            {
-                DepartureStop = departure,
-                ArrivalStop = detour,
-                DepartureTime = 1000,
-                ArrivalTime = 1100,
-                GlobalId = "a",
-                TravelTime = 100,
-                TripId = trdetour
-            };
-
-            wr.AddOrUpdateConnection(c);
-            c = new Connection
-            {
-                DepartureStop = detour,
-                ArrivalStop = departure,
-                DepartureTime = 1500,
-                ArrivalTime = 1600,
-                GlobalId = "b",
-                TravelTime = 100,
-                TripId = trdirect
-            };
-            wr.AddOrUpdateConnection(c);
-
-            c = new Connection
-            {
-                DepartureStop = departure,
-                ArrivalStop = arrival,
-                DepartureTime = 1700,
-                ArrivalTime = 1800,
-                GlobalId = "c",
-                TravelTime = 100,
-                TripId = trdirect
-            };
-            wr.AddOrUpdateConnection(c);
+            wr.AddOrUpdateConnection(new Connection(departure, detour, "a", 1000, 100, trdetour));
+            wr.AddOrUpdateConnection(new Connection("b", detour, departure, 1500, 100, trdirect));
+            wr.AddOrUpdateConnection(new Connection("c", departure, arrival, 1700, 100, trdirect));
             wr.Close();
 
             var j = tdb.SelectProfile(new DefaultProfile())
@@ -556,17 +527,17 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var loc0 = writer.AddOrUpdateStop("https://example.com/stops/0", 3.1904983520507812,
-                51.256758449834216);
-            var loc1 = writer.AddOrUpdateStop("https://example.com/stops/1", 3.216590881347656,
-                51.197848510420464);
-            var loc2 = writer.AddOrUpdateStop("https://example.com/stops/2", 3.7236785888671875,
-                51.05348088381823);
+            var loc0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 3.1904983520507812,
+                51.256758449834216));
+            var loc1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 3.216590881347656,
+                51.197848510420464));
+            var loc2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/2", 3.7236785888671875,
+                51.05348088381823));
 
-            writer.AddOrUpdateConnection(loc1, loc2,
+            writer.AddOrUpdateConnection(new Connection(loc1, loc2,
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 01, 00, DateTimeKind.Utc),
-                30 * 60, 0, 0, new TripId(0, 0), 0);
+                30 * 60, 0, 0, new TripId(0, 0), 0));
 
             writer.Close();
 
@@ -594,17 +565,17 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var loc0 = writer.AddOrUpdateStop("https://example.com/stops/0", 3.1904983520507812,
-                51.256758449834216);
-            var loc1 = writer.AddOrUpdateStop("https://example.com/stops/1", 3.216590881347656,
-                51.197848510420464);
-            var loc2 = writer.AddOrUpdateStop("https://example.com/stops/2", 3.7236785888671875,
-                51.05348088381823);
+            var loc0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 3.1904983520507812,
+                51.256758449834216));
+            var loc1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 3.216590881347656,
+                51.197848510420464));
+            var loc2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/2", 3.7236785888671875,
+                51.05348088381823));
 
-            writer.AddOrUpdateConnection(loc2, loc1,
+            writer.AddOrUpdateConnection(new Connection(loc2, loc1,
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 01, 00, DateTimeKind.Utc),
-                30 * 60, 0, 0, new TripId(0, 0), 0);
+                30 * 60, 0, 0, new TripId(0, 0), 0));
 
             writer.Close();
 
@@ -633,37 +604,33 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
 
-            var departure = wr.AddOrUpdateStop("departure", 0, 0);
-            var arrival = wr.AddOrUpdateStop("arrival", 0, 0);
-            var bigstation = wr.AddOrUpdateStop("bigstation", 0, 0);
-            var smallstation = wr.AddOrUpdateStop("smallstation", 0, 0);
+            var departure = wr.AddOrUpdateStop(new Stop("departure", 0, 0));
+            var arrival = wr.AddOrUpdateStop(new Stop("arrival", 0, 0));
+            var bigstation = wr.AddOrUpdateStop(new Stop("bigstation", 0, 0));
+            var smallstation = wr.AddOrUpdateStop(new Stop("smallstation", 0, 0));
 
             var tripA = wr.AddOrUpdateTrip("tripA");
             var tripB = wr.AddOrUpdateTrip("tripB");
             var tripC = wr.AddOrUpdateTrip("tripC");
 
             wr.AddOrUpdateConnection(new Connection(
-                new ConnectionId(0,0), 
                 "0", departure, bigstation, 1000, 1000, tripA
-                ));
-            
+            ));
+
             wr.AddOrUpdateConnection(new Connection(
-                new ConnectionId(0,1), 
                 "1", bigstation, smallstation, 3000, 1000, tripB
             ));
-            
+
             wr.AddOrUpdateConnection(new Connection(
-                new ConnectionId(0,2), 
                 "2", smallstation, bigstation, 5000, 1000, tripC
             ));
-            
+
             wr.AddOrUpdateConnection(new Connection(
-                new ConnectionId(0,3), 
                 "3", bigstation, arrival, 6500, 1000, tripC
             ));
-            
+
             wr.Close();
-            
+
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(0),
                 TransferMetric.Factory,
@@ -673,10 +640,6 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 .CalculateEarliestArrivalJourney();
 
             Assert.NotNull(journey);
-            
-            
-            
-
         }
     }
 }

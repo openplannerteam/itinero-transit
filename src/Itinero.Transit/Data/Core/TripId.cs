@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using Itinero.Transit.OtherMode;
 
@@ -6,13 +7,13 @@ namespace Itinero.Transit.Data.Core
 {
     public struct TripId : InternalId
     {
-        public uint DatabaseId { get;  }
-        public readonly uint InternalId;
+        public uint DatabaseId { get; }
+        public uint LocalId { get; }
 
         public TripId(uint databaseId, uint internalId)
         {
             DatabaseId = databaseId;
-            InternalId = internalId;
+            LocalId = internalId;
         }
 
         public TripId(IOtherModeGenerator otherModeGenerator):this(UInt32.MaxValue, 
@@ -21,12 +22,15 @@ namespace Itinero.Transit.Data.Core
             
         }
 
-        public static readonly TripId Invalid = new TripId(uint.MaxValue, uint.MaxValue);
+        public InternalId Create(uint databaseId, uint localId)
+        {
+            return new TripId(databaseId, localId);
+        }
 
         [Pure]
         public bool Equals(TripId other)
         {
-            return DatabaseId == other.DatabaseId && InternalId == other.InternalId;
+            return DatabaseId == other.DatabaseId && LocalId == other.LocalId;
         }
 
         [Pure]
@@ -37,18 +41,19 @@ namespace Itinero.Transit.Data.Core
         }
 
         [Pure]
+        [SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode")]
         public override int GetHashCode()
         {
             unchecked
             {
-                return ((int) DatabaseId * 397) ^ (int) InternalId;
+                return ((int) DatabaseId * 397) ^ (int) LocalId;
             }
         }
 
         [Pure]
         public override string ToString()
         {
-            return $"Trip {DatabaseId}_{InternalId}";
+            return $"Trip {DatabaseId}_{LocalId}";
         }
     }
 

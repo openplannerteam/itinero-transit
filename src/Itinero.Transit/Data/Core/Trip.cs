@@ -1,4 +1,4 @@
-using Itinero.Transit.Data.Attributes;
+using System.Collections.Generic;
 
 namespace Itinero.Transit.Data.Core
 {
@@ -6,10 +6,20 @@ namespace Itinero.Transit.Data.Core
     /// The class representing a single trip and related attributes.
     /// This can be rewritten and should not be shared amongst threads
     /// </summary>
-    public class Trip
+    public class Trip : IGlobalId
     {
-        public string GlobalId { get; set; }
-        public TripId Id { get; set; }
-        public IAttributeCollection Attributes { get; set; }
+        public string GlobalId { get; }
+        public Dictionary<string, string> Attributes { get; }
+
+        public Trip(string globalId)
+        {
+            GlobalId = globalId;
+        }
+        
+        public Trip(string globalId, Dictionary<string, string> attributes)
+        {
+            GlobalId = globalId;
+            Attributes = attributes;
+        }
     }
 }

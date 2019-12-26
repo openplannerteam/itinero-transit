@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
@@ -13,13 +12,12 @@ namespace Itinero.Transit.OtherMode
             return new OtherModeCache(fallback);
         }
 
-        public static uint TimeBetween(this IOtherModeGenerator modeGenerator, IStopsReader reader, StopId from,
-            StopId to)
+        public static uint TimeBetween(this IOtherModeGenerator modeGenerator, IStopsDb stops, 
+            StopId from,StopId to)
         {
-            reader.MoveTo(from);
-            var fr = new Stop(reader);
-            reader.MoveTo(to);
-            return modeGenerator.TimeBetween(fr, reader);
+            stops.TryGet(from, out var fromStop);
+            stops.TryGet(to, out var toStop);
+            return modeGenerator.TimeBetween(fromStop, toStop);
         }
 
         /// <summary>
@@ -30,20 +28,15 @@ namespace Itinero.Transit.OtherMode
         public static IEnumerable<Journey<T>> WalkAwayFrom<T>(
             this Journey<T> journey,
             IOtherModeGenerator otherModeGenerator,
-            IStopsReader stops) where T : IJourneyMetric<T>
+            IStopsDb stops) where T : IJourneyMetric<T>
         {
             var location = journey.Location;
-            if (!stops.MoveTo(location))
-            {
-                throw new ArgumentException($"Location {location} not found, could not move to it");
-            }
 
-            var self = new Stop(stops);
+            var from = stops.Get(location);
             var reachableLocations =
-                stops.StopsAround(self, otherModeGenerator.Range());
+                stops.GetInRange((from.Longitude, from.Latitude), otherModeGenerator.Range());
 
-            stops.MoveTo(journey.Location);
-            var times = otherModeGenerator.TimesBetween( /*from Istop journey.Location*/stops, reachableLocations);
+            var times = otherModeGenerator.TimesBetween(from, reachableLocations);
 
 
             foreach (var v in times)
@@ -57,8 +50,10 @@ namespace Itinero.Transit.OtherMode
                 }
 
                 // We come from the journey, and walks towards the reachable location
+                stops.SearchId(reachableLocation.GlobalId, out var reachableLocationId);
+
                 var walkingJourney =
-                    journey.ChainSpecial(Journey<T>.OTHERMODE, journey.Time + time, reachableLocation,
+                    journey.ChainSpecial(Journey<T>.OTHERMODE, journey.Time + time, reachableLocationId,
                         new TripId(otherModeGenerator));
 
                 yield return walkingJourney;
@@ -68,9 +63,9 @@ namespace Itinero.Transit.OtherMode
         public static IEnumerable<Journey<T>> WalkTowards<T>(
             this Journey<T> journey,
             IOtherModeGenerator otherModeGenerator,
-            IStopsReader stops) where T : IJourneyMetric<T>
+            IStopsDb stops) where T : IJourneyMetric<T>
         {
-            return new[] {journey}.WalkTowards(journey.Location, otherModeGenerator, stops);
+            return new[] {journey}.WalkTowards(stops.Get(journey.Location), otherModeGenerator, stops);
         }
 
         /// <summary>
@@ -82,19 +77,13 @@ namespace Itinero.Transit.OtherMode
         /// </summary>
         public static IEnumerable<Journey<T>> WalkTowards<T>(
             this IEnumerable<Journey<T>> journeys,
-            StopId location, // The target location
+            Stop to,
             IOtherModeGenerator otherModeGenerator,
-            IStopsReader stops) where T : IJourneyMetric<T>
+            IStopsDb stops) where T : IJourneyMetric<T>
         {
-            if (!stops.MoveTo(location))
-            {
-                throw new ArgumentException($"Location {location} not found, could not move to it");
-            }
 
-
-            var to = new Stop(stops);
             var reachableLocations =
-                stops.StopsAround(to, otherModeGenerator.Range());
+                stops.GetInRange((to.Longitude, to.Latitude), otherModeGenerator.Range());
 
             var times = otherModeGenerator.TimesBetween(reachableLocations, to);
 
@@ -124,11 +113,12 @@ namespace Itinero.Transit.OtherMode
                     // The new 'arrive before' time is a little sooner - the time needed to walk
                     // The new 'arrive at to continue' is where we could walk from 
 
+                    stops.SearchId(from.GlobalId, out var fromId);
                     var walkingJourney =
                         j.ChainSpecial(
                             Journey<T>.OTHERMODE,
                             j.Time - time,
-                            from,
+                            fromId,
                             new TripId(otherModeGenerator)
                         );
                     yield return walkingJourney;
@@ -140,11 +130,11 @@ namespace Itinero.Transit.OtherMode
         /// A very straightforward implementation to get multiple routings at the same time...
         /// 
         /// </summary>
-        public static Dictionary<StopId, uint> DefaultTimesBetween(
-            this IOtherModeGenerator modeGenerator, IStop coorFrom,
-            IEnumerable<IStop> to)
+        public static Dictionary<Stop, uint> DefaultTimesBetween(
+            this IOtherModeGenerator modeGenerator, Stop coorFrom,
+            IEnumerable<Stop> to)
         {
-            var times = new Dictionary<StopId, uint>();
+            var times = new Dictionary<Stop, uint>();
             foreach (var stop in to)
             {
                 var time = modeGenerator.TimeBetween(coorFrom, stop);
@@ -153,17 +143,17 @@ namespace Itinero.Transit.OtherMode
                     continue;
                 }
 
-                times.Add(stop.Id, time);
+                times.Add(stop, time);
             }
 
             return times;
         }
 
-        public static Dictionary<StopId, uint> DefaultTimesBetween(
-            this IOtherModeGenerator modeGenerator, IEnumerable<IStop> from,
-            IStop to)
+        public static Dictionary<Stop, uint> DefaultTimesBetween(
+            this IOtherModeGenerator modeGenerator, IEnumerable<Stop> from,
+            Stop to)
         {
-            var times = new Dictionary<StopId, uint>();
+            var times = new Dictionary<Stop, uint>();
             foreach (var stop in from)
             {
                 var time = modeGenerator.TimeBetween(stop, to);
@@ -172,17 +162,17 @@ namespace Itinero.Transit.OtherMode
                     continue;
                 }
 
-                times.Add(stop.Id, time);
+                times.Add(stop, time);
             }
 
             return times;
         }
 
-        public static Dictionary<(StopId from, StopId to), uint> TimesBetween(
+        public static Dictionary<(Stop from, Stop to), uint> TimesBetween(
             this IOtherModeGenerator gen,
             List<Stop> from, List<Stop> to)
         {
-            var result = new Dictionary<(StopId @from, StopId to), uint>();
+            var result = new Dictionary<(Stop from, Stop to), uint>();
 
             if (from.Count < to.Count)
             {
@@ -191,7 +181,7 @@ namespace Itinero.Transit.OtherMode
                     var times = gen.TimesBetween(fr, to);
                     foreach (var arr in times.Keys)
                     {
-                        result.Add((fr.Id, arr), times[arr]);
+                        result.Add((fr, arr), times[arr]);
                     }
                 }
             }
@@ -202,7 +192,7 @@ namespace Itinero.Transit.OtherMode
                     var times = gen.TimesBetween(from, t);
                     foreach (var fr in times.Keys)
                     {
-                        result.Add((fr, t.Id), times[fr]);
+                        result.Add((fr, t), times[fr]);
                     }
                 }
             }

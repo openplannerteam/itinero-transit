@@ -85,7 +85,7 @@ namespace Itinero.Transit.Journey
             var summarized =
                 new Journey<T>(parts[0].Location, parts[0].Time, parts[0].Metric);
 
-            int i = 1;
+            var i = 1;
             while (i < parts.Count)
             {
                 // We search something that should be summarized
@@ -107,12 +107,14 @@ namespace Itinero.Transit.Journey
                 var pEnd = parts[i - 1];
                 // pDep --> pEnd are just all part of the same trip
                 // We summarize it as a single connection
-                var connection = new Connection(pDep.Connection, "summarized-connection",
+                var connection = new Connection("summarized-connection",
                     pDep.Location, pEnd.Location,
                     pDep.PreviousLink.Time, (ushort) (pEnd.Time - pDep.PreviousLink.Time),
                     0, 0, 0, pDep.TripId);
 
-                summarized = summarized.ChainForward(connection);
+                var connectionId = pDep.Connection;
+                
+                summarized = summarized.ChainForward(connectionId, connection);
             }
 
             return summarized;

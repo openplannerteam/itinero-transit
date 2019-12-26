@@ -1,35 +1,61 @@
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Contracts;
 using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Data.Core
 {
-    public class Connection
+    public class Connection : IGlobalId
     {
         public const ushort ModeGetOnOnly = 1;
         public const ushort ModeGetOffOnly = 2;
 
-        private const ushort _modeCancelled = 4;
+        private const ushort ModeCancelled = 4;
 
+        public static Comparer<Connection> SortByDepartureTime = new ConnectionComparer();
+
+        
+        
+        
+        public string GlobalId { get; }
+
+        public ulong ArrivalTime { get; }
+
+        public ulong DepartureTime { get; }
+
+        public ushort TravelTime { get;  }
+
+        public ushort ArrivalDelay { get; }
+
+        public ushort DepartureDelay { get;  }
+
+        public ushort Mode { get;  }
+
+        public TripId TripId { get;  }
+
+        public StopId DepartureStop { get;  }
+
+        public StopId ArrivalStop { get;  }
+
+
+        
         public Connection()
         {
         }
 
-        public Connection(
-            ConnectionId id,
-            string globalId,
+        public Connection(string globalId,
             StopId departureStop,
             StopId arrivalStop,
             ulong departureTime,
             ushort travelTime,
             TripId tripId
-        ):this(id, globalId, departureStop, arrivalStop,departureTime, travelTime,0,0,0, tripId)
+        ):this(globalId, departureStop, arrivalStop,departureTime, travelTime,0,0,0, tripId)
         {
             
         }
 
-        public Connection(
-            ConnectionId id,
-            string globalId,
+        public Connection(string globalId,
             StopId departureStop,
             StopId arrivalStop,
             ulong departureTime,
@@ -40,7 +66,6 @@ namespace Itinero.Transit.Data.Core
             TripId tripId
         )
         {
-            Id = id;
             DepartureTime = departureTime;
             TravelTime = travelTime;
             ArrivalDelay = arrivalDelay;
@@ -52,53 +77,63 @@ namespace Itinero.Transit.Data.Core
             ArrivalStop = arrivalStop;
             ArrivalTime = departureTime + travelTime;
         }
-        
+
+        public Connection(StopId departureStop, StopId arrivalStop, 
+            string globalId, DateTime departureTime, int travelTime, ushort departureDelay, ushort arrivalDelay, 
+            TripId tripId, ushort mode)
+        {
+            
+            DepartureStop = departureStop;
+            ArrivalStop = arrivalStop;
+            GlobalId = globalId;
+            DepartureTime = departureTime.ToUnixTime();
+            ArrivalTime = departureTime .AddSeconds(travelTime).ToUnixTime();
+            DepartureDelay = departureDelay;
+            ArrivalDelay = arrivalDelay;
+            TripId = tripId;
+            Mode = mode;
+        }
+
+        public Connection(StopId departureStop, StopId arrivalStop, string globalId, ulong departureTime, ushort travelTime, TripId tripId)
+        {            DepartureStop = departureStop;
+            ArrivalStop = arrivalStop;
+            GlobalId = globalId;
+            DepartureTime = departureTime;
+            ArrivalTime = departureTime + travelTime;
+            TripId = tripId;
+            Mode = 0;
+        }
+
+        [Pure]
         public string ToJson()
         {
             return $"{{id: {GlobalId}, departureTime:{DepartureTime.FromUnixTime():s}, arrivalTime:{ArrivalTime.FromUnixTime():s}, mode:{Mode}" +
                    $", depDelay:{DepartureDelay}, arrDelay:{ArrivalDelay} }}";
         }
 
-        public ConnectionId Id { get; set; }
-        public string GlobalId { get; set; }
-
-        public ulong ArrivalTime { get; set; }
-
-        public ulong DepartureTime { get; set; }
-
-        public ushort TravelTime { get; set; }
-
-        public ushort ArrivalDelay { get; set; }
-
-        public ushort DepartureDelay { get; set; }
-
-        public ushort Mode { get; set; }
-
-        public TripId TripId { get; set; }
-
-        public StopId DepartureStop { get; set; }
-
-        public StopId ArrivalStop { get; set; }
-
-
+  
+        [Pure]
         public bool CanGetOn()
         {
             var m = (Mode % 4);
             return m == 0 || m == 1;
         }
 
+        [Pure]
         public bool CanGetOff()
         {
             var m = (Mode % 4);
             return m == 0 || m == 2;
         }
 
+        [Pure]
         public bool IsCancelled()
         {
-            return (Mode & _modeCancelled) == _modeCancelled;
+            return (Mode & ModeCancelled) == ModeCancelled;
         }
 
 
+        [Pure]
         public override bool Equals(object obj)
         {
             if (obj is Connection c)
@@ -110,26 +145,27 @@ namespace Itinero.Transit.Data.Core
         }
 
 
-        public bool Equals(Connection x, Connection y)
+        [Pure]
+        private static bool Equals(Connection x, Connection y)
         {
             if (ReferenceEquals(x, y)) return true;
             if (ReferenceEquals(x, null)) return false;
             if (ReferenceEquals(y, null)) return false;
             if (x.GetType() != y.GetType()) return false;
-            return x.Id.Equals(y.Id) && string.Equals(x.GlobalId, y.GlobalId) && x.ArrivalTime == y.ArrivalTime &&
+            return string.Equals(x.GlobalId, y.GlobalId) && x.ArrivalTime == y.ArrivalTime &&
                    x.DepartureTime == y.DepartureTime && x.TravelTime == y.TravelTime &&
                    x.ArrivalDelay == y.ArrivalDelay && x.DepartureDelay == y.DepartureDelay && x.Mode == y.Mode &&
                    x.TripId.Equals(y.TripId) && x.DepartureStop.Equals(y.DepartureStop) &&
                    x.ArrivalStop.Equals(y.ArrivalStop);
         }
 
+        [Pure]
         [SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode")]
         public override int GetHashCode()
         {
             unchecked
             {
-                var hashCode = Id.GetHashCode();
-                hashCode = (hashCode * 397) ^ GlobalId.GetHashCode();
+                var hashCode =  GlobalId.GetHashCode();
                 hashCode = (hashCode * 397) ^ ArrivalTime.GetHashCode();
                 hashCode = (hashCode * 397) ^ DepartureTime.GetHashCode();
                 hashCode = (hashCode * 397) ^ TravelTime.GetHashCode();
@@ -145,5 +181,14 @@ namespace Itinero.Transit.Data.Core
 
         
         
+    }
+
+    internal class ConnectionComparer : Comparer<Connection>
+    {
+        [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+        public override int Compare(Connection x, Connection y)
+        {
+            return (int) ((long) x.DepartureTime - (long) y.DepartureTime);
+        }
     }
 }

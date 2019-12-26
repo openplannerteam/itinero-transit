@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
-using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
-using Itinero.Transit.Utils;
 
 // ReSharper disable StaticMemberInGenericType
 
@@ -238,7 +235,7 @@ namespace Itinero.Transit.Journey
         }
 
         [Pure]
-        public Journey<T> ChainForward(Connection c)
+        public Journey<T> ChainForward(ConnectionId cid, Connection c)
         {
             // ReSharper disable once InvertIf
             if (SpecialConnection && Equals(Connection, GENESIS))
@@ -247,14 +244,14 @@ namespace Itinero.Transit.Journey
                 // We move the genesis to the departure time of the connection
                 // This is used by EAS to have a correcter departure time
                 var newGenesis = new Journey<T>(Location, c.DepartureTime, Metric.Zero(), TripId);
-                return newGenesis.Chain(c.Id, c.ArrivalTime, c.ArrivalStop, c.TripId);
+                return newGenesis.Chain(cid, c.ArrivalTime, c.ArrivalStop, c.TripId);
             }
 
-            return Chain(c.Id, c.ArrivalTime, c.ArrivalStop, c.TripId);
+            return Chain(cid, c.ArrivalTime, c.ArrivalStop, c.TripId);
         }
 
         [Pure]
-        public Journey<T> ChainBackward(Connection c)
+        public Journey<T> ChainBackward(ConnectionId cid, Connection c)
         {
             // ReSharper disable once InvertIf
             if (SpecialConnection && Equals(Connection, GENESIS))
@@ -262,10 +259,10 @@ namespace Itinero.Transit.Journey
                 // We do something special here:
                 // We move the genesis to the departure time of the connection
                 var newGenesis = new Journey<T>(Location, c.ArrivalTime, Metric.Zero(), TripId);
-                return newGenesis.Chain(c.Id, c.DepartureTime, c.DepartureStop, c.TripId);
+                return newGenesis.Chain(cid, c.DepartureTime, c.DepartureStop, c.TripId);
             }
 
-            return Chain(c.Id, c.DepartureTime, c.DepartureStop, c.TripId);
+            return Chain(cid, c.DepartureTime, c.DepartureStop, c.TripId);
         }
 
 
@@ -285,10 +282,10 @@ namespace Itinero.Transit.Journey
         /// Chains an 'othermode' link to this journey, using a forward (with time) logic.
         /// </summary>
         [Pure]
-        public Journey<T> ChainForwardWith(IStopsReader reader, IOtherModeGenerator otherModeGenerator,
+        public Journey<T> ChainForwardWith(IStopsDb stops, IOtherModeGenerator otherModeGenerator,
             StopId otherLocation)
         {
-            var time = otherModeGenerator.TimeBetween(reader, Location, otherLocation);
+            var time = otherModeGenerator.TimeBetween(stops, Location, otherLocation);
             // ReSharper disable once ConvertIfStatementToReturnStatement
             if (uint.MaxValue == time)
             {
@@ -302,10 +299,10 @@ namespace Itinero.Transit.Journey
         /// Chains an 'othermode' link to this journey, using a backward (against time) logic.
         /// </summary>
         [Pure]
-        public Journey<T> ChainBackwardWith(IStopsReader reader, IOtherModeGenerator otherModeGenerator,
+        public Journey<T> ChainBackwardWith(IStopsDb stops, IOtherModeGenerator otherModeGenerator,
             StopId otherLocation)
         {
-            var time = otherModeGenerator.TimeBetween(reader, Location, otherLocation);
+            var time = otherModeGenerator.TimeBetween(stops, Location, otherLocation);
             // ReSharper disable once ConvertIfStatementToReturnStatement
             if (uint.MaxValue == time)
             {
@@ -383,191 +380,6 @@ namespace Itinero.Transit.Journey
             return j;
         }
 
-        [Pure]
-        internal string ToString(TransitDbSnapShot snapshot, uint truncateAt = 15)
-        {
-            return ToString(15, snapshot.StopsDb.GetReader());
-        }
-
-
-        [Pure]
-        public string ToString(WithProfile<TransferMetric> withProfile, uint truncateAt = 15)
-        {
-            return ToString(truncateAt, withProfile.StopsReader);
-        }
-
-        public string Summary(WithProfile<T> stops)
-        {
-            return Summary(stops.StopsReader);
-        }
-
-        public string Summary(IStopsReader stops)
-        {
-            stops.MoveTo(Root.Location);
-            if (!stops.Attributes.TryGetValue("name", out var depname))
-            {
-                depname = stops.GlobalId;
-            }
-            
-            stops.MoveTo(Location);
-            if (!stops.Attributes.TryGetValue("name", out var arrname))
-            {
-                arrname = stops.GlobalId;
-            }
-
-            string via = "";
-            var j = this;
-            while (j.PreviousLink != null)
-            {
-                j = j.PreviousLink;
-                if (j.SpecialConnection)
-                {
-                    stops.MoveTo(j.Location);
-                    if (!stops.Attributes.TryGetValue("name", out var nm))
-                    {
-                        nm = stops.GlobalId;
-                    }
-
-                    via += nm+", ";
-                }
-            }
-            
-            return $"Journey {depname} {Root.Time.FromUnixTime():s} -> {arrname} {Time.FromUnixTime():s} (via {via})";
-        }
-
-        [Pure]
-        public string ToString(uint truncateAt, IStopsReader stops = null,
-            IDatabaseReader<ConnectionId, Connection> connection = null)
-        {
-            if (Equals(InfiniteJourney))
-            {
-                return "Journey impossible/infinite";
-            }
-
-            var asList = this.ToList();
-
-
-            var snippets = asList.Select(j => j.PartToString(stops, connection)).ToList();
-
-            if (snippets.Count > truncateAt)
-            {
-                var allSnippets = snippets;
-                var partL = (int) truncateAt / 2;
-                snippets = allSnippets.GetRange(0, partL);
-                snippets.Add("... journey truncated ...");
-                snippets.AddRange(
-                    allSnippets.GetRange(
-                        allSnippets.Count - partL, partL));
-            }
-
-            var totals = $" ({Metric})";
-
-
-            return string.Join("\n", snippets) + totals;
-        }
-
-        [Pure]
-        private string PartToString(IStopsReader stops,
-            IDatabaseReader<ConnectionId, Connection> connectionReader)
-        {
-            var location = Location.ToString();
-            var dbOperator = uint.MaxValue;
-
-            if (stops != null)
-            {
-                stops.MoveTo(Location);
-                location = stops.GlobalId + " " + stops.Attributes;
-                dbOperator = stops.Id.DatabaseId;
-            }
-
-            if (SpecialConnection)
-            {
-                // First: is this a special connection?
-                // attempt to read this before trying to decode the connection
-                return SpecialPartToString(location);
-            }
-
-            var md = "";
-            if (connectionReader != null)
-            {
-                var connection = connectionReader.Get(Connection);
-                switch (connection.Mode % 4)
-                {
-                    case 1:
-                        md = "; Only getting on";
-                        break;
-                    case 2:
-                        md = "; Only getting off";
-                        break;
-                    case 3:
-                        md = "; No getting off/getting on";
-                        break;
-                    default:
-                        md = "; normal connection";
-                        break;
-                }
-
-                if ((connection.Mode & 4) == 4)
-                {
-                    md += "; CANCELLED";
-                }
-            }
-
-            string tm;
-            if (Time < 100000)
-            {
-                tm = "Unixtime " + Time;
-            }
-            else
-            {
-                tm = $"{Time.FromUnixTime():s}";
-            }
-
-            return
-                $"Connection {Connection} to {location}, arriving at {tm}; operator is {dbOperator}{md}";
-        }
-
-        private string SpecialPartToString(string location)
-        {
-            if (Connection.Equals(GENESIS))
-            {
-                var freeForm = ", debugging free form tag is ";
-
-                if (TripId.Equals(EarliestArrivalScanJourney))
-                {
-                    freeForm += "EAS";
-                }
-                else if (TripId.Equals(LatestArrivalScanJourney))
-                {
-                    freeForm += "LAS";
-                }
-                else if (TripId.Equals(ProfiledScanJourney))
-                {
-                    freeForm += "PCS";
-                }
-                else
-                {
-                    freeForm = TripId.ToString();
-                }
-
-                return
-                    $"Genesis at {location}, time is {Time.FromUnixTime():s}{freeForm}";
-            }
-
-            if (Connection.Equals(OTHERMODE))
-            {
-                return
-                    $"Transfer/Wait/Walk for {Math.Abs((long) Time - (long) PreviousLink.Time)} seconds till {Time.FromUnixTime():s} in/to {location}";
-            }
-
-            if (Connection.Equals(JOINED_JOURNEYS))
-            {
-                return
-                    $"Choose a journey: there is a equivalent journey available. Continuing print via one arbitrary option";
-            }
-
-            throw new ArgumentException($"Unknown Special Connection code {Connection}");
-        }
 
 
         [Pure]

@@ -106,7 +106,7 @@ namespace Itinero.Transit.IO.OSM.Data.Parser
         public DateTime Next(DateTime dt)
         {
             dt = _bigTick.Next(dt);
-            for (int i = 0; i < _skip; i++)
+            for (var i = 0; i < _skip; i++)
             {
                 dt = _smallTick.Next(dt);
             }
@@ -117,7 +117,7 @@ namespace Itinero.Transit.IO.OSM.Data.Parser
         public DateTime Prev(DateTime dt)
         {
             dt = _bigTick.Prev(dt);
-            for (int i = 0; i < _skip; i++)
+            for (var i = 0; i < _skip; i++)
             {
                 dt = _smallTick.Prev(dt);
             }
@@ -185,13 +185,13 @@ namespace Itinero.Transit.IO.OSM.Data.Parser
 
         private static DateTime DateFromWeekNumber(int year, int weekNumber, int dayOfWeek = 0)
         {
-            DateTime jan1 = new DateTime(year, 1, 1);
-            int daysOffset = DayOfWeek.Tuesday - jan1.DayOfWeek;
+            var jan1 = new DateTime(year, 1, 1);
+            var daysOffset = DayOfWeek.Tuesday - jan1.DayOfWeek;
 
-            DateTime firstMonday = jan1.AddDays(daysOffset);
+            var firstMonday = jan1.AddDays(daysOffset);
 
             var cal = CultureInfo.CurrentCulture.Calendar;
-            int firstWeek = cal.GetWeekOfYear(jan1, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            var firstWeek = cal.GetWeekOfYear(jan1, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
 
             var weekNum = weekNumber;
             if (firstWeek <= 1)

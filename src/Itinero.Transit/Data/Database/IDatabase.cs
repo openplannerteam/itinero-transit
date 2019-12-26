@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -10,112 +11,147 @@ namespace Itinero.Transit.Data
         /// Gives the internal DatabaseId
         /// </summary>
         uint DatabaseId { get; }
+
+        /// <summary>
+        /// Gives the index in the internal database
+        /// </summary>
+        uint LocalId { get; }
+
+        /// <summary>
+        /// Create a new InternalId
+        /// </summary>
+        /// <param name="databaseId"></param>
+        /// <param name="localId"></param>
+        /// <returns></returns>
+        InternalId Create(uint databaseId, uint localId);
+
     }
 
-    public interface IDatabase<TId, in T> :
-        IDatabaseEnumerator<TId>, 
+    public interface IGlobalId
+    {
+        /// <summary>
+        /// Gives the global id
+        /// </summary>
+        string GlobalId { get; }
+    }
+
+    public interface IDatabase<TId, T> :
         IDatabaseReader<TId, T>,
         IDatabaseSerializer
         where TId : struct, InternalId
+        where T : IGlobalId
     {
-        IDatabase<TId, T> Clone();
-
         TId Add(T value);
         TId AddOrUpdate(T value);
     }
-    
+
     /// <summary>
     /// The DatabaseReader is an object which, given an internal or global id, fetches the corresponding piece of data.
     /// 
     /// </summary>
     /// <typeparam name="TId"></typeparam>
     /// <typeparam name="T"></typeparam>
-    public interface IDatabaseReader<in TId, in T>
+    public interface IDatabaseReader<TId, T> : IEnumerable<T>
         where TId : InternalId, new()
     {
         /// <summary>
-        /// MoveNext will  
+        /// Gets the object corresponding with this id.
+        /// A new object might be created for this.
         /// </summary>
         /// <returns></returns>
-        bool Get(TId id, T objectToWrite);
+        bool TryGet(TId id, out T t);
+
 
         /// <summary>
         /// Searches if this globalId is present in this database.
-        /// If it is, it'll return true and assign the id of it into Tid.
-        /// If not, the implementation is free to give back a clearly invalid value, such as all 'maxValue' for the field
-        ///
-        /// Note that Tids should be structs for performance
         /// </summary>
-        /// <returns></returns>
-        bool Get(string globalId, T objectToWrite);
-
+        /// <returns>true iff found</returns>
+        bool SearchId(string globalId, out TId id);
+        
         /// <summary>
         /// Identifies which database-IDS this database can handle
         /// </summary>
         IEnumerable<uint> DatabaseIds { get; }
+
     }
 
     public static class DatabaseExtensions
     {
-        public static bool Get<TId, T>(
-            this IDatabaseReader<TId, T> db, string globalId, out T found) where TId : InternalId, new() where T : new()
+        /// <summary>
+        /// Gets the element, throws an exception if the id is not found
+        /// </summary>
+        public static T Get<TId, T>(this IDatabaseReader<TId, T> db, TId id) where TId : struct, InternalId where T : IGlobalId
         {
-            found = new T();
-            return db.Get(globalId, found);
-        }
-        public static T Get<TId, T>(this IDatabaseReader<TId, T> db, TId id)
-            where T : new() where TId : InternalId, new()
-        {
-            var t = new T();
-            if (db.Get(id, t))
+            if (!db.TryGet(id, out var t))
             {
-                return t;
+                throw new ArgumentException($"The id {id} could not be found");
             }
 
-            return default(T);
+            return t;
         }
-
-        public static T Get<TId, T>(this IDatabaseReader<TId, T> db, string uri) where TId : InternalId, new() where T : new()
+        
+        
+        /// <summary>
+        /// Gets the element, throws an exception if the id is not found
+        /// </summary>
+        public static T Get<TId, T>(this IDatabaseReader<TId, T> db, TId id, string notFoundMessage) where TId : struct, InternalId where T : IGlobalId
         {
-            var t = new T();
-            if (db.Get(uri, t))
+            if (!db.TryGet(id, out var t))
             {
-                return t;
+                throw new ArgumentException(notFoundMessage);
             }
 
-            return default(T);
+            return t;
+        }
+
+        public static bool TryGet<TId, T>(this IDatabaseReader<TId, T> db, string globalId, out T value) where TId : InternalId, new()
+        {
+            if (!db.SearchId(globalId, out var id))
+            {
+                value = default(T);
+                return false;
+            }
+
+            return db.TryGet(id, out value);
+
+        }
+                
+        /// <summary>
+        /// Gets the element, throws an exception if the id is not found
+        /// </summary>
+        public static T Get<TId, T>(this IDatabaseReader<TId, T> db, string globalId, string notFoundMessage = null) where TId : struct, InternalId where T : IGlobalId
+        {
+            
+            if (!db.SearchId(globalId, out var id))
+            {
+                throw new ArgumentException(notFoundMessage ?? $"GlobalId {globalId} not found");
+            }
+
+            return db.Get(id);
+        }
+
+        public static List<T> GetAll<TId, T>(this IDatabaseReader<TId, T> db, List<TId> ids)
+            where TId : struct, InternalId where T : IGlobalId
+        {
+            var values = new List<T>();
+
+            foreach (var id in ids)
+            {
+                values.Add(db.Get(id));
+            }
+
+            return values;
         }
     }
-    
-    
-    /// <summary>
-    /// THe DatabaseEnumerator is an object which enumerates the identifiers of all data pieces in the database
-    /// </summary>
-    /// <typeparam name="TId"></typeparam>
-    public interface IDatabaseEnumerator<TId> where TId : struct
+
+
+    public interface IClone<out T>
     {
-        /// <summary>
-        /// Gives the first identifier.
-        /// Returns null if the collection is empty
-        /// </summary>
-        /// <returns></returns>
-        TId? First();
-        /// <summary>
-        /// Gives the next index based on the current
-        /// Should be Pure
-        /// </summary>
-        /// <param name="current"></param>
-        /// <param name="next"></param>
-        /// <returns></returns>
-        bool HasNext(TId current, out TId next);
+        T Clone();
     }
 
     public interface IDatabaseSerializer
     {
-
         long WriteTo(Stream stream);
-       
-        
     }
-
 }

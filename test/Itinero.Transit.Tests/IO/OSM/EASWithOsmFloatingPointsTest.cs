@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
 using Itinero.Transit.IO.OSM.Data;
@@ -16,13 +17,13 @@ namespace Itinero.Transit.Tests.IO.OSM
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.000001,
-                0.00001); // very walkable distance
+            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 50, 50.0));
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.000001,
+                0.00001)); // very walkable distance
 
 
-            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+            writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
 
             writer.Close();
 
@@ -46,13 +47,13 @@ namespace Itinero.Transit.Tests.IO.OSM
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.000001,
-                0.00001); // very walkable distance
+            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 50, 50.0));
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.000001,
+                0.00001)); // very walkable distance
 
 
-            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+            writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
 
             writer.Close();
 
@@ -65,10 +66,7 @@ namespace Itinero.Transit.Tests.IO.OSM
                 TransferMetric.Factory,
                 TransferMetric.ParetoCompare);
 
-            var osmStopReader = new OsmLocationStopReader(1);
-
-            osmStopReader.MoveTo(departureLocation);
-            osmStopReader.AddSearchableLocation(osmStopReader.Id);
+            var osmStopReader = new OsmLocationStopReader(1, new List<(double lon, double lat)>{(50.00005, 49.99953)});
 
             // Walk from start
             var input = latest
@@ -98,12 +96,12 @@ namespace Itinero.Transit.Tests.IO.OSM
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.000001,
-                0.00001); // very walkable distance
+            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 50, 50.0));
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.000001,
+                0.00001)); // very walkable distance
 
-            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+            writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
 
 
             writer.Close();
@@ -117,10 +115,7 @@ namespace Itinero.Transit.Tests.IO.OSM
                 TransferMetric.Factory,
                 TransferMetric.ParetoCompare);
 
-            var osmStopReader = new OsmLocationStopReader(1);
-
-            osmStopReader.MoveTo(arrivalLocation);
-            osmStopReader.AddSearchableLocation(osmStopReader.Id);
+            var osmStopReader = new OsmLocationStopReader(1, new (double lon, double lat)[]{(0,0)});
 
             // Walk to end
 
@@ -150,12 +145,12 @@ namespace Itinero.Transit.Tests.IO.OSM
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.000001,
-                0.00001); // very walkable distance
+            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 50, 50.0));
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.000001,
+                0.00001)); // very walkable distance
 
-            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+            writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
 
 
             writer.Close();
@@ -170,11 +165,11 @@ namespace Itinero.Transit.Tests.IO.OSM
             var departureLocation = "https://www.openstreetmap.org/#map=19/50.00005/49.99953";
             var arrivalLocation = "https://www.openstreetmap.org/#map=19/0.0/0.0";
 
-            var osmStopReader = new OsmLocationStopReader(1);
-            osmStopReader.MoveTo(departureLocation);
-            osmStopReader.AddSearchableLocation(osmStopReader.Id);
-            osmStopReader.MoveTo(arrivalLocation);
-            osmStopReader.AddSearchableLocation(osmStopReader.Id);
+            var osmStopReader = new OsmLocationStopReader(1, new List<(double lon, double lat)>
+            {
+                (50.00005, 49.99953),
+                (0,0)
+            });
 
 
             var input = latest

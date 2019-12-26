@@ -280,7 +280,8 @@ namespace Itinero.Transit.Algorithms.CSA
 
         public void Clean(
             IMetricGuesser<T> metricGuess,
-            HashSet<ProfiledParetoFrontier<T>> stopsToReach)
+            HashSet<ProfiledParetoFrontier<T>> stopsToReach,
+            ulong currentTime)
         {
             if (metricGuess == null)
             {
@@ -292,7 +293,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 return;
             }
 
-            if (!metricGuess.ShouldBeChecked(this))
+            if (!metricGuess.ShouldBeChecked(this, currentTime))
             {
                 return;
             }
@@ -301,7 +302,7 @@ namespace Itinero.Transit.Algorithms.CSA
             for (var i = Frontier.Count - 1; i >= 0; i--)
             {
                 var teleportedMetric =
-                    metricGuess.LeastTheoreticalConnection(Frontier[i], out var teleportedDepartureTime);
+                    metricGuess.LeastTheoreticalConnection(Frontier[i], currentTime, out var teleportedDepartureTime);
 
                 foreach (var testFrontier in stopsToReach)
                 {

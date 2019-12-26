@@ -1,7 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.IO;
+using Itinero.Transit.Data.Simple;
 
 namespace Itinero.Transit.Data
 {
@@ -21,16 +20,17 @@ namespace Itinero.Transit.Data
         public TransitDbSnapShot Latest;
 
 
-        public TransitDb(uint databaseId) : this(databaseId,
-            new StopsDb(databaseId), new TripsDb(databaseId), new ConnectionsDb(databaseId))
+        public TransitDb(uint databaseId)
         {
+            DatabaseId = databaseId;
+            Latest = new TransitDbSnapShot(
+                databaseId,
+                new SimpleStopsDb(databaseId),
+                new SimpleConnectionsDb(databaseId),
+                new SimpleTripsDb(databaseId)
+            );
         }
 
-        private TransitDb(uint databaseId, StopsDb stopsDb, TripsDb tripsDb, ConnectionsDb connectionsDb)
-        {
-            Latest = new TransitDbSnapShot(stopsDb, tripsDb, connectionsDb);
-            DatabaseId = databaseId;
-        }
 
         private readonly object _writerLock = new object();
         private TransitDbWriter _writer;
@@ -67,49 +67,6 @@ namespace Itinero.Transit.Data
                 Latest = snapShot;
                 _writer = null;
             }
-        }
-
-
-        [Pure]
-        public static IEnumerable<TransitDb> ReadFrom(IEnumerable<string> paths)
-        {
-            var tdbs = new List<TransitDb>();
-            var i = 0;
-            foreach (var path in paths)
-            {
-                tdbs.Add(ReadFrom(path, (uint) i));
-                i++;
-            }
-
-            return tdbs;
-        }
-
-        [Pure]
-        public static TransitDb ReadFrom(string path, uint databaseId)
-        {
-            using (var stream = File.OpenRead(path))
-            {
-                return ReadFrom(stream, databaseId);
-            }
-        }
-
-        /// <summary>
-        /// Reads a transit db an all its data from the given stream.
-        /// </summary>
-        /// <param name="stream">The stream.</param>
-        /// <param name="databaseId"></param>
-        /// <returns>The transit db.</returns>
-        [Pure]
-        public static TransitDb ReadFrom(Stream stream, uint databaseId)
-        {
-            var version = stream.ReadByte();
-            if (version != 1) throw new InvalidDataException($"Cannot read {nameof(TransitDb)}, invalid version #.");
-
-            var stopsDb = StopsDb.ReadFrom(stream, databaseId);
-            var tripsDb = TripsDb.ReadFrom(stream, databaseId);
-            var connectionsDb = ConnectionsDb.ReadFrom(stream, databaseId);
-
-            return new TransitDb(databaseId, stopsDb, tripsDb, connectionsDb);
         }
     }
 }

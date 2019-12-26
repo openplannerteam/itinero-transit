@@ -18,12 +18,12 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.000001,
-                0.00001); // very walkable distance
+            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 50, 50.0));
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.000001,
+                0.00001)); // very walkable distance
 
-            var connId = writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+            var connId = writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
 
             writer.Close();
 
@@ -49,13 +49,13 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
 
             Assert.True(filter.CanBeTaken(c));
             Assert.False(filter.CanBeTaken(
-                new Connection(new ConnectionId(0, 1), "http://ex.org/con/563", stop1, stop0,
+                new Connection("http://ex.org/con/563", stop1, stop0,
                     // This is the same time we depart from stop0 towards stop1
                     new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc).ToUnixTime(),
                     10 * 60, 0, 0, 0, new TripId(0, 1))));
 
             Assert.True(filter.CanBeTaken(
-                new Connection(new ConnectionId(0, 1), "http://ex.org/con/563", stop1, stop0,
+                new Connection("http://ex.org/con/563", stop1, stop0,
                     // This is the same time we arrive at stop1
                     new DateTime(2018, 12, 04, 9, 40, 00, DateTimeKind.Utc).ToUnixTime(),
                     10 * 60, 0, 0, 0, new TripId(0, 1))));
@@ -68,12 +68,11 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.000001,
-                0.00001); // very walkable distance
+            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 50, 50.0));
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.000001,0.00001)); // very walkable distance
 
-            var connId = writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+            var connId = writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
 
             writer.Close();
 
@@ -102,14 +101,13 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             // Arriving at stop0 at 09:30 makes that we could still just get our connection
             Assert.True(filter.CanBeTaken(
                 new Connection(
-                    new ConnectionId(0, 1), "http://ex.org/con/563",
-                    stop1, stop0,
+                    "id",  stop1, stop0, 
                     new DateTime(2018, 12, 04, 9, 20, 00, DateTimeKind.Utc).ToUnixTime(),
                     10 * 60, 0, 0, 0, new TripId(0, 1))));
 
             // If we arrived at 09:50 at stop0, we can't take our connection anymore
             Assert.False(filter.CanBeTaken(
-                new Connection(new ConnectionId(0, 1), "http://ex.org/con/563", stop1, stop0,
+                new Connection("http://ex.org/con/563", stop1, stop0,
                     new DateTime(2018, 12, 04, 9, 40, 00, DateTimeKind.Utc).ToUnixTime(),
                     10 * 60, 0, 0, 0, new TripId(0, 1))));
         }
@@ -124,12 +122,11 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.0,
-                0.0);
+            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 50, 50.0));
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.0,0.0));
 
-            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0);
+            writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
 
             writer.Close();
 
@@ -166,19 +163,17 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var stop0 = writer.AddOrUpdateStop("https://example.com/stops/0", 50, 50.0);
-            var stop1 = writer.AddOrUpdateStop("https://example.com/stops/1", 0.0,
-                0);
-            var stop2 = writer.AddOrUpdateStop("https://example.com/stops/2", 5,
-                10);
+            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 50, 50.0));
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.0,0));
+            var stop2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/2", 5,10));
 
 
-            writer.AddOrUpdateConnection(stop0, stop1, "https://example.com/connections/0",
+            writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 9, 10, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0),
-                Connection.ModeGetOnOnly);
-            writer.AddOrUpdateConnection(stop1, stop2, "https://example.com/connections/1",
+                Connection.ModeGetOnOnly));
+            writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0),
-                Connection.ModeGetOffOnly);
+                Connection.ModeGetOffOnly));
 
             writer.Close();
 

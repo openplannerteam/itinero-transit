@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
 
 namespace Itinero.Transit.OtherMode
@@ -18,9 +17,9 @@ namespace Itinero.Transit.OtherMode
         }
 
 
-        public uint TimeBetween(IStop from, IStop to)
+        public uint TimeBetween(Stop from, Stop to)
         {
-            if (from.Id.Equals(to.Id))
+            if (from.GlobalId.Equals(to.GlobalId))
             {
                 return _internalTransferTime;
             }
@@ -28,15 +27,15 @@ namespace Itinero.Transit.OtherMode
             return uint.MaxValue;
         }
 
-        public Dictionary<StopId, uint> TimesBetween(IStop from,
-            IEnumerable<IStop> to)
+        public Dictionary<Stop, uint> TimesBetween(
+            Stop from,IEnumerable<Stop> to)
         {
             // It is a tad weird to have this method implemented, as this one only works when from == to...
             // But well, here we go anyway
             return this.DefaultTimesBetween(from, to);
         }
 
-        public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @from, IStop to)
+        public Dictionary<Stop, uint> TimesBetween(IEnumerable<Stop> @from, Stop to)
         {
             return this.DefaultTimesBetween(from, to);
         }
@@ -51,7 +50,7 @@ namespace Itinero.Transit.OtherMode
             return "internalTransfer&timeNeeded=" + _internalTransferTime;
         }
 
-        public IOtherModeGenerator GetSource(StopId @from, StopId to)
+        public IOtherModeGenerator GetSource(Stop from, Stop to)
         {
             return this;
         }

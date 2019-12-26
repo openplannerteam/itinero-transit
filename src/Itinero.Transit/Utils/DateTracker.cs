@@ -22,7 +22,7 @@ namespace Itinero.Transit.Utils
             var insertionIndex = _allWindows.Count;
             var currentStart = DateTime.MaxValue;
             var currentEnd = DateTime.MinValue;
-            for (int i = 0; i < _allWindows.Count; i++)
+            for (var i = 0; i < _allWindows.Count; i++)
             {
                 if (_allWindows[i].start >= start)
                 {

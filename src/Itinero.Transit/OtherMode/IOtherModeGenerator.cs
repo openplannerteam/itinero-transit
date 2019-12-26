@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
 
 namespace Itinero.Transit.OtherMode
@@ -18,7 +17,7 @@ namespace Itinero.Transit.OtherMode
         ///
         /// </summary>
         /// <returns></returns>
-        uint TimeBetween(IStop from, IStop to);
+        uint TimeBetween(Stop from, Stop to);
 
 
         /// <summary>
@@ -33,8 +32,8 @@ namespace Itinero.Transit.OtherMode
         /// However, calling 'MoveNext' will cause that object to change state.
         /// In other words, 'to' should always be used in a 'for-each' loop.
         /// </summary>
-        Dictionary<StopId, uint> TimesBetween(IStop from,IEnumerable<IStop> to);
-        Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> from, IStop to);
+        Dictionary<Stop, uint> TimesBetween(Stop from,IEnumerable<Stop> to);
+        Dictionary<Stop, uint> TimesBetween(IEnumerable<Stop> from, Stop to);
         /// <summary>
         /// The maximum range of this IOtherModeGenerator, in meters.
         /// This generator will only be asked to generate transfers within this range.
@@ -61,7 +60,7 @@ namespace Itinero.Transit.OtherMode
         /// <param name="to"></param>
         /// <returns></returns>
         // ReSharper disable once UnusedMemberInSuper.Global
-        IOtherModeGenerator GetSource(StopId from, StopId to);
+        IOtherModeGenerator GetSource(Stop from, Stop to);
 
     }
 }

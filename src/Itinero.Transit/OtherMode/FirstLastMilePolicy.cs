@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
 
 namespace Itinero.Transit.OtherMode
@@ -14,18 +13,18 @@ namespace Itinero.Transit.OtherMode
         private readonly IOtherModeGenerator _firstMile;
         private readonly IOtherModeGenerator _lastMile;
         private readonly uint _range;
-        private readonly HashSet<StopId> _firstMileStops;
-        private readonly HashSet<StopId> _lastMileStops;
+        private readonly HashSet<Stop> _firstMileStops;
+        private readonly HashSet<Stop> _lastMileStops;
 
         public FirstLastMilePolicy(
             IOtherModeGenerator otherModeGeneratorImplementation,
-            IOtherModeGenerator firstMile, IEnumerable<StopId> firstMileStops,
-            IOtherModeGenerator lastMile, IEnumerable<StopId> lastMileStops)
+            IOtherModeGenerator firstMile, IEnumerable<Stop> firstMileStops,
+            IOtherModeGenerator lastMile, IEnumerable<Stop> lastMileStops)
         {
             _firstMile = firstMile;
-            _firstMileStops = new HashSet<StopId>(firstMileStops);
+            _firstMileStops = new HashSet<Stop>(firstMileStops);
             _lastMile = lastMile;
-            _lastMileStops = new HashSet<StopId>(lastMileStops);
+            _lastMileStops = new HashSet<Stop>(lastMileStops);
             _defaultWalk = otherModeGeneratorImplementation;
             _range = Math.Max(firstMile.Range(),
                 Math.Max(lastMile.Range(), _defaultWalk.Range()));
@@ -33,35 +32,35 @@ namespace Itinero.Transit.OtherMode
 
         public FirstLastMilePolicy(
             IOtherModeGenerator otherModeGeneratorImplementation,
-            IOtherModeGenerator firstMile, StopId firstMileStopId,
-            IOtherModeGenerator lastMile, StopId lastMileStopId) : this(
+            IOtherModeGenerator firstMile, Stop firstMileStopId,
+            IOtherModeGenerator lastMile, Stop lastMileStopId) : this(
             otherModeGeneratorImplementation,
             firstMile, new[] {firstMileStopId},
             lastMile, new[] {lastMileStopId})
         {
         }
 
-        public uint TimeBetween(IStop from, IStop to)
+        public uint TimeBetween(Stop from, Stop to)
         {
-            return SelectSource(from.Id, to.Id).TimeBetween(from, to);
+            return SelectSource(from, to).TimeBetween(from, to);
         }
 
-        public Dictionary<StopId, uint> TimesBetween(IStop @from,
-            IEnumerable<IStop> to)
+        public Dictionary<Stop, uint> TimesBetween(Stop @from,
+            IEnumerable<Stop> to)
         {
-            if (_firstMileStops.Contains(from.Id))
+            if (_firstMileStops.Contains(from))
             {
                 // The from is a firstmile stop -> Everything should be handled with the first-mile logic
                 return _firstMile.TimesBetween(from, to);
             }
 
             // Partition the 'stops'
-            var tosDefault = new List<IStop>();
-            var tosLastMile = new List<IStop>();
+            var tosDefault = new List<Stop>();
+            var tosLastMile = new List<Stop>();
 
             foreach (var stop in to)
             {
-                if (_lastMileStops.Contains(stop.Id))
+                if (_lastMileStops.Contains(stop))
                 {
                     tosLastMile.Add(stop);
                 }
@@ -94,15 +93,15 @@ namespace Itinero.Transit.OtherMode
             return _defaultWalk.TimesBetween(@from, tosDefault);
         }
 
-        public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @from,
-            IStop to)
+        public Dictionary<Stop, uint> TimesBetween(IEnumerable<Stop> @from,
+            Stop to)
         {
-            var firstMiles = new List<IStop>();
-            var defaults = new List<IStop>();
+            var firstMiles = new List<Stop>();
+            var defaults = new List<Stop>();
 
             foreach (var stop in from)
             {
-                if (_firstMileStops.Contains(stop.Id))
+                if (_firstMileStops.Contains(stop))
                 {
                     firstMiles.Add(stop);
                 }
@@ -114,8 +113,8 @@ namespace Itinero.Transit.OtherMode
 
             var firstMileWalks = _firstMile.TimesBetween(firstMiles, to);
 
-            Dictionary<StopId, uint> defaultWalks;
-            if (_lastMileStops.Contains(to.Id))
+            Dictionary<Stop, uint> defaultWalks;
+            if (_lastMileStops.Contains(to))
             {
                 defaultWalks = _lastMile.TimesBetween(defaults, to);
             }
@@ -154,7 +153,7 @@ namespace Itinero.Transit.OtherMode
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        public IOtherModeGenerator SelectSource(StopId from, StopId to)
+        public IOtherModeGenerator SelectSource(Stop from, Stop to)
         {
             if (_firstMileStops.Contains(from))
             {
@@ -177,7 +176,7 @@ namespace Itinero.Transit.OtherMode
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        public IOtherModeGenerator GetSource(StopId from, StopId to)
+        public IOtherModeGenerator GetSource(Stop from, Stop to)
         {
             return SelectSource(from, to).GetSource(from, to);
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Itinero.Transit.Algorithms.Filter;
 using Itinero.Transit.Data;
@@ -21,8 +22,8 @@ namespace Itinero.Transit.Algorithms.CSA
     {
         private readonly List<StopId> _userDepartureLocation;
 
-        private readonly IConnectionEnumerator _connectionsEnumerator;
-        private readonly IStopsReader _stopsReader;
+        private readonly IConnectionsDb _connections;
+        private readonly IStopsDb _stopsDb;
 
         private readonly ulong _earliestDeparture;
 
@@ -81,23 +82,28 @@ namespace Itinero.Transit.Algorithms.CSA
             // settings.Filter is NOT used and SHOULD NOT BE used
 
 
-            _stopsReader = settings.StopsReader;
+            _stopsDb = settings.Stops;
             _earliestDeparture = settings.EarliestDeparture.ToUnixTime();
             ScanEndTime = settings.LastArrival.ToUnixTime();
-            _connectionsEnumerator = settings.ConnectionsEnumerator;
+            _connections = settings.Connections;
             _transferPolicy = settings.Profile.InternalTransferGenerator;
-            _userDepartureLocation = settings.DepartureStop;
+            _userDepartureLocation = settings.DepartureStop.Select(departure =>
+                {
+                    _stopsDb.SearchId(departure.GlobalId, out var departureId);
+                    return departureId;
+                }).ToList();
             _walkPolicy = settings.Profile.WalksGenerator;
 
 
             foreach (var loc in settings.TargetStop)
             {
-                var journey =  new Journey<T>(loc, settings.LastArrival.ToUnixTime(),
-                                  settings.Profile.MetricFactory,
-                                  Journey<T>.LatestArrivalScanJourney);
-                JourneysToArrivalStopTable.Add(loc, journey);
+                _stopsDb.SearchId(loc.GlobalId, out var locId);
+                var journey = new Journey<T>(locId, settings.LastArrival.ToUnixTime(),
+                    settings.Profile.MetricFactory,
+                    Journey<T>.LatestArrivalScanJourney);
+                JourneysToArrivalStopTable.Add(locId, journey);
                 // Allow an walk to end
-                WalkTowards(loc);
+                WalkTowards(locId);
             }
         }
 
@@ -120,19 +126,19 @@ namespace Itinero.Transit.Algorithms.CSA
         /// <exception cref="Exception"></exception>
         public Journey<T> CalculateJourney(Func<ulong, ulong, ulong> depArrivalToTimeout = null)
         {
-            var enumerator = _connectionsEnumerator;
-            enumerator.MoveTo(ScanEndTime);
+            var enumerator = _connections.GetEnumeratorAt(ScanEndTime);
             if (!enumerator.MovePrevious())
             {
-                throw new Exception("Could not calculate the latest arriving country: enumerator is empty");
+                throw new Exception(
+                    $"Could not calculate LAS with latest arrival time {ScanEndTime.FromUnixTime():s}: enumerator is empty");
             }
 
             var earliestAllowedDeparture = _earliestDeparture;
             Journey<T> bestJourney = null;
             var depleted = false;
-            while (!depleted && enumerator.CurrentDateTime >= earliestAllowedDeparture)
+            while (!depleted && _connections.Get(enumerator.Current).DepartureTime >= earliestAllowedDeparture)
             {
-                if (!IntegrateBatch())
+                if (!IntegrateBatch(enumerator))
                 {
                     depleted = true;
                 }
@@ -176,9 +182,9 @@ namespace Itinero.Transit.Algorithms.CSA
             // The user might need a profile to optimize PCS later on
             // We got an alternative end time, we still calculate a little
             ScanBeginTime = depArrivalToTimeout(bestJourney.Root.Time, bestJourney.Time);
-            while (!depleted && enumerator.CurrentDateTime >= ScanBeginTime)
+            while (!depleted && _connections.Get(enumerator.Current).DepartureTime >= ScanBeginTime)
             {
-                if (!IntegrateBatch())
+                if (!IntegrateBatch(enumerator))
                 {
                     break;
                 }
@@ -191,25 +197,31 @@ namespace Itinero.Transit.Algorithms.CSA
         /// Integrates all connections which happen to have the same departure time.
         /// Once all those connections are handled, the walks from the improved locations are batched
         /// </summary>
-        private bool IntegrateBatch()
+        /// <param name="enumerator"></param>
+        private bool IntegrateBatch(IConnectionEnumerator enumerator)
         {
             var improvedLocations = new List<StopId>();
 
-            var c = new Connection();
-            var lastDepartureTime = _connectionsEnumerator.CurrentDateTime;
+            var cid = enumerator.Current;
+            var c = _connections.Get(cid);
+            var lastDepartureTime = c.DepartureTime;
             bool hasNext;
             do
             {
-                _connectionsEnumerator.Current(c);
-                var departureImproved = IntegrateConnection(c);
+                var departureImproved = IntegrateConnection(cid, c);
 
                 if (departureImproved)
                 {
                     improvedLocations.Add(c.DepartureStop);
                 }
 
-                hasNext = _connectionsEnumerator.MovePrevious();
-            } while (hasNext && lastDepartureTime == _connectionsEnumerator.CurrentDateTime);
+                hasNext = enumerator.MovePrevious();
+                if (hasNext)
+                {
+                    cid = enumerator.Current;
+                    c = _connections.Get(cid);
+                }
+            } while (hasNext && lastDepartureTime == c.DepartureTime);
 
             foreach (var improvedLocation in improvedLocations)
             {
@@ -222,13 +234,13 @@ namespace Itinero.Transit.Algorithms.CSA
 
         /// <summary>
         /// Handle a single connection, update the stop positions with new times if possible.
-        ///
+        /// 
         /// Returns true if an improvement if to c.DepartureLocation is made
         /// 
         /// </summary>
+        /// <param name="cid">The identifier of the connection</param>
         /// <param name="c">A DepartureEnumeration, which is used here as if it were a single connection object</param>
-        private bool IntegrateConnection(
-            Connection c)
+        private bool IntegrateConnection(ConnectionId cid, Connection c)
         {
             // The connection describes a random connection somewhere
             // Lets check if we can take it
@@ -256,7 +268,7 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 // Staying on this trip will take us to our destination
                 // We extend the trip journey
-                journeyFromDeparture = _trips[trip].ChainBackward(c);
+                journeyFromDeparture = _trips[trip].ChainBackward(cid, c);
             }
             else if (!c.CanGetOff())
             {
@@ -270,20 +282,20 @@ namespace Itinero.Transit.Algorithms.CSA
                 if (journeyFromArrival.SpecialConnection)
                 {
                     // We only insert a transfer before a 'normal' connection
-                    journeyFromDeparture = journeyFromArrival.ChainBackward(c);
+                    journeyFromDeparture = journeyFromArrival.ChainBackward(cid, c);
                 }
                 else
                 {
                     // internal transfer
                     var timeNeeded =
-                        _transferPolicy.TimeBetween(_stopsReader, c.ArrivalStop, journeyFromArrival.Location);
+                        _transferPolicy.TimeBetween(_stopsDb, c.ArrivalStop, journeyFromArrival.Location);
 
                     if (journeyFromArrival.Time - timeNeeded >= c.ArrivalTime)
                     {
                         journeyFromDeparture =
                             journeyFromArrival
-                                .ChainBackwardWith(_stopsReader, _transferPolicy, c.ArrivalStop)
-                                ?.ChainBackward(c);
+                                .ChainBackwardWith(_stopsDb, _transferPolicy, c.ArrivalStop)
+                                ?.ChainBackward(cid, c);
                     }
                     else
                     {
@@ -346,14 +358,14 @@ namespace Itinero.Transit.Algorithms.CSA
 
             var journey = JourneysToArrivalStopTable[location];
 
-            foreach (var walkingJourney in journey.WalkTowards(_walkPolicy, _stopsReader))
+            foreach (var walkingJourney in journey.WalkTowards(_walkPolicy, _stopsDb))
             {
                 if (walkingJourney.Time < _earliestDeparture)
                 {
                     // this journey departs too soon.
                     continue;
                 }
-                
+
                 var id = walkingJourney.Location;
                 if (id.Equals(location))
                 {

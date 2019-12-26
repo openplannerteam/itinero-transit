@@ -26,20 +26,20 @@ namespace Itinero.Transit.IO.OSM.Data
         /// <returns></returns>
         public static WithProfile<T> UseOsmLocations<T>(this WithProfile<T> withProfile) where T : IJourneyMetric<T>
         {
-            var databaseIdCount = withProfile.StopsReader.DatabaseIndexes().Max() + 1;
+            var databaseIdCount = withProfile.StopsDb.DatabaseIds.Max() + 1;
 
-            var osmReader = new OsmLocationStopReader(databaseIdCount, hoard: true);
+            var osmReader = new OsmLocationStopReader(databaseIdCount);
             return withProfile.AddStopsReader(osmReader);
         }
 
 
         public static IWithSingleLocation<T> SelectSingleStop<T>(
             this WithProfile<T> withProfile,
-            (double latitude, double longitude) stop) where T : IJourneyMetric<T>
+            (double lon, double lat) stop) where T : IJourneyMetric<T>
         {
-            var databaseIdCount = withProfile.StopsReader.DatabaseIndexes().Max() + 1;
-            var osmReader = new OsmLocationStopReader(databaseIdCount);
-            var fromId = osmReader.AddSearchableLocation(stop);
+            var databaseIdCount = withProfile.StopsDb.DatabaseIds.Max() + 1;
+            var osmReader = new OsmLocationStopReader(databaseIdCount, new[] {stop});
+            var fromId = osmReader.SearchId(stop);
 
             var newProfile = withProfile.AddStopsReader(osmReader);
             return newProfile.SelectSingleStop(fromId);
@@ -48,12 +48,12 @@ namespace Itinero.Transit.IO.OSM.Data
 
         public static IWithSingleLocation<T> SelectSingleStop<T>(
             this WithProfile<T> withProfile,
-            IEnumerable<(double latitude, double longitude)> stops) where T : IJourneyMetric<T>
+            IEnumerable<(double lon, double lat)> stops) where T : IJourneyMetric<T>
         {
-            var databaseIdCount = withProfile.StopsReader.DatabaseIndexes().Max() + 1;
+            var databaseIdCount = withProfile.StopsDb.DatabaseIds.Max() + 1;
 
-            var osmReader = new OsmLocationStopReader(databaseIdCount);
-            var fromIds = stops.Select(osmReader.AddSearchableLocation).ToList();
+            var osmReader = new OsmLocationStopReader(databaseIdCount, stops);
+            var fromIds = stops.Select(osmReader.SearchId).ToList();
 
             var newProfile = withProfile.AddStopsReader(osmReader);
             return newProfile.SelectSingleStop(fromIds);
@@ -62,13 +62,13 @@ namespace Itinero.Transit.IO.OSM.Data
 
         public static WithLocation<T> SelectStops<T>(
             this WithProfile<T> withProfile,
-            (double latitude, double longitude) from,
-            (double latitude, double longitude) to) where T : IJourneyMetric<T>
+            (double lon, double lat) from,
+            (double lon, double lat) to) where T : IJourneyMetric<T>
         {
-            var databaseIdCount = withProfile.StopsReader.DatabaseIndexes().Max() + 1;
-            var osmReader = new OsmLocationStopReader(databaseIdCount);
-            var fromId = osmReader.AddSearchableLocation(from);
-            var toId = osmReader.AddSearchableLocation(to);
+            var databaseIdCount = withProfile.StopsDb.DatabaseIds.Max() + 1;
+            var osmReader = new OsmLocationStopReader(databaseIdCount, new[] {from, to});
+            var fromId = osmReader.SearchId(from);
+            var toId = osmReader.SearchId(to);
 
             var newProfile = withProfile.AddStopsReader(osmReader);
             return newProfile.SelectStops(fromId, toId);
@@ -77,13 +77,15 @@ namespace Itinero.Transit.IO.OSM.Data
 
         public static WithLocation<T> SelectStops<T>(
             this WithProfile<T> withProfile,
-            IEnumerable<(double latitude, double longitude)> from,
-            IEnumerable<(double latitude, double longitude)> to) where T : IJourneyMetric<T>
+            IEnumerable<(double lon, double lat)> from,
+            IEnumerable<(double lon, double lat)> to) where T : IJourneyMetric<T>
         {
-            var databaseIdCount = withProfile.StopsReader.DatabaseIndexes().Max() + 1;
-            var osmReader = new OsmLocationStopReader(databaseIdCount);
-            var fromIds = from.Select(osmReader.AddSearchableLocation).ToList();
-            var toIds = to.Select(osmReader.AddSearchableLocation).ToList();
+            var databaseIdCount = withProfile.StopsDb.DatabaseIds.Max() + 1;
+            from = from.ToList();
+            to = to.ToList();
+            var osmReader = new OsmLocationStopReader(databaseIdCount, from.Concat(to));
+            var fromIds = from.Select(osmReader.SearchId).ToList();
+            var toIds = to.Select(osmReader.SearchId).ToList();
 
             var newProfile = withProfile.AddStopsReader(osmReader);
             return newProfile.SelectStops(fromIds, toIds);
@@ -120,11 +122,11 @@ namespace Itinero.Transit.IO.OSM.Data
                 synchronizations);
         }
 
-        public static IStopsReader AddOsmReader(this IStopsReader reader)
+        public static IStopsDb AddOsmReader(this IStopsDb reader)
         {
-            var id = reader.DatabaseIndexes().Max() + 1u;
-          var osmReader =  new OsmLocationStopReader(id);
-          return StopsReaderAggregator.CreateFrom(reader, osmReader);
+            var id = reader.DatabaseIds.Max() + 1u;
+            var osmReader = new OsmLocationStopReader(id);
+            return StopsDbAggregator.CreateFrom(new List<IStopsDb> {reader, osmReader});
         }
     }
 }

@@ -27,8 +27,8 @@ namespace Sample.SNCB
             var snapshot = transitDb.Latest;
 
             // look up departure/arrival stops.
-            var departureStop = snapshot.FindClosestStop(new Stop(4.9376678466796875, 51.322734170650484));
-            var arrivalStop = snapshot.FindClosestStop(new Stop(4.715280532836914, 50.88132251839807));
+            var departureStop = snapshot.FindClosestStop(new Stop("dep", (4.9376678466796875, 51.322734170650484)));
+            var arrivalStop = snapshot.FindClosestStop(new Stop("arr", (4.715280532836914, 50.88132251839807)));
             // Create a traveller profile
             var profile = new DefaultProfile();
 
@@ -49,7 +49,7 @@ namespace Sample.SNCB
             {
                 foreach (var journey in journeys)
                 {
-                    Console.WriteLine(journey.ToString(router));
+                    Console.WriteLine(journey.ToString());
                 }
             }
         }

@@ -6,7 +6,7 @@ namespace Itinero.Transit.Tests.IO.LC
 {
     public class ParseJsonLdTest
     {
-        private const string _testString =
+        private const string TestString =
             "{\"@id\":\"http://irail.be/connections/8814001/20190617/IC3115\"," +
             "\"@type\":[\"http://semweb.mmlab.be/ns/linkedconnections#CancelledConnection\"]," +
             "\"http://semweb.mmlab.be/ns/linkedconnections#departureStop\":" +
@@ -33,7 +33,7 @@ namespace Itinero.Transit.Tests.IO.LC
         [Fact]
         public void ConnectionParse_TestString_ExpectsCancelledConnection()
         {
-            var conn = new Connection(JObject.Parse(_testString));
+            var conn = new Connection(JObject.Parse(TestString));
             Assert.True(conn.IsCancelled);
             
             

@@ -1,26 +1,25 @@
 using System.Collections.Generic;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Attributes;
+using Itinero.Transit.Data.Core;
 using Xunit;
 
 namespace Itinero.Transit.Tests.Core.Data
 {
     public class SingleAttributeEnumeratorTest
     {
-        private void Test(IStop source)
+        private static void Test(IStopsDb stops,  StopId id)
         {
+            var source = stops.Get(id);
             source.Attributes.TryGetValue("name", out var name);
             if (name != null)
             {
                 Assert.NotEmpty(name);
             }
 
-            foreach (var attr in source.Attributes)
+            foreach (var (k, v) in source.Attributes)
             {
-                if (attr.Key.StartsWith("name:"))
+                if (k.StartsWith("name:"))
                 {
-                    var v = attr.Value;
-                    var k = attr.Key;
                     Assert.StartsWith("name:", k);
                     Assert.NotEmpty(v);
                 }
@@ -33,46 +32,40 @@ namespace Itinero.Transit.Tests.Core.Data
             var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
 
-            var a = wr.AddOrUpdateStop("a", 1, 1);
-            var b = wr.AddOrUpdateStop("b", 1, 1, new List<Attribute>());
-            var c = wr.AddOrUpdateStop("c", 1, 1, new List<Attribute>
+            var a = wr.AddOrUpdateStop(new Stop("a", 1, 1));
+            var b = wr.AddOrUpdateStop(new Stop("b", 1, 1));
+            var c = wr.AddOrUpdateStop(new Stop("c", (1, 1), new Dictionary<string, string>
             {
-                new Attribute("name", "c")
-            });
-            var d = wr.AddOrUpdateStop("d", 1, 1, new List<Attribute>
+                {"name", "c"}
+            }));
+            var d = wr.AddOrUpdateStop(new Stop("d", (1, 1), new Dictionary<string, string>
             {
-                new Attribute("name", "d"),
-                new Attribute("name:fr", "dfr")
-            });
-            var e = wr.AddOrUpdateStop("e", 1, 1, new List<Attribute>
+                {"name", "d"},
+                {"name:fr", "dfr"}
+            }));
+            var e = wr.AddOrUpdateStop(new Stop("e", (1, 1), new Dictionary<string, string>
             {
-                new Attribute("name", "d"),
-                new Attribute("name:", "d:")
-            });
-            var f = wr.AddOrUpdateStop("f", 1, 1, new List<Attribute>
+                {"name", "d"},
+                {"name:", "d:"}
+            }));
+            var f = wr.AddOrUpdateStop(new Stop("f", (1, 1), new Dictionary<string, string>
             {
-                new Attribute("bus", "yes"),
-                new Attribute("name", "couseaukaai"),
-                new Attribute("operator", "Stad Brugge"),
-                new Attribute("public_transport", "stop_position")
-            });
+                {"bus", "yes"},
+                {"name", "couseaukaai"},
+                {"operator", "Stad Brugge"},
+                {"public_transport", "stop_position"}
+            }));
             wr.Close();
 
 
-            var reader = tdb.Latest.StopsDb.GetReader();
+            var stops = tdb.Latest.StopsDb;
 
-            reader.MoveTo(a);
-            Test(reader);
-            reader.MoveTo(b);
-            Test(reader);
-            reader.MoveTo(c);
-            Test(reader);
-            reader.MoveTo(d);
-            Test(reader);
-            reader.MoveTo(e);
-            Test(reader);
-            reader.MoveTo(f);
-            Test(reader);
+            Test(stops, a);
+            Test(stops, b);
+            Test(stops, c);
+            Test(stops, d);
+            Test(stops, e);
+            Test(stops, f);
         }
     }
 }

@@ -21,16 +21,13 @@ namespace Itinero.Transit.Algorithms.Filter
         /// The constructed journey will be checked against already known optimal routes.
         /// If the constructed journey can not be optimal, the intermediate journey can be pruned from the algorithm.
         /// </summary>
-        /// <returns></returns>
-        T LeastTheoreticalConnection(Journey<T> intermediate, out ulong departureTime);
+        T LeastTheoreticalConnection(Journey<T> intermediate, ulong currentTime, out ulong departureTime);
 
         /// <summary>
         /// Returns whether or not it is useful to check this pareto frontier.
         /// (e.g. if we just cleaned up the frontier and nothing actually changed, it is no use to retry cleaning).
         ///
         /// </summary>
-        /// <param name="frontier"></param>
-        /// <returns></returns>
-        bool ShouldBeChecked(ProfiledParetoFrontier<T> frontier);
+        bool ShouldBeChecked(ProfiledParetoFrontier<T> frontier, ulong currentTime);
     }
 }

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
-using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey;
 
@@ -21,7 +20,6 @@ namespace Itinero.Transit.Algorithms.Filter
     /// <typeparam name="T"></typeparam>
     public class SimpleMetricGuesser<T> : IMetricGuesser<T> where T : IJourneyMetric<T>
     {
-        private readonly IConnectionEnumerator _clock;
 
         private readonly StopId _departureStop;
 
@@ -31,37 +29,34 @@ namespace Itinero.Transit.Algorithms.Filter
         /// <summary>
         /// Create a new SimpleMetric
         /// </summary>
-        /// <param name="clock">The 'clock' is a IConnectionReader, IConnectionEnumerator or something _stateful_. The departure time should regularly update to reflect departure time PCS is scanning </param>
         /// <param name="departureStop">A normal ID where to teleport too</param>
-        public SimpleMetricGuesser(IConnectionEnumerator clock, StopId departureStop)
+        public SimpleMetricGuesser(StopId departureStop)
         {
-            _clock = clock;
             _departureStop = departureStop;
         }
 
-        public SimpleMetricGuesser(IConnectionEnumerator clock, IEnumerable<StopId> departureStops)
-            :this(clock, departureStops.First())
-            // It doesn't matter what the exact comparison stop is - it is just used to 'teleport' there and to be considered
+        public SimpleMetricGuesser(IEnumerable<StopId> departureStops)
+            :this(departureStops.First())
+            // It doesn't matter what the exact comparison stop is - it is just used to 'teleport' there; afterwards we see if the collection is still in the optimal set. This is done by PCS
         {
         }
 
-        public T LeastTheoreticalConnection(Journey<T> intermediate, out ulong departureTime)
+        public T LeastTheoreticalConnection(Journey<T> intermediate, ulong currentTime, out ulong departureTime)
         {
-            departureTime = _clock.CurrentDateTime;
-            var m = intermediate.Metric.Add(intermediate, _departureStop, _clock.CurrentDateTime, 
+            departureTime = currentTime;
+            var m = intermediate.Metric.Add(intermediate, _departureStop, currentTime, 
                 intermediate.TripId,
                 true); // The 'special bit' is true, as this will make sure no extra vehicle is added
             return m;
         }
 
-        public bool ShouldBeChecked(ProfiledParetoFrontier<T> frontier)
+        public bool ShouldBeChecked(ProfiledParetoFrontier<T> frontier, ulong currentTime)
         {
-            var curScanTime = _clock.CurrentDateTime;
             // ReSharper disable once InvertIf
-            if (curScanTime != _alreadyCleanedScanTime)
+            if (currentTime != _alreadyCleanedScanTime)
             {
                 _alreadyCleaned = new HashSet<ProfiledParetoFrontier<T>>();
-                _alreadyCleanedScanTime = curScanTime;
+                _alreadyCleanedScanTime = currentTime;
             }
 
             return _alreadyCleaned.Add(frontier);

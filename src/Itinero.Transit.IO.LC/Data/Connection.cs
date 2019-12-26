@@ -67,7 +67,7 @@ namespace Itinero.Transit.IO.LC.Data
         public bool IsCancelled { get; private set; }
 
 
-        private const string _gtfsRegular = "http://vocab.gtfs.org/terms#Regular";
+        private const string GtfsRegular = "http://vocab.gtfs.org/terms#Regular";
 
         // ReSharper disable once UnusedMember.Global
         public Connection(Uri uri)
@@ -155,16 +155,16 @@ namespace Itinero.Transit.IO.LC.Data
             GtfsTrip = json.GetId("http://vocab.gtfs.org/terms#trip");
             GtfsRoute = json.GetId("http://vocab.gtfs.org/terms#route");
 
-            var getOn = json.GetContents("http://vocab.gtfs.org/terms#pickupType", _gtfsRegular);
+            var getOn = json.GetContents("http://vocab.gtfs.org/terms#pickupType", GtfsRegular);
 
-            GetOn = (getOn.IsString() && getOn.ToString().Equals(_gtfsRegular))
-                    || getOn.GetId().ToString().Equals(_gtfsRegular);
+            GetOn = (getOn.IsString() && getOn.ToString().Equals(GtfsRegular))
+                    || getOn.GetId().ToString().Equals(GtfsRegular);
 
             IsCancelled = isCancelledConnection;
 
-            var getOff = json.GetContents("http://vocab.gtfs.org/terms#dropOffType", _gtfsRegular);
-            GetOff = (getOff.IsString() && getOff.ToString().Equals(_gtfsRegular))
-                     || getOff.GetId().ToString().Equals(_gtfsRegular);
+            var getOff = json.GetContents("http://vocab.gtfs.org/terms#dropOffType", GtfsRegular);
+            GetOff = (getOff.IsString() && getOff.ToString().Equals(GtfsRegular))
+                     || getOff.GetId().ToString().Equals(GtfsRegular);
 
         }
 

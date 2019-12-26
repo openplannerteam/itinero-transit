@@ -22,14 +22,14 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
 
-            var stop0 = wr.AddOrUpdateStop("0", 3.00, 50.00);
-            var stop1 = wr.AddOrUpdateStop("1", 3.001, 50.001);
+            var stop0 = wr.AddOrUpdateStop(new Stop("0", 3.00, 50.00));
+            var stop1 = wr.AddOrUpdateStop(new Stop("1", 3.001, 50.001));
 
             wr.Close();
 
-            var stops = tdb.Latest.StopsDb.GetReader();
+            var stops = tdb.Latest.StopsDb;
 
-            var d = (uint) DistanceEstimate.DistanceEstimateInMeter(50.00, 3.00f, 50.001, 3.001);
+            var d = (uint) DistanceEstimate.DistanceEstimateInMeter((3.00,50.00), (3.001, 50.001));
 
             Assert.True(d > 100);
             Assert.True(d < 250);
@@ -82,14 +82,14 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
 
-            var stop0 = wr.AddOrUpdateStop("0", 3.00, 50.00);
-            var stop1 = wr.AddOrUpdateStop("1", 3.00001, 50.00001);
+            var stop0 = wr.AddOrUpdateStop(new Stop("0", 3.00, 50.00));
+            var stop1 = wr.AddOrUpdateStop(new Stop("1", 3.00001, 50.00001));
 
 
             // Note that this connections falls out of the requested window
-            wr.AddOrUpdateConnection(
+            wr.AddOrUpdateConnection(new Connection(
                 stop1, stop0, "qsdf", DateTime.Now.ToUniversalTime().AddMinutes(10),
-                10 * 60, 0, 0, new TripId(0, 0), 0);
+                10 * 60, 0, 0, new TripId(0, 0), 0));
             wr.Close();
 
 

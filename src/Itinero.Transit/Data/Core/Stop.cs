@@ -1,54 +1,17 @@
-using Itinero.Transit.Data.Attributes;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Itinero.Transit.Data.Core
 {
-    /// <inheritdoc />
     /// <summary>
     /// Representation of a stop.
     /// </summary>
-    public class Stop : IStop
+    public class Stop : IGlobalId
     {
-        public Stop(IStop stop)
-        {
-            GlobalId = stop.GlobalId;
-            Id = stop.Id;
-            Longitude = stop.Longitude;
-            Latitude = stop.Latitude;
-            if (stop.Attributes != null)
-            {
-                Attributes = new AttributeCollection(stop.Attributes);
-            }
-        }
-        
-        internal Stop(string globalId, StopId id,
-            double longitude, double latitude, IAttributeCollection attributes)
-        {
-            GlobalId = globalId;
-            Id = id;
-            Longitude = longitude;
-            Latitude = latitude;
-            if (attributes != null)
-            {
-                Attributes = new AttributeCollection(attributes);
-            }
-        }
-
-        public Stop(double latitude, double longitude)
-        {
-            Latitude = latitude;
-            Longitude = longitude;
-            Id= StopId.Invalid;
-        }
-
         /// <summary>
         /// Gets the global id.
         /// </summary>
         public string GlobalId { get; }
-
-        /// <summary>
-        /// Gets the id.
-        /// </summary>
-        public StopId Id { get; }
 
         /// <summary>
         /// Gets the longitude.
@@ -59,22 +22,57 @@ namespace Itinero.Transit.Data.Core
         /// Gets the latitude.
         /// </summary>
         public double Latitude { get; }
-        
+
         /// <summary>
         /// Gets the attributes.
         /// </summary>
-        public IAttributeCollection Attributes { get; }
+        public Dictionary<string, string> Attributes { get; }
 
+        private static Dictionary<string, string>  _empty = new Dictionary<string, string>();
+        
+        public Stop(Stop stop)
+        {
+            GlobalId = stop.GlobalId;
+            Longitude = stop.Longitude;
+            Latitude = stop.Latitude;
+            Attributes = stop.Attributes != null ? new Dictionary<string, string>(stop.Attributes) : _empty;
+        }
+
+        public Stop(string globalId,
+            (double longitude, double latitude) c, Dictionary<string, string> attributes = null)
+        {
+            GlobalId = globalId;
+            Longitude = c.longitude;
+            Latitude = c.latitude;
+            Attributes = attributes ?? _empty;
+        }
+        
+        
+        public Stop(string globalId, double latitude, double longitude):
+        this(globalId, (longitude, latitude))
+            
+        {
+            GlobalId = globalId;
+            Latitude = latitude;
+            Longitude = longitude;
+        }
+  
+
+
+
+        [Pure]
         public override string ToString()
         {
-            return $"{GlobalId} ({Id}-[{Longitude},{Latitude}]) {Attributes}";
+            return $"{GlobalId} ([{Longitude},{Latitude}]) {Attributes}";
         }
 
-        protected bool Equals(Stop other)
+        [Pure]
+        public bool Equals(Stop other)
         {
-            return Id.Equals(other.Id);
+            return GlobalId.Equals(other.GlobalId);
         }
 
+        [Pure]
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -83,9 +81,10 @@ namespace Itinero.Transit.Data.Core
             return Equals((Stop) obj);
         }
 
+        [Pure]
         public override int GetHashCode()
         {
-            return Id.GetHashCode();
+            return GlobalId.GetHashCode();
         }
 
         /// <summary>
@@ -93,12 +92,14 @@ namespace Itinero.Transit.Data.Core
         /// If missing, the empty string is returned
         /// </summary>
         /// <returns></returns>
+        [Pure]
         public string GetName()
         {
             if (Attributes == null)
             {
                 return "";
             }
+
             Attributes.TryGetValue("name", out var name);
             return name ?? "";
         }

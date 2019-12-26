@@ -13,7 +13,7 @@ namespace Itinero.Transit.Utils
     {
         private static readonly DateTime _epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        private const ulong _secondsInADay = 24 * 60 * 60;
+        private const ulong SecondsInADay = 24 * 60 * 60;
 
         /// <summary>
         /// Converts a number of milliseconds from 1/1/1970 into a standard DateTime.
@@ -42,7 +42,7 @@ namespace Itinero.Transit.Utils
         /// <returns></returns>
         internal static ulong ExtractDate(ulong seconds)
         {
-            return (seconds - (seconds % _secondsInADay));
+            return (seconds - (seconds % SecondsInADay));
         }
 
         /// <summary>

@@ -5,7 +5,6 @@ using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Utils;
-using Attribute = Itinero.Transit.Data.Attributes.Attribute;
 
 namespace Itinero.Transit.IO.OSM.Data
 {
@@ -34,17 +33,17 @@ namespace Itinero.Transit.IO.OSM.Data
 
             foreach (var (id, lon, lat, tags) in route.StopPositions)
             {
-                var attr = new List<Attribute>();
+                var attrs = new Dictionary<string, string>();
 
                 foreach (var tag in tags)
                 {
-                    attr.Add(new Attribute(tag.Key, tag.Value));
+                    attrs[tag.Key] = tag.Value;
                 }
 
-                stopIds.Add(wr.AddOrUpdateStop(id, lon, lat, attr));
+                stopIds.Add(wr.AddOrUpdateStop(new Stop(id, (lon, lat), attrs)));
             }
 
-            var allRuns = new List<(uint, Connection)>();
+            var allRuns = new List<Connection>();
 
             {
                 // Simulate the buses running.
@@ -69,13 +68,13 @@ namespace Itinero.Transit.IO.OSM.Data
                     var tripGlobalId = $"https://openstreetmap.org/relation/{route.Id}/vehicle/{index}";
 
 
-                    var tripIndex = wr.AddOrUpdateTrip(tripGlobalId, new[]
+                    var tripIndex = wr.AddOrUpdateTrip(new Trip(tripGlobalId, new Dictionary<string, string>
                     {
-                        new Attribute("route", "http://openstreetmap.org/relation/" + route.Id),
-                        new Attribute("headsign", route.Name ?? "")
-                    });
+                        {"route", "http://openstreetmap.org/relation/" + route.Id},
+                        {"headsign", route.Name ?? ""}
+                    }));
                     allRuns.AddRange(
-                        CreateRun(route, dbId, tripIndex, index, stopIds, currentStart));
+                        CreateRun(route, tripIndex, index, stopIds, currentStart));
 
                     index = (index + 1) % modulo;
                     currentStart += route.Interval;
@@ -83,11 +82,8 @@ namespace Itinero.Transit.IO.OSM.Data
             }
 
 
-            foreach (var (vehicle, connection) in allRuns.OrderBy(c => c.Item2.DepartureTime))
+            foreach (var  connection in allRuns.OrderBy(c => c.DepartureTime))
             {
-                connection.GlobalId = $"https://openstreetmap.org/relation/{route.Id}/vehicle/{vehicle}/" +
-                                      $"{(connection.DepartureTime - connection.DepartureDelay).FromUnixTime():s}";
-
                 wr.AddOrUpdateConnection(connection);
             }
 
@@ -101,10 +97,9 @@ namespace Itinero.Transit.IO.OSM.Data
         ///  For now, the vehicle is assumed to take the same amount of time between each stop
         ///  
         ///  </summary>
-        private static LinkedList<(uint, Connection)> CreateRun(this OsmRoute route,
-            uint dbId,
+        private static IEnumerable<Connection> CreateRun(this OsmRoute route,
             TripId tripId, uint vehicleId,
-            List<StopId> locations,
+            IReadOnlyList<StopId> locations,
             DateTime startMoment)
         {
             if (startMoment.Kind != DateTimeKind.Utc)
@@ -112,7 +107,7 @@ namespace Itinero.Transit.IO.OSM.Data
                 throw new ArgumentException("startMoment: DateTimes should be UTC");
             }
 
-            var conns = new LinkedList<(uint, Connection)>();
+            var conns = new LinkedList<Connection>();
 
             var travelTime = (ushort) (route.Duration.TotalSeconds / route.StopPositions.Count);
 
@@ -122,13 +117,12 @@ namespace Itinero.Transit.IO.OSM.Data
                 // This implies that, if the route does do a loop (`roundtrip=yes`) the first and last element in the osmRoute should be the same
 
                 var l0 = locations[i];
-                (double lon, double lat) l0Coor = (route.StopPositions[i].lon, route.StopPositions[i].lat);
-                var l0Id = Uri.EscapeDataString(route.StopPositions[i].Item1);
                 var l1 = locations[i + 1];
-                (double lon, double lat) l1Coor = (route.StopPositions[i + 1].lon, route.StopPositions[i + 1].lat);
-                var l1Id = Uri.EscapeDataString(route.StopPositions[i + 1].Item1);
 
                 var depTime = startMoment.AddSeconds(travelTime * i);
+                var id = $"https://openstreetmap.org/relation/{route.Id}/vehicle/{vehicleId}/" +
+                         $"{depTime:s}";
+
 
                 ushort mode = 0;
 
@@ -146,13 +140,8 @@ namespace Itinero.Transit.IO.OSM.Data
                     }
                 }
 
-
-                var con = new Connection(
-                    new ConnectionId(dbId, 0),
-                    $"https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route={l0Coor.lat}%2C{l0Coor.lon}%3B{l1Coor.lat}%2C{l1Coor.lon}" +
-                    $"&from={l0Id}&to={l1Id}",
-                    l0, l1, depTime.ToUnixTime(), travelTime, 0, 0, mode, tripId);
-                conns.AddLast((vehicleId, con));
+                var con = new Connection(id ,l0, l1, depTime.ToUnixTime(), travelTime, 0, 0, mode, tripId);
+                conns.AddLast(con);
             }
 
             return conns;

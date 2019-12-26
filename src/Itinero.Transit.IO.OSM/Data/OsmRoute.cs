@@ -119,7 +119,7 @@ namespace Itinero.Transit.IO.OSM.Data
                 foreach (var (_, lon0, lat0, _) in stopPositions)
                 {
                     // ReSharper disable once InvertIf
-                    if (DistanceEstimate.DistanceEstimateInMeter(lat, lon, lat0, lon0) < 25)
+                    if (DistanceEstimate.DistanceEstimateInMeter((lon, lat), (lon0, lat0)) < 25)
                     {
                         inRange = true;
                         break;

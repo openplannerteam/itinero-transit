@@ -10,7 +10,7 @@ namespace Itinero.Transit.IO.LC.Json
 {
     public static class JourneyToGeoJsonExtensions
     {
-        public static string ToGeoJson<T>(this Journey<T> journey, StopsDb stopsDb)
+        public static string ToGeoJson<T>(this Journey<T> journey, IStopsDb stopsDb)
             where T : IJourneyMetric<T>
         {
             var stringWriter = new StringWriter();
@@ -23,7 +23,7 @@ namespace Itinero.Transit.IO.LC.Json
         /// Writes the route as json.
         /// </summary>
         // ReSharper disable once MemberCanBePrivate.Global
-        public static void WriteGeoJson<T>(this Journey<T> journey, StopsDb stopsDb, TextWriter writer)
+        public static void WriteGeoJson<T>(this Journey<T> journey, IStopsDb stopsDb, TextWriter writer)
             where T : IJourneyMetric<T>
         {
             if (journey == null)
@@ -42,11 +42,10 @@ namespace Itinero.Transit.IO.LC.Json
             jsonWriter.WritePropertyName("features");
             jsonWriter.WriteArrayOpen();
 
-            var reader = stopsDb.GetReader();
             var originalJourney = journey;
             while (journey != null)
             {
-                if (reader.MoveTo(journey.Location))
+                if (stopsDb.TryGet(journey.Location, out var stop))
                 {
                     jsonWriter.WriteOpen();
                     jsonWriter.WriteProperty("type", "Feature", true);
@@ -58,9 +57,9 @@ namespace Itinero.Transit.IO.LC.Json
                     jsonWriter.WritePropertyName("coordinates");
                     jsonWriter.WriteArrayOpen();
                     jsonWriter.WriteArrayValue(
-                        reader.Longitude.ToString(CultureInfo.InvariantCulture));
+                        stop.Longitude.ToString(CultureInfo.InvariantCulture));
                     jsonWriter.WriteArrayValue(
-                        reader.Latitude.ToString(CultureInfo.InvariantCulture));
+                        stop.Latitude.ToString(CultureInfo.InvariantCulture));
 
                     jsonWriter.WriteArrayClose();
                     jsonWriter.WriteClose();
@@ -68,7 +67,7 @@ namespace Itinero.Transit.IO.LC.Json
                     jsonWriter.WritePropertyName("properties");
                     jsonWriter.WriteOpen();
 
-                    jsonWriter.WriteProperty("stop_uri", reader.GlobalId, true, true);
+                    jsonWriter.WriteProperty("stop_uri", stop.GlobalId, true, true);
 
                     jsonWriter.WriteClose();
 
@@ -96,13 +95,13 @@ namespace Itinero.Transit.IO.LC.Json
             journey = originalJourney;
             while (journey != null)
             {
-                if (reader.MoveTo(journey.Location))
+                if (stopsDb.TryGet(journey.Location, out var stop))
                 {
                     jsonWriter.WriteArrayOpen();
                     jsonWriter.WriteArrayValue(
-                        reader.Longitude.ToString(CultureInfo.InvariantCulture));
+                        stop.Longitude.ToString(CultureInfo.InvariantCulture));
                     jsonWriter.WriteArrayValue(
-                        reader.Latitude.ToString(CultureInfo.InvariantCulture));
+                        stop.Latitude.ToString(CultureInfo.InvariantCulture));
 
                     jsonWriter.WriteArrayClose();
                 }

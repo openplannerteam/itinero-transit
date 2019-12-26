@@ -32,15 +32,9 @@ namespace Itinero.Transit.Tests.IO.LC
             wr.AddAllLocations(allLocations);
             wr.Close();
 
-            var stops = transitDb.Latest.StopsDb.GetReader();
-            stops.Reset();
-            var i = 0;
-            while (stops.MoveNext())
-            {
-                i++;
-            }
-
-            Assert.Equal(expectedCount, i);
+            var stops = transitDb.Latest.StopsDb;
+         
+            Assert.Equal(expectedCount, stops.Count());
 
 
 
