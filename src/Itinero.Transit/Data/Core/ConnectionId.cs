@@ -5,7 +5,7 @@ namespace Itinero.Transit.Data.Core
         public static ConnectionId Invalid = new ConnectionId(uint.MaxValue, uint.MaxValue);
 
         public uint DatabaseId { get; }
-        public uint LocalId { get; }
+        public ulong LocalId { get; }
 
 
         public ConnectionId(uint databaseId, uint internalId)

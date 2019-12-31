@@ -66,7 +66,7 @@ namespace Itinero.Transit.Data.Simple
                 return false;
             }
 
-            if (id.LocalId >= Data.Count)
+            if (id.LocalId >= (ulong) Data.Count)
             {
                 stop = default(T);
                 return false;

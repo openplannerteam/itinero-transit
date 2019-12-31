@@ -8,7 +8,7 @@ namespace Itinero.Transit.Data.Core
     public struct TripId : InternalId
     {
         public uint DatabaseId { get; }
-        public uint LocalId { get; }
+        public ulong LocalId { get; }
 
         public TripId(uint databaseId, uint internalId)
         {

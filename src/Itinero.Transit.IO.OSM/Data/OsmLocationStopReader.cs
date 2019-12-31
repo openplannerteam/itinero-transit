@@ -44,7 +44,7 @@ namespace Itinero.Transit.IO.OSM.Data
         private readonly List<Stop> _searchableLocations = new List<Stop>();
 
 
-        private const uint Precision = 100000;
+        private const uint Precision = 10000000;
 
         /// <summary>
         /// Creates a StopsReader which is capable of decoding OSM-urls.
@@ -56,9 +56,8 @@ namespace Itinero.Transit.IO.OSM.Data
         /// <param name="databaseId"></param>
         /// <param name="searchableLocations">Locations that can be picked up by GetEnumerator and SearchClosest</param>
         public OsmLocationStopReader(uint databaseId, IEnumerable<(double lon, double lat)> searchableLocations)
-        : this(databaseId, searchableLocations?.Select(CreateOsmStop))
+            : this(databaseId, searchableLocations?.Select(CreateOsmStop))
         {
-            
         }
 
         /// <summary>
@@ -88,14 +87,14 @@ namespace Itinero.Transit.IO.OSM.Data
 
         public StopId SearchId((double lon, double lat) c)
         {
-            var lonRounded = c.lon * Precision / Precision;
-            var latRounded = c.lat * Precision / Precision;
+            var lonRounded = (int) ((c.lon + 180) * Precision);
+            var latRounded = (int) ((c.lat + 90) * Precision);
 
             return new StopId(_databaseId,
-                (uint) ((int) (lonRounded + 180) * Precision * 10000 + (latRounded + 90) * 10000));
+                (uint) ((lonRounded + 180) * 10000 + (latRounded + 90) * 10000));
         }
 
-        private static Stop CreateOsmStop((double lat, double lon) location)
+        private static Stop CreateOsmStop((double lon, double lat) location)
         {
             var (lon, lat) = location;
 
@@ -119,7 +118,7 @@ namespace Itinero.Transit.IO.OSM.Data
             // ReSharper disable once PossibleLossOfFraction
             var lon = (double) (id.LocalId / 1000) / Precision;
 
-            t = CreateOsmStop((lat, lon));
+            t = CreateOsmStop((lon, lat));
             return true;
         }
 
@@ -130,7 +129,6 @@ namespace Itinero.Transit.IO.OSM.Data
             return true;
         }
 
-   
 
         public void PostProcess(uint zoomLevel)
         {

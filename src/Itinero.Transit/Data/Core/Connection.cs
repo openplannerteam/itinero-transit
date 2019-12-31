@@ -76,6 +76,10 @@ namespace Itinero.Transit.Data.Core
             DepartureStop = departureStop;
             ArrivalStop = arrivalStop;
             ArrivalTime = departureTime + travelTime;
+            if (DepartureTime == 0)
+            {
+                throw new ArgumentException("Trains are not supposed to leave at epoch, this will cause bugs.");
+            }
         }
 
         public Connection(StopId departureStop, StopId arrivalStop, 

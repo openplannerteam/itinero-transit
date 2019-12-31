@@ -5,13 +5,13 @@ namespace Itinero.Transit.Data.Core
 {
     public struct StopId : InternalId
     {
-        public static StopId Invalid = new StopId(uint.MaxValue, uint.MaxValue);
+        public static StopId Invalid = new StopId(uint.MaxValue, ulong.MaxValue);
 
 
         public uint DatabaseId { get; private set; }
-        public uint LocalId { get; private set; }
+        public ulong LocalId { get; private set; }
 
-        public StopId(uint databaseId, uint localId)
+        public StopId(uint databaseId, ulong localId)
         {
             DatabaseId = databaseId;
             LocalId = localId;

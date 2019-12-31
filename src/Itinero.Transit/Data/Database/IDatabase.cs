@@ -15,7 +15,7 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// Gives the index in the internal database
         /// </summary>
-        uint LocalId { get; }
+        ulong LocalId { get; }
 
         /// <summary>
         /// Create a new InternalId
