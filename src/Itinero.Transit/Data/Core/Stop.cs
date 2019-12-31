@@ -46,18 +46,6 @@ namespace Itinero.Transit.Data.Core
             Latitude = c.latitude;
             Attributes = attributes ?? _empty;
         }
-        
-        
-        public Stop(string globalId, double latitude, double longitude):
-        this(globalId, (longitude, latitude))
-            
-        {
-            GlobalId = globalId;
-            Latitude = latitude;
-            Longitude = longitude;
-        }
-  
-
 
 
         [Pure]

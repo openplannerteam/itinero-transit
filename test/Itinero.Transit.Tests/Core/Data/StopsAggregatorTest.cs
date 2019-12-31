@@ -14,7 +14,7 @@ namespace Itinero.Transit.Tests.Core.Data
         {
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
-            wr0.AddOrUpdateStop(new Stop("b", 4.2, 4.100001));
+            wr0.AddOrUpdateStop(new Stop("b", (4.2, 4.100001)));
             wr0.Close();
 
 
@@ -43,7 +43,7 @@ namespace Itinero.Transit.Tests.Core.Data
         {
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
-            wr0.AddOrUpdateStop(new Stop("a", 4.0001, 4.100001));
+            wr0.AddOrUpdateStop(new Stop("a", (4.0001, 4.100001)));
             wr0.Close();
 
 
@@ -89,18 +89,18 @@ namespace Itinero.Transit.Tests.Core.Data
         {
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
-            wr0.AddOrUpdateStop(new Stop("a", 4.0001, 4.100001));
+            wr0.AddOrUpdateStop(new Stop("a", (4.0001, 4.100001)));
             wr0.Close();
 
 
             var tdb1 = new TransitDb(1);
             var wr1 = tdb1.GetWriter();
-            wr1.AddOrUpdateStop(new Stop("b", 4.1, 4.1));
+            wr1.AddOrUpdateStop(new Stop("b", (4.1, 4.1)));
             wr1.Close();
 
             var tdb2 = new TransitDb(2);
             var wr2 = tdb2.GetWriter();
-            wr2.AddOrUpdateStop(new Stop("c", 4.2, 4.2));
+            wr2.AddOrUpdateStop(new Stop("c", (4.2, 4.2)));
             wr2.Close();
 
 
@@ -130,13 +130,13 @@ namespace Itinero.Transit.Tests.Core.Data
         {
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
-            wr0.AddOrUpdateStop(new Stop("a", 4.0001, 4.100001));
+            wr0.AddOrUpdateStop(new Stop("a", (4.0001, 4.100001)));
             wr0.Close();
 
 
             var tdb1 = new TransitDb(1);
             var wr1 = tdb1.GetWriter();
-            wr1.AddOrUpdateStop(new Stop("b", 4.1, 4.1));
+            wr1.AddOrUpdateStop(new Stop("b", (4.1, 4.1)));
             wr1.Close();
 
 
@@ -157,18 +157,18 @@ namespace Itinero.Transit.Tests.Core.Data
         {
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
-            wr0.AddOrUpdateStop(new Stop("a", 4.0001, 4.100001));
+            wr0.AddOrUpdateStop(new Stop("a", (4.0001, 4.100001)));
             wr0.Close();
 
 
             var tdb1 = new TransitDb(1);
             var wr1 = tdb1.GetWriter();
-            wr1.AddOrUpdateStop(new Stop("b", 4.1, 4.1));
+            wr1.AddOrUpdateStop(new Stop("b", (4.1, 4.1)));
             wr1.Close();
 
             var tdb2 = new TransitDb(2);
             var wr2 = tdb2.GetWriter();
-            wr2.AddOrUpdateStop(new Stop("c", 4.2, 4.2));
+            wr2.AddOrUpdateStop(new Stop("c", (4.2, 4.2)));
             wr2.Close();
 
 
@@ -189,18 +189,18 @@ namespace Itinero.Transit.Tests.Core.Data
         {
             var tdb0 = new TransitDb(5);
             var wr0 = tdb0.GetWriter();
-            wr0.AddOrUpdateStop(new Stop("a", 4.0001, 4.100001));
+            wr0.AddOrUpdateStop(new Stop("a", (4.0001, 4.100001)));
             wr0.Close();
 
 
             var tdb1 = new TransitDb(8);
             var wr1 = tdb1.GetWriter();
-            wr1.AddOrUpdateStop(new Stop("b", 4.1, 4.1));
+            wr1.AddOrUpdateStop(new Stop("b", (4.1, 4.1)));
             wr1.Close();
 
             var tdb2 = new TransitDb(3);
             var wr2 = tdb2.GetWriter();
-            wr2.AddOrUpdateStop(new Stop("c", 4.2, 4.2));
+            wr2.AddOrUpdateStop(new Stop("c", (4.2, 4.2)));
             wr2.Close();
 
 
@@ -220,18 +220,18 @@ namespace Itinero.Transit.Tests.Core.Data
         {
             var tdb0 = new TransitDb(5);
             var wr0 = tdb0.GetWriter();
-            wr0.AddOrUpdateStop(new Stop("a", 4.0001, 4.100001));
+            wr0.AddOrUpdateStop(new Stop("a", (4.0001, 4.100001)));
             wr0.Close();
 
 
             var tdb1 = new TransitDb(8);
             var wr1 = tdb1.GetWriter();
-            wr1.AddOrUpdateStop(new Stop("b", 4.1, 4.1));
+            wr1.AddOrUpdateStop(new Stop("b", (4.1, 4.1)));
             wr1.Close();
 
             var tdb2 = new TransitDb(3);
             var wr2 = tdb2.GetWriter();
-            wr2.AddOrUpdateStop(new Stop("c", 4.2, 4.2));
+            wr2.AddOrUpdateStop(new Stop("c", (4.2, 4.2)));
             wr2.Close();
 
 
@@ -255,7 +255,7 @@ namespace Itinero.Transit.Tests.Core.Data
             var tdb5 = new TransitDb(5);
 
             var wr = tdb5.GetWriter();
-            var realStop = wr.AddOrUpdateStop(new Stop("stop5", 6.86, 51.684));
+            var realStop = wr.AddOrUpdateStop(new Stop("stop5", (6.86, 51.684)));
             wr.Close();
 
             var tdb10 = new TransitDb(10);
@@ -275,18 +275,18 @@ namespace Itinero.Transit.Tests.Core.Data
         {
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
-            wr0.AddOrUpdateStop(new Stop("a", 4.0001, 4.100001));
+            wr0.AddOrUpdateStop(new Stop("a", (4.0001, 4.100001)));
             wr0.Close();
 
 
             var tdb1 = new TransitDb(1);
             var wr1 = tdb1.GetWriter();
-            wr1.AddOrUpdateStop(new Stop("b", 4.1, 4.1));
+            wr1.AddOrUpdateStop(new Stop("b", (4.1, 4.1)));
             wr1.Close();
 
             var tdb2 = new TransitDb(2);
             var wr2 = tdb2.GetWriter();
-            wr2.AddOrUpdateStop(new Stop("c", 4.2, 4.2));
+            wr2.AddOrUpdateStop(new Stop("c", (4.2, 4.2)));
             wr2.Close();
 
 

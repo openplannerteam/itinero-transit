@@ -32,8 +32,8 @@ namespace Itinero.Transit.Tests.Core.Data
             var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
 
-            var a = wr.AddOrUpdateStop(new Stop("a", 1, 1));
-            var b = wr.AddOrUpdateStop(new Stop("b", 1, 1));
+            var a = wr.AddOrUpdateStop(new Stop("a", (1, 1)));
+            var b = wr.AddOrUpdateStop(new Stop("b", (1, 1)));
             var c = wr.AddOrUpdateStop(new Stop("c", (1, 1), new Dictionary<string, string>
             {
                 {"name", "c"}

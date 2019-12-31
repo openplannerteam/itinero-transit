@@ -17,9 +17,9 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             var writer = tdb.GetWriter();
 
-            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 0, 0.0));
-            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.1, 1.1));
-            var stop2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/2", 0.5, 0.5));
+            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", (0.0, 0.0)));
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", (0.1, 1.1)));
+            var stop2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/2", (0.5, 0.5)));
             var date = new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc);
 
 
@@ -74,15 +74,15 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         }
 
         [Fact]
-        public void CalculateJourneys_SmallTdb_CancelledConnectionFilter_ExpextsJourneyWithoutCancelledConnections()
+        public void CalculateJourneys_SmallTdb_CancelledConnectionFilter_ExpectsJourneyWithoutCancelledConnections()
         {
             var tdb = new TransitDb(0);
 
             var writer = tdb.GetWriter();
 
-            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 0, 0.0));
-            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.1, 1.1));
-            var stop2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/2", 0.5, 0.5));
+            var stop0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", (0.0, 0.0)));
+            var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", (0.1, 1.1)));
+            var stop2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/2", (0.5, 0.5)));
             var date = new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc);
 
 

@@ -22,8 +22,8 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
 
-            var stop0 = wr.AddOrUpdateStop(new Stop("0", 3.00, 50.00));
-            var stop1 = wr.AddOrUpdateStop(new Stop("1", 3.001, 50.001));
+            var stop0 = wr.AddOrUpdateStop(new Stop("0", (3.00, 50.00)));
+            var stop1 = wr.AddOrUpdateStop(new Stop("1", (3.001, 50.001)));
 
             wr.Close();
 
@@ -82,8 +82,8 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
 
-            var stop0 = wr.AddOrUpdateStop(new Stop("0", 3.00, 50.00));
-            var stop1 = wr.AddOrUpdateStop(new Stop("1", 3.00001, 50.00001));
+            var stop0 = wr.AddOrUpdateStop(new Stop("0", (3.00, 50.00)));
+            var stop1 = wr.AddOrUpdateStop(new Stop("1", (3.00001, 50.00001)));
 
 
             // Note that this connections falls out of the requested window

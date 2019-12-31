@@ -19,8 +19,8 @@ namespace Itinero.Transit.Tests.Core.Data
 
             var wr = tdb.GetWriter();
 
-            var stop0 = wr.AddOrUpdateStop(new Stop("a", 50, 4));
-            var stop1 = wr.AddOrUpdateStop(new Stop("b", 51, 5));
+            var stop0 = wr.AddOrUpdateStop(new Stop("a", (50, 4)));
+            var stop1 = wr.AddOrUpdateStop(new Stop("b", (51, 5)));
             var input = new Connection(
                 "a", stop0, stop1, 12345, 6789, 5, 4, 1,
                 new TripId(1, 5));
@@ -44,8 +44,8 @@ namespace Itinero.Transit.Tests.Core.Data
 
             var wr = tdb.GetWriter();
 
-            var stop0 = wr.AddOrUpdateStop(new Stop("a", 0, 0));
-            var stop1 = wr.AddOrUpdateStop(new Stop("b", 0, 0));
+            var stop0 = wr.AddOrUpdateStop(new Stop("a", (0, 0)));
+            var stop1 = wr.AddOrUpdateStop(new Stop("b", (0, 0)));
 
             wr.AddOrUpdateConnection(new Connection("a", stop0, stop1, 50, 10, 0, 0, 0, new TripId(0, 0)));
             wr.AddOrUpdateConnection(new Connection("b", stop0, stop1, 100, 10, 0, 0, 0, new TripId(0, 0)));
@@ -122,8 +122,8 @@ namespace Itinero.Transit.Tests.Core.Data
 
             var wr = tdb.GetWriter();
 
-            var stop0 = wr.AddOrUpdateStop(new Stop("stop0", 0, 0));
-            var stop1 = wr.AddOrUpdateStop(new Stop("stop1", 0, 0));
+            var stop0 = wr.AddOrUpdateStop(new Stop("stop0", (0, 0)));
+            var stop1 = wr.AddOrUpdateStop(new Stop("stop1", (0, 0)));
 
             wr.AddOrUpdateConnection(new Connection("a", stop0, stop1, d - 59, 1, 0, 0, 0, new TripId(0, 0)));
             wr.AddOrUpdateConnection(new Connection("a0", stop0, stop1, d - 59, 2, 0, 0, 0, new TripId(0, 0)));
@@ -159,8 +159,8 @@ namespace Itinero.Transit.Tests.Core.Data
 
             var wr = tdb.GetWriter();
 
-            var stop0 = wr.AddOrUpdateStop(new Stop("stop0", 0, 0));
-            var stop1 = wr.AddOrUpdateStop(new Stop("stop1", 0, 0));
+            var stop0 = wr.AddOrUpdateStop(new Stop("stop0", (0, 0)));
+            var stop1 = wr.AddOrUpdateStop(new Stop("stop1", (0, 0)));
 
             wr.AddOrUpdateConnection(new Connection("a", stop0, stop1, d - 59, 1, 0, 0, 0, new TripId(0, 0)));
             wr.AddOrUpdateConnection(new Connection("a0", stop0, stop1, d - 59, 2, 0, 0, 0, new TripId(0, 0)));
@@ -199,8 +199,8 @@ namespace Itinero.Transit.Tests.Core.Data
             var wr = tdb.GetWriter();
             var wr1 = tdb1.GetWriter();
 
-            var stop0 = wr.AddOrUpdateStop(new Stop("a", 0, 0));
-            var stop1 = wr.AddOrUpdateStop(new Stop("b", 0, 0));
+            var stop0 = wr.AddOrUpdateStop(new Stop("a", (0, 0)));
+            var stop1 = wr.AddOrUpdateStop(new Stop("b", (0, 0)));
 
             wr.AddOrUpdateConnection(new Connection("a", stop0, stop1, d - 59, 1, 0, 0, 0, new TripId(0, 0)));
             wr1.AddOrUpdateConnection(new Connection("a0", stop0, stop1, d - 59, 2, 0, 0, 0, new TripId(0, 0)));
@@ -362,8 +362,8 @@ namespace Itinero.Transit.Tests.Core.Data
 
             var wr = tdb.GetWriter();
 
-            var stop0 = wr.AddOrUpdateStop(new Stop("a", 0, 0));
-            var stop1 = wr.AddOrUpdateStop(new Stop("b", 0, 0));
+            var stop0 = wr.AddOrUpdateStop(new Stop("a", (0, 0)));
+            var stop1 = wr.AddOrUpdateStop(new Stop("b", (0, 0)));
 
             for (uint i = 0; i < 100000; i++)
             {

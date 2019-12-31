@@ -17,12 +17,12 @@ namespace Itinero.Transit.Tests
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            stop0 =  writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", 0, 0.0));
-            stop1 =  writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", 0.1, 1.1));
-            stop2 =  writer.AddOrUpdateStop(new Stop("https://example.com/stops/2", 0.5, 0.5));
-            stop3 =  writer.AddOrUpdateStop(new Stop("https://example.com/stops/3", 1.5, 0.5));
-            stop10 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/10", 2.5, 0.5));
-            stop11 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/11", 3.5, 0.5));
+            stop0 =  writer.AddOrUpdateStop(new Stop("https://example.com/stops/00", (0.0, 0.0)));
+            stop1 =  writer.AddOrUpdateStop(new Stop("https://example.com/stops/01", (0.1, 1.1)));
+            stop2 =  writer.AddOrUpdateStop(new Stop("https://example.com/stops/02", (0.5, 0.5)));
+            stop3 =  writer.AddOrUpdateStop(new Stop("https://example.com/stops/03", (1.5, 0.5)));
+            stop10 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/10", (2.5, 0.5)));
+            stop11 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/11", (3.5, 0.5)));
 
             writer.AddOrUpdateConnection(new Connection(stop0, stop1,
                 "https://example.com/connections/0",

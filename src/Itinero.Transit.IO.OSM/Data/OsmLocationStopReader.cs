@@ -104,7 +104,7 @@ namespace Itinero.Transit.IO.OSM.Data
             var globalId = $"https://www.openstreetmap.org/#map=19/{latRounded}/{lonRounded}";
 
 
-            return new Stop(globalId, latRounded, lonRounded);
+            return new Stop(globalId, (lonRounded, latRounded));
         }
 
         public bool TryGet(StopId id, out Stop t)

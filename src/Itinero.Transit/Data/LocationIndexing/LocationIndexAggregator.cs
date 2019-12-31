@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
@@ -19,24 +18,11 @@ namespace Itinero.Transit.Data.LocationIndexing
            return _fallbacks.SelectMany(fb => fb.GetInBox(nw, se));
         }
 
+
         [Pure]
-        public List<T> GetInRange((double lat, double lon) c, uint maxDistanceInMeter)
+        public List<T> GetInRange((double lon, double lat) c, double maxDistanceInMeter)
         {
             return _fallbacks.SelectMany(fallback => fallback.GetInRange(c, maxDistanceInMeter)).ToList();
-        }
-
-        public (T, double distance) GetClosest((double lat, double lon) c, uint maxDistance)
-        {
-            T t = default(T);
-            double distance = maxDistance;
-            foreach (var fb in _fallbacks)
-            {
-                var (tfound, d) = fb.GetClosest(c, distance);
-                if (d < distance)
-                {
-                    
-                }
-            }
         }
     }
 }

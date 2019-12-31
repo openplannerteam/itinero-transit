@@ -134,7 +134,7 @@ namespace Itinero.Transit.Data.Aggregators
         }
 
 
-        private bool _initedForMovePrevious = false;
+        private bool _initedForMovePrevious;
 
         public bool MovePrevious()
         {

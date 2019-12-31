@@ -23,7 +23,7 @@ namespace Itinero.Transit.Data.LocationIndexing
         }
 
         [Pure]
-        public List<T> GetInRange((double lat, double lon) c, double maxDistanceInMeter)
+        public List<T> GetInRange((double lon, double lat) c, double maxDistanceInMeter)
         {
             var key = (c, (uint) (maxDistanceInMeter+1));
             if (_cache.TryGetValue(key, out var cached))
@@ -34,11 +34,6 @@ namespace Itinero.Transit.Data.LocationIndexing
             var data = _fallback.GetInRange(c, maxDistanceInMeter);
             _cache[key] = data;
             return data;
-        }
-
-        public (T, double distance) GetClosest((double lat, double lon) c, double maxDistance)
-        {
-            return _fallback.GetClosest(c, maxDistance);
         }
     }
 }

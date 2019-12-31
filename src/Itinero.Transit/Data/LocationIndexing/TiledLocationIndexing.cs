@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Itinero.Transit.Utils;
@@ -20,8 +19,6 @@ namespace Itinero.Transit.Data.LocationIndexing
 
         private readonly Dictionary<(int x, int y), List<T>>
             _dataPerTile = new Dictionary<(int x, int y), List<T>>();
-
-        private readonly IEnumerable<T> _empty = new T[0];
 
         public TiledLocationIndexing(uint zoomLevel = 14)
         {
@@ -51,10 +48,8 @@ namespace Itinero.Transit.Data.LocationIndexing
                     var y = kv.Key.y;
                     return (firstX <= x && x <= lastX && firstY <= y && y <= lastY);
                 }).SelectMany(kv => kv.Value);
-
         }
 
-        
 
         /// <summary>
         /// Gets all data which are in range of the given coordinate.
@@ -62,65 +57,63 @@ namespace Itinero.Transit.Data.LocationIndexing
         /// </summary>
         /// <returns></returns>
         [Pure]
-        public List<T> GetInRange((double lat, double lon) c, double maxDistanceInMeter)
+        public List<T> GetInRange((double lon, double lat) c, double maxDistanceInMeter)
         {
             var result = new List<T>();
 
             // First, lets figure out the bounding box
 
             var centerTile = DistanceEstimate.Wgs84ToTileNumbers(c, ZoomLevel);
-            var nextTile = (centerTile.x + 1, centerTile.y + 1);
-            
-            var centerXY = DistanceEstimate.NorthWestCoordinateOfTile(centerTile, ZoomLevel);
-            var se = DistanceEstimate.NorthWestCoordinateOfTile(nextTile, ZoomLevel);
+            var centerTileNw = DistanceEstimate.NorthWestCoordinateOfTile(centerTile, ZoomLevel);
+            var (width, height) = DistanceEstimate.SizeOf(centerTile, ZoomLevel);
 
-            
-            
-            var (firstX, firstY) = DistanceEstimate.Wgs84ToTileNumbers(nw, ZoomLevel);
-            var (lastX, lastY) = DistanceEstimate.Wgs84ToTileNumbers(se, ZoomLevel);
-            var tiles = _dataPerTile
-                .Where(kv =>
-                {
-                    var x = kv.Key.x;
-                    var y = kv.Key.y;
-                   return(firstX <= x && x <= lastX && firstY <= y && y <= lastY))
-                });
-            
-            
+            var diffX = (uint) Math.Ceiling(maxDistanceInMeter / width / 2);
+            var diffY = (uint) Math.Ceiling(maxDistanceInMeter / height / 2);
 
-            // We will need to run from (x - xDiff) to (x + xDiff) to catch all the values
-            for (var x = centerTile.x - xDiff; x < centerTile.x + xDiff; x++)
+            var firstX = centerTile.x - diffX;
+            var lastX = centerTile.x + diffY;
+
+            var firstY = centerTile.y - diffY;
+            var lastY = centerTile.y + diffY;
+
+
+            foreach (var kv in _dataPerTile)
             {
-                for (var y = centerTile.y - yDiff; y < centerTile.y + yDiff; y++)
+                var (x, y) = kv.Key;
+                var data = kv.Value;
+
+                if (!(firstX <= x && x <= lastX && firstY <= y && y <= lastY))
                 {
-                    var currentTile = (x, y);
-                    // Might this tile have values in range? For this, we determine the furthest away corner
-
-                    var furthestX = x;
-                    if (x > centerTile.x)
-                    {
-                        furthestX++;
-                    }
-
-                    var furthestY = y;
-                    if (y < centerTile.y)
-                    {
-                        y--;
-                    }
-
-                    var furthestCornerCoordinate =
-                        DistanceEstimate.NorthWestCoordinateOfTile((furthestX, furthestY), ZoomLevel);
-                    var furthestDistance = DistanceEstimate.DistanceEstimateInMeter(c, furthestCornerCoordinate);
-                    if (furthestDistance > maxDistanceInMeter)
-                    {
-                        continue;
-                    }
-
-                    if (_dataPerTile.TryGetValue(currentTile, out var data))
-                    {
-                        result.AddRange(data);
-                    }
+                    // Out of the bounding box
+                    continue;
                 }
+
+                var closestX = x;
+                if (x < centerTile.x)
+                {
+                    // We are on the left of the centertile, the closest side is one tile to the right
+                    // x1 < x2 ==> lon1 < lon2
+                    
+                    closestX++;
+                }
+
+                var closestY = y;
+                if (y < centerTile.y)
+                {
+                    // We are above the center tile, the closest side is one tile beneath
+                    // y1 < y2 ==> lat1 > lat2
+                    closestY++;
+                }
+
+                var closestCornerCoordinate =
+                    DistanceEstimate.NorthWestCoordinateOfTile((closestX, closestY), ZoomLevel);
+                var closestDistance = DistanceEstimate.DistanceEstimateInMeter(closestCornerCoordinate, centerTileNw);
+                if (closestDistance > maxDistanceInMeter)
+                {
+                    continue;
+                }
+
+                result.AddRange(data);
             }
 
             return result;

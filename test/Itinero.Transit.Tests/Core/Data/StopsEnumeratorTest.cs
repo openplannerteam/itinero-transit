@@ -26,7 +26,7 @@ namespace Itinero.Transit.Tests.Core.Data
         {
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
-            wr0.AddOrUpdateStop(new Stop("a", 4.0001, 4.100001));
+            wr0.AddOrUpdateStop(new Stop("a", (4.0001, 4.100001)));
             wr0.Close();
 
             var stopsDb = tdb0.Latest.StopsDb;
@@ -41,8 +41,8 @@ namespace Itinero.Transit.Tests.Core.Data
         {
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
-            wr0.AddOrUpdateStop(new Stop("a", 4.0001, 4.100001));
-            wr0.AddOrUpdateStop(new Stop("b", 4.1, 4.1));
+            wr0.AddOrUpdateStop(new Stop("a", (4.0001, 4.100001)));
+            wr0.AddOrUpdateStop(new Stop("b", (4.1, 4.1)));
             wr0.Close();
 
 
@@ -60,9 +60,9 @@ namespace Itinero.Transit.Tests.Core.Data
         {
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
-            wr0.AddOrUpdateStop(new Stop("a", 4.0001, 4.100001));
-            wr0.AddOrUpdateStop(new Stop("b", 4.1, 4.1));
-            wr0.AddOrUpdateStop(new Stop("c", 4.5, 4.1));
+            wr0.AddOrUpdateStop(new Stop("a", (4.0001, 4.100001)));
+            wr0.AddOrUpdateStop(new Stop("b", (4.1, 4.1)));
+            wr0.AddOrUpdateStop(new Stop("c", (4.5, 4.1)));
             wr0.Close();
 
             var stopsDb = tdb0.Latest.StopsDb;
