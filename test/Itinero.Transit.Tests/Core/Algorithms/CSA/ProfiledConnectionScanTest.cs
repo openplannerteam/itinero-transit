@@ -256,7 +256,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             var settings = calculator.GetScanSettings();
 
-            calculator.StopsDb.SearchId(calculator.From[0].GlobalId, out var fromId);
+            calculator.StopsDb.TryGetId(calculator.From[0].GlobalId, out var fromId);
             settings.MetricGuesser = new SimpleMetricGuesser<TransferMetric>(fromId);
 
             var pcs = new ProfiledConnectionScan<TransferMetric>(calculator.GetScanSettings());
@@ -559,7 +559,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             calc.CheckAll();
             var settings = calc.GetScanSettings();
 
-            settings.Stops.SearchId(settings.DepartureStop[0].GlobalId, out var depId);
+            settings.Stops.TryGetId(settings.DepartureStop[0].GlobalId, out var depId);
             settings.MetricGuesser = new SimpleMetricGuesser<TransferMetric>(depId);
 
             var pcs = new ProfiledConnectionScan<TransferMetric>(settings);
@@ -787,7 +787,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             calc.CheckAll();
             var settings = calc.GetScanSettings();
-            settings.Stops.SearchId(settings.DepartureStop[0].GlobalId, out var depId);
+            settings.Stops.TryGetId(settings.DepartureStop[0].GlobalId, out var depId);
 
             settings.MetricGuesser = new SimpleMetricGuesser<TransferMetric>(depId);
 
@@ -896,7 +896,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             calc.CheckAll();
             settings = calc.GetScanSettings();
-            settings.Stops.SearchId(settings.DepartureStop[0].GlobalId, out var depId);
+            settings.Stops.TryGetId(settings.DepartureStop[0].GlobalId, out var depId);
 
             settings.MetricGuesser =
                 new SimpleMetricGuesser<TransferMetric>(depId);

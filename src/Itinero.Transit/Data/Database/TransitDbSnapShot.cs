@@ -1,6 +1,8 @@
 using System;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using Itinero.Transit.Data.Core;
+using Itinero.Transit.Data.Serialization;
 using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Data
@@ -50,10 +52,12 @@ namespace Itinero.Transit.Data
             return ConnectionsDb.LatestDate.FromUnixTime();
         }
         
-        public uint WriteTo(FileStream stream)
+        public void WriteTo(FileStream stream)
         {
-            // TODO FIXME IMPLEMENT ME
-            throw new NotImplementedException();
+            var formatter = new BinaryFormatter();
+            stream.Serialize(StopsDb, formatter);
+            stream.Serialize(TripsDb, formatter);
+            stream.Serialize(ConnectionsDb, formatter);
         }
     }
 }

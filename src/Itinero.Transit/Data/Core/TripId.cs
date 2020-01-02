@@ -5,6 +5,7 @@ using Itinero.Transit.OtherMode;
 
 namespace Itinero.Transit.Data.Core
 {
+    [Serializable]
     public struct TripId : InternalId
     {
         public uint DatabaseId { get; }

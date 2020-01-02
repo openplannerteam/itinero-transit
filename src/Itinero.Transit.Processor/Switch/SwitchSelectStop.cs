@@ -44,7 +44,7 @@ namespace Itinero.Transit.Processor.Switch
 
             foreach (var id in ids)
             {
-                if (!old.Latest.StopsDb.SearchId(id, out _))
+                if (!old.Latest.StopsDb.TryGetId(id, out _))
                 {
                     throw new ArgumentException($"The global id {id} was not found");
                 }

@@ -87,7 +87,7 @@ namespace Itinero.Transit.Data.Simple
             return Data[Data.Count - 1];
         }
 
-        public bool SearchId(string globalId, out TId id)
+        public bool TryGetId(string globalId, out TId id)
         {
             id = _idFactory;
             if (!_globalIdMapping.TryGetValue(globalId, out var index)) return false;

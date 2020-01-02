@@ -76,7 +76,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             _userTargetLocations = settings.TargetStop.Select(arrival =>
                 {
-                    _stops.SearchId(arrival.GlobalId, out var arrivalId);
+                    _stops.TryGetId(arrival.GlobalId, out var arrivalId);
                     return arrivalId;
                 }).ToList();
             _journeyFilter = settings.Profile.JourneyFilter;
@@ -86,7 +86,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             foreach (var loc in settings.DepartureStop)
             {
-                _stops.SearchId(loc.GlobalId, out var locId);
+                _stops.TryGetId(loc.GlobalId, out var locId);
                 var journey = new Journey<T>(
                     locId, settings.EarliestDeparture.ToUnixTime(), settings.Profile.MetricFactory,
                     Journey<T>.EarliestArrivalScanJourney);

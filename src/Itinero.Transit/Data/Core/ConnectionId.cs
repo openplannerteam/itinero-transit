@@ -1,5 +1,8 @@
+using System;
+
 namespace Itinero.Transit.Data.Core
 {
+    [Serializable]
     public struct ConnectionId : InternalId
     {
         public static ConnectionId Invalid = new ConnectionId(uint.MaxValue, uint.MaxValue);

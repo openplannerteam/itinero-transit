@@ -13,7 +13,7 @@ namespace Itinero.Transit.Tests.Dummies
     {
         public IEnumerator<Stop> GetEnumerator()
         {
-            throw new NotImplementedException();
+            throw new Exception();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -27,32 +27,31 @@ namespace Itinero.Transit.Tests.Dummies
             return true;
         }
 
-        public bool SearchId(string globalId, out StopId id)
+        public bool TryGetId(string globalId, out StopId id)
         {
-            throw new NotImplementedException();
+            throw new Exception();
         }
 
         public IEnumerable<uint> DatabaseIds { get; }
 
         public IStopsDb Clone()
         {
-            throw new NotImplementedException();
+            throw new Exception();
         }
 
         public ILocationIndexing<Stop> LocationIndex { get; }
         public void PostProcess(uint zoomLevel)
         {
-            throw new NotImplementedException();
+            throw new Exception();
         }
 
         public List<Stop> GetInRange((double lon, double lat) c, uint maxDistanceInMeter)
         {
-            throw new NotImplementedException();
+            throw new Exception();
         }
 
         public void PostProcess()
         {
-            throw new NotImplementedException();
         }
     }
 }

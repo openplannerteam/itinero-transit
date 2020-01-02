@@ -29,7 +29,7 @@ namespace Itinero.Transit.Tests.Functional.IO.LC.Synchronization
             using (var stream = File.OpenRead(path))
             {
                 // can we read this stuff again?
-                var read = TransitDb.ReadFrom(stream, 0);
+                var read = new TransitDb(0, stream);
                 NotNull(read);
             }
 

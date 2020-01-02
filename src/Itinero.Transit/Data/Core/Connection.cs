@@ -6,6 +6,7 @@ using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Data.Core
 {
+    [Serializable]
     public class Connection : IGlobalId
     {
         public const ushort ModeGetOnOnly = 1;

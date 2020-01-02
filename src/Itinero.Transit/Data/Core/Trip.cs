@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Itinero.Transit.Data.Core
@@ -6,6 +7,7 @@ namespace Itinero.Transit.Data.Core
     /// The class representing a single trip and related attributes.
     /// This can be rewritten and should not be shared amongst threads
     /// </summary>
+    [Serializable]
     public class Trip : IGlobalId
     {
         public string GlobalId { get; }

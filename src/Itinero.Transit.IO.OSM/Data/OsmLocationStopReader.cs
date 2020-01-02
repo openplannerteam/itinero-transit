@@ -128,7 +128,7 @@ namespace Itinero.Transit.IO.OSM.Data
 
         public StopId SearchId(string globalId)
         {
-            if (!SearchId(globalId, out var id))
+            if (!TryGetId(globalId, out var id))
             {
                 throw new ArgumentException("Could not parse the globalId");
             }
@@ -154,7 +154,7 @@ namespace Itinero.Transit.IO.OSM.Data
             return true;
         }
 
-        public bool SearchId(string globalId, out StopId id)
+        public bool TryGetId(string globalId, out StopId id)
         {
             var couldParse = ParseOsmUrl.ParseUrl(Precision).TryParseFull(globalId, out var c, out _);
             if (!couldParse)

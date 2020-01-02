@@ -39,9 +39,9 @@ namespace Itinero.Transit.Data.Aggregators
             return _data.TryGet(id, out t);
         }
 
-        public bool SearchId(string globalId, out StopId id)
+        public bool TryGetId(string globalId, out StopId id)
         {
-            return _data.SearchId(globalId, out id);
+            return _data.TryGetId(globalId, out id);
         }
 
         public List<Stop> GetInRange((double lon, double lat) c, uint maxDistanceInMeter)

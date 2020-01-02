@@ -61,8 +61,8 @@ namespace Itinero.Transit.Processor.Switch
 
             using (var stream = File.OpenWrite(fileName))
             {
-                var bytesWritten = tdb.Latest.WriteTo(stream);
-                Console.WriteLine($"Written {fileName}: {bytesWritten} bytes written, transitDb is valid from {tdb.Latest.ConnectionsDb.EarliestDate.FromUnixTime():s} till {tdb.Latest.ConnectionsDb.LatestDate.FromUnixTime():s} ");
+                tdb.Latest.WriteTo(stream);
+                Console.WriteLine($"Written {fileName}, transitDb is valid from {tdb.Latest.ConnectionsDb.EarliestDate.FromUnixTime():s} till {tdb.Latest.ConnectionsDb.LatestDate.FromUnixTime():s} ");
             }
         }
     }

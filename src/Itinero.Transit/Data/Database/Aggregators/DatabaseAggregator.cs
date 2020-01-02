@@ -66,11 +66,11 @@ namespace Itinero.Transit.Data.Aggregators
             return values;
         }
 
-        public bool SearchId(string globalId, out TId id)
+        public bool TryGetId(string globalId, out TId id)
         {
             foreach (var db in _dbs)
             {
-                if (db.SearchId(globalId, out id))
+                if (db.TryGetId(globalId, out id))
                 {
                     return true;
                 }

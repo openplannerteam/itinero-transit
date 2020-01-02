@@ -424,7 +424,7 @@ namespace Itinero.Transit
 
         public IWithSingleLocation<T> SelectSingleStop(string stop)
         {
-            if (!StopsDb.SearchId(stop, out var id))
+            if (!StopsDb.TryGetId(stop, out var id))
             {
                 throw new ArgumentException($"Stop {stop} was not found");
             }

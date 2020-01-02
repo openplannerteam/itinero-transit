@@ -23,6 +23,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Serialization;
 
 namespace Itinero.Transit.Processor.Switch
 {
@@ -59,7 +60,11 @@ namespace Itinero.Transit.Processor.Switch
 
             using (var stream = File.OpenRead(fileName))
             {
-                return new TransitDb( 0, stream);
+                var tdb = new TransitDb(0);
+                var wr = tdb.GetWriter();
+                wr.ReadFrom(stream);
+                wr.Close();
+                return tdb;
             }
         }
     }

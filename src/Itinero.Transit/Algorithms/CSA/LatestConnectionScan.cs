@@ -89,7 +89,7 @@ namespace Itinero.Transit.Algorithms.CSA
             _transferPolicy = settings.Profile.InternalTransferGenerator;
             _userDepartureLocation = settings.DepartureStop.Select(departure =>
                 {
-                    _stopsDb.SearchId(departure.GlobalId, out var departureId);
+                    _stopsDb.TryGetId(departure.GlobalId, out var departureId);
                     return departureId;
                 }).ToList();
             _walkPolicy = settings.Profile.WalksGenerator;
@@ -97,7 +97,7 @@ namespace Itinero.Transit.Algorithms.CSA
 
             foreach (var loc in settings.TargetStop)
             {
-                _stopsDb.SearchId(loc.GlobalId, out var locId);
+                _stopsDb.TryGetId(loc.GlobalId, out var locId);
                 var journey = new Journey<T>(locId, settings.LastArrival.ToUnixTime(),
                     settings.Profile.MetricFactory,
                     Journey<T>.LatestArrivalScanJourney);

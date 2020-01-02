@@ -123,14 +123,14 @@ namespace Itinero.Transit.Algorithms.CSA
             foreach (var target in settings.TargetStop)
             {
                 _targetLocations.Add(target);
-                _stops.SearchId(target.GlobalId, out var targetId);
+                _stops.TryGetId(target.GlobalId, out var targetId);
                 _targetLocationsIds.Add(targetId);
             }
 
             _departureLocations = new HashSet<StopId>();
             foreach (var target in settings.DepartureStop)
             {
-                _stops.SearchId(target.GlobalId, out var targetId);
+                _stops.TryGetId(target.GlobalId, out var targetId);
 
                 _departureLocations.Add(targetId);
                 // We already create a frontier for each of the destinations...
@@ -387,7 +387,7 @@ namespace Itinero.Transit.Algorithms.CSA
                 return null;
             }
 
-            _stops.SearchId(fastestTarget.GlobalId, out var fastestTargetId);
+            _stops.TryGetId(fastestTarget.GlobalId, out var fastestTargetId);
             var j =
                     // The 'genesis' indicating when we arrive ... 
                     new Journey<T>

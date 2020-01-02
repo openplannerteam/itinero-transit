@@ -1,8 +1,10 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 
 namespace Itinero.Transit.Data.Core
 {
+    [Serializable]
     public struct StopId : InternalId
     {
         public static StopId Invalid = new StopId(uint.MaxValue, ulong.MaxValue);

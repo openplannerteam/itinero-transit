@@ -73,9 +73,9 @@ namespace Itinero.Transit.Data.Aggregators
             return _data.TryGet(id, out t);
         }
 
-        public bool SearchId(string globalId, out ConnectionId id)
+        public bool TryGetId(string globalId, out ConnectionId id)
         {
-            return _data.SearchId(globalId, out id);
+            return _data.TryGetId(globalId, out id);
         }
 
         public IEnumerable<uint> DatabaseIds => _data.DatabaseIds;

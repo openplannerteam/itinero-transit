@@ -50,7 +50,7 @@ namespace Itinero.Transit.OtherMode
                 }
 
                 // We come from the journey, and walks towards the reachable location
-                stops.SearchId(reachableLocation.GlobalId, out var reachableLocationId);
+                stops.TryGetId(reachableLocation.GlobalId, out var reachableLocationId);
 
                 var walkingJourney =
                     journey.ChainSpecial(Journey<T>.OTHERMODE, journey.Time + time, reachableLocationId,
@@ -113,7 +113,7 @@ namespace Itinero.Transit.OtherMode
                     // The new 'arrive before' time is a little sooner - the time needed to walk
                     // The new 'arrive at to continue' is where we could walk from 
 
-                    stops.SearchId(from.GlobalId, out var fromId);
+                    stops.TryGetId(from.GlobalId, out var fromId);
                     var walkingJourney =
                         j.ChainSpecial(
                             Journey<T>.OTHERMODE,

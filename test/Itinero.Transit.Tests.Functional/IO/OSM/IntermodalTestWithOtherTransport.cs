@@ -26,11 +26,9 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
         protected override void Execute()
         {
             // We create a router from the TDB and amend it with an OSM-Locations-Reader to decode OSM-coordinates
-            var reader = _tdb.Latest.StopsDb.GetReader().AddOsmReader();
-            reader.MoveTo(Input.start);
-            var startStopId = reader.Id;
-            reader.MoveTo(Input.destination);
-            var destinationStopId = reader.Id;
+            var reader = _tdb.Latest.StopsDb.AddOsmReader();
+            var startStopId = reader.GetId(Input.start);
+            var destinationStopId = reader.GetId(Input.destination);
 
             var profile = _profile(Input.maxDistance, startStopId, destinationStopId);
             var calculator =

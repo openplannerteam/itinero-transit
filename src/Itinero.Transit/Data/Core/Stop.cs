@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
@@ -6,6 +7,7 @@ namespace Itinero.Transit.Data.Core
     /// <summary>
     /// Representation of a stop.
     /// </summary>
+    [Serializable]
     public class Stop : IGlobalId
     {
         /// <summary>
@@ -28,8 +30,8 @@ namespace Itinero.Transit.Data.Core
         /// </summary>
         public Dictionary<string, string> Attributes { get; }
 
-        private static Dictionary<string, string>  _empty = new Dictionary<string, string>();
-        
+        private static Dictionary<string, string> _empty = new Dictionary<string, string>();
+
         public Stop(Stop stop)
         {
             GlobalId = stop.GlobalId;

@@ -24,7 +24,6 @@ namespace Itinero.Transit.Data
         /// <param name="localId"></param>
         /// <returns></returns>
         InternalId Create(uint databaseId, uint localId);
-
     }
 
     public interface IGlobalId
@@ -36,8 +35,7 @@ namespace Itinero.Transit.Data
     }
 
     public interface IDatabase<TId, T> :
-        IDatabaseReader<TId, T>,
-        IDatabaseSerializer
+        IDatabaseReader<TId, T>
         where TId : struct, InternalId
         where T : IGlobalId
     {
@@ -66,13 +64,12 @@ namespace Itinero.Transit.Data
         /// Searches if this globalId is present in this database.
         /// </summary>
         /// <returns>true iff found</returns>
-        bool SearchId(string globalId, out TId id);
-        
+        bool TryGetId(string globalId, out TId id);
+
         /// <summary>
         /// Identifies which database-IDS this database can handle
         /// </summary>
         IEnumerable<uint> DatabaseIds { get; }
-
     }
 
     public static class DatabaseExtensions
@@ -80,7 +77,8 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// Gets the element, throws an exception if the id is not found
         /// </summary>
-        public static T Get<TId, T>(this IDatabaseReader<TId, T> db, TId id) where TId : struct, InternalId where T : IGlobalId
+        public static T Get<TId, T>(this IDatabaseReader<TId, T> db, TId id)
+            where TId : struct, InternalId where T : IGlobalId
         {
             if (!db.TryGet(id, out var t))
             {
@@ -89,12 +87,13 @@ namespace Itinero.Transit.Data
 
             return t;
         }
-        
-        
+
+
         /// <summary>
         /// Gets the element, throws an exception if the id is not found
         /// </summary>
-        public static T Get<TId, T>(this IDatabaseReader<TId, T> db, TId id, string notFoundMessage) where TId : struct, InternalId where T : IGlobalId
+        public static T Get<TId, T>(this IDatabaseReader<TId, T> db, TId id, string notFoundMessage)
+            where TId : struct, InternalId where T : IGlobalId
         {
             if (!db.TryGet(id, out var t))
             {
@@ -104,30 +103,48 @@ namespace Itinero.Transit.Data
             return t;
         }
 
-        public static bool TryGet<TId, T>(this IDatabaseReader<TId, T> db, string globalId, out T value) where TId : InternalId, new()
+        public static bool TryGet<TId, T>(this IDatabaseReader<TId, T> db, string globalId, out T value)
+            where TId : InternalId, new()
         {
-            if (!db.SearchId(globalId, out var id))
+            if (!db.TryGetId(globalId, out var id))
             {
                 value = default(T);
                 return false;
             }
 
             return db.TryGet(id, out value);
-
         }
-                
+
         /// <summary>
         /// Gets the element, throws an exception if the id is not found
         /// </summary>
-        public static T Get<TId, T>(this IDatabaseReader<TId, T> db, string globalId, string notFoundMessage = null) where TId : struct, InternalId where T : IGlobalId
+        public static T Get<TId, T>(this IDatabaseReader<TId, T> db, string globalId, string notFoundMessage = null)
+            where TId : struct, InternalId where T : IGlobalId
         {
-            
-            if (!db.SearchId(globalId, out var id))
+            if (!db.TryGetId(globalId, out var id))
             {
                 throw new ArgumentException(notFoundMessage ?? $"GlobalId {globalId} not found");
             }
 
             return db.Get(id);
+        }
+
+        public static TId GetId<TId, T>(this IDatabaseReader<TId, T> db, T t, string notFoundMessage = null)
+            where TId : InternalId, new()
+            where T : IGlobalId
+        {
+            return db.GetId(t.GlobalId, notFoundMessage);
+        }
+        
+        public static TId GetId<TId, T>(this IDatabaseReader<TId, T> db, string globalId, string notFoundMessage = null)
+            where TId : InternalId, new()
+        {
+            if (!db.TryGetId(globalId, out var id))
+            {
+                throw new ArgumentException(notFoundMessage ?? $"GlobalId {globalId} not found");
+            }
+
+            return id;
         }
 
         public static List<T> GetAll<TId, T>(this IDatabaseReader<TId, T> db, List<TId> ids)
@@ -149,9 +166,5 @@ namespace Itinero.Transit.Data
     {
         T Clone();
     }
-
-    public interface IDatabaseSerializer
-    {
-        long WriteTo(Stream stream);
-    }
+    
 }
