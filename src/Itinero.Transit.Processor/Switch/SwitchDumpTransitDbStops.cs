@@ -9,7 +9,7 @@ namespace Itinero.Transit.Processor.Switch
     {
         private static readonly string[] _names = {"--dump-stops"};
 
-        private static string _about = "Writes all stops contained in a transitDB to console";
+        private static string About = "Writes all stops contained in a transitDB to console";
 
 
         private static readonly List<(List<string> args, bool isObligated, string comment, string defaultValue)>
@@ -20,12 +20,12 @@ namespace Itinero.Transit.Processor.Switch
                         .SetDefault("")
                 };
 
-        private const bool _isStable = true;
+        private const bool IsStable = true;
 
 
         public SwitchDumpTransitDbStops
             () :
-            base(_names, _about, _extraParams, _isStable)
+            base(_names, About, _extraParams, IsStable)
         {
         }
 
@@ -34,27 +34,28 @@ namespace Itinero.Transit.Processor.Switch
             var writeTo = arguments["file"];
 
 
-            var stops = tdb.Latest.StopsDb.GetReader();
+            var stops = tdb.Latest.StopsDb;
 
 
             using (var outStream =
                 string.IsNullOrEmpty(writeTo) ? Console.Out : new StreamWriter(File.OpenWrite(writeTo)))
             {
                 var knownAttributes = new List<string>();
-                while (stops.MoveNext())
+
+                foreach (var stop in stops)
                 {
-                    var attributes = stops.Attributes;
-                    foreach (var attribute in attributes)
+                    var attributes = stop.Attributes;
+                    foreach (var (key, _) in attributes)
                     {
-                        if (!knownAttributes.Contains(attribute.Key))
+                        if (!knownAttributes.Contains(key))
                         {
-                            knownAttributes.Add(attribute.Key);
+                            knownAttributes.Add(key);
                         }
                     }
                 }
 
 
-                var header = "globalId,Latitude,Longitude,tileId_internalId";
+                var header = "globalId,Latitude,Longitude,";
                 foreach (var knownAttribute in knownAttributes)
                 {
                     header += "," + knownAttribute;
@@ -62,14 +63,13 @@ namespace Itinero.Transit.Processor.Switch
 
                 outStream.WriteLine(header);
 
-
-                stops = tdb.Latest.StopsDb.GetReader();
-                while (stops.MoveNext())
+                foreach (var stop in stops)
                 {
+                    
                     var value =
-                        $"{stops.GlobalId},{stops.Latitude}, {stops.Longitude},{stops.Id.LocalTileId}_{stops.Id.LocalId}";
+                        $"{stop.GlobalId},{stop.Latitude}, {stop.Longitude}";
 
-                    var attributes = stops.Attributes;
+                    var attributes = stop.Attributes;
                     foreach (var attribute in knownAttributes)
                     {
                         attributes.TryGetValue(attribute, out var val);

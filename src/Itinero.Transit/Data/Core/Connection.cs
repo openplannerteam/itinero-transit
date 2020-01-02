@@ -87,6 +87,11 @@ namespace Itinero.Transit.Data.Core
                 throw new ArgumentException("Trains are not supposed to leave at epoch, this will cause bugs.");
             }
         }
+        
+        public Connection(Connection c): this(c.GlobalId, c.DepartureStop, c.ArrivalStop, c.DepartureTime, c.TravelTime, c.ArrivalDelay, c.DepartureDelay, c.Mode, c.TripId)
+        {
+           
+        }
 
         public Connection(StopId departureStop, StopId arrivalStop, 
             string globalId, DateTime departureTime, int travelTime, ushort departureDelay, ushort arrivalDelay, 

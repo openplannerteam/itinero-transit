@@ -19,7 +19,7 @@ namespace Itinero.Transit.Processor.Validator
         public override string ToString()
         {
             return $"[{Type}]\n" +
-                   $"    {MessageText.Replace("\n","\n    ")}\n" +
+                   $"    {MessageText.Replace("\n", "\n    ")}\n" +
                    $"    > {Connection.ToJson()}\n";
         }
     }
@@ -54,8 +54,8 @@ namespace Itinero.Transit.Processor.Validator
                 {
                     continue;
                 }
-                
-                
+
+
                 i++;
                 Console.WriteLine(msg);
 

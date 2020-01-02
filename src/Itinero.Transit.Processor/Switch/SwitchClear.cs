@@ -8,7 +8,7 @@ namespace Itinero.Transit.Processor.Switch
     {
         private static readonly string[] _names = {"--clear"};
 
-        private static string _about =
+        private static string About =
             "Removes the currently loaded database from memory. This switch is only useful in interactive shell sessions";
 
 
@@ -16,9 +16,9 @@ namespace Itinero.Transit.Processor.Switch
             _extraParams =
                 new List<(List<string> args, bool isObligated, string comment, string defaultValue)>();
 
-        private const bool _isStable =true;
+        private const bool IsStable =true;
 
-        public SwitchClear() : base(_names,_about,_extraParams,_isStable)
+        public SwitchClear() : base(_names,About,_extraParams,IsStable)
         {}
 
 

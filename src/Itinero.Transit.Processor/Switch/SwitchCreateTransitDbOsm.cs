@@ -12,7 +12,7 @@ namespace Itinero.Transit.Processor.Switch
         private static readonly string[] _names =
             {"--create-transit-db-with-open-street-map-relation", "--create-transit-osm", "--ctosm"};
 
-        private static string _about =
+        private static string About =
             "Creates a transit DB based on an OpenStreetMap-relation following the route scheme (or adds it to an already existing db). For all information on Public Transport tagging, refer to [the OSM-Wiki](https://wiki.openstreetmap.org/wiki/Public_transport).n\n" +
             "A timewindow should be specified to indicate what period the transitDB should cover. \n\n" +
             "Of course, the relation itself should be provided. Either:\n\n - Pass the ID of the relation to download it\n - Pass the URL of a relation.xml\n - Pass the filename of a relation.xml\n\n" +
@@ -22,7 +22,7 @@ namespace Itinero.Transit.Processor.Switch
             "        idp --create-transit-osm 9413958";
 
 
-        private const bool _isStable = true;
+        private const bool IsStable = true;
 
         private static readonly List<(List<string> args, bool isObligated, string comment, string defaultValue)>
             _extraParams =
@@ -40,7 +40,7 @@ namespace Itinero.Transit.Processor.Switch
 
 
         public SwitchCreateTransitDbOSM()
-            : base(_names, _about, _extraParams, _isStable)
+            : base(_names, About, _extraParams, IsStable)
         {
         }
 

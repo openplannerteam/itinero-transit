@@ -10,7 +10,7 @@ namespace Itinero.Transit.Processor
     {
         private static readonly string[] _names = {"--shell", "--interactive", "--i"};
 
-        private static string _about =
+        private static string About =
             "Starts an interactive shell where switches can be used as commands";
 
 
@@ -18,9 +18,9 @@ namespace Itinero.Transit.Processor
             _extraParams =
                 new List<(List<string> args, bool isObligated, string comment, string defaultValue)>();
 
-        private const bool _isStable = true;
+        private const bool IsStable = true;
 
-        public Shell() : base(_names, _about, _extraParams, _isStable)
+        public Shell() : base(_names, About, _extraParams, IsStable)
         {
         }
 
@@ -77,8 +77,6 @@ namespace Itinero.Transit.Processor
         {
             var start = DateTime.Now;
 
-            var history = new List<string>();
-            
             using (var inStr = Console.In)
             {
                 while (true)

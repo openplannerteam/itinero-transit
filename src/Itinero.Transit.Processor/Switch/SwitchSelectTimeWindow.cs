@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Core;
 using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Processor.Switch
@@ -10,10 +9,10 @@ namespace Itinero.Transit.Processor.Switch
     {
         private static readonly string[] _names = {"--select-time", "--filter-time"};
 
-        private static string _about =
+        private static string About =
             "Filters the transit-db so that only connections departing in the specified time window are kept. " +
             "This allows to take a small slice out of the transitDB, which can be useful to debug. " +
-            "All locations will be kept.";
+            "Only used locations will be kept.";
 
 
         private static readonly List<(List<string> args, bool isObligated, string comment, string defaultValue)>
@@ -32,19 +31,19 @@ namespace Itinero.Transit.Processor.Switch
                         .SetDefault("false")
                 };
 
-        private const bool _isStable = true;
+        private const bool IsStable = true;
 
 
         public SwitchSelectTimeWindow
             () :
-            base(_names, _about, _extraParams, _isStable)
+            base(_names, About, _extraParams, IsStable)
         {
         }
 
-        public TransitDb Modify(Dictionary<string, string> arguments, TransitDb transitDb)
+        public TransitDb Modify(Dictionary<string, string> arguments, TransitDb old)
         {
-            var start = DateTime.ParseExact(arguments["window-start"], "yyyy-MM-dd_HH:mm:ss", null);
-            start = start.ToUniversalTime();
+            var startDate = DateTime.ParseExact(arguments["window-start"], "yyyy-MM-dd_HH:mm:ss", null);
+            startDate = startDate.ToUniversalTime();
             int duration;
             DateTime endDate;
             try
@@ -55,56 +54,26 @@ namespace Itinero.Transit.Processor.Switch
             {
                 endDate = DateTime.ParseExact(arguments["duration"], "yyyy-MM-dd_HH:mm:ss", null);
                 endDate = endDate.ToUniversalTime();
-                duration = (int) (endDate - start).TotalSeconds;
+                duration = (int) (endDate - startDate).TotalSeconds;
             }
 
             var allowEmpty = bool.Parse(arguments["allow-empty"]);
 
-            endDate = start.AddSeconds(duration);
+            endDate = startDate.AddSeconds(duration);
             var end = endDate.ToUnixTime();
-            var old = transitDb;
 
-            var filtered = new TransitDb(0);
-            var wr = filtered.GetWriter();
+            var start = startDate.ToUnixTime();
 
-
-            var stops = old.Latest.StopsDb.GetReader();
-            while (stops.MoveNext())
-            {
-                wr.AddOrUpdateStop(stops.GlobalId, stops.Longitude, stops.Latitude, stops.Attributes);
-            }
-
-
-            var connsEnumerator = old.Latest.ConnectionsDb.GetDepartureEnumerator();
-            connsEnumerator.MoveTo(start.ToUnixTime());
-            var c = new Connection();
-            var copied = 0;
-
-            var trips = old.Latest.TripsDb;
-
-            while (connsEnumerator.MoveNext() && connsEnumerator.CurrentDateTime <= end)
-            {
-                connsEnumerator.Current(c);
-                var tr = trips.Get(c.TripId);
-                var newTripId = wr.AddOrUpdateTrip(tr.GlobalId);
-                c.TripId = newTripId;
-                wr.AddOrUpdateConnection(c);
-
-                copied++;
-            }
-
-
-            wr.Close();
-
-
-            if (!allowEmpty && copied == 0)
-            {
-                throw new Exception("There are no connections in the given timeframe.");
-            }
-
-
-            Console.WriteLine($"There are {copied} connections in the filtered transitDB");
-            return filtered;
+            return old.Copy(
+                allowEmpty,
+                keepStop: _ => false,
+                keepTrip: _ => false,
+                keepConnection: x =>
+                {
+                   var t= x.c.DepartureTime;
+                   return start <= t && t < end;
+                }
+            );
         }
     }
 }

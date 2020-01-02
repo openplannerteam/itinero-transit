@@ -9,7 +9,7 @@ namespace Itinero.Transit.Processor.Switch
     {
         private static readonly string[] _names = {"--gc","--garbage-collect"};
 
-        private static string _about =
+        private static string About =
             "Run garbage collection. This is for debugging";
 
 
@@ -17,11 +17,11 @@ namespace Itinero.Transit.Processor.Switch
             _extraParams =
                 new List<(List<string> args, bool isObligated, string comment, string defaultValue)>();
 
-        private const bool _isStable = false;
+        private const bool IsStable = false;
 
 
         public SwitchGc
-            () :base(_names, _about, _extraParams, _isStable)
+            () :base(_names, About, _extraParams, IsStable)
         {
         }
 

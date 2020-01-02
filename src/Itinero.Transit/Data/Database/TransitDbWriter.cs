@@ -35,7 +35,7 @@ namespace Itinero.Transit.Data
             var latest = new TransitDbSnapShot(_parent.DatabaseId, _stopsDb, _connectionsDb, _tripsDb);
             _parent.SetSnapshot(latest);
         }
-
+        
         public StopId AddOrUpdateStop(Stop stop)
         {
             return ((IDatabase<StopId, Stop>) _stopsDb).AddOrUpdate(stop);

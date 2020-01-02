@@ -10,7 +10,7 @@ namespace Itinero.Transit.Processor.Switch
     {
         private static readonly string[] _names = {"--validate"};
 
-        private static string _about =
+        private static string About =
             "Checks assumptions on the database, e.g: are the coordinates of stops within the correct range? Does the train not drive impossibly fast? Are there connections going back in time?";
 
 
@@ -27,14 +27,14 @@ namespace Itinero.Transit.Processor.Switch
                         .SetDefault("false")
                 };
 
-        private const bool _isStable = true;
+        private const bool IsStable = true;
 
-        public SwitchValidate() : base(_names, _about, _extraParams, _isStable)
+        public SwitchValidate() : base(_names, About, _extraParams, IsStable)
         {
         }
 
 
-        private List<IValidation> Validators = new List<IValidation>
+        private List<IValidation> _validators = new List<IValidation>
         {
             new ValidateTrips()
         };
@@ -46,7 +46,7 @@ namespace Itinero.Transit.Processor.Switch
             var typesToPrint = parameters["type"];
             var relax = parameters.Bool("relax");
 
-            foreach (var validation in Validators)
+            foreach (var validation in _validators)
             {
                 var msgs = validation.Validate(transitDb, relax);
 

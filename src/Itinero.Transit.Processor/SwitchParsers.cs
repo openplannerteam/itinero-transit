@@ -41,8 +41,6 @@ namespace Itinero.Transit.Processor
 
                 {
                     new SwitchJapanize(),
-                    new SwitchCalculateAll(),
-                    new SwitchAnalyze(),
                     new SwitchValidate(),
                     new SwitchNmbsFilter(),
                     new HelpSwitch(),

@@ -50,7 +50,7 @@ namespace Itinero.Transit.Data
             return ConnectionsDb.LatestDate.FromUnixTime();
         }
         
-        public void WriteTo(FileStream stream)
+        public uint WriteTo(FileStream stream)
         {
             // TODO FIXME IMPLEMENT ME
             throw new NotImplementedException();

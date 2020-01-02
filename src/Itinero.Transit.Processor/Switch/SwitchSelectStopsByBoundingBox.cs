@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Itinero.Transit.Data;
-using Itinero.Transit.Data.Core;
-using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Processor.Switch
 {
@@ -10,7 +9,7 @@ namespace Itinero.Transit.Processor.Switch
     {
         private static readonly string[] _names = {"--bounding-box", "--bb"};
 
-        private static string _about =
+        private static string About =
             "Filters the transit-db so that only stops within the bounding box are kept. " +
             "All connections containing a removed location will be removed as well.\n\n" +
             "This switch is mainly used for debugging.";
@@ -37,10 +36,10 @@ namespace Itinero.Transit.Processor.Switch
                         .SetDefault("false")
                 };
 
-        private const bool _isStable = true;
+        private const bool IsStable = true;
 
         public SwitchSelectStopsByBoundingBox() :
-            base(_names, _about, _extraParams, _isStable)
+            base(_names, About, _extraParams, IsStable)
         {
         }
 
@@ -57,84 +56,34 @@ namespace Itinero.Transit.Processor.Switch
             var allowEmptyCon = bool.Parse(arguments["allow-empty-connections"]);
 
 
-            var filtered = new TransitDb(old.DatabaseId);
-            var wr = filtered.GetWriter();
-
-
-            var stopIdMapping = new Dictionary<StopId, StopId>();
-
-            var stops = old.Latest.StopsDb.GetReader();
-            var copied = 0;
-            while (stops.MoveNext())
-            {
-                var lat = stops.Latitude;
-                var lon = stops.Longitude;
-                if (
-                    !(minLat <= lat && lat <= maxLat && minLon <= lon && lon <= maxLon))
+            var newDb = old.Copy(
+                allowEmptyCon,
+                keepStop: stop =>
                 {
-                    continue;
+                    var lon = stop.Longitude;
+                    var lat = stop.Latitude;
+                    return minLat <= lat && lat <= maxLat && minLon <= lon && lon <= maxLon;
+                },
+                keepTrip: _ => false,
+                keepConnection: x =>
+                {
+                    var c = x.c;
+                    var stopMapping = x.reverseStopIdMapping;
+                    return stopMapping.ContainsKey(c.DepartureStop) && stopMapping.ContainsKey(c.ArrivalStop);
                 }
+            );
 
-                var newId = wr.AddOrUpdateStop(stops.GlobalId, stops.Longitude, stops.Latitude, stops.Attributes);
-                var oldId = stops.Id;
-                stopIdMapping.Add(oldId, newId);
-                copied++;
-            }
 
-            if (!allowEmpty && copied == 0)
+            var newStopCount = newDb.Latest.StopsDb.Count();
+            if (!allowEmpty && newStopCount == 0)
             {
                 throw new Exception("There are no stops in the selected bounding box");
             }
 
 
-            var consDb = old.Latest.ConnectionsDb;
-            var tripsDb = old.Latest.TripsDb;
-
-            var stopCount = copied;
-            copied = 0;
-
-            var first = consDb.First();
-            if (first.HasValue)
-            {
-                var index = first.Value;
-                do
-                {
-                    var con = consDb.Get(index);
-                    if (!(stopIdMapping.ContainsKey(con.DepartureStop) && stopIdMapping.ContainsKey(con.ArrivalStop)))
-                    {
-                        // One of the stops is outside of the bounding box
-                        continue;
-                    }
-
-                    var trip = tripsDb.Get(con.TripId); // The old trip
-                    var newTripId = wr.AddOrUpdateTrip(trip.GlobalId, trip.Attributes);
-
-                    wr.AddOrUpdateConnection(
-                        stopIdMapping[con.DepartureStop],
-                        stopIdMapping[con.ArrivalStop],
-                        con.GlobalId,
-                        con.DepartureTime.FromUnixTime(),
-                        con.TravelTime,
-                        con.DepartureDelay,
-                        con.ArrivalDelay,
-                        newTripId,
-                        con.Mode
-                    );
-                    copied++;
-                } while (consDb.HasNext(index, out index));
-            }
-
-            wr.Close();
-
-
-            if (!allowEmptyCon && copied == 0)
-            {
-                throw new Exception("There are no connections in this bounding box");
-            }
-
-
-            Console.WriteLine($"There are {stopCount} stops and {copied} connections in the bounding box");
-            return filtered;
+            var removed = old.Latest.StopsDb.Count() - newStopCount;
+            Console.WriteLine($"There are {newStopCount} stops (removed {removed} stops) in the bounding box");
+            return newDb;
         }
     }
 }

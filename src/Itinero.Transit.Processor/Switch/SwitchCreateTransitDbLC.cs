@@ -12,7 +12,7 @@ namespace Itinero.Transit.Processor.Switch
         private static readonly string[] _names =
             {"--create-transit-db-with-linked-connections", "--create-transit-lc", "--ctlc"};
 
-        private static string _about =
+        private static string About =
             "Creates a transit DB based on linked connections (or adds them to an already existing db). For this, the linked connections source and a timewindow should be specified.\n" +
             "If the previous switch reads or creates a transit db as well, the two transitDbs are merged into a single one.\n\n" +
             "Note that this switch only downloads the connections and keeps them in memory. To write them to disk, add --write-transit-db too.\n\n" +
@@ -37,11 +37,11 @@ namespace Itinero.Transit.Processor.Switch
                 };
 
 
-        private const bool _isStable = true;
+        private const bool IsStable = true;
 
 
         public SwitchCreateTransitDbLC()
-            : base(_names, _about, _extraParams, _isStable)
+            : base(_names, About, _extraParams, IsStable)
         {
         }
 

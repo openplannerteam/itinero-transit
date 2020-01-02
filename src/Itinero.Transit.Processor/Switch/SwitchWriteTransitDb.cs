@@ -46,11 +46,11 @@ namespace Itinero.Transit.Processor.Switch
                     SwitchesExtensions.obl("file", "The output file to write to"),
                 };
 
-        private const bool _isStable = true;
+        private const bool IsStable = true;
 
 
         public SwitchWriteTransitDb()
-            : base(_names, _about, _extraParams, _isStable)
+            : base(_names, _about, _extraParams, IsStable)
         {
         }
 

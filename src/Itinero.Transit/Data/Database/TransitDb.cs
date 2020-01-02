@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.Contracts;
+using System.IO;
 using Itinero.Transit.Data.Simple;
 
 namespace Itinero.Transit.Data
@@ -29,6 +30,11 @@ namespace Itinero.Transit.Data
                 new SimpleConnectionsDb(databaseId),
                 new SimpleTripsDb(databaseId)
             );
+        }
+
+        public TransitDb(uint databaseId, Stream readFromFile)
+        {
+            throw new NotImplementedException();
         }
 
 

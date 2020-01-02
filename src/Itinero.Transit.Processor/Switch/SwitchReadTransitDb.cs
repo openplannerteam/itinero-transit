@@ -33,7 +33,7 @@ namespace Itinero.Transit.Processor.Switch
     {
         private static readonly string[] _names = {"--read-transit-db", "--read-transit", "--read-tdb", "--rt", "--read"};
 
-        private static string _about =
+        private static string About =
             "Read a transitDB file as input to do all the data processing. A transitDB is a database containing connections between multiple stops";
 
 
@@ -44,11 +44,11 @@ namespace Itinero.Transit.Processor.Switch
                     SwitchesExtensions.obl("file", "The input file to read"),
                 };
 
-        private const bool _isStable = true;
+        private const bool IsStable = true;
 
 
         public SwitchReadTransitDb()
-            : base(_names, _about, _extraParams, _isStable)
+            : base(_names, About, _extraParams, IsStable)
         {
         }
 
@@ -59,7 +59,7 @@ namespace Itinero.Transit.Processor.Switch
 
             using (var stream = File.OpenRead(fileName))
             {
-                return TransitDb.ReadFrom(stream, 0);
+                return new TransitDb( 0, stream);
             }
         }
     }

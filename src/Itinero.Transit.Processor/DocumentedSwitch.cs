@@ -18,7 +18,7 @@ namespace Itinero.Transit.Processor
         /// <summary>
         /// What does this switch do?
         /// </summary>
-        public readonly string About;
+        public readonly string Documentation;
 
         /// <summary>
         /// 
@@ -42,7 +42,7 @@ namespace Itinero.Transit.Processor
         /// Should this switch be clearly showed in the documentation?
         /// </summary>
         /// <returns></returns>
-        public readonly bool IsStable;
+        public readonly bool SwitchIsStable;
 
         protected DocumentedSwitch(
             string[] names, string about,
@@ -51,9 +51,9 @@ namespace Itinero.Transit.Processor
         )
         {
             Names = names;
-            About = about;
+            Documentation = about;
             _extraParams = extraParams;
-            IsStable = isStable;
+            SwitchIsStable = isStable;
         }
 
 
@@ -231,7 +231,7 @@ namespace Itinero.Transit.Processor
                 text += ")";
             }
 
-            if (!IsStable)
+            if (!SwitchIsStable)
             {
                 text += " (Experimental feature)";
             }
@@ -258,7 +258,7 @@ namespace Itinero.Transit.Processor
 
 
             text += "\n\n";
-            text += "   " + About + "\n\n";
+            text += "   " + Documentation + "\n\n";
 
             if (markdown)
             {

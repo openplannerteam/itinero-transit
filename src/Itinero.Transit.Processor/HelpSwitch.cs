@@ -22,11 +22,11 @@ namespace Itinero.Transit.Processor
                     SwitchesExtensions.opt("short", "Only print a small overview").SetDefault("false")
                 };
 
-        private const bool _isStable = true;
-        private const string _about = "Print the help message";
+        private const bool IsStable = true;
+        private const string About = "Print the help message";
 
         public HelpSwitch() :
-            base(_names, _about, _extraParams, _isStable)
+            base(_names, About, _extraParams, IsStable)
         {
         }
 
@@ -171,7 +171,7 @@ namespace Itinero.Transit.Processor
                     var sw = new List<DocumentedSwitch>();
                     foreach (var @switch in switches)
                     {
-                        if (@switch.IsStable)
+                        if (@switch.SwitchIsStable)
                         {
                             sw.Add(@switch);
                         }
@@ -206,7 +206,7 @@ namespace Itinero.Transit.Processor
                             .Replace(")", "");
 
                         text += ") ";
-                        var about = @switch.About;
+                        var about = @switch.Documentation;
                         var index = about.IndexOf('.');
                         text += index < 0 ? about : about.Substring(0, index + 1);
                         text += "\n";
@@ -226,7 +226,7 @@ namespace Itinero.Transit.Processor
                     {
                         text += $"   {@switch.Names[0]}\t";
 
-                        var about = @switch.About;
+                        var about = @switch.Documentation;
                         var index = about.IndexOf('.');
                         text += index < 0 ? about : about.Substring(0, index + 1);
                         text += "\n";
