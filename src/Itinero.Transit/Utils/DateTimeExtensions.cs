@@ -42,7 +42,7 @@ namespace Itinero.Transit.Utils
         /// <returns></returns>
         internal static ulong ExtractDate(ulong seconds)
         {
-            return (seconds - (seconds % SecondsInADay));
+            return seconds - seconds % SecondsInADay;
         }
 
         /// <summary>

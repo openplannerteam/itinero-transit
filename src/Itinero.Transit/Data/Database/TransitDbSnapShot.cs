@@ -1,4 +1,7 @@
+using System;
 using System.IO;
+using Itinero.Transit.Data.Core;
+using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Data
 {
@@ -21,10 +24,36 @@ namespace Itinero.Transit.Data
             ConnectionsDb = connectionsDb;
         }
 
+        public Connection Get(ConnectionId id)
+        {
+            return ConnectionsDb.Get(id);
+        }
+
+        public Stop Get(StopId id)
+        {
+            return StopsDb.Get(id);
+        }
+
+        public Trip Get(TripId trip)
+        {
+            return TripsDb.Get(trip);
+        }
+
+        public DateTime EarliestDate()
+        {
+            return ConnectionsDb.EarliestDate.FromUnixTime();
+        }
+
+        
+        public DateTime LatestDate()
+        {
+            return ConnectionsDb.LatestDate.FromUnixTime();
+        }
+        
         public void WriteTo(FileStream stream)
         {
             // TODO FIXME IMPLEMENT ME
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

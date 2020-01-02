@@ -13,7 +13,7 @@ namespace Itinero.Transit.Data.Core
 
         private const ushort ModeCancelled = 4;
 
-        public static Comparer<Connection> SortByDepartureTime = new ConnectionComparer();
+        public static readonly Comparer<Connection> SortByDepartureTime = new ConnectionComparer();
 
         
         
@@ -39,11 +39,6 @@ namespace Itinero.Transit.Data.Core
         public StopId ArrivalStop { get;  }
 
 
-        
-        public Connection()
-        {
-        }
-
         public Connection(string globalId,
             StopId departureStop,
             StopId arrivalStop,
@@ -51,6 +46,17 @@ namespace Itinero.Transit.Data.Core
             ushort travelTime,
             TripId tripId
         ):this(globalId, departureStop, arrivalStop,departureTime, travelTime,0,0,0, tripId)
+        {
+            
+        }
+        
+        public Connection(string globalId,
+            StopId departureStop,
+            StopId arrivalStop,
+            DateTime departureTime,
+            ushort travelTime,
+            TripId tripId
+        ):this(globalId, departureStop, arrivalStop,departureTime.ToUnixTime(), travelTime,0,0,0, tripId)
         {
             
         }
@@ -108,6 +114,7 @@ namespace Itinero.Transit.Data.Core
             Mode = 0;
         }
 
+
         [Pure]
         public string ToJson()
         {
@@ -119,14 +126,14 @@ namespace Itinero.Transit.Data.Core
         [Pure]
         public bool CanGetOn()
         {
-            var m = (Mode % 4);
+            var m = Mode % 4;
             return m == 0 || m == 1;
         }
 
         [Pure]
         public bool CanGetOff()
         {
-            var m = (Mode % 4);
+            var m = Mode % 4;
             return m == 0 || m == 2;
         }
 

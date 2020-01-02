@@ -8,8 +8,8 @@ namespace Itinero.Transit.Data.Core
         public static StopId Invalid = new StopId(uint.MaxValue, ulong.MaxValue);
 
 
-        public uint DatabaseId { get; private set; }
-        public ulong LocalId { get; private set; }
+        public uint DatabaseId { get; }
+        public ulong LocalId { get; }
 
         public StopId(uint databaseId, ulong localId)
         {

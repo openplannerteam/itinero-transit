@@ -20,7 +20,7 @@ namespace Itinero.Transit.Journey
     /// so that users of the lib get a uniform experience
     ///
     /// </summary>
-    public class Journey<T>
+    public partial class Journey<T>
         where T : IJourneyMetric<T>
     {
         public static readonly Journey<T> InfiniteJourney = new Journey<T>();
@@ -76,12 +76,6 @@ namespace Itinero.Transit.Journey
         // ReSharper disable once InconsistentNaming
         public static readonly ConnectionId OTHERMODE = new ConnectionId(uint.MaxValue, 2);
 
-
-        /// <summary>
-        /// Indicates that this journey represents a choice
-        /// </summary>
-        // ReSharper disable once InconsistentNaming
-        public static readonly ConnectionId JOINED_JOURNEYS = new ConnectionId(uint.MaxValue, 3);
 
         /// <summary>
         /// Keep track of Location.
@@ -347,39 +341,6 @@ namespace Itinero.Transit.Journey
         {
             return Time;
         }
-
-
-        /// <summary>
-        /// Given a journey and a reversed journey, append the reversed journey to the journey
-        /// </summary>
-        [Pure]
-        public Journey<T> Append(Journey<T> restingJourney)
-        {
-            var j = this;
-            while (restingJourney != null &&
-                   (!restingJourney.SpecialConnection ||
-                    !Equals(restingJourney.Connection, GENESIS)))
-            {
-                // Resting journey is backwards - so restingJourney is departure, restingJourney.PreviousLink the arrival time
-                var timeDiff =
-                    (long) restingJourney.Time -
-                    (long) restingJourney.PreviousLink.Time; // Cast to long to allow negative values
-                j = new Journey<T>(
-                    j.Root,
-                    j,
-                    restingJourney.SpecialConnection,
-                    restingJourney.Connection,
-                    restingJourney.PreviousLink.Location,
-                    j.Time + (ulong) timeDiff,
-                    restingJourney.TripId,
-                    j.Metric
-                );
-                restingJourney = restingJourney.PreviousLink;
-            }
-
-            return j;
-        }
-
 
 
         [Pure]

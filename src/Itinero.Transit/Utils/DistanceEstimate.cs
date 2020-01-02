@@ -69,7 +69,7 @@ namespace Itinero.Transit.Utils
         public static (double lon, double lat) NorthWestCoordinateOfTile((int x, int y) tile, uint zoomlevel)
         {
             var n = Math.Pow(2, zoomlevel);
-            var lonDeg = (tile.x / n) * 360.0 - 180.0;
+            var lonDeg = tile.x / n * 360.0 - 180.0;
             var latRad = Math.Atan(Math.Sinh(Math.PI * (1 - 2 * tile.y / n)));
             var latDeg = 180 * latRad / Math.PI;
             return (lonDeg, latDeg);

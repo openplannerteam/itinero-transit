@@ -3,6 +3,7 @@ using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Data.Core;
+using Itinero.Transit.Data.LocationIndexing;
 using Itinero.Transit.Data.Simple;
 using Itinero.Transit.Utils;
 using Xunit;
@@ -11,6 +12,37 @@ namespace Itinero.Transit.Tests.Core.Algorithms.Search
 {
     public class StopSearchTest
     {
+        [Fact]
+        public void LocationIndex_LocationAround00_LocationIsFound()
+        {
+            var index = new TiledLocationIndexing<string>();
+            index.Add((0.000001, 0.000001), "found");
+            var found = index.GetInRange((0, 0), 500);
+            Assert.Single(found);
+            Assert.Equal("found", found[0]);
+        }
+        
+        [Fact]
+        public void LocationIndex_LocationAround0101_LocationIsFound()
+        {
+            var index = new TiledLocationIndexing<string>();
+            index.Add((0.0000001, 0.0000001), "found");
+            var found = index.GetInRange((0, 0), 500);
+            Assert.Single(found);
+            Assert.Equal("found", found[0]);
+        }
+        
+        [Fact]
+        public void LocationIndex_LocationOn00_LocationIsFound()
+        {
+            var index = new TiledLocationIndexing<string>();
+            index.Add((0, 0), "found");
+            var found = index.GetInRange((0.0001, 0.0001), 500);
+            Assert.Single(found);
+            Assert.Equal("found", found[0]);
+        }
+
+
         private static (IStopsDb, StopId howest, StopId sintClara, StopId station) CreateTestReader()
         {
             var tdb = new TransitDb(0);
@@ -84,8 +116,8 @@ namespace Itinero.Transit.Tests.Core.Algorithms.Search
         public void FindClosest_SmallReader_ExpectsNo1()
         {
             var db = new SimpleStopsDb(0);
-            var id1 = 
-                db.Add(new Stop("http://irail.be/stations/NMBS/008863354", (4.786863327026367,51.262774197393820)));
+            var id1 =
+                db.Add(new Stop("http://irail.be/stations/NMBS/008863354", (4.786863327026367, 51.262774197393820)));
             db.Add(new Stop("http://irail.be/stations/NMBS/008863008", (4.649276733398437, 51.345839804352885)));
             db.Add(new Stop("http://irail.be/stations/NMBS/008863009", (4.989852905273437, 51.223657764702750)));
             db.Add(new Stop("http://irail.be/stations/NMBS/008863010", (4.955863952636719, 51.325462944331300)));
@@ -118,7 +150,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.Search
             {
                 stopsdb.Add(s);
             }
-            
+
             db.PostProcess(14);
             var reader = stopsdb.UseCache();
 

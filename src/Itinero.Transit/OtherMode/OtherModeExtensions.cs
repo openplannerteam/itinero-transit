@@ -156,12 +156,13 @@ namespace Itinero.Transit.OtherMode
             var times = new Dictionary<Stop, uint>();
             foreach (var stop in from)
             {
+                
                 var time = modeGenerator.TimeBetween(stop, to);
                 if (time == uint.MaxValue)
                 {
                     continue;
                 }
-
+                
                 times.Add(stop, time);
             }
 

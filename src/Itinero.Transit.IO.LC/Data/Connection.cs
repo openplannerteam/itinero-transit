@@ -157,13 +157,13 @@ namespace Itinero.Transit.IO.LC.Data
 
             var getOn = json.GetContents("http://vocab.gtfs.org/terms#pickupType", GtfsRegular);
 
-            GetOn = (getOn.IsString() && getOn.ToString().Equals(GtfsRegular))
+            GetOn = getOn.IsString() && getOn.ToString().Equals(GtfsRegular)
                     || getOn.GetId().ToString().Equals(GtfsRegular);
 
             IsCancelled = isCancelledConnection;
 
             var getOff = json.GetContents("http://vocab.gtfs.org/terms#dropOffType", GtfsRegular);
-            GetOff = (getOff.IsString() && getOff.ToString().Equals(GtfsRegular))
+            GetOff = getOff.IsString() && getOff.ToString().Equals(GtfsRegular)
                      || getOff.GetId().ToString().Equals(GtfsRegular);
 
         }

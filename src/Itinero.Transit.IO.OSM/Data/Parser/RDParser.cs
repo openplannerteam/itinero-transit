@@ -116,6 +116,35 @@ namespace Itinero.Transit.IO.OSM.Data.Parser
         }
 
         [Pure]
+        public static RDParser<long> DoubleAsLong(uint precision)
+        {
+            return
+                RDParser<uint>.X(Regex("-?[0-9]+") + !Lit("."), Regex("[0-9]*"))
+                    .Map(data =>
+                    {
+                        var afterDotString = data.Item2;
+
+                        while (Math.Pow(10, afterDotString.Length) < precision)
+                        {
+                            afterDotString += "0";
+                        }
+
+                        var afterDot = uint.Parse(afterDotString);
+
+
+                        while (afterDot > precision)
+                        {
+                            afterDot /= 10;
+                        }
+
+                        var beforeDot = int.Parse(data.Item1);
+
+                        return beforeDot * precision + afterDot;
+                    })
+                | Int().Map(i => i * precision);
+        }
+
+        [Pure]
         public static RDParser<string> Regex(string regex)
         {
             return new RDParser<string>(
@@ -380,6 +409,34 @@ namespace Itinero.Transit.IO.OSM.Data.Parser
             );
         }
 
+
+        public bool TryParseFull(string value, out T t, out string errorMessage)
+        {
+            if (value == null)
+            {
+                throw new NullReferenceException(value);
+            }
+
+
+            var result = Parse((value, 0));
+            if (!result.Success())
+            {
+                errorMessage = result.FancyErrorMessage();
+                t = default(T);
+                return false;
+            }
+
+            if (!string.IsNullOrEmpty(result.Rest))
+            {
+                errorMessage = "Could not parse everything of {value}, only {result.Index} characters parsed";
+                t = default(T);
+                return false;
+            }
+
+            t = result.Result;
+            errorMessage = "";
+            return true;
+        }
 
         /// <summary>
         /// Parses the given input string, crashes if the entire string was not entirely consumed

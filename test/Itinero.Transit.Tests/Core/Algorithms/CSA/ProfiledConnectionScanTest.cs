@@ -162,34 +162,29 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         /// one which is clearly better then the other.
         /// </summary>
         [Fact]
-        public static void AllJourneys_4ConnectionTdb_ExpectsOneOptimalJourney()
+        public static void AllJourneys_2SimilarConnectionsButOneIsFaster_ExpectsOneOptimalJourney()
         {
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
             var loc0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", (0, 0.0)));
             var loc1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", (0.1, 0.1)));
-            var loc2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", (2.1, 0.1)));
-            var loc3 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", (3.1, 0.1)));
 
-            writer.AddOrUpdateConnection(new Connection(loc0, loc1,
+            var t0 = new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc);
+            
+            writer.AddOrUpdateConnection(new Connection(
                 "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
-                30 * 60, 0, 0, new TripId(0, 0), 0));
+                loc0, loc1,
+                t0,
+                30 * 60, 
+                new TripId(0, 0)));
 
 
-            writer.AddOrUpdateConnection(new Connection(loc0, loc1,
+            writer.AddOrUpdateConnection(new Connection(
                 "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
-                40 * 60, 0, 0, new TripId(0, 1), 0));
-
-            writer.AddOrUpdateConnection(new Connection(loc2, loc3, "https//example.com/connections/2",
-                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc),
-                40 * 60, 0, 0, new TripId(0, 2), 0));
-
-            writer.AddOrUpdateConnection(new Connection(loc2, loc3, "https//example.com/connections/4",
-                new DateTime(2018, 12, 04, 2, 00, 00, DateTimeKind.Utc),
-                40 * 60, 0, 0, new TripId(0, 3), 0));
+                loc0, loc1,
+                t0,
+                40 * 60, new TripId(0, 1)));
 
             writer.Close();
 
@@ -203,9 +198,9 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             var journeys = latest.SelectProfile(profile)
                 .SelectStops(loc0, loc1)
-                .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00, DateTimeKind.Utc),
-                    new DateTime(2018, 12, 04, 18, 00, 00, DateTimeKind.Utc))
+                .SelectTimeFrame(latest.EarliestDate(), latest.LatestDate().AddMinutes(60))
                 .CalculateAllJourneys();
+            // string.Join("\n\n-----------------------\n\n", journeys.Select(j => j.ToString(15)))
             Assert.Single(journeys);
             foreach (var j in journeys)
             {

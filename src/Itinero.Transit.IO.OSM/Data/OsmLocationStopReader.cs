@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,10 +42,10 @@ namespace Itinero.Transit.IO.OSM.Data
         /// We expect this list to stay small (at most 100) so we are not gonna optimize this a lot
         /// 
         /// </summary>
-        private readonly List<Stop> _searchableLocations = new List<Stop>();
+        public readonly List<Stop> SearchableLocations = new List<Stop>();
 
 
-        private const uint Precision = 10000000;
+        private const uint Precision = 1000000;
 
         /// <summary>
         /// Creates a StopsReader which is capable of decoding OSM-urls.
@@ -56,7 +57,8 @@ namespace Itinero.Transit.IO.OSM.Data
         /// <param name="databaseId"></param>
         /// <param name="searchableLocations">Locations that can be picked up by GetEnumerator and SearchClosest</param>
         public OsmLocationStopReader(uint databaseId, IEnumerable<(double lon, double lat)> searchableLocations)
-            : this(databaseId, searchableLocations?.Select(CreateOsmStop))
+            : this(databaseId, searchableLocations?.Select(c => 
+                CreateOsmStop(((long) (c.lon * Precision), (long) (c.lat * Precision)))))
         {
         }
 
@@ -78,33 +80,62 @@ namespace Itinero.Transit.IO.OSM.Data
             {
                 foreach (var searchableLocation in searchableLocations)
                 {
-                    _locationIndex.Add(searchableLocation.Longitude, searchableLocation.Latitude, searchableLocation);
-                    _searchableLocations.Add(searchableLocation);
+                    _locationIndex.Add(searchableLocation.Longitude, searchableLocation.Latitude,
+                        searchableLocation);
+                    SearchableLocations.Add(searchableLocation);
                 }
             }
         }
 
 
+        private static Stop CreateOsmStop((long lon, long lat) location)
+        {
+            var (lonRounded, latRounded) = location;
+
+            var lonBeforeDot = lonRounded / Precision;
+            var lonAfterDot =
+                Math.Abs(lonRounded %
+                         Precision); // We don't need a minus sign in the url, the lonBeforeDot handles that
+
+            var latBeforeDot = latRounded / Precision;
+            var latAfterDot = Math.Abs(latRounded % Precision);
+            var globalId =
+                $"https://www.openstreetmap.org/#map=19/{latBeforeDot}.{latAfterDot:000000}/{lonBeforeDot}.{lonAfterDot:000000}";
+
+
+            return new Stop(globalId, ((double) lonRounded / Precision, (double) latRounded / Precision));
+        }
+
         public StopId SearchId((double lon, double lat) c)
         {
-            var lonRounded = (int) ((c.lon + 180) * Precision);
-            var latRounded = (int) ((c.lat + 90) * Precision);
+            // Range: (0 -> 360 * Precision). Should be moved log(10, Precision) + 3 digits to the left to neatly fit into the long
+            var lonRounded = (int) (c.lon * Precision);
+            // Range: 0 -> 180 * Precision
+            var latRounded = (int) (c.lat * Precision);
+
+
+            return SearchId(lonRounded, latRounded);
+        }
+
+        public StopId SearchId(long lonRounded, long latRounded)
+        {
+            lonRounded += 180 * Precision;
+            latRounded += 90 * Precision;
 
             return new StopId(_databaseId,
-                (uint) ((lonRounded + 180) * 10000 + (latRounded + 90) * 10000));
+                (ulong) (lonRounded * Precision * 1000 + latRounded));
         }
 
-        private static Stop CreateOsmStop((double lon, double lat) location)
+        public StopId SearchId(string globalId)
         {
-            var (lon, lat) = location;
+            if (!SearchId(globalId, out var id))
+            {
+                throw new ArgumentException("Could not parse the globalId");
+            }
 
-            var lonRounded = lon * Precision / Precision;
-            var latRounded = lat * Precision / Precision;
-            var globalId = $"https://www.openstreetmap.org/#map=19/{latRounded}/{lonRounded}";
-
-
-            return new Stop(globalId, (lonRounded, latRounded));
+            return id;
         }
+
 
         public bool TryGet(StopId id, out Stop t)
         {
@@ -114,18 +145,25 @@ namespace Itinero.Transit.IO.OSM.Data
                 return false;
             }
 
-            var lat = (id.LocalId % 10000) / 1000.0;
+            // First we divide, then we cast to double to prevent the latitude from leaking
             // ReSharper disable once PossibleLossOfFraction
-            var lon = (double) (id.LocalId / 1000) / Precision;
+            var lonRounded = id.LocalId / (Precision * 1000);
+            var latRounded = id.LocalId % (Precision * 1000);
 
-            t = CreateOsmStop((lon, lat));
+            t = CreateOsmStop(((long) lonRounded -  Precision * 180, (long) latRounded - Precision * 90));
             return true;
         }
 
         public bool SearchId(string globalId, out StopId id)
         {
-            var (lat, lon) = ParseOsmUrl.ParseUrl().ParseFull(globalId);
-            id = SearchId((lon, lat));
+            var couldParse = ParseOsmUrl.ParseUrl(Precision).TryParseFull(globalId, out var c, out _);
+            if (!couldParse)
+            {
+                id = StopId.Invalid;
+                return false;
+            }
+
+            id = SearchId(c.lon, c.lat);
             return true;
         }
 
@@ -136,12 +174,12 @@ namespace Itinero.Transit.IO.OSM.Data
 
         public IStopsDb Clone()
         {
-            return new OsmLocationStopReader(_databaseId, _searchableLocations);
+            return new OsmLocationStopReader(_databaseId, SearchableLocations);
         }
 
         public IEnumerator<Stop> GetEnumerator()
         {
-            return _searchableLocations.GetEnumerator();
+            return SearchableLocations.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -163,13 +201,13 @@ namespace Itinero.Transit.IO.OSM.Data
                    + !Lit("/");
         }
 
-        public static RDParser<(double, double)> ParseUrl()
+        public static RDParser<(long lon, long lat)> ParseUrl(uint precision)
         {
-            return RDParser<(double latitude, double longitude)>.X(
-                !ParsePrefix() * Double(),
+            return RDParser<(double lat, double lon)>.X(
+                !ParsePrefix() * DoubleAsLong(precision),
                 !Lit("/") *
-                Double()
-            );
+                DoubleAsLong(precision)
+            ).Map(c => (c.Item2, c.Item1));
         }
     }
 }

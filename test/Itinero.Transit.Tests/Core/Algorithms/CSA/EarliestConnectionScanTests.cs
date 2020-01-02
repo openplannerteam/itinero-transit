@@ -6,7 +6,6 @@ using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
-using Itinero.Transit.Utils;
 using Xunit;
 
 namespace Itinero.Transit.Tests.Core.Algorithms.CSA
@@ -51,9 +50,9 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
         }
 
         [Fact]
-        public void EarliestArrivalJourney_SmallDb_RouteFromStopToStop()
+        public void EarliestArrivalJourney_SmallDb_OneConnectionJourney()
         {
-            var tdb = Db.GetDefaultTestDb(out var stop0, out var stop1, out var stop2, out var _, out var _, out var _);
+            var tdb = Db.GetDefaultTestDb(out var stop0, out var stop1, out _, out _, out _, out _);
             var db = tdb.Latest;
 
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
@@ -66,24 +65,38 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var j = db
                 .SelectProfile(profile)
                 .SelectStops(stop0, stop1)
-                .SelectTimeFrame(db.GetConn(0).DepartureTime.FromUnixTime(),
-                    (db.GetConn(0).DepartureTime + 60 * 60 * 6).FromUnixTime())
+                .SelectTimeFrame(db.ConnectionsDb.EarliestDate - 1,
+                    db.ConnectionsDb.LatestDate + 1)
                 .CalculateEarliestArrivalJourney();
 
             Assert.NotNull(j);
-            Assert.Equal(new ConnectionId(0, 0), j.Connection);
+            Assert.Equal("https://example.com/connections/0", db.Get(j.Connection).GlobalId);
+        }
 
 
-            j = db.SelectProfile(profile)
+        [Fact]
+        public void EarliestArrivalJourney_SmallDb_TwoConnectionJourney()
+        {
+            var tdb = Db.GetDefaultTestDb(out var stop0, out _, out var stop2, out _, out _, out _);
+            var db = tdb.Latest;
+
+            var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
+                null,
+                TransferMetric.Factory,
+                TransferMetric.ParetoCompare
+            );
+
+
+            var j = db.SelectProfile(profile)
                     .SelectStops(stop0, stop2)
                     .SelectTimeFrame(
-                        db.GetConn(0).DepartureTime.FromUnixTime(),
-                        (db.GetConn(0).DepartureTime + 60 * 60 * 2).FromUnixTime())
+                        db.EarliestDate(),
+                        db.LatestDate())
                     .CalculateEarliestArrivalJourney()
                 ;
 
             Assert.NotNull(j);
-            Assert.Equal(new ConnectionId(0, 1), j.Connection);
+            Assert.Equal("https://example.com/connections/1", db.Get(j.Connection).GlobalId);
         }
 
         [Fact]
@@ -523,9 +536,12 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var transitDb = new TransitDb(0);
             var writer = transitDb.GetWriter();
 
-            var loc0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0", (3.1904983520507812,51.256758449834216)));
-            var loc1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", (3.216590881347656,51.197848510420464)));
-            var loc2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/2", (3.7236785888671875,51.05348088381823)));
+            var loc0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/0",
+                (3.1904983520507812, 51.256758449834216)));
+            var loc1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1",
+                (3.216590881347656, 51.197848510420464)));
+            var loc2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/2",
+                (3.7236785888671875, 51.05348088381823)));
 
             writer.AddOrUpdateConnection(new Connection(loc1, loc2,
                 "https://example.com/connections/0",

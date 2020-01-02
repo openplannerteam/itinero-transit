@@ -34,7 +34,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                     new Connection("1", locDep, locB, 10, 10, 0, 0, 0, new TripId(0, 1)));
 
             var commonConnection = new Connection(
-                 "2", locA, locDest, 00, 10, 0, 0, 0,
+                 "2", locA, locDest, 01, 9, 0, 0, 0,
                 new TripId(0, 2));
             var atDestA =
                 atLocA.ChainBackward(new ConnectionId(0, 2),commonConnection);
@@ -63,8 +63,8 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             // Backwards journey
             var j = new Journey<TransferMetric>(loc, 20, TransferMetric.Factory);
-            j = j.ChainBackward(new ConnectionId(0,0),new Connection( "01", loc1, loc2, 10, 20, 30, 1, 0, new TripId(0, 1)));
-            j = j.ChainBackward(new ConnectionId(0,0),new Connection( "00", loc, loc1, 0, 10, 10, 0, 0, new TripId(0, 0)));
+            j = j.ChainBackward(new ConnectionId(0,0),new Connection( "01", loc1, loc2, 20, 20, 30, 1, 0, new TripId(0, 1)));
+            j = j.ChainBackward(new ConnectionId(0,0),new Connection( "00", loc, loc1, 10, 10, 10, 0, 0, new TripId(0, 0)));
 
 
             Assert.True(frontier.AddToFrontier(j));

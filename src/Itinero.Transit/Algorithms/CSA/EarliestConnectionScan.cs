@@ -405,6 +405,7 @@ namespace Itinero.Transit.Algorithms.CSA
             {
                 if (!JourneyFromDepartureTable.ContainsKey(targetLoc))
                 {
+                    // TODO FIXME THIS FAILS
                     continue;
                 }
 

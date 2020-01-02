@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Itinero.Transit.Data.Core;
@@ -187,11 +188,9 @@ namespace Itinero.Transit.Journey
                     j.Location, j.Time, newMetricFactory.Zero(), j.TripId);
             }
 
-            if (j.SpecialConnection && Equals(j.Connection, Journey<T>.JOINED_JOURNEYS))
+            if (j.AlternativePreviousLink != null)
             {
-                var prev = j.PreviousLink.MeasureWith(newMetricFactory);
-                var altPrev = j.AlternativePreviousLink?.MeasureWith(newMetricFactory);
-                return new Journey<S>(prev, altPrev);
+               throw new ArgumentException("Journey still contains an alternative previous link. Please dedup before using this methods");
             }
 
 

@@ -45,6 +45,11 @@ namespace Itinero.Transit.OtherMode
                 return uint.MaxValue;
             }
 
+            if (from.Equals(to))
+            {
+                return uint.MaxValue;
+            }
+
             return (uint) (distance * _speed);
         }
 

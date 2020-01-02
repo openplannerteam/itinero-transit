@@ -5,7 +5,6 @@ using Itinero.Transit.Data.Core;
 using Itinero.Transit.Journey;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.OtherMode;
-using Itinero.Transit.Utils;
 using Xunit;
 
 namespace Itinero.Transit.Tests.Core.Algorithms.CSA
@@ -27,17 +26,15 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var j =
                 db.SelectProfile(profile)
                     .SelectStops(stop0, stop1)
-                    .SelectTimeFrame(new DateTime(2018, 12, 04, 16, 00, 00),
-                        new DateTime(2018, 12, 04, 18, 00, 00))
+                    .SelectTimeFrame(db.EarliestDate(), db.LatestDate())
                     .CalculateLatestDepartureJourney();
                 
             Assert.NotNull(j);
-            Assert.Equal(new ConnectionId(0,0), j.Connection);
+            Assert.Equal("https://example.com/connections/0", db.Get(j.Connection).GlobalId);
 
             j = db.SelectProfile(profile)
                 .SelectStops(stop0, stop2)
-                .SelectTimeFrame(db.GetConn(0).DepartureTime.FromUnixTime(),
-                    (db.GetConn(0).DepartureTime + 60 * 60 * 2).FromUnixTime())
+                .SelectTimeFrame(db.EarliestDate(), db.LatestDate())
                 .CalculateLatestDepartureJourney();
                 
                 

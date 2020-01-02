@@ -25,6 +25,11 @@ namespace Itinero.Transit.Data.LocationIndexing
             ZoomLevel = zoomLevel;
         }
 
+        public void Add((double lon, double lat) c, T t)
+        {
+            Add(c.lon, c.lat, t);
+        }
+
         public void Add(double lon, double lat, T t)
         {
             var key = DistanceEstimate.Wgs84ToTileNumbers((lon, lat), ZoomLevel);
@@ -46,7 +51,7 @@ namespace Itinero.Transit.Data.LocationIndexing
                 {
                     var x = kv.Key.x;
                     var y = kv.Key.y;
-                    return (firstX <= x && x <= lastX && firstY <= y && y <= lastY);
+                    return firstX <= x && x <= lastX && firstY <= y && y <= lastY;
                 }).SelectMany(kv => kv.Value);
         }
 
@@ -71,7 +76,7 @@ namespace Itinero.Transit.Data.LocationIndexing
             var diffY = (uint) Math.Ceiling(maxDistanceInMeter / height / 2);
 
             var firstX = centerTile.x - diffX;
-            var lastX = centerTile.x + diffY;
+            var lastX = centerTile.x + diffX;
 
             var firstY = centerTile.y - diffY;
             var lastY = centerTile.y + diffY;
@@ -95,6 +100,9 @@ namespace Itinero.Transit.Data.LocationIndexing
                     // x1 < x2 ==> lon1 < lon2
                     
                     closestX++;
+                }else if (x > centerTile.x)
+                {
+                    closestX--;
                 }
 
                 var closestY = y;
@@ -103,6 +111,10 @@ namespace Itinero.Transit.Data.LocationIndexing
                     // We are above the center tile, the closest side is one tile beneath
                     // y1 < y2 ==> lat1 > lat2
                     closestY++;
+                }else if (y > centerTile.y)
+                {
+                    // We are beneath the center tile, we move up one tile
+                    closestY--;
                 }
 
                 var closestCornerCoordinate =
