@@ -45,9 +45,9 @@ namespace Itinero.Transit.Journey
         /// <param name="maxLength"></param>
         /// <param name="dataProvider"></param>
         /// <returns></returns>
-        public string ToString(int maxLength, TransitDb dataProvider = null)
+        public string ToString(int maxLength, IStopsDb dataProvider = null)
         {
-            var stop = dataProvider?.Latest?.StopsDb?.Get(Location);
+            var stop = dataProvider?.Get(Location);
             var location =
                 stop?.GetName() ?? stop?.GlobalId ?? Location.ToString();
 
@@ -60,7 +60,7 @@ namespace Itinero.Transit.Journey
 
             while (c != null)
             {
-                stop = dataProvider?.Latest?.StopsDb?.Get(c.Location);
+                stop = dataProvider?.Get(c.Location);
                 location =
                     stop?.GetName() ?? stop?.GlobalId ?? c.Location.ToString();
 

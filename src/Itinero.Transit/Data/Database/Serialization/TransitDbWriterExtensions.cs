@@ -7,7 +7,15 @@ namespace Itinero.Transit.Data.Serialization
 {
     public static class TransitDbWriterExtensions
     {
-        public static void ReadFrom(this TransitDbWriter writer, Stream stream)
+        public static void ReadFrom(this TransitDbWriter writer, string path)
+        {
+            using (Stream s = File.OpenRead(path))
+            {
+                writer.ReadFrom(s);
+            }
+        }
+
+        public static TransitDbWriter ReadFrom(this TransitDbWriter writer, Stream stream)
         {
             var formatter = new BinaryFormatter();
             // TransitDbSnaphot.WriteTo
@@ -42,6 +50,8 @@ namespace Itinero.Transit.Data.Serialization
                     tripMapping[c.TripId]
                 ));
             }
+
+            return writer;
         }
     }
 }

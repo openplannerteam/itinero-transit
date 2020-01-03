@@ -1,5 +1,6 @@
 using System.IO;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Serialization;
 using Itinero.Transit.Tests.Functional.Utils;
 
 namespace Itinero.Transit.Tests.Functional.Data
@@ -15,7 +16,8 @@ namespace Itinero.Transit.Tests.Functional.Data
             {
                 Input.Item1.Latest.WriteTo(stream);
                 stream.Seek(0, SeekOrigin.Begin);
-                var newTdb = TransitDb.ReadFrom(stream, 0);
+                var newTdb = new TransitDb(0);
+                newTdb.GetWriter().ReadFrom(stream).Close();
                 True(Equals(Input.Item1.Latest.ConnectionsDb.LatestDate, newTdb.Latest.ConnectionsDb.LatestDate));
                 new ConnectionsDbDepartureEnumeratorTest().Run((newTdb, Input.expectedNumberOfConnections));
 

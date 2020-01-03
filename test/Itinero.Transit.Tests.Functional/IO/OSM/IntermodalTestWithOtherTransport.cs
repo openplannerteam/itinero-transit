@@ -13,11 +13,11 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
     public class IntermodalTestWithOtherTransport : FunctionalTestWithInput<(string start, string destination, uint maxDistance)>
     {
         private readonly TransitDb _tdb;
-        private readonly Func<uint, StopId, StopId, Profile<TransferMetric>> _profile;
+        private readonly Func<uint, Stop, Stop, Profile<TransferMetric>> _profile;
 
         public IntermodalTestWithOtherTransport(
             TransitDb tdb,
-           Func<uint, StopId, StopId, Profile<TransferMetric>> profile)
+           Func<uint, Stop, Stop, Profile<TransferMetric>> profile)
         {
             _tdb = tdb;
             _profile = profile;
@@ -26,13 +26,14 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
         protected override void Execute()
         {
             // We create a router from the TDB and amend it with an OSM-Locations-Reader to decode OSM-coordinates
-            var reader = _tdb.Latest.StopsDb.AddOsmReader();
-            var startStopId = reader.GetId(Input.start);
-            var destinationStopId = reader.GetId(Input.destination);
+            var stops = _tdb.Latest.StopsDb.AddOsmReader(new []{Input.start, Input.destination});
+            var startStop = stops.Get(Input.start);
+            var destinationStop = stops.Get(Input.destination);
 
-            var profile = _profile(Input.maxDistance, startStopId, destinationStopId);
+            var profile = _profile(Input.maxDistance, startStop, destinationStop);
             var calculator =
                 _tdb.SelectProfile(profile)
+                    .SetStopsDb(stops)
                     .UseOsmLocations()
                     .SelectStops(
                         Input.start,

@@ -13,8 +13,7 @@ namespace Itinero.Transit.Tests.Functional.Data
         {
             var latest = tdb.Latest;
             var count = 0;
-            var enumerator = latest.ConnectionsDb.GetDepartureEnumerator();
-            enumerator.MoveTo(now.ToUnixTime());
+            var enumerator = latest.ConnectionsDb.GetEnumeratorAt(now.ToUnixTime());
             while (enumerator.MoveNext())
             {
                 count++;

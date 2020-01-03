@@ -115,7 +115,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
         public static void AssertNoLoops<T>(Journey<T> journey, WithTime<TransferMetric> info)
             where T : IJourneyMetric<T>
         {
-            AssertNoLoops(journey, info.StopsReader, info.ConnectionReader);
+            AssertNoLoops(journey, info.StopsDb, info.ConnectionsDb);
         }
 
         private static bool ContainsLoop<T>(Journey<T> journey)
@@ -143,7 +143,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
             return false;
         }
 
-        public static void AssertNoLoops<T>(Journey<T> journey, IStopsReader stops,
+        public static void AssertNoLoops<T>(Journey<T> journey, IStopsDb stops,
             IDatabaseReader<ConnectionId, Connection> conn) where T : IJourneyMetric<T>
         {
             if (journey.Root.TripId.Equals(Journey<T>.EarliestArrivalScanJourney))
@@ -158,12 +158,12 @@ namespace Itinero.Transit.Tests.Functional.Utils
             
             if (ContainsLoop(journey))
             {
-                throw new Exception("Loop detected in the journey: " + journey.ToString(50, stops, conn));
+                throw new Exception("Loop detected in the journey: " + journey.ToString(50, stops));
             }
         }
 
         public void AssertAreSame(ICollection<Journey<TransferMetric>> js, ICollection<Journey<TransferMetric>> bs,
-            IStopsReader reader)
+            IStopsDb reader)
         {
             var oneMissing = false;
             foreach (var a in js)

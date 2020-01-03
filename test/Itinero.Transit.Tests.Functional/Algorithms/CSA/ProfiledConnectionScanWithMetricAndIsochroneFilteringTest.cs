@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Itinero.Transit.Algorithms.CSA;
 using Itinero.Transit.Algorithms.Filter;
+using Itinero.Transit.Data;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.Tests.Functional.Utils;
 
@@ -46,7 +47,8 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var settings = Input.GetScanSettings();
 
             settings.MetricGuesser =
-                new SimpleMetricGuesser<TransferMetric>(settings.ConnectionsEnumerator, settings.DepartureStop);
+                new SimpleMetricGuesser<TransferMetric>(
+                    settings.DepartureStop.Select(stop => Input.StopsDb.GetId(stop)));
 
             var pcsF = new ProfiledConnectionScan<TransferMetric>(settings);
             var journeysF = pcsF.CalculateJourneys();
@@ -59,7 +61,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             Information(
                 $"No filter: {noFilterTime}ms, with filter: {filteredTime}ms, diff {noFilterTime - filteredTime}ms faster, {(int) (100 * filteredTime / noFilterTime)}% of original)");
 
-            AssertAreSame(journeysF, journeys, Input.StopsReader);
+            AssertAreSame(journeysF, journeys, Input.StopsDb);
         }
     }
 }

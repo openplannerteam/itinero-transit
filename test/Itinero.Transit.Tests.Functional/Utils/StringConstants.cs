@@ -5,7 +5,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
 {
     public static class StringConstants
     {
-        public static readonly DateTime TestDate = new DateTime(2019, 10, 28, 09, 00, 00).ToUniversalTime().Date;
+        public static readonly DateTime TestDate = new DateTime(2020, 01, 01, 09, 00, 00).ToUniversalTime().Date;
 
 
         public const string OsmNearStationBruggeLatLon = "https://www.openstreetmap.org/#map=19/51.19764/3.21847";

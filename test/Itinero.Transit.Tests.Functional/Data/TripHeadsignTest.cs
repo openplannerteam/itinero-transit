@@ -11,15 +11,15 @@ namespace Itinero.Transit.Tests.Functional.Data
 
             Information("Testing headsign attribute");
             var tripDb = latest.TripsDb;
-            var consReader = latest.ConnectionsDb;
+            var connections = latest.ConnectionsDb;
             uint failed = 0;
             uint found = 0;
             uint total = 0;
-            var index = consReader.First().Value;
-            while (consReader.HasNext(index, out index))
+
+            foreach (var connection in connections)
             {
                 total++;
-                var trip = tripDb.Get(consReader.Get(index).TripId);
+                var trip = tripDb.Get(connection.TripId);
                 trip.Attributes.TryGetValue("headsign", out var hs);
                 if (hs == null)
                 {

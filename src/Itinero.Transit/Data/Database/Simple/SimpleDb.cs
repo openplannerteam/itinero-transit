@@ -1,8 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.IO;
 
 namespace Itinero.Transit.Data.Simple
 {
@@ -107,18 +105,6 @@ namespace Itinero.Transit.Data.Simple
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-
-        [Pure]
-        public long WriteTo(Stream stream)
-        {
-            throw new NotImplementedException();
-        }
-
-        public long ReadFrom(Stream stream)
-        {
-            throw new NotImplementedException();
         }
 
         private class SimpleDbEnumerator : IEnumerator<T>

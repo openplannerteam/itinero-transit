@@ -1,6 +1,7 @@
 using System.IO;
 using System.Threading;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Serialization;
 using Itinero.Transit.Data.Synchronization;
 using Itinero.Transit.IO.LC;
 using Itinero.Transit.Tests.Functional.Utils;
@@ -26,12 +27,12 @@ namespace Itinero.Transit.Tests.Functional.IO.LC.Synchronization
             Thread.Sleep(10000);
             True(File.Exists(path));
 
-            using (var stream = File.OpenRead(path))
-            {
-                // can we read this stuff again?
-                var read = new TransitDb(0, stream);
-                NotNull(read);
-            }
+            // can we read this stuff again?
+            var read = new TransitDb(0);
+            var writer = read.GetWriter();
+            writer.ReadFrom(path);
+            writer.Close();
+            NotNull(read);
 
             File.Delete(path);
         }

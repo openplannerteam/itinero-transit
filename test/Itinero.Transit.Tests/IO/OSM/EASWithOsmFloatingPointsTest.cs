@@ -94,8 +94,9 @@ namespace Itinero.Transit.Tests.IO.OSM
                 TransferMetric.Factory,
                 TransferMetric.ParetoCompare);
 
-            var osmStopReader = new OsmLocationStopReader(1, new List<(double lon, double lat)> {(50.00005, 49.99953)});
-            var departureLocation = osmStopReader.SearchableLocations[0].GlobalId;
+            var coor = (50.00005, 49.99953);
+            var osmStopReader = new OsmStopsDb(1, new List<(double lon, double lat)> {coor});
+            var departureLocation = osmStopReader.FindClosest(coor, 50).GlobalId;
 
             // Walk from start
             var input = latest
@@ -135,7 +136,7 @@ namespace Itinero.Transit.Tests.IO.OSM
                 TransferMetric.Factory,
                 TransferMetric.ParetoCompare);
 
-            var osmStopReader = new OsmLocationStopReader(1, new (double lon, double lat)[] {(0, 0)});
+            var osmStopReader = new OsmStopsDb(1, new (double lon, double lat)[] {(0, 0)});
 
             // Walk to end
 
@@ -166,9 +167,8 @@ namespace Itinero.Transit.Tests.IO.OSM
             var journey = input.CalculateEarliestArrivalJourney();
             Assert.NotNull(journey);
             input.ResetFilter();
-            
         }
-        
+
         [Fact]
         public void Latest_WithBeginAndEndWalk_ExpectsJourney()
         {
@@ -178,7 +178,7 @@ namespace Itinero.Transit.Tests.IO.OSM
             Assert.NotNull(las);
             input.ResetFilter();
         }
-        
+
         [Fact]
         public void PCS_WithBeginAndEndWalk_ExpectsJourney()
         {
@@ -212,14 +212,15 @@ namespace Itinero.Transit.Tests.IO.OSM
                 TransferMetric.ParetoCompare);
 
 
-            var osmStopReader = new OsmLocationStopReader(1, new List<(double lon, double lat)>
+            var coor0 = (50.00005, 49.99953);
+            var coor1 = (0, 0);
+            var osmStopReader = new OsmStopsDb(1, new List<(double lon, double lat)>
             {
-                (50.00005, 49.99953),
-                (0, 0)
+                coor0, coor1
             });
 
-            var departureLocation = osmStopReader.SearchableLocations[0];
-            var arrivalLocation = osmStopReader.SearchableLocations[1];
+            var departureLocation = osmStopReader.FindClosest(coor0, 50);
+            var arrivalLocation = osmStopReader.FindClosest(coor1, 50);
 
             var input = latest
                 .SelectProfile(profile)

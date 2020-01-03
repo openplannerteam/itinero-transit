@@ -41,6 +41,11 @@ namespace Itinero.Transit.Tests.Functional
             // do some local caching.
             if (devTestsOnly)
             {
+                new IntermodalTestWithOtherTransport(nmbs, TestConstants.DefaultProfile)
+                    .RunOverMultiple(TestConstants.WithWalkTestCases);
+                new IntermodalTestWithOtherTransport(nmbs, TestConstants.WithFirstLastMile)
+                    .RunOverMultiple(TestConstants.WithWalkTestCases);
+
                 var withTime = nmbs.SelectProfile(new DefaultProfile(0))
                     .SelectStops("http://irail.be/stations/NMBS/008811262", "http://irail.be/stations/NMBS/008811197")
                     .SelectTimeFrame(StringConstants.TestDate.AddHours(1), StringConstants.TestDate.AddHours(10));
@@ -74,8 +79,8 @@ namespace Itinero.Transit.Tests.Functional
 
             new TestAutoUpdating().Run();
 
-            new ConnectionsDbDepartureEnumeratorTest().Run((nmbs, 65677));
-            new ReadWriteTest().Run((nmbs, 65677));
+            new ConnectionsDbDepartureEnumeratorTest().Run((nmbs, 38947));
+            new ReadWriteTest().Run((nmbs, 38947));
 
             new DelayTest().Run();
 
@@ -84,10 +89,7 @@ namespace Itinero.Transit.Tests.Functional
             new UpdateTransitDbTest().Run();
 
 
-            new IntermodalTestWithOtherTransport(nmbs, TestConstants.DefaultProfile)
-                .RunOverMultiple(TestConstants.WithWalkTestCases);
-            new IntermodalTestWithOtherTransport(nmbs, TestConstants.WithFirstLastMile)
-                .RunOverMultiple(TestConstants.WithWalkTestCases);
+            // INSERT HERE
 
 
             MultiTestRunner.NmbsOnlyTester().RunAllTests();

@@ -13,7 +13,7 @@ namespace Itinero.Transit.Tests.IO.OSM
         public void SearchId_Bruges_ExpectsCorrectStop()
         {
             var loc = "https://www.openstreetmap.org/#map=19/51.21575/3.21999";
-            var reader = new OsmLocationStopReader(0);
+            var reader = new OsmStopsDb(0);
             reader.TryGetId(loc, out var id);
             var stop = reader.Get(id);
 
@@ -27,14 +27,14 @@ namespace Itinero.Transit.Tests.IO.OSM
         public void SearchId_IsStable()
         {
             var c = (50.00005, 49.99953);
-            var reader = new OsmLocationStopReader(0);
-            var stop0Id = reader.SearchId(c);
+            var reader = new OsmStopsDb(0);
+            var stop0Id = reader.GetId(c);
             var stop0 = reader.Get(stop0Id);
 
-            var stop1Id = reader.SearchId(stop0.GlobalId);
+            var stop1Id = reader.GetId(stop0.GlobalId);
             var stop1 = reader.Get(stop1Id);
 
-            var stop2Id = reader.SearchId(stop1.GlobalId);
+            var stop2Id = reader.GetId(stop1.GlobalId);
             var stop2 = reader.Get(stop2Id);
 
             Assert.Equal(stop1.GlobalId, stop2.GlobalId);
@@ -44,8 +44,9 @@ namespace Itinero.Transit.Tests.IO.OSM
         [Fact]
         public void SearchID_IdIsStable()
         {
-            var reader = new OsmLocationStopReader(0, new List<(double lon, double lat)> {(50.00005, 49.99953)});
-            var stop = reader.SearchableLocations[0];
+            var coor = (50.00005, 49.99953);
+            var reader = new OsmStopsDb(0, new List<(double lon, double lat)> {coor});
+            var stop = reader.FindClosest(coor, 50);
             var altStop = reader.Get(stop.GlobalId);
 
             Assert.Equal(stop.GlobalId, altStop.GlobalId);
@@ -65,7 +66,7 @@ namespace Itinero.Transit.Tests.IO.OSM
         public void SearchId_FloatingZeroes_ExpectsCorrectStop()
         {
             var loc = "https://www.openstreetmap.org/#map=19/51.002/3.09";
-            var reader = new OsmLocationStopReader(0);
+            var reader = new OsmStopsDb(0);
             reader.TryGetId(loc, out var id);
             var stop = reader.Get(id);
 
@@ -79,7 +80,7 @@ namespace Itinero.Transit.Tests.IO.OSM
         public void SearchId_ExtremePointPos_ExpectsCorrectStop()
         {
             var loc = "https://www.openstreetmap.org/#map=19/85/180";
-            var reader = new OsmLocationStopReader(0);
+            var reader = new OsmStopsDb(0);
             reader.TryGetId(loc, out var id);
             var stop = reader.Get(id);
 
@@ -93,7 +94,7 @@ namespace Itinero.Transit.Tests.IO.OSM
         public void SearchId_ExtremePointNeg_ExpectsCorrectStop()
         {
             var loc = "https://www.openstreetmap.org/#map=19/-85/-180";
-            var reader = new OsmLocationStopReader(0);
+            var reader = new OsmStopsDb(0);
             reader.TryGetId(loc, out var id);
             var stop = reader.Get(id);
 

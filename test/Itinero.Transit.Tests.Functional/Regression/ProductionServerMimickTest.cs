@@ -21,7 +21,7 @@ namespace Itinero.Transit.Tests.Functional.Regression
         private readonly TransitDb _transitDb;
         private readonly DateTime? _departureTime;
         private readonly DateTime? _arrivalTime;
-        private readonly IStopsReader _reader;
+        private readonly IStopsDb _reader;
 
 
         public ProductionServerMimickTest(TransitDb transitDb, DateTime? departureTime, DateTime? arrivalTime)
@@ -29,18 +29,20 @@ namespace Itinero.Transit.Tests.Functional.Regression
             _transitDb = transitDb;
             _departureTime = departureTime;
             _arrivalTime = arrivalTime;
-            _reader = StopsReaderAggregator.CreateFrom(
-                new List<IStopsReader>
-                {
-                    _transitDb.Latest.StopsDb.GetReader()
-                }).UseCache();
+            _reader = _transitDb.Latest.StopsDb.UseCache();
             
         }
 
         protected override void Execute()
         {
-            var profile = CreateProfile(Input.@from, Input.to);
-            var foundJourneys = BuildJourneys(profile, Input.@from, Input.to, _departureTime, _arrivalTime, true);
+            
+            var stopsDb = _reader.AddOsmReader(new []{Input.from, Input.to});
+
+            var from = stopsDb.Get(Input.from);
+            var to = stopsDb.Get(Input.to);
+
+            var profile = CreateProfile(from, to);
+            var foundJourneys = BuildJourneys(profile, stopsDb, from, to, _departureTime, _arrivalTime, true);
             NotNull(foundJourneys);
             NotNull(foundJourneys.Item1);
             True(foundJourneys.Item1.Count > 0);
@@ -49,36 +51,23 @@ namespace Itinero.Transit.Tests.Functional.Regression
         private (
             List<Journey<TransferMetric>>, DateTime start, DateTime end) BuildJourneys(
                 Profile<TransferMetric> p,
-                string from, string to, DateTime? departure,
+                IStopsDb stops,
+                Stop from, Stop to, DateTime? departure,
                 DateTime? arrival,
                 bool multipleOptions)
         {
             departure = departure?.ToUniversalTime();
             arrival = arrival?.ToUniversalTime();
 
-            var reader = _reader;
-            var osmIndex = reader.DatabaseIndexes().Max() + 1u;
-
-            var stopsReader = StopsReaderAggregator.CreateFrom(new List<IStopsReader>
-            {
-                reader,
-                new OsmLocationStopReader(osmIndex, true),
-            }).UseCache(); // We cache here only for this request- only case cache will be missed is around the new stop locations
+            stops = stops.UseCache(); // We cache here only for this request- only case cache will be missed is around the new stop locations
 
             // Calculate the first and last miles, in order to
             // 1) Detect impossible routes
             // 2) cache them
 
-            stopsReader.MoveTo(from);
-            var fromStop = new Stop(stopsReader);
 
-            stopsReader.MoveTo(to);
-            var toStop = new Stop(stopsReader);
-
-           DetectFirstMileWalks(p, stopsReader, fromStop, osmIndex, false, "departure");
-           DetectFirstMileWalks(p, stopsReader, toStop, osmIndex, true, "arrival");
-
-           stopsReader.MakeComplete();
+           DetectFirstMileWalks(p, stops, from, false, "departure");
+           DetectFirstMileWalks(p, stops, to, true, "arrival");
 
             // Close the cache, cross-calculate everything
             // Then, the 'SearchAround'-queries will not be run anymore.
@@ -91,7 +80,7 @@ namespace Itinero.Transit.Tests.Functional.Regression
             var precalculator =
                 _transitDb
                     .SelectProfile(p)
-                    .SetStopsReader(stopsReader)
+                    .SetStopsDb(stops)
                     .SelectStops(from, to);
             WithTime<TransferMetric> calculator;
             if (departure == null)
@@ -145,9 +134,12 @@ namespace Itinero.Transit.Tests.Functional.Regression
         
         private static void DetectFirstMileWalks<T>(
             Profile<T> p,
-            IStopsReader stops, Stop stop, uint osmIndex, bool isLastMile, string name) where T : IJourneyMetric<T>
+            IStopsDb stops, Stop stop, bool isLastMile, string name) where T : IJourneyMetric<T>
         {
-            var failIfNoneFound = stop.Id.DatabaseId == osmIndex;
+            // Is this stop an OSM-location?
+            // If yes, then we'll have to walk towards a nearby stop to do something
+            // If we didn't find anything, we'll have to fail
+            var failIfNoneFound = stop.GlobalId.StartsWith("https://www.openstreetmap.org/");
 
             if (p.WalksGenerator.Range() == 0)
             {
@@ -155,10 +147,10 @@ namespace Itinero.Transit.Tests.Functional.Regression
                 return;
             }
 
-            var inRange = stops.StopsAround(stop, p.WalksGenerator.Range()).ToList();
+            var inRange = stops.GetInRange(stop, p.WalksGenerator.Range()).ToList();
             if (inRange == null 
                 || !inRange.Any() 
-                || inRange.Count == 1 && inRange[0].Id.Equals(stop.Id))
+                || inRange.Count == 1 && inRange[0].Equals(stop))
             {
                 if (!failIfNoneFound)
                 {
@@ -215,10 +207,10 @@ namespace Itinero.Transit.Tests.Functional.Regression
             var errors = new List<string>();
             foreach (var stp in inRange)
             {
-                var gen = w.GetSource(stop.Id, stp.Id);
+                var gen = w.GetSource(stop, stp);
                 if (isLastMile)
                 {
-                    gen = w.GetSource(stp.Id, stop.Id);
+                    gen = w.GetSource(stp, stop);
                 }
 
                 var errorMessage =
@@ -248,25 +240,19 @@ namespace Itinero.Transit.Tests.Functional.Regression
         }
 
         private Profile<TransferMetric> CreateProfile(
-            string @from, string to,
+            Stop from, Stop to,
             uint internalTransferTime = 180,
             bool allowCancelled = false
         )
         {
-            var stops = _reader.AddOsmReader();
-
-            stops.MoveTo(from);
-            var fromId = stops.Id;
-            stops.MoveTo(to);
-            var toId = stops.Id;
 
 
             var walksGenerator = new FirstLastMilePolicy(
                 new CrowsFlightTransferGenerator(0),
                 new OsmTransferGenerator(RouterDbStaging.RouterDb, Input.maxSearch, OsmProfiles.Pedestrian).UseCache(),
-                fromId,
+                from,
                 new OsmTransferGenerator(RouterDbStaging.RouterDb, Input.maxSearch, OsmProfiles.Pedestrian).UseCache(),
-                toId
+                to
             ).UseCache();
 
 

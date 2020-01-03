@@ -51,7 +51,7 @@ namespace Itinero.Transit.OtherMode
                 return _cacheSingle[key];
             }
 
-            var v = Fallback.TimeBetween(@from, to);
+            var v = Fallback.TimeBetween(from, to);
             lock (_cacheSingle)
             {
                 _cacheSingle[key] = v;
@@ -120,7 +120,7 @@ namespace Itinero.Transit.OtherMode
 
             if (toSearch.Count != 0)
             {
-                var rawSearch = Fallback.TimesBetween(@from, to);
+                var rawSearch = Fallback.TimesBetween(from, to);
                 foreach (var found in rawSearch)
                 {
                     v[found.Key] = found.Value;
@@ -160,7 +160,7 @@ namespace Itinero.Transit.OtherMode
         }
 
 
-        public Dictionary<Stop, uint> TimesBetween(IEnumerable<Stop> @fromEnum, Stop to)
+        public Dictionary<Stop, uint> TimesBetween(IEnumerable<Stop> fromEnum, Stop to)
         {
             var from = fromEnum.ToList();
             var froms = new KeyList<Stop>(from);
@@ -197,7 +197,7 @@ namespace Itinero.Transit.OtherMode
             if (toSearch.Count != 0)
             {
                 // There are still values to search for. Lets do that now
-                var rawSearch = Fallback.TimesBetween(@toSearch, to);
+                var rawSearch = Fallback.TimesBetween(toSearch, to);
                 foreach (var found in rawSearch)
                 {
                     v[found.Key] = found.Value;

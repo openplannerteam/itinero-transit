@@ -42,7 +42,7 @@ namespace Itinero.Transit.Processor
                 {
                     new SwitchJapanize(),
                     new SwitchValidate(),
-                    new SwitchNmbsFilter(),
+                    new SwitchUnusedFilter(),
                     new HelpSwitch(),
                     new Shell(),
                     new SwitchClear(),

@@ -5,7 +5,6 @@ using Itinero.IO.Osm.Tiles.Parsers;
 using Itinero.LocalGeo;
 using Itinero.Profiles;
 using Itinero.Profiles.Lua.Osm;
-using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
 using Itinero.Transit.Logging;
 using Itinero.Transit.OtherMode;
@@ -63,16 +62,16 @@ namespace Itinero.Transit.Tests.Functional.Transfers
             _profile = profile ?? OsmProfiles.Pedestrian;
         }
 
-        public uint TimeBetween(IStop from, IStop to)
+        public uint TimeBetween(Stop from, Stop to)
         {
-            if (from.Id.Equals(to.Id))
+            if (from.GlobalId.Equals(to.GlobalId))
             {
                 // This thing is not allowed to generate transfers between the same stops
                 return uint.MaxValue;
             }
 
             var distance =
-                Coordinate.DistanceEstimateInMeter(@from.Longitude, @from.Latitude, to.Longitude, to.Latitude);
+                Coordinate.DistanceEstimateInMeter(from.Longitude, from.Latitude, to.Longitude, to.Latitude);
             // Small patch for small distances...
             if (distance < 20)
             {
@@ -108,7 +107,7 @@ namespace Itinero.Transit.Tests.Functional.Transfers
             try
             {
                 var startPoint = _routerDb.Snap(
-                    @from.lon, @from.lat, profile: _profile);
+                    from.lon, from.lat, profile: _profile);
                 var endPoint = _routerDb.Snap(to.lon, to.lat, profile: _profile);
                 if (startPoint.IsError || endPoint.IsError)
                 {
@@ -162,30 +161,30 @@ namespace Itinero.Transit.Tests.Functional.Transfers
             }
         }
 
-        public Dictionary<StopId, uint> TimesBetween(IStop from,
-            IEnumerable<IStop> toEnumerable)
+        public Dictionary<Stop, uint> TimesBetween(Stop from,
+            IEnumerable<Stop> toEnumerable)
         {
             var to = toEnumerable.ToList();
             try
             {
-                var times = new Dictionary<StopId, uint>();
+                var times = new Dictionary<Stop, uint>();
 
                 // collect targets that are in range.
-                var targets = new List<(SnapPoint target, IStop stop)>();
+                var targets = new List<(SnapPoint target, Stop stop)>();
                 foreach (var t in to)
                 {
                     var distance =
-                        Coordinate.DistanceEstimateInMeter(@from.Latitude, @from.Longitude, t.Latitude, t.Longitude);
+                        Coordinate.DistanceEstimateInMeter(from.Latitude, from.Longitude, t.Latitude, t.Longitude);
                     // Small patch for small distances...
                     if (distance < 20)
                     {
-                        times[t.Id] = 0;
+                        times[t] = 0;
                         continue;
                     }
 
                     if (distance > _searchDistance)
                     {
-                        times[t.Id] = uint.MaxValue;
+                        times[t] = uint.MaxValue;
                         continue;
                     }
 
@@ -197,7 +196,7 @@ namespace Itinero.Transit.Tests.Functional.Transfers
 
                 // resolve source only if we have targets.
                 var source = _routerDb.Snap(
-                    @from.Longitude, @from.Latitude, profile: _profile);
+                    from.Longitude, from.Latitude, profile: _profile);
 
                 // calculate all routes using one-to-many search.
                 var config = new RoutingSettings
@@ -213,11 +212,11 @@ namespace Itinero.Transit.Tests.Functional.Transfers
                     var result = routes[i];
                     if (result.IsError || result.Value.TotalDistance > Range())
                     {
-                        times[stop.Id] = uint.MaxValue;
+                        times[stop] = uint.MaxValue;
                     }
                     else
                     {
-                        times[stop.Id] = (uint) result.Value.TotalTime;
+                        times[stop] = (uint) result.Value.TotalTime;
                     }
                 }
 
@@ -229,36 +228,36 @@ namespace Itinero.Transit.Tests.Functional.Transfers
                     to.Select(t => $"{t.GlobalId} {(t.Longitude, t.Latitude)}"));
                 Log.Error(
                     $"Could not calculate one-to-many route: weird exception: {e.Message}\n" +
-                    $"Departure point is {@from.GlobalId} {(@from.Longitude, @from.Latitude)}\n" +
+                    $"Departure point is {from.GlobalId} {(from.Longitude, from.Latitude)}\n" +
                     $"Arrival points are {arrivalPoints}\n" +
                     $"Stack trace is {e}");
                 throw;
             }
         }
 
-        public Dictionary<StopId, uint> TimesBetween(IEnumerable<IStop> @fromEnum, IStop to)
+        public Dictionary<Stop, uint> TimesBetween(IEnumerable<Stop> fromEnum, Stop to)
         {
             var from = fromEnum.ToList();
             try
             {
-                var times = new Dictionary<StopId, uint>();
+                var times = new Dictionary<Stop, uint>();
 
                 // collect targets that are in range.
-                var sources = new List<(SnapPoint target, IStop stop)>();
+                var sources = new List<(SnapPoint target, Stop stop)>();
                 foreach (var f in from)
                 {
                     var distance =
-                        Coordinate.DistanceEstimateInMeter(@f.Latitude, @f.Longitude, to.Latitude, to.Longitude);
+                        Coordinate.DistanceEstimateInMeter(f.Latitude, f.Longitude, to.Latitude, to.Longitude);
                     // Small patch for small distances...
                     if (distance < 20)
                     {
-                        times[f.Id] = 0;
+                        times[f] = 0;
                         continue;
                     }
 
                     if (distance > _searchDistance)
                     {
-                        times[f.Id] = uint.MaxValue;
+                        times[f] = uint.MaxValue;
                         continue;
                     }
 
@@ -271,7 +270,7 @@ namespace Itinero.Transit.Tests.Functional.Transfers
 
                 // resolve source only if we have targets.
                 var source = _routerDb.Snap(
-                    @to.Longitude, @to.Latitude, profile: _profile);
+                    to.Longitude, to.Latitude, profile: _profile);
 
                 // calculate all routes using one-to-many search.
                 var config = new RoutingSettings
@@ -286,11 +285,11 @@ namespace Itinero.Transit.Tests.Functional.Transfers
                     var result = routes[i];
                     if (result.IsError || result.Value.TotalDistance > Range())
                     {
-                        times[stop.Id] = uint.MaxValue;
+                        times[stop] = uint.MaxValue;
                     }
                     else
                     {
-                        times[stop.Id] = (uint) result.Value.TotalTime;
+                        times[stop] = (uint) result.Value.TotalTime;
                     }
                 }
 
@@ -320,7 +319,7 @@ namespace Itinero.Transit.Tests.Functional.Transfers
                 $"osm&maxDistance={_searchDistance}&profile={_profile.Name}";
         }
 
-        public IOtherModeGenerator GetSource(StopId @from, StopId to)
+        public IOtherModeGenerator GetSource(Stop from, Stop to)
         {
             return this;
         }

@@ -41,15 +41,5 @@ namespace Itinero.Transit.Tests.Functional
                 new Uri(SncbLocations)
             );
         }
-
-
-        private static LinkedConnectionDataset CreateDeLijnProfile(string province)
-        {
-            return new LinkedConnectionDataset(
-                new Uri($"https://openplanner.ilabt.imec.be/delijn/{province}/connections"),
-                new Uri($"https://openplanner.ilabt.imec.be/delijn/{province}/stops")
-            );
-        }
-
     }
 }

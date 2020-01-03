@@ -31,7 +31,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
             ShuttleBrugge
         };
 
-        public static Profile<TransferMetric> DefaultProfile(uint maxSearch, StopId _, StopId __)
+        public static Profile<TransferMetric> DefaultProfile(uint maxSearch, Stop _, Stop __)
         {
             return new DefaultProfile(maxSearch);
         }
@@ -48,8 +48,8 @@ namespace Itinero.Transit.Tests.Functional.Utils
             );
         }
 
-        public static Profile<TransferMetric> WithFirstLastMile(uint maxSearchDistance, StopId firstMile,
-            StopId lastMile)
+        public static Profile<TransferMetric> WithFirstLastMile(uint maxSearchDistance, Stop firstMile,
+            Stop lastMile)
         {
             var router = RouterDbStaging.RouterDb;
             IOtherModeGenerator gen = new CrowsFlightTransferGenerator(maxSearchDistance);

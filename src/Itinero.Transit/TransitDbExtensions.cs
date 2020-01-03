@@ -350,7 +350,7 @@ namespace Itinero.Transit
         }
 
         [Pure]
-        public WithProfile<T> SetStopsReader(IStopsDb stopsReader)
+        public WithProfile<T> SetStopsDb(IStopsDb stopsReader)
         {
             return new WithProfile<T>(
                 stopsReader,

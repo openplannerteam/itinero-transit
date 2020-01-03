@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Serialization;
 
 namespace Itinero.Transit.Tests.Functional.Utils
 {
@@ -16,7 +17,11 @@ namespace Itinero.Transit.Tests.Functional.Utils
             var key = (path, index);
             if (!_tdbCache.ContainsKey(key))
             {
-                _tdbCache[key] = TransitDb.ReadFrom(path, index);
+                var tdb = new TransitDb(index);
+                var wr = tdb.GetWriter();
+                wr.ReadFrom(path);
+                wr.Close();
+                _tdbCache[key] = tdb;
             }
 
             return _tdbCache[key];

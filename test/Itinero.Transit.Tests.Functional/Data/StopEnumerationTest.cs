@@ -10,18 +10,18 @@ namespace Itinero.Transit.Tests.Functional.Data
     {
         protected override void Execute()
         {
-            var reader = StopsReaderAggregator.CreateFrom(Input.Select(a => a.Latest));
+            var reader = StopsDbAggregator.CreateFrom(Input.Select(a => a.Latest));
 
-            True(reader.MoveTo("https://data.delijn.be/stops/502132"));
+            True(reader.TryGet("https://data.delijn.be/stops/502132", out var stop));
 
-            Information(reader.GlobalId);
-            var n = reader.Attributes;
+            Information(stop.GlobalId);
+            var n = stop.Attributes;
             n.TryGetValue("name", out var name);
 
             NotNull(name);
-            True(reader.MoveTo("http://irail.be/stations/NMBS/008892007"));
+            True(reader.TryGet("http://irail.be/stations/NMBS/008892007", out stop));
 
-            n = reader.Attributes;
+            n = stop.Attributes;
             n.TryGetValue("name", out name);
             NotNull(name);
 

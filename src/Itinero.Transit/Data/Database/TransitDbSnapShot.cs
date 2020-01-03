@@ -52,7 +52,7 @@ namespace Itinero.Transit.Data
             return ConnectionsDb.LatestDate.FromUnixTime();
         }
         
-        public void WriteTo(FileStream stream)
+        public void WriteTo(Stream stream)
         {
             var formatter = new BinaryFormatter();
             stream.Serialize(StopsDb, formatter);

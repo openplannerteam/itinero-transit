@@ -45,7 +45,7 @@ namespace Itinero.Transit.OtherMode
             return SelectSource(from, to).TimeBetween(from, to);
         }
 
-        public Dictionary<Stop, uint> TimesBetween(Stop @from,
+        public Dictionary<Stop, uint> TimesBetween(Stop from,
             IEnumerable<Stop> to)
         {
             if (_firstMileStops.Contains(from))
@@ -90,10 +90,10 @@ namespace Itinero.Transit.OtherMode
                 return _lastMile.TimesBetween(from, tosLastMile);
             }
 
-            return _defaultWalk.TimesBetween(@from, tosDefault);
+            return _defaultWalk.TimesBetween(from, tosDefault);
         }
 
-        public Dictionary<Stop, uint> TimesBetween(IEnumerable<Stop> @from,
+        public Dictionary<Stop, uint> TimesBetween(IEnumerable<Stop> from,
             Stop to)
         {
             var firstMiles = new List<Stop>();

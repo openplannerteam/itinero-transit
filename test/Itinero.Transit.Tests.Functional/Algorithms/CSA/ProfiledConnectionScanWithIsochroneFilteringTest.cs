@@ -50,7 +50,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             Information($"Found {journeysF.Count} profiles");
             Information($"No filter: {noFilterTime}ms, with filter: {filteredTime}ms, diff {noFilterTime - filteredTime}ms faster, {(int) (100*filteredTime/noFilterTime)}% of original)");
 
-            AssertAreSame(journeysF, journeys, Input.StopsReader);
+            AssertAreSame(journeysF, journeys, Input.StopsDb);
         }
     }
 }

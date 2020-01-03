@@ -19,7 +19,7 @@ namespace Itinero.Transit.IO.OSM.Data
     /// https://www.openstreetmap.org/#map=[irrelevant_zoom_level]/[lat]/[lon]
     /// E.g.:  https://www.openstreetmap.org/#map=19/51.21575/3.21999
     /// </summary>
-    public class OsmLocationStopReader : IStopsDb
+    public class OsmStopsDb : IStopsDb
     {
         private readonly uint _databaseId;
 
@@ -42,7 +42,7 @@ namespace Itinero.Transit.IO.OSM.Data
         /// We expect this list to stay small (at most 100) so we are not gonna optimize this a lot
         /// 
         /// </summary>
-        public readonly List<Stop> SearchableLocations = new List<Stop>();
+        private readonly List<Stop> _searchableLocations = new List<Stop>();
 
 
         private const uint Precision = 1000000;
@@ -56,8 +56,8 @@ namespace Itinero.Transit.IO.OSM.Data
         /// </summary>
         /// <param name="databaseId"></param>
         /// <param name="searchableLocations">Locations that can be picked up by GetEnumerator and SearchClosest</param>
-        public OsmLocationStopReader(uint databaseId, IEnumerable<(double lon, double lat)> searchableLocations)
-            : this(databaseId, searchableLocations?.Select(c => 
+        public OsmStopsDb(uint databaseId, IEnumerable<(double lon, double lat)> searchableLocations)
+            : this(databaseId, searchableLocations?.Select(c =>
                 CreateOsmStop(((long) (c.lon * Precision), (long) (c.lat * Precision)))))
         {
         }
@@ -71,7 +71,7 @@ namespace Itinero.Transit.IO.OSM.Data
         /// </summary>
         /// <param name="databaseId"></param>
         /// <param name="searchableLocations">Locations that can be picked up by GetEnumerator and SearchClosest</param>
-        public OsmLocationStopReader(uint databaseId, IEnumerable<Stop> searchableLocations = null)
+        public OsmStopsDb(uint databaseId, IEnumerable<Stop> searchableLocations = null)
         {
             _databaseId = databaseId;
             DatabaseIds = new[] {_databaseId};
@@ -82,11 +82,28 @@ namespace Itinero.Transit.IO.OSM.Data
                 {
                     _locationIndex.Add(searchableLocation.Longitude, searchableLocation.Latitude,
                         searchableLocation);
-                    SearchableLocations.Add(searchableLocation);
+                    _searchableLocations.Add(searchableLocation);
                 }
             }
         }
 
+        public OsmStopsDb(in uint databaseId, string[] searchableLocationsUrls)
+        {
+            _databaseId = databaseId;
+            DatabaseIds = new[] {_databaseId};
+            // ReSharper disable once InvertIf
+            if (searchableLocationsUrls != null)
+            {
+                foreach (var url in searchableLocationsUrls)
+                {
+                    if (!TryGetId(url, out var id)) continue;
+                    if (!TryGet(id, out var stop)) continue;
+                    _locationIndex.Add(stop.Longitude, stop.Latitude,
+                        stop);
+                    _searchableLocations.Add(stop);
+                }
+            }
+        }
 
         private static Stop CreateOsmStop((long lon, long lat) location)
         {
@@ -106,7 +123,7 @@ namespace Itinero.Transit.IO.OSM.Data
             return new Stop(globalId, ((double) lonRounded / Precision, (double) latRounded / Precision));
         }
 
-        public StopId SearchId((double lon, double lat) c)
+        public StopId GetId((double lon, double lat) c)
         {
             // Range: (0 -> 360 * Precision). Should be moved log(10, Precision) + 3 digits to the left to neatly fit into the long
             var lonRounded = (int) (c.lon * Precision);
@@ -114,10 +131,10 @@ namespace Itinero.Transit.IO.OSM.Data
             var latRounded = (int) (c.lat * Precision);
 
 
-            return SearchId(lonRounded, latRounded);
+            return GetId(lonRounded, latRounded);
         }
 
-        public StopId SearchId(long lonRounded, long latRounded)
+        private StopId GetId(long lonRounded, long latRounded)
         {
             lonRounded += 180 * Precision;
             latRounded += 90 * Precision;
@@ -126,7 +143,7 @@ namespace Itinero.Transit.IO.OSM.Data
                 (ulong) (lonRounded * Precision * 1000 + latRounded));
         }
 
-        public StopId SearchId(string globalId)
+        public StopId GetId(string globalId)
         {
             if (!TryGetId(globalId, out var id))
             {
@@ -150,7 +167,7 @@ namespace Itinero.Transit.IO.OSM.Data
             var lonRounded = id.LocalId / (Precision * 1000);
             var latRounded = id.LocalId % (Precision * 1000);
 
-            t = CreateOsmStop(((long) lonRounded -  Precision * 180, (long) latRounded - Precision * 90));
+            t = CreateOsmStop(((long) lonRounded - Precision * 180, (long) latRounded - Precision * 90));
             return true;
         }
 
@@ -163,7 +180,7 @@ namespace Itinero.Transit.IO.OSM.Data
                 return false;
             }
 
-            id = SearchId(c.lon, c.lat);
+            id = GetId(c.lon, c.lat);
             return true;
         }
 
@@ -174,12 +191,12 @@ namespace Itinero.Transit.IO.OSM.Data
 
         public IStopsDb Clone()
         {
-            return new OsmLocationStopReader(_databaseId, SearchableLocations);
+            return new OsmStopsDb(_databaseId, _searchableLocations);
         }
 
         public IEnumerator<Stop> GetEnumerator()
         {
-            return SearchableLocations.GetEnumerator();
+            return _searchableLocations.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

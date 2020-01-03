@@ -5,9 +5,9 @@ using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Processor.Switch
 {
-    internal class SwitchNmbsFilter : DocumentedSwitch, ITransitDbModifier
+    internal class SwitchUnusedFilter : DocumentedSwitch, ITransitDbModifier
     {
-        private static readonly string[] _names = {"--rm-unused"};
+        private static readonly string[] _names = {"--remove-unused", "--rm-unused"};
 
         private static string About ="Removes stops and trips without connections.";
 
@@ -17,7 +17,7 @@ namespace Itinero.Transit.Processor.Switch
 
         private const bool IsStable = false;
 
-        public SwitchNmbsFilter() : base(_names, About, _extraParams, IsStable)
+        public SwitchUnusedFilter() : base(_names, About, _extraParams, IsStable)
         {
         }
 

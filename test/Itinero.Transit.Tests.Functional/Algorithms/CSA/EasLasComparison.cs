@@ -27,15 +27,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
                     .CalculateLatestDepartureJourney();
 
 
-            var stop = Input.StopsReader;
-            stop.MoveTo(Input.From[0]);
-            var id0 = stop.GlobalId;
-            stop.MoveTo(Input.To[0]);
-            var id1 = stop.GlobalId;
-            stop.Attributes.TryGetValue("name", out var name);
             NotNull(lasJ,
-                $"No latest journey found for {id0} {Input.Start:s} --> {id1}({name}). However, the earliest arrival journey has been found:" +
-                $"\n{easJ.ToString(Input)}");
+                $"No latest journey found for {Input.From[0].GlobalId} {Input.Start:s} --> {Input.From[1].GlobalId}. However, the earliest arrival journey has been found:" +
+                $"\n{easJ.ToString(1, Input.StopsDb)}");
             AssertNoLoops(lasJ, Input);
 
             // Eas is bound by the first departing train, while las is not

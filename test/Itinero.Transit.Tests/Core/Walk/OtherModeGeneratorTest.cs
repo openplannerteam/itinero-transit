@@ -140,13 +140,13 @@ namespace Itinero.Transit.Tests.Core.Walk
             return 50;
         }
 
-        public Dictionary<Stop, uint> TimesBetween(Stop @from,
+        public Dictionary<Stop, uint> TimesBetween(Stop from,
             IEnumerable<Stop> to)
         {
             return this.DefaultTimesBetween(from, to);
         }
 
-        public Dictionary<Stop, uint> TimesBetween(IEnumerable<Stop> @from, Stop to)
+        public Dictionary<Stop, uint> TimesBetween(IEnumerable<Stop> from, Stop to)
         {
             return this.DefaultTimesBetween(from, to);
         }
@@ -161,7 +161,7 @@ namespace Itinero.Transit.Tests.Core.Walk
             return "test";
         }
 
-        public IOtherModeGenerator GetSource(Stop @from, Stop to)
+        public IOtherModeGenerator GetSource(Stop from, Stop to)
         {
             return this;
         }
@@ -181,12 +181,12 @@ namespace Itinero.Transit.Tests.Core.Walk
             return _time;
         }
 
-        public Dictionary<Stop, uint> TimesBetween(Stop @from, IEnumerable<Stop> to)
+        public Dictionary<Stop, uint> TimesBetween(Stop from, IEnumerable<Stop> to)
         {
             return this.DefaultTimesBetween(from, to);
         }
 
-        public Dictionary<Stop, uint> TimesBetween(IEnumerable<Stop> @from, Stop to)
+        public Dictionary<Stop, uint> TimesBetween(IEnumerable<Stop> from, Stop to)
         {
             return this.DefaultTimesBetween(from, to);
         }

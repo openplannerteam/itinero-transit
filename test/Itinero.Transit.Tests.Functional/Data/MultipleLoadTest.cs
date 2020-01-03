@@ -43,12 +43,11 @@ namespace Itinero.Transit.Tests.Functional.Data
         {
             var conns = db.Latest.ConnectionsDb;
 
-            var enumerator = conns.GetDepartureEnumerator();
             var count = 0;
 
-            enumerator.MoveTo(DateTime.Today.AddHours(10).ToUniversalTime().ToUnixTime());
+            var enumerator = conns.GetEnumeratorAt(DateTime.Today.AddHours(10).ToUniversalTime().ToUnixTime());
             var endTime = DateTime.Today.AddHours(11).ToUniversalTime().ToUnixTime();
-            while (enumerator.MoveNext() && enumerator.CurrentDateTime < endTime)
+            while (enumerator.MoveNext() && enumerator.CurrentTime < endTime)
             {
                 count++;
             }
