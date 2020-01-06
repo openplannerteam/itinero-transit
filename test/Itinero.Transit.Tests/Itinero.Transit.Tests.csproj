@@ -6,6 +6,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="NetTopologySuite.IO.GeoJSON" Version="1.15.5" />
+    <PackageReference Include="openplannerteam.Itinero.IO.Osm.Tiles" Version="2.0.0-pre034" />
     <PackageReference Include="SQLitePCLRaw.core" Version="1.1.13" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
@@ -17,6 +18,7 @@
     <ProjectReference Include="..\..\src\Itinero.Transit.IO.LC\Itinero.Transit.IO.LC.csproj" />
     <ProjectReference Include="..\..\src\Itinero.Transit.IO.OSM\Itinero.Transit.IO.OSM.csproj" />
     <ProjectReference Include="..\..\src\Itinero.Transit\Itinero.Transit.csproj" />
+    <ProjectReference Include="..\Itinero.Transit.Tests.Functional\Itinero.Transit.Tests.Functional.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Data\**" />
@@ -37,5 +39,10 @@
     <None Update="ebike.lua">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Itinero, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\..\.nuget\packages\openplannerteam.itinero\2.0.0-pre034\lib\netstandard2.0\Itinero.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

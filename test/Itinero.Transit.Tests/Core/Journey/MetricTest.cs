@@ -7,8 +7,6 @@ namespace Itinero.Transit.Tests.Core.Journey
 {
     public class TransferMetricTest
     {
-        // TEST ALT LINK WITH VEHICLE INCREASE TODO FIX
-
         [Fact]
         public void Construct_NormalCase_ExpectsCorrectMetrics()
         {

@@ -27,7 +27,7 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
                 1,
                 new SynchronizedWindow(1, TimeSpan.FromSeconds(-1),TimeSpan.FromSeconds(2), forceUpdate:true ));
             synchronizer.Start();
-            Thread.Sleep(4200);
+            Thread.Sleep(6000);
             Assert.True(triggered);
             synchronizer.Stop();
         }

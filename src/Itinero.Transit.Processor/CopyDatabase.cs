@@ -74,11 +74,7 @@ namespace Itinero.Transit.Processor
 
             foreach (var c in old.Latest.ConnectionsDb)
             {
-                if (keepConnection != null && !keepConnection(
-                        (stopIdMapping, reverseStopIdMapping, tripIdMapping,reverseTripIdMapping, c)))
-                {
-                    continue;
-                }
+
 
                 var depStop = old.Latest.StopsDb.Get(c.DepartureStop);
                 if (!stopIdMapping.TryGetValue(depStop.GlobalId, out var depStopId))
@@ -115,6 +111,12 @@ namespace Itinero.Transit.Processor
                     c.TravelTime,
                     0, 0,
                     c.Mode, tripId);
+                
+                if (keepConnection != null && !keepConnection(
+                        (stopIdMapping, reverseStopIdMapping, tripIdMapping,reverseTripIdMapping, newConnection)))
+                {
+                    continue;
+                }
 
                 wr.AddOrUpdateConnection(modifyConnection(newConnection));
                 copiedConnections++;

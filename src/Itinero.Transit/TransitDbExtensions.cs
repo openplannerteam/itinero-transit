@@ -873,5 +873,12 @@ namespace Itinero.Transit
         {
             TimedFilter = null;
         }
+
+
+        public override string ToString()
+        {
+            return $"withTime : {{  start: {Start:s}, end: {End:s}, from: [{string.Join(",", From)}]" +
+                   $"to: [{string.Join(",", To)}], profile: {Profile}}}";
+        }
     }
 }

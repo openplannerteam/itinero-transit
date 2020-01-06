@@ -12,7 +12,7 @@ namespace Itinero.Transit.Tests.Functional.Data
         {
             var reader = StopsDbAggregator.CreateFrom(Input.Select(a => a.Latest));
 
-            True(reader.TryGet("https://data.delijn.be/stops/502132", out var stop));
+            True(reader.TryGet("https://data.delijn.be/stops/200372", out var stop));
 
             Information(stop.GlobalId);
             var n = stop.Attributes;

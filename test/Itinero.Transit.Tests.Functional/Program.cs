@@ -27,24 +27,24 @@ namespace Itinero.Transit.Tests.Functional
             EnableLogging();
 
 
-            Log.Information("Starting the functional tests...");
             var devTestsOnly = args.Length == 0 ||
-                               !new List<string> {"--full-test-suite", "--full", "--test"}.Contains(args[0].ToLower());
+                               !new List<string> {"--full-test-suite", "--full", "--test", "--all"}.Contains(args[0].ToLower());
 
-
+            Log.Information("Starting the functional tests...");
+            if (devTestsOnly)
+            {
+                Log.Information("DEV TESTS ONLY");
+            }
             // Setup...
             RouterDbStaging.Setup();
             var nmbs = TransitDbCache.Get(StringConstants.Nmbs, 0);
-            var wvl = TransitDbCache.Get(StringConstants.DelijnWvl, 1);
+            var ovl = TransitDbCache.Get(StringConstants.DelijnOVl, 1);
             var all = TransitDbCache.GetAll(StringConstants.TestDbs.ToList());
 
             // do some local caching.
             if (devTestsOnly)
             {
-                new IntermodalTestWithOtherTransport(nmbs, TestConstants.DefaultProfile)
-                    .RunOverMultiple(TestConstants.WithWalkTestCases);
-                new IntermodalTestWithOtherTransport(nmbs, TestConstants.WithFirstLastMile)
-                    .RunOverMultiple(TestConstants.WithWalkTestCases);
+                // TODO make sure IRail can     handle this one          new MultipleLoadTest().Run();
 
                 var withTime = nmbs.SelectProfile(new DefaultProfile(0))
                     .SelectStops("http://irail.be/stations/NMBS/008811262", "http://irail.be/stations/NMBS/008811197")
@@ -52,23 +52,21 @@ namespace Itinero.Transit.Tests.Functional
 
                 new ProfiledConnectionScanWithMetricAndIsochroneFilteringTest().Run(withTime);
 
+
+                // //
                 Logging.Log.Information("Ran the devtests. Exiting now. Use --full-test-suite to run everything");
                 return;
             }
-
-
-            // TODO make sure IRail can handle this one          new MultipleLoadTest().Run();
-
-
-            new StopEnumerationTest().Run(new List<TransitDb> {nmbs, wvl});
+            
+            new StopEnumerationTest().Run(new List<TransitDb> {nmbs, ovl});
 
             new TripHeadsignTest().RunOverMultiple(all);
 
             new StopSearchTest().RunOverMultiple(new List<(TransitDb db, double lon, double lat, double distance)>
             {
-                (wvl, 4.336209297180176, 50.83567623496864, 1000),
-                (wvl, 4.436824321746825, 50.41119778957908, 1000),
-                (wvl, 3.329758644104004, 50.99052927907061, 1000)
+                (ovl, 4.336209297180176, 50.83567623496864, 1000),
+                (ovl, 4.436824321746825, 50.41119778957908, 1000),
+                (ovl, 3.329758644104004, 50.99052927907061, 1000)
             });
 
             new InitialSynchronizationTest().Run();
@@ -79,8 +77,8 @@ namespace Itinero.Transit.Tests.Functional
 
             new TestAutoUpdating().Run();
 
-            new ConnectionsDbDepartureEnumeratorTest().Run((nmbs, 38947));
-            new ReadWriteTest().Run((nmbs, 38947));
+            new ConnectionsDbDepartureEnumeratorTest().Run((nmbs, 66420));
+            new ReadWriteTest().Run((nmbs, 66420));
 
             new DelayTest().Run();
 
@@ -89,7 +87,14 @@ namespace Itinero.Transit.Tests.Functional
             new UpdateTransitDbTest().Run();
 
 
-            // INSERT HERE
+            new IntermodalTestWithOtherTransport(nmbs, TestConstants.DefaultProfile)
+                .RunOverMultiple(TestConstants.WithWalkTestCases);
+
+
+            new IntermodalTestWithOtherTransport(nmbs, TestConstants.DefaultProfile)
+                .RunOverMultiple(TestConstants.WithWalkTestCases);
+            new IntermodalTestWithOtherTransport(nmbs, TestConstants.WithFirstLastMile)
+                .RunOverMultiple(TestConstants.WithWalkTestCases);
 
 
             MultiTestRunner.NmbsOnlyTester().RunAllTests();

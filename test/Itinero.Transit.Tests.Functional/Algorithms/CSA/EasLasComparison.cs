@@ -10,7 +10,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
     /// </summary>
     public class EasLasComparison : FunctionalTestWithInput<WithTime<TransferMetric>>
     {
-        protected override void Execute( )
+        protected override void Execute()
         {
             var easJ =
                 Input.CalculateEarliestArrivalJourney();
@@ -23,13 +23,14 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
             var lasJ =
                 Input
                     .SelectTimeFrame(easJ.Root.DepartureTime().FromUnixTime(),
-                       easJ.ArrivalTime().FromUnixTime())
+                        easJ.ArrivalTime().FromUnixTime().AddSeconds(1))
                     .CalculateLatestDepartureJourney();
 
 
             NotNull(lasJ,
-                $"No latest journey found for {Input.From[0].GlobalId} {Input.Start:s} --> {Input.From[1].GlobalId}. However, the earliest arrival journey has been found:" +
+                $"No latest journey found for {Input.From[0].GlobalId} {Input.Start:s} --> {Input.To[0].GlobalId}. However, the earliest arrival journey has been found:" +
                 $"\n{easJ.ToString(1, Input.StopsDb)}");
+
             AssertNoLoops(lasJ, Input);
 
             // Eas is bound by the first departing train, while las is not

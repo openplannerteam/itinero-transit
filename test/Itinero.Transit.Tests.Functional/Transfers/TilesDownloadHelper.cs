@@ -11,7 +11,6 @@ namespace Itinero.Transit.Tests.Functional.Transfers
     /// Copies the http-response to file.
     /// Adds a checksum to detect corruptions
     /// </summary>
-    // TODO: remove this later, the cache should be the router db only.
     internal class TilesDownloadHelper
     {
         private readonly string _cachingDir;

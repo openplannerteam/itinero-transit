@@ -125,7 +125,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
                 new EasPcsComparison(),
                 new EasLasComparison(),
                 new IsochroneTest(),
-                new ProfiledConnectionScanWithIsochroneFilteringTest(),
+                // TODO new ProfiledConnectionScanWithIsochroneFilteringTest(),
                 // TODO     new ProfiledConnectionScanWithMetricFilteringTest(),
                 // TODO       new ProfiledConnectionScanWithMetricAndIsochroneFilteringTest()
             };
@@ -205,10 +205,14 @@ namespace Itinero.Transit.Tests.Functional.Utils
                     StringConstants.Gent).SelectTimeFrame(
                     date.Date.AddHours(9),
                     date.Date.AddHours(12)),
+             /* TODO Add delijn   withProfile.SelectStops(StringConstants.Brugge,
+                    StringConstants.GentTennisstraatDeLijn).SelectTimeFrame(
+                    date.Date.AddHours(8),
+                    date.Date.AddHours(13)),
                 withProfile.SelectStops(StringConstants.CoiseauKaaiOsmNode,
-                    StringConstants.GentZwijnaardeDeLijn).SelectTimeFrame(
-                    date.Date.AddHours(9),
-                    date.Date.AddHours(12)),
+                    StringConstants.GentTennisstraatDeLijn).SelectTimeFrame(
+                    date.Date.AddHours(8),
+                    date.Date.AddHours(13)),*/
             };
         }
     }

@@ -41,7 +41,9 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
                     .SelectTimeFrame(StringConstants.TestDate, StringConstants.TestDate.AddHours(10));
 
             var start = DateTime.Now;
-            NotNull(calculator.CalculateLatestDepartureJourney());
+            var las = calculator.CalculateLatestDepartureJourney();
+            
+            NotNull(las);
             calculator.ResetFilter();
             var end = DateTime.Now;
             Information($"Calculating LAS took {(end - start).TotalMilliseconds}ms");

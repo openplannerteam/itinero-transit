@@ -124,18 +124,17 @@ namespace Itinero.Transit.IO.OSM.Data.Parser
                     {
                         var afterDotString = data.Item2;
 
-                        while (Math.Pow(10, afterDotString.Length) < precision)
+                        var expectedCount = ("" + precision).Length - 1;
+
+                        while (afterDotString.Length < expectedCount)
                         {
                             afterDotString += "0";
                         }
 
+                        afterDotString = afterDotString.Substring(0, expectedCount);
+
                         var afterDot = uint.Parse(afterDotString);
 
-
-                        while (afterDot > precision)
-                        {
-                            afterDot /= 10;
-                        }
 
                         var beforeDot = int.Parse(data.Item1);
 

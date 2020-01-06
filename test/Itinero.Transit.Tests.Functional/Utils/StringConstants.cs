@@ -5,7 +5,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
 {
     public static class StringConstants
     {
-        public static readonly DateTime TestDate = new DateTime(2020, 01, 01, 09, 00, 00).ToUniversalTime().Date;
+        public static readonly DateTime TestDate = new DateTime(2020, 01, 06, 09, 00, 00).ToUniversalTime().Date;
 
 
         public const string OsmNearStationBruggeLatLon = "https://www.openstreetmap.org/#map=19/51.19764/3.21847";
@@ -14,8 +14,8 @@ namespace Itinero.Transit.Tests.Functional.Utils
             "https://www.openstreetmap.org/#map=17/51.19335/3.21378";
 
         public const string OsmBruggeHome = "https://www.openstreetmap.org/#map=19/51.21576/3.22048";
-        public const string OsmDeSterre = "https://www.openstreetmap.org/#map=18/51.02260/3.71108";
-        public const string OsmHermanTeirlinck = "https://www.openstreetmap.org/#map=18/50.86621/4.35104";
+        public const string OsmDeSterre = "https://www.openstreetmap.org/#map=19/51.02260/3.71108";
+        public const string OsmHermanTeirlinck = "https://www.openstreetmap.org/#map=19/50.86621/4.35104";
         public const string OsmWechel = "https://www.openstreetmap.org/#map=19/51.26290/4.80125";
 
         public const string OsmTielen = "https://www.openstreetmap.org/#map=19/51.244726870748565/4.895057698232279";
@@ -25,7 +25,8 @@ namespace Itinero.Transit.Tests.Functional.Utils
         public const string ZandStraat = "https://data.delijn.be/stops/500562";
         public const string AzSintJan = "https://data.delijn.be/stops/502083";
         public const string Moereind = "https://data.delijn.be/stops/107455";
-        public const string GentZwijnaardeDeLijn = "https://data.delijn.be/stops/200657";
+        //public const string GentZwijnaardeDeLijn = "https://data.delijn.be/stops/200657";
+        public const string GentTennisstraatDeLijn = "https://data.delijn.be/stops/201052";
         public const string Howest = "https://data.delijn.be/stops/502132";
 
 
@@ -66,7 +67,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
             Nmbs,
             OsmCentrumShuttle,
             DelijnVlB,
-            DelijnWvl,
+         // TODO fixme   DelijnWvl,
             DelijnOVl,
             DelijnLim,
             DelijnAnt

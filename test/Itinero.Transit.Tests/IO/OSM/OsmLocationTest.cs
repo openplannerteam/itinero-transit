@@ -111,9 +111,18 @@ namespace Itinero.Transit.Tests.IO.OSM
             var zoomLvl = ParseOsmUrl.ParsePrefix().Parse((loc, 0));
             Assert.Equal(19, zoomLvl.Result);
             var (lonLong, latLong) = ParseOsmUrl.ParseUrl(1000000).ParseFull(loc);
-            
-            Assert.Equal(3219990, lonLong);
+
+            Assert.Equal( 3219990, lonLong);
             Assert.Equal(51210000, latLong);
+        }
+
+        [Fact]
+        public void ParseOsmUrl_ValidURLLeadingZeroes_SameUrl()
+        {
+            var loc = "https://www.openstreetmap.org/#map=19/51.02260/3.71108";
+            var (lon, lat) = ParseOsmUrl.ParseUrl(1000000).ParseFull(loc);
+            Assert.Equal( 3711080, lon);
+            Assert.Equal(51022600, lat);
         }
     }
 }

@@ -44,14 +44,14 @@ namespace Itinero.Transit.Tests.Functional.Utils
                 catch (Exception e)
                 {
                     failed++;
-                    var msg = $"Test {Name} failed for input {i} {input.ToString()} with message {e}\n{e.StackTrace}";
+                    var msg = $"Test {Name} failed for input {i}\n\n {input.ToString()}\n\n with message {e}\n{e.StackTrace}";
                     if (input is FunctionalTest ft)
                     {
                         msg = $"Test {ft.Name} ({i}/{inputs.Count}) failed with message {e}";
                     }
 
                     Information(msg);
-                    report += msg;
+                    report += "\n\n---------------\n\n" + msg;
                 }
 
                 
