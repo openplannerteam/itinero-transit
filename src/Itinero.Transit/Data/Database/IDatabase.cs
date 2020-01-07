@@ -38,7 +38,6 @@ namespace Itinero.Transit.Data
         where TId : struct, InternalId
         where T : IGlobalId
     {
-        TId Add(T value);
         TId AddOrUpdate(T value);
     }
 

@@ -51,21 +51,6 @@ namespace Itinero.Transit.Data.Aggregators
             return false;
         }
 
-        public List<T> GetAll(List<TId> ids)
-        {
-            var values = new List<T>();
-
-            foreach (var id in ids)
-            {
-                if (!TryGet(id, out var stop))
-                {
-                    throw new ArgumentException($"Stop with id {id} not found");
-                }
-                values.Add(stop);
-            }
-            return values;
-        }
-
         public bool TryGetId(string globalId, out TId id)
         {
             foreach (var db in _dbs)
