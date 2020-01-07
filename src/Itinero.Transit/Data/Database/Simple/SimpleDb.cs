@@ -77,11 +77,19 @@ namespace Itinero.Transit.Data.Simple
 
         public T First()
         {
+            if (Data.Count == 0)
+            {
+                return default(T);
+            }
             return Data[0];
         }
 
         public T Last()
         {
+            if (Data.Count == 0)
+            {
+                return default(T);
+            }
             return Data[Data.Count - 1];
         }
 

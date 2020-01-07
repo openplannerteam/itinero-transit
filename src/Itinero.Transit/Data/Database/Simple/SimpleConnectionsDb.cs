@@ -32,12 +32,12 @@ namespace Itinero.Transit.Data.Simple
         /// <summary>
         /// Gives the departure time of the first connection in the DB, sorted by departure time
         /// </summary>
-        public ulong EarliestDate => First().DepartureTime;
+        public ulong EarliestDate => First()?.DepartureTime ?? ulong.MaxValue;
 
         /// <summary>
         /// Gives the departure time of the last connection in the DB, sorted by departure time
         /// </summary>
-        public ulong LatestDate => Last().DepartureTime;
+        public ulong LatestDate => Last()?.DepartureTime ?? ulong.MinValue;
 
         /// <summary>
         /// Returns the index of the first connection which departs after the given datetime
@@ -84,70 +84,71 @@ namespace Itinero.Transit.Data.Simple
         {
             return Clone();
         }
-   
 
-    internal class SimpleConnectionEnumerator : IConnectionEnumerator
-    {
-        private readonly int _count;
-        private readonly uint _dbId;
-        private int _next;
-        private SimpleConnectionsDb _fallback;
-        public ulong CurrentTime { get; private set; }
 
-        public SimpleConnectionEnumerator(SimpleConnectionsDb fallback, int count, int startConnection)
+        internal class SimpleConnectionEnumerator : IConnectionEnumerator
         {
-            _dbId = fallback.DatabaseId;
-            _fallback = fallback;
-            _count = count;
-            _next =  startConnection;
-        }
-        
+            private readonly int _count;
+            private readonly uint _dbId;
+            private int _next;
+            private SimpleConnectionsDb _fallback;
+            public ulong CurrentTime { get; private set; }
 
-        public bool MoveNext()
-        {
-            if (_count == 0 || _next >= _count)
+            public SimpleConnectionEnumerator(SimpleConnectionsDb fallback, int count, int startConnection)
             {
-                CurrentTime = ulong.MaxValue;
-                return false;
-            }
-            CurrentTime = _fallback.GetDepartureTimeOf((uint) _next);
-            Current = new ConnectionId(_dbId, (uint) _next);
-            _next++;
-            return true;
-        }
-
-        public bool MovePrevious()
-        {
-            if (_next < 0 || _count == 0)
-            {
-                CurrentTime = ulong.MinValue;
-                return false;
+                _dbId = fallback.DatabaseId;
+                _fallback = fallback;
+                _count = count;
+                _next = startConnection;
             }
 
-            if (_next >= _count)
+
+            public bool MoveNext()
             {
-                _next = _count - 1;
+                if (_count == 0 || _next >= _count)
+                {
+                    CurrentTime = ulong.MaxValue;
+                    return false;
+                }
+
+                CurrentTime = _fallback.GetDepartureTimeOf((uint) _next);
+                Current = new ConnectionId(_dbId, (uint) _next);
+                _next++;
+                return true;
             }
 
-            CurrentTime = _fallback.GetDepartureTimeOf((uint) _next);
-            Current = new ConnectionId(_dbId, (uint) _next);
+            public bool MovePrevious()
+            {
+                if (_next < 0 || _count == 0)
+                {
+                    CurrentTime = ulong.MinValue;
+                    return false;
+                }
 
-            _next--;
-            return true;
-        }
+                if (_next >= _count)
+                {
+                    _next = _count - 1;
+                }
 
-        public void Reset()
-        {
-            _next = 0; 
-            CurrentTime = _fallback.GetDepartureTimeOf((uint) _next);
+                CurrentTime = _fallback.GetDepartureTimeOf((uint) _next);
+                Current = new ConnectionId(_dbId, (uint) _next);
 
-        }
+                _next--;
+                return true;
+            }
 
-        [Pure] public ConnectionId Current { get; private set;  }
-        [Pure] object IEnumerator.Current => Current;
+            public void Reset()
+            {
+                _next = 0;
+                CurrentTime = _fallback.GetDepartureTimeOf((uint) _next);
+            }
 
-        public void Dispose()
-        {
+            [Pure] public ConnectionId Current { get; private set; }
+            [Pure] object IEnumerator.Current => Current;
+
+            public void Dispose()
+            {
+            }
         }
     }
-} }
+}
