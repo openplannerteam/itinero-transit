@@ -24,7 +24,9 @@ namespace Itinero.Transit.Tests.Functional.Utils
 
         public const string ZandStraat = "https://data.delijn.be/stops/500562";
         public const string AzSintJan = "https://data.delijn.be/stops/502083";
+
         public const string Moereind = "https://data.delijn.be/stops/107455";
+
         //public const string GentZwijnaardeDeLijn = "https://data.delijn.be/stops/200657";
         public const string GentTennisstraatDeLijn = "https://data.delijn.be/stops/201052";
         public const string Howest = "https://data.delijn.be/stops/502132";
@@ -48,18 +50,26 @@ namespace Itinero.Transit.Tests.Functional.Utils
         public const string StationBruggeOsmNode = "https://www.openstreetmap.org/node/6348496391";
 
 
-        public static readonly string OsmCentrumShuttle = $"testdata/fixed-test-cases-osm-CentrumbusBrugge-{TestDate:yyyy-MM-dd}.transitdb";
+        public static readonly string OsmCentrumShuttle =
+            $"testdata/fixed-test-cases-osm-CentrumbusBrugge-{TestDate:yyyy-MM-dd}.transitdb";
+
         public static readonly string Nmbs = $"testdata/fixed-test-cases-sncb-{TestDate:yyyy-MM-dd}.transitdb";
 
-        public const string NmbsLongPeriod = "testdata/nmbs-long.transitdb";
-        public static readonly DateTime NmbsLongPeriodDate = new DateTime(2019, 07, 13);
+/*
+        public static readonly string DelijnWvl =
+            $"testdata/fixed-test-cases-de-lijn-wvl-{TestDate:yyyy-MM-dd}.transitdb";
 
+        public static readonly string DelijnOVl =
+            $"testdata/fixed-test-cases-de-lijn-ovl-{TestDate:yyyy-MM-dd}.transitdb";
 
-        public static readonly string DelijnWvl = $"testdata/fixed-test-cases-de-lijn-wvl-{TestDate:yyyy-MM-dd}.transitdb";
-        public static readonly string DelijnOVl = $"testdata/fixed-test-cases-de-lijn-ovl-{TestDate:yyyy-MM-dd}.transitdb";
-        public static readonly string DelijnVlB = $"testdata/fixed-test-cases-de-lijn-vlb-{TestDate:yyyy-MM-dd}.transitdb";
-        public static readonly string DelijnLim = $"testdata/fixed-test-cases-de-lijn-lim-{TestDate:yyyy-MM-dd}.transitdb";
-        public static readonly string DelijnAnt = $"testdata/fixed-test-cases-de-lijn-ant-{TestDate:yyyy-MM-dd}.transitdb";
+        public static readonly string DelijnVlB =
+            $"testdata/fixed-test-cases-de-lijn-vlb-{TestDate:yyyy-MM-dd}.transitdb";
+
+        public static readonly string DelijnLim =
+            $"testdata/fixed-test-cases-de-lijn-lim-{TestDate:yyyy-MM-dd}.transitdb";
+
+        public static readonly string DelijnAnt =
+            $"testdata/fixed-test-cases-de-lijn-ant-{TestDate:yyyy-MM-dd}.transitdb";
 
 
         public static readonly IReadOnlyList<string> TestDbs = new[]
@@ -67,10 +77,11 @@ namespace Itinero.Transit.Tests.Functional.Utils
             Nmbs,
             OsmCentrumShuttle,
             DelijnVlB,
-         // TODO fixme   DelijnWvl,
+            DelijnWvl,
             DelijnOVl,
             DelijnLim,
             DelijnAnt
         };
+        //*/
     }
 }

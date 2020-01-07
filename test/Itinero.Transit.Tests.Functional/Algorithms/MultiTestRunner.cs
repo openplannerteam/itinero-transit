@@ -54,7 +54,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
                 new List<string> {StringConstants.Nmbs}, StringConstants.TestDate, TestConstants.NmbsInputs);
         }
 
-
+/*TODO ENABLE
         /// <summary>
         /// Creates a tester with Delijn loaded + all applicable inputs for those tests
         /// </summary>
@@ -68,6 +68,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
                     return TestConstants.NmbsInputs(a, b).Concat(TestConstants.MultimodalInputs(a, b)).ToList();
                 });
         }
+        //*/
 
 
         protected override void Execute()

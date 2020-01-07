@@ -95,6 +95,9 @@ namespace Itinero.Transit.Processor.Switch
             else if (durationStr.EndsWith("hour"))
             {
                 duration = 60 * 60 * int.Parse(durationStr.Substring(0, durationStr.Length - 4));
+            }else if (durationStr.EndsWith("hours"))
+            {
+                duration = 60 * 60 * int.Parse(durationStr.Substring(0, durationStr.Length - 5));
             }
             else
             {
