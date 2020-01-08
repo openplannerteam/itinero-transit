@@ -1,33 +1,27 @@
 using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
-using Itinero.Transit.IO.LC;
+using Itinero.Transit.IO.GTFS;
 using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.Processor.Switch
 {
     // ReSharper disable once InconsistentNaming
-    internal class SwitchCreateTransitDbLC : DocumentedSwitch, ITransitDbModifier, ITransitDbSource
+    internal class SwitchCreateTransitDbGTFS : DocumentedSwitch, ITransitDbModifier, ITransitDbSource
     {
         private static readonly string[] _names =
-            {"--create-transit-db-with-linked-connections", "--create-transit-lc", "--ctlc"};
+            {"--create-transit-db-with-gtfs", "--create-transit-gtfs", "--ctgtfs"};
 
         private static string About =
-            "Creates a transit DB based on linked connections (or adds them to an already existing db). For this, the linked connections source and a timewindow should be specified.\n" +
-            "If the previous switch reads or creates a transit db as well, the two transitDbs are merged into a single one.\n\n" +
-            "Note that this switch only downloads the connections and keeps them in memory. To write them to disk, add --write-transit-db too.\n\n" +
-            "Example usage to create the database for the Belgian Railway (SNCB/NMBS):\n\n" +
-            "        idp --create-transit-db https://graph.irail.be/sncb/connections https://irail.be/stations/NMBS";
+            "Creates a transit DB based on GTFS (or adds them to an already existing db), for the explicitly specified timeframe";
 
 
         private static readonly List<(List<string> args, bool isObligated, string comment, string defaultValue)>
             _extraParams =
                 new List<(List<string> args, bool isObligated, string comment, string defaultValue)>
                 {
-                    SwitchesExtensions.obl("connections", "curl",
-                        "The URL where connections can be downloaded. Special value: 'nmbs'"),
-                    SwitchesExtensions.obl("locations", "stops","lurl",
-                        "The URL where the location can be downloaded. Special value: 'nmbs'"),
+                    SwitchesExtensions.obl("path", 
+                        "The path of the GTFS archive"),
                     SwitchesExtensions.opt("window-start", "start",
                             "The start of the timewindow to load. Specify 'now' to take the current date and time. Otherwise provide a timestring of the format 'YYYY-MM-DDThh:mm:ss' (where T is a literal T). Special values: 'now' and 'today'")
                         .SetDefault("now"),
@@ -40,7 +34,7 @@ namespace Itinero.Transit.Processor.Switch
         private const bool IsStable = true;
 
 
-        public SwitchCreateTransitDbLC()
+        public SwitchCreateTransitDbGTFS()
             : base(_names, About, _extraParams, IsStable)
         {
         }
@@ -55,18 +49,10 @@ namespace Itinero.Transit.Processor.Switch
 
         public TransitDb Modify(Dictionary<string, string> arguments, TransitDb tdb)
         {
-            var curl = arguments["connections"];
+            var path = arguments["path"];
 
-            if (curl.Equals("nmbs"))
-            {
-                curl = "https://graph.irail.be/sncb/connections";
-            }
             
-            var lurl = arguments["locations"];
-            if (lurl.Equals("nmbs"))
-            {
-                lurl = "https://graph.irail.be/sncb/stops";
-            }
+           
             var wStart = arguments["window-start"];
             var time = wStart.Equals("now")
                 ? DateTime.Now
@@ -78,13 +64,13 @@ namespace Itinero.Transit.Processor.Switch
             // In seconds
             var duration = ParseTimeSpan(arguments["window-duration"]);
 
-
+          Console.WriteLine($"Loading GTFS file {path} in timewindow {time:s} + {duration} seconds");
 
             Logger.LogAction =
                 (origin, level, message, parameters) =>
                     Console.WriteLine($"[{DateTime.Now:O}] [{level}] [{origin}]: {message}");
 
-            tdb.UseLinkedConnections(curl, lurl, time, time.AddSeconds(duration));
+            tdb.UseGtfs(path, time, time.AddSeconds(duration));
             return tdb;
         }
     }

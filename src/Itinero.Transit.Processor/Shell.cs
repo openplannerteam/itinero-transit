@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Utils;
 
@@ -69,7 +70,8 @@ namespace Itinero.Transit.Processor
                 }
 
                 return
-                    $"Transitdb spans {snapshot.ConnectionsDb.EarliestDate.FromUnixTime():s} to {snapshot.ConnectionsDb.LatestDate.FromUnixTime():s}. {stats}";
+                    $"Transitdb spans {snapshot.ConnectionsDb.EarliestDate.FromUnixTime():s} to {snapshot.ConnectionsDb.LatestDate.FromUnixTime():s}." +
+                    $"Loaded: {tdb.Latest.StopsDb.Count()} stops, {tdb.Latest.ConnectionsDb.Count()} connections, {tdb.Latest.TripsDb.Count()} trips. {stats}";
             }
         }
 

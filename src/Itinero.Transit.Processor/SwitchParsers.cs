@@ -18,10 +18,11 @@ namespace Itinero.Transit.Processor
                 ("Creating a transitdb", new List<DocumentedSwitch>
                 {
                     new SwitchCreateTransitDbLC(),
-                    new SwitchCreateTransitDbOSM()
+                    new SwitchCreateTransitDbOSM(),
+                    new SwitchCreateTransitDbGTFS()
                 }),
 
-                ("Filtering to and from file", new List<DocumentedSwitch>
+                ("Filtering the transitdb", new List<DocumentedSwitch>
                 {
                     new SwitchSelectTimeWindow(),
                     new SwitchSelectStopsByBoundingBox(),
@@ -34,6 +35,7 @@ namespace Itinero.Transit.Processor
                     new SwitchReadTransitDb(),
                     new SwitchDumpTransitDbStops(),
                     new SwitchDumpTransitDbConnections(),
+                    new SwitchDumpTransitDbTrips(),
                     new SwitchWriteTransitDb(),
                 }),
 

@@ -106,6 +106,10 @@ namespace Itinero.Transit.Processor.Switch
     {
         public static string Get(this Dictionary<string, string> attributes, string name)
         {
+            if (attributes == null)
+            {
+                return "";
+            }
             attributes.TryGetValue(name, out var result);
             return result;
         }

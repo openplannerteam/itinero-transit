@@ -11,6 +11,7 @@ using Itinero.Transit.Logging;
 using Itinero.Transit.Utils;
 using Stop = Itinero.Transit.Data.Core.Stop;
 using Trip = GTFS.Entities.Trip;
+// ReSharper disable PossibleInvalidOperationException
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
 
@@ -137,7 +138,7 @@ namespace Itinero.Transit.IO.GTFS.Data
         }
 
 
-        private void AddService(TransitDbWriter writer, Calendar service, DateTime day)
+        private void AddService(TransitDbWriter writer, Calendar service, DateTime day, DateTime startDate, DateTime endDate)
         {
             // We know that 'service' drives today
             // Let's generate the connections and trip for that
@@ -156,11 +157,12 @@ namespace Itinero.Transit.IO.GTFS.Data
             // gtfsTrips are the trips we need to add    
             foreach (var gtfsTrip in gtfsTrips)
             {
-                AddCompleteTrip(writer, day, gtfsTrip);
+                AddCompleteTrip(writer, gtfsTrip, day, startDate, endDate);
             }
         }
 
-        private void AddCompleteTrip(TransitDbWriter writer, DateTime day, Trip gtfsTrip)
+        private void AddCompleteTrip(TransitDbWriter writer, Trip gtfsTrip, DateTime day, DateTime startDate,
+            DateTime endDate)
         {
             /* Note that we use 'blockId' to generate the tripID
              A block identifies the vehicle throughout the day
@@ -220,12 +222,22 @@ namespace Itinero.Transit.IO.GTFS.Data
             {
                 var departure = stopTimes[i - 1];
                 var arrival = stopTimes[i];
+                var departureTime = day.AddSeconds(departure.DepartureTime.Value.TotalSeconds);
+                if (!(startDate <= departureTime && departureTime < endDate))
+                {
+                    // Departure time out of range
+                    continue;
+                }
+                
+                
+                var travelTime = arrival.ArrivalTime.Value.TotalSeconds - departure.DepartureTime.Value.TotalSeconds;
+                
+                
+                
                 var departureStop = _gtfsId2TdbId[departure.StopId];
                 var arrivalStop = _gtfsId2TdbId[arrival.StopId];
 
 
-                var departureTime = day.AddSeconds(departure.DepartureTime.Value.TotalSeconds);
-                var travelTime = arrival.ArrivalTime.Value.TotalSeconds - departure.DepartureTime.Value.TotalSeconds;
                 var mode = Connection.CreateMode(
                     departure.PickupType == PickupType.Regular,
                     arrival.DropOffType == DropOffType.Regular,
@@ -247,8 +259,17 @@ namespace Itinero.Transit.IO.GTFS.Data
             }
         }
 
+        /// <summary>
+        /// Adds all the trips and connections that are driving on the given day.
+        /// Connections departing (strictly) before startDate or departing after or on endDate are not added
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="day"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <exception cref="Exception"></exception>
 
-        public void AddDay(TransitDbWriter writer, DateTime day)
+        internal void AddDay(TransitDbWriter writer, DateTime day, DateTime startDate, DateTime endDate)
         {
             if (_gtfsId2TdbId == null)
             {
@@ -291,7 +312,7 @@ namespace Itinero.Transit.IO.GTFS.Data
                 if (goesToday || exceptionallyGoesToday.Contains(service.ServiceId))
                 {
                     // This service drives today. Generate the connections
-                    AddService(writer, service, day);
+                    AddService(writer, service, day, startDate, endDate);
                 }
             }
         }
@@ -357,6 +378,29 @@ namespace Itinero.Transit.IO.GTFS.Data
             return _gtfsId2TdbId;
         }
 
+        /// <summary>
+        /// Does all the work:
+        /// - Adds all locations
+        /// - Adds all necessary trips of the given timeperiod
+        /// - Adds all connections with departure times between startDate (incl) and enddate (excl)
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="startdate"></param>
+        /// <param name="enddate"></param>
+        public void AddDataBetween(TransitDbWriter writer, DateTime startdate, DateTime enddate)
+        {
+            AddLocations(writer);
+
+            var day = startdate.Date;
+            var end = enddate.Date;
+            while (day <= end)
+            {
+                AddDay(writer, day, startdate, enddate);
+
+                day = day.AddDays(1);
+            }
+
+        }
 
         internal List<string> AgencyUrls()
         {

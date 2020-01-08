@@ -3,31 +3,32 @@ using System.Collections;
 using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.IO.GTFS.Data;
+using Itinero.Transit.Utils;
 using Xunit;
 
 namespace Itinero.Transit.Tests.IO.GTFS
 {
     public class Gtfs2TdbTest
     {
-
         [Fact]
         public void AddDay_13oct_ConnectionsAreLoaded()
         {
             var convertor = new Gtfs2Tdb("IO/GTFS/sncb-13-october.zip");
-            
+
             var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
             convertor.AddLocations(wr);
-            convertor.AddDay(wr, new DateTime(2019,10,13, 0,0,0, DateTimeKind.Utc).Date);
+            var d = new DateTime(2019, 10, 13, 0, 0, 0, DateTimeKind.Utc).Date;
+            convertor.AddDay(wr, d, d, d.AddDays(1).AddMinutes(2));
             wr.Close();
-            
-            
-            
 
+            Assert.True(tdb.Latest.ConnectionsDb.Count() > 10000);
+            Assert.True(tdb.Latest.ConnectionsDb.EarliestDate <= d.Date.AddMinutes(5).ToUnixTime());
+            Assert.True(tdb.Latest.ConnectionsDb.LatestDate >= d.Date.AddDays(1).ToUnixTime());
         }
-        
+
         // TODO test that trips on 'end_date' are included as well
-        
+
         [Fact]
         public void AgencyURLS_SNCB_ContainBelgianTrainId()
         {
