@@ -14,6 +14,14 @@ namespace Itinero.Transit.Data.Core
 
         private const ushort ModeCancelled = 4;
 
+        public static ushort CreateMode(bool canGetOn, bool canGetOff, bool isCancelled)
+        {
+            var mode =  (canGetOn ? ModeGetOnOnly : 0)
+                +  (canGetOff ? ModeGetOffOnly : 0)
+                + (isCancelled ? ModeCancelled : 0);
+            return (ushort) mode;
+        }
+
         public static readonly Comparer<Connection> SortByDepartureTime = new ConnectionComparer();
 
         

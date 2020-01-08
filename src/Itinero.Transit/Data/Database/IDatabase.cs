@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Itinero.Transit.Data
 {
@@ -121,7 +122,18 @@ namespace Itinero.Transit.Data
         {
             if (!db.TryGetId(globalId, out var id))
             {
-                throw new ArgumentException(notFoundMessage ?? $"GlobalId {globalId} not found");
+                if (notFoundMessage != null)
+                {
+                 throw new ArgumentException(notFoundMessage);   
+                }
+
+                var exampleId = "";
+                if (db.Any())
+                {
+                    exampleId = "An example id is " + db.First().GlobalId;
+                }
+                
+                throw new ArgumentException($"GlobalId {globalId} not found. {exampleId}");
             }
 
             return db.Get(id);
