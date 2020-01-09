@@ -128,11 +128,11 @@ namespace Itinero.Transit.Tests.Core.Data
             var stop1 = wr.AddOrUpdateStop(new Stop("stop1", (0, 0)));
 
             wr.AddOrUpdateConnection(new Connection("a", stop0, stop1, d - 59, 1, 0, 0, 0, new TripId(0, 0)));
-            wr.AddOrUpdateConnection(new Connection("a0", stop0, stop1, d - 59, 2, 0, 0, 0, new TripId(0, 0)));
+            wr.AddOrUpdateConnection(new Connection("a0", stop0, stop1, d - 59, 2, 0, 0, 0, new TripId(0, 4)));
             wr.AddOrUpdateConnection(new Connection("b", stop0, stop1, d + 1, 4, 0, 0, 0, new TripId(0, 1)));
             wr.AddOrUpdateConnection(new Connection("c", stop0, stop1, d + 61, 8, 0, 0, 0, new TripId(0, 2)));
             wr.AddOrUpdateConnection(new Connection("d", stop0, stop1, d + 121, 16, 0, 0, 0, new TripId(0, 3)));
-            wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, d + 121, 32, 0, 0, 0, new TripId(0, 3)));
+            wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, d + 121, 32, 0, 0, 0, new TripId(0, 5)));
             wr.Close();
 
             var cons = tdb.Latest.ConnectionsDb;
@@ -165,11 +165,11 @@ namespace Itinero.Transit.Tests.Core.Data
             var stop1 = wr.AddOrUpdateStop(new Stop("stop1", (0, 0)));
 
             wr.AddOrUpdateConnection(new Connection("a", stop0, stop1, d - 59, 1, 0, 0, 0, new TripId(0, 0)));
-            wr.AddOrUpdateConnection(new Connection("a0", stop0, stop1, d - 59, 2, 0, 0, 0, new TripId(0, 0)));
+            wr.AddOrUpdateConnection(new Connection("a0", stop0, stop1, d - 59, 2, 0, 0, 0, new TripId(0, 4)));
             wr.AddOrUpdateConnection(new Connection("b", stop0, stop1, d + 1, 4, 0, 0, 0, new TripId(0, 1)));
             wr.AddOrUpdateConnection(new Connection("c", stop0, stop1, d + 61, 8, 0, 0, 0, new TripId(0, 2)));
             wr.AddOrUpdateConnection(new Connection("d", stop0, stop1, d + 121, 16, 0, 0, 0, new TripId(0, 3)));
-            wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, d + 121, 32, 0, 0, 0, new TripId(0, 3)));
+            wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, d + 121, 32, 0, 0, 0, new TripId(0, 5)));
             wr.Close();
 
             var cons = tdb.Latest.ConnectionsDb;
@@ -308,13 +308,14 @@ namespace Itinero.Transit.Tests.Core.Data
             var tr2 = wr.AddOrUpdateTrip("2");
             var tr3 = wr.AddOrUpdateTrip("3");
             var tr4 = wr.AddOrUpdateTrip("4");
-            
-            wr.AddOrUpdateConnection(new Connection("a", stop0, stop1, d - 59, 1, 0, 0, 0,  tr0));
-            wr.AddOrUpdateConnection(new Connection("a0", stop0, stop1, d - 59, 2, 0, 0, 0, tr0));
-            wr.AddOrUpdateConnection(new Connection("b", stop0, stop1, d + 1, 4, 0, 0, 0,   tr1));
-            wr.AddOrUpdateConnection(new Connection("c", stop0, stop1, d + 61, 8, 0, 0, 0,  tr2));
-            wr.AddOrUpdateConnection(new Connection("d", stop0, stop1, d + 121, 16, 0, 0, 0,tr3));
-            wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, d + 121, 32, 0, 0, 0,tr4));
+            var tr5 = wr.AddOrUpdateTrip("5");
+
+            wr.AddOrUpdateConnection(new Connection("a", stop0, stop1, d - 59, 1, 0, 0, 0, tr0));
+            wr.AddOrUpdateConnection(new Connection("a0", stop0, stop1, d - 59, 2, 0, 0, 0, tr5));
+            wr.AddOrUpdateConnection(new Connection("b", stop0, stop1, d + 1, 4, 0, 0, 0, tr1));
+            wr.AddOrUpdateConnection(new Connection("c", stop0, stop1, d + 61, 8, 0, 0, 0, tr2));
+            wr.AddOrUpdateConnection(new Connection("d", stop0, stop1, d + 121, 16, 0, 0, 0, tr3));
+            wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, d + 121, 32, 0, 0, 0, tr4));
             wr.Close();
 
 
@@ -351,7 +352,7 @@ namespace Itinero.Transit.Tests.Core.Data
             Assert.Equal(6, count);
             Assert.Equal(63, tt);
 
-            enumerator = connections.GetEnumeratorAt(tdb.Latest.ConnectionsDb.LatestDate+1);
+            enumerator = connections.GetEnumeratorAt(tdb.Latest.ConnectionsDb.LatestDate + 1);
             tt = 0;
             count = 0;
             while (enumerator.MovePrevious())
