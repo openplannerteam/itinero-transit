@@ -7,7 +7,7 @@ namespace Itinero.Transit.Processor.Switch
 {
     internal class SwitchUnusedFilter : DocumentedSwitch, ITransitDbModifier
     {
-        private static readonly string[] _names = {"--remove-unused", "--rm-unused"};
+        private static readonly string[] _names = {"--filter-unused", "--remove-unused", "--rm-unused"};
 
         private static string About ="Removes stops and trips without connections.";
 

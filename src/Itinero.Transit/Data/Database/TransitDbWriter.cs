@@ -13,7 +13,7 @@ namespace Itinero.Transit.Data
         private readonly IConnectionsDb _connectionsDb;
         private readonly ITripsDb _tripsDb;
 
-        internal TransitDbWriter(TransitDb parent, TransitDbSnapShot latestSnapshot)
+        internal TransitDbWriter(TransitDb parent, TransitDbSnapShot latestSnapshot) 
         {
             _parent = parent;
 

@@ -68,6 +68,8 @@ namespace Itinero.Transit.Processor.Switch
                     if (!hist.ContainsKey(type))
                     {
                         Console.WriteLine($"Type {type} not found in histogram. Try one of {string.Join(",", hist.Keys)}");
+                        continue;
+                        
                     }
 
                     var count = hist[type];

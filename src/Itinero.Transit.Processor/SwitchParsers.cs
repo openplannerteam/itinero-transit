@@ -27,7 +27,8 @@ namespace Itinero.Transit.Processor
                     new SwitchSelectTimeWindow(),
                     new SwitchSelectStopsByBoundingBox(),
                     new SwitchSelectStopById(),
-                    new SwitchSelectTrip()
+                    new SwitchSelectTrip(),
+                    new SwitchUnusedFilter()
                 }),
 
                 ("Saving to and from file", new List<DocumentedSwitch>
@@ -44,7 +45,6 @@ namespace Itinero.Transit.Processor
                 {
                     new SwitchJapanize(),
                     new SwitchValidate(),
-                    new SwitchUnusedFilter(),
                     new HelpSwitch(),
                     new Shell(),
                     new SwitchClear(),

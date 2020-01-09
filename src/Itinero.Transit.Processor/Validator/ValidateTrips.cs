@@ -76,7 +76,7 @@ namespace Itinero.Transit.Processor.Validator
                     if (!oldConnection.ArrivalStop.Equals(c.DepartureStop))
                     {
                         Err(c, "jump",
-                                $"Error in trip {trip.GlobalId}" +
+                                $"Error in trip {trip.GlobalId}\n" +
                                 $"The trip arrived in {prevStop.GetName()} at {oldConnection.ArrivalTime.FromUnixTime():s} (incl {oldConnection.ArrivalDelay}s delay) from {prevprevStop.GetName()}\n" +
                                 $"The trip now departs in {currStop.GetName()} at {c.DepartureTime.FromUnixTime():s} (incl {c.DepartureDelay}s delay)\n" +
                                 $"The trip should arrive in {nextStop.GetName()} at {c.ArrivalTime.FromUnixTime():s} (incl {c.ArrivalDelay}s delay)" +
@@ -99,8 +99,11 @@ namespace Itinero.Transit.Processor.Validator
                     if (oldConnection.ArrivalTime > c.DepartureTime)
                     {
                         var delta = oldConnection.ArrivalTime - c.DepartureTime;
+                        var stop = c.DepartureStop;
+                        var stopName = stops.Get(stop).GetName() ?? "";
+                        
                         Err(c, "timetravel in station",
-                            $"Connection departs {delta} seconds before its arrival. Departure time is {c.DepartureTime}, arrival time is {oldConnection.ArrivalTime} (note: the previous connection has {oldConnection.ArrivalDelay}s delay arriving)\n" +
+                            $"Connection departs {delta} seconds before its arrival in {stopName}. Departure time is {c.DepartureTime.FromUnixTime():HH:mm:ss}, arrival time is {oldConnection.ArrivalTime.FromUnixTime():HH:mm:ss} (note: the previous connection has {oldConnection.ArrivalDelay}s delay arriving)\n" +
                             $"OldConnection data: {oldConnection.ToJson()}");
                     }
 

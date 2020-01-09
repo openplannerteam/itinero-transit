@@ -1,5 +1,8 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using Itinero.Transit.Data.Core;
 
 namespace Itinero.Transit.Data.Simple
@@ -26,8 +29,148 @@ namespace Itinero.Transit.Data.Simple
         /// </summary>
         private void Sort()
         {
+
+            if (!Data.Any())
+            {
+                // Hmm, empty db... Not a lot to prepocess
+                return;
+            }
             Data.Sort(Connection.SortByDepartureTime);
+            
+            // Edge case: a train has a (theoretical) stop time of 0seconds in one stop
+            // Then it can happen that this stop jumps after the departure from that stop, e.g.
+            // A -> B
+            // C -> D
+            // B -> C
+            
+            // That is of course incorrect
+            
+            // We fix this by doing a check for those cases and correcting them
+            // We run over the data (sorted by time)
+            // For every discrete departure time, we build a histogram {trip --> (connection, index in list)}
+            // Then, we check every trip and swap if necessary
+
+
+            var trips = new Dictionary<TripId, List<(int index, Connection c)>>();
+            var currentDepartureTime = Data.First().DepartureTime;
+            for (var i = 0; i < Data.Count; i++)
+            {
+                var connection = Data[i];
+                if (currentDepartureTime != connection.DepartureTime)
+                {
+                    // We have reached a new era
+                    // Let's correct the previous one
+
+                    foreach (var trip in trips)
+                    {
+                        CorrectTripSingleDepartureTime(trip.Value);
+                    }
+
+                    currentDepartureTime = connection.DepartureTime;
+                }
+                
+                
+                if (!trips.ContainsKey(connection.TripId))
+                {
+                    trips[connection.TripId] = new List<(int index, Connection c)>();
+                }
+                
+                trips[connection.TripId].Add((i, connection));
+            }
+            // Let's not forget to handle the last connections...
+            foreach (var trip in trips)
+            {
+                CorrectTripSingleDepartureTime(trip.Value);
+            }
+            
         }
+
+        /// <summary>
+        /// Corrects the trip.
+        /// We assume the triplist is ordered by index
+        /// Very statefull: the triplist is cleared upon exiting this method
+        /// </summary>
+        /// <param name="trip"></param>
+        private void CorrectTripSingleDepartureTime(List<(int index, Connection c)> trip)
+        {
+            if (trip.Count == 0)
+            {
+                return;
+            }
+
+            if (trip.Count == 1)
+            {
+                trip.Clear();
+                return;
+            }
+            
+            _byArrivalStop.Clear();
+            _connectionsOrdered.Clear();
+
+            foreach (var c in trip)
+            {
+                _byArrivalStop[c.c.ArrivalStop] = c;
+            }
+
+            do
+            {
+                // We search the first connection: this is the connection of which the departureStop is _not_ in the dictionary
+                // We add that one to the connectionsOrderedList
+                bool oneFound = false;
+                foreach (var c in trip)
+                {
+                    if (_byArrivalStop.ContainsKey(c.c.DepartureStop))
+                    {
+                        // Not the first
+                        continue;
+                    }
+
+                    if (!_byArrivalStop.ContainsKey(c.c.ArrivalStop))
+                    {
+                        // Already handled
+                        continue;
+                    }
+                    
+                    _connectionsOrdered.Add(c);
+                    _byArrivalStop.Remove(c.c.ArrivalStop);
+                    oneFound = true;
+                }
+
+                if (!oneFound)
+                {
+                    // In normal circumstances, this should never be triggered
+                    // It is merely here to prevent infinite loops
+                    throw new ArgumentException("Broken trip");
+                }
+
+ 
+                // And we repeat this until there is no connection left
+            } while (_byArrivalStop.Any());
+            
+            // At this point, we have the connections in the order that they have to be, for example
+            // [(A -> B, 1), (B -> C, 0)] clearly showing the wrong index order here
+                
+                
+            // The first element of _connectionsOrdered should be placed at the lowest index found in the list
+            // We can neatly match them as the indices can be read (in order) from the triplist!
+            
+
+
+            for (var i = 0; i < trip.Count; i++)
+            {
+                var indexToPlace = trip[i].index;
+                var connectionToPlace = _connectionsOrdered[i].c;
+                Data[indexToPlace] = connectionToPlace;
+            }
+
+            
+            trip.Clear();
+        }
+        
+        // Only used by CorrectTripSingleDepartureTime, infinitely reused
+        private List<(int index, Connection c)> _connectionsOrdered = new List<(int index, Connection c)>();
+        // Only used by CorrectTripSingleDepartureTime, infinitely reused
+        private Dictionary<StopId, (int index, Connection c)> _byArrivalStop = new Dictionary<StopId, (int index, Connection c)>();
 
         /// <summary>
         /// Gives the departure time of the first connection in the DB, sorted by departure time

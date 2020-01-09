@@ -61,7 +61,9 @@ namespace Itinero.Transit.IO.GTFS.Data
             {
                 if (_feed == null)
                 {
+                    Log.Information("Starting to read the GTFS-archive");
                     _feed = new GTFSReader<GTFSFeed>().Read(_path);
+                    Log.Information("GTFS archive unpacked");
                 }
 
                 return _feed;
@@ -150,7 +152,7 @@ namespace Itinero.Transit.IO.GTFS.Data
                 // Seems like there is no trip associated with this service
                 // Print an error message and go on
                 
-                Log.Error($"No trip with id {service.ServiceId} found.");
+                Log.Error($"No trip found for serviceId {service.ServiceId} found.");
                 
                 return;
             }

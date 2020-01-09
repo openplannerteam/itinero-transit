@@ -13,11 +13,33 @@ namespace Itinero.Transit.Tests.Core.Data
     public class ConnectionsDbTest
     {
         [Fact]
+        public void ConnectionsDb_TwoConnectionsOfWhichOneZeroWaitTime_CorrectOrer()
+        {
+            // THis tests the case that a train has no waiting time at a location
+            // THe connection might jump after the 'leaving' connection, resulting in trips as:
+            // B -> C, A -> B
+            // This is ofc wrong, the simpleConnectionDb should correct for this
+
+            var connsDb = new SimpleConnectionsDb(1);
+
+            connsDb.Add(new Connection(
+                "B", new StopId(0, 1), new StopId(0, 2), 1000, 100, new TripId(0, 0)));
+            connsDb.Add(new Connection(
+                "A", new StopId(0, 0), new StopId(0, 1), 1000, 0, new TripId(0, 0)));
+            connsDb.PostProcess();
+
+
+            var allConnections = connsDb.ToList();
+            Assert.Equal("A", allConnections[0].GlobalId);
+            Assert.Equal("B", allConnections[1].GlobalId);
+        }
+
+
+        [Fact]
         public void ConnectionsDb_WriteTo_ReadFrom_ExpectsSameResult()
         {
             var connsDb = new SimpleConnectionsDb(1);
-            
-            
+
 
             var inputConnection = new Connection(
                 "XYZ", new StopId(1, 0), new StopId(1, 7),
@@ -32,13 +54,14 @@ namespace Itinero.Transit.Tests.Core.Data
             List<(ConnectionId, Connection)> read;
             using (var f = File.OpenRead("Test.transitdb"))
             {
-                read = f.Deserialize<ConnectionId, Connection>(new BinaryFormatter()).OrderBy(c => c.Item2.DepartureTime).ToList();
+                read = f.Deserialize<ConnectionId, Connection>(new BinaryFormatter())
+                    .OrderBy(c => c.Item2.DepartureTime).ToList();
             }
 
             File.Delete("Test.transitdb");
-            
 
-           Assert.Equal(inputConnection, read[0].Item2);
+
+            Assert.Equal(inputConnection, read[0].Item2);
         }
 
         [Fact]
