@@ -54,11 +54,10 @@ namespace Itinero.Transit.Processor.Switch
 
         public TransitDb Modify(Dictionary<string, string> arguments, TransitDb tdb)
         {
-            var wStart = arguments["window-start"];
+            var start = ParseDate(arguments["window-start"]);
 
             var durationSeconds = int.Parse(arguments["window-duration"]);
 
-            var start = wStart.Equals("now") ? DateTime.Now : DateTime.Parse(wStart);
             start = start.ToUniversalTime();
             var end = start.AddSeconds(durationSeconds);
             var arg = arguments["relation"];

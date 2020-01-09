@@ -51,16 +51,8 @@ namespace Itinero.Transit.Processor.Switch
         {
             var path = arguments["path"];
 
-            
-           
-            var wStart = arguments["window-start"];
-            var time = wStart.Equals("now")
-                ? DateTime.Now
-                : wStart.Equals("today")
-                    ? DateTime.Now.Date
-                    : DateTime.Parse(wStart);
 
-            time = time.ToUniversalTime();
+            var time = ParseDate(arguments["window-start"]);
             // In seconds
             var duration = ParseTimeSpan(arguments["window-duration"]);
 

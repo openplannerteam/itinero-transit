@@ -365,11 +365,18 @@ namespace Itinero.Transit.Processor
             return null;
         }
 
+        public static DateTime ParseDate(string dateTime)
+        {
+            return (dateTime.Equals("now")
+                ? DateTime.Now
+                : dateTime.Equals("today")
+                    ? DateTime.Now.Date
+                    : DateTime.Parse(dateTime)).ToUniversalTime();
+        }
+
         /// <summary>
         /// Gives a timespan in seconds
         /// </summary>
-        /// <param name="timeIndication"></param>
-        /// <returns></returns>
         public static int ParseTimeSpan(string durationStr)
         {
             int duration;

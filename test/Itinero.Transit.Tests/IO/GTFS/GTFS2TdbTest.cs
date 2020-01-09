@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using Itinero.Transit.Data;
+using Itinero.Transit.IO.GTFS;
 using Itinero.Transit.IO.GTFS.Data;
 using Itinero.Transit.Utils;
 using Xunit;
@@ -28,6 +29,41 @@ namespace Itinero.Transit.Tests.IO.GTFS
         }
 
         // TODO test that trips on 'end_date' are included as well
+
+        [Fact]
+        public void LoadTimePeriod_HourWithinGtfs_ConnectionsAreLoaded()
+        {
+            var tdb = new TransitDb(0);
+            tdb.UseGtfs("IO/GTFS/sncb-13-october.zip",
+                new DateTime(2019, 10, 21, 10, 0, 0, DateTimeKind.Utc),
+                new DateTime(2019, 10, 21, 11, 0, 0, DateTimeKind.Utc));
+            var count = tdb.Latest.ConnectionsDb.Count();
+            Assert.Equal(3566, count);
+        }
+        
+        
+        [Fact]
+        public void LoadTimePeriod_HourAtFirstDayOfGtfs_ConnectionsAreLoaded()
+        {
+            var tdb = new TransitDb(0);
+            tdb.UseGtfs("IO/GTFS/sncb-13-october.zip",
+                new DateTime(2019, 10, 07, 10, 0, 0, DateTimeKind.Utc),
+                new DateTime(2019, 10, 07, 11, 0, 0, DateTimeKind.Utc));
+            var count = tdb.Latest.ConnectionsDb.Count();
+            Assert.Equal(3527, count);
+        }
+        
+        
+        [Fact]
+        public void LoadTimePeriod_HourAtLastDayOfGtfs_ConnectionsAreLoaded()
+        {
+            var tdb = new TransitDb(0);
+            tdb.UseGtfs("IO/GTFS/sncb-13-october.zip",
+                new DateTime(2019, 12, 14, 10, 0, 0, DateTimeKind.Utc),
+                new DateTime(2019, 12, 14, 11, 0, 0, DateTimeKind.Utc));
+            var count = tdb.Latest.ConnectionsDb.Count();
+            Assert.Equal(2370, count);
+        }
 
         [Fact]
         public void AgencyURLS_SNCB_ContainBelgianTrainId()
