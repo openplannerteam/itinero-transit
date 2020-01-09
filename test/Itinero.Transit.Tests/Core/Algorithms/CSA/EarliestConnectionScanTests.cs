@@ -24,11 +24,11 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             writer.AddOrUpdateConnection(new Connection(
                 stop1, stop2, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
             // Prevent depletion of the DB
             writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 1), 0));
+                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 1), 0));
 
             writer.Close();
 
@@ -114,7 +114,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var w0 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/2", (50.00001, 50.00001)));
 
             writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
 
             writer.Close();
@@ -151,7 +151,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 (0.000002, 0.00002))); // very walkable distance
 
             writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
 
             writer.Close();
@@ -188,7 +188,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 (0.000001, 0.00001))); // very walkable distance
 
             writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
 
             writer.Close();
@@ -224,16 +224,16 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var stop3 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/3", (60.1, 60.1)));
 
             writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
             writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 10, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+                new DateTime(2018, 12, 04, 10, 00, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
             writer.AddOrUpdateConnection(new Connection(stop2, stop3, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 10, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 1), 0));
+                new DateTime(2018, 12, 04, 10, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 1), 0));
 
             // Prevent depletion of the DB
             writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/2",
-                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 2), 0));
+                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 2), 0));
 
             writer.Close();
 
@@ -265,11 +265,11 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var stop2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", (0.1, 0.1)));
 
             writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
             // Prevent depletion of the DB
             writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
             writer.Close();
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
@@ -309,11 +309,11 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var stop2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", (0.5, 0.5)));
 
             writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
             // Prevent depletion of the DB
             writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
             writer.Close();
             var latest = transitDb.Latest;
@@ -356,18 +356,18 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var stop2 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", (0.1, 0.1)));
 
             writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
             writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+                new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
             writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 17, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+                new DateTime(2018, 12, 04, 17, 20, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
             writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/2",
-                new DateTime(2018, 12, 04, 18, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+                new DateTime(2018, 12, 04, 18, 20, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
             writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/3",
-                new DateTime(2018, 12, 04, 19, 20, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+                new DateTime(2018, 12, 04, 19, 20, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
             writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/4",
-                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
             writer.Close();
 
@@ -399,10 +399,10 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
 
             writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 10, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0),
+                new DateTime(2018, 12, 04, 9, 10, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0),
                 Connection.ModeGetOnOnly));
             writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0),
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0),
                 Connection.ModeGetOffOnly));
 
             writer.Close();
@@ -457,13 +457,13 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             // Note that all connections have mode '3', indicating neither getting on or of the connection
             writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 10, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 3));
+                new DateTime(2018, 12, 04, 10, 00, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 3));
             writer.AddOrUpdateConnection(new Connection(stop2, stop3, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 10, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 1), 3));
+                new DateTime(2018, 12, 04, 10, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 1), 3));
 
             // Prevent depletion of the DB
             writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/2",
-                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 2), 3));
+                new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 2), 3));
 
             writer.Close();
 
@@ -546,7 +546,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             writer.AddOrUpdateConnection(new Connection(loc1, loc2,
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 01, 00, DateTimeKind.Utc),
-                30 * 60, 0, 0, new TripId(0, 0), 0));
+                30 * 60, new TripId(0, 0), 0));
 
             writer.Close();
 
@@ -584,7 +584,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             writer.AddOrUpdateConnection(new Connection(loc2, loc1,
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 01, 00, DateTimeKind.Utc),
-                30 * 60, 0, 0, new TripId(0, 0), 0));
+                30 * 60, new TripId(0, 0), 0));
 
             writer.Close();
 

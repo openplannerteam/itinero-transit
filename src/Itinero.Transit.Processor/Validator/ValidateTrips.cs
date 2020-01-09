@@ -65,7 +65,7 @@ namespace Itinero.Transit.Processor.Validator
                     var distance = DistanceEstimate.DistanceEstimateInMeter(
                         (currStop.Longitude, currStop.Latitude),
                         (nextStop.Longitude, nextStop.Latitude));
-                    var speedMs = distance / (c.ArrivalTime - c.DepartureTime);
+                    var speedMs = distance / c.TravelTime;
                     var speedKmH = speedMs * 6 * 6 / 10;
 
                     var trip = trips.Get(c.TripId);
@@ -77,10 +77,11 @@ namespace Itinero.Transit.Processor.Validator
                     {
                         Err(c, "jump",
                                 $"Error in trip {trip.GlobalId}\n" +
-                                $"The trip arrived in {prevStop.GetName()} at {oldConnection.ArrivalTime.FromUnixTime():s} (incl {oldConnection.ArrivalDelay}s delay) from {prevprevStop.GetName()}\n" +
-                                $"The trip now departs in {currStop.GetName()} at {c.DepartureTime.FromUnixTime():s} (incl {c.DepartureDelay}s delay)\n" +
-                                $"The trip should arrive in {nextStop.GetName()} at {c.ArrivalTime.FromUnixTime():s} (incl {c.ArrivalDelay}s delay)" +
-                                $"Previous trip data {prevConnection.ToJson()}")
+                                $"The trip arrived in {prevStop.GetName()} at {oldConnection.ArrivalTime.FromUnixTime():s} from {prevprevStop.GetName()}\n" +
+                                $"The trip now departs in {currStop.GetName()} at {c.DepartureTime.FromUnixTime():s}\n" +
+                                $"The trip should arrive in {nextStop.GetName()} at {c.ArrivalTime.FromUnixTime():s}" +
+                                $"Previous trip data {prevConnection.ToJson()}" +
+                                $"All times include delay (if any delay is present)")
                             ;
                     }
 
@@ -90,20 +91,14 @@ namespace Itinero.Transit.Processor.Validator
                             $"This train stays in the same place");
                     }
 
-                    if (c.ArrivalTime < c.DepartureTime)
-                    {
-                        Err(c, "timetravel between station",
-                            $"This train travels back in time, it arrives {c.DepartureTime - c.ArrivalTime}s before it departs");
-                    }
-
-                    if (oldConnection.ArrivalTime > c.DepartureTime)
+                    if (oldConnection.DepartureTime + oldConnection.TravelTime > c.DepartureTime)
                     {
                         var delta = oldConnection.ArrivalTime - c.DepartureTime;
                         var stop = c.DepartureStop;
                         var stopName = stops.Get(stop).GetName() ?? "";
                         
                         Err(c, "timetravel in station",
-                            $"Connection departs {delta} seconds before its arrival in {stopName}. Departure time is {c.DepartureTime.FromUnixTime():HH:mm:ss}, arrival time is {oldConnection.ArrivalTime.FromUnixTime():HH:mm:ss} (note: the previous connection has {oldConnection.ArrivalDelay}s delay arriving)\n" +
+                            $"Connection departs {delta} seconds before its arrival in {stopName}. Departure time is {c.DepartureTime.FromUnixTime():HH:mm:ss}, arrival time is {oldConnection.ArrivalTime.FromUnixTime():HH:mm:ss}\n" +
                             $"OldConnection data: {oldConnection.ToJson()}");
                     }
 

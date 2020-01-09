@@ -1,18 +1,29 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Itinero.Transit.Data.Core;
 
 namespace Itinero.Transit.Data.Aggregators
 {
     public class TripsDbAggregator : ITripsDb
     {
-        private DatabaseAggregator<TripId, Trip> _aggregator;
+        private IDatabaseReader<TripId, Trip> _aggregator;
         private readonly List<ITripsDb> _fallbacks;
 
-        public TripsDbAggregator(List<ITripsDb> fallbacks)
+        public static ITripsDb CreateFrom(List<ITripsDb> fallbacks)
+        {
+            if (fallbacks.Count == 1)
+            {
+                return fallbacks[0];
+            }
+            return new TripsDbAggregator(fallbacks);
+        }
+        
+        private TripsDbAggregator(List<ITripsDb> fallbacks)
         {
             _fallbacks = fallbacks;
+            _aggregator = DatabaseAggregator<TripId, Trip>.CreateFrom(
+                fallbacks.Select(db => (IDatabaseReader<TripId, Trip>) db).ToList());
         }
 
         public IEnumerator<Trip> GetEnumerator()

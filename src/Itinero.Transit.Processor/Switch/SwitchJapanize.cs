@@ -35,15 +35,21 @@ namespace Itinero.Transit.Processor.Switch
                 modifyConnection: c =>
 
                 {
-                    delaySum += c.DepartureDelay;
+                    if (c.Attributes == null)
+                    {
+                        return c;
+                    }
+
+                    var depDelay = ushort.Parse(c.Attributes.GetValueOrDefault("departureDelay", "0"));
+                    var arrDelay = ushort.Parse(c.Attributes.GetValueOrDefault("departureDelay", "0"));
+                    delaySum += depDelay;
                     return new Connection(
                         c.GlobalId,
                         c.DepartureStop,
                         c.ArrivalStop,
-                        c.DepartureTime,
-                        c.TravelTime,
-                        0, 0,
-                        c.Mode, c.TripId);
+                        c.DepartureTime - depDelay,
+                        (ushort) (c.TravelTime - arrDelay),
+                        c.Mode, c.TripId, c.Attributes);
                 }
             );
             Console.WriteLine($"Removed {delaySum / 60} minutes of delay. If only it was that easy in Belgium too...");

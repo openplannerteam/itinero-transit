@@ -43,7 +43,7 @@ namespace Itinero.Transit.Tests.Core.Data
 
             var inputConnection = new Connection(
                 "XYZ", new StopId(1, 0), new StopId(1, 7),
-                123456, 123, 2, 5, 3, new TripId(1, 2));
+                123456, 123, 3, new TripId(1, 2));
             connsDb.AddOrUpdate(inputConnection);
 
             using (var f = File.OpenWrite("Test.transitdb"))

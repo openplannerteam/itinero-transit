@@ -44,10 +44,9 @@ namespace Itinero.Transit.Data.Serialization
                     stopMapping[c.ArrivalStop],
                     c.DepartureTime,
                     c.TravelTime,
-                    c.DepartureDelay,
-                    c.ArrivalDelay,
                     c.Mode,
-                    tripMapping[c.TripId]
+                    tripMapping[c.TripId],
+                    c.Attributes
                 ));
             }
 

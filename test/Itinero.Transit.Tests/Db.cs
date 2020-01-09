@@ -62,13 +62,13 @@ namespace Itinero.Transit.Tests
                 stop10, stop11,
                 "https://example.com/connections/100",
                 new DateTime(2018, 12, 04, 23, 30, 00, DateTimeKind.Utc),
-                120, 0, 0, new TripId(0, 100), 0));
+                120, new TripId(0, 100), 0));
 
             writer.AddOrUpdateConnection(new Connection(
                 stop11, stop10,
                 "AddOrUpdateConnection://example.com/connections/101",
                 new DateTime(2018, 12, 04, 00, 30, 00, DateTimeKind.Utc),
-                120, 0, 0, new TripId(0, 100), 0));
+                120, new TripId(0, 100), 0));
 
             writer.Close();
 

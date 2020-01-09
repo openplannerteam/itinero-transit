@@ -22,7 +22,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", (0.000001, 0.00001))); // very walkable distance
 
             var connId = writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
             writer.Close();
 
@@ -51,13 +51,13 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
                 new Connection("http://ex.org/con/563", stop1, stop0,
                     // This is the same time we depart from stop0 towards stop1
                     new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc).ToUnixTime(),
-                    10 * 60, 0, 0, 0, new TripId(0, 1))));
+                    10 * 60, 0, new TripId(0, 1))));
 
             Assert.True(filter.CanBeTaken(
                 new Connection("http://ex.org/con/563", stop1, stop0,
                     // This is the same time we arrive at stop1
                     new DateTime(2018, 12, 04, 9, 40, 00, DateTimeKind.Utc).ToUnixTime(),
-                    10 * 60, 0, 0, 0, new TripId(0, 1))));
+                    10 * 60, 0, new TripId(0, 1))));
         }
 
         [Fact]
@@ -71,7 +71,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", (0.000001, 0.00001))); // very walkable distance
 
             var connId = writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
             writer.Close();
 
@@ -102,13 +102,13 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
                 new Connection(
                     "id",  stop1, stop0, 
                     new DateTime(2018, 12, 04, 9, 20, 00, DateTimeKind.Utc).ToUnixTime(),
-                    10 * 60, 0, 0, 0, new TripId(0, 1))));
+                    10 * 60, 0, new TripId(0, 1))));
 
             // If we arrived at 09:50 at stop0, we can't take our connection anymore
             Assert.False(filter.CanBeTaken(
                 new Connection("http://ex.org/con/563", stop1, stop0,
                     new DateTime(2018, 12, 04, 9, 40, 00, DateTimeKind.Utc).ToUnixTime(),
-                    10 * 60, 0, 0, 0, new TripId(0, 1))));
+                    10 * 60, 0, new TripId(0, 1))));
         }
 
         [Fact]
@@ -125,7 +125,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             var stop1 = writer.AddOrUpdateStop(new Stop("https://example.com/stops/1", (0.0, 0.0)));
 
             writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0), 0));
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
             writer.Close();
 
@@ -168,10 +168,10 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
 
 
             writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
-                new DateTime(2018, 12, 04, 9, 10, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0),
+                new DateTime(2018, 12, 04, 9, 10, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0),
                 Connection.ModeGetOnOnly));
             writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/1",
-                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, 0, 0, new TripId(0, 0),
+                new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0),
                 Connection.ModeGetOffOnly));
 
             writer.Close();

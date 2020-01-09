@@ -162,8 +162,7 @@ namespace Itinero.Transit.IO.LC
                 new Transit.Data.Core.Connection(
                 stop1Id, stop2Id, connectionUri,
                 connection.DepartureTime(),
-                (ushort) (connection.ArrivalTime() - connection.DepartureTime()).TotalSeconds,
-                connection.DepartureDelay, connection.ArrivalDelay, tripId, mode));
+                (ushort) (connection.ArrivalTime() - connection.DepartureTime()).TotalSeconds, tripId, mode));
         }
 
 

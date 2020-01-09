@@ -26,18 +26,18 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             writer.AddOrUpdateConnection(new Connection(stop0, stop1,
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc),
-                10 * 60, 0, 0, new TripId(0, 0), 0));
+                10 * 60, new TripId(0, 0), 0));
 
             writer.AddOrUpdateConnection(new Connection(stop1, stop2,
                 "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 16, 33, 00, DateTimeKind.Utc),
-                10 * 60, 0, 0, new TripId(0, 1), 0));
+                10 * 60, new TripId(0, 1), 0));
 
 
             writer.AddOrUpdateConnection(new Connection(stop0, stop2,
                 "https://example.com/connections/2",
                 new DateTime(2018, 12, 04, 16, 25, 00, DateTimeKind.Utc),
-                30 * 60, 0, 0, new TripId(0, 2), 0));
+                30 * 60, new TripId(0, 2), 0));
 
             writer.Close();
 
@@ -89,19 +89,19 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             writer.AddOrUpdateConnection(new Connection(stop0, stop1,
                 "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc),
-                10 * 60, 0, 0, new TripId(0, 0), 0));
+                10 * 60, new TripId(0, 0), 0));
 
             writer.AddOrUpdateConnection(new Connection(stop1, stop2,
                 "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 16, 33, 00, DateTimeKind.Utc),
-                10 * 60, 0, 0, new TripId(0, 1), 0));
+                10 * 60, new TripId(0, 1), 0));
 
 
             // Faster, better, stronger... but cancelled
             writer.AddOrUpdateConnection(new Connection(stop0, stop2,
                 "https://example.com/connections/2",
                 new DateTime(2018, 12, 04, 16, 10, 00, DateTimeKind.Utc),
-                10 * 60, 0, 0, new TripId(0, 2), 4));
+                10 * 60, new TripId(0, 2), 4));
 
             writer.Close();
 

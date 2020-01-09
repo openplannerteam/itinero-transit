@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using Itinero.Transit.Data;
 using Itinero.Transit.IO.GTFS.Data;
 

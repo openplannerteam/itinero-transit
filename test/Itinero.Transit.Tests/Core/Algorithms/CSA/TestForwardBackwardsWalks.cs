@@ -89,7 +89,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             // Note that this connections falls out of the requested window
             wr.AddOrUpdateConnection(new Connection(
                 stop1, stop0, "qsdf", DateTime.Now.ToUniversalTime().AddMinutes(10),
-                10 * 60, 0, 0, new TripId(0, 0), 0));
+                10 * 60, new TripId(0, 0), 0));
             wr.Close();
 
 

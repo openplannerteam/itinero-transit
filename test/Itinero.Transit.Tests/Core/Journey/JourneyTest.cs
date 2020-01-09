@@ -62,8 +62,8 @@ namespace Itinero.Transit.Tests.Core.Journey
             var tripId1 = new TripId(0, 1);
 
 
-            var c0 = new Connection( "c0", stop1, stop2, 9000, 600, 0, 0, 0, tripId0);
-            var c1 = new Connection( "c1", stop0, stop1, 8000, 600, 0, 0, 0, tripId1);
+            var c0 = new Connection( "c0", stop1, stop2, 9000, 600, 0, tripId0);
+            var c1 = new Connection( "c1", stop0, stop1, 8000, 600, 0, tripId1);
 
             var j = new Journey<TransferMetric>(stop0, 10000, TransferMetric.Factory);
             var j0 = j.ChainBackward(cid0, c0);

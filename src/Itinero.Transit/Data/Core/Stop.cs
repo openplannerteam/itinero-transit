@@ -28,25 +28,32 @@ namespace Itinero.Transit.Data.Core
         /// <summary>
         /// Gets the attributes.
         /// </summary>
-        public Dictionary<string, string> Attributes { get; }
-
-        private static Dictionary<string, string> _empty = new Dictionary<string, string>();
+        public IReadOnlyDictionary<string, string> Attributes { get; }
 
         public Stop(Stop stop)
         {
             GlobalId = stop.GlobalId;
             Longitude = stop.Longitude;
             Latitude = stop.Latitude;
-            Attributes = stop.Attributes != null ? new Dictionary<string, string>(stop.Attributes) : _empty;
+            var attributes = new Dictionary<string, string>();
+
+            if (stop.Attributes != null)
+            {
+                foreach (var kv in stop.Attributes)
+                {
+                    attributes[kv.Key] = kv.Value;
+                }
+            }
+
+            Attributes = attributes;
         }
 
         public Stop(string globalId,
-            (double longitude, double latitude) c, Dictionary<string, string> attributes = null)
+            (double longitude, double latitude) c, IReadOnlyDictionary<string, string> attributes = null)
         {
             GlobalId = globalId;
-            Longitude = c.longitude;
-            Latitude = c.latitude;
-            Attributes = attributes ?? _empty;
+            (Longitude, Latitude) = c;
+            Attributes = attributes;
         }
 
 

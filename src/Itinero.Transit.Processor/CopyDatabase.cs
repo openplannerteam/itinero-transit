@@ -109,7 +109,6 @@ namespace Itinero.Transit.Processor
                     arrStopId,
                     c.DepartureTime,
                     c.TravelTime,
-                    0, 0,
                     c.Mode, tripId);
                 
                 if (keepConnection != null && !keepConnection(

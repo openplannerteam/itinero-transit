@@ -11,14 +11,14 @@ namespace Itinero.Transit.Data.Core
     public class Trip : IGlobalId
     {
         public string GlobalId { get; }
-        public Dictionary<string, string> Attributes { get; }
+        public IReadOnlyDictionary<string, string> Attributes { get; }
 
         public Trip(string globalId)
         {
             GlobalId = globalId;
         }
         
-        public Trip(string globalId, Dictionary<string, string> attributes)
+        public Trip(string globalId, IReadOnlyDictionary<string, string> attributes)
         {
             GlobalId = globalId;
             Attributes = attributes;

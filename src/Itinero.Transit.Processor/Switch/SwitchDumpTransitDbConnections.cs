@@ -43,11 +43,11 @@ namespace Itinero.Transit.Processor.Switch
                 string.IsNullOrEmpty(writeTo) ? Console.Out : new StreamWriter(File.OpenWrite(writeTo)))
             {
                 const string header =
-                    "GlobalId,DepartureStop,DepartureStopName,DepartureTime,DepartureDelay,ArrivalStop,ArrivalStopName," +
-                    "ArrivalTime,ArrivalDelay,TravelTime,Mode,TripId,TripHeadSign";
+                    "GlobalId,DepartureStop,DepartureStopName,DepartureTime,ArrivalStop,ArrivalStopName," +
+                    "ArrivalTime,TravelTime,Mode,TripId,TripHeadSign";
                 const string headerHuman =
-                    "GlobalId,DepartureStopName,DepartureTime,DepartureDelay,ArrivalStopName," +
-                    "ArrivalTime,ArrivalDelay,TravelTime,Mode,TripId,TripHeadSign";
+                    "GlobalId,DepartureStopName,DepartureTime,ArrivalStopName," +
+                    "ArrivalTime,TravelTime,Mode,TripId,TripHeadSign";
 
 
                 outStream.WriteLine(humanFormat ? headerHuman : header);
@@ -72,12 +72,10 @@ namespace Itinero.Transit.Processor.Switch
                                 $"{dep.GlobalId}," +
                                 $"{dep.Attributes.Get("name")}," +
                                 $"{connection.DepartureTime.FromUnixTime():O}," +
-                                $"{connection.DepartureDelay}," +
                                 $"{arr.GlobalId}," +
                                 $"{arr.Attributes.Get("name")}," +
                                 $"{connection.ArrivalTime.FromUnixTime():O}," +
-                                $"{connection.ArrivalDelay}," +
-                                $"{(connection.ArrivalTime.FromUnixTime() - connection.DepartureTime.FromUnixTime()).TotalSeconds}," +
+                                $"{connection.TravelTime}," +
                                 $"{connection.Mode}," +
                                 $"{trip.GlobalId}," +
                                 $"{trip.Attributes.Get("headsign")}";
@@ -86,11 +84,9 @@ namespace Itinero.Transit.Processor.Switch
                         $"{connection.GlobalId}," +
                         $"{dep.Attributes.Get("name")}," +
                         $"{connection.DepartureTime.FromUnixTime():hh:mm}," +
-                        $"{connection.DepartureDelay}," +
                         $"{arr.Attributes.Get("name")}," +
                         $"{connection.ArrivalTime.FromUnixTime():hh:mm}," +
-                        $"{connection.ArrivalDelay}," +
-                        $"{(connection.ArrivalTime.FromUnixTime() - connection.DepartureTime.FromUnixTime()).TotalSeconds}," +
+                        $"{connection.TravelTime}," +
                         $"{connection.Mode}," +
                         $"{trip.GlobalId}," +
                         $"{trip.Attributes.Get("headsign")}";
@@ -104,7 +100,7 @@ namespace Itinero.Transit.Processor.Switch
 
     internal static class Helpers
     {
-        public static string Get(this Dictionary<string, string> attributes, string name)
+        public static string Get(this IReadOnlyDictionary<string, string> attributes, string name)
         {
             if (attributes == null)
             {

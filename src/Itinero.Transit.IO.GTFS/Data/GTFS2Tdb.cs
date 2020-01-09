@@ -252,8 +252,6 @@ namespace Itinero.Transit.IO.GTFS.Data
                     arrivalStop,
                     DateTimeExtensions.ToUnixTime(departureTime),
                     (ushort) travelTime,
-                    0, // We are working with static data, the perfect world without delays
-                    0,
                     mode,
                     vehicleTripId);
 

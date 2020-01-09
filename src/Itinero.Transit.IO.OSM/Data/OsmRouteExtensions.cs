@@ -140,7 +140,7 @@ namespace Itinero.Transit.IO.OSM.Data
                     }
                 }
 
-                var con = new Connection(id ,l0, l1, depTime.ToUnixTime(), travelTime, 0, 0, mode, tripId);
+                var con = new Connection(id ,l0, l1, depTime.ToUnixTime(), travelTime, mode, tripId);
                 conns.AddLast(con);
             }
 

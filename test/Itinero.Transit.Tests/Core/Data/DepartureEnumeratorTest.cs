@@ -24,7 +24,7 @@ namespace Itinero.Transit.Tests.Core.Data
             var stop0 = wr.AddOrUpdateStop(new Stop("a", (50, 4)));
             var stop1 = wr.AddOrUpdateStop(new Stop("b", (51, 5)));
             var input = new Connection(
-                "a", stop0, stop1, 12345, 6789, 5, 4, 1,
+                "a", stop0, stop1, 12345, 6789, 1,
                 new TripId(1, 5));
             wr.AddOrUpdateConnection(input);
             wr.Close();
@@ -49,13 +49,13 @@ namespace Itinero.Transit.Tests.Core.Data
             var stop0 = wr.AddOrUpdateStop(new Stop("a", (0, 0)));
             var stop1 = wr.AddOrUpdateStop(new Stop("b", (0, 0)));
 
-            wr.AddOrUpdateConnection(new Connection("a", stop0, stop1, 50, 10, 0, 0, 0, new TripId(0, 0)));
-            wr.AddOrUpdateConnection(new Connection("b", stop0, stop1, 100, 10, 0, 0, 0, new TripId(0, 0)));
-            wr.AddOrUpdateConnection(new Connection("c", stop0, stop1, 1000, 10, 0, 0, 0, new TripId(0, 0)));
-            wr.AddOrUpdateConnection(new Connection("d", stop0, stop1, 1100, 10, 0, 0, 0, new TripId(0, 0)));
-            wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, 1200, 10, 0, 0, 0, new TripId(0, 0)));
-            wr.AddOrUpdateConnection(new Connection("f", stop0, stop1, 1300, 10, 0, 0, 0, new TripId(0, 0)));
-            wr.AddOrUpdateConnection(new Connection("g", stop0, stop1, 1400, 10, 0, 0, 0, new TripId(0, 0)));
+            wr.AddOrUpdateConnection(new Connection("a", stop0, stop1, 50, 10, 0, new TripId(0, 0)));
+            wr.AddOrUpdateConnection(new Connection("b", stop0, stop1, 100, 10, 0, new TripId(0, 0)));
+            wr.AddOrUpdateConnection(new Connection("c", stop0, stop1, 1000, 10, 0, new TripId(0, 0)));
+            wr.AddOrUpdateConnection(new Connection("d", stop0, stop1, 1100, 10, 0, new TripId(0, 0)));
+            wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, 1200, 10, 0, new TripId(0, 0)));
+            wr.AddOrUpdateConnection(new Connection("f", stop0, stop1, 1300, 10, 0, new TripId(0, 0)));
+            wr.AddOrUpdateConnection(new Connection("g", stop0, stop1, 1400, 10, 0, new TripId(0, 0)));
             wr.Close();
 
 
@@ -127,12 +127,12 @@ namespace Itinero.Transit.Tests.Core.Data
             var stop0 = wr.AddOrUpdateStop(new Stop("stop0", (0, 0)));
             var stop1 = wr.AddOrUpdateStop(new Stop("stop1", (0, 0)));
 
-            wr.AddOrUpdateConnection(new Connection("a", stop0, stop1, d - 59, 1, 0, 0, 0, new TripId(0, 0)));
-            wr.AddOrUpdateConnection(new Connection("a0", stop0, stop1, d - 59, 2, 0, 0, 0, new TripId(0, 4)));
-            wr.AddOrUpdateConnection(new Connection("b", stop0, stop1, d + 1, 4, 0, 0, 0, new TripId(0, 1)));
-            wr.AddOrUpdateConnection(new Connection("c", stop0, stop1, d + 61, 8, 0, 0, 0, new TripId(0, 2)));
-            wr.AddOrUpdateConnection(new Connection("d", stop0, stop1, d + 121, 16, 0, 0, 0, new TripId(0, 3)));
-            wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, d + 121, 32, 0, 0, 0, new TripId(0, 5)));
+            wr.AddOrUpdateConnection(new Connection("a", stop0, stop1, d - 59, 1, 0, new TripId(0, 0)));
+            wr.AddOrUpdateConnection(new Connection("a0", stop0, stop1, d - 59, 2, 0, new TripId(0, 4)));
+            wr.AddOrUpdateConnection(new Connection("b", stop0, stop1, d + 1, 4, 0, new TripId(0, 1)));
+            wr.AddOrUpdateConnection(new Connection("c", stop0, stop1, d + 61, 8, 0, new TripId(0, 2)));
+            wr.AddOrUpdateConnection(new Connection("d", stop0, stop1, d + 121, 16, 0, new TripId(0, 3)));
+            wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, d + 121, 32, 0, new TripId(0, 5)));
             wr.Close();
 
             var cons = tdb.Latest.ConnectionsDb;
@@ -164,12 +164,12 @@ namespace Itinero.Transit.Tests.Core.Data
             var stop0 = wr.AddOrUpdateStop(new Stop("stop0", (0, 0)));
             var stop1 = wr.AddOrUpdateStop(new Stop("stop1", (0, 0)));
 
-            wr.AddOrUpdateConnection(new Connection("a", stop0, stop1, d - 59, 1, 0, 0, 0, new TripId(0, 0)));
-            wr.AddOrUpdateConnection(new Connection("a0", stop0, stop1, d - 59, 2, 0, 0, 0, new TripId(0, 4)));
-            wr.AddOrUpdateConnection(new Connection("b", stop0, stop1, d + 1, 4, 0, 0, 0, new TripId(0, 1)));
-            wr.AddOrUpdateConnection(new Connection("c", stop0, stop1, d + 61, 8, 0, 0, 0, new TripId(0, 2)));
-            wr.AddOrUpdateConnection(new Connection("d", stop0, stop1, d + 121, 16, 0, 0, 0, new TripId(0, 3)));
-            wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, d + 121, 32, 0, 0, 0, new TripId(0, 5)));
+            wr.AddOrUpdateConnection(new Connection("a", stop0, stop1, d - 59, 1, 0, new TripId(0, 0)));
+            wr.AddOrUpdateConnection(new Connection("a0", stop0, stop1, d - 59, 2, 0, new TripId(0, 4)));
+            wr.AddOrUpdateConnection(new Connection("b", stop0, stop1, d + 1, 4, 0, new TripId(0, 1)));
+            wr.AddOrUpdateConnection(new Connection("c", stop0, stop1, d + 61, 8, 0, new TripId(0, 2)));
+            wr.AddOrUpdateConnection(new Connection("d", stop0, stop1, d + 121, 16, 0, new TripId(0, 3)));
+            wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, d + 121, 32, 0, new TripId(0, 5)));
             wr.Close();
 
             var cons = tdb.Latest.ConnectionsDb;
@@ -204,12 +204,12 @@ namespace Itinero.Transit.Tests.Core.Data
             var stop0 = wr.AddOrUpdateStop(new Stop("a", (0, 0)));
             var stop1 = wr.AddOrUpdateStop(new Stop("b", (0, 0)));
 
-            wr.AddOrUpdateConnection(new Connection("a", stop0, stop1, d - 59, 1, 0, 0, 0, new TripId(0, 0)));
-            wr1.AddOrUpdateConnection(new Connection("a0", stop0, stop1, d - 59, 2, 0, 0, 0, new TripId(0, 0)));
-            wr.AddOrUpdateConnection(new Connection("b", stop0, stop1, d + 1, 4, 0, 0, 0, new TripId(0, 1)));
-            wr.AddOrUpdateConnection(new Connection("c", stop0, stop1, d + 61, 8, 0, 0, 0, new TripId(0, 2)));
-            wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, d + 121, 32, 0, 0, 0, new TripId(0, 3)));
-            wr1.AddOrUpdateConnection(new Connection("d", stop0, stop1, d + 121, 16, 0, 0, 0, new TripId(0, 3)));
+            wr.AddOrUpdateConnection(new Connection("a", stop0, stop1, d - 59, 1, 0, new TripId(0, 0)));
+            wr1.AddOrUpdateConnection(new Connection("a0", stop0, stop1, d - 59, 2, 0, new TripId(0, 0)));
+            wr.AddOrUpdateConnection(new Connection("b", stop0, stop1, d + 1, 4, 0, new TripId(0, 1)));
+            wr.AddOrUpdateConnection(new Connection("c", stop0, stop1, d + 61, 8, 0, new TripId(0, 2)));
+            wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, d + 121, 32, 0, new TripId(0, 3)));
+            wr1.AddOrUpdateConnection(new Connection("d", stop0, stop1, d + 121, 16, 0, new TripId(0, 3)));
             wr.Close();
             wr1.Close();
 
@@ -310,12 +310,12 @@ namespace Itinero.Transit.Tests.Core.Data
             var tr4 = wr.AddOrUpdateTrip("4");
             var tr5 = wr.AddOrUpdateTrip("5");
 
-            wr.AddOrUpdateConnection(new Connection("a", stop0, stop1, d - 59, 1, 0, 0, 0, tr0));
-            wr.AddOrUpdateConnection(new Connection("a0", stop0, stop1, d - 59, 2, 0, 0, 0, tr5));
-            wr.AddOrUpdateConnection(new Connection("b", stop0, stop1, d + 1, 4, 0, 0, 0, tr1));
-            wr.AddOrUpdateConnection(new Connection("c", stop0, stop1, d + 61, 8, 0, 0, 0, tr2));
-            wr.AddOrUpdateConnection(new Connection("d", stop0, stop1, d + 121, 16, 0, 0, 0, tr3));
-            wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, d + 121, 32, 0, 0, 0, tr4));
+            wr.AddOrUpdateConnection(new Connection("a", stop0, stop1, d - 59, 1, 0, tr0));
+            wr.AddOrUpdateConnection(new Connection("a0", stop0, stop1, d - 59, 2, 0, tr5));
+            wr.AddOrUpdateConnection(new Connection("b", stop0, stop1, d + 1, 4, 0, tr1));
+            wr.AddOrUpdateConnection(new Connection("c", stop0, stop1, d + 61, 8, 0, tr2));
+            wr.AddOrUpdateConnection(new Connection("d", stop0, stop1, d + 121, 16, 0, tr3));
+            wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, d + 121, 32, 0, tr4));
             wr.Close();
 
 
@@ -383,7 +383,7 @@ namespace Itinero.Transit.Tests.Core.Data
                 wr.AddOrUpdateConnection(
                     new Connection("c" + i,
                         stop0, stop1,
-                        50 + i * 1000, 10, 0, 0, 0,
+                        50 + i * 1000, 10, 0,
                         new TripId(0, 0)));
             }
 

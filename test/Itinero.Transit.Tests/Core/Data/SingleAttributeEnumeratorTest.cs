@@ -7,22 +7,22 @@ namespace Itinero.Transit.Tests.Core.Data
 {
     public class SingleAttributeEnumeratorTest
     {
-        private static void Test(IStopsDb stops,  StopId id)
+        private static void Test(IStopsDb stops, StopId id)
         {
             var source = stops.Get(id);
-            source.Attributes.TryGetValue("name", out var name);
+            string name = null;
+            source.Attributes?.TryGetValue("name", out name);
             if (name != null)
             {
                 Assert.NotEmpty(name);
             }
 
+            if (source.Attributes == null) return;
             foreach (var (k, v) in source.Attributes)
             {
-                if (k.StartsWith("name:"))
-                {
-                    Assert.StartsWith("name:", k);
-                    Assert.NotEmpty(v);
-                }
+                if (!k.StartsWith("name:")) continue;
+                Assert.StartsWith("name:", k);
+                Assert.NotEmpty(v);
             }
         }
 

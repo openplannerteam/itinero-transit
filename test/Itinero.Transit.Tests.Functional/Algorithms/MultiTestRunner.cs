@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Journey.Metric;
 using Itinero.Transit.Tests.Functional.Utils;
