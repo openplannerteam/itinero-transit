@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Itinero.Transit.Data
 {
@@ -32,6 +33,29 @@ namespace Itinero.Transit.Data
         /// Gives the global id
         /// </summary>
         string GlobalId { get; }
+        
+        IReadOnlyDictionary<string, string> Attributes { get; }
+    }
+
+    public static class IGlobalIdExtensions
+    {
+        public static bool TryGetAttribute(this IGlobalId element, string key, out string value, string defaultValue = "")
+        {
+            if (element.Attributes == null)
+            {
+                value = defaultValue;
+                return false;
+            }
+
+            if (element.Attributes.TryGetValue(key, out value))
+            {
+                return true;
+            }
+
+            value = defaultValue;
+            return false;
+
+        }
     }
 
     public interface IDatabase<TId, T> :
