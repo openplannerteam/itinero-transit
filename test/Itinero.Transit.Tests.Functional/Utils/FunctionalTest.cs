@@ -19,7 +19,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
         /// Executes this test for the given input.
         /// </summary>
         protected abstract void Execute();
-
+        
 
         public void Run()
         {
@@ -29,7 +29,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
             Information($"[OK] {Name} took {(end - start).TotalMilliseconds}ms");
         }
 
-        public string Name => GetType().Name;
+        public abstract string Name { get; }
         public string LogPrefix = "";
 
         /// <summary>

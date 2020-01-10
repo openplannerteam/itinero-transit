@@ -8,6 +8,8 @@ namespace Itinero.Transit.Tests.Functional.Data
 {
     public class StopEnumerationTest : FunctionalTestWithInput<List<TransitDb>>
     {
+        public override string Name => "Stop enumeration test";
+
         protected override void Execute()
         {
             var reader = StopsDbAggregator.CreateFrom(Input.Select(a => a.Latest));
@@ -24,7 +26,6 @@ namespace Itinero.Transit.Tests.Functional.Data
             n = stop.Attributes;
             n.TryGetValue("name", out name);
             NotNull(name);
-
         }
     }
 }

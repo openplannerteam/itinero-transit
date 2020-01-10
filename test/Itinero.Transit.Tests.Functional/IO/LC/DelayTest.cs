@@ -14,6 +14,8 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
     /// </summary>
     public class DelayTest : FunctionalTest
     {
+        public override string Name => "Delay Test";
+
         protected override void Execute()
         {
             var contents = File.ReadAllText("testdata/connections0.json");

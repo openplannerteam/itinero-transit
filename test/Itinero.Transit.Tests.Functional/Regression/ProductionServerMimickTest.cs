@@ -18,6 +18,9 @@ namespace Itinero.Transit.Tests.Functional.Regression
 {
     public class ProductionServerMimickTest : FunctionalTestWithInput<(string from, string to, uint maxSearch)>
     {
+
+        public override string Name => "ProductionServerMimickTest";
+        
         private readonly TransitDb _transitDb;
         private readonly DateTime? _departureTime;
         private readonly DateTime? _arrivalTime;

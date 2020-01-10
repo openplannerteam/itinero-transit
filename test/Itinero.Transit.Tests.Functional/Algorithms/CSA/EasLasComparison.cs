@@ -10,6 +10,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
     /// </summary>
     public class EasLasComparison : FunctionalTestWithInput<WithTime<TransferMetric>>
     {
+        
+        public override string Name => "EAS/LAS comparison";
+
         protected override void Execute()
         {
             var easJ =

@@ -4,7 +4,8 @@ using Itinero.Transit.Tests.Functional.Utils;
 namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
     public class LatestConnectionScanTest :FunctionalTestWithInput<WithTime<TransferMetric>>
-    {
+    {      public override string Name => "LAS";
+
         protected override void Execute()
         {
             var lasJ = Input.CalculateLatestDepartureJourney();

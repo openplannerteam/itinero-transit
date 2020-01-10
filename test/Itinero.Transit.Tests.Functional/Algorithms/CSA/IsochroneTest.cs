@@ -5,6 +5,8 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
     public class IsochroneTest :FunctionalTestWithInput<WithTime<TransferMetric>>
     {
+        public override string Name => "Isochrone";
+
         protected override void Execute()
         {
             var found = Input.CalculateIsochroneFrom();

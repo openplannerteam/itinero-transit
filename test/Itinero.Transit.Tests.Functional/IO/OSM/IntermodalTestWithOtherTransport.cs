@@ -12,6 +12,9 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
 
     public class IntermodalTestWithOtherTransport : FunctionalTestWithInput<(string start, string destination, uint maxDistance)>
     {
+        
+        public override string Name => "Test intermodality";
+
         private readonly TransitDb _tdb;
         private readonly Func<uint, Stop, Stop, Profile<TransferMetric>> _profile;
 

@@ -12,6 +12,8 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
     /// </summary>
     public class TestOsmLoadingIntoTransitDb : FunctionalTestWithInput<(string url, int expectedNrOfStops)>
     {
+        public override string Name => "Load OSM";
+
         protected override void Execute()
         {
             var tdb = new TransitDb(0);

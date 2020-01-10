@@ -6,6 +6,8 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
 {
     public class CachingTest : FunctionalTest
     {
+        public override string Name => "Test Caching";
+
         protected override void Execute()
         {
             var cons = new ConnectionProvider(new Uri(Belgium.SncbConnections),

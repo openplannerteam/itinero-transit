@@ -10,6 +10,8 @@ namespace Itinero.Transit.Tests.Functional.Data
 {
     public class InitialSynchronizationTest : FunctionalTest
     {
+        public override string Name => "Initial synchronization test";
+
         protected override void Execute()
         {
             var tdb = new TransitDb(0);

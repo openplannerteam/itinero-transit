@@ -8,7 +8,8 @@ using Itinero.Transit.Utils;
 namespace Itinero.Transit.Tests.Functional.Data
 {
     public class NoDuplicationTest : FunctionalTest
-    {
+    {  public override string Name => "No Duplication Test";
+
         private static int CountConnections(DateTime now, TransitDb tdb)
         {
             var latest = tdb.Latest;

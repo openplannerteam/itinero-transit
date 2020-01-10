@@ -7,6 +7,10 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.Search
     public class StopSearchTest : 
         FunctionalTestWithInput<(TransitDb db, double lon, double lat, double distance)>
     {
+        
+        public override string Name => "Stop Search Test";
+
+        
         protected override void Execute()
         {
             Input.db.Latest.StopsDb.FindClosest(new Stop("some stop",(Input.lon, Input.lat)), (uint) Input.distance);

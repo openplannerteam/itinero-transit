@@ -9,6 +9,9 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
     /// </summary>
     public class UpdateTransitDbTest : FunctionalTest
     {
+        
+        public override string Name => "Update Transit Db Test";
+
         protected override void Execute()
         {
             var tdb = new TransitDb(0);

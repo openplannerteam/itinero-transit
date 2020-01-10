@@ -18,6 +18,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms
         FunctionalTestWithInput<WithTime<TransferMetric>>>
     {
         private List<WithTime<TransferMetric>> _inputs;
+        public override string Name => "Multiple Test";
 
 
         /// <summary>

@@ -6,7 +6,8 @@ using Itinero.Transit.Tests.Functional.Utils;
 namespace Itinero.Transit.Tests.Functional.Data
 {
     public class ConnectionsDbDepartureEnumeratorTest : FunctionalTestWithInput<(TransitDb, uint expectedNumberOfConnections)>
-    {
+    {  public override string Name => "Departure Enumerator Test";
+
         protected override void Execute()
         {
             var latest = Input.Item1.Latest;

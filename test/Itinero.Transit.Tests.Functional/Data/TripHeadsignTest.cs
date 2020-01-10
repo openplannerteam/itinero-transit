@@ -5,6 +5,9 @@ namespace Itinero.Transit.Tests.Functional.Data
 {
     public class TripHeadsignTest : FunctionalTestWithInput<TransitDb>
     {
+        public override string Name => "Trip Headsign test";
+
+        
         protected override void Execute()
         {
             var latest = Input.Latest;

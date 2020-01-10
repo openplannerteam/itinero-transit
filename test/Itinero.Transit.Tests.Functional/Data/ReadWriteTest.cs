@@ -9,7 +9,8 @@ namespace Itinero.Transit.Tests.Functional.Data
     /// Simply write the transitDB and reads it from a in-memory stream
     /// </summary>
     public class ReadWriteTest : FunctionalTestWithInput<(TransitDb, uint expectedNumberOfConnections)>
-    {
+    {  public override string Name => "Read Write Test";
+
         protected override void Execute()
         {
             using (var stream = new MemoryStream())

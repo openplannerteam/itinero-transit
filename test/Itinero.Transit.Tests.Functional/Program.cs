@@ -51,7 +51,6 @@ namespace Itinero.Transit.Tests.Functional
                 new ProfiledConnectionScanWithMetricAndIsochroneFilteringTest().Run(withTime);
 
 
-                // //
                 Logging.Log.Information("Ran the devtests. Exiting now. Use --full-test-suite to run everything");
                 return;
             }
@@ -106,7 +105,6 @@ namespace Itinero.Transit.Tests.Functional
                 .RunOverMultiple(TestConstants.WithWalkAndPtTestCases);
 
             /*
-            // KILL THE SERVER TEST
             // Run all the OpenHopperTestCases
             new ProductionServerMimickTest(nmbs, StringConstants.TestDate, StringConstants.TestDate.AddHours(12))
                 .RunOverMultiple(TestConstants.OpenHopperTestCases());

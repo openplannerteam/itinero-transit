@@ -10,6 +10,9 @@ namespace Itinero.Transit.Tests.Functional.IO.LC.Synchronization
 {
     public class TestWriteToDisk : FunctionalTestWithInput<TransitDb>
     {
+        
+        public override string Name => "Test Writing to disk";
+
         protected override void Execute()
         {
             var path = $"test-write-to-disk-nmbs.transitdb";

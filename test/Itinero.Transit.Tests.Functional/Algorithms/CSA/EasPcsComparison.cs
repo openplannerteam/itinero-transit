@@ -10,6 +10,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
     /// </summary>
     public class EasPcsComparison : FunctionalTestWithInput<WithTime<TransferMetric>>
     {
+        
+        public override string Name => "EAS/PCS comparison";
+
         protected override void Execute()
         {
             var easJ = Input.CalculateEarliestArrivalJourney(

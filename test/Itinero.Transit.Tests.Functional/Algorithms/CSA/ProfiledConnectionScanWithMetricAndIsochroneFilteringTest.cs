@@ -13,6 +13,9 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
     public class
         ProfiledConnectionScanWithMetricAndIsochroneFilteringTest : FunctionalTestWithInput<WithTime<TransferMetric>>
     {
+        
+        public override string Name => "PCS + Metric+Isochrone Filtering";
+
         protected override void Execute()
         {
             Input.CalculateIsochroneFrom(); // Calculating the isochrone lines makes sure this is reused as filter - in some cases, testing goes from ~26 seconds to ~6

@@ -10,7 +10,8 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 {
     public class ProfiledConnectionScanWithIsochroneFilteringTest : FunctionalTestWithInput<WithTime<TransferMetric>>
     {
-       
+        public override string Name => "PCS + Isochrone Filtering";
+
 
         protected override void Execute()
         {

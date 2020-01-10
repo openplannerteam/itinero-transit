@@ -9,6 +9,9 @@ namespace Itinero.Transit.Tests.Functional.IO.LC.Synchronization
 {
     public class TestAutoUpdating : FunctionalTest
     {
+        
+        public override string Name => "Auto updating test";
+
         protected override void Execute()
         {
             var tdb = new TransitDb(0);
