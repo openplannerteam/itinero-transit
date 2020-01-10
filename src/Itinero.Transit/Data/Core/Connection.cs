@@ -42,7 +42,7 @@ namespace Itinero.Transit.Data.Core
         public TripId TripId { get; }
 
 
-        public readonly IReadOnlyDictionary<string, string> Attributes { get; }
+        public IReadOnlyDictionary<string, string> Attributes { get; }
 
 
         public Connection(string globalId,
