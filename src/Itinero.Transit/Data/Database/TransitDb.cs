@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Itinero.Transit.Data.Simple;
 
@@ -7,12 +8,15 @@ namespace Itinero.Transit.Data
     /// <summary>
     /// A transit db contains all connections, trips and stops.
     /// </summary>
-    public class TransitDb
+    public class TransitDb : IGlobalId
     {
         /// <summary>
         /// The identifier of the database. Should be unique amongst the program
         /// </summary>
         public uint DatabaseId { get; }
+
+        public string GlobalId { get; private set; }
+        public IReadOnlyDictionary<string, string> Attributes { get; private set; }
 
         /// <summary>
         /// The actual data
@@ -22,9 +26,11 @@ namespace Itinero.Transit.Data
 
         public TransitDb(uint databaseId)
         {
+            GlobalId = "";
+            Attributes = new Dictionary<string, string>();
             DatabaseId = databaseId;
             Latest = new TransitDbSnapShot(
-                databaseId,
+                this,
                 new SimpleStopsDb(databaseId),
                 new SimpleConnectionsDb(databaseId),
                 new SimpleTripsDb(databaseId)
@@ -59,11 +65,13 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// This method is called by the writer itself and closely coupled to it
         /// </summary>
-        internal void SetSnapshot(TransitDbSnapShot snapShot)
+        internal void SetSnapshot(TransitDbSnapShot snapShot, string globalId, IReadOnlyDictionary<string, string> attributes)
         {
             lock (_writerLock)
             {
                 Latest = snapShot;
+                GlobalId = globalId;
+                Attributes = attributes;
                 _writer = null;
             }
         }

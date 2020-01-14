@@ -15,11 +15,12 @@ namespace Itinero.Transit.Processor
         public static List<(string category, List<DocumentedSwitch> swtch)> Documented =
             new List<(string category, List<DocumentedSwitch> swtch)>
             {
-                ("Creating a transitdb", new List<DocumentedSwitch>
+                ("Reading data", new List<DocumentedSwitch>
                 {
                     new SwitchCreateTransitDbLC(),
                     new SwitchCreateTransitDbOSM(),
-                    new SwitchCreateTransitDbGTFS()
+                    new SwitchCreateTransitDbGTFS(),
+                    new SwitchReadTransitDb(),
                 }),
 
                 ("Filtering the transitdb", new List<DocumentedSwitch>
@@ -28,23 +29,29 @@ namespace Itinero.Transit.Processor
                     new SwitchSelectStopsByBoundingBox(),
                     new SwitchSelectStopById(),
                     new SwitchSelectTrip(),
-                    new SwitchUnusedFilter()
+                    new SwitchUnusedFilter(),
                 }),
 
-                ("Saving to and from file", new List<DocumentedSwitch>
+                ("Validating and testing the transitdb", new List<DocumentedSwitch>
                 {
-                    new SwitchReadTransitDb(),
+                    new SwitchValidate(),
+                    new SwitchJapanize(),
+                    new SwitchShowInfo(),
+                }),
+
+                ("Writing to file and to other formats", new List<DocumentedSwitch>
+                {
+                    new SwitchWriteTransitDb(),
+                    new SwitchCreateVectorTiles(),
                     new SwitchDumpTransitDbStops(),
                     new SwitchDumpTransitDbConnections(),
+                    new SwitchCreateRoutes(),
                     new SwitchDumpTransitDbTrips(),
-                    new SwitchWriteTransitDb(),
                 }),
 
                 ("Misc", new List<DocumentedSwitch>
 
                 {
-                    new SwitchJapanize(),
-                    new SwitchValidate(),
                     new HelpSwitch(),
                     new Shell(),
                     new SwitchClear(),

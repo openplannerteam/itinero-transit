@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Itinero.Transit.Data.Core;
 
 namespace Itinero.Transit.Data
@@ -5,21 +6,41 @@ namespace Itinero.Transit.Data
     /// <summary>
     /// A writer for the transit db.
     /// </summary>
-    public class TransitDbWriter
+    public class TransitDbWriter : IGlobalId
     {
         private readonly TransitDb _parent;
 
-        private readonly IStopsDb _stopsDb;
-        private readonly IConnectionsDb _connectionsDb;
-        private readonly ITripsDb _tripsDb;
+        public readonly IStopsDb StopsDb;
+        public readonly IConnectionsDb ConnectionsDb;
+        public readonly ITripsDb TripsDb;
 
-        internal TransitDbWriter(TransitDb parent, TransitDbSnapShot latestSnapshot) 
+        /// <summary>
+        /// The URL (or prefix) of the PT-operator
+        /// </summary>
+        public string GlobalId { get; set; }
+
+        /// <summary>
+        /// Attributes of the PT-operator.
+        /// Is moved into the TDB afterwards
+        /// </summary>
+        public Dictionary<string, string> AttributesWritable { get; set; }
+
+        public IReadOnlyDictionary<string, string> Attributes => AttributesWritable;
+
+        internal TransitDbWriter(TransitDb parent, TransitDbSnapShot latestSnapshot)
         {
             _parent = parent;
 
-            _stopsDb = latestSnapshot.StopsDb.Clone();
-            _tripsDb = latestSnapshot.TripsDb.Clone();
-            _connectionsDb = latestSnapshot.ConnectionsDb.Clone();
+            GlobalId = _parent.GlobalId;
+            AttributesWritable = new Dictionary<string, string>();
+            foreach (var kv in _parent.Attributes)
+            {
+                AttributesWritable.Add(kv.Key, kv.Value);
+            }
+
+            StopsDb = latestSnapshot.StopsDb.Clone();
+            TripsDb = latestSnapshot.TripsDb.Clone();
+            ConnectionsDb = latestSnapshot.ConnectionsDb.Clone();
         }
 
 
@@ -28,28 +49,29 @@ namespace Itinero.Transit.Data
         /// </summary>
         public void Close()
         {
-            _stopsDb.PostProcess();
-            _connectionsDb.PostProcess();
-            _tripsDb.PostProcess();
+            StopsDb.PostProcess();
+            ConnectionsDb.PostProcess();
+            TripsDb.PostProcess();
 
-            var latest = new TransitDbSnapShot(_parent.DatabaseId, _stopsDb, _connectionsDb, _tripsDb);
-            _parent.SetSnapshot(latest);
+            var latest = new TransitDbSnapShot(_parent, StopsDb, ConnectionsDb, TripsDb);
+            _parent.SetSnapshot(latest, GlobalId, Attributes);
         }
-        
+
         public StopId AddOrUpdateStop(Stop stop)
         {
-            return ((IDatabase<StopId, Stop>) _stopsDb).AddOrUpdate(stop);
+            return ((IDatabase<StopId, Stop>) StopsDb).AddOrUpdate(stop);
         }
-        
+
         public ConnectionId AddOrUpdateConnection(Connection connection)
         {
-            return ((IDatabase<ConnectionId, Connection>) _connectionsDb).AddOrUpdate(connection);
+            return ((IDatabase<ConnectionId, Connection>) ConnectionsDb).AddOrUpdate(connection);
         }
-        public TripId AddOrUpdateTrip(Trip trip)
-        {         return ((IDatabase<TripId, Trip>) _tripsDb).AddOrUpdate(trip);
 
-            
+        public TripId AddOrUpdateTrip(Trip trip)
+        {
+            return ((IDatabase<TripId, Trip>) TripsDb).AddOrUpdate(trip);
         }
+
         public TripId AddOrUpdateTrip(string globalId)
         {
             return AddOrUpdateTrip(new Trip(globalId));

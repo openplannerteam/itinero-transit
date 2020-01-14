@@ -32,26 +32,29 @@ namespace Itinero.Transit.Data
         /// Gives the global id
         /// </summary>
         string GlobalId { get; }
-        
+
         IReadOnlyDictionary<string, string> Attributes { get; }
     }
 
-    public static class IGlobalIdExtensions
+    public static class GlobalIdExtensions
     {
-        public static bool TryGetAttribute(this IGlobalId element, string key, out string value, string defaultValue = "")
+        public static string GetAttribute(this IGlobalId element, string key, string defaultValue)
         {
-            if (element.Attributes == null)
+            if (element.TryGetAttribute(key, out var value))
             {
-                value = defaultValue;
-                return false;
+                return value;
             }
 
-            if (element.Attributes.TryGetValue(key, out value))
-            {
-                return true;
-            }
+            return defaultValue;
+        }
 
-            value = defaultValue;
+        public static bool TryGetAttribute(this IGlobalId element, string key, out string value)
+        {
+            if (element.Attributes != null)
+            {
+                return element.Attributes.TryGetValue(key, out value);
+            }
+            value = null;
             return false;
 
         }
@@ -147,7 +150,7 @@ namespace Itinero.Transit.Data
             {
                 if (notFoundMessage != null)
                 {
-                 throw new ArgumentException(notFoundMessage);   
+                    throw new ArgumentException(notFoundMessage);
                 }
 
                 var exampleId = "";
@@ -155,7 +158,7 @@ namespace Itinero.Transit.Data
                 {
                     exampleId = "An example id is " + db.First().GlobalId;
                 }
-                
+
                 throw new ArgumentException($"GlobalId {globalId} not found. {exampleId}");
             }
 
@@ -168,7 +171,7 @@ namespace Itinero.Transit.Data
         {
             return db.GetId(t.GlobalId, notFoundMessage);
         }
-        
+
         public static TId GetId<TId, T>(this IDatabaseReader<TId, T> db, string globalId, string notFoundMessage = null)
             where TId : InternalId, new()
         {
@@ -199,5 +202,4 @@ namespace Itinero.Transit.Data
     {
         T Clone();
     }
-    
 }

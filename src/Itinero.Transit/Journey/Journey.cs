@@ -119,7 +119,7 @@ namespace Itinero.Transit.Journey
         /// Infinity constructor
         /// This is the constructor which creates a journey representing an infinite journey.
         /// There is a singleton available: Journey.InfiniteJourney.
-        /// This object is used when needing a dummy object to compare to, e.g. as journey to locations that can't be reached
+        /// This object is used when needing a dummy object to      to, e.g. as journey to locations that can't be reached
         /// </summary>
         private Journey(ulong time = ulong.MaxValue)
         {

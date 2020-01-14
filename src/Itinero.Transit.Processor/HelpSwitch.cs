@@ -112,29 +112,19 @@ namespace Itinero.Transit.Processor
         {
             var text = "";
 
-            if (!shortVersion)
+            if (shortVersion)
             {
-                text += " Itinero Data Processor \n";
-                text += " ====================== \n\n";
-                text +=
-                    "The **Itinero Data Processor** *(IDP)* helps to convert a routable graph into a RouterDB," +
-                    " which can be used to quickly solve routing queries.\n\n" +
-                    "The minimal requirement to work with IDP is having a routable graph to serve as input. OpenStreetMap data for the entire world can be obtained for free at [geofrabrik.de](http://download.geofabrik.de/)\n";
-                text += "\n\n";
+                includeExperimental = true;
             }
 
-
-            text +=
-                " Some examples\n" +
-                " -------------" +
-                "\n" +
-                "A minimal example which builds routing for bicycles is\n\n" +
-                "        IDP --read-pbf <input-file.osm.pbf> --pr --create-routerdb bicycle --write-routerdb output.routerdb";
-            text +=
-                "\n\nTo include elevation data, add `--elevation`. To solve the queries even faster, use `--contract bicycle.<profile-to-optimize>`.\n" +
-                "The full command would thus become\n\n" +
-                "        IDP --read-pbf <input-file.osm.pbf> --pr --elevation --create-routerdb bicycle --contract bicycle.fastest --write-routerdb output.routerdb\n\n" +
-                "For more advanced options, see the arguments below.";
+            if (!shortVersion)
+            {
+                text += "Itinero Transit Processor \n";
+                text += "========================= \n\n";
+                text +=
+                    "The **Itinero Transit Processor** *(ITP)* helps to convert various public transport datasets into a transitdb" +
+                    " which can be used to quickly solve routing queries.\n\n";
+            }
 
 
             if (!shortVersion)
@@ -188,8 +178,8 @@ namespace Itinero.Transit.Processor
             // Build table of contents
             if (markdown)
             {
-                text += "\n\n Full overview of all options ";
-                text += "\n ------------------------------- \n\n";
+                text += "\n\nFull overview of all options ";
+                text += "\n------------------------------- \n\n";
                 if (!shortVersion)
                 {
                     text +=

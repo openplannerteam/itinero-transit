@@ -19,12 +19,11 @@ namespace Itinero.Transit.Data.Core
             LocalId = localId;
         }
 
+        [Pure]
         public InternalId Create(uint databaseId, uint localId)
         {
-            return  new StopId(databaseId, localId);
+            return new StopId(databaseId, localId);
         }
-
-        
 
 
         [Pure]

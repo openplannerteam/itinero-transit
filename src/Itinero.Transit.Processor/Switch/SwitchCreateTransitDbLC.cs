@@ -10,7 +10,7 @@ namespace Itinero.Transit.Processor.Switch
     internal class SwitchCreateTransitDbLC : DocumentedSwitch, ITransitDbModifier, ITransitDbSource
     {
         private static readonly string[] _names =
-            {"--create-transit-db-with-linked-connections", "--create-transit-lc", "--ctlc"};
+            {"--read-linked-connections", "--read-lc", "--rlc"};
 
         private static string About =
             "Creates a transit DB based on linked connections (or adds them to an already existing db). For this, the linked connections source and a timewindow should be specified.\n" +

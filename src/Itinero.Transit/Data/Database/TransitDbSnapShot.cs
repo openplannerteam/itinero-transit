@@ -12,15 +12,18 @@ namespace Itinero.Transit.Data
     /// </summary>
     public class TransitDbSnapShot
     {
-        
+        private readonly TransitDb _parent;
+
         public uint Id { get; }
 
         public IStopsDb StopsDb { get; }
         public ITripsDb TripsDb { get; }
         public IConnectionsDb ConnectionsDb { get; }
-        internal TransitDbSnapShot(uint dbId, IStopsDb stopsDb,  IConnectionsDb connectionsDb, ITripsDb tripsDb)
+
+        internal TransitDbSnapShot(TransitDb parent, IStopsDb stopsDb, IConnectionsDb connectionsDb, ITripsDb tripsDb)
         {
-            Id = dbId;
+            _parent = parent;
+            Id = parent.DatabaseId;
             StopsDb = stopsDb;
             TripsDb = tripsDb;
             ConnectionsDb = connectionsDb;
@@ -46,15 +49,18 @@ namespace Itinero.Transit.Data
             return ConnectionsDb.EarliestDate.FromUnixTime();
         }
 
-        
+
         public DateTime LatestDate()
         {
             return ConnectionsDb.LatestDate.FromUnixTime();
         }
-        
+
         public void WriteTo(Stream stream)
         {
             var formatter = new BinaryFormatter();
+            formatter.Serialize(stream, _parent.GlobalId);
+            formatter.Serialize(stream, _parent.Attributes);
+
             stream.Serialize(StopsDb, formatter);
             stream.Serialize(TripsDb, formatter);
             stream.Serialize(ConnectionsDb, formatter);

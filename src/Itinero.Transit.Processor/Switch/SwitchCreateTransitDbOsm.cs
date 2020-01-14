@@ -10,7 +10,7 @@ namespace Itinero.Transit.Processor.Switch
     internal class SwitchCreateTransitDbOSM : DocumentedSwitch, ITransitDbSource, ITransitDbModifier
     {
         private static readonly string[] _names =
-            {"--create-transit-db-with-open-street-map-relation", "--create-transit-osm", "--ctosm"};
+            {"--read-open-street-map-relation", "--read-osm", "--rosm"};
 
         private static string About =
             "Creates a transit DB based on an OpenStreetMap-relation following the route scheme (or adds it to an already existing db). For all information on Public Transport tagging, refer to [the OSM-Wiki](https://wiki.openstreetmap.org/wiki/Public_transport).n\n" +

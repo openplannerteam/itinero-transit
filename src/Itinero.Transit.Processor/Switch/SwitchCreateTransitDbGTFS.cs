@@ -7,10 +7,10 @@ using Itinero.Transit.Logging;
 namespace Itinero.Transit.Processor.Switch
 {
     // ReSharper disable once InconsistentNaming
-    internal class SwitchCreateTransitDbGTFS : DocumentedSwitch, ITransitDbModifier, ITransitDbSource
+    internal class SwitchCreateTransitDbGTFS : DocumentedSwitch, ITransitDbSource
     {
         private static readonly string[] _names =
-            {"--create-transit-db-with-gtfs", "--create-transit-gtfs", "--ctgtfs"};
+            {"--read-gtfs", "--rgtfs"};
 
         private static string About =
             "Creates a transit DB based on GTFS (or adds them to an already existing db), for the explicitly specified timeframe";
@@ -20,7 +20,7 @@ namespace Itinero.Transit.Processor.Switch
             _extraParams =
                 new List<(List<string> args, bool isObligated, string comment, string defaultValue)>
                 {
-                    SwitchesExtensions.obl("path", 
+                    SwitchesExtensions.obl("path",
                         "The path of the GTFS archive"),
                     SwitchesExtensions.opt("window-start", "start",
                             "The start of the timewindow to load. Specify 'now' to take the current date and time. Otherwise provide a timestring of the format 'YYYY-MM-DDThh:mm:ss' (where T is a literal T). Special values: 'now' and 'today'")
@@ -42,13 +42,8 @@ namespace Itinero.Transit.Processor.Switch
 
         public TransitDb Generate(Dictionary<string, string> arguments)
         {
-            var tdb = new TransitDb(0);
-            Modify(arguments, tdb);
-            return tdb;
-        }
-
-        public TransitDb Modify(Dictionary<string, string> arguments, TransitDb tdb)
-        {
+            var tdb = new TransitDb( 0);
+  
             var path = arguments["path"];
 
 
@@ -56,7 +51,7 @@ namespace Itinero.Transit.Processor.Switch
             // In seconds
             var duration = ParseTimeSpan(arguments["window-duration"]);
 
-          Console.WriteLine($"Loading GTFS file {path} in timewindow {time:s} + {duration} seconds");
+            Console.WriteLine($"Loading GTFS file {path} in timewindow {time:s} + {duration} seconds");
 
             Logger.LogAction =
                 (origin, level, message, parameters) =>

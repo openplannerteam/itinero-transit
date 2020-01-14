@@ -25,7 +25,7 @@ namespace Itinero.Transit.Processor.Switch
         {
         }
 
-        private void Run()
+        private static void Run()
         {
             GC.Collect();
             GC.WaitForPendingFinalizers();

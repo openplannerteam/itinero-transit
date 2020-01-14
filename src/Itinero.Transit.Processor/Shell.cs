@@ -70,8 +70,9 @@ namespace Itinero.Transit.Processor
                 }
 
                 return
-                    $"Transitdb spans {snapshot.ConnectionsDb.EarliestDate.FromUnixTime():s} to {snapshot.ConnectionsDb.LatestDate.FromUnixTime():s}." +
-                    $"Loaded: {tdb.Latest.StopsDb.Count()} stops, {tdb.Latest.ConnectionsDb.Count()} connections, {tdb.Latest.TripsDb.Count()} trips. {stats}";
+                    $"Transitdb spans {snapshot.ConnectionsDb.EarliestDate.FromUnixTime():s} to {snapshot.ConnectionsDb.LatestDate.FromUnixTime():s}\n" +
+                    $"Transitdb for {tdb.GlobalId} contains {tdb.Latest.StopsDb.Count()} stops, {tdb.Latest.ConnectionsDb.Count()} connections, {tdb.Latest.TripsDb.Count()} trips." +
+                    $"\n{stats}";
             }
         }
 
@@ -176,9 +177,10 @@ namespace Itinero.Transit.Processor
             "Computers follow your orders, not your intentions.",
             "How did the locomotive get so good at it’s job? Training",
             "How do you find a missing train? Follow the tracks",
-            "What happened to the man that took the train home?He had to give it back!",
+            "What happened to the man that took the train home? He had to give it back!",
             "Why was the train late? It kept getting side tracked.",
-            "In de mobiliteitsector, daar beweegt wat!"
+            "In de mobiliteitsector, daar beweegt wat!",
+            "Hoe kan je zien dat er recent een trein is gepasseerd? Omdat de sporen er nog zijn!" // Humor van de bovenste plank
         };
     }
 }

@@ -11,6 +11,7 @@ using Itinero.Transit.Logging;
 using Itinero.Transit.Utils;
 using Stop = Itinero.Transit.Data.Core.Stop;
 using Trip = GTFS.Entities.Trip;
+
 // ReSharper disable PossibleInvalidOperationException
 
 [assembly: InternalsVisibleTo("Itinero.Transit.Tests")]
@@ -105,27 +106,43 @@ namespace Itinero.Transit.IO.GTFS.Data
             }
         }
 
+        private TimeZoneInfo _timeZone;
 
+        /// <summary>
+        /// Get the identifier-prefix for this GTFS feed.
+        /// The identifier-prefix starts with the agencies website ('http://belgiantrain.be/') and has a trailing slash.
+        ///
+        /// If the GTFS feed contains multiple agencies, an error is thrown
+        /// </summary>
+        /// <returns></returns>
+        /*      internal TimeZoneInfo TimeZone =>
+                  _timeZone ??
+                  (_timeZone = TimeZoneInfo.FromSerializedString(Feed.Agencies.Get(0).Timezone)); // Do you like code golf?
+      */
         private Dictionary<string, List<Trip>> _serviceIdToTrip;
+
         private Dictionary<string, StopId> _gtfsId2TdbId;
 
         private Dictionary<string, List<Trip>> ServiceIdToTrip
         {
             get
             {
-                if (_serviceIdToTrip == null)
+                if (_serviceIdToTrip != null)
                 {
-                    _serviceIdToTrip = new Dictionary<string, List<Trip>>();
+                    return _serviceIdToTrip;
+                }
 
-                    foreach (var gtfstrip in Feed.Trips)
+
+                _serviceIdToTrip = new Dictionary<string, List<Trip>>();
+
+                foreach (var gtfstrip in Feed.Trips)
+                {
+                    if (!_serviceIdToTrip.ContainsKey(gtfstrip.ServiceId))
                     {
-                        if (!_serviceIdToTrip.ContainsKey(gtfstrip.ServiceId))
-                        {
-                            _serviceIdToTrip[gtfstrip.ServiceId] = new List<Trip>();
-                        }
-
-                        _serviceIdToTrip[gtfstrip.ServiceId].Add(gtfstrip);
+                        _serviceIdToTrip[gtfstrip.ServiceId] = new List<Trip>();
                     }
+
+                    _serviceIdToTrip[gtfstrip.ServiceId].Add(gtfstrip);
                 }
 
 
@@ -140,7 +157,8 @@ namespace Itinero.Transit.IO.GTFS.Data
         }
 
 
-        private void AddService(TransitDbWriter writer, Calendar service, DateTime day, DateTime startDate, DateTime endDate)
+        private void AddService(TransitDbWriter writer, Calendar service, DateTime day, DateTime startDate,
+            DateTime endDate)
         {
             // We know that 'service' drives today
             // Let's generate the connections and trip for that
@@ -151,11 +169,12 @@ namespace Itinero.Transit.IO.GTFS.Data
             {
                 // Seems like there is no trip associated with this service
                 // Print an error message and go on
-                
+
                 Log.Error($"No trip found for serviceId {service.ServiceId} found.");
-                
+
                 return;
             }
+
             // gtfsTrips are the trips we need to add    
             foreach (var gtfsTrip in gtfsTrips)
             {
@@ -199,20 +218,45 @@ namespace Itinero.Transit.IO.GTFS.Data
                   The GlobalId of the connection does use the tripID as well, in order to make the metatrip-id recoverable
                  */
 
-            var vehicleTrip =
-                new Transit.Data.Core.Trip($"{IdentifierPrefix}trip-by-vehicle/{gtfsTrip.BlockId}/{day:yyyyMMdd}");
+            var tripGlobalId = $"{IdentifierPrefix}trip/{gtfsTrip.BlockId}/{day:yyyyMMdd}";
+
+            Transit.Data.Core.Trip vehicleTrip;
+            if (writer.TripsDb.TryGet(tripGlobalId, out var existingTrip))
+            {
+                existingTrip.TryGetAttribute("headsign", out var existingHeadsign);
+                existingHeadsign = existingHeadsign ?? "";
+                existingTrip.TryGetAttribute("shapeid", out var existingShapeId);
+                existingShapeId = existingShapeId ?? "";
+                existingTrip.TryGetAttribute("shortName", out var existingShortName);
+                existingShortName = existingShortName ?? "";
+
+                // We merge all values with ";"
+                // Note: even when no information is given, we add a ";" in order to be able to match them afterwards
+                vehicleTrip =
+                    new Transit.Data.Core.Trip(tripGlobalId,
+                        new Dictionary<string, string>
+                        {
+                            {"headsign", existingHeadsign + ";" + gtfsTrip.Headsign},
+                            {"shapeid", existingShapeId + ";" + gtfsTrip.ShapeId},
+                            {"shortname", existingShortName + ";" + gtfsTrip.ShortName}
+                        });
+            }
+            else
+            {
+                vehicleTrip =
+                    new Transit.Data.Core.Trip(tripGlobalId,
+                        new Dictionary<string, string>
+                        {
+                            {"headsign", gtfsTrip.Headsign},
+                            {"blockid", gtfsTrip.BlockId},
+                            {"shapeid", gtfsTrip.ShapeId},
+                            {"shortname", gtfsTrip.ShortName}
+                        });
+            }
+
+
             var vehicleTripId = writer.AddOrUpdateTrip(vehicleTrip);
 
-            var tripMeta = new Transit.Data.Core.Trip($"{IdentifierPrefix}trip-meta/{gtfsTrip.Id}/{day:yyyyMMdd}",
-                new Dictionary<string, string>
-                {
-                    {"headsign", gtfsTrip.Headsign},
-                    {"blockid", gtfsTrip.BlockId},
-                    {"vehicle-trip", vehicleTrip.GlobalId},
-                    {"shapeid", gtfsTrip.ShapeId},
-                    {"shortname", gtfsTrip.ShortName}
-                });
-            writer.AddOrUpdateTrip(tripMeta);
 
             /*
                  Now that we know all about the trip, we have to figure out where and when the train drives
@@ -224,18 +268,18 @@ namespace Itinero.Transit.IO.GTFS.Data
             {
                 var departure = stopTimes[i - 1];
                 var arrival = stopTimes[i];
-                var departureTime = day.AddSeconds(departure.DepartureTime.Value.TotalSeconds);
+                var departureTime =
+                    day.AddSeconds(departure.DepartureTime.Value.TotalSeconds);
                 if (!(startDate <= departureTime && departureTime < endDate))
                 {
                     // Departure time out of range
                     continue;
                 }
-                
-                
+
+
                 var travelTime = arrival.ArrivalTime.Value.TotalSeconds - departure.DepartureTime.Value.TotalSeconds;
-                
-                
-                
+
+
                 var departureStop = _gtfsId2TdbId[departure.StopId];
                 var arrivalStop = _gtfsId2TdbId[arrival.StopId];
 
@@ -245,7 +289,7 @@ namespace Itinero.Transit.IO.GTFS.Data
                     arrival.DropOffType == DropOffType.Regular,
                     false // again: static data, not the messy realworld
                 );
-                
+
                 var connection = new Connection(
                     $"{IdentifierPrefix}connection/{gtfsTrip.Id}/{day:yyyyMMdd}/{i}",
                     departureStop,
@@ -268,7 +312,6 @@ namespace Itinero.Transit.IO.GTFS.Data
         /// <param name="startDate"></param>
         /// <param name="endDate"></param>
         /// <exception cref="Exception"></exception>
-
         internal void AddDay(TransitDbWriter writer, DateTime day, DateTime startDate, DateTime endDate)
         {
             if (_gtfsId2TdbId == null)
@@ -323,7 +366,7 @@ namespace Itinero.Transit.IO.GTFS.Data
         {
             var result = new Dictionary<string, List<(string language, string translatedTerm)>>();
 
-            // TODO FIXME
+            // TODO ADD REAL TRANSLATIONS AND A REAL TEST
             result["Bruges"] = new List<(string language, string translatedTerm)>
             {
                 ("nl", "Brugge"),
@@ -361,12 +404,17 @@ namespace Itinero.Transit.IO.GTFS.Data
                     {"wheelchairboarding", stop.WheelchairBoarding},
                     {"zone", stop.Zone},
                 };
+                if (writer.TryGetAttribute("languagecode", out var languageCode)
+                    && !string.IsNullOrEmpty(languageCode))
+                {
+                    attributes["name:" + languageCode] = stop.Name;
+                }
 
                 if (translations.TryGetValue(stop.Name, out var translated))
                 {
                     foreach (var (lng, term) in translated)
                     {
-                        attributes.Add("name:" + lng, term);
+                        attributes["name:" + lng] = term;
                     }
                 }
 
@@ -389,9 +437,29 @@ namespace Itinero.Transit.IO.GTFS.Data
         /// <param name="enddate"></param>
         public void AddDataBetween(TransitDbWriter writer, DateTime startdate, DateTime enddate)
         {
+            var agencies = Feed.Agencies.ToList();
+            if (agencies.Count > 1)
+            {
+                throw new ArgumentException(
+                    "This GTFS contains data on multiple operators, this is not supported at this moment");
+            }
+
+            var agency = agencies[0];
+
+            writer.GlobalId = agency.URL;
+            writer.AttributesWritable["email"] = agency.Email;
+            writer.AttributesWritable["id"] = agency.Id;
+            writer.AttributesWritable["name"] = agency.Name;
+            writer.AttributesWritable["phone"] = agency.Phone;
+            writer.AttributesWritable["timezone"] = agency.Timezone;
+            writer.AttributesWritable["languagecode"] = agency.LanguageCode;
+            writer.AttributesWritable["url"] = agency.URL;
+            writer.AttributesWritable["website"] = agency.URL;
+            writer.AttributesWritable["charge:url"] = agency.FareURL;
+
             AddLocations(writer);
 
-            var day = startdate.Date;
+            var day = startdate.Date; // TODO FIX THIS TIMEZONE MESS
             var end = enddate.Date;
             while (day <= end)
             {
@@ -399,7 +467,6 @@ namespace Itinero.Transit.IO.GTFS.Data
 
                 day = day.AddDays(1);
             }
-
         }
 
         internal List<string> AgencyUrls()

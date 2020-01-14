@@ -28,8 +28,6 @@ namespace Itinero.Transit.Tests.IO.GTFS
             Assert.True(tdb.Latest.ConnectionsDb.LatestDate >= d.Date.AddDays(1).ToUnixTime());
         }
 
-        // TODO test that trips on 'end_date' are included as well
-
         [Fact]
         public void LoadTimePeriod_HourWithinGtfs_ConnectionsAreLoaded()
         {

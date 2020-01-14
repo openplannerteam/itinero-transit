@@ -18,6 +18,14 @@ namespace Itinero.Transit.Data.Serialization
         public static TransitDbWriter ReadFrom(this TransitDbWriter writer, Stream stream)
         {
             var formatter = new BinaryFormatter();
+
+            writer.GlobalId =(string) formatter.Deserialize(stream);
+            var attributes = (IReadOnlyDictionary<string, string>) formatter.Deserialize(stream);
+            foreach (var kv in attributes)
+            {
+                writer.AttributesWritable[kv.Key] = kv.Value;
+            }
+            
             // TransitDbSnaphot.WriteTo
             var stops = stream.Deserialize<StopId, Stop>(formatter);
             var trips = stream.Deserialize<TripId, Trip>(formatter);
