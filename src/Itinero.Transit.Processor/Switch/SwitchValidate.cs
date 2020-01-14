@@ -40,7 +40,7 @@ namespace Itinero.Transit.Processor.Switch
         };
 
 
-        public void Use(Dictionary<string, string> parameters, TransitDb transitDb)
+        public void Use(Dictionary<string, string> parameters, TransitDbSnapShot transitDb)
         {
             var cutoff = parameters.Int("cutoff");
             var typesToPrint = parameters["type"];

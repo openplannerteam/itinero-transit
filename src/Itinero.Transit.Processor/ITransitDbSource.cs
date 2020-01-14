@@ -13,7 +13,7 @@ namespace Itinero.Transit.Processor
         /// <summary>
         /// Does _not_ change the transitDb
         /// </summary>
-        void Use(Dictionary<string, string> parameters, TransitDb transitDb);
+        void Use(Dictionary<string, string> parameters, TransitDbSnapShot transitDb);
     }
     public interface ITransitDbModifier
     {

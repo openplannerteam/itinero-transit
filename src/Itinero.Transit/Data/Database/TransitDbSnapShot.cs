@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Itinero.Transit.Data.Core;
@@ -10,23 +11,30 @@ namespace Itinero.Transit.Data
     /// <summary>
     /// A transit db snapshot, represents a consistent state of the transit db.
     /// </summary>
-    public class TransitDbSnapShot
+    public class TransitDbSnapShot : IGlobalId
     {
-        private readonly TransitDb _parent;
-
+        public string GlobalId { get; }
+        public IReadOnlyDictionary<string, string> Attributes { get; }
+        
         public uint Id { get; }
 
         public IStopsDb StopsDb { get; }
         public ITripsDb TripsDb { get; }
         public IConnectionsDb ConnectionsDb { get; }
 
-        internal TransitDbSnapShot(TransitDb parent, IStopsDb stopsDb, IConnectionsDb connectionsDb, ITripsDb tripsDb)
+        internal TransitDbSnapShot(uint id,
+            string globalId,
+            IStopsDb stopsDb, 
+            IConnectionsDb connectionsDb, 
+            ITripsDb tripsDb,
+            IReadOnlyDictionary<string, string> attributes = null)
         {
-            _parent = parent;
-            Id = parent.DatabaseId;
+            Id = id;
+            GlobalId = globalId;
             StopsDb = stopsDb;
             TripsDb = tripsDb;
             ConnectionsDb = connectionsDb;
+            Attributes = attributes ?? new Dictionary<string, string>();
         }
 
         public Connection Get(ConnectionId id)
@@ -58,8 +66,8 @@ namespace Itinero.Transit.Data
         public void WriteTo(Stream stream)
         {
             var formatter = new BinaryFormatter();
-            formatter.Serialize(stream, _parent.GlobalId);
-            formatter.Serialize(stream, _parent.Attributes);
+            formatter.Serialize(stream, GlobalId);
+            formatter.Serialize(stream, Attributes);
 
             stream.Serialize(StopsDb, formatter);
             stream.Serialize(TripsDb, formatter);

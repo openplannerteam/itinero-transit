@@ -8,14 +8,14 @@ namespace Itinero.Transit.Processor.Validator
 {
     public class ValidateTrips : IValidation
     {
-        public List<Message> Validate(TransitDb tdb, bool relax = false)
+        public List<Message> Validate(TransitDbSnapShot tdb, bool relax = false)
         {
             var errors = new List<Message>();
 
 
             var currentTripCoordinates = new Dictionary<TripId, Connection>();
 
-            var connections = tdb.Latest.ConnectionsDb;
+            var connections = tdb.ConnectionsDb;
 
             void Err(Connection conn, string type, string message)
             {
@@ -40,8 +40,8 @@ namespace Itinero.Transit.Processor.Validator
             }
 
 
-            var stops = tdb.Latest.StopsDb;
-            var trips = tdb.Latest.TripsDb;
+            var stops = tdb.StopsDb;
+            var trips = tdb.TripsDb;
 
             Connection prevConnection = null;
             foreach (var c in connections)

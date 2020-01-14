@@ -34,7 +34,7 @@ namespace Itinero.Transit.Processor.Switch
         }
 
 
-        public void Use(Dictionary<string, string> arguments, TransitDb tdb)
+        public void Use(Dictionary<string, string> arguments, TransitDbSnapShot tdb)
         {
             var writeTo = arguments["file"];
             var humanFormat = bool.Parse(arguments["human"]);
@@ -53,9 +53,9 @@ namespace Itinero.Transit.Processor.Switch
                 outStream.WriteLine(humanFormat ? headerHuman : header);
 
 
-                var connections = tdb.Latest.ConnectionsDb;
-                var stops = tdb.Latest.StopsDb;
-                var trips = tdb.Latest.TripsDb;
+                var connections = tdb.ConnectionsDb;
+                var stops = tdb.StopsDb;
+                var trips = tdb.TripsDb;
 
                 if (!connections.Any())
                 {

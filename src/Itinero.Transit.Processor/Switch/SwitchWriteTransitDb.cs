@@ -55,14 +55,14 @@ namespace Itinero.Transit.Processor.Switch
         }
 
 
-        public void Use(Dictionary<string, string> arguments, TransitDb tdb)
+        public void Use(Dictionary<string, string> arguments, TransitDbSnapShot tdb)
         {
             var fileName = arguments["file"];
 
             using (var stream = File.OpenWrite(fileName))
             {
-                tdb.Latest.WriteTo(stream);
-                Console.WriteLine($"Written {fileName}, transitDb is valid from {tdb.Latest.ConnectionsDb.EarliestDate.FromUnixTime():s} till {tdb.Latest.ConnectionsDb.LatestDate.FromUnixTime():s} ");
+                tdb.WriteTo(stream);
+                Console.WriteLine($"Written {fileName}, transitDb is valid from {tdb.ConnectionsDb.EarliestDate.FromUnixTime():s} till {tdb.ConnectionsDb.LatestDate.FromUnixTime():s} ");
             }
         }
     }

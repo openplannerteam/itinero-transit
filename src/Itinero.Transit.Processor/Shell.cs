@@ -7,7 +7,7 @@ using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Processor
 {
-    internal class Shell : DocumentedSwitch, ITransitDbSource, ITransitDbSink, ITransitDbModifier
+    internal class Shell : DocumentedSwitch, ITransitDbSource, ITransitDbModifier
     {
         private static readonly string[] _names = {"--shell", "--interactive", "--i"};
 
@@ -44,7 +44,7 @@ namespace Itinero.Transit.Processor
             return $"{byteCount}.{rest:000}{_units[index]}";
         }
 
-        private string StateMsg(TransitDb tdb, DateTime lastActionStart)
+        private string StateMsg(TransitDbSnapShot tdb, DateTime lastActionStart)
         {
             using (var proc = Process.GetCurrentProcess())
             {
@@ -58,20 +58,19 @@ namespace Itinero.Transit.Processor
                 var stats =
                     $"Last action took {timeNeeded:000}, memory is {FormatMemory(ram)}/{FormatMemory(available)}";
 
-                var snapshot = tdb.Latest;
-                if (snapshot == null)
+                if (tdb == null)
                 {
                     return $"No transitdb loaded. {stats}";
                 }
 
-                if (snapshot.ConnectionsDb.EarliestDate == ulong.MaxValue)
+                if (tdb.ConnectionsDb.EarliestDate == ulong.MaxValue)
                 {
                     return $"No transitdb loaded. {stats}";
                 }
 
                 return
-                    $"Transitdb spans {snapshot.ConnectionsDb.EarliestDate.FromUnixTime():s} to {snapshot.ConnectionsDb.LatestDate.FromUnixTime():s}\n" +
-                    $"Transitdb for {tdb.GlobalId} contains {tdb.Latest.StopsDb.Count()} stops, {tdb.Latest.ConnectionsDb.Count()} connections, {tdb.Latest.TripsDb.Count()} trips." +
+                    $"Transitdb spans {tdb.ConnectionsDb.EarliestDate.FromUnixTime():s} to {tdb.ConnectionsDb.LatestDate.FromUnixTime():s}\n" +
+                    $"Transitdb for {tdb.GlobalId} contains {tdb.StopsDb.Count()} stops, {tdb.ConnectionsDb.Count()} connections, {tdb.TripsDb.Count()} trips." +
                     $"\n{stats}";
             }
         }
@@ -84,7 +83,7 @@ namespace Itinero.Transit.Processor
             {
                 while (true)
                 {
-                    Console.WriteLine("\n\n" + StateMsg(transitDb, start));
+                    Console.WriteLine("\n\n" + StateMsg(transitDb.Latest, start));
                     Console.Write("--");
                     var line = inStr.ReadLine();
                     if (line == null || line.Equals("q"))
@@ -127,7 +126,7 @@ namespace Itinero.Transit.Processor
 
                             if (swtch is ITransitDbSink sink)
                             {
-                                sink.Use(parameters, transitDb);
+                                sink.Use(parameters, transitDb.Latest);
                                 continue;
                             }
 
@@ -157,11 +156,6 @@ namespace Itinero.Transit.Processor
         public TransitDb Generate(Dictionary<string, string> parameters)
         {
             return RunShell(new TransitDb(0));
-        }
-
-        public void Use(Dictionary<string, string> parameters, TransitDb transitDb)
-        {
-            RunShell(transitDb);
         }
 
         public TransitDb Modify(Dictionary<string, string> parameters, TransitDb transitDb)

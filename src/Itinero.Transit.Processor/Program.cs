@@ -88,7 +88,7 @@ namespace Itinero.Transit.Processor
 
                 if (swtch is ITransitDbSink sink)
                 {
-                    sink.Use(parameters, tdb);
+                    sink.Use(parameters, tdb.Latest);
                     continue;
                 }
 

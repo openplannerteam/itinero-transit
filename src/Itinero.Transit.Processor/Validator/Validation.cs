@@ -75,7 +75,7 @@ namespace Itinero.Transit.Processor.Validator
         /// Generates a list of warnings/errors for the transitDb
         /// </summary>
         /// <returns></returns>
-        List<Message> Validate(TransitDb tdb, bool relax);
+        List<Message> Validate(TransitDbSnapShot tdb, bool relax);
 
         /// <summary>
         /// Gives information about the validation

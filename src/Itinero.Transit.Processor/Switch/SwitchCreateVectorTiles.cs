@@ -37,11 +37,10 @@ namespace Itinero.Transit.Processor.Switch
         {
         }
 
-        public void Use(Dictionary<string, string> arguments, TransitDb tdb)
+        public void Use(Dictionary<string, string> arguments, TransitDbSnapShot tdb)
         {
             var writeTo = arguments["directory"];
-            var latest = tdb.Latest;
-            var connections = latest.ConnectionsDb;
+            var connections = tdb.ConnectionsDb;
 
             var minZoom = 1;
             var maxZoom = 25;
@@ -65,14 +64,14 @@ namespace Itinero.Transit.Processor.Switch
             var stops2Routes = new Dictionary<string, List<string>>();
             foreach (var (route, trips) in routes.GetRouteToTrips())
             {
-                var feature = new RouteFeature(latest, route, routeId,
-                    latest.TripsDb.GetAll(trips), tdb.GlobalId);
+                var feature = new RouteFeature(tdb, route, routeId,
+                    tdb.TripsDb.GetAll(trips), tdb.GlobalId);
                 features.Add(feature);
 
 
                 foreach (var stopId in route)
                 {
-                    var stop = latest.StopsDb.Get(stopId);
+                    var stop = tdb.StopsDb.Get(stopId);
                     if (!stops2Routes.ContainsKey(stop.GlobalId))
                     {
                         stops2Routes[stop.GlobalId] = new List<string>();
@@ -84,7 +83,7 @@ namespace Itinero.Transit.Processor.Switch
             }
 
 
-            var stops = tdb.Latest.StopsDb;
+            var stops = tdb.StopsDb;
             var minLat = double.MaxValue;
             var minLon = double.MaxValue;
             var maxLat = double.MinValue;

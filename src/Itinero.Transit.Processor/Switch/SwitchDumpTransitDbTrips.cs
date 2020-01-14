@@ -29,12 +29,12 @@ namespace Itinero.Transit.Processor.Switch
         {
         }
 
-        public void Use(Dictionary<string, string> arguments, TransitDb tdb)
+        public void Use(Dictionary<string, string> arguments, TransitDbSnapShot tdb)
         {
             var writeTo = arguments["file"];
 
 
-            var trips = tdb.Latest.TripsDb;
+            var trips = tdb.TripsDb;
 
 
             using (var outStream =

@@ -43,7 +43,7 @@ namespace Itinero.Transit.Processor
             return new TransitDb(0);
         }
 
-        public void Use(Dictionary<string, string> parameters, TransitDb _)
+        public void Use(Dictionary<string, string> parameters, TransitDbSnapShot _)
         {
             PrintHelp(parameters);
         }

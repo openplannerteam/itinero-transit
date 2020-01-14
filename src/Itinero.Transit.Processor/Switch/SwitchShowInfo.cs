@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Itinero.Transit.Algorithms.Mergers;
 using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Processor.Switch
@@ -15,9 +14,7 @@ namespace Itinero.Transit.Processor.Switch
 
         private static readonly List<(List<string> args, bool isObligated, string comment, string defaultValue)>
             _extraParams =
-                new List<(List<string> args, bool isObligated, string comment, string defaultValue)>
-                {
-                };
+                new List<(List<string> args, bool isObligated, string comment, string defaultValue)>();
 
         private const bool IsStable = false;
 
@@ -26,7 +23,7 @@ namespace Itinero.Transit.Processor.Switch
         {
         }
 
-        public void Use(Dictionary<string, string> parameters, TransitDb transitDb)
+        public void Use(Dictionary<string, string> parameters, TransitDbSnapShot transitDb)
         {
             var txt =
                 $"# {transitDb.GlobalId}\n\n";

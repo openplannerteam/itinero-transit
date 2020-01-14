@@ -17,9 +17,7 @@ namespace Itinero.Transit.Processor.Switch
 
         private static readonly List<(List<string> args, bool isObligated, string comment, string defaultValue)>
             _extraParams =
-                new List<(List<string> args, bool isObligated, string comment, string defaultValue)>
-                {
-                };
+                new List<(List<string> args, bool isObligated, string comment, string defaultValue)>();
 
         private const bool IsStable = false;
 
@@ -52,22 +50,22 @@ namespace Itinero.Transit.Processor.Switch
             return msg;
         }
 
-        public void Use(Dictionary<string, string> parameters, TransitDb transitDb)
+        public void Use(Dictionary<string, string> parameters, TransitDbSnapShot transitDb)
         {
             var routeMerger = new RouteMerger();
 
-            var connections = transitDb.Latest.ConnectionsDb;
-            var stops = transitDb.Latest.StopsDb;
-            var trips = transitDb.Latest.TripsDb;
+            var connections = transitDb.ConnectionsDb;
+            var stops = transitDb.StopsDb;
+            var trips = transitDb.TripsDb;
 
             foreach (var connection in connections)
             {
                 routeMerger.AddConnection(connection);
             }
 
-            var route2trips = routeMerger.GetRouteToTrips();
+            var route2Trips = routeMerger.GetRouteToTrips();
 
-            foreach (var kv in route2trips)
+            foreach (var kv in route2Trips)
             {
                 var route = kv.Key;
                 var allTrips = trips.GetAll(kv.Value);

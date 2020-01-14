@@ -31,9 +31,9 @@ namespace Itinero.Transit.Data
         {
             _parent = parent;
 
-            GlobalId = _parent.GlobalId;
+            GlobalId = _parent.Latest.GlobalId;
             AttributesWritable = new Dictionary<string, string>();
-            foreach (var kv in _parent.Attributes)
+            foreach (var kv in _parent.Latest.Attributes)
             {
                 AttributesWritable.Add(kv.Key, kv.Value);
             }
@@ -53,7 +53,7 @@ namespace Itinero.Transit.Data
             ConnectionsDb.PostProcess();
             TripsDb.PostProcess();
 
-            var latest = new TransitDbSnapShot(_parent, StopsDb, ConnectionsDb, TripsDb);
+            var latest = new TransitDbSnapShot(_parent.DatabaseId, GlobalId, StopsDb, ConnectionsDb, TripsDb, Attributes);
             _parent.SetSnapshot(latest, GlobalId, Attributes);
         }
 
