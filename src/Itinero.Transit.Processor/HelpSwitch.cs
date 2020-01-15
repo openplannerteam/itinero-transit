@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Itinero.Transit.Data;
+using Itinero.Transit.Processor.Switch.Filter;
+using Itinero.Transit.Processor.Switch.Read;
+using Itinero.Transit.Processor.Switch.Validation;
+using Itinero.Transit.Processor.Switch.Write;
 
 namespace Itinero.Transit.Processor
 {
@@ -78,7 +82,6 @@ namespace Itinero.Transit.Processor
                         {
                             options.Add(documentedSwitch.Names[0]);
                         }
-                        
                     }
                 }
 
@@ -102,7 +105,7 @@ namespace Itinero.Transit.Processor
             else
             {
                 File.WriteAllText(arguments["markdown"],
-                    GenerateAllHelp(true,  experimental, shortVersion));
+                    GenerateAllHelp(true, experimental, shortVersion));
             }
         }
 
@@ -129,21 +132,65 @@ namespace Itinero.Transit.Processor
 
             if (!shortVersion)
             {
-                text +=
-                    "\n\n" +
-                    "Switch Syntax\n" +
-                    "-------------\n\n" +
-                    "The syntax of a switch is:\n\n" +
-                    "    --switch param1=value1 param2=value2\n" +
-                    "    # Or equivalent:\n" +
-                    "    --switch value1 value2\n" +
-                    "\n\nThere is no need to explicitly give the parameter name, as long as *unnamed* parameters" +
-                    " are in the same order as in the tables below. " +
-                    "It doesn't mater if only some arguments, all arguments or even no arguments are named. " +
-                    "`--switch value2 param1=value1`, `--switch value1 param2=value2` or `--switch param1=value1 value2` " +
-                    "are valid just as well.";
-                text += "\n\n";
-                text += "At last, `-param1` is a shorthand for `param=true`. This is useful for boolean flags\n\n";
+                text += string.Join("\n", new[]
+                {
+                    "",
+                    "Usage",
+                    "-----",
+                    "",
+                    "The switches act as 'mini-programs' which are executed one after another.",
+                    "A switch will either create, modify or write this data. This document details what switches are available.",
+                    "",
+                    "In normal circumstances, only a single transit-db is loaded into memory." ,//However, ITP supports h",
+                    "",
+                    "Examples",
+                    "--------",
+                    "",
+                    "A few useful examples to get you started:",
+                    "",
+                    "````" ,
+                    $"itp {new ReadGTFS().Names[0]} gtfs.zip # read a gtfs archive",
+                    $"        {new WriteTransitDb().Names[0]} # write the data into a transitdb, so that we can routeplan with it",
+                    $"        {new WriteVectorTiles().Names[0]} # And while we are at it, generate vector tiles from them as well",
+                    "````",
+                    "",
+                    "",
+                    "````" ,
+                    $"itp {new ReadTransitDb().Names[0]} data.transitdp # read a transitdb",
+                    $"        {new WriteStops()} stops.csv # Create a stops.csv of all the stop locations and information",
+                    $"        {new Validate().Names[0]} # Afterwards, check the transitdb for issues",
+                    "````",
+                    "",
+                    "````" ,
+                    $"itp {new ReadTransitDb().Names[0]} data.transitdp # read a transitdb",
+                    $"        {new SelectTimeWindow().Names[0]} 2020-01-20T10:00:00 1hour # Select only connections departing between 10:00 and 11:00",
+                    $"        {new SelectStopById()} http://some-agency.com/stop/123456 # Filter for this stop, and retain only connections and trips only using this stop",
+                    $"        {new WriteConnections().Names[0]} # Write all the connections to console to inspect them",
+                    "````",
+                    "",
+                    "````" ,
+                    $"itp {new Shell().Names[0]} # Open an interactive shell, in order to experiment with the data",
+                    "````",
+                    "",
+
+                    "Switch Syntax",
+                    "-------------",
+                    "",
+                    "The syntax of a switch is:",
+                    "",
+                    "    --switch param1=value1 param2=value2",
+                    "    # Or equivalent:",
+                    "    --switch value1 value2",
+                    "",
+                    "There is no need to explicitly give the parameter name, ",
+                    "as long as *unnamed* parameters are in the same order as in the tables below. ",
+                    "It doesn't mater if only some arguments, all arguments or even no arguments are named: ",
+                    "`--switch value2 param1=value1`, `--switch value1 param2=value2` or `--switch param1=value1 value2` ",
+                    "are valid just as well.",
+                    "",
+                    "At last, `-param1` is a shorthand for `param=true`. This is useful for boolean flags.",
+                    ""
+                });
             }
 
 
