@@ -13,7 +13,7 @@ namespace Itinero.Transit.Processor.Switch.Read
             {"--read-linked-connections", "--read-lc", "--rlc"};
 
         private static string About =
-            "Creates a transit DB based on linked connections (or adds them to an already existing db). For this, the linked connections source and a timewindow should be specified.\n" +
+            "Creates a transit DB based on linked connections. For this, the linked connections source and a timewindow should be specified.\n" +
             "If the previous switch reads or creates a transit db as well, the two transitDbs are merged into a single one.\n\n" +
             "Note that this switch only downloads the connections and keeps them in memory. To write them to disk, add --write-transit-db too.\n\n" +
             "Example usage to create the database for the Belgian Railway (SNCB/NMBS):\n\n" +

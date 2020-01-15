@@ -12,8 +12,15 @@ namespace Itinero.Transit.Processor.Switch.Read
         private static readonly string[] _names =
             {"--read-gtfs", "--rgtfs"};
 
-        private static string About =
-            "Creates a transit DB based on GTFS (or adds them to an already existing db), for the explicitly specified timeframe";
+        private static string About = string.Join("\n", new string[]
+        {
+            "Creates a transit DB based on GTFS. Added connection will depart within the explicitly specified timeframe.",
+            "",
+            "##### A word about timezone handling",
+            "",
+            "[Timezones are pesky](https://www.youtube.com/watch?v=-5wpm-gesOY). First of all, you should realize that all **arguments at the command line are parsed as UTC.**",
+            "However, the GTS might be encoded into local time. The used timezone is encoded in the GTFS, but this might however imply that the time you entered at the command line does not match the window you mean - unless you explicitly added a timezone indication onto your date."
+        });
 
 
         private static readonly List<(List<string> args, bool isObligated, string comment, string defaultValue)>
@@ -23,7 +30,7 @@ namespace Itinero.Transit.Processor.Switch.Read
                     SwitchesExtensions.obl("path",
                         "The path of the GTFS archive"),
                     SwitchesExtensions.opt("window-start", "start",
-                            "The start of the timewindow to load. Specify 'now' to take the current date and time. Otherwise provide a timestring of the format 'YYYY-MM-DDThh:mm:ss' (where T is a literal T). Special values: 'now' and 'today'")
+                            "The start of the timewindow to load. Specify 'now' to take the current date and time. Otherwise provide a timestring of the format 'YYYY-MM-DDThh:mm:ss' (where T is a literal T) or 'YYYY-MM-DDThh:mm:ss+offset', where offset is the offset to UTC. Special values: 'now' and 'today'")
                         .SetDefault("now"),
                     SwitchesExtensions.opt("window-duration", "duration",
                             "The length of the window to load, in seconds. If zero is specified, no connections will be downloaded. Special values: 'xhour', 'xday'")
@@ -42,8 +49,8 @@ namespace Itinero.Transit.Processor.Switch.Read
 
         public TransitDb Generate(Dictionary<string, string> arguments)
         {
-            var tdb = new TransitDb( 0);
-  
+            var tdb = new TransitDb(0);
+
             var path = arguments["path"];
 
 

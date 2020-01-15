@@ -15,11 +15,11 @@ namespace Itinero.Transit.Processor.Switch.Misc
             _extraParams =
                 new List<(List<string> args, bool isObligated, string comment, string defaultValue)>();
 
-        private const bool IsStable =true;
+        private const bool IsStable = true;
 
-        public Clear() : base(_names,About,_extraParams,IsStable)
-        {}
-
+        public Clear() : base(_names, About, _extraParams, IsStable)
+        {
+        }
 
 
         public IEnumerable<TransitDb> Modify(Dictionary<string, string> __, List<TransitDb> _)

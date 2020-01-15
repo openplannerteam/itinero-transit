@@ -59,7 +59,8 @@ namespace Itinero.Transit.Processor.Switch
                     new HelpSwitch(),
                     new Shell(),
                     new Clear(),
-                    new GarbageCollect()
+                    new GarbageCollect(),
+                    new ShowTimeZone()
                 })
             };
 

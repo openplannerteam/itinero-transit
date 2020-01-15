@@ -68,9 +68,9 @@ Full overview of all options
 All switches are listed below. Click on a switch to get a full overview, including sub-arguments.
 
 - [Reading data](#Reading-data)
-  * [--read-linked-connections](#--read-linked-connections---read-lc---rlc) Creates a transit DB based on linked connections (or adds them to an already existing db).
-  * [--read-open-street-map-relation](#--read-open-street-map-relation---read-osm---rosm) Creates a transit DB based on an OpenStreetMap-relation following the route scheme (or adds it to an already existing db).
-  * [--read-gtfs](#--read-gtfs---rgtfs) Creates a transit DB based on GTFS (or adds them to an already existing db), for the explicitly specified timeframe
+  * [--read-linked-connections](#--read-linked-connections---read-lc---rlc) Creates a transit DB based on linked connections.
+  * [--read-open-street-map-relation](#--read-open-street-map-relation---read-osm---rosm) Creates a transit DB based on an OpenStreetMap-relation following the route scheme.
+  * [--read-gtfs](#--read-gtfs---rgtfs) Creates a transit DB based on GTFS.
   * [--read-transit-db](#--read-transit-db---read-transit---read-tdb---rt---rtdb---read) Read a transitDB file as input to do all the data processing.
 - [Filtering the transitdb](#Filtering-the-transitdb)
   * [--select-time](#--select-time---filter-time) Filters the transit-db so that only connections departing in the specified time window are kept.
@@ -100,7 +100,7 @@ All switches are listed below. Click on a switch to get a full overview, includi
 
 This switch is a transitdb-source
 
-   Creates a transit DB based on linked connections (or adds them to an already existing db). For this, the linked connections source and a timewindow should be specified.
+   Creates a transit DB based on linked connections. For this, the linked connections source and a timewindow should be specified.
 If the previous switch reads or creates a transit db as well, the two transitDbs are merged into a single one.
 
 Note that this switch only downloads the connections and keeps them in memory. To write them to disk, add --write-transit-db too.
@@ -120,7 +120,7 @@ Example usage to create the database for the Belgian Railway (SNCB/NMBS):
 
 This switch is a transitdb-source
 
-   Creates a transit DB based on an OpenStreetMap-relation following the route scheme (or adds it to an already existing db). For all information on Public Transport tagging, refer to [the OSM-Wiki](https://wiki.openstreetmap.org/wiki/Public_transport).n
+   Creates a transit DB based on an OpenStreetMap-relation following the route scheme. For all information on Public Transport tagging, refer to [the OSM-Wiki](https://wiki.openstreetmap.org/wiki/Public_transport).n
 A timewindow should be specified to indicate what period the transitDB should cover. 
 
 Of course, the relation itself should be provided. Either:
@@ -147,7 +147,11 @@ Example usage to create the database:
 
 This switch is a transitdb-source
 
-   Creates a transit DB based on GTFS (or adds them to an already existing db), for the explicitly specified timeframe
+   Creates a transit DB based on GTFS. Added connection will depart within the explicitly specified timeframe.
+
+##### A word about timezone handling
+
+[Timezones are pesky](https://www.youtube.com/watch?v=-5wpm-gesOY). First of all, you should realize that all **arguments at the command line are parsed as UTC.**
 
 | Parameter  | Default value | Explanation       |
 |----------- | ------------- | ----------------- |

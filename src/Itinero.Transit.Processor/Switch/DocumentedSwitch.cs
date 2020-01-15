@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Itinero.Transit.Processor.Switch
@@ -240,20 +241,20 @@ namespace Itinero.Transit.Processor.Switch
         {
             return this is IMultiTransitDbSource || this is IMultiTransitDbModifier || this is IMultiTransitDbSink;
         }
-        
+
         private bool IsSource()
         {
             return this is IMultiTransitDbSource || this is ITransitDbSource;
         }
-        
+
         private bool IsModifier()
         {
-            return this is IMultiTransitDbModifier|| this is ITransitDbModifier;
+            return this is IMultiTransitDbModifier || this is ITransitDbModifier;
         }
-        
+
         private bool IsSink()
         {
-            return this is IMultiTransitDbSink|| this is ITransitDbSink;
+            return this is IMultiTransitDbSink || this is ITransitDbSink;
         }
 
         /// <summary>
@@ -272,12 +273,14 @@ namespace Itinero.Transit.Processor.Switch
             {
                 text += string.Join(", ", Names);
             }
+
             text += "\n\n";
             text += "This switch is ";
             if (!SwitchIsStable)
             {
                 text += "**experimental**, ";
             }
+
             if (IsMulti())
             {
                 text += "multi-compatible, ";
@@ -288,7 +291,7 @@ namespace Itinero.Transit.Processor.Switch
                 text += "a transitdb-source, ";
             }
 
-            
+
             if (IsModifier())
             {
                 text += "a transitdb-modifier, ";
@@ -411,11 +414,32 @@ namespace Itinero.Transit.Processor.Switch
 
         public static DateTime ParseDate(string dateTime)
         {
-            return (dateTime.Equals("now")
-                ? DateTime.Now
-                : dateTime.Equals("today")
-                    ? DateTime.Now.Date
-                    : DateTime.Parse(dateTime)).ToUniversalTime();
+            if (dateTime.Equals("now"))
+            {
+                return DateTime.Now.ToUniversalTime();
+            }
+
+            if (dateTime.Equals("today"))
+            {
+                return DateTime.Now.Date.ToUniversalTime();
+            }
+
+
+            if (!dateTime.Contains("/"))
+            {
+                return DateTime.Parse(dateTime).ToUniversalTime();
+            }
+
+            var splitted = dateTime.Split("/");
+            dateTime = splitted[0];
+            var region = splitted[1] + "/" + splitted[2];
+            var timezone = TimeZoneInfo.FindSystemTimeZoneById(region);
+
+            var parsedDateLocal =
+                DateTimeOffset.ParseExact(dateTime, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+            var tzOffset = timezone.GetUtcOffset(parsedDateLocal.DateTime);
+            var parsedDateTimeZone = new DateTimeOffset(parsedDateLocal.DateTime, tzOffset);
+            return DateTime.Parse(dateTime).ToUniversalTime(); // TODO fix
         }
 
         /// <summary>

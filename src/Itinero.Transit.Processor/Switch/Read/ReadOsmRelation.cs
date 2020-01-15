@@ -13,7 +13,7 @@ namespace Itinero.Transit.Processor.Switch.Read
             {"--read-open-street-map-relation", "--read-osm", "--rosm"};
 
         private static string About =
-            "Creates a transit DB based on an OpenStreetMap-relation following the route scheme (or adds it to an already existing db). For all information on Public Transport tagging, refer to [the OSM-Wiki](https://wiki.openstreetmap.org/wiki/Public_transport).n\n" +
+            "Creates a transit DB based on an OpenStreetMap-relation following the route scheme. For all information on Public Transport tagging, refer to [the OSM-Wiki](https://wiki.openstreetmap.org/wiki/Public_transport).n\n" +
             "A timewindow should be specified to indicate what period the transitDB should cover. \n\n" +
             "Of course, the relation itself should be provided. Either:\n\n - Pass the ID of the relation to download it\n - Pass the URL of a relation.xml\n - Pass the filename of a relation.xml\n\n" +
             "If the previous switch reads or creates a transit db as well, the two transitDbs are merged into a single one.\n\n" +
