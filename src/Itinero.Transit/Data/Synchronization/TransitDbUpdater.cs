@@ -63,6 +63,7 @@ namespace Itinero.Transit.Data.Synchronization
             {
                 foreach (var (wStart, wEnd) in gaps)
                 {
+                    
                     _updateTimeFrame.Invoke(writer, wStart, wEnd);
                     _loadedTimeWindows.AddTimeWindow(wStart, wEnd);
                 }
