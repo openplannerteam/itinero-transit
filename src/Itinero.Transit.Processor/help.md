@@ -61,6 +61,20 @@ are valid just as well.
 
 At last, `-param1` is a shorthand for `param=true`. This is useful for boolean flags.
 
+Parsing dates and timezone handling
+-----------------------------------
+
+[Timezones are pesky](https://www.youtube.com/watch?v=-5wpm-gesOY).
+First of all, you should realize that all **arguments at the command line are parsed as UTC.** by default.
+If you want to specify a different timezone, either add an offset (the format becomes `YYYY-MM-DDThh:mm:ss(+|-)zz?`), e.g. `2020-12-31T23:59:59+1` for a country running one hour ahead of Greenwich, or `2020-12-31T23:59:59-1` for a country running behind.
+Alternatively, one can use `YYYY-MM-DDThh:mm:ss/TimeZoneId`, e.g. `2020-12-31T23:23:59/Europe/Brussels` (the timezoneId is case sensitive). 
+[A list of timezone-ids can be found on Wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
+
+At last, dates normally support the shorthand values `now` and `today`. A duration can always be replaced by an end-date or by a shorthand as `1hour`, `6hours`, `1day`, `1week`, ...
+
+All dates within a transitdb are encoded using UTC-time. Read transitdbs should thus not be a problem.
+
+However, the GTS might be encoded into local time. The used timezone is encoded in the GTFS and will be converted automatically. However, make sure that the entered timewindow matches what you think you write.
 
 Full overview of all options 
 ------------------------------- 
@@ -94,6 +108,7 @@ All switches are listed below. Click on a switch to get a full overview, includi
   * [--shell](#--shell---interactive---i) Starts an interactive shell where switches can be used as commands
   * [--clear](#--clear) Removes the currently loaded database from memory.
   * [--garbage-collect](#--garbage-collect---gc) Run garbage collection.
+  * [--timezone](#--timezone) Shows the current timezone of the machine.
 ### Reading data
 
 #### --read-linked-connections (--read-lc, --rlc)
@@ -149,14 +164,10 @@ This switch is a transitdb-source
 
    Creates a transit DB based on GTFS. Added connection will depart within the explicitly specified timeframe.
 
-##### A word about timezone handling
-
-[Timezones are pesky](https://www.youtube.com/watch?v=-5wpm-gesOY). First of all, you should realize that all **arguments at the command line are parsed as UTC.**
-
 | Parameter  | Default value | Explanation       |
 |----------- | ------------- | ----------------- |
 | **path** | _Obligated param_ | The path of the GTFS archive | 
-| window-start, start | `now`| The start of the timewindow to load. Specify 'now' to take the current date and time. Otherwise provide a timestring of the format 'YYYY-MM-DDThh:mm:ss' (where T is a literal T). Special values: 'now' and 'today' | 
+| window-start, start | `now`| The start of the timewindow to load. Specify 'now' to take the current date and time. Otherwise provide a timestring of the format 'YYYY-MM-DDThh:mm:ss' (where T is a literal T) or 'YYYY-MM-DDThh:mm:ss+offset', where offset is the offset to UTC. Special values: 'now' and 'today' | 
 | window-duration, duration | `3600`| The length of the window to load, in seconds. If zero is specified, no connections will be downloaded. Special values: 'xhour', 'xday' | 
 
 #### --read-transit-db (--read-transit, --read-tdb, --rt, --rtdb, --read)
@@ -376,4 +387,15 @@ This switch is **experimental**, multi-compatible, a transitdb-source, a transit
 
 
 *This switch does not need parameters*
+
+#### --timezone
+
+This switch is multi-compatible, a transitdb-source, a transitdb-modifier, a transitdb-sink
+
+   Shows the current timezone of the machine.
+
+| Parameter  | Default value | Explanation       |
+|----------- | ------------- | ----------------- |
+| timezone | _NA_| A timezone id to query information about, e.g. 'Europe/Brussels' (case sensitive). For a full reference, see [wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) | 
+| time | `now`| A date to test parsing | 
 

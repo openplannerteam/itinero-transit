@@ -63,9 +63,8 @@ namespace Itinero.Transit.Processor.Switch.Read
                 lurl = "https://graph.irail.be/sncb/stops";
             }
 
-            var time = ParseDate(arguments["window-start"]);
-            // In seconds
-            var duration = ParseTimeSpan(arguments["window-duration"]);
+            var time = arguments.ParseDate("window-start");
+            var duration = arguments.ParseTimeSpan("window-duration", time);
 
 
 

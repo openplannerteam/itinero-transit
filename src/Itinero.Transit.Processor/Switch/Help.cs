@@ -130,7 +130,7 @@ namespace Itinero.Transit.Processor.Switch
             }
             else
             {
-                text += "Experimental switches are included in this document.";
+                text += "Experimental switches are included in this document.\n\n";
             }
 
 
@@ -144,14 +144,14 @@ namespace Itinero.Transit.Processor.Switch
                     "",
                     "The switches act as 'mini-programs' which are executed one after another.",
                     "A switch will either create, modify or write this data. This document details what switches are available.",
+                    "",
 
                     !includeExperimental
                         ? ""
                         : string.Join("\n",
                             "In normal circumstances, only a single transit-db is loaded into memory.",
                             "However, ITP supports to have multiple transitDBs loaded at the same time if a read-switch is called multiple times.",
-                            "Most modifying switches will execute their effect on all of them independently; but a few have a special effect if they are merged.",
-                            "Most consuming switches will get a 'mashed-together'-version of all the databases.",
+                            "Most modifying switches will execute their effect on all of them independently; but a few have a special support to work on multiple transitdbs at once.",
                             ""),
 
                     "Examples",
@@ -201,7 +201,22 @@ namespace Itinero.Transit.Processor.Switch
                     "are valid just as well.",
                     "",
                     "At last, `-param1` is a shorthand for `param=true`. This is useful for boolean flags.",
-                    ""
+                    "",
+                    "Parsing dates and timezone handling",
+                    "-----------------------------------",
+                    "",
+                    "[Timezones are pesky](https://www.youtube.com/watch?v=-5wpm-gesOY).",
+                    "First of all, you should realize that all **arguments at the command line are parsed as UTC.** by default.",
+                    "If you want to specify a different timezone, either add an offset " +
+                    "(the format becomes `YYYY-MM-DDThh:mm:ss(+|-)zz?`), e.g. `2020-12-31T23:59:59+1` for a country running one hour ahead of Greenwich, or `2020-12-31T23:59:59-1` for a country running behind.",
+                    "Alternatively, one can use `YYYY-MM-DDThh:mm:ss/TimeZoneId`, e.g. `2020-12-31T23:23:59/Europe/Brussels` (the timezoneId is case sensitive). ",
+                    "[A list of timezone-ids can be found on Wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).",
+                    "",
+                    "At last, dates normally support the shorthand values `now` and `today`. A duration can always be replaced by an end-date or by a shorthand as `1hour`, `6hours`, `1day`, `1week`, ...",
+                    "",
+                    "All dates within a transitdb are encoded using UTC-time. Read transitdbs should thus not be a problem.",
+                    "",
+                    "However, the GTS might be encoded into local time. The used timezone is encoded in the GTFS and will be converted automatically. However, make sure that the entered timewindow matches what you think you write."
                 });
             }
 

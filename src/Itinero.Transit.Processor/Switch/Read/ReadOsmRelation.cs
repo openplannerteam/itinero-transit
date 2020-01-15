@@ -49,9 +49,9 @@ namespace Itinero.Transit.Processor.Switch.Read
         {
             var tdb = new TransitDb(0);
             
-            var start = ParseDate(arguments["window-start"]);
+            var start = arguments.ParseDate("window-start");
 
-            var durationSeconds = int.Parse(arguments["window-duration"]);
+            var durationSeconds = arguments.ParseTimeSpan("window-duration", start);
 
             start = start.ToUniversalTime();
             var end = start.AddSeconds(durationSeconds);

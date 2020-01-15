@@ -14,12 +14,7 @@ namespace Itinero.Transit.Processor.Switch.Read
 
         private static string About = string.Join("\n", new string[]
         {
-            "Creates a transit DB based on GTFS. Added connection will depart within the explicitly specified timeframe.",
-            "",
-            "##### A word about timezone handling",
-            "",
-            "[Timezones are pesky](https://www.youtube.com/watch?v=-5wpm-gesOY). First of all, you should realize that all **arguments at the command line are parsed as UTC.**",
-            "However, the GTS might be encoded into local time. The used timezone is encoded in the GTFS, but this might however imply that the time you entered at the command line does not match the window you mean - unless you explicitly added a timezone indication onto your date."
+            "Creates a transit DB based on GTFS. Added connection will depart within the explicitly specified timeframe."
         });
 
 
@@ -52,11 +47,8 @@ namespace Itinero.Transit.Processor.Switch.Read
             var tdb = new TransitDb(0);
 
             var path = arguments["path"];
-
-
-            var time = ParseDate(arguments["window-start"]);
-            // In seconds
-            var duration = ParseTimeSpan(arguments["window-duration"]);
+            var time = arguments.ParseDate("window-start");
+            var duration = arguments.ParseTimeSpan("window-duration", time);
 
             Console.WriteLine($"Loading GTFS file {path} in timewindow {time:s} + {duration} seconds");
 

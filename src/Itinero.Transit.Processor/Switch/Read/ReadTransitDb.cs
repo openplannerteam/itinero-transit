@@ -38,18 +38,13 @@ namespace Itinero.Transit.Processor.Switch.Read
 
         public IEnumerable<TransitDb> Generate(Dictionary<string, string> arguments)
         {
-            var arg = arguments["file"];
-            var files = arg.Split(",");
-            if (arg.Equals("*.transitdb"))
-            {
-               files = Directory.EnumerateFiles(".", "*.transitdb").ToArray();
-            }
+            var files = arguments.GetFilesMatching("file");
 
-            return files.Select((file , i)=>
+            return files.Select((file, i) =>
             {
                 using (var stream = File.OpenRead(file))
                 {
-                    Console.WriteLine("Reading "+file);
+                    Console.WriteLine("Reading " + file);
                     var tdb = new TransitDb((uint) i);
                     var wr = tdb.GetWriter();
                     wr.ReadFrom(stream);

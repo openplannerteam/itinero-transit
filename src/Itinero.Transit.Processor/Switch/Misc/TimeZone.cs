@@ -17,6 +17,9 @@ namespace Itinero.Transit.Processor.Switch.Misc
             _extraParams =
                 new List<(List<string> args, bool isObligated, string comment, string defaultValue)>
                 {
+                    SwitchesExtensions.opt("timezone",
+                            "A timezone id to query information about, e.g. 'Europe/Brussels' (case sensitive). For a full reference, see [wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)")
+                        .SetDefault(""),
                     SwitchesExtensions.opt("time", "A date to test parsing")
                         .SetDefault("now")
                 };
@@ -29,14 +32,22 @@ namespace Itinero.Transit.Processor.Switch.Misc
 
         private void Run(Dictionary<string, string> parameters)
         {
-            var t = ParseDate(parameters["time"]);
-            Console.WriteLine($"The given time is {t:s}");
-            Console.WriteLine($"The given time in UTC is {t.ToUniversalTime():s}");
-            Console.WriteLine($"The UNIX-timestamp is {t.ToUniversalTime().ToUnixTime()}"); 
+            var t = parameters.ParseDate("time");
+            var tzName = parameters["timezone"];
+            Console.WriteLine($"The given time (in UTC) is {t.ToUniversalTime():s}");
             var tzinfo = TimeZoneInfo.Local;
-            Console.WriteLine($"The timezone of this machine is {tzinfo.Id}, the offset is currently {tzinfo.BaseUtcOffset} ({tzinfo}). The offset can change during summer/wintertime");
+            Console.WriteLine($"This is {t.ToLocalTime():s} in local time ({tzinfo.Id})");
+            Console.WriteLine($"The UNIX-timestamp is {t.ToUniversalTime().ToUnixTime()}");
+            Console.WriteLine(
+                $"The timezone of this machine is {tzinfo.Id}, the offset is currently {tzinfo.BaseUtcOffset} ({tzinfo}). The offset can change during summer/wintertime");
+            if (!string.IsNullOrEmpty(tzName))
+            {
+                tzinfo = TimeZoneInfo.FindSystemTimeZoneById(tzName);
+                Console.WriteLine(
+                    $"The requested timezone is {tzinfo.Id}, the offset is currently {tzinfo.BaseUtcOffset} ({tzinfo}). The offset can change during summer/wintertime");
+            }
         }
-        
+
 
         public IEnumerable<TransitDb> Modify(Dictionary<string, string> parameters, List<TransitDb> tdbs)
         {

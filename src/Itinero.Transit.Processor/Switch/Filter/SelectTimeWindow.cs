@@ -44,24 +44,13 @@ namespace Itinero.Transit.Processor.Switch.Filter
         {
             var startDate = DateTime.ParseExact(arguments["window-start"], "yyyy-MM-dd_HH:mm:ss", null);
             startDate = startDate.ToUniversalTime();
-            int duration;
-            DateTime endDate;
-            try
-            {
-                duration = int.Parse(arguments["duration"]);
-            }
-            catch (FormatException)
-            {
-                endDate = DateTime.ParseExact(arguments["duration"], "yyyy-MM-dd_HH:mm:ss", null);
-                endDate = endDate.ToUniversalTime();
-                duration = (int) (endDate - startDate).TotalSeconds;
-            }
+            var duration = arguments.ParseTimeSpan("duration", startDate);
+
 
             var allowEmpty = bool.Parse(arguments["allow-empty"]);
 
-            endDate = startDate.AddSeconds(duration);
+            var endDate = startDate.AddSeconds(duration);
             var end = endDate.ToUnixTime();
-
             var start = startDate.ToUnixTime();
 
             return old.Copy(

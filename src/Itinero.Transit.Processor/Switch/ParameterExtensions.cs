@@ -1,0 +1,98 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+
+namespace Itinero.Transit.Processor.Switch
+{
+    public static class ParameterExtensions
+    {
+        public static int GetInt(this Dictionary<string, string> parameters, string name)
+        {
+            return int.Parse(parameters[name]);
+        }
+
+        public static IEnumerable<string> GetFilesMatching(this Dictionary<string, string> parameters, string name)
+        {
+            var pattern = parameters[name];
+            return Directory.EnumerateFiles(".", pattern);
+        }
+
+        public static DateTime ParseDate(this Dictionary<string, string> parameters, string name)
+        {
+            var dateTime = parameters[name];
+            if (dateTime.Equals("now"))
+            {
+                return DateTime.Now.ToUniversalTime();
+            }
+
+            if (dateTime.Equals("today"))
+            {
+                return DateTime.Now.Date.ToUniversalTime();
+            }
+
+
+            if (!dateTime.Contains("/"))
+            {
+                return DateTime.Parse(dateTime).ToUniversalTime();
+            }
+
+            var splitted = dateTime.Split("/");
+            dateTime = splitted[0];
+            var region = splitted[1] + "/" + splitted[2];
+            var timezone = TimeZoneInfo.FindSystemTimeZoneById(region);
+            var parsedDateLocal =
+                DateTimeOffset.ParseExact(dateTime, "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
+            var tzOffset = timezone.GetUtcOffset(parsedDateLocal.DateTime);
+
+            var parsedDateTimeZone = new DateTimeOffset(parsedDateLocal.DateTime, tzOffset);
+            // There must be a better way to do this...
+            return new DateTime(parsedDateTimeZone.ToUniversalTime().DateTime.Ticks, DateTimeKind.Utc);
+        }
+
+        public static int ParseTimeSpan(this Dictionary<string, string> parameters, string name, DateTime startTime)
+        {
+            try
+            {
+                var endDate = parameters.ParseDate(name);
+                return (int) (endDate - startTime).TotalSeconds;
+            }
+            catch
+            {
+                return ParseTimeSpan(parameters, name);
+            }
+        }
+
+        private static readonly IReadOnlyList<(string timeEntity, int factor)> _unitLengths
+            = new List<(string timeEntity, int factor)>
+            {
+                ("minute", 60),
+                ("minutes", 60),
+                ("hour", 60 * 60),
+                ("hours", 60 * 60),
+                ("day", 24 * 60 * 60),
+                ("days", 24 * 60 * 60),
+                ("week", 7 * 24 * 60 * 60),
+                ("weeks", 7 * 24 * 60 * 60),
+            };
+
+        /// <summary>
+        /// Gives a timespan in seconds
+        /// </summary>
+        public static int ParseTimeSpan(this Dictionary<string, string> parameters, string name)
+        {
+            var durationStr = parameters[name];
+
+            foreach (var (unitName, factor) in _unitLengths)
+            {
+                if (!durationStr.EndsWith(unitName)) continue;
+
+                durationStr = durationStr.Substring(0, durationStr.Length - unitName.Length);
+                return factor * int.Parse(durationStr);
+            }
+
+            return int.Parse(durationStr);
+        }
+    }
+}
