@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Itinero.Transit.Processor
+namespace Itinero.Transit.Processor.Switch
 {
     /// <summary>
     /// A documented switch contains all flags explicitly,
@@ -190,9 +190,10 @@ namespace Itinero.Transit.Processor
             // Did we use all arguments?
             if (arguments.Count > used.Count)
             {
-                var unused = string.Join(", ", 
+                var unused = string.Join(", ",
                     arguments.Where((str, i) => !used.Contains(i)));
-                throw new ArgumentException($"{arguments.Count - used.Count} arguments in switch {Names[0]} were not used: \n  {unused}");
+                throw new ArgumentException(
+                    $"{arguments.Count - used.Count} arguments in switch {Names[0]} were not used: \n  {unused}");
             }
 
 
@@ -231,12 +232,28 @@ namespace Itinero.Transit.Processor
                 text += ")";
             }
 
-            if (!SwitchIsStable)
-            {
-                text += " (Experimental feature)";
-            }
 
             return text;
+        }
+
+        private bool IsMulti()
+        {
+            return this is IMultiTransitDbSource || this is IMultiTransitDbModifier || this is IMultiTransitDbSink;
+        }
+        
+        private bool IsSource()
+        {
+            return this is IMultiTransitDbSource || this is ITransitDbSource;
+        }
+        
+        private bool IsModifier()
+        {
+            return this is IMultiTransitDbModifier|| this is ITransitDbModifier;
+        }
+        
+        private bool IsSink()
+        {
+            return this is IMultiTransitDbSink|| this is ITransitDbSink;
         }
 
         /// <summary>
@@ -255,7 +272,34 @@ namespace Itinero.Transit.Processor
             {
                 text += string.Join(", ", Names);
             }
+            text += "\n\n";
+            text += "This switch is ";
+            if (!SwitchIsStable)
+            {
+                text += "**experimental**, ";
+            }
+            if (IsMulti())
+            {
+                text += "multi-compatible, ";
+            }
 
+            if (IsSource())
+            {
+                text += "a transitdb-source, ";
+            }
+
+            
+            if (IsModifier())
+            {
+                text += "a transitdb-modifier, ";
+            }
+
+            if (IsSink())
+            {
+                text += "a transitdb-sink, ";
+            }
+
+            text = text.Substring(0, text.Length - 2);
 
             text += "\n\n";
             text += "   " + Documentation + "\n\n";
@@ -383,20 +427,24 @@ namespace Itinero.Transit.Processor
             if (durationStr.EndsWith("day"))
             {
                 duration = 24 * 60 * 60 * int.Parse(durationStr.Substring(0, durationStr.Length - 3));
-            }else if (durationStr.EndsWith("days"))
+            }
+            else if (durationStr.EndsWith("days"))
             {
                 duration = 24 * 60 * 60 * int.Parse(durationStr.Substring(0, durationStr.Length - 4));
-            }else if (durationStr.EndsWith("week"))
+            }
+            else if (durationStr.EndsWith("week"))
             {
                 duration = 7 * 24 * 60 * 60 * int.Parse(durationStr.Substring(0, durationStr.Length - 4));
-            }else if (durationStr.EndsWith("weeks"))
+            }
+            else if (durationStr.EndsWith("weeks"))
             {
                 duration = 7 * 24 * 60 * 60 * int.Parse(durationStr.Substring(0, durationStr.Length - 5));
             }
             else if (durationStr.EndsWith("hour"))
             {
                 duration = 60 * 60 * int.Parse(durationStr.Substring(0, durationStr.Length - 4));
-            }else if (durationStr.EndsWith("hours"))
+            }
+            else if (durationStr.EndsWith("hours"))
             {
                 duration = 60 * 60 * int.Parse(durationStr.Substring(0, durationStr.Length - 5));
             }

@@ -4,7 +4,7 @@ using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Processor.Switch.Validation
 {
-    class ShowInfo : DocumentedSwitch, ITransitDbSink
+    class ShowInfo : DocumentedSwitch, IMultiTransitDbSink
     {
         private static readonly string[] _names = {"--show-info", "--info"};
 
@@ -23,15 +23,19 @@ namespace Itinero.Transit.Processor.Switch.Validation
         {
         }
 
-        public void Use(Dictionary<string, string> parameters, TransitDbSnapShot transitDb)
+        public void Use(Dictionary<string, string> parameters, IEnumerable<TransitDbSnapShot> transitDbs)
         {
-            var txt =
-                $"# {transitDb.GlobalId}\n\n";
-            foreach (var kv in transitDb.Attributes)
+            foreach (var transitDb in transitDbs)
             {
-                txt += $" - {kv.Key} = {kv.Value}\n";
+                var txt =
+                    $"# {transitDb.GlobalId}\n\n";
+                foreach (var kv in transitDb.Attributes)
+                {
+                    txt += $" - {kv.Key} = {kv.Value}\n";
+                }
+
+                Console.WriteLine(txt);
             }
-            Console.WriteLine(txt);
         }
     }
 }

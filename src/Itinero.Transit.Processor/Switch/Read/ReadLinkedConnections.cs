@@ -7,7 +7,7 @@ using Itinero.Transit.Logging;
 namespace Itinero.Transit.Processor.Switch.Read
 {
     // ReSharper disable once InconsistentNaming
-    internal class ReadLinkedConnections : DocumentedSwitch, ITransitDbModifier, ITransitDbSource
+    internal class ReadLinkedConnections : DocumentedSwitch, ITransitDbSource
     {
         private static readonly string[] _names =
             {"--read-linked-connections", "--read-lc", "--rlc"};
@@ -17,7 +17,7 @@ namespace Itinero.Transit.Processor.Switch.Read
             "If the previous switch reads or creates a transit db as well, the two transitDbs are merged into a single one.\n\n" +
             "Note that this switch only downloads the connections and keeps them in memory. To write them to disk, add --write-transit-db too.\n\n" +
             "Example usage to create the database for the Belgian Railway (SNCB/NMBS):\n\n" +
-            "        idp --create-transit-db https://graph.irail.be/sncb/connections https://irail.be/stations/NMBS";
+            "        --read-lc https://graph.irail.be/sncb/connections https://irail.be/stations/NMBS";
 
 
         private static readonly List<(List<string> args, bool isObligated, string comment, string defaultValue)>
@@ -49,12 +49,7 @@ namespace Itinero.Transit.Processor.Switch.Read
         public TransitDb Generate(Dictionary<string, string> arguments)
         {
             var tdb = new TransitDb(0);
-            Modify(arguments, tdb);
-            return tdb;
-        }
-
-        public TransitDb Modify(Dictionary<string, string> arguments, TransitDb tdb)
-        {
+    
             var curl = arguments["connections"];
 
             if (curl.Equals("nmbs"))

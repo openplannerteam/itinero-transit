@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Serialization;
 
@@ -8,9 +10,10 @@ namespace Itinero.Transit.Processor.Switch.Read
     /// <summary>
     /// Represents a switch to read a shapefile for routing.
     /// </summary>
-    class ReadTransitDb : DocumentedSwitch, ITransitDbSource
+    class ReadTransitDb : DocumentedSwitch, IMultiTransitDbSource
     {
-        private static readonly string[] _names = {"--read-transit-db", "--read-transit", "--read-tdb", "--rt", "--rtdb"};
+        private static readonly string[] _names =
+            {"--read-transit-db", "--read-transit", "--read-tdb", "--rt", "--rtdb", "--read"};
 
         private static string About =
             "Read a transitDB file as input to do all the data processing. A transitDB is a database containing connections between multiple stops";
@@ -20,7 +23,8 @@ namespace Itinero.Transit.Processor.Switch.Read
             _extraParams =
                 new List<(List<string> args, bool isObligated, string comment, string defaultValue)>
                 {
-                    SwitchesExtensions.obl("file", "The input file to read"),
+                    SwitchesExtensions.opt("file", "The input file(s) to read, ',' seperated")
+                        .SetDefault("*.transitdb"),
                 };
 
         private const bool IsStable = true;
@@ -32,18 +36,27 @@ namespace Itinero.Transit.Processor.Switch.Read
         }
 
 
-        public TransitDb Generate(Dictionary<string, string> arguments)
+        public IEnumerable<TransitDb> Generate(Dictionary<string, string> arguments)
         {
-            var fileName = arguments["file"];
-
-            using (var stream = File.OpenRead(fileName))
+            var arg = arguments["file"];
+            var files = arg.Split(",");
+            if (arg.Equals("*.transitdb"))
             {
-                var tdb = new TransitDb(0);
-                var wr = tdb.GetWriter();
-                wr.ReadFrom(stream);
-                wr.Close();
-                return tdb;
+               files = Directory.EnumerateFiles(".", "*.transitdb").ToArray();
             }
+
+            return files.Select((file , i)=>
+            {
+                using (var stream = File.OpenRead(file))
+                {
+                    Console.WriteLine("Reading "+file);
+                    var tdb = new TransitDb((uint) i);
+                    var wr = tdb.GetWriter();
+                    wr.ReadFrom(stream);
+                    wr.Close();
+                    return tdb;
+                }
+            }).ToList(); // ToList forces execution
         }
     }
 }

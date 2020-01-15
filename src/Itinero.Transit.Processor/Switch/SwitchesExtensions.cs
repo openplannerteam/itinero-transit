@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 // ReSharper disable InconsistentNaming
 
-namespace Itinero.Transit.Processor
+namespace Itinero.Transit.Processor.Switch
 {
     public static class SwitchesExtensions
     {

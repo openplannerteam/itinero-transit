@@ -7,7 +7,7 @@ using Itinero.Transit.Logging;
 namespace Itinero.Transit.Processor.Switch.Read
 {
     // ReSharper disable once InconsistentNaming
-    internal class ReadOsmRelation : DocumentedSwitch, ITransitDbSource, ITransitDbModifier
+    internal class ReadOsmRelation : DocumentedSwitch, ITransitDbSource
     {
         private static readonly string[] _names =
             {"--read-open-street-map-relation", "--read-osm", "--rosm"};
@@ -48,12 +48,7 @@ namespace Itinero.Transit.Processor.Switch.Read
         public TransitDb Generate(Dictionary<string, string> arguments)
         {
             var tdb = new TransitDb(0);
-            Modify(arguments, tdb);
-            return tdb;
-        }
-
-        public TransitDb Modify(Dictionary<string, string> arguments, TransitDb tdb)
-        {
+            
             var start = ParseDate(arguments["window-start"]);
 
             var durationSeconds = int.Parse(arguments["window-duration"]);

@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Globalization;
 using Itinero.Transit.Data;
+using Itinero.Transit.Processor.Switch;
 using OsmSharp.Logging;
 
 namespace Itinero.Transit.Processor
 {
-    class Program
+    internal static class Program
     {
-        private static void Main(string[] args)
+        public static void Main(string[] args)
         {
             // enable logging.
             Logger.LogAction = (origin, level, message, parameters) =>
@@ -16,9 +17,6 @@ namespace Itinero.Transit.Processor
                 Console.WriteLine("[{0}-{3}] {1} - {2}", origin, level, message,
                     DateTime.Now.ToString(CultureInfo.InvariantCulture));
             };
-
-
-            // register switches.
 
             if (args.Length == 0)
             {
@@ -30,74 +28,47 @@ namespace Itinero.Transit.Processor
             try
             {
                 switches = SwitchParsers.ParseSwitches(args);
-
-
-                var generatorOrModifier = 0;
-                var sinks = 0;
-                foreach (var (swtch, _) in switches)
+                ValidateSwitches(switches);
+                
+                IEnumerable<TransitDb> tdbs = new List<TransitDb>();
+                foreach (var sw in switches)
                 {
-                    if (swtch is ITransitDbModifier || swtch is ITransitDbSource)
-                    {
-                        generatorOrModifier++;
-                    }
-
-                    if (swtch is ITransitDbSink)
-                    {
-                        sinks++;
-                    }
-                }
-
-                if (generatorOrModifier == 0)
-                {
-                    throw new ArgumentException(
-                        "Not a single switch generates or modifies a transitDB - you'll wont have a lot of output this way...");
-                }
-
-                if (sinks == 0)
-                {
-                    throw new ArgumentException(
-                        "Not a single switch does something with the transitDB - perhaps you forgot '--write outputfile' or similar?");
+                    tdbs = tdbs.ApplySwitch(sw);
                 }
             }
             catch (ArgumentException e)
             {
                 Console.WriteLine(e.Message);
-                return;
             }
+        }
 
-
-            TransitDb tdb;
-            if (switches[0].Item1 is ITransitDbSource source)
+        private static void ValidateSwitches(IEnumerable<(DocumentedSwitch, Dictionary<string, string>)> switches)
+        {
+            var generatorOrModifier = 0;
+            var sinks = 0;
+            foreach (var (swtch, _) in switches)
             {
-                tdb = source.Generate(switches[0].Item2);
-                switches = switches.GetRange(1, switches.Count - 1);
-            }
-            else
-            {
-                tdb = new TransitDb(0);
-            }
-
-
-            foreach (var (swtch, parameters) in switches)
-            {
-                if (swtch is ITransitDbModifier modif)
+                if (swtch is ITransitDbModifier || swtch is ITransitDbSource || swtch is IMultiTransitDbModifier || swtch is IMultiTransitDbSource)
                 {
-                    tdb = modif.Modify(parameters, tdb);
-                    continue;
+                    generatorOrModifier++;
                 }
 
-                if (swtch is ITransitDbSink sink)
+                if (swtch is ITransitDbSink || swtch is IMultiTransitDbSink)
                 {
-                    sink.Use(parameters, tdb.Latest);
-                    continue;
+                    sinks++;
                 }
+            }
 
-                if (swtch is ITransitDbSource)
-                {
-                    throw new ArgumentException("A generator can only be the first argument");
-                }
+            if (generatorOrModifier == 0)
+            {
+                throw new ArgumentException(
+                    "Not a single switch generates or modifies a transitDB - you'll wont have a lot of output this way...");
+            }
 
-                throw new ArgumentException("Unknown switch type: " + swtch.Names[0]);
+            if (sinks == 0)
+            {
+                throw new ArgumentException(
+                    "Not a single switch does something with the transitDB - perhaps you forgot '--write outputfile' or similar?");
             }
         }
     }

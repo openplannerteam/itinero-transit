@@ -22,6 +22,10 @@ namespace Itinero.Transit.IO.LC
 
             var writer = tdb.GetWriter();
 
+            writer.GlobalId = connectionsUri;
+            writer.AttributesWritable["connections"] = connectionsUri;
+            writer.AttributesWritable["locations"] = locationsUri;
+
             try
             {
                 lcDataset.AddAllLocationsTo(writer);

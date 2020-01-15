@@ -8,9 +8,9 @@ using Itinero.Transit.Processor.Switch.Read;
 using Itinero.Transit.Processor.Switch.Validation;
 using Itinero.Transit.Processor.Switch.Write;
 
-namespace Itinero.Transit.Processor
+namespace Itinero.Transit.Processor.Switch
 {
-    internal class HelpSwitch : DocumentedSwitch, ITransitDbModifier, ITransitDbSource, ITransitDbSink
+    internal class HelpSwitch : DocumentedSwitch, IMultiTransitDbSource, IMultiTransitDbSink
     {
         private static readonly string[] _names = {"--help", "--?", "--h"};
 
@@ -35,19 +35,13 @@ namespace Itinero.Transit.Processor
         }
 
 
-        public TransitDb Modify(Dictionary<string, string> parameters, TransitDb transitDb)
+        public IEnumerable<TransitDb> Generate(Dictionary<string, string> parameters)
         {
             PrintHelp(parameters);
-            return transitDb;
+            return new List<TransitDb>();
         }
 
-        public TransitDb Generate(Dictionary<string, string> parameters)
-        {
-            PrintHelp(parameters);
-            return new TransitDb(0);
-        }
-
-        public void Use(Dictionary<string, string> parameters, TransitDbSnapShot _)
+        public void Use(Dictionary<string, string> parameters, IEnumerable<TransitDbSnapShot> _)
         {
             PrintHelp(parameters);
         }
@@ -100,7 +94,7 @@ namespace Itinero.Transit.Processor
 
             if (string.IsNullOrEmpty(arguments["markdown"]))
             {
-                Console.Write(GenerateAllHelp(includeExperimental: experimental, shortVersion: shortVersion));
+                Console.WriteLine(GenerateAllHelp(includeExperimental: experimental, shortVersion: shortVersion));
             }
             else
             {
@@ -129,6 +123,16 @@ namespace Itinero.Transit.Processor
                     " which can be used to quickly solve routing queries.\n\n";
             }
 
+            if (!includeExperimental)
+            {
+                text +=
+                    $"This document only shows the stable options. If you want to see help for the experimental options too, run itp --? -experimental -markdown=filename";
+            }
+            else
+            {
+                text += "Experimental switches are included in this document.";
+            }
+
 
             if (!shortVersion)
             {
@@ -140,36 +144,44 @@ namespace Itinero.Transit.Processor
                     "",
                     "The switches act as 'mini-programs' which are executed one after another.",
                     "A switch will either create, modify or write this data. This document details what switches are available.",
-                    "",
-                    "In normal circumstances, only a single transit-db is loaded into memory." ,//However, ITP supports h",
-                    "",
+
+                    !includeExperimental
+                        ? ""
+                        : string.Join("\n",
+                            "In normal circumstances, only a single transit-db is loaded into memory.",
+                            "However, ITP supports to have multiple transitDBs loaded at the same time if a read-switch is called multiple times.",
+                            "Most modifying switches will execute their effect on all of them independently; but a few have a special effect if they are merged.",
+                            "Most consuming switches will get a 'mashed-together'-version of all the databases.",
+                            ""),
+
                     "Examples",
                     "--------",
                     "",
                     "A few useful examples to get you started:",
                     "",
-                    "````" ,
+                    "````",
                     $"itp {new ReadGTFS().Names[0]} gtfs.zip # read a gtfs archive",
                     $"        {new WriteTransitDb().Names[0]} # write the data into a transitdb, so that we can routeplan with it",
                     $"        {new WriteVectorTiles().Names[0]} # And while we are at it, generate vector tiles from them as well",
                     "````",
                     "",
                     "",
-                    "````" ,
+                    "````",
                     $"itp {new ReadTransitDb().Names[0]} data.transitdp # read a transitdb",
                     $"        {new WriteStops()} stops.csv # Create a stops.csv of all the stop locations and information",
                     $"        {new Validate().Names[0]} # Afterwards, check the transitdb for issues",
                     "````",
                     "",
-                    "````" ,
+                    "````",
                     $"itp {new ReadTransitDb().Names[0]} data.transitdp # read a transitdb",
                     $"        {new SelectTimeWindow().Names[0]} 2020-01-20T10:00:00 1hour # Select only connections departing between 10:00 and 11:00",
                     $"        {new SelectStopById()} http://some-agency.com/stop/123456 # Filter for this stop, and retain only connections and trips only using this stop",
                     $"        {new WriteConnections().Names[0]} # Write all the connections to console to inspect them",
                     "````",
                     "",
-                    "````" ,
-                    $"itp {new Shell().Names[0]} # Open an interactive shell, in order to experiment with the data",
+                    "````",
+                    $"itp --read # read all the .transitdbs in the current directory",
+                    $"{new Shell().Names[0]} # Open an interactive shell, in order to experiment with the data",
                     "````",
                     "",
 

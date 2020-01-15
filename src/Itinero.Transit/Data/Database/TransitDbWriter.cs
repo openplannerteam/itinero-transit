@@ -54,7 +54,7 @@ namespace Itinero.Transit.Data
             TripsDb.PostProcess();
 
             var latest = new TransitDbSnapShot(_parent.DatabaseId, GlobalId, StopsDb, ConnectionsDb, TripsDb, Attributes);
-            _parent.SetSnapshot(latest, GlobalId, Attributes);
+            _parent.SetSnapshot(latest);
         }
 
         public StopId AddOrUpdateStop(Stop stop)

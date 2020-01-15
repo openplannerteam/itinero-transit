@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
 
-namespace Itinero.Transit.Processor
+namespace Itinero.Transit.Processor.Switch
 {
     public static class CopyDatabase
     {

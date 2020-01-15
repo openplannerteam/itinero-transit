@@ -15,12 +15,21 @@ namespace Itinero.Transit.IO.OSM.Data
     {
         internal static void UseOsmRoute(this TransitDb tdb, OsmRoute route, DateTime start, DateTime end)
         {
-            tdb.GetWriter().UseOsmRoute(tdb.DatabaseId, route, start, end);
+            tdb.GetWriter().UseOsmRoute(route, start, end);
         }
 
-        internal static void UseOsmRoute(this TransitDbWriter wr, uint dbId, OsmRoute route, DateTime start,
-            DateTime end)
+        internal static void UseOsmRoute(this TransitDbWriter wr, OsmRoute route, 
+            DateTime start,DateTime end)
         {
+
+            wr.GlobalId = "https://osm.org/relation/"+route.Id;
+            wr.AttributesWritable["name"] = route.Name;
+            wr.AttributesWritable["duration"] = ""+route.Duration;
+            wr.AttributesWritable["interval"] = ""+route.Interval;
+            wr.AttributesWritable["roundtrip"] = ""+route.RoundTrip;
+            wr.AttributesWritable["stops:count"] = ""+route.StopPositions.Count;
+            wr.AttributesWritable["stops"] = string.Join(";", route.StopPositions.Select(stop => stop.url));
+
             Log.Information($"Adding route {route.Id} to the transitdb in frame {start} --> {end}. " +
                             $"The route {(route.RoundTrip ? "loops" : "does not loop")}, has {route.StopPositions.Count} stops, " +
                             $"is based in timezone {route.GetTimeZone()} ");

@@ -102,6 +102,12 @@ namespace Itinero.Transit.Data.Aggregators
 
             return new ConnectionsDbAggregator(connections);
         }
+        
+        public static IConnectionsDb CreateFrom(IEnumerable<TransitDbSnapShot> snapshots)
+        {
+            var dbs = snapshots.Select(sn => sn.ConnectionsDb).ToList();
+            return CreateFrom(dbs);
+        }
     }
 
     internal class ConnectionEnumeratorAggregator : IConnectionEnumerator

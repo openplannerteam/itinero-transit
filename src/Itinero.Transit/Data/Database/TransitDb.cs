@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
+using Itinero.Transit.Data.Aggregators;
 using Itinero.Transit.Data.Simple;
 
 namespace Itinero.Transit.Data
@@ -23,15 +25,20 @@ namespace Itinero.Transit.Data
 
 
         public TransitDb(uint databaseId)
-        {
-            DatabaseId = databaseId;
-            Latest = new TransitDbSnapShot(
-                DatabaseId,
+            : this(databaseId, new TransitDbSnapShot(
+                databaseId,
                 "",
                 new SimpleStopsDb(databaseId),
                 new SimpleConnectionsDb(databaseId),
                 new SimpleTripsDb(databaseId)
-            );
+            ))
+        {
+        }
+
+        private TransitDb(uint databaseId, TransitDbSnapShot snapshot)
+        {
+            DatabaseId = databaseId;
+            Latest = snapshot;
         }
 
         private readonly object _writerLock = new object();
@@ -62,14 +69,34 @@ namespace Itinero.Transit.Data
         /// <summary>
         /// This method is called by the writer itself and closely coupled to it
         /// </summary>
-        internal void SetSnapshot(TransitDbSnapShot snapShot, string globalId,
-            IReadOnlyDictionary<string, string> attributes)
+        internal void SetSnapshot(TransitDbSnapShot snapShot)
         {
             lock (_writerLock)
             {
                 Latest = snapShot;
                 _writer = null;
             }
+        }
+
+        /// <summary>
+        /// This is intended only to be used by Itinero Transit Processor
+        /// </summary>
+        public static TransitDb CreateMergedTransitDb(IEnumerable<TransitDbSnapShot> tdbs)
+        {
+            tdbs = tdbs.ToList();
+
+            if (tdbs.Count() == 1)
+            {
+                return new TransitDb(0, tdbs.First());
+            }
+            
+            var snapshot = new TransitDbSnapShot(0,
+                string.Join(";", tdbs.Select(tdb => tdb.GlobalId)),
+                StopsDbAggregator.CreateFrom(tdbs),
+                ConnectionsDbAggregator.CreateFrom(tdbs),
+                TripsDbAggregator.CreateFrom(tdbs)
+            );
+            return new TransitDb(0, snapshot);
         }
     }
 }

@@ -5,9 +5,9 @@ using Itinero.Transit.Data;
 namespace Itinero.Transit.Processor.Switch.Misc
 {
     class GarbageCollect : DocumentedSwitch,
-        ITransitDbModifier, ITransitDbSink, ITransitDbSource
+        IMultiTransitDbModifier, IMultiTransitDbSink, IMultiTransitDbSource
     {
-        private static readonly string[] _names = {"--garbage-collect","--gc"};
+        private static readonly string[] _names = {"--garbage-collect", "--gc"};
 
         private static string About =
             "Run garbage collection. This is for debugging";
@@ -21,7 +21,7 @@ namespace Itinero.Transit.Processor.Switch.Misc
 
 
         public GarbageCollect
-            () :base(_names, About, _extraParams, IsStable)
+            () : base(_names, About, _extraParams, IsStable)
         {
         }
 
@@ -31,21 +31,22 @@ namespace Itinero.Transit.Processor.Switch.Misc
             GC.WaitForPendingFinalizers();
         }
 
-        public TransitDb Modify(Dictionary<string, string> parameters, TransitDb transitDb)
+
+        public void Use(Dictionary<string, string> __, IEnumerable<TransitDbSnapShot> _)
         {
             Run();
-            return transitDb;
         }
 
-        public void Use(Dictionary<string, string> __, TransitDbSnapShot _)
+        public IEnumerable<TransitDb> Generate(Dictionary<string, string> parameters)
         {
-           Run();
+            Run();
+            return new List<TransitDb>();
         }
 
-        public TransitDb Generate(Dictionary<string, string> parameters)
+        public IEnumerable<TransitDb> Modify(Dictionary<string, string> parameters, List<TransitDb> transitDbs)
         {
-           Run();
-           return new TransitDb(0);
+            Run();
+            return transitDbs;
         }
     }
 }

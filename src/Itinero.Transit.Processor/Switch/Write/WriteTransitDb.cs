@@ -1,24 +1,5 @@
 ﻿// The MIT License (MIT)
 
-// Copyright (c) 2016 Ben Abelshausen
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -31,7 +12,7 @@ namespace Itinero.Transit.Processor.Switch.Write
     /// <summary>
     /// Represents a switch to read a shapefile for routing.
     /// </summary>
-    class WriteTransitDb : DocumentedSwitch, ITransitDbSink
+    class WriteTransitDb : DocumentedSwitch, IMultiTransitDbSink
     {
         private static readonly string[] _names =
             {"--write-transit-db", "--write-transitdb", "--write-transit", "--write", "--wt"};
@@ -43,7 +24,8 @@ namespace Itinero.Transit.Processor.Switch.Write
             _extraParams =
                 new List<(List<string> args, bool isObligated, string comment, string defaultValue)>
                 {
-                    SwitchesExtensions.obl("file", "The output file to write to"),
+                    SwitchesExtensions.opt("file", "The output file to write to")
+                        .SetDefault("$operatorName.YYYY-mm-dd.transitdb"),
                 };
 
         private const bool IsStable = true;
@@ -55,14 +37,24 @@ namespace Itinero.Transit.Processor.Switch.Write
         }
 
 
-        public void Use(Dictionary<string, string> arguments, TransitDbSnapShot tdb)
+        public void Use(Dictionary<string, string> arguments, IEnumerable<TransitDbSnapShot> tdbs)
         {
-            var fileName = arguments["file"];
-
-            using (var stream = File.OpenWrite(fileName))
+            foreach (var tdb in tdbs)
             {
-                tdb.WriteTo(stream);
-                Console.WriteLine($"Written {fileName}, transitDb is valid from {tdb.ConnectionsDb.EarliestDate.FromUnixTime():s} till {tdb.ConnectionsDb.LatestDate.FromUnixTime():s} ");
+                var fileName = arguments["file"];
+
+                if (fileName.Equals("$operatorName.YYYY-mm-dd.transitdb"))
+                {
+                    fileName =
+                        $"{tdb.GetAttribute("name", tdb.GlobalId)}.{tdb.EarliestDate().Date:yyyy-MM-dd}.transitdb";
+                }
+
+                using (var stream = File.OpenWrite(fileName))
+                {
+                    tdb.WriteTo(stream);
+                    Console.WriteLine(
+                        $"Written {fileName}, transitDb is valid from {tdb.ConnectionsDb.EarliestDate.FromUnixTime():s} till {tdb.ConnectionsDb.LatestDate.FromUnixTime():s} ");
+                }
             }
         }
     }

@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Itinero.Transit.Processor.Switch;
 using Itinero.Transit.Processor.Switch.Filter;
 using Itinero.Transit.Processor.Switch.Misc;
 using Itinero.Transit.Processor.Switch.Read;
 using Itinero.Transit.Processor.Switch.Validation;
 using Itinero.Transit.Processor.Switch.Write;
 
-namespace Itinero.Transit.Processor
+namespace Itinero.Transit.Processor.Switch
 {
     /// <summary>
     /// A switch parser.
@@ -101,8 +100,20 @@ namespace Itinero.Transit.Processor
 
             var currentArgs = new List<string>();
             DocumentedSwitch currentSwitch = null;
-            foreach (var arg in args)
+            foreach (var argm in args)
             {
+
+                if (argm.Length == 0)
+                {
+                    continue;
+                }
+
+                var arg = argm.Trim();
+                if (argm.StartsWith("\"") && argm.EndsWith("\""))
+                {
+                    arg = argm.Substring(1, argm.Length - 2);
+                }
+                
                 if (IsSwitch(arg))
                 {
                     // Finish of the previous switch (if any)

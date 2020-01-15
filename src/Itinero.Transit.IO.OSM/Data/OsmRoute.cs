@@ -22,7 +22,7 @@ namespace Itinero.Transit.IO.OSM.Data
     /// </summary>
     internal class OsmRoute
     {
-        public readonly List<(string, double lon, double lat, TagsCollectionBase)> StopPositions;
+        public readonly List<(string url, double lon, double lat, TagsCollectionBase)> StopPositions;
         public readonly bool RoundTrip;
         public TimeSpan Duration;
         public TimeSpan Interval;
@@ -60,7 +60,7 @@ namespace Itinero.Transit.IO.OSM.Data
         }
 
 
-        private static List<(string, double lon, double lat, TagsCollectionBase)> ExtractStopPositions(CompleteRelation relation)
+        private static List<(string url, double lon, double lat, TagsCollectionBase)> ExtractStopPositions(CompleteRelation relation)
         {
             var stopPositions = new List<(string,  double lon, double lat, TagsCollectionBase)>();
             // First pass: explicitly located stop positions

@@ -3,8 +3,7 @@ using Itinero.Transit.Data;
 
 namespace Itinero.Transit.Processor.Switch.Misc
 {
-    internal class Clear : DocumentedSwitch,
-        ITransitDbModifier
+    internal class Clear : DocumentedSwitch, IMultiTransitDbModifier
     {
         private static readonly string[] _names = {"--clear"};
 
@@ -22,9 +21,10 @@ namespace Itinero.Transit.Processor.Switch.Misc
         {}
 
 
-        public TransitDb Modify(Dictionary<string, string> parameters, TransitDb transitDb)
+
+        public IEnumerable<TransitDb> Modify(Dictionary<string, string> __, List<TransitDb> _)
         {
-            return new TransitDb(0);
+            return new List<TransitDb>();
         }
     }
 }
