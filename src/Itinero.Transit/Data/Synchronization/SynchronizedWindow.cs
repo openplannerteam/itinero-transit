@@ -60,7 +60,7 @@ namespace Itinero.Transit.Data.Synchronization
                 catch (Exception e)
                 {
                     Log.Warning(
-                        $"Updating timewindow {start} --> {end} failed: {e.Message}\nThis is attempt {attempts} out of {_retries}");
+                        $"Updating timewindow {start:s} --> {end:s} failed: {e.Message}\nThis is attempt {attempts} out of {_retries}. Full stack trace: {e.StackTrace}");
                 }
             }
 
