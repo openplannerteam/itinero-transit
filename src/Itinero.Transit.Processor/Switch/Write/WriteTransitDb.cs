@@ -26,12 +26,12 @@ using System.IO;
 using Itinero.Transit.Data;
 using Itinero.Transit.Utils;
 
-namespace Itinero.Transit.Processor.Switch
+namespace Itinero.Transit.Processor.Switch.Write
 {
     /// <summary>
     /// Represents a switch to read a shapefile for routing.
     /// </summary>
-    class SwitchWriteTransitDb : DocumentedSwitch, ITransitDbSink
+    class WriteTransitDb : DocumentedSwitch, ITransitDbSink
     {
         private static readonly string[] _names =
             {"--write-transit-db", "--write-transitdb", "--write-transit", "--write", "--wt"};
@@ -49,7 +49,7 @@ namespace Itinero.Transit.Processor.Switch
         private const bool IsStable = true;
 
 
-        public SwitchWriteTransitDb()
+        public WriteTransitDb()
             : base(_names, _about, _extraParams, IsStable)
         {
         }

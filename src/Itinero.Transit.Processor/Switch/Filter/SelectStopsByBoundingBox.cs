@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Data;
 
-namespace Itinero.Transit.Processor.Switch
+namespace Itinero.Transit.Processor.Switch.Filter
 {
-    internal class SwitchSelectStopsByBoundingBox : DocumentedSwitch, ITransitDbModifier
+    internal class SelectStopsByBoundingBox : DocumentedSwitch, ITransitDbModifier
     {
-        private static readonly string[] _names = {"--bounding-box", "--bb"};
+        private static readonly string[] _names = {"--select-bounding-box", "--bounding-box", "--bbox"};
 
         private static string About =
             "Filters the transit-db so that only stops within the bounding box are kept. " +
@@ -38,7 +38,7 @@ namespace Itinero.Transit.Processor.Switch
 
         private const bool IsStable = true;
 
-        public SwitchSelectStopsByBoundingBox() :
+        public SelectStopsByBoundingBox() :
             base(_names, About, _extraParams, IsStable)
         {
         }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Utils;
 
-namespace Itinero.Transit.Processor.Switch
+namespace Itinero.Transit.Processor.Switch.Filter
 {
-    class SwitchSelectTimeWindow : DocumentedSwitch, ITransitDbModifier
+    class SelectTimeWindow : DocumentedSwitch, ITransitDbModifier
     {
         private static readonly string[] _names = {"--select-time", "--filter-time"};
 
@@ -34,7 +34,7 @@ namespace Itinero.Transit.Processor.Switch
         private const bool IsStable = true;
 
 
-        public SwitchSelectTimeWindow
+        public SelectTimeWindow
             () :
             base(_names, About, _extraParams, IsStable)
         {

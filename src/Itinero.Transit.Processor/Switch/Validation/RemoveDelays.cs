@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
 
-namespace Itinero.Transit.Processor.Switch
+namespace Itinero.Transit.Processor.Switch.Validation
 {
-    class SwitchJapanize : DocumentedSwitch, ITransitDbModifier
+    class RemoveDelays : DocumentedSwitch, ITransitDbModifier
     {
         private static readonly string[] _names =
             {"--undo-delays", "--japanize", "--the-dutch-are-better", "--swiss-perfection"};
@@ -21,7 +21,7 @@ namespace Itinero.Transit.Processor.Switch
         private const bool IsStable = true;
 
 
-        public SwitchJapanize
+        public RemoveDelays
             () :
             base(_names, _about, _extraParams, IsStable)
         {

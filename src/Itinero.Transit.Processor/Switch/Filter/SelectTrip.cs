@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Itinero.Transit.Data;
 
-namespace Itinero.Transit.Processor.Switch
+namespace Itinero.Transit.Processor.Switch.Filter
 {
-    internal class SwitchSelectTrip : DocumentedSwitch, ITransitDbModifier
+    internal class SelectTrip : DocumentedSwitch, ITransitDbModifier
     {
         private static readonly string[] _names = {"--select-trip", "--filter-trip"};
 
@@ -21,7 +21,7 @@ namespace Itinero.Transit.Processor.Switch
 
         private const bool IsStable = true;
 
-        public SwitchSelectTrip() : base(_names, About, _extraParams, IsStable)
+        public SelectTrip() : base(_names, About, _extraParams, IsStable)
         {
         }
 

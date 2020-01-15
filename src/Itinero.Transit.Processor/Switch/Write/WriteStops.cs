@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using Itinero.Transit.Data;
 
-namespace Itinero.Transit.Processor.Switch
+namespace Itinero.Transit.Processor.Switch.Write
 {
-    class SwitchDumpTransitDbTrips : DocumentedSwitch, ITransitDbSink
+    class WriteStops : DocumentedSwitch, ITransitDbSink
     {
-        private static readonly string[] _names = {"--dump-trips"};
+        private static readonly string[] _names = {"--write-stops"};
 
-        private static string About = "Writes all trips contained in a transitDB to console or file";
+        private static string About = "Writes all stops contained in a transitDB to console";
 
 
         private static readonly List<(List<string> args, bool isObligated, string comment, string defaultValue)>
@@ -23,7 +23,7 @@ namespace Itinero.Transit.Processor.Switch
         private const bool IsStable = true;
 
 
-        public SwitchDumpTransitDbTrips
+        public WriteStops
             () :
             base(_names, About, _extraParams, IsStable)
         {
@@ -34,7 +34,7 @@ namespace Itinero.Transit.Processor.Switch
             var writeTo = arguments["file"];
 
 
-            var trips = tdb.TripsDb;
+            var stops = tdb.StopsDb;
 
 
             using (var outStream =
@@ -42,10 +42,9 @@ namespace Itinero.Transit.Processor.Switch
             {
                 var knownAttributes = new List<string>();
 
-                foreach (var trip in trips)
+                foreach (var stop in stops)
                 {
-                    var attributes = trip.Attributes;
-                    if (attributes == null) continue;
+                    var attributes = stop.Attributes;
                     foreach (var (key, _) in attributes)
                     {
                         if (!knownAttributes.Contains(key))
@@ -56,7 +55,7 @@ namespace Itinero.Transit.Processor.Switch
                 }
 
 
-                var header = "GlobalId";
+                var header = "globalId,Latitude,Longitude,";
                 foreach (var knownAttribute in knownAttributes)
                 {
                     header += "," + knownAttribute;
@@ -64,19 +63,17 @@ namespace Itinero.Transit.Processor.Switch
 
                 outStream.WriteLine(header);
 
-                foreach (var trip in trips)
+                foreach (var stop in stops)
                 {
+                    
                     var value =
-                        $"{trip.GlobalId}";
+                        $"{stop.GlobalId},{stop.Latitude}, {stop.Longitude}";
 
-                    var attributes = trip.Attributes;
-                    if (attributes != null)
+                    var attributes = stop.Attributes;
+                    foreach (var attribute in knownAttributes)
                     {
-                        foreach (var attribute in knownAttributes)
-                        {
-                            attributes.TryGetValue(attribute, out var val);
-                            value += $",{val ?? ""}";
-                        }
+                        attributes.TryGetValue(attribute, out var val);
+                        value += $",{val ?? ""}";
                     }
 
                     outStream.WriteLine(value);

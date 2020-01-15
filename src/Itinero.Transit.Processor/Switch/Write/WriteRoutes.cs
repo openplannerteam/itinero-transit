@@ -5,11 +5,11 @@ using Itinero.Transit.Algorithms.Mergers;
 using Itinero.Transit.Data;
 using Itinero.Transit.Data.Core;
 
-namespace Itinero.Transit.Processor.Switch
+namespace Itinero.Transit.Processor.Switch.Write
 {
-    class SwitchCreateRoutes : DocumentedSwitch, ITransitDbSink
+    class WriteRoutes : DocumentedSwitch, ITransitDbSink
     {
-        private static readonly string[] _names = {"--get-routes"};
+        private static readonly string[] _names = {"--write-routes","--routes"};
 
         private static string About =
             "Create an overview of routes and shows them. A route is a list of stops, where at least one trip does all of them in order";
@@ -22,7 +22,7 @@ namespace Itinero.Transit.Processor.Switch
         private const bool IsStable = false;
 
 
-        public SwitchCreateRoutes
+        public WriteRoutes
             () : base(_names, About, _extraParams, IsStable)
         {
         }

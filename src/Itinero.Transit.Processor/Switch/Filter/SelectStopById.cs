@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Data;
 
-namespace Itinero.Transit.Processor.Switch
+namespace Itinero.Transit.Processor.Switch.Filter
 {
-    class SwitchSelectStopById : DocumentedSwitch, ITransitDbModifier
+    class SelectStopById : DocumentedSwitch, ITransitDbModifier
     {
         private static readonly string[] _names =
             {"--select-stop", "--select-stops", "--filter-stop", "--filter-stops"};
@@ -29,7 +29,7 @@ namespace Itinero.Transit.Processor.Switch
 
         private const bool IsStable = true;
 
-        public SwitchSelectStopById() :
+        public SelectStopById() :
             base(_names, About, _extraParams, IsStable)
         {
         }

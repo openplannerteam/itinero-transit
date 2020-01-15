@@ -4,10 +4,10 @@ using Itinero.Transit.Data;
 using Itinero.Transit.IO.LC;
 using Itinero.Transit.Logging;
 
-namespace Itinero.Transit.Processor.Switch
+namespace Itinero.Transit.Processor.Switch.Read
 {
     // ReSharper disable once InconsistentNaming
-    internal class SwitchCreateTransitDbLC : DocumentedSwitch, ITransitDbModifier, ITransitDbSource
+    internal class ReadLinkedConnections : DocumentedSwitch, ITransitDbModifier, ITransitDbSource
     {
         private static readonly string[] _names =
             {"--read-linked-connections", "--read-lc", "--rlc"};
@@ -40,7 +40,7 @@ namespace Itinero.Transit.Processor.Switch
         private const bool IsStable = true;
 
 
-        public SwitchCreateTransitDbLC()
+        public ReadLinkedConnections()
             : base(_names, About, _extraParams, IsStable)
         {
         }

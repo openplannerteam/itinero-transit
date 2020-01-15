@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Itinero.Transit.Data;
 
-namespace Itinero.Transit.Processor.Switch
+namespace Itinero.Transit.Processor.Switch.Misc
 {
-    class SwitchClear : DocumentedSwitch,
+    internal class Clear : DocumentedSwitch,
         ITransitDbModifier
     {
         private static readonly string[] _names = {"--clear"};
@@ -18,7 +18,7 @@ namespace Itinero.Transit.Processor.Switch
 
         private const bool IsStable =true;
 
-        public SwitchClear() : base(_names,About,_extraParams,IsStable)
+        public Clear() : base(_names,About,_extraParams,IsStable)
         {}
 
 

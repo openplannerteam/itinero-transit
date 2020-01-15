@@ -4,9 +4,9 @@ using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Processor.Validator;
 
-namespace Itinero.Transit.Processor.Switch
+namespace Itinero.Transit.Processor.Switch.Validation
 {
-    internal class SwitchValidate : DocumentedSwitch, ITransitDbSink
+    internal class Validate : DocumentedSwitch, ITransitDbSink
     {
         private static readonly string[] _names = {"--validate"};
 
@@ -29,7 +29,7 @@ namespace Itinero.Transit.Processor.Switch
 
         private const bool IsStable = true;
 
-        public SwitchValidate() : base(_names, About, _extraParams, IsStable)
+        public Validate() : base(_names, About, _extraParams, IsStable)
         {
         }
 

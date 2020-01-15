@@ -5,11 +5,11 @@ using System.Linq;
 using Itinero.Transit.Data;
 using Itinero.Transit.Utils;
 
-namespace Itinero.Transit.Processor.Switch
+namespace Itinero.Transit.Processor.Switch.Write
 {
-    class SwitchDumpTransitDbConnections : DocumentedSwitch, ITransitDbSink
+    class WriteConnections : DocumentedSwitch, ITransitDbSink
     {
-        private static readonly string[] _names = {"--dump-connections"};
+        private static readonly string[] _names = {"--write-connections-to-csv", "--write-connections"};
 
         private const string About = "Writes all connections contained in a transitDB to console";
 
@@ -27,7 +27,7 @@ namespace Itinero.Transit.Processor.Switch
         private const bool IsStable = true;
 
 
-        public SwitchDumpTransitDbConnections
+        public WriteConnections
             () :
             base(_names, About, _extraParams, IsStable)
         {
@@ -93,7 +93,6 @@ namespace Itinero.Transit.Processor.Switch
 
                     outStream.WriteLine(humanFormat ? valueHuman : value);
                 }
-
             }
         }
     }
@@ -106,6 +105,7 @@ namespace Itinero.Transit.Processor.Switch
             {
                 return "";
             }
+
             attributes.TryGetValue(name, out var result);
             return result;
         }

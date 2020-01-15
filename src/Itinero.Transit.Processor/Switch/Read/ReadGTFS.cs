@@ -4,10 +4,10 @@ using Itinero.Transit.Data;
 using Itinero.Transit.IO.GTFS;
 using Itinero.Transit.Logging;
 
-namespace Itinero.Transit.Processor.Switch
+namespace Itinero.Transit.Processor.Switch.Read
 {
     // ReSharper disable once InconsistentNaming
-    internal class SwitchCreateTransitDbGTFS : DocumentedSwitch, ITransitDbSource
+    internal class ReadGTFS : DocumentedSwitch, ITransitDbSource
     {
         private static readonly string[] _names =
             {"--read-gtfs", "--rgtfs"};
@@ -34,7 +34,7 @@ namespace Itinero.Transit.Processor.Switch
         private const bool IsStable = true;
 
 
-        public SwitchCreateTransitDbGTFS()
+        public ReadGTFS()
             : base(_names, About, _extraParams, IsStable)
         {
         }

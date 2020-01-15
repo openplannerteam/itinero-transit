@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
 
-namespace Itinero.Transit.Processor.Switch
+namespace Itinero.Transit.Processor.Switch.Misc
 {
-    class SwitchGc : DocumentedSwitch,
+    class GarbageCollect : DocumentedSwitch,
         ITransitDbModifier, ITransitDbSink, ITransitDbSource
     {
-        private static readonly string[] _names = {"--gc","--garbage-collect"};
+        private static readonly string[] _names = {"--garbage-collect","--gc"};
 
         private static string About =
             "Run garbage collection. This is for debugging";
@@ -20,7 +20,7 @@ namespace Itinero.Transit.Processor.Switch
         private const bool IsStable = false;
 
 
-        public SwitchGc
+        public GarbageCollect
             () :base(_names, About, _extraParams, IsStable)
         {
         }

@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Processor.Switch;
+using Itinero.Transit.Processor.Switch.Filter;
+using Itinero.Transit.Processor.Switch.Misc;
+using Itinero.Transit.Processor.Switch.Read;
+using Itinero.Transit.Processor.Switch.Validation;
+using Itinero.Transit.Processor.Switch.Write;
 
 namespace Itinero.Transit.Processor
 {
@@ -17,36 +22,36 @@ namespace Itinero.Transit.Processor
             {
                 ("Reading data", new List<DocumentedSwitch>
                 {
-                    new SwitchCreateTransitDbLC(),
-                    new SwitchCreateTransitDbOSM(),
-                    new SwitchCreateTransitDbGTFS(),
-                    new SwitchReadTransitDb(),
+                    new ReadLinkedConnections(),
+                    new ReadOsmRelation(),
+                    new ReadGTFS(),
+                    new ReadTransitDb(),
                 }),
 
                 ("Filtering the transitdb", new List<DocumentedSwitch>
                 {
-                    new SwitchSelectTimeWindow(),
-                    new SwitchSelectStopsByBoundingBox(),
-                    new SwitchSelectStopById(),
-                    new SwitchSelectTrip(),
-                    new SwitchUnusedFilter(),
+                    new SelectTimeWindow(),
+                    new SelectStopsByBoundingBox(),
+                    new SelectStopById(),
+                    new SelectTrip(),
                 }),
 
                 ("Validating and testing the transitdb", new List<DocumentedSwitch>
                 {
-                    new SwitchValidate(),
-                    new SwitchJapanize(),
-                    new SwitchShowInfo(),
+                    new Validate(),
+                    new RemoveDelays(),
+                    new RemoveUnused(),
+                    new ShowInfo(),
                 }),
 
                 ("Writing to file and to other formats", new List<DocumentedSwitch>
                 {
-                    new SwitchWriteTransitDb(),
-                    new SwitchCreateVectorTiles(),
-                    new SwitchDumpTransitDbStops(),
-                    new SwitchDumpTransitDbConnections(),
-                    new SwitchCreateRoutes(),
-                    new SwitchDumpTransitDbTrips(),
+                    new WriteTransitDb(),
+                    new WriteVectorTiles(),
+                    new WriteStops(),
+                    new WriteConnections(),
+                    new WriteRoutes(),
+                    new WriteTrips(),
                 }),
 
                 ("Misc", new List<DocumentedSwitch>
@@ -54,8 +59,8 @@ namespace Itinero.Transit.Processor
                 {
                     new HelpSwitch(),
                     new Shell(),
-                    new SwitchClear(),
-                    new SwitchGc()
+                    new Clear(),
+                    new GarbageCollect()
                 })
             };
 

@@ -4,10 +4,10 @@ using Itinero.Transit.Data;
 using Itinero.Transit.IO.OSM.Data;
 using Itinero.Transit.Logging;
 
-namespace Itinero.Transit.Processor.Switch
+namespace Itinero.Transit.Processor.Switch.Read
 {
     // ReSharper disable once InconsistentNaming
-    internal class SwitchCreateTransitDbOSM : DocumentedSwitch, ITransitDbSource, ITransitDbModifier
+    internal class ReadOsmRelation : DocumentedSwitch, ITransitDbSource, ITransitDbModifier
     {
         private static readonly string[] _names =
             {"--read-open-street-map-relation", "--read-osm", "--rosm"};
@@ -39,7 +39,7 @@ namespace Itinero.Transit.Processor.Switch
                 };
 
 
-        public SwitchCreateTransitDbOSM()
+        public ReadOsmRelation()
             : base(_names, About, _extraParams, IsStable)
         {
         }

@@ -11,11 +11,11 @@ using NetTopologySuite.Geometries;
 using NetTopologySuite.IO.VectorTiles;
 using NetTopologySuite.IO.VectorTiles.Mapbox;
 
-namespace Itinero.Transit.Processor.Switch
+namespace Itinero.Transit.Processor.Switch.Write
 {
-    class SwitchCreateVectorTiles : DocumentedSwitch, ITransitDbSink
+    class WriteVectorTiles : DocumentedSwitch, ITransitDbSink
     {
-        private static readonly string[] _names = {"--create-vector-tiles", "--generate-vector-tiles", "--vt"};
+        private static readonly string[] _names = {"--write-vector-tiles", "--write-vt", "--vt"};
 
         private static string About = "Creates a vector tile representation of the loaded transitDb";
 
@@ -31,7 +31,7 @@ namespace Itinero.Transit.Processor.Switch
         private const bool IsStable = true;
 
 
-        public SwitchCreateVectorTiles
+        public WriteVectorTiles
             () :
             base(_names, About, _extraParams, IsStable)
         {

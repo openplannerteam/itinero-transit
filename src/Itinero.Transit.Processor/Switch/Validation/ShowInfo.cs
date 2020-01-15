@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using Itinero.Transit.Data;
 
-namespace Itinero.Transit.Processor.Switch
+namespace Itinero.Transit.Processor.Switch.Validation
 {
-    class SwitchShowInfo : DocumentedSwitch, ITransitDbSink
+    class ShowInfo : DocumentedSwitch, ITransitDbSink
     {
         private static readonly string[] _names = {"--show-info", "--info"};
 
@@ -19,7 +19,7 @@ namespace Itinero.Transit.Processor.Switch
         private const bool IsStable = false;
 
 
-        public SwitchShowInfo() : base(_names, About, _extraParams, IsStable)
+        public ShowInfo() : base(_names, About, _extraParams, IsStable)
         {
         }
 

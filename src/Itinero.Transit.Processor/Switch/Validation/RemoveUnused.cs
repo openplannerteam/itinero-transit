@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Itinero.Transit.Data;
 
-namespace Itinero.Transit.Processor.Switch
+namespace Itinero.Transit.Processor.Switch.Validation
 {
-    internal class SwitchUnusedFilter : DocumentedSwitch, ITransitDbModifier
+    internal class RemoveUnused : DocumentedSwitch, ITransitDbModifier
     {
-        private static readonly string[] _names = {"--filter-unused", "--remove-unused", "--rm-unused"};
+        private static readonly string[] _names = {"--remove-unused", "--filter-unused", "--rm-unused"};
 
-        private static string About ="Removes stops and trips without connections.";
+        private static string About = "Removes stops and trips without connections.";
 
 
         private static readonly List<(List<string> args, bool isObligated, string comment, string defaultValue)>
@@ -17,7 +17,7 @@ namespace Itinero.Transit.Processor.Switch
 
         private const bool IsStable = false;
 
-        public SwitchUnusedFilter() : base(_names, About, _extraParams, IsStable)
+        public RemoveUnused() : base(_names, About, _extraParams, IsStable)
         {
         }
 
@@ -30,7 +30,8 @@ namespace Itinero.Transit.Processor.Switch
                 keepConnection: _ => true);
 
             var newStopsCount = newDb.Latest.StopsDb.Count();
-            Console.WriteLine($"There are {newStopsCount} stops (removed {old.Latest.StopsDb.Count() - newStopsCount})");
+            Console.WriteLine(
+                $"There are {newStopsCount} stops (removed {old.Latest.StopsDb.Count() - newStopsCount})");
             return newDb;
         }
     }
