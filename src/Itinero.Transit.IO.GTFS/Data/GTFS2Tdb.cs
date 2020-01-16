@@ -106,7 +106,7 @@ namespace Itinero.Transit.IO.GTFS.Data
             }
         }
 
-        private TimeZoneInfo _timeZone;
+        private TimeZoneInfo _timeZone = null;
 
         /// <summary>
         /// Get the identifier-prefix for this GTFS feed.
@@ -115,10 +115,20 @@ namespace Itinero.Transit.IO.GTFS.Data
         /// If the GTFS feed contains multiple agencies, an error is thrown
         /// </summary>
         /// <returns></returns>
-        /*      internal TimeZoneInfo TimeZone =>
-                  _timeZone ??
-                  (_timeZone = TimeZoneInfo.FromSerializedString(Feed.Agencies.Get(0).Timezone)); // Do you like code golf?
-      */
+        internal TimeZoneInfo TimeZone
+        {
+            get
+            {
+                // ReSharper disable once ConvertIfStatementToNullCoalescingExpression
+                if (_timeZone == null)
+                {
+                    _timeZone = TimeZoneInfo.FindSystemTimeZoneById(Feed.Agencies.Get(0).Timezone);
+                }
+
+                return _timeZone;
+            }
+        }
+
         private Dictionary<string, List<Trip>> _serviceIdToTrip;
 
         private Dictionary<string, StopId> _gtfsId2TdbId;
@@ -294,7 +304,7 @@ namespace Itinero.Transit.IO.GTFS.Data
                     $"{IdentifierPrefix}connection/{gtfsTrip.Id}/{day:yyyyMMdd}/{i}",
                     departureStop,
                     arrivalStop,
-                    DateTimeExtensions.ToUnixTime(departureTime),
+                    DateTimeExtensions.ToUnixTime(departureTime.ConvertToUtcFrom(TimeZone)),
                     (ushort) travelTime,
                     mode,
                     vehicleTripId);
@@ -459,7 +469,12 @@ namespace Itinero.Transit.IO.GTFS.Data
 
             AddLocations(writer);
 
-            var day = startdate.Date; // TODO FIX THIS TIMEZONE MESS
+            // First things first - lets convert everything to the timezone specified by the GTFS
+            startdate = startdate.ConvertTo(TimeZone);
+            enddate = enddate.ConvertTo(TimeZone);
+
+
+            var day = startdate.Date;
             var end = enddate.Date;
             while (day <= end)
             {

@@ -13,8 +13,6 @@ namespace Itinero.Transit.Utils
     {
         private static readonly DateTime _epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-        private const ulong SecondsInADay = 24 * 60 * 60;
-
         /// <summary>
         /// Converts a number of milliseconds from 1/1/1970 into a standard DateTime.
         /// </summary>
@@ -35,38 +33,32 @@ namespace Itinero.Transit.Utils
             return (ulong) (date - _epoch).TotalSeconds; // from a multiple of 100 nanosec or ticks to milliseconds.
         }
 
-        /// <summary>
-        /// Extracts the date component.
-        /// </summary>
-        /// <param name="seconds">The unix time in seconds.</param>
-        /// <returns></returns>
-        internal static ulong ExtractDate(ulong seconds)
+
+        public static DateTime ConvertToUtcFrom(this DateTime dateTime, TimeZoneInfo originTimeZone)
         {
-            return seconds - seconds % SecondsInADay;
+            if (dateTime.Kind != DateTimeKind.Unspecified)
+            {
+                throw new ArgumentException("To convert a foreign time zone in UTC, it should be entered as unspecified");
+            }
+            var tzOffset = originTimeZone.GetUtcOffset(dateTime);
+
+            var parsedDateTimeZone = new DateTimeOffset(dateTime, tzOffset);
+            // There must be a better way to do this...
+            return new DateTime(parsedDateTimeZone.ToUniversalTime().DateTime.Ticks, DateTimeKind.Utc);
         }
 
-        /// <summary>
-        /// Jumps to the next day.
-        /// </summary>
-        /// <param name="seconds">The unix time in seconds.</param>
-        /// <returns></returns>
-        internal static ulong AddDay(ulong seconds)
+        public static DateTime ConvertTo(this DateTime dateTime, TimeZoneInfo targetTimeZone)
         {
-            var date = FromUnixTime(seconds);
-            date = date.AddDays(1);
-            return date.ToUnixTime();
-        }
+            if (dateTime.Kind != DateTimeKind.Utc)
+            {
+                throw new ArgumentException("To convert a datetime into a foreign time zone, it should be entered as ITC");
+            }
+            var tzOffset = targetTimeZone.GetUtcOffset(dateTime);
 
-        /// <summary>
-        /// Jumps to the previous day.
-        /// </summary>
-        /// <param name="seconds">The unix time in seconds.</param>
-        /// <returns></returns>
-        internal static ulong RemoveDay(ulong seconds)
-        {
-            var date = FromUnixTime(seconds);
-            date = date.AddDays(-1);
-            return date.ToUnixTime();
+            var parsedDateTimeZone = new DateTimeOffset(
+                new DateTime(dateTime.Ticks, DateTimeKind.Unspecified), -tzOffset);
+            // There must be a better way to do this...
+            return new DateTime(parsedDateTimeZone.ToUniversalTime().DateTime.Ticks, DateTimeKind.Unspecified);
         }
     }
 }

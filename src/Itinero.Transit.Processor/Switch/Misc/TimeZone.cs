@@ -45,6 +45,11 @@ namespace Itinero.Transit.Processor.Switch.Misc
                 tzinfo = TimeZoneInfo.FindSystemTimeZoneById(tzName);
                 Console.WriteLine(
                     $"The requested timezone is {tzinfo.Id}, the offset is currently {tzinfo.BaseUtcOffset} ({tzinfo}). The offset can change during summer/wintertime");
+
+                var tlocal = t.ConvertTo(tzinfo);
+                Console.WriteLine(
+                    $"The specified time is {tlocal:s}/{tzinfo.Id}");
+                
             }
         }
 

@@ -32,7 +32,7 @@ namespace Itinero.Transit.IO.OSM.Data
 
             Log.Information($"Adding route {route.Id} to the transitdb in frame {start} --> {end}. " +
                             $"The route {(route.RoundTrip ? "loops" : "does not loop")}, has {route.StopPositions.Count} stops, " +
-                            $"is based in timezone {route.GetTimeZone()} ");
+                            $"is based in timezone {route.GetTimeZone()}. Opening hours are not taken into account in this version of Itinero-Transit");
             if (route.StopPositions.Count <= 1)
             {
                 throw new ArgumentException("No or only one stop positions in OSM route");

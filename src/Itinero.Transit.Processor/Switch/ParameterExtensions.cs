@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
+using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Processor.Switch
 {
@@ -35,20 +34,14 @@ namespace Itinero.Transit.Processor.Switch
 
             if (!dateTime.Contains("/"))
             {
-                return DateTime.Parse(dateTime).ToUniversalTime();
+                return new DateTime(DateTime.Parse(dateTime).Ticks, DateTimeKind.Utc);
             }
 
             var splitted = dateTime.Split("/");
-            dateTime = splitted[0];
+            var parsed = new DateTime(DateTime.Parse(splitted[0]).Ticks, DateTimeKind.Unspecified);
             var region = splitted[1] + "/" + splitted[2];
             var timezone = TimeZoneInfo.FindSystemTimeZoneById(region);
-            var parsedDateLocal =
-                DateTimeOffset.ParseExact(dateTime, "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
-            var tzOffset = timezone.GetUtcOffset(parsedDateLocal.DateTime);
-
-            var parsedDateTimeZone = new DateTimeOffset(parsedDateLocal.DateTime, tzOffset);
-            // There must be a better way to do this...
-            return new DateTime(parsedDateTimeZone.ToUniversalTime().DateTime.Ticks, DateTimeKind.Utc);
+            return parsed.ConvertToUtcFrom(timezone);
         }
 
         public static int ParseTimeSpan(this Dictionary<string, string> parameters, string name, DateTime startTime)

@@ -210,13 +210,14 @@ namespace Itinero.Transit.Processor.Switch
                     "If you want to specify a different timezone, either add an offset " +
                     "(the format becomes `YYYY-MM-DDThh:mm:ss(+|-)zz?`), e.g. `2020-12-31T23:59:59+1` for a country running one hour ahead of Greenwich, or `2020-12-31T23:59:59-1` for a country running behind.",
                     "Alternatively, one can use `YYYY-MM-DDThh:mm:ss/TimeZoneId`, e.g. `2020-12-31T23:23:59/Europe/Brussels` (the timezoneId is case sensitive). ",
+                    "If you want to test the date-parsing or get info on a timezone, use the flag "+new ShowInfo().Names[0],
                     "[A list of timezone-ids can be found on Wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).",
                     "",
                     "At last, dates normally support the shorthand values `now` and `today`. A duration can always be replaced by an end-date or by a shorthand as `1hour`, `6hours`, `1day`, `1week`, ...",
                     "",
                     "All dates within a transitdb are encoded using UTC-time. Read transitdbs should thus not be a problem.",
                     "",
-                    "However, the GTS might be encoded into local time. The used timezone is encoded in the GTFS and will be converted automatically. However, make sure that the entered timewindow matches what you think you write."
+                    "However, the GTFS might be encoded into local time. The used timezone is encoded in the GTFS and will be converted automatically. However, make sure that the entered timewindow matches what you think you write."
                 });
             }
 
