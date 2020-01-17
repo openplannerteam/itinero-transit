@@ -228,6 +228,12 @@ namespace Itinero.Transit.IO.GTFS.Data
                   The GlobalId of the connection does use the tripID as well, in order to make the metatrip-id recoverable
                  */
 
+            if (string.IsNullOrEmpty(gtfsTrip.BlockId))
+            {
+                Log.Warning($"No BlockId given - using tripId {gtfsTrip.Id} instead");
+                gtfsTrip.BlockId = gtfsTrip.Id;
+            }
+            
             var tripGlobalId = $"{IdentifierPrefix}trip/{gtfsTrip.BlockId}/{day:yyyyMMdd}";
 
             Transit.Data.Core.Trip vehicleTrip;

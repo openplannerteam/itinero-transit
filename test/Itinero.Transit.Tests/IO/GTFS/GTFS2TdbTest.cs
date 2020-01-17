@@ -19,13 +19,13 @@ namespace Itinero.Transit.Tests.IO.GTFS
             var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
             convertor.AddLocations(wr);
-            var d = new DateTime(2019, 10, 13, 0, 0, 0, DateTimeKind.Utc).Date;
+            var d = new DateTime(2019, 10, 13, 0, 0, 0, DateTimeKind.Unspecified).Date;
             convertor.AddDay(wr, d, d, d.AddDays(1).AddMinutes(2));
             wr.Close();
 
             Assert.True(tdb.Latest.ConnectionsDb.Count() > 10000);
-            Assert.True(tdb.Latest.ConnectionsDb.EarliestDate <= d.Date.AddMinutes(5).ToUnixTime());
-            Assert.True(tdb.Latest.ConnectionsDb.LatestDate >= d.Date.AddDays(1).ToUnixTime());
+            Assert.True(tdb.Latest.ConnectionsDb.EarliestDate.FromUnixTime() <= d.Date.AddMinutes(5));
+            Assert.True(tdb.Latest.ConnectionsDb.LatestDate.FromUnixTime() >= d.Date.AddDays(1));
         }
 
         [Fact]

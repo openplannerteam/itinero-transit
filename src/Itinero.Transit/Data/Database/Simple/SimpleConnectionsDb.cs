@@ -91,7 +91,7 @@ namespace Itinero.Transit.Data.Simple
         /// Very statefull: the triplist is cleared upon exiting this method
         /// </summary>
         /// <param name="trip"></param>
-        private void CorrectTripSingleDepartureTime(List<(int index, Connection c)> trip)
+        private void CorrectTripSingleDepartureTime(IList<(int index, Connection c)> trip)
         {
             if (trip.Count == 0)
             {
@@ -109,14 +109,14 @@ namespace Itinero.Transit.Data.Simple
 
             foreach (var c in trip)
             {
-                _byArrivalStop[c.c.ArrivalStop] = c;
+                _byArrivalStop.Add(c.c.ArrivalStop,c);
             }
 
             do
             {
                 // We search the first connection: this is the connection of which the departureStop is _not_ in the dictionary
                 // We add that one to the connectionsOrderedList
-                bool oneFound = false;
+                var oneFound = false;
                 foreach (var c in trip)
                 {
                     if (_byArrivalStop.ContainsKey(c.c.DepartureStop))

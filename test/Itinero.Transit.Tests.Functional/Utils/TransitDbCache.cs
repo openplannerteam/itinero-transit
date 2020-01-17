@@ -27,15 +27,5 @@ namespace Itinero.Transit.Tests.Functional.Utils
             return _tdbCache[key];
         }
 
-        public static List<TransitDb> GetAll(List<string> paths)
-        {
-            var result = new List<TransitDb>();
-            for (var i = 0; i < paths.Count; i++)
-            {
-                result.Add(Get(paths[i], (uint) i));
-            }
-
-            return result;
-        }
     }
 }

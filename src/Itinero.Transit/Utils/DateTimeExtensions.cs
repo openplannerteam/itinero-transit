@@ -51,7 +51,7 @@ namespace Itinero.Transit.Utils
         {
             if (dateTime.Kind != DateTimeKind.Utc)
             {
-                throw new ArgumentException("To convert a datetime into a foreign time zone, it should be entered as ITC");
+                throw new ArgumentException("To convert a datetime into a foreign time zone, it should be entered as UTC");
             }
             var tzOffset = targetTimeZone.GetUtcOffset(dateTime);
 

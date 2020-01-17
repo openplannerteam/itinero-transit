@@ -183,7 +183,7 @@ namespace Itinero.Transit.Data
             return id;
         }
 
-        public static List<T> GetAll<TId, T>(this IDatabaseReader<TId, T> db, List<TId> ids)
+        public static List<T> GetAll<TId, T>(this IDatabaseReader<TId, T> db, IEnumerable<TId> ids)
             where TId : struct, InternalId where T : IGlobalId
         {
             var values = new List<T>();
