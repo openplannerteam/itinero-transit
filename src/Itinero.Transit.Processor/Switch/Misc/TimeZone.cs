@@ -21,7 +21,9 @@ namespace Itinero.Transit.Processor.Switch.Misc
                             "A timezone id to query information about, e.g. 'Europe/Brussels' (case sensitive). For a full reference, see [wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)")
                         .SetDefault(""),
                     SwitchesExtensions.opt("time", "A date to test parsing")
-                        .SetDefault("now")
+                        .SetDefault("now"),
+                    SwitchesExtensions.opt("all", "If set, print all timezones installed on this machine")
+                        .SetDefault("false")
                 };
 
         private const bool IsStable = true;
@@ -50,6 +52,14 @@ namespace Itinero.Transit.Processor.Switch.Misc
                 Console.WriteLine(
                     $"The specified time is {tlocal:s}/{tzinfo.Id}");
                 
+            }
+
+            if (parameters.ParseBool("all"))
+            {
+                foreach (var tz in TimeZoneInfo.GetSystemTimeZones())
+                {
+                    Console.WriteLine(tz.Id);
+                }
             }
         }
 
