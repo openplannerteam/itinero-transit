@@ -29,7 +29,7 @@ namespace Itinero.Transit.Processor
             {
                 switches = SwitchParsers.ParseSwitches(args);
                 ValidateSwitches(switches);
-                
+
                 IEnumerable<TransitDb> tdbs = new List<TransitDb>();
                 foreach (var sw in switches)
                 {
@@ -39,6 +39,9 @@ namespace Itinero.Transit.Processor
             catch (ArgumentException e)
             {
                 Console.WriteLine(e.Message);
+#if DEBUG
+                throw;
+#endif
             }
         }
 
@@ -48,7 +51,8 @@ namespace Itinero.Transit.Processor
             var sinks = 0;
             foreach (var (swtch, _) in switches)
             {
-                if (swtch is ITransitDbModifier || swtch is ITransitDbSource || swtch is IMultiTransitDbModifier || swtch is IMultiTransitDbSource)
+                if (swtch is ITransitDbModifier || swtch is ITransitDbSource || swtch is IMultiTransitDbModifier ||
+                    swtch is IMultiTransitDbSource)
                 {
                     generatorOrModifier++;
                 }

@@ -87,5 +87,11 @@ namespace Itinero.Transit.Processor.Switch
 
             return int.Parse(durationStr);
         }
+
+
+        public static bool ParseBool(this Dictionary<string, string> parameters, string name)
+        {
+            return bool.Parse(parameters[name]);
+        }
     }
 }
