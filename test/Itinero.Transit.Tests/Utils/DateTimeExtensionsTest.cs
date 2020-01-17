@@ -51,13 +51,13 @@ namespace Itinero.Transit.Tests.Utils
         }
 
         [Fact]
-        public void TimeZoneInfo_Count_MoreThen()
+        public void TimeZoneInfo_Count_MoreThen100()
         {
             var tzs = TimeZoneInfo.GetSystemTimeZones();
             var c = tzs.Count;
             if (c < 100)
             {
-                throw new Exception("Very little timezones are found: " + string.Join(",",
+                throw new Exception($"Only {c} timezones are found: " + string.Join(",",
                                         tzs.Select(tz => tz.Id)));
             }
 
