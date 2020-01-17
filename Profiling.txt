@@ -1,0 +1,12 @@
+# Profiling code on linux
+
+In the shell session, make sure that: (so add that to .bashrc)
+COMPlus_PerfMapEnabled=1
+
+Then:
+
+sudo perf record -g dotnet run 
+sudo perf report -g
+
+
+Source: https://codeblog.dotsandbrackets.com/profiling-net-core-app-linux/

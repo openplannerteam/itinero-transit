@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Itinero.Transit.IO.LC.Data;
 using Itinero.Transit.Utils;
 using Xunit;
 

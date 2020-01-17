@@ -29,7 +29,9 @@ namespace Itinero.Transit.Processor.Switch.Write
                     SwitchesExtensions.opt("minzoom", "The minimal zoom level that this vector tiles are generated for")
                         .SetDefault("3"),
                     SwitchesExtensions.opt("maxzoom", "The maximal zoom level that the vector tiles are generated for. Note: maxzoom should be pretty big, as lines sometimes disappear if they have no point in a tile")
-                        .SetDefault("14")
+                        .SetDefault("14"),
+                    SwitchesExtensions.opt("extent", "resolution", "The precision of every vector tile. Increase this value if the locations are not good enough on high zoom levels")
+                        .SetDefault("4096")
                 };
 
         private const bool IsStable = true;
@@ -79,6 +81,7 @@ namespace Itinero.Transit.Processor.Switch.Write
 
             var minZoom = uint.Parse(arguments["minzoom"]);
             var maxZoom = uint.Parse(arguments["maxzoom"]);
+            var extent = uint.Parse(arguments["extent"]);
 
             Console.WriteLine(
                 $"Generating vector tiles to directory {writeTo} for zoom levels {minZoom} --> {maxZoom}");
@@ -135,7 +138,7 @@ namespace Itinero.Transit.Processor.Switch.Write
                 }
 
                 Console.WriteLine("Writing tiles...");
-                new VectorTileTree {{features, ConfigureFeature}}.Write(writeTo);
+                new VectorTileTree {{features, ConfigureFeature}}.Write(writeTo, extent);
 
 
                 var mvtFileContents = GenerateMvtJson(
