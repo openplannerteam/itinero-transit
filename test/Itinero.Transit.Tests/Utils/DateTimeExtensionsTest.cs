@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Itinero.Transit.IO.LC.Data;
 using Itinero.Transit.Utils;
 using Xunit;
@@ -54,6 +55,12 @@ namespace Itinero.Transit.Tests.Utils
         {
             var tzs = TimeZoneInfo.GetSystemTimeZones();
             var c = tzs.Count;
+            if (c < 100)
+            {
+                throw new Exception("Very little timezones are found: " + string.Join(",",
+                                        tzs.Select(tz => tz.Id)));
+            }
+
             Assert.True(100 < c);
             Assert.NotNull(TimeZoneInfo.FindSystemTimeZoneById("Europe/Brussels"));
         }
