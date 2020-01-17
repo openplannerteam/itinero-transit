@@ -49,6 +49,11 @@ namespace Itinero.Transit.Processor.Switch.Write
                         $"{tdb.GetAttribute("name", tdb.GlobalId)}.{tdb.EarliestDate().Date:yyyy-MM-dd}.transitdb";
                 }
 
+                fileName = fileName.Replace("/", "_")
+                    .Replace(" ", "_")
+                    .Replace(",","_")
+                    .Replace("%","_");
+
                 using (var stream = File.OpenWrite(fileName))
                 {
                     tdb.WriteTo(stream);

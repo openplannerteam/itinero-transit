@@ -26,6 +26,13 @@ namespace Itinero.Transit.Processor.Switch
             var newDb = new TransitDb(old.DatabaseId);
             var wr = newDb.GetWriter();
 
+            wr.GlobalId = old.Latest.GlobalId;
+
+            foreach (var (key, value) in old.Latest.Attributes)
+            {
+                wr.AttributesWritable[key] = value;
+            }
+
             if (modifyStop == null)
             {
                 modifyStop = stop => stop;

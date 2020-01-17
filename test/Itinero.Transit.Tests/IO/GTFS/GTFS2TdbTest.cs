@@ -65,7 +65,7 @@ namespace Itinero.Transit.Tests.IO.GTFS
         [Fact]
         public void AgencyURLS_SNCB_ContainBelgianTrainId()
         {
-            var convertor = new Gtfs2Tdb("IO/GTFS/sncb-13-october.zip");
+            var convertor = new FeedData("IO/GTFS/sncb-13-october.zip");
 
             var urls = convertor.AgencyUrls().ToList();
 
@@ -76,7 +76,7 @@ namespace Itinero.Transit.Tests.IO.GTFS
         [Fact]
         public void IdentifierPrefix_SNCB_BelgianTrail()
         {
-            var convertor = new Gtfs2Tdb("IO/GTFS/sncb-13-october.zip");
+            var convertor = new FeedData("IO/GTFS/sncb-13-october.zip");
 
             var url = convertor.IdentifierPrefix;
 

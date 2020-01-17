@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Processor.Switch
@@ -15,7 +16,13 @@ namespace Itinero.Transit.Processor.Switch
         public static IEnumerable<string> GetFilesMatching(this Dictionary<string, string> parameters, string name)
         {
             var pattern = parameters[name];
-            return Directory.EnumerateFiles(".", pattern);
+            var files = Directory.EnumerateFiles(".", pattern).ToList();
+            if (!files.Any())
+            {
+                throw new ArgumentException($"No files were found for the pattern {pattern} of argument {name}");
+            }
+
+            return files;
         }
 
         public static DateTime ParseDate(this Dictionary<string, string> parameters, string name)

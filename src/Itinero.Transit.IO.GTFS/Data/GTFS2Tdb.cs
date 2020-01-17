@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using GTFS;
 using GTFS.Entities;
 using GTFS.Entities.Enumerations;
 using Itinero.Transit.Data;
@@ -51,121 +50,18 @@ namespace Itinero.Transit.IO.GTFS.Data
 
     public class Gtfs2Tdb
     {
-        private readonly string _path;
-
-
-        private GTFSFeed _feed;
-
-        private GTFSFeed Feed
-        {
-            get
-            {
-                if (_feed == null)
-                {
-                    Log.Information("Starting to read the GTFS-archive");
-                    _feed = new GTFSReader<GTFSFeed>().Read(_path);
-                    Log.Information("GTFS archive unpacked");
-                }
-
-                return _feed;
-            }
-        }
-
-
-        private string _prefix;
-
-        /// <summary>
-        /// Get the identifier-prefix for this GTFS feed.
-        /// The identifier-prefix starts with the agencies website ('http://belgiantrain.be/') and has a trailing slash.
-        ///
-        /// If the GTFS feed contains multiple agencies, an error is thrown
-        /// </summary>
-        /// <returns></returns>
-        internal string IdentifierPrefix
-        {
-            get
-            {
-                if (_prefix != null)
-                {
-                    return _prefix;
-                }
-
-                var urls = AgencyUrls();
-                if (urls.Count > 1)
-                {
-                    throw new ArgumentException("The GTFS archive " + _path + " contains data on multiple agencies");
-                }
-
-                var prefix = urls[0];
-                if (!prefix.EndsWith("/"))
-                {
-                    prefix += "/";
-                }
-
-                return _prefix = prefix;
-            }
-        }
-
-        private TimeZoneInfo _timeZone = null;
-
-        /// <summary>
-        /// Get the identifier-prefix for this GTFS feed.
-        /// The identifier-prefix starts with the agencies website ('http://belgiantrain.be/') and has a trailing slash.
-        ///
-        /// If the GTFS feed contains multiple agencies, an error is thrown
-        /// </summary>
-        /// <returns></returns>
-        internal TimeZoneInfo TimeZone
-        {
-            get
-            {
-                // ReSharper disable once ConvertIfStatementToNullCoalescingExpression
-                if (_timeZone == null)
-                {
-                    _timeZone = TimeZoneInfo.FindSystemTimeZoneById(Feed.Agencies.Get(0).Timezone);
-                }
-
-                return _timeZone;
-            }
-        }
-
-        private Dictionary<string, List<Trip>> _serviceIdToTrip;
+        private readonly FeedData _f;
 
         private Dictionary<string, StopId> _gtfsId2TdbId;
 
-        private Dictionary<string, List<Trip>> ServiceIdToTrip
+        public Gtfs2Tdb(FeedData f)
         {
-            get
-            {
-                if (_serviceIdToTrip != null)
-                {
-                    return _serviceIdToTrip;
-                }
-
-
-                _serviceIdToTrip = new Dictionary<string, List<Trip>>();
-
-                foreach (var gtfstrip in Feed.Trips)
-                {
-                    if (!_serviceIdToTrip.ContainsKey(gtfstrip.ServiceId))
-                    {
-                        _serviceIdToTrip[gtfstrip.ServiceId] = new List<Trip>();
-                    }
-
-                    _serviceIdToTrip[gtfstrip.ServiceId].Add(gtfstrip);
-                }
-
-
-                return _serviceIdToTrip;
-            }
+            _f = f;
         }
 
-
-        public Gtfs2Tdb(string path)
+        public Gtfs2Tdb(string path) : this(new FeedData(path))
         {
-            _path = path;
         }
-
 
         private void AddService(TransitDbWriter writer, Calendar service, DateTime day, DateTime startDate,
             DateTime endDate)
@@ -175,7 +71,7 @@ namespace Itinero.Transit.IO.GTFS.Data
             // Note that our 'trip' is slightly different from the gtfs trip:
             // our trip has a specific time and date, whereas a gtfs trip drives at a specific time, over multiple dates
 
-            if (!ServiceIdToTrip.TryGetValue(service.ServiceId, out var gtfsTrips))
+            if (!_f.ServiceIdToTrip.TryGetValue(service.ServiceId, out var gtfsTrips))
             {
                 // Seems like there is no trip associated with this service
                 // Print an error message and go on
@@ -184,16 +80,18 @@ namespace Itinero.Transit.IO.GTFS.Data
 
                 return;
             }
+            
+            Log.Information($"Found {gtfsTrips.Count} trips for service {service.ServiceId}");
 
             // gtfsTrips are the trips we need to add    
-            foreach (var gtfsTrip in gtfsTrips)
+            foreach (var gtfsTrip in gtfsTrips) // the trips for this given service
             {
                 AddCompleteTrip(writer, gtfsTrip, day, startDate, endDate);
             }
         }
 
         private void AddCompleteTrip(TransitDbWriter writer, Trip gtfsTrip, DateTime day, DateTime startDate,
-            DateTime endDate)
+            DateTime endDate)   
         {
             /* Note that we use 'blockId' to generate the tripID
              A block identifies the vehicle throughout the day
@@ -233,8 +131,8 @@ namespace Itinero.Transit.IO.GTFS.Data
                 Log.Warning($"No BlockId given - using tripId {gtfsTrip.Id} instead");
                 gtfsTrip.BlockId = gtfsTrip.Id;
             }
-            
-            var tripGlobalId = $"{IdentifierPrefix}trip/{gtfsTrip.BlockId}/{day:yyyyMMdd}";
+
+            var tripGlobalId = $"{_f.IdentifierPrefix}trip/{gtfsTrip.BlockId}/{day:yyyyMMdd}";
 
             Transit.Data.Core.Trip vehicleTrip;
             if (writer.TripsDb.TryGet(tripGlobalId, out var existingTrip))
@@ -278,7 +176,8 @@ namespace Itinero.Transit.IO.GTFS.Data
                  Now that we know all about the trip, we have to figure out where and when the train drives
                  For this, we use stopstimes.txt
                  */
-            var stopTimes = Feed.StopTimes.GetForTrip(gtfsTrip.Id).OrderBy(stopTime => stopTime.StopSequence).ToList();
+            var stopTimes = _f.Feed.StopTimes.GetForTrip(gtfsTrip.Id).OrderBy(stopTime => stopTime.StopSequence)
+                .ToList();
 
             for (var i = 1; i < stopTimes.Count; i++)
             {
@@ -307,10 +206,10 @@ namespace Itinero.Transit.IO.GTFS.Data
                 );
 
                 var connection = new Connection(
-                    $"{IdentifierPrefix}connection/{gtfsTrip.Id}/{day:yyyyMMdd}/{i}",
+                    $"{_f.IdentifierPrefix}connection/{gtfsTrip.Id}/{day:yyyyMMdd}/{i}",
                     departureStop,
                     arrivalStop,
-                    DateTimeExtensions.ToUnixTime(departureTime.ConvertToUtcFrom(TimeZone)),
+                    DateTimeExtensions.ToUnixTime(departureTime.ConvertToUtcFrom(_f.TimeZone)),
                     (ushort) travelTime,
                     mode,
                     vehicleTripId);
@@ -335,63 +234,16 @@ namespace Itinero.Transit.IO.GTFS.Data
                 throw new Exception("Please, run AddLocations before trying to add the time schedule");
             }
 
-            // Figure out what services (don't) drive today
-            // For this, we ask both the exceptions and the regular schedule
             day = day.Date;
 
-            var exceptionallyGoesToday = new HashSet<string>();
-            var cancelledToday = new HashSet<string>();
 
-            foreach (var exception in Feed.CalendarDates)
+            var services = _f.ServicesForDay(day);
+            Log.Information($"Adding {services.Count} services for day {day:yyyy-MM-dd}");
+
+            foreach (var service in services)
             {
-                if (!exception.Date.Equals(day)) continue;
-
-                if (exception.ExceptionType == ExceptionType.Added)
-                {
-                    exceptionallyGoesToday.Add(exception.ServiceId);
-                }
-                else
-                {
-                    cancelledToday.Add(exception.ServiceId);
-                }
+                AddService(writer, service, day, startDate, endDate);
             }
-
-            foreach (var service in Feed.Calendars)
-            {
-                if (cancelledToday.Contains(service.ServiceId))
-                {
-                    continue;
-                }
-
-                var goesToday =
-                    service[day.DayOfWeek] &&
-                    service.StartDate <= day &&
-                    day <= service
-                        .EndDate; // end date is included in the interval: https://developers.google.com/transit/gtfs/reference#calendartxt
-                if (goesToday || exceptionallyGoesToday.Contains(service.ServiceId))
-                {
-                    // This service drives today. Generate the connections
-                    AddService(writer, service, day, startDate, endDate);
-                }
-            }
-        }
-
-
-        private Dictionary<string, List<(string language, string translatedTerm)>>
-            GetTranslations()
-        {
-            var result = new Dictionary<string, List<(string language, string translatedTerm)>>();
-
-            // TODO ADD REAL TRANSLATIONS AND A REAL TEST
-            result["Bruges"] = new List<(string language, string translatedTerm)>
-            {
-                ("nl", "Brugge"),
-                ("fr", "Bruges"),
-                ("es", "Brugas"),
-                ("en", "Bruges"),
-                ("de", "Brügge")
-            };
-            return result;
         }
 
 
@@ -399,14 +251,13 @@ namespace Itinero.Transit.IO.GTFS.Data
         {
             _gtfsId2TdbId = new Dictionary<string, StopId>();
 
-            var translations = GetTranslations();
 
-            foreach (var stop in Feed.Stops.Get())
+            foreach (var stop in _f.Feed.Stops.Get())
             {
                 var id = stop.Url;
                 if (string.IsNullOrEmpty(id))
                 {
-                    id = IdentifierPrefix + "stop/" + stop.Id;
+                    id = _f.IdentifierPrefix + "stop/" + stop.Id;
                 }
 
                 var attributes = new Dictionary<string, string>
@@ -426,7 +277,7 @@ namespace Itinero.Transit.IO.GTFS.Data
                     attributes["name:" + languageCode] = stop.Name;
                 }
 
-                if (translations.TryGetValue(stop.Name, out var translated))
+                if (_f.Translations.TryGetValue(stop.Name, out var translated))
                 {
                     foreach (var (lng, term) in translated)
                     {
@@ -453,7 +304,7 @@ namespace Itinero.Transit.IO.GTFS.Data
         /// <param name="enddate"></param>
         public void AddDataBetween(TransitDbWriter writer, DateTime startdate, DateTime enddate)
         {
-            var agencies = Feed.Agencies.ToList();
+            var agencies = _f.Feed.Agencies.ToList();
             if (agencies.Count > 1)
             {
                 throw new ArgumentException(
@@ -473,11 +324,12 @@ namespace Itinero.Transit.IO.GTFS.Data
             writer.AttributesWritable["website"] = agency.URL;
             writer.AttributesWritable["charge:url"] = agency.FareURL;
 
-            AddLocations(writer);
+            var locationsAdded = AddLocations(writer).Count;
+            Log.Information($"Added {locationsAdded} stop locations");
 
             // First things first - lets convert everything to the timezone specified by the GTFS
-            startdate = startdate.ConvertTo(TimeZone);
-            enddate = enddate.ConvertTo(TimeZone);
+            startdate = startdate.ConvertTo(_f.TimeZone);
+            enddate = enddate.ConvertTo(_f.TimeZone);
 
 
             var day = startdate.Date;
@@ -488,11 +340,6 @@ namespace Itinero.Transit.IO.GTFS.Data
 
                 day = day.AddDays(1);
             }
-        }
-
-        internal List<string> AgencyUrls()
-        {
-            return Feed.Agencies.Get().ToList().Select(agency => agency.URL).ToList();
         }
     }
 }
