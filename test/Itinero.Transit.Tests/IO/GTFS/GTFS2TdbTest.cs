@@ -20,12 +20,11 @@ namespace Itinero.Transit.Tests.IO.GTFS
             var wr = tdb.GetWriter();
             convertor.AddLocations(wr);
             var d = new DateTime(2019, 10, 13, 0, 0, 0, DateTimeKind.Unspecified).Date;
-            convertor.AddDay(wr, d, d, d.AddDays(1).AddMinutes(2));
+            convertor.AddDay(wr, d, d, d.AddDays(2));
             wr.Close();
 
             Assert.True(tdb.Latest.ConnectionsDb.Count() > 10000);
             Assert.True(tdb.Latest.ConnectionsDb.EarliestDate.FromUnixTime() <= d.Date.AddMinutes(5));
-            Assert.True(tdb.Latest.ConnectionsDb.LatestDate.FromUnixTime() >= d.Date.AddDays(1));
         }
 
         [Fact]
@@ -36,7 +35,7 @@ namespace Itinero.Transit.Tests.IO.GTFS
                 new DateTime(2019, 10, 21, 10, 0, 0, DateTimeKind.Utc),
                 new DateTime(2019, 10, 21, 11, 0, 0, DateTimeKind.Utc));
             var count = tdb.Latest.ConnectionsDb.Count();
-            Assert.Equal(3566, count);
+            Assert.Equal(3597, count);
         }
         
         
@@ -48,7 +47,7 @@ namespace Itinero.Transit.Tests.IO.GTFS
                 new DateTime(2019, 10, 07, 10, 0, 0, DateTimeKind.Utc),
                 new DateTime(2019, 10, 07, 11, 0, 0, DateTimeKind.Utc));
             var count = tdb.Latest.ConnectionsDb.Count();
-            Assert.Equal(3527, count);
+            Assert.Equal(3558, count);
         }
         
         
@@ -60,7 +59,7 @@ namespace Itinero.Transit.Tests.IO.GTFS
                 new DateTime(2019, 12, 14, 10, 0, 0, DateTimeKind.Utc),
                 new DateTime(2019, 12, 14, 11, 0, 0, DateTimeKind.Utc));
             var count = tdb.Latest.ConnectionsDb.Count();
-            Assert.Equal(2370, count);
+            Assert.Equal(2359, count);
         }
 
         [Fact]

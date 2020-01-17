@@ -57,12 +57,17 @@ namespace Itinero.Transit.Tests.Utils
             var c = tzs.Count;
             if (c < 100)
             {
-                throw new Exception($"Only {c} timezones are found: " + string.Join(",",
+                throw new Exception($"IF THIS TEST FAILS: make sure that the timezones are enabled on the linux machine you are using.\n" +
+                                    $"Check that /usr/share/zoneinfo exists and is not empty. If it is, install locales or tzdata\n" +
+                                    $"Are you working with docker images, such as teamcity-agents? Link the volumes /usr/share/zoneinfo together \n" +
+                                    $"Only {c} timezones are found: " + string.Join(",",
                                         tzs.Select(tz => tz.Id)));
             }
 
             Assert.True(100 < c);
             Assert.NotNull(TimeZoneInfo.FindSystemTimeZoneById("Europe/Brussels"));
         }
+
+
     }
 }
