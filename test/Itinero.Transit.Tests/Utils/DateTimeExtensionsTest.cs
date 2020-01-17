@@ -55,6 +55,7 @@ namespace Itinero.Transit.Tests.Utils
             var tzs = TimeZoneInfo.GetSystemTimeZones();
             var c = tzs.Count;
             Assert.True(100 < c);
+            Assert.NotNull(TimeZoneInfo.FindSystemTimeZoneById("Europe/Brussels"));
         }
     }
 }
