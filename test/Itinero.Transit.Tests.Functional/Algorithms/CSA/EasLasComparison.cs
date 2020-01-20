@@ -32,7 +32,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.CSA
 
             NotNull(lasJ,
                 $"No latest journey found for {Input.From[0].GlobalId} {Input.Start:s} --> {Input.To[0].GlobalId}. However, the earliest arrival journey has been found:" +
-                $"\n{easJ.ToString(1, Input.StopsDb)}");
+                $"\n{easJ.ToString(Input.StopsDb)}");
 
             AssertNoLoops(lasJ, Input);
 

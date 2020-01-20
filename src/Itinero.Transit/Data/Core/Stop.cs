@@ -96,7 +96,7 @@ namespace Itinero.Transit.Data.Core
             {
                 return "";
             }
-
+            
             Attributes.TryGetValue("name", out var name);
             return name ?? "";
         }

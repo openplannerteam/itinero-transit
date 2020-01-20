@@ -1,6 +1,7 @@
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using Itinero.Transit.Utils;
 using Reminiscence.Collections;
 
@@ -42,14 +43,29 @@ namespace Itinero.Transit.Journey
         /// <summary>
         /// Converts an entire journey into a neat overview
         /// </summary>
-        /// <param name="maxLength"></param>
         /// <param name="dataProvider"></param>
         /// <returns></returns>
-        public string ToString(int maxLength, IStopsDb dataProvider = null)
+        public string ToString(IStopsDb stops)
         {
-            var stop = dataProvider?.Get(Location);
-            var location =
-                stop?.GetName() ?? stop?.GlobalId ?? Location.ToString();
+
+            string locName(StopId sId)
+            {
+                if (stops == null)
+                {
+                    return sId.ToString();
+                }
+
+                var s = stops.Get(sId);
+                var nm = s?.GetName();
+                if (!string.IsNullOrEmpty(""))
+                {
+                    return nm;
+                }
+
+                return s?.GlobalId ?? s.ToString();
+            }
+
+            var location = locName(Location);
 
             var texts = new List<string>
             {
@@ -60,14 +76,10 @@ namespace Itinero.Transit.Journey
 
             while (c != null)
             {
-                stop = dataProvider?.Get(c.Location);
-                location =
-                    stop?.GetName() ?? stop?.GlobalId ?? c.Location.ToString();
-
-
-                var msg = SpecialConnection
+             
+                var msg = c.SpecialConnection
                     ? $"Walk/cycle to {location}, eta {c.Time.FromUnixTime():HH:mm}"
-                    : $"    {c.Time.FromUnixTime():HH:mm} {location} {c.Connection}";
+                    : $"    {c.Time.FromUnixTime():HH:mm} {locName(c.Location)} {c.Connection}";
 
                 if (c.PreviousLink == null)
                 {

@@ -158,7 +158,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
             
             if (ContainsLoop(journey))
             {
-                throw new Exception("Loop detected in the journey: " + journey.ToString(50, stops));
+                throw new Exception("Loop detected in the journey: " + journey.ToString(stops));
             }
         }
 
@@ -173,7 +173,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
                     continue;
                 }
                 
-                Log.Error($"Missing journey: {a.ToString(100, reader)}");
+                Log.Error($"Missing journey: {a.ToString(reader)}");
                 oneMissing = true;
             }
 
@@ -182,7 +182,7 @@ namespace Itinero.Transit.Tests.Functional.Utils
             {
                 if (!js.Contains(b))
                 {
-                    Log.Error($"Missing journey {bi}: {b.ToString(100, reader)}");
+                    Log.Error($"Missing journey {bi}: {b.ToString(reader)}");
                     oneMissing = true;
                 }
 
