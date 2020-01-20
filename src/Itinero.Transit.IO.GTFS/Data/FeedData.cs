@@ -152,9 +152,9 @@ namespace Itinero.Transit.IO.GTFS.Data
                 return result;
             }
         }
-
-
         /// <summary>
+
+
         /// Returns which services are scheduled for the given day.
         /// THis uses both 'calenders.txt' and 'calendar_dates.txt' and does keep track of exceptions as well of regular services
         /// </summary>

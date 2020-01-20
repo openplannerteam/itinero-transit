@@ -25,6 +25,15 @@ namespace Itinero.Transit.Processor.Switch
             return files;
         }
 
+        public static string TimezonesNotFoundMessage = 
+            "If the timezones are not found by C#, then please check the following:\n" +
+            "\n" +
+            "- Make sure you are on a linux machine\n" +
+            "- C# uses the timezone information that is located in /usr/share/zoneinfo, e.g. /usr/share/zoneinfo/Europe/Brussels . Have a look if this directory exists and is populated\n" +
+            "- If it isn't, installing `tzdata` or `locales` might fix it\n" +
+            "- If you are within a docker container, the base image of your docker might not have this directory. The easiest way to fix this, is to link the host `zoneinfo`-directory into the guest.\n" +
+            "- This can be easily done with `-v /usr/share/zoneinfo:/usr/share/zoneinfo`\n";
+        
         public static DateTime ParseDate(this Dictionary<string, string> parameters, string name)
         {
             var dateTime = parameters[name];
@@ -47,8 +56,16 @@ namespace Itinero.Transit.Processor.Switch
             var splitted = dateTime.Split("/");
             var parsed = new DateTime(DateTime.Parse(splitted[0]).Ticks, DateTimeKind.Unspecified);
             var region = splitted[1] + "/" + splitted[2];
-            var timezone = TimeZoneInfo.FindSystemTimeZoneById(region);
+            try
+            {
+
+                var timezone = TimeZoneInfo.FindSystemTimeZoneById(region);
             return parsed.ConvertToUtcFrom(timezone);
+            }
+            catch(TimeZoneNotFoundException e)
+            {
+                throw new Exception(TimezonesNotFoundMessage, e);
+            }
         }
 
         public static int ParseTimeSpan(this Dictionary<string, string> parameters, string name, DateTime startTime)

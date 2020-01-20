@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using GeoAPI.CoordinateSystems;
 using Itinero.Transit.Data;
 using Itinero.Transit.Utils;
 
@@ -34,6 +36,12 @@ namespace Itinero.Transit.Processor.Switch.Misc
 
         private void Run(Dictionary<string, string> parameters)
         {
+
+            if (TimeZoneInfo.GetSystemTimeZones().Count <= 50)
+            {
+                Console.WriteLine("WARNING: No or very little timezones were found.\n"+ParameterExtensions.TimezonesNotFoundMessage);
+            }
+            
             var t = parameters.ParseDate("time");
             var tzName = parameters["timezone"];
             Console.WriteLine($"The given time (in UTC) is {t.ToUniversalTime():s}");

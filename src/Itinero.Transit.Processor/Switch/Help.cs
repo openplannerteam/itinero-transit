@@ -213,6 +213,8 @@ namespace Itinero.Transit.Processor.Switch
                     "If you want to test the date-parsing or get info on a timezone, use the flag "+new ShowInfo().Names[0],
                     "[A list of timezone-ids can be found on Wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).",
                     "",
+                    ParameterExtensions.TimezonesNotFoundMessage,
+                    "",
                     "At last, dates normally support the shorthand values `now` and `today`. A duration can always be replaced by an end-date or by a shorthand as `1hour`, `6hours`, `1day`, `1week`, ...",
                     "",
                     "All dates within a transitdb are encoded using UTC-time. Read transitdbs should thus not be a problem.",
