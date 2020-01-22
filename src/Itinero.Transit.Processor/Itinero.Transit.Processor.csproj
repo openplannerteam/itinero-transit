@@ -9,9 +9,9 @@
         <ProjectReference Include="..\Itinero.Transit.IO.GTFS\Itinero.Transit.IO.GTFS.csproj" />
         <ProjectReference Include="..\Itinero.Transit.IO.LC\Itinero.Transit.IO.LC.csproj" />
         <ProjectReference Include="..\Itinero.Transit.IO.OSM\Itinero.Transit.IO.OSM.csproj" />
+        <ProjectReference Include="..\Itinero.Transit.IO.VectorTiles\Itinero.Transit.IO.VectorTiles.csproj" />
         <ProjectReference Include="..\Itinero.Transit\Itinero.Transit.csproj" />
-        <PackageReference Include="NetTopologySuite.IO.VectorTiles.Mapbox" Version="0.0.4" />
-
+    
     </ItemGroup>
 
 </Project>

@@ -1,5 +1,6 @@
 #! /bin/bash
 
+cd ..
 DATE="$1"
 DURATION="12hours"
 if [ -z "$2" ]
