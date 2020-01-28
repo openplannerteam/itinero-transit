@@ -15,19 +15,21 @@ namespace Itinero.Transit.IO.GTFS.Data
     /// </summary>
     internal class FeedData
     {
-        public FeedData(IGTFSFeed feed)
+        private TimeZoneInfo _timeZone;
+        private string _prefix;
+        
+        public FeedData(IGTFSFeed feed, TimeZoneInfo overrideTimeZone = null)
         {
             Feed = feed;
+            _timeZone = overrideTimeZone;
         }
 
         public IGTFSFeed Feed { get; }
 
         internal List<string> AgencyUrls()
         {
-            return Feed.Agencies.Get().ToList().Select(agency => agency.URL).ToList();
+            return Feed.Agencies.Select(agency => agency.URL).ToList();
         }
-
-        private string _prefix;
 
         /// <summary>
         /// Get the identifier-prefix for this GTFS feed.
@@ -46,6 +48,13 @@ namespace Itinero.Transit.IO.GTFS.Data
                 }
 
                 var urls = AgencyUrls();
+                
+                if (urls == null ||
+                    urls.Count == 0)
+                {
+                    _prefix = string.Empty;
+                    return _prefix;
+                }
                 if (urls.Count > 1)
                 {
                     throw new ArgumentException("This GTFS archive contains data on multiple agencies");
@@ -61,23 +70,22 @@ namespace Itinero.Transit.IO.GTFS.Data
             }
         }
 
-        private TimeZoneInfo _timeZone;
-
-        /// <summary>
-        /// Get the identifier-prefix for this GTFS feed.
-        /// The identifier-prefix starts with the agencies website ('http://belgiantrain.be/') and has a trailing slash.
-        ///
-        /// If the GTFS feed contains multiple agencies, an error is thrown
-        /// </summary>
-        /// <returns></returns>
-        public TimeZoneInfo TimeZone
+        internal TimeZoneInfo TimeZone
         {
             get
             {
-                // ReSharper disable once ConvertIfStatementToNullCoalescingExpression
-                if (_timeZone == null)
+                if (_timeZone != null) return _timeZone;
+                
+                // try to get timezone info, assume utc if none available.
+                var agency = Feed.Agencies.FirstOrDefault();
+                if (agency == null ||
+                    string.IsNullOrWhiteSpace(agency.Timezone))
                 {
-                    _timeZone = TimeZoneInfo.FindSystemTimeZoneById(Feed.Agencies.Get(0).Timezone);
+                    _timeZone = TimeZoneInfo.Utc;
+                }
+                else
+                {
+                    _timeZone = TimeZoneInfo.FindSystemTimeZoneById(agency.Timezone);
                 }
 
                 return _timeZone;
@@ -113,70 +121,65 @@ namespace Itinero.Transit.IO.GTFS.Data
             }
         }
 
-
-        public Dictionary<string, List<(string language, string translatedTerm)>>
-            Translations
-        {
-            get
-            {
-                var result = new Dictionary<string, List<(string language, string translatedTerm)>>();
-
-                // TODO ADD REAL TRANSLATIONS AND A REAL TEST
-                result["Bruges"] = new List<(string language, string translatedTerm)>
-                {
-                    ("nl", "Brugge"),
-                    ("fr", "Bruges"),
-                    ("es", "Brugas"),
-                    ("en", "Bruges"),
-                    ("de", "Brügge")
-                };
-                return result;
-            }
-        }
         /// <summary>
-
-
+        /// Returns translation per language.
+        /// </summary>
+        public Dictionary<string, List<(string language, string translatedTerm)>> Translations { get; } = new Dictionary<string, List<(string language, string translatedTerm)>>();
+        
+        /// <summary>
         /// Returns which services are scheduled for the given day.
         /// THis uses both 'calenders.txt' and 'calendar_dates.txt' and does keep track of exceptions as well of regular services
         /// </summary>
         /// <param name="day"></param>
         /// <returns></returns>
-        public List<Calendar> ServicesForDay(DateTime day)
+        internal IEnumerable<string> ServicesForDay(DateTime day)
         {
-            var services = new List<Calendar>();
             var doesntGo = GetExceptionallyDoesntDriveToday(day);
             var doesGo = GetExceptionallyDrivesToday(day);
 
-            foreach (var service in Feed.Calendars)
+            if (!Feed.Calendars.Any())
             {
-                if (doesntGo.Contains(service.ServiceId))
+                // there is no calendar data, use calendar_dates only.
+                // https://developers.google.com/transit/gtfs/reference/#calendar_datestxt
+                foreach (var service in doesGo)
                 {
-                    continue;
-                }
+                    if (doesntGo.Contains(service)) continue;
 
-                if (doesGo.Contains(service.ServiceId))
-                {
-                    if (service.StartDate <= day && day <= service.EndDate)
-                    {
-                        services.Add(service);
-                    }
-
-                    continue;
-                }
-
-                var goesToday =
-                    service[day.DayOfWeek] &&
-                    service.StartDate <= day &&
-                    day <= service
-                        .EndDate; // end date is included in the interval: https://developers.google.com/transit/gtfs/reference#calendartxt
-                if (goesToday)
-                {
-                    services.Add(service);
+                    yield return service;
                 }
             }
+            else
+            { 
+                // use week patterns in calendar.
+                // https://developers.google.com/transit/gtfs/reference/#calendartxt
+                foreach (var service in Feed.Calendars)
+                {
+                    if (doesntGo.Contains(service.ServiceId))
+                    {
+                        continue;
+                    }
 
+                    if (doesGo.Contains(service.ServiceId))
+                    {
+                        if (service.StartDate <= day && day <= service.EndDate)
+                        {
+                            yield return service.ServiceId;
+                        }
 
-            return services;
+                        continue;
+                    }
+
+                    var goesToday =
+                        service[day.DayOfWeek] &&
+                        service.StartDate <= day &&
+                        day <= service
+                            .EndDate; // end date is included in the interval: https://developers.google.com/transit/gtfs/reference#calendartxt
+                    if (goesToday)
+                    {
+                        yield return service.ServiceId;
+                    }
+                }
+            }
         }
 
 

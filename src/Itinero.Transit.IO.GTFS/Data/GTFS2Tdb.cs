@@ -51,15 +51,24 @@ namespace Itinero.Transit.IO.GTFS.Data
     internal class Gtfs2Tdb
     {
         private readonly FeedData _f;
+        private readonly Dictionary<string, StopId> _gtfsId2TdbId;
+        private readonly bool _addEmptyTrips;
+        private readonly bool _addUnusedStops;
+        private readonly Dictionary<string, Stop> _stops;
 
-        private Dictionary<string, StopId> _gtfsId2TdbId;
+        private bool _stopTimesSorted = false;
 
-        public Gtfs2Tdb(FeedData f)
+        public Gtfs2Tdb(FeedData f, bool addEmptyTrips = false, bool addUnusedStops = false)
         {
             _f = f;
+            _addEmptyTrips = addEmptyTrips;
+            _addUnusedStops = addUnusedStops;
+            
+            _gtfsId2TdbId = new Dictionary<string, StopId>();
+            _stops = new Dictionary<string, Stop>();
         }
 
-        private void AddService(TransitDbWriter writer, Calendar service, DateTime day, DateTime startDate,
+        private void AddService(TransitDbWriter writer, string serviceId, DateTime day, DateTime startDate,
             DateTime endDate)
         {
             // We know that 'service' drives today
@@ -67,17 +76,17 @@ namespace Itinero.Transit.IO.GTFS.Data
             // Note that our 'trip' is slightly different from the gtfs trip:
             // our trip has a specific time and date, whereas a gtfs trip drives at a specific time, over multiple dates
 
-            if (!_f.ServiceIdToTrip.TryGetValue(service.ServiceId, out var gtfsTrips))
+            if (!_f.ServiceIdToTrip.TryGetValue(serviceId, out var gtfsTrips))
             {
                 // Seems like there is no trip associated with this service
                 // Print an error message and go on
 
-                Log.Error($"No trip found for serviceId {service.ServiceId} found.");
+                Log.Error($"No trip found for serviceId {serviceId} found.");
 
                 return;
             }
             
-            Log.Information($"Found {gtfsTrips.Count} trips for service {service.ServiceId}");
+            Log.Information($"Found {gtfsTrips.Count} trips for service {serviceId}");
 
             // gtfsTrips are the trips we need to add    
             foreach (var gtfsTrip in gtfsTrips) // the trips for this given service
@@ -122,9 +131,15 @@ namespace Itinero.Transit.IO.GTFS.Data
                   The GlobalId of the connection does use the tripID as well, in order to make the metatrip-id recoverable
                  */
 
+            if (_stopTimesSorted)
+            {
+                // make sure the stop times are sorted by tripid/sequence.
+                
+            }
+
             if (string.IsNullOrEmpty(gtfsTrip.BlockId))
             {
-                Log.Warning($"No BlockId given - using tripId {gtfsTrip.Id} instead");
+                //Log.Warning($"No BlockId given - using tripId {gtfsTrip.Id} instead");
                 gtfsTrip.BlockId = gtfsTrip.Id;
             }
 
@@ -164,9 +179,12 @@ namespace Itinero.Transit.IO.GTFS.Data
                         });
             }
 
-
-            var vehicleTripId = writer.AddOrUpdateTrip(vehicleTrip);
-
+            // add the trip here if empty trips are ok.
+            TripId? vehicleTripId = null;
+            if (_addEmptyTrips)
+            {
+                vehicleTripId = writer.AddOrUpdateTrip(vehicleTrip);
+            }
 
             /*
                  Now that we know all about the trip, we have to figure out where and when the train drives
@@ -190,10 +208,29 @@ namespace Itinero.Transit.IO.GTFS.Data
 
                 var travelTime = arrival.ArrivalTime.Value.TotalSeconds - departure.DepartureTime.Value.TotalSeconds;
 
+                if (!_gtfsId2TdbId.TryGetValue(departure.StopId, out var departureStopId))
+                {
+                    // stop doesn't exist yet, load it.
+                    if (!_stops.TryGetValue(departure.StopId, out var departureStop))
+                    {
+                        Log.Warning($"A connection was found with a non-existing departure stop id: {departure.StopId}");
+                        continue;
+                    }
+                    departureStopId = writer.AddOrUpdateStop(departureStop);
+                    _gtfsId2TdbId.Add(departure.StopId, departureStopId);
+                }
 
-                var departureStop = _gtfsId2TdbId[departure.StopId];
-                var arrivalStop = _gtfsId2TdbId[arrival.StopId];
-
+                if (!_gtfsId2TdbId.TryGetValue(arrival.StopId, out var arrivalStopId))
+                {
+                    // stop doesn't exist yet, load it.
+                    if (!_stops.TryGetValue(arrival.StopId, out var arrivalStop))
+                    {
+                        Log.Warning($"A connection was found with a non-existing arrival stop id: {arrival.StopId}");
+                        continue;
+                    }
+                    arrivalStopId = writer.AddOrUpdateStop(arrivalStop);
+                    _gtfsId2TdbId.Add(arrival.StopId, arrivalStopId);
+                }
 
                 var mode = Connection.CreateMode(
                     departure.PickupType == PickupType.Regular,
@@ -201,16 +238,25 @@ namespace Itinero.Transit.IO.GTFS.Data
                     false // again: static data, not the messy realworld
                 );
 
+                // add trip here, now that we sure we have a connection.
+                if (vehicleTripId == null)
+                {
+                    vehicleTripId = writer.AddOrUpdateTrip(vehicleTrip);
+                }
+
                 var connection = new Connection(
                     $"{_f.IdentifierPrefix}connection/{gtfsTrip.Id}/{day:yyyyMMdd}/{i}",
-                    departureStop,
-                    arrivalStop,
+                    departureStopId,
+                    arrivalStopId,
                     DateTimeExtensions.ToUnixTime(departureTime.ConvertToUtcFrom(_f.TimeZone)),
                     (ushort) travelTime,
                     mode,
-                    vehicleTripId);
+                    vehicleTripId.Value);
 
                 writer.AddOrUpdateConnection(connection);
+                
+                if (writer.ConnectionsDb.Count % 10000 == 0) Log.Verbose($"Added {writer.ConnectionsDb.Count} connections with " +
+                                                                         $"{writer.StopsDb.Count} stops and {writer.TripsDb.Count} trips.");
             }
         }
 
@@ -232,47 +278,52 @@ namespace Itinero.Transit.IO.GTFS.Data
 
             day = day.Date;
 
-
-            var services = _f.ServicesForDay(day);
+            var services = _f.ServicesForDay(day).ToList();
             Log.Information($"Adding {services.Count} services for day {day:yyyy-MM-dd}");
-
             foreach (var service in services)
             {
                 AddService(writer, service, day, startDate, endDate);
             }
         }
 
-
-        internal Dictionary<string, StopId> AddLocations(TransitDbWriter writer)
+        internal void AddStops(TransitDbWriter writer)
         {
-            _gtfsId2TdbId = new Dictionary<string, StopId>();
-
-
             foreach (var stop in _f.Feed.Stops.Get())
             {
-                var id = stop.Url;
-                if (string.IsNullOrEmpty(id))
-                {
-                    id = _f.IdentifierPrefix + "stop/" + stop.Id;
-                }
+                AddStop(writer, stop);
+            }
+        }
 
-                var attributes = new Dictionary<string, string>
-                {
-                    {"name", stop.Name},
-                    {"code", stop.Code},
-                    {"description", stop.Description},
-                    {"parent_station", stop.ParentStation},
-                    {"platform", stop.PlatformCode},
-                    {"levelid", stop.LevelId},
-                    {"wheelchairboarding", stop.WheelchairBoarding},
-                    {"zone", stop.Zone},
-                };
-                if (writer.TryGetAttribute("languagecode", out var languageCode)
-                    && !string.IsNullOrEmpty(languageCode))
-                {
-                    attributes["name:" + languageCode] = stop.Name;
-                }
+        private void AddStop(TransitDbWriter writer, global::GTFS.Entities.Stop stop)
+        {
+            // build the id.
+            var id = stop.Url;
+            if (string.IsNullOrEmpty(id))
+            {
+                id = _f.IdentifierPrefix + "stop/" + stop.Id;
+            }
 
+            // collect attributes.
+            var attributes = new Dictionary<string, string>
+            {
+                {"name", stop.Name},
+                {"code", stop.Code},
+                {"description", stop.Description},
+                {"parent_station", stop.ParentStation},
+                {"platform", stop.PlatformCode},
+                {"levelid", stop.LevelId},
+                {"wheelchairboarding", stop.WheelchairBoarding},
+                {"zone", stop.Zone},
+            };
+            if (writer.TryGetAttribute("languagecode", out var languageCode)
+                && !string.IsNullOrEmpty(languageCode))
+            {
+                attributes["name:" + languageCode] = stop.Name;
+            }
+
+            // add translated names.
+            if (!string.IsNullOrEmpty(stop.Name))
+            {
                 if (_f.Translations.TryGetValue(stop.Name, out var translated))
                 {
                     foreach (var (lng, term) in translated)
@@ -280,13 +331,19 @@ namespace Itinero.Transit.IO.GTFS.Data
                         attributes["name:" + lng] = term;
                     }
                 }
+            }
 
+            // add stop and keep id.
+            if (_addUnusedStops)
+            { // add stop here.
                 var stopId = writer.AddOrUpdateStop(
                     new Stop(id, (stop.Longitude, stop.Latitude), attributes));
                 _gtfsId2TdbId.Add(stop.Id, stopId);
             }
-
-            return _gtfsId2TdbId;
+            else
+            { // keep stop for later.
+                _stops[stop.Id] = new Stop(id, (stop.Longitude, stop.Latitude), attributes);
+            }
         }
 
         /// <summary>
@@ -298,7 +355,7 @@ namespace Itinero.Transit.IO.GTFS.Data
         /// <param name="writer"></param>
         /// <param name="startdate"></param>
         /// <param name="enddate"></param>
-        public void AddDataBetween(TransitDbWriter writer, DateTime startdate, DateTime enddate)
+        internal void AddDataBetween(TransitDbWriter writer, DateTime startdate, DateTime enddate)
         {
             var agencies = _f.Feed.Agencies.ToList();
             if (agencies.Count > 1)
@@ -320,8 +377,9 @@ namespace Itinero.Transit.IO.GTFS.Data
             writer.AttributesWritable["website"] = agency.URL;
             writer.AttributesWritable["charge:url"] = agency.FareURL;
 
-            var locationsAdded = AddLocations(writer).Count;
-            Log.Information($"Added {locationsAdded} stop locations");
+            // add stops.
+            AddStops(writer);
+            Log.Information($"Added {_gtfsId2TdbId.Count} stop locations");
 
             // First things first - lets convert everything to the timezone specified by the GTFS
             startdate = startdate.ConvertTo(_f.TimeZone);

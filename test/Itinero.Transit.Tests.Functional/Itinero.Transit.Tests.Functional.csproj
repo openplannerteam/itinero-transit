@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\src\Itinero.Transit.IO.GTFS\Itinero.Transit.IO.GTFS.csproj" />
       <ProjectReference Include="..\..\src\Itinero.Transit.IO.OSM\Itinero.Transit.IO.OSM.csproj" />
       <ProjectReference Include="..\..\src\Itinero.Transit\Itinero.Transit.csproj" />
       <ProjectReference Include="..\..\src\Itinero.Transit.IO.LC\Itinero.Transit.IO.LC.csproj" />

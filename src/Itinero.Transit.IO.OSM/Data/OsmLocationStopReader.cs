@@ -105,6 +105,8 @@ namespace Itinero.Transit.IO.OSM.Data
             }
         }
 
+        public long Count => _searchableLocations.Count;
+
         private static Stop CreateOsmStop((long lon, long lat) location)
         {
             var (lonRounded, latRounded) = location;
