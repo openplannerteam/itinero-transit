@@ -15,21 +15,21 @@ namespace Itinero.Transit.Tests.Core.Data
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
             wr0.AddOrUpdateStop(new Stop("b", (4.2, 4.100001)));
-            wr0.Close();
+            tdb0.CloseWriter();
 
 
             var tdb1 = new TransitDb(1);
             var wr1 = tdb1.GetWriter();
             wr1.AddOrUpdateStop(new Stop("a", (4.1, 4.1)));
-            wr1.Close();
+            tdb1.CloseWriter();
 
 
             var searchAround = new Stop("x", (4.15, 4.15));
 
-            var results = tdb0.Latest.StopsDb.GetInRange(searchAround, 50000);
+            var results = tdb0.Latest.Stops.GetInRange(searchAround, 50000);
             Assert.Single(results);
 
-            results = tdb1.Latest.StopsDb.GetInRange(searchAround, 50000);
+            results = tdb1.Latest.Stops.GetInRange(searchAround, 50000);
             Assert.Single(results);
 
 
@@ -44,25 +44,25 @@ namespace Itinero.Transit.Tests.Core.Data
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
             wr0.AddOrUpdateStop(new Stop("a", (4.0001, 4.100001)));
-            wr0.Close();
+            tdb0.CloseWriter();
 
 
             var tdb1 = new TransitDb(1);
             var wr1 = tdb1.GetWriter();
             wr1.AddOrUpdateStop(new Stop("b", (4.1, 4.1)));
-            wr1.Close();
+            tdb1.CloseWriter();
 
             var tdb2 = new TransitDb(2);
             var wr2 = tdb2.GetWriter();
             wr2.AddOrUpdateStop(new Stop("c", (4.2, 4.2)));
-            wr2.Close();
+            tdb2.CloseWriter();
 
 
-            var x = tdb0.Latest.StopsDb.GetInRange((4.1, 4.1), 500000).ToList();
+            var x = tdb0.Latest.Stops.GetInRange((4.1, 4.1), 500000).ToList();
             Assert.Single(x);
 
 
-            x = tdb1.Latest.StopsDb.GetInRange((4.1, 4.1), 500000).ToList();
+            x = tdb1.Latest.Stops.GetInRange((4.1, 4.1), 500000).ToList();
             Assert.Single(x);
 
 
@@ -71,7 +71,7 @@ namespace Itinero.Transit.Tests.Core.Data
                     new List<IStopsDb>
                     {
                         cached,
-                        tdb2.Latest.StopsDb
+                        tdb2.Latest.Stops
                     })
                 ;
 
@@ -90,33 +90,33 @@ namespace Itinero.Transit.Tests.Core.Data
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
             wr0.AddOrUpdateStop(new Stop("a", (4.0001, 4.100001)));
-            wr0.Close();
+            tdb0.CloseWriter();
 
 
             var tdb1 = new TransitDb(1);
             var wr1 = tdb1.GetWriter();
             wr1.AddOrUpdateStop(new Stop("b", (4.1, 4.1)));
-            wr1.Close();
+            tdb1.CloseWriter();
 
             var tdb2 = new TransitDb(2);
             var wr2 = tdb2.GetWriter();
             wr2.AddOrUpdateStop(new Stop("c", (4.2, 4.2)));
-            wr2.Close();
+            tdb2.CloseWriter();
 
 
             var stopsReader = StopsDbAggregator.CreateFrom(
                     new List<IStopsDb>
                     {
-                        tdb0.Latest.StopsDb,
-                        tdb1.Latest.StopsDb,
-                        tdb2.Latest.StopsDb
+                        tdb0.Latest.Stops,
+                        tdb1.Latest.Stops,
+                        tdb2.Latest.Stops
                     });
             
             stopsReader.PostProcess(6);
 
             
             var results = stopsReader.GetInRange((4.1, 4.1), 250000);
-            Assert.Equal(3, results.Count());
+            Assert.Equal(3, results.Count);
 
             var ids = new HashSet<string>();
             ids.UnionWith(results.Select(x => x.GlobalId));
@@ -131,20 +131,20 @@ namespace Itinero.Transit.Tests.Core.Data
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
             wr0.AddOrUpdateStop(new Stop("a", (4.0001, 4.100001)));
-            wr0.Close();
+            tdb0.CloseWriter();
 
 
             var tdb1 = new TransitDb(1);
             var wr1 = tdb1.GetWriter();
             wr1.AddOrUpdateStop(new Stop("b", (4.1, 4.1)));
-            wr1.Close();
+            tdb1.CloseWriter();
 
 
             var stopsDb = StopsDbAggregator.CreateFrom(
                     new List<IStopsDb>
                     {
-                        tdb0.Latest.StopsDb,
-                        tdb1.Latest.StopsDb
+                        tdb0.Latest.Stops,
+                        tdb1.Latest.Stops
                     })
                 ;
 
@@ -158,26 +158,26 @@ namespace Itinero.Transit.Tests.Core.Data
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
             wr0.AddOrUpdateStop(new Stop("a", (4.0001, 4.100001)));
-            wr0.Close();
+            tdb0.CloseWriter();
 
 
             var tdb1 = new TransitDb(1);
             var wr1 = tdb1.GetWriter();
             wr1.AddOrUpdateStop(new Stop("b", (4.1, 4.1)));
-            wr1.Close();
+            tdb1.CloseWriter();
 
             var tdb2 = new TransitDb(2);
             var wr2 = tdb2.GetWriter();
             wr2.AddOrUpdateStop(new Stop("c", (4.2, 4.2)));
-            wr2.Close();
+            tdb2.CloseWriter();
 
 
             var stopsReader = StopsDbAggregator.CreateFrom(
                     new List<IStopsDb>
                     {
-                        tdb0.Latest.StopsDb,
-                        tdb1.Latest.StopsDb,
-                        tdb2.Latest.StopsDb
+                        tdb0.Latest.Stops,
+                        tdb1.Latest.Stops,
+                        tdb2.Latest.Stops
                     });
 
             Assert.Equal(3, stopsReader.Count());
@@ -190,26 +190,26 @@ namespace Itinero.Transit.Tests.Core.Data
             var tdb0 = new TransitDb(5);
             var wr0 = tdb0.GetWriter();
             wr0.AddOrUpdateStop(new Stop("a", (4.0001, 4.100001)));
-            wr0.Close();
+            tdb0.CloseWriter();
 
 
             var tdb1 = new TransitDb(8);
             var wr1 = tdb1.GetWriter();
             wr1.AddOrUpdateStop(new Stop("b", (4.1, 4.1)));
-            wr1.Close();
+            tdb1.CloseWriter();
 
             var tdb2 = new TransitDb(3);
             var wr2 = tdb2.GetWriter();
             wr2.AddOrUpdateStop(new Stop("c", (4.2, 4.2)));
-            wr2.Close();
+            tdb2.CloseWriter();
 
 
             var stopsReader = StopsDbAggregator.CreateFrom(
                     new List<IStopsDb>
                     {
-                        tdb0.Latest.StopsDb,
-                        tdb1.Latest.StopsDb,
-                        tdb2.Latest.StopsDb
+                        tdb0.Latest.Stops,
+                        tdb1.Latest.Stops,
+                        tdb2.Latest.Stops
                     });
 
             Assert.Equal(3, stopsReader.Count());
@@ -221,26 +221,26 @@ namespace Itinero.Transit.Tests.Core.Data
             var tdb0 = new TransitDb(5);
             var wr0 = tdb0.GetWriter();
             wr0.AddOrUpdateStop(new Stop("a", (4.0001, 4.100001)));
-            wr0.Close();
+            tdb0.CloseWriter();
 
 
             var tdb1 = new TransitDb(8);
             var wr1 = tdb1.GetWriter();
             wr1.AddOrUpdateStop(new Stop("b", (4.1, 4.1)));
-            wr1.Close();
+            tdb1.CloseWriter();
 
             var tdb2 = new TransitDb(3);
             var wr2 = tdb2.GetWriter();
             wr2.AddOrUpdateStop(new Stop("c", (4.2, 4.2)));
-            wr2.Close();
+            tdb2.CloseWriter();
 
 
             var stopsReader = StopsDbAggregator.CreateFrom(
                     new List<IStopsDb>
                     {
-                        tdb0.Latest.StopsDb,
-                        tdb1.Latest.StopsDb,
-                        tdb2.Latest.StopsDb
+                        tdb0.Latest.Stops,
+                        tdb1.Latest.Stops,
+                        tdb2.Latest.Stops
                     });
 
            Assert.True(stopsReader.TryGet("a", out _));
@@ -256,11 +256,11 @@ namespace Itinero.Transit.Tests.Core.Data
 
             var wr = tdb5.GetWriter();
             var realStop = wr.AddOrUpdateStop(new Stop("stop5", (6.86, 51.684)));
-            wr.Close();
+           tdb5.CloseWriter();
 
             var tdb10 = new TransitDb(10);
             var reader =
-                StopsDbAggregator.CreateFrom(new List<IStopsDb>{tdb5.Latest.StopsDb, tdb10.Latest.StopsDb});
+                StopsDbAggregator.CreateFrom(new List<IStopsDb>{tdb5.Latest.Stops, tdb10.Latest.Stops});
             Assert.False(reader.TryGet(new StopId(5, 12), out _));
             Assert.False(reader.TryGet(new StopId(0, 12), out _));
             Assert.False(reader.TryGet(new StopId(10, 12), out _));
@@ -276,26 +276,26 @@ namespace Itinero.Transit.Tests.Core.Data
             var tdb0 = new TransitDb(0);
             var wr0 = tdb0.GetWriter();
             wr0.AddOrUpdateStop(new Stop("a", (4.0001, 4.100001)));
-            wr0.Close();
+            tdb0.CloseWriter();
 
 
             var tdb1 = new TransitDb(1);
             var wr1 = tdb1.GetWriter();
             wr1.AddOrUpdateStop(new Stop("b", (4.1, 4.1)));
-            wr1.Close();
+            tdb1.CloseWriter();
 
             var tdb2 = new TransitDb(2);
             var wr2 = tdb2.GetWriter();
             wr2.AddOrUpdateStop(new Stop("c", (4.2, 4.2)));
-            wr2.Close();
+            tdb2.CloseWriter();
 
 
             var stopsReader = StopsDbAggregator.CreateFrom(new List<IStopsDb>{
                 StopsDbAggregator.CreateFrom(new List<IStopsDb>
                 {
-                    tdb0.Latest.StopsDb,
-                    tdb1.Latest.StopsDb.UseCache()}),
-                tdb2.Latest.StopsDb}
+                    tdb0.Latest.Stops,
+                    tdb1.Latest.Stops.UseCache()}),
+                tdb2.Latest.Stops}
             );
 
             Assert.Equal(3, stopsReader.Count());

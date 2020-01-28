@@ -18,8 +18,9 @@ namespace Itinero.Transit.Tests.Functional.Data
                 Input.Item1.Latest.WriteTo(stream);
                 stream.Seek(0, SeekOrigin.Begin);
                 var newTdb = new TransitDb(0);
-                newTdb.GetWriter().ReadFrom(stream).Close();
-                True(Equals(Input.Item1.Latest.ConnectionsDb.LatestDate, newTdb.Latest.ConnectionsDb.LatestDate));
+                newTdb.GetWriter().ReadFrom(stream);
+                newTdb.CloseWriter();
+                True(Equals(Input.Item1.Latest.Connections.LatestDate, newTdb.Latest.Connections.LatestDate));
                 new ConnectionsDbDepartureEnumeratorTest().Run((newTdb, Input.expectedNumberOfConnections));
 
             }

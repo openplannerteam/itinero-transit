@@ -32,7 +32,7 @@ namespace Itinero.Transit.Tests.Functional.Regression
             _transitDb = transitDb;
             _departureTime = departureTime;
             _arrivalTime = arrivalTime;
-            _reader = _transitDb.Latest.StopsDb.UseCache();
+            _reader = _transitDb.Latest.Stops.UseCache();
             
         }
 
@@ -150,7 +150,8 @@ namespace Itinero.Transit.Tests.Functional.Regression
                 return;
             }
 
-            var inRange = stops.GetInRange(stop, p.WalksGenerator.Range()).ToList();
+            var inRange = 
+                stops.GetInRange(stop, p.WalksGenerator.Range()).ToList();
             if (inRange == null 
                 || !inRange.Any() 
                 || inRange.Count == 1 && inRange[0].Equals(stop))

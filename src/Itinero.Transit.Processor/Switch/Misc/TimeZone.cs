@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using GeoAPI.CoordinateSystems;
 using Itinero.Transit.Data;
 using Itinero.Transit.Utils;
 
@@ -72,19 +70,19 @@ namespace Itinero.Transit.Processor.Switch.Misc
         }
 
 
-        public IEnumerable<TransitDb> Modify(Dictionary<string, string> parameters, List<TransitDb> tdbs)
+        public List<TransitDbSnapShot> Modify(Dictionary<string, string> parameters, List<TransitDbSnapShot> tdbs)
         {
             Run(parameters);
             return tdbs;
         }
 
-        public IEnumerable<TransitDb> Generate(Dictionary<string, string> parameters)
+        public List<TransitDbSnapShot> Generate(Dictionary<string, string> parameters)
         {
             Run(parameters);
-            return new List<TransitDb>();
+            return new List<TransitDbSnapShot>();
         }
 
-        public void Use(Dictionary<string, string> parameters, IEnumerable<TransitDbSnapShot> transitDbs)
+        public void Use(Dictionary<string, string> parameters, List<TransitDbSnapShot> transitDbs)
         {
             Run(parameters);
         }

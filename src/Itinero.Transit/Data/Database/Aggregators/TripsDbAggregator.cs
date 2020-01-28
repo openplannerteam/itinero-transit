@@ -21,7 +21,7 @@ namespace Itinero.Transit.Data.Aggregators
         
         public static ITripsDb CreateFrom(IEnumerable<TransitDbSnapShot> snapshots)
         {
-            var dbs = snapshots.Select(sn => sn.TripsDb).ToList();
+            var dbs = snapshots.Select(sn => sn.Trips).ToList();
             return CreateFrom(dbs);
         }
         

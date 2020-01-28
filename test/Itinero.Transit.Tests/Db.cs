@@ -70,14 +70,14 @@ namespace Itinero.Transit.Tests
                 new DateTime(2018, 12, 04, 00, 30, 00, DateTimeKind.Utc),
                 120, new TripId(0, 100), 0));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             return transitDb;
         }
 
         public static Connection GetConn(this TransitDbSnapShot db, uint id)
         {
-            var reader = db.ConnectionsDb;
+            var reader = db.Connections;
             return reader.Get(new ConnectionId(0, id));
         }
     }

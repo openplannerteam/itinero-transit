@@ -15,7 +15,7 @@ namespace Itinero.Transit.Tests.Functional.Data
             // enumerate connections by departure time.
             var tt = 0;
             var forwardCount = (uint) 0;
-            var connections = latest.ConnectionsDb;
+            var connections = latest.Connections;
             var all = new List<string>();
             foreach (var c in connections)
             {
@@ -29,7 +29,7 @@ namespace Itinero.Transit.Tests.Functional.Data
             // enumerate connections by departure time, but in reverse.
             tt = 0;
             forwardCount = 0;
-            var departureEnumerator = latest.ConnectionsDb.GetEnumeratorAt(latest.ConnectionsDb.EarliestDate);
+            var departureEnumerator = latest.Connections.GetEnumeratorAt(latest.Connections.EarliestDate);
             var seenInForward = new HashSet<string>();
 
             while (departureEnumerator.MoveNext())
@@ -49,7 +49,7 @@ namespace Itinero.Transit.Tests.Functional.Data
 
             // enumerate connections by departure time, but in reverse.
             var backwardsCount = (uint) 0;
-            departureEnumerator = latest.ConnectionsDb.GetEnumeratorAt(latest.ConnectionsDb.LatestDate + 1);
+            departureEnumerator = latest.Connections.GetEnumeratorAt(latest.Connections.LatestDate + 1);
             var seenInBackwards = new HashSet<string>();
             while (departureEnumerator.MovePrevious())
             {
@@ -68,7 +68,7 @@ namespace Itinero.Transit.Tests.Functional.Data
 
             var oneMissed = false;
             var i = 0;
-            var cdb = latest.ConnectionsDb;
+            var cdb = latest.Connections;
             foreach (var cid in all)
             {
                 if (!seenInForward.Contains(cid))
@@ -86,7 +86,7 @@ namespace Itinero.Transit.Tests.Functional.Data
                 if (!seenInBackwards.Contains(cid))
                 {
                     oneMissed = true;
-                    var c = latest.ConnectionsDb.Get(cid);
+                    var c = latest.Connections.Get(cid);
 
                     Information($"The backwards enumerator did not contain {cid} (dep time {c.DepartureTime})");
                 }

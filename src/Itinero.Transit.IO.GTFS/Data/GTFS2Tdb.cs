@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using GTFS.Entities;
 using GTFS.Entities.Enumerations;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Compacted;
 using Itinero.Transit.Data.Core;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Utils;
-using Stop = Itinero.Transit.Data.Core.Stop;
 using Trip = GTFS.Entities.Trip;
 
 // ReSharper disable PossibleInvalidOperationException
@@ -63,7 +62,7 @@ namespace Itinero.Transit.IO.GTFS.Data
         {
         }
 
-        private void AddService(TransitDbWriter writer, Calendar service, DateTime day, DateTime startDate,
+        private void AddService(CompactedWriter writer, string service, DateTime day, DateTime startDate,
             DateTime endDate)
         {
             // We know that 'service' drives today
@@ -71,113 +70,62 @@ namespace Itinero.Transit.IO.GTFS.Data
             // Note that our 'trip' is slightly different from the gtfs trip:
             // our trip has a specific time and date, whereas a gtfs trip drives at a specific time, over multiple dates
 
-            if (!_f.ServiceIdToTrip.TryGetValue(service.ServiceId, out var gtfsTrips))
+            if (!_f.ServiceIdToTrip.TryGetValue(service, out var gtfsTrips))
             {
                 // Seems like there is no trip associated with this service
                 // Print an error message and go on
 
-                Log.Error($"No trip found for serviceId {service.ServiceId} found.");
+                Log.Error($"No trip found for serviceId {service} found.");
 
                 return;
             }
-            
-            Log.Information($"Found {gtfsTrips.Count} trips for service {service.ServiceId}");
+
+            var c = gtfsTrips.Count;
+            Log.Information($"Found {c} trips for service {service}");
 
             // gtfsTrips are the trips we need to add    
+            var i = 0;
             foreach (var gtfsTrip in gtfsTrips) // the trips for this given service
             {
                 AddCompleteTrip(writer, gtfsTrip, day, startDate, endDate);
+                i++;
+                if (i % 100 == 0)
+                {
+                    Log.Information($"Added trip {i}/{c}");
+                }
             }
         }
 
-        private void AddCompleteTrip(TransitDbWriter writer, Trip gtfsTrip, DateTime day, DateTime startDate,
-            DateTime endDate)   
+        private void AddCompleteTrip(CompactedWriter writer, Trip gtfsTrip, DateTime day, DateTime startDate,
+            DateTime endDate)
         {
-            /* Note that we use 'blockId' to generate the tripID
-             A block identifies the vehicle throughout the day
-             An example is the line Brugge -> ....... -> Kortrijk -> ....... -> Gent
-             (The -> ..... -> represents many small stops in between)
-             It is advertised as two distinct trips: the part 'Brugge' -> ..... -> 'Kortrijk' and 'Kortrijk' -> .... -> 'Gent'
-             However, in practice, this is one continuous trip, and the traveller can stay seated on it (e.g. to depart in Brugge and reach one of the small stops between Kortrijk and Ghent)
-            
-             Another advantage is that, if two trains join at C and split again at D:
-             
-             A                x
-               \            /
-                 C =====> D
-               /            \
-             B                Y
-             
-             (Train 1: A -> C -> D -> X)
-             (Train 2: B -> C -> D -> Y)
-             
-             A passenger going from A to Y still has to "transfer" (he has to get out, and get in to the other part of the train)
-             
-             The blockID neatly captures this and will force a transfer onto the passenger.
-             
-            */
-
-            /*
-                  A disadvantage is that we loose the neat, predefined trips, e.g. the journey above 
-                  Brugge -> .... -> Kortrijk -> .... -> Ghent is not individually traceable anymore.
-                  We solve this by adding some extra tagging onto the connections and a secondary trip.
-                  E.g. information such as 'Headsign', 'Route', ... are tacked onto a secondary trip element which contains the actual metadat
-                  Note that the identifier of this trip-meta is added to the connections as well.
-                  The GlobalId of the connection does use the tripID as well, in order to make the metatrip-id recoverable
-                 */
-
-            if (string.IsNullOrEmpty(gtfsTrip.BlockId))
-            {
-                Log.Warning($"No BlockId given - using tripId {gtfsTrip.Id} instead");
-                gtfsTrip.BlockId = gtfsTrip.Id;
-            }
-
-            var tripGlobalId = $"{_f.IdentifierPrefix}trip/{gtfsTrip.BlockId}/{day:yyyyMMdd}";
-
-            Transit.Data.Core.Trip vehicleTrip;
-            if (writer.TripsDb.TryGet(tripGlobalId, out var existingTrip))
-            {
-                existingTrip.TryGetAttribute("headsign", out var existingHeadsign);
-                existingHeadsign = existingHeadsign ?? "";
-                existingTrip.TryGetAttribute("shapeid", out var existingShapeId);
-                existingShapeId = existingShapeId ?? "";
-                existingTrip.TryGetAttribute("shortName", out var existingShortName);
-                existingShortName = existingShortName ?? "";
-
-                // We merge all values with ";"
-                // Note: even when no information is given, we add a ";" in order to be able to match them afterwards
-                vehicleTrip =
-                    new Transit.Data.Core.Trip(tripGlobalId,
-                        new Dictionary<string, string>
-                        {
-                            {"headsign", existingHeadsign + ";" + gtfsTrip.Headsign},
-                            {"shapeid", existingShapeId + ";" + gtfsTrip.ShapeId},
-                            {"shortname", existingShortName + ";" + gtfsTrip.ShortName}
-                        });
-            }
-            else
-            {
-                vehicleTrip =
-                    new Transit.Data.Core.Trip(tripGlobalId,
-                        new Dictionary<string, string>
-                        {
-                            {"headsign", gtfsTrip.Headsign},
-                            {"blockid", gtfsTrip.BlockId},
-                            {"shapeid", gtfsTrip.ShapeId},
-                            {"shortname", gtfsTrip.ShortName}
-                        });
-            }
-
-
-            var vehicleTripId = writer.AddOrUpdateTrip(vehicleTrip);
-
+            var vehicleTripId = AddVehicleTripId(writer, gtfsTrip, day);
 
             /*
                  Now that we know all about the trip, we have to figure out where and when the train drives
                  For this, we use stopstimes.txt
                  */
-            var stopTimes = _f.Feed.StopTimes.GetForTrip(gtfsTrip.Id).OrderBy(stopTime => stopTime.StopSequence)
+            var stopTimes = _f.Feed.StopTimes.GetForTrip(gtfsTrip.Id)
+                .OrderBy(stopTime => stopTime.StopSequence)
                 .ToList();
+
+
+            var stops = stopTimes.Select(time => writer.Stops.GetId(time.StopId)).ToList();
+            Route route;
+            if (!writer.RoutesDb.TryGetId(stops, out var routeId))
+            {
+                route = new Route(_f.IdentifierPrefix+"routes/"+writer.RoutesDb.Count(),stops);
+                routeId = writer.AddOrUpdateRoute(route);
+            }
+            else
+            {
+                route = writer.RoutesDb.Get(routeId);
+            }
+
+            
+            
+            // TODO ADD THIS THING IN A COMPACTED WAYx
+
 
             for (var i = 1; i < stopTimes.Count; i++)
             {
@@ -218,6 +166,87 @@ namespace Itinero.Transit.IO.GTFS.Data
             }
         }
 
+        private TripId AddVehicleTripId(IWriter writer, Trip gtfsTrip, DateTime day)
+        {
+/* Note that we use 'blockId' to generate the tripID
+             A block identifies the vehicle throughout the day
+             An example is the line Brugge -> ....... -> Kortrijk -> ....... -> Gent
+             (The -> ..... -> represents many small stops in between)
+             It is advertised as two distinct trips: the part 'Brugge' -> ..... -> 'Kortrijk' and 'Kortrijk' -> .... -> 'Gent'
+             However, in practice, this is one continuous trip, and the traveller can stay seated on it (e.g. to depart in Brugge and reach one of the small stops between Kortrijk and Ghent)
+            
+             Another advantage is that, if two trains join at C and split again at D:
+             
+             A                x
+               \            /
+                 C =====> D
+               /            \
+             B                Y
+             
+             (Train 1: A -> C -> D -> X)
+             (Train 2: B -> C -> D -> Y)
+             
+             A passenger going from A to Y still has to "transfer" (he has to get out, and get in to the other part of the train)
+             
+             The blockID neatly captures this and will force a transfer onto the passenger.
+             
+            */
+
+            /*
+                  A disadvantage is that we loose the neat, predefined trips, e.g. the journey above 
+                  Brugge -> .... -> Kortrijk -> .... -> Ghent is not individually traceable anymore.
+                  We solve this by adding some extra tagging onto the connections and a secondary trip.
+                  E.g. information such as 'Headsign', 'Route', ... are tacked onto a secondary trip element which contains the actual metadat
+                  Note that the identifier of this trip-meta is added to the connections as well.
+                  The GlobalId of the connection does use the tripID as well, in order to make the metatrip-id recoverable
+                 */
+
+            if (string.IsNullOrEmpty(gtfsTrip.BlockId))
+            {
+                gtfsTrip.BlockId = gtfsTrip.Id;
+            }
+
+            var tripGlobalId = $"{_f.IdentifierPrefix}trip/{gtfsTrip.BlockId}/{day:yyyyMMdd}";
+
+            Transit.Data.Core.Trip vehicleTrip;
+            if (writer.Trips.TryGet(tripGlobalId, out var existingTrip))
+            {
+                existingTrip.TryGetAttribute("headsign", out var existingHeadsign);
+                existingHeadsign = existingHeadsign ?? "";
+                existingTrip.TryGetAttribute("shapeid", out var existingShapeId);
+                existingShapeId = existingShapeId ?? "";
+                existingTrip.TryGetAttribute("shortName", out var existingShortName);
+                existingShortName = existingShortName ?? "";
+
+                // We merge all values with ";"
+                // Note: even when no information is given, we add a ";" in order to be able to match them afterwards
+                vehicleTrip =
+                    new Transit.Data.Core.Trip(tripGlobalId,
+                        new Dictionary<string, string>
+                        {
+                            {"headsign", existingHeadsign + ";" + gtfsTrip.Headsign},
+                            {"shapeid", existingShapeId + ";" + gtfsTrip.ShapeId},
+                            {"shortname", existingShortName + ";" + gtfsTrip.ShortName}
+                        });
+            }
+            else
+            {
+                vehicleTrip =
+                    new Transit.Data.Core.Trip(tripGlobalId,
+                        new Dictionary<string, string>
+                        {
+                            {"headsign", gtfsTrip.Headsign},
+                            {"blockid", gtfsTrip.BlockId},
+                            {"shapeid", gtfsTrip.ShapeId},
+                            {"shortname", gtfsTrip.ShortName}
+                        });
+            }
+
+
+            var vehicleTripId = writer.AddOrUpdateTrip(vehicleTrip);
+            return vehicleTripId;
+        }
+
         /// <summary>
         /// Adds all the trips and connections that are driving on the given day.
         /// Connections departing (strictly) before startDate or departing after or on endDate are not added
@@ -227,7 +256,7 @@ namespace Itinero.Transit.IO.GTFS.Data
         /// <param name="startDate"></param>
         /// <param name="endDate"></param>
         /// <exception cref="Exception"></exception>
-        internal void AddDay(TransitDbWriter writer, DateTime day, DateTime startDate, DateTime endDate)
+        internal void AddDay(CompactedWriter writer, DateTime day, DateTime startDate, DateTime endDate)
         {
             if (_gtfsId2TdbId == null)
             {
@@ -247,7 +276,7 @@ namespace Itinero.Transit.IO.GTFS.Data
         }
 
 
-        internal Dictionary<string, StopId> AddLocations(TransitDbWriter writer)
+        internal Dictionary<string, StopId> AddLocations(IWriter writer)
         {
             _gtfsId2TdbId = new Dictionary<string, StopId>();
 
@@ -302,7 +331,7 @@ namespace Itinero.Transit.IO.GTFS.Data
         /// <param name="writer"></param>
         /// <param name="startdate"></param>
         /// <param name="enddate"></param>
-        public void AddDataBetween(TransitDbWriter writer, DateTime startdate, DateTime enddate)
+        public void AddDataBetween(CompactedWriter writer, DateTime startdate, DateTime enddate)
         {
             var agencies = _f.Feed.Agencies.ToList();
             if (agencies.Count > 1)
@@ -311,18 +340,39 @@ namespace Itinero.Transit.IO.GTFS.Data
                     "This GTFS contains data on multiple operators, this is not supported at this moment");
             }
 
+            if (startdate >= enddate)
+            {
+                throw new ArgumentException("Weird, the startdate falls after the enddate");
+            }
+
+            var (rangeStart, rangeEnd) = _f.TimeRange;
+            var range = $"The range of this GTFS runs from {rangeStart:s} till {rangeEnd:s}";
+            Log.Information(range);
+            if (startdate < rangeStart)
+            {
+                throw new ArgumentException(
+                    $"The specified startdate ({startdate:s} falls before the first date that this GTFS contains. {range}");
+            }
+
+            if (enddate > rangeEnd)
+            {
+                throw new ArgumentException(
+                    $"The specified enddate ({enddate:s} falls after the last date that this GTFS contains. {range}");
+            }
+
+
             var agency = agencies[0];
 
-            writer.GlobalId = agency.URL;
-            writer.AttributesWritable["email"] = agency.Email;
-            writer.AttributesWritable["id"] = agency.Id;
-            writer.AttributesWritable["name"] = agency.Name;
-            writer.AttributesWritable["phone"] = agency.Phone;
-            writer.AttributesWritable["timezone"] = agency.Timezone;
-            writer.AttributesWritable["languagecode"] = agency.LanguageCode;
-            writer.AttributesWritable["url"] = agency.URL;
-            writer.AttributesWritable["website"] = agency.URL;
-            writer.AttributesWritable["charge:url"] = agency.FareURL;
+            writer.SetGlobalId(agency.URL);
+            writer.SetAttribute("email", agency.Email);
+            writer.SetAttribute("id", agency.Id);
+            writer.SetAttribute("name", agency.Name);
+            writer.SetAttribute("phone", agency.Phone);
+            writer.SetAttribute("timezone", agency.Timezone);
+            writer.SetAttribute("languagecode", agency.LanguageCode);
+            writer.SetAttribute("url", agency.URL);
+            writer.SetAttribute("website", agency.URL);
+            writer.SetAttribute("charge:url", agency.FareURL);
 
             var locationsAdded = AddLocations(writer).Count;
             Log.Information($"Added {locationsAdded} stop locations");

@@ -1,11 +1,12 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Itinero.Transit.Utils
 {
-    public class KeyList<T>
+    public class KeyList<T> : IEnumerable<T>, IReadOnlyList<T>
     {
-        private readonly List<T> _keys;
+        private readonly IReadOnlyList<T> _keys;
 
         public KeyList(IEnumerable<T> keys)
         {
@@ -15,6 +16,11 @@ namespace Itinero.Transit.Utils
         private bool Equals(KeyList<T> other)
         {
             return _keys.SequenceEqual(other._keys);
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return _keys.GetEnumerator();
         }
 
         public override bool Equals(object obj)
@@ -35,5 +41,14 @@ namespace Itinero.Transit.Utils
 
             return hash;
         }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public int Count => _keys.Count;
+
+        public T this[int index] => _keys[index];
     }
 }

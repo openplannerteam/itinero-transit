@@ -41,7 +41,7 @@ namespace Itinero.Transit.IO.VectorTiles
 
 
             var points = new List<Coordinate>();
-            var allStops = tdb.StopsDb.GetAll(route.Reverse().ToList());
+            var allStops = tdb.Stops.GetAll(route.Reverse().ToList());
             var minLat = double.MaxValue;
             var minLon = double.MaxValue;
             var maxLat = double.MinValue;

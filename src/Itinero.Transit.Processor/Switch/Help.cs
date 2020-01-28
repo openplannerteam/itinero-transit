@@ -35,13 +35,13 @@ namespace Itinero.Transit.Processor.Switch
         }
 
 
-        public IEnumerable<TransitDb> Generate(Dictionary<string, string> parameters)
+        public List<TransitDbSnapShot> Generate(Dictionary<string, string> parameters)
         {
             PrintHelp(parameters);
-            return new List<TransitDb>();
+            return new List<TransitDbSnapShot>();
         }
 
-        public void Use(Dictionary<string, string> parameters, IEnumerable<TransitDbSnapShot> _)
+        public void Use(Dictionary<string, string> parameters, List<TransitDbSnapShot> _)
         {
             PrintHelp(parameters);
         }

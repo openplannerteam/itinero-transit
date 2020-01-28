@@ -72,9 +72,9 @@ namespace Itinero.Transit.Tests.Core.Walk
             var wr = tdb.GetWriter();
             var stop0 = wr.AddOrUpdateStop(new Stop("0", (6, 50)));
             var stop1 = wr.AddOrUpdateStop(new Stop("1", (6.001, 50)));
-            wr.Close();
+            tdb.CloseWriter();
 
-            var stops = tdb.Latest.StopsDb;
+            var stops = tdb.Latest.Stops;
 
             var exp = (uint) DistanceEstimate.DistanceEstimateInMeter((6, 50), (6.001, 50));
 
@@ -95,9 +95,9 @@ namespace Itinero.Transit.Tests.Core.Walk
             var wr = tdb.GetWriter();
             var stop0 = wr.AddOrUpdateStop(new Stop("0", (6, 50)));
             var stop1 = wr.AddOrUpdateStop(new Stop("1", (6.001, 50)));
-            wr.Close();
+            tdb.CloseWriter();
 
-            var stops = tdb.Latest.StopsDb;
+            var stops = tdb.Latest.Stops;
 
             var exp = (uint) DistanceEstimate.DistanceEstimateInMeter((6, 50), (6.001, 50));
 

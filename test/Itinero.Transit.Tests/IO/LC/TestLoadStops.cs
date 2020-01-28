@@ -30,9 +30,9 @@ namespace Itinero.Transit.Tests.IO.LC
             var transitDb = new TransitDb(0);
             var wr = transitDb.GetWriter();
             wr.AddAllLocations(allLocations);
-            wr.Close();
+            transitDb.CloseWriter();
 
-            var stops = transitDb.Latest.StopsDb;
+            var stops = transitDb.Latest.Stops;
          
             Assert.Equal(expectedCount, stops.Count());
 

@@ -7,7 +7,7 @@ namespace Itinero.Transit.Data.Simple
     public abstract class SimpleDb<TId, T> : IDatabase<TId, T>
         where TId : struct, InternalId where T : IGlobalId
     {
-        public readonly uint DatabaseId;
+        protected readonly uint DatabaseId;
         public IEnumerable<uint> DatabaseIds { get; }
 
         /// <summary>
@@ -18,22 +18,21 @@ namespace Itinero.Transit.Data.Simple
         /// <summary>
         /// A mapping of 'globalId' onto the index in _all
         /// </summary>
-        private Dictionary<string, uint> _globalIdMapping = new Dictionary<string, uint>();
+        private readonly Dictionary<string, uint> _globalIdMapping = new Dictionary<string, uint>();
 
         private TId _idFactory = new TId();
 
-        public SimpleDb(uint dbId)
+        protected SimpleDb(uint dbId)
         {
             DatabaseId = dbId;
             DatabaseIds = new[] {DatabaseId};
         }
 
-        public SimpleDb(SimpleDb<TId, T> copyFrom) : this(copyFrom.DatabaseId)
+        protected SimpleDb(SimpleDb<TId, T> copyFrom) : this(copyFrom.DatabaseId)
         {
             Data = new List<T>(copyFrom.Data);
             _globalIdMapping = new Dictionary<string, uint>(copyFrom._globalIdMapping);
         }
-
 
         public TId Add(T value)
         {
@@ -81,6 +80,7 @@ namespace Itinero.Transit.Data.Simple
             {
                 return default(T);
             }
+
             return Data[0];
         }
 
@@ -90,6 +90,7 @@ namespace Itinero.Transit.Data.Simple
             {
                 return default(T);
             }
+
             return Data[Data.Count - 1];
         }
 
@@ -115,6 +116,7 @@ namespace Itinero.Transit.Data.Simple
             return GetEnumerator();
         }
 
+
         private class SimpleDbEnumerator : IEnumerator<T>
         {
             private readonly SimpleDb<TId, T> _db;
@@ -134,6 +136,7 @@ namespace Itinero.Transit.Data.Simple
                 {
                     return false;
                 }
+
                 Current = _db.Data[_next];
                 _next++;
                 return true;

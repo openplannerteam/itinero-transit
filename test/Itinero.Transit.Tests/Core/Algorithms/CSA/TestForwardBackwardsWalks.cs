@@ -25,9 +25,9 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var stop0 = wr.AddOrUpdateStop(new Stop("0", (3.00, 50.00)));
             var stop1 = wr.AddOrUpdateStop(new Stop("1", (3.001, 50.001)));
 
-            wr.Close();
+            tdb.CloseWriter();
 
-            var stops = tdb.Latest.StopsDb;
+            var stops = tdb.Latest.Stops;
 
             var d = (uint) DistanceEstimate.DistanceEstimateInMeter((3.00,50.00), (3.001, 50.001));
 
@@ -90,7 +90,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             wr.AddOrUpdateConnection(new Connection(
                 stop1, stop0, "qsdf", DateTime.Now.ToUniversalTime().AddMinutes(10),
                 10 * 60, new TripId(0, 0), 0));
-            wr.Close();
+            tdb.CloseWriter();
 
 
             var easJ = tdb.SelectProfile(

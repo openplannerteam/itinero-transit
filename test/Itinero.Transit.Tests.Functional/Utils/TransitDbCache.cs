@@ -15,17 +15,18 @@ namespace Itinero.Transit.Tests.Functional.Utils
         public static TransitDb Get(string path, uint index)
         {
             var key = (path, index);
-            if (!_tdbCache.ContainsKey(key))
+            if (_tdbCache.ContainsKey(key))
             {
-                var tdb = new TransitDb(index);
-                var wr = tdb.GetWriter();
-                wr.ReadFrom(path);
-                wr.Close();
-                _tdbCache[key] = tdb;
+                return _tdbCache[key];
             }
+
+            var tdb = new TransitDb(index);
+            var wr = tdb.GetWriter();
+            wr.ReadFrom(path);
+            tdb.CloseWriter();
+            _tdbCache[key] = tdb;
 
             return _tdbCache[key];
         }
-
     }
 }

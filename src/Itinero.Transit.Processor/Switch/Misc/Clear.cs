@@ -22,9 +22,9 @@ namespace Itinero.Transit.Processor.Switch.Misc
         }
 
 
-        public IEnumerable<TransitDb> Modify(Dictionary<string, string> __, List<TransitDb> _)
+        public List<TransitDbSnapShot> Modify(Dictionary<string, string> __, List<TransitDbSnapShot> _)
         {
-            return new List<TransitDb>();
+            return new List<TransitDbSnapShot>();
         }
     }
 }

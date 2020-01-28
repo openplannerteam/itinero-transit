@@ -14,13 +14,13 @@ namespace Itinero.Transit.IO.LC
 {
     internal static class WriterExtensions
     {
-        public static void AddAllLocations(this TransitDbWriter writer,
+        public static void AddAllLocations(this IWriter writer,
             LinkedConnectionDataset linkedConnectionDataset)
         {
             writer.AddAllLocations(linkedConnectionDataset.LocationProvider);
         }
 
-        internal static void AddAllLocations(this TransitDbWriter writer, LocationFragment locationsFragment)
+        internal static void AddAllLocations(this IWriter writer, LocationFragment locationsFragment)
         {
             foreach (var location in locationsFragment.Locations)
             {
@@ -31,7 +31,7 @@ namespace Itinero.Transit.IO.LC
                 $"Importing locations: All {locationsFragment.Locations.Count} locations imported");
         }
 
-        public static (int loaded, int reused) AddAllConnections(this TransitDbWriter writer,
+        public static (int loaded, int reused) AddAllConnections(this IWriter writer,
             LinkedConnectionDataset p, DateTime startDate,
             DateTime endDate)
         {
@@ -52,7 +52,7 @@ namespace Itinero.Transit.IO.LC
         }
 
 
-        private static (int loaded, int ofWhichReused) AddTimeTableWindow(this TransitDbWriter writer,
+        private static (int loaded, int ofWhichReused) AddTimeTableWindow(this IWriter writer,
             ConnectionProvider cons, LocationFragment locations,
             DateTime startDate, DateTime endDate)
         {
@@ -86,7 +86,7 @@ namespace Itinero.Transit.IO.LC
             return (count, reused);
         }
 
-        private static int AddTimeTable(this TransitDbWriter writer, TimeTable tt, LocationFragment locations)
+        private static int AddTimeTable(this IWriter writer, TimeTable tt, LocationFragment locations)
         {
             var count = 0;
             tt.Validate(locations);
@@ -99,7 +99,7 @@ namespace Itinero.Transit.IO.LC
             return count;
         }
 
-        private static StopId AddLocation(this TransitDbWriter writer, Location location)
+        private static StopId AddLocation(this IWriter writer, Location location)
         {
             var globalId = location.Uri;
             var stopId = globalId.ToString();
@@ -118,7 +118,7 @@ namespace Itinero.Transit.IO.LC
         }
 
         private static StopId
-            AddStop(this TransitDbWriter writer, LocationFragment profile, Uri stopUri)
+            AddStop(this IWriter writer, LocationFragment profile, Uri stopUri)
         {
             var location = profile.GetCoordinateFor(stopUri);
             if (location == null)
@@ -130,7 +130,7 @@ namespace Itinero.Transit.IO.LC
         }
 
 
-        private static void AddConnection(this TransitDbWriter writer, Connection connection,
+        private static void AddConnection(this IWriter writer, Connection connection,
             LocationFragment locations)
         {
             
@@ -166,7 +166,7 @@ namespace Itinero.Transit.IO.LC
         }
 
 
-        private static TripId AddTrip(this TransitDbWriter writer, Connection connection)
+        private static TripId AddTrip(this IWriter writer, Connection connection)
         {
             var tripUri = connection.Trip().ToString();
 

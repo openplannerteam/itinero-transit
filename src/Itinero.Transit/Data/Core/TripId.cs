@@ -11,7 +11,7 @@ namespace Itinero.Transit.Data.Core
         public uint DatabaseId { get; }
         public ulong LocalId { get; }
 
-        public TripId(uint databaseId, uint internalId)
+        public TripId(uint databaseId, ulong internalId)
         {
             DatabaseId = databaseId;
             LocalId = internalId;
@@ -23,7 +23,7 @@ namespace Itinero.Transit.Data.Core
             
         }
 
-        public InternalId Create(uint databaseId, uint localId)
+        public InternalId Create(uint databaseId, ulong localId)
         {
             return new TripId(databaseId, localId);
         }

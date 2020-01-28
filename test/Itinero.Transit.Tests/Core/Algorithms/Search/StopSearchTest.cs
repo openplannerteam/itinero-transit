@@ -21,7 +21,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.Search
             Assert.Single(found);
             Assert.Equal("found", found[0]);
         }
-        
+
         [Fact]
         public void LocationIndex_LocationAround0101_LocationIsFound()
         {
@@ -31,7 +31,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.Search
             Assert.Single(found);
             Assert.Equal("found", found[0]);
         }
-        
+
         [Fact]
         public void LocationIndex_LocationOn00_LocationIsFound()
         {
@@ -55,10 +55,9 @@ namespace Itinero.Transit.Tests.Core.Algorithms.Search
             var sintClara = wr.AddOrUpdateStop(new Stop("sint-clara", (3.2227, 51.2153)));
 
             var station = wr.AddOrUpdateStop(new Stop("station-brugge", (3.21782, 51.19723)));
+            tdb.CloseWriter();
 
-            wr.Close();
-
-            return (tdb.Latest.StopsDb, howest, sintClara, station);
+            return (tdb.Latest.Stops, howest, sintClara, station);
         }
 
 

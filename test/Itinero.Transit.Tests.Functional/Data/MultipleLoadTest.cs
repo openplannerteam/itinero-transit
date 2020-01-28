@@ -14,7 +14,7 @@ namespace Itinero.Transit.Tests.Functional.Data
         {
             var sncb = Belgium.Sncb();
 
-            void UpdateTimeFrame(TransitDbWriter w, DateTime start, DateTime end)
+            void UpdateTimeFrame(IWriter w, DateTime start, DateTime end)
             {
                 sncb.AddAllConnectionsTo(w, start, end);
             }
@@ -24,7 +24,7 @@ namespace Itinero.Transit.Tests.Functional.Data
 
             var writer = db.GetWriter();
             sncb.AddAllLocationsTo(writer);
-            writer.Close();
+            db.CloseWriter();
 
             var hours = 1;
 
@@ -43,7 +43,7 @@ namespace Itinero.Transit.Tests.Functional.Data
 
         private void Test(TransitDb db)
         {
-            var conns = db.Latest.ConnectionsDb;
+            var conns = db.Latest.Connections;
 
             var count = 0;
 

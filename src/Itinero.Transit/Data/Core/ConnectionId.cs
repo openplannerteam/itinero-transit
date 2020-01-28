@@ -11,13 +11,13 @@ namespace Itinero.Transit.Data.Core
         public ulong LocalId { get; }
 
 
-        public ConnectionId(uint databaseId, uint internalId)
+        public ConnectionId(uint databaseId, ulong internalId)
         {
             DatabaseId = databaseId;
             LocalId = internalId;
         }
 
-        public InternalId Create(uint databaseId, uint localId)
+        public InternalId Create(uint databaseId, ulong localId)
         {
             return new ConnectionId(databaseId, localId);
         }

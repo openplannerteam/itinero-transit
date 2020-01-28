@@ -80,8 +80,7 @@ namespace Itinero.Transit.IO.OSM.Data
             {
                 foreach (var searchableLocation in searchableLocations)
                 {
-                    _locationIndex.Add(searchableLocation.Longitude, searchableLocation.Latitude,
-                        searchableLocation);
+                    _locationIndex.Add(searchableLocation.Longitude, searchableLocation.Latitude, searchableLocation);
                     _searchableLocations.Add(searchableLocation);
                 }
             }
@@ -98,8 +97,7 @@ namespace Itinero.Transit.IO.OSM.Data
                 {
                     if (!TryGetId(url, out var id)) continue;
                     if (!TryGet(id, out var stop)) continue;
-                    _locationIndex.Add(stop.Longitude, stop.Latitude,
-                        stop);
+                    _locationIndex.Add(stop.Longitude, stop.Latitude, stop);
                     _searchableLocations.Add(stop);
                 }
             }

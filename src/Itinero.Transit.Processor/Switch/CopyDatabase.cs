@@ -13,7 +13,7 @@ namespace Itinero.Transit.Processor.Switch
         /// If a subsequent data element needs the given trip id, it will be copied as well.
         /// If a filtering predicate is not given, it is filtered by default
         /// </summary>
-        public static TransitDb Copy(this TransitDb old,
+        public static TransitDbSnapShot Copy(this TransitDbSnapShot old,
             bool allowEmpty = false,
             Predicate<Stop> keepStop = null,
             Func<Stop, Stop> modifyStop = null,
@@ -26,11 +26,11 @@ namespace Itinero.Transit.Processor.Switch
             var newDb = new TransitDb(old.DatabaseId);
             var wr = newDb.GetWriter();
 
-            wr.GlobalId = old.Latest.GlobalId;
+            wr.SetGlobalId(old.GlobalId);
 
-            foreach (var (key, value) in old.Latest.Attributes)
+            foreach (var (key, value) in old.Attributes)
             {
-                wr.AttributesWritable[key] = value;
+                wr.SetAttribute(key, value);
             }
 
             if (modifyStop == null)
@@ -53,7 +53,7 @@ namespace Itinero.Transit.Processor.Switch
             var reverseStopIdMapping = new Dictionary<StopId, string>();
             var reverseTripIdMapping = new Dictionary<TripId, string>();
 
-            foreach (var stop in old.Latest.StopsDb)
+            foreach (var stop in old.Stops)
             {
                 if (keepStop != null && !keepStop(stop))
                 {
@@ -65,7 +65,7 @@ namespace Itinero.Transit.Processor.Switch
                 reverseStopIdMapping.Add(id, stop.GlobalId);
             }
 
-            foreach (var trip in old.Latest.TripsDb)
+            foreach (var trip in old.Trips)
             {
                 if (keepTrip != null && !keepTrip(trip))
                 {
@@ -79,11 +79,11 @@ namespace Itinero.Transit.Processor.Switch
 
             var copiedConnections = 0;
 
-            foreach (var c in old.Latest.ConnectionsDb)
+            foreach (var c in old.Connections)
             {
 
 
-                var depStop = old.Latest.StopsDb.Get(c.DepartureStop);
+                var depStop = old.Stops.Get(c.DepartureStop);
                 if (!stopIdMapping.TryGetValue(depStop.GlobalId, out var depStopId))
                 {
                     depStopId = wr.AddOrUpdateStop(modifyStop(depStop));
@@ -92,7 +92,7 @@ namespace Itinero.Transit.Processor.Switch
 
                 }
 
-                var arrStop = old.Latest.StopsDb.Get(c.ArrivalStop);
+                var arrStop = old.Stops.Get(c.ArrivalStop);
                 if (!stopIdMapping.TryGetValue(arrStop.GlobalId, out var arrStopId))
                 {
                     arrStopId = wr.AddOrUpdateStop(modifyStop(arrStop));
@@ -100,7 +100,7 @@ namespace Itinero.Transit.Processor.Switch
                     reverseStopIdMapping.Add(arrStopId, arrStop.GlobalId );
                 }
 
-                var trip = old.Latest.TripsDb.Get(c.TripId);
+                var trip = old.Trips.Get(c.TripId);
                 if (!tripIdMapping.TryGetValue(trip.GlobalId, out var tripId))
                 {
                     tripId = wr.AddOrUpdateTrip(modifyTrip(trip));
@@ -127,8 +127,8 @@ namespace Itinero.Transit.Processor.Switch
                 wr.AddOrUpdateConnection(modifyConnection(newConnection));
                 copiedConnections++;
             }
-
-            wr.Close();
+            
+            newDb.CloseWriter();
 
             if (!allowEmpty && copiedConnections == 0)
             {
@@ -136,7 +136,7 @@ namespace Itinero.Transit.Processor.Switch
             }
 
             Console.WriteLine($"Copied {copiedConnections} connections");
-            return newDb;
+            return newDb.Latest;
         }
     }
 }

@@ -40,7 +40,7 @@ namespace Itinero.Transit.Tests.IO.LC.Synchronization
             var triggered5 = 0;
             var triggered10 = 0;
 
-            void Update(TransitDbWriter wr, DateTime start, DateTime end)
+            void Update(IWriter wr, DateTime start, DateTime end)
             {
                 var diff = (int) (end - start).TotalSeconds;
                 if (diff == 5)

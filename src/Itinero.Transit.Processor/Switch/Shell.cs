@@ -60,27 +60,26 @@ namespace Itinero.Transit.Processor.Switch
             }
         }
 
-        private string StateMsg(TransitDb transitDb)
+        private static string StateMsg(TransitDbSnapShot tdb)
         {
-            var tdb = transitDb.Latest;
 
             if (tdb == null)
             {
                 return $"No transitdb loaded.";
             }
 
-            if (tdb.ConnectionsDb.EarliestDate == ulong.MaxValue)
+            if (tdb.Connections.EarliestDate == ulong.MaxValue)
             {
                 return $"Transitdb {tdb.GlobalId} is empty";
             }
 
             return
-                $"Transitdb {tdb.GlobalId} contains {tdb.ConnectionsDb.Count()} connections between {tdb.ConnectionsDb.EarliestDate.FromUnixTime():s} and {tdb.ConnectionsDb.LatestDate.FromUnixTime():s}, " +
-                $"{tdb.StopsDb.Count()} stops,  {tdb.TripsDb.Count()} trips.";
+                $"Transitdb {tdb.GlobalId} contains {tdb.Connections.Count()} connections between {tdb.Connections.EarliestDate.FromUnixTime():s} and {tdb.Connections.LatestDate.FromUnixTime():s}, " +
+                $"{tdb.Stops.Count()} stops,  {tdb.Trips.Count()} trips.";
         }
 
 
-        private IEnumerable<TransitDb> RunShell(IEnumerable<TransitDb> transitDbs)
+        private List<TransitDbSnapShot> RunShell(List<TransitDbSnapShot> transitDbs)
         {
             using (var inStr = Console.In)
             {
@@ -90,6 +89,7 @@ namespace Itinero.Transit.Processor.Switch
                 {
                     try
                     {
+                        transitDbs = transitDbs.ToList();
                         Console.WriteLine("\nLoaded " + transitDbs.Count() + " transitdbs");
                         Console.WriteLine(string.Join("\n", transitDbs.Select(StateMsg)));
 
@@ -138,12 +138,12 @@ namespace Itinero.Transit.Processor.Switch
             return transitDbs;
         }
 
-        public IEnumerable<TransitDb> Generate(Dictionary<string, string> parameters)
+        public List<TransitDbSnapShot> Generate(Dictionary<string, string> parameters)
         {
-            return RunShell(new List<TransitDb>());
+            return RunShell(new List<TransitDbSnapShot>());
         }
 
-        public IEnumerable<TransitDb> Modify(Dictionary<string, string> parameters, List<TransitDb> transitDbs)
+        public List<TransitDbSnapShot> Modify(Dictionary<string, string> parameters, List<TransitDbSnapShot> transitDbs)
         {
             return RunShell(transitDbs);
         }
@@ -158,24 +158,22 @@ namespace Itinero.Transit.Processor.Switch
             "See you next time!",
             "Over and out.",
             "Computers follow your orders, not your intentions.",
-            "How did the locomotive get so good at it’s job? Training",
+            "How did the locomotive get so good at its job? Training",
             "How do you find a missing train? Follow the tracks",
             "What happened to the man that took the train home? He had to give it back!",
             "Why was the train late? It kept getting side tracked.",
-            "In de mobiliteitsector, daar beweegt wat!",
+            "In de mobiliteitssector, daar beweegt wat!",
             "Do your buses run on time? No, they run on diesel.",
             "Hoe kan je zien dat er recent een trein is gepasseerd? Omdat de sporen er nog zijn!",
             "A bus is a vehicle that runs twice as fast when you are after it as when you are in it.",
-            "What did bus say to other bus? 'Beeep'",
+            "What did bus say to other bus? 'HONK'",
             "Why was the bus 🚌sleeping? Because it was too tired",
-            "The new Director of Public Transportation is obsessed with 'green' fuels. He's made all the buses run on thyme."
+            "The new Director of Public Transportation is obsessed with 'green' fuels." +
+            " He's made all the buses run on thyme."
         };
 
-        public void Use(Dictionary<string, string> parameters, IEnumerable<TransitDbSnapShot> transitDbs)
+        public void Use(Dictionary<string, string> parameters, List<TransitDbSnapShot> tdbs)
         {
-            // This is a bit dirty
-            var tdbs = transitDbs.Select(snapshot =>
-                TransitDb.CreateMergedTransitDb(new List<TransitDbSnapShot> {snapshot}));
             RunShell(tdbs);
         }
     }

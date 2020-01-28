@@ -23,7 +23,7 @@ namespace Itinero.Transit.Data
         /// <param name="databaseId"></param>
         /// <param name="localId"></param>
         /// <returns></returns>
-        InternalId Create(uint databaseId, uint localId);
+        InternalId Create(uint databaseId, ulong localId);
     }
 
     public interface IGlobalId

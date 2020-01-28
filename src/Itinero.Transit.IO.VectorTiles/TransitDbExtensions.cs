@@ -54,7 +54,7 @@ namespace Itinero.Transit.IO.VectorTiles
         private static Dictionary<string, List<string>> CalculateRoutes(FeatureCollection addFeatures,
             TransitDbSnapShot tdb)
         {
-            var connections = tdb.ConnectionsDb;
+            var connections = tdb.Connections;
 
             var routes = new RouteMerger(connections);
             var routeId = (uint) 0;
@@ -66,13 +66,13 @@ namespace Itinero.Transit.IO.VectorTiles
                 var trips = kv.Value;
                 
                 var feature = new RouteFeature(tdb, route, routeId,
-                    tdb.TripsDb.GetAll(trips), tdb.GlobalId);
+                    tdb.Trips.GetAll(trips), tdb.GlobalId);
                 addFeatures.Add(feature);
 
 
                 foreach (var stopId in route)
                 {
-                    var stop = tdb.StopsDb.Get(stopId);
+                    var stop = tdb.Stops.Get(stopId);
                     if (!stops2Routes.ContainsKey(stop.GlobalId))
                     {
                         stops2Routes[stop.GlobalId] = new List<string>();
@@ -91,7 +91,7 @@ namespace Itinero.Transit.IO.VectorTiles
         private static BBox AddStops(TransitDbSnapShot tdb,
             FeatureCollection features, IReadOnlyDictionary<string, List<string>> stops2Routes)
         {
-            var stops = tdb.StopsDb;
+            var stops = tdb.Stops;
 
             var empty = new List<string>();
             var bbox = new BBox();

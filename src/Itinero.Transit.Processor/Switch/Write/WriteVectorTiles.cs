@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Itinero.Transit.Algorithms.Mergers;
 using Itinero.Transit.Data;
 using Itinero.Transit.IO.VectorTiles;
-using NetTopologySuite.Features;
 using NetTopologySuite.IO.VectorTiles.Mapbox;
 
 namespace Itinero.Transit.Processor.Switch.Write
@@ -42,7 +40,7 @@ namespace Itinero.Transit.Processor.Switch.Write
         {
         }
 
-        public void Use(Dictionary<string, string> arguments, IEnumerable<TransitDbSnapShot> tdbs)
+        public void Use(Dictionary<string, string> arguments, List<TransitDbSnapShot> tdbs)
         {
             var writeTo = arguments["directory"];
 

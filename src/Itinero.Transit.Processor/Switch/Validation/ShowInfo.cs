@@ -23,7 +23,7 @@ namespace Itinero.Transit.Processor.Switch.Validation
         {
         }
 
-        public void Use(Dictionary<string, string> parameters, IEnumerable<TransitDbSnapShot> transitDbs)
+        public void Use(Dictionary<string, string> parameters, List<TransitDbSnapShot> transitDbs)
         {
             foreach (var transitDb in transitDbs)
             {

@@ -15,7 +15,7 @@ namespace Itinero.Transit.Processor.Validator
 
             var currentTripCoordinates = new Dictionary<TripId, Connection>();
 
-            var connections = tdb.ConnectionsDb;
+            var connections = tdb.Connections;
 
             void Err(Connection conn, string type, string message)
             {
@@ -40,8 +40,8 @@ namespace Itinero.Transit.Processor.Validator
             }
 
 
-            var stops = tdb.StopsDb;
-            var trips = tdb.TripsDb;
+            var stops = tdb.Stops;
+            var trips = tdb.Trips;
 
             Connection prevConnection = null;
             foreach (var c in connections)

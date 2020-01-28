@@ -14,15 +14,15 @@ namespace Itinero.Transit.Processor.Switch
         /// Returns a new list
         /// </summary>
         [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
-        public static IEnumerable<TransitDb> ApplySwitch(
-            this IEnumerable<TransitDb> tdbs,
+        public static List<TransitDbSnapShot> ApplySwitch(
+            this List<TransitDbSnapShot> tdbs,
             (DocumentedSwitch swtch, Dictionary<string, string> @parameters) switchAndParams)
         {
             var (swtch, parameters) = switchAndParams;
             switch (swtch)
             {
                 case IMultiTransitDbModifier multiModifier:
-                    return multiModifier.Modify(parameters, tdbs.ToList());
+                    return multiModifier.Modify(parameters, tdbs);
                 case ITransitDbModifier modifier:
                     return tdbs.Select(tdb => modifier.Modify(parameters, tdb)).ToList();
                 
@@ -31,16 +31,16 @@ namespace Itinero.Transit.Processor.Switch
                     return tdbs.Concat(source.Generate(parameters)).ToList();
                 case ITransitDbSource source:
                     var newTdb = source.Generate(parameters);
-                    return tdbs.Concat(new List<TransitDb> {newTdb}).ToList();
+                    return tdbs.Concat(new List<TransitDbSnapShot> {newTdb}).ToList();
                 
                 
                 case IMultiTransitDbSink multiSink:
-                    multiSink.Use(parameters, tdbs.Select(tdb => tdb.Latest));
+                    multiSink.Use(parameters, tdbs);
                     return tdbs;
                 case ITransitDbSink sink:
                     foreach (var tdb in tdbs)
                     {
-                        sink.Use(parameters, tdb.Latest);
+                        sink.Use(parameters, tdb);
                     }
                     return tdbs;
                 

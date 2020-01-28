@@ -43,7 +43,7 @@ namespace Itinero.Transit.Processor.Switch.Filter
         {
         }
 
-        public TransitDb Modify(Dictionary<string, string> arguments, TransitDb old)
+        public TransitDbSnapShot Modify(Dictionary<string, string> arguments, TransitDbSnapShot old)
 
         {
             var minLon = float.Parse(arguments["left"]);
@@ -74,14 +74,14 @@ namespace Itinero.Transit.Processor.Switch.Filter
             );
 
 
-            var newStopCount = newDb.Latest.StopsDb.Count();
+            var newStopCount = newDb.Stops.Count();
             if (!allowEmpty && newStopCount == 0)
             {
                 throw new Exception("There are no stops in the selected bounding box");
             }
 
 
-            var removed = old.Latest.StopsDb.Count() - newStopCount;
+            var removed = old.Stops.Count() - newStopCount;
             Console.WriteLine($"There are {newStopCount} stops (removed {removed} stops) in the bounding box");
             return newDb;
         }

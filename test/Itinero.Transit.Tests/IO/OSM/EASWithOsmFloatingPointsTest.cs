@@ -25,7 +25,7 @@ namespace Itinero.Transit.Tests.IO.OSM
             writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var input = transitDb
                 .SelectProfile(new DefaultProfile())
@@ -84,7 +84,7 @@ namespace Itinero.Transit.Tests.IO.OSM
             writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
 
             var latest = transitDb.Latest;
@@ -125,7 +125,7 @@ namespace Itinero.Transit.Tests.IO.OSM
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
             var arrivalLocation = "https://www.openstreetmap.org/#map=19/0.0/0.0";
@@ -202,7 +202,7 @@ namespace Itinero.Transit.Tests.IO.OSM
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
 

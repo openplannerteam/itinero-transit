@@ -53,9 +53,9 @@ namespace Itinero.Transit.Processor.Switch.Write
                 outStream.WriteLine(humanFormat ? headerHuman : header);
 
 
-                var connections = tdb.ConnectionsDb;
-                var stops = tdb.StopsDb;
-                var trips = tdb.TripsDb;
+                var connections = tdb.Connections;
+                var stops = tdb.Stops;
+                var trips = tdb.Trips;
 
                 if (!connections.Any())
                 {

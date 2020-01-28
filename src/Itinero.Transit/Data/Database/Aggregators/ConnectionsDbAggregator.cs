@@ -105,7 +105,7 @@ namespace Itinero.Transit.Data.Aggregators
         
         public static IConnectionsDb CreateFrom(IEnumerable<TransitDbSnapShot> snapshots)
         {
-            var dbs = snapshots.Select(sn => sn.ConnectionsDb).ToList();
+            var dbs = snapshots.Select(sn => sn.Connections).ToList();
             return CreateFrom(dbs);
         }
     }

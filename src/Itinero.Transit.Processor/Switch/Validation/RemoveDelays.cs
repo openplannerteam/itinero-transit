@@ -27,7 +27,7 @@ namespace Itinero.Transit.Processor.Switch.Validation
         {
         }
 
-        public TransitDb Modify(Dictionary<string, string> arguments, TransitDb old)
+        public TransitDbSnapShot Modify(Dictionary<string, string> arguments, TransitDbSnapShot old)
         {
             var delaySum = 0;
 

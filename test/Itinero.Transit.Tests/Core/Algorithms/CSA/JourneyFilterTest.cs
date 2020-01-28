@@ -39,7 +39,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 new DateTime(2018, 12, 04, 16, 25, 00, DateTimeKind.Utc),
                 30 * 60, new TripId(0, 2), 0));
 
-            writer.Close();
+            tdb.CloseWriter();
 
 
             var routerWithTransfer = tdb.SelectProfile(new DefaultProfile())
@@ -103,7 +103,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 new DateTime(2018, 12, 04, 16, 10, 00, DateTimeKind.Utc),
                 10 * 60, new TripId(0, 2), 4));
 
-            writer.Close();
+            tdb.CloseWriter();
 
 
             //Filters the cancelled connections because of DefaultProfile

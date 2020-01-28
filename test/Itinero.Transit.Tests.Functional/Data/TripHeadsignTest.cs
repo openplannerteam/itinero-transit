@@ -13,8 +13,8 @@ namespace Itinero.Transit.Tests.Functional.Data
             var latest = Input.Latest;
 
             Information("Testing headsign attribute");
-            var tripDb = latest.TripsDb;
-            var connections = latest.ConnectionsDb;
+            var tripDb = latest.Trips;
+            var connections = latest.Connections;
             uint failed = 0;
             uint found = 0;
             uint total = 0;

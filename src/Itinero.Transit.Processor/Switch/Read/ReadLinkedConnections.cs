@@ -46,7 +46,7 @@ namespace Itinero.Transit.Processor.Switch.Read
         }
 
 
-        public TransitDb Generate(Dictionary<string, string> arguments)
+        public TransitDbSnapShot Generate(Dictionary<string, string> arguments)
         {
             var tdb = new TransitDb(0);
     
@@ -73,7 +73,7 @@ namespace Itinero.Transit.Processor.Switch.Read
                     Console.WriteLine($"[{DateTime.Now:O}] [{level}] [{origin}]: {message}");
 
             tdb.UseLinkedConnections(curl, lurl, time, time.AddSeconds(duration));
-            return tdb;
+            return tdb.Latest;
         }
     }
 }

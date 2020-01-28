@@ -62,7 +62,7 @@ namespace Itinero.Transit
         public static Stop FindClosestStop(this TransitDbSnapShot snapShot, Stop around,
             uint maxDistanceInMeters = 1000)
         {
-            return snapShot.StopsDb.FindClosest(around, maxDistanceInMeters);
+            return snapShot.Stops.FindClosest(around, maxDistanceInMeters);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Itinero.Transit
         public static Stop FindStop(this TransitDbSnapShot snapshot, string locationId,
             string errMsg = null)
         {
-            return snapshot.StopsDb.Get(locationId, errMsg);
+            return snapshot.Stops.Get(locationId, errMsg);
         }
 
         public static Stop FindStop(this IEnumerable<TransitDbSnapShot> snapshots, string locationId,
@@ -273,7 +273,7 @@ namespace Itinero.Transit
         {
             StopsDb = StopsDbAggregator.CreateFrom(tdbs);
             ConnectionsDb =
-                ConnectionsDbAggregator.CreateFrom(tdbs.Select(tdb => tdb.ConnectionsDb).ToList());
+                ConnectionsDbAggregator.CreateFrom(tdbs.Select(tdb => tdb.Connections).ToList());
             Profile = new Profile<T>(
                 profile.InternalTransferGenerator,
                 profile.WalksGenerator,
@@ -287,12 +287,12 @@ namespace Itinero.Transit
             var alreadyUsedIds = new HashSet<uint>();
             foreach (var tdb in tdbs)
             {
-                if (alreadyUsedIds.Contains(tdb.Id))
+                if (alreadyUsedIds.Contains(tdb.DatabaseId))
                 {
                     throw new ArgumentException("Duplicate identifiers");
                 }
 
-                alreadyUsedIds.Add(tdb.Id);
+                alreadyUsedIds.Add(tdb.DatabaseId);
             }
         }
 

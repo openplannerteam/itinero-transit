@@ -35,7 +35,7 @@ namespace Itinero.Transit.Processor.Switch.Filter
         }
 
 
-        public TransitDb Modify(Dictionary<string, string> arguments, TransitDb old)
+        public TransitDbSnapShot Modify(Dictionary<string, string> arguments, TransitDbSnapShot old)
 
         {
             var ids = arguments["id"].Split(";").ToHashSet();
@@ -44,7 +44,7 @@ namespace Itinero.Transit.Processor.Switch.Filter
 
             foreach (var id in ids)
             {
-                if (!old.Latest.StopsDb.TryGetId(id, out _))
+                if (!old.Stops.TryGetId(id, out _))
                 {
                     throw new ArgumentException($"The global id {id} was not found");
                 }

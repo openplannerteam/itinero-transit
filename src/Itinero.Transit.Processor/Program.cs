@@ -30,7 +30,7 @@ namespace Itinero.Transit.Processor
                 switches = SwitchParsers.ParseSwitches(args);
                 ValidateSwitches(switches);
 
-                IEnumerable<TransitDb> tdbs = new List<TransitDb>();
+                var tdbs = new List<TransitDbSnapShot>();
                 foreach (var sw in switches)
                 {
                     tdbs = tdbs.ApplySwitch(sw);

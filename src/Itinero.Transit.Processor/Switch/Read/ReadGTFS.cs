@@ -42,7 +42,7 @@ namespace Itinero.Transit.Processor.Switch.Read
         }
 
 
-        public IEnumerable<TransitDb> Generate(Dictionary<string, string> arguments)
+        public List<TransitDbSnapShot> Generate(Dictionary<string, string> arguments)
         {
             var tdb = new TransitDb(0);
 
@@ -50,7 +50,7 @@ namespace Itinero.Transit.Processor.Switch.Read
             var time = arguments.ParseDate("window-start");
             var duration = arguments.ParseTimeSpan("window-duration", time);
 
-            var tdbs = new List<TransitDb>();
+            var tdbs = new List<TransitDbSnapShot>();
             foreach (var path in paths)
             {
                 Console.WriteLine($"Loading GTFS file {path} in timewindow {time:s} + {duration} seconds");
@@ -60,7 +60,7 @@ namespace Itinero.Transit.Processor.Switch.Read
                         Console.WriteLine($"[{DateTime.Now:O}] [{level}] [{origin}]: {message}");
 
                 tdb.UseGtfs(path, time, time.AddSeconds(duration));
-                tdbs.Add(tdb);
+                tdbs.Add(tdb.Latest);
             }
 
             return tdbs;

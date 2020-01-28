@@ -24,7 +24,7 @@ namespace Itinero.Transit.Tests.Functional.IO.LC
             var w = tdb.GetWriter();
             profile.AddAllLocationsTo(w);
             profile.AddAllConnectionsTo(w, DateTime.Now.ToUniversalTime(), DateTime.Now.ToUniversalTime().AddHours(10));
-            w.Close();
+            tdb.CloseWriter();
         }
     }
 }

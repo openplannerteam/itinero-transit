@@ -36,7 +36,7 @@ namespace Itinero.Transit.Processor.Switch.Read
         }
 
 
-        public IEnumerable<TransitDb> Generate(Dictionary<string, string> arguments)
+        public List<TransitDbSnapShot> Generate(Dictionary<string, string> arguments)
         {
             var files = arguments.GetFilesMatching("file");
 
@@ -47,9 +47,10 @@ namespace Itinero.Transit.Processor.Switch.Read
                     Console.WriteLine("Reading " + file);
                     var tdb = new TransitDb((uint) i);
                     var wr = tdb.GetWriter();
-                    wr.ReadFrom(stream);
-                    wr.Close();
-                    return tdb;
+                    
+                    ((SimpleWriter)wr).ReadFrom(stream);
+                    tdb.CloseWriter();
+                    return tdb.Latest;
                 }
             }).ToList(); // ToList forces execution
         }

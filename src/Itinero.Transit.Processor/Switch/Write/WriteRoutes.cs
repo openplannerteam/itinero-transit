@@ -54,9 +54,9 @@ namespace Itinero.Transit.Processor.Switch.Write
         {
             var routeMerger = new RouteMerger();
 
-            var connections = transitDb.ConnectionsDb;
-            var stops = transitDb.StopsDb;
-            var trips = transitDb.TripsDb;
+            var connections = transitDb.Connections;
+            var stops = transitDb.Stops;
+            var trips = transitDb.Trips;
 
             foreach (var connection in connections)
             {

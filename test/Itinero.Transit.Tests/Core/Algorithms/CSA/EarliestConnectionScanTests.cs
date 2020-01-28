@@ -30,7 +30,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 1), 0));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
@@ -65,12 +65,12 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             var j = db
                 .SelectProfile(profile)
                 .SelectStops(stop0, stop1)
-                .SelectTimeFrame(db.ConnectionsDb.EarliestDate - 1,
-                    db.ConnectionsDb.LatestDate + 1)
+                .SelectTimeFrame(db.Connections.EarliestDate - 1,
+                    db.Connections.LatestDate + 1)
                 .CalculateEarliestArrivalJourney();
 
             Assert.NotNull(j);
-            Assert.Equal("https://example.com/connections/0", db.Get(j.Connection).GlobalId);
+            Assert.Equal("https://example.com/connections/0", db.Connections.Get(j.Connection).GlobalId);
         }
 
 
@@ -96,7 +96,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 ;
 
             Assert.NotNull(j);
-            Assert.Equal("https://example.com/connections/1", db.Get(j.Connection).GlobalId);
+            Assert.Equal("https://example.com/connections/1", db.Connections.Get(j.Connection).GlobalId);
         }
 
         [Fact]
@@ -117,7 +117,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
 
@@ -154,7 +154,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
 
@@ -191,7 +191,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
 
@@ -235,7 +235,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/2",
                 new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 2), 0));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
 
@@ -271,7 +271,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
-            writer.Close();
+            transitDb.CloseWriter();
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 null,
                 TransferMetric.Factory,
@@ -315,7 +315,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
-            writer.Close();
+            transitDb.CloseWriter();
             var latest = transitDb.Latest;
 
 
@@ -369,7 +369,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/4",
                 new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
@@ -405,7 +405,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0),
                 Connection.ModeGetOffOnly));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
 
@@ -465,7 +465,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/2",
                 new DateTime(2018, 12, 04, 20, 00, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 2), 3));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
 
@@ -514,7 +514,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             wr.AddOrUpdateConnection(new Connection(departure, detour, "a", 1000, 100, trdetour));
             wr.AddOrUpdateConnection(new Connection("b", detour, departure, 1500, 100, trdirect));
             wr.AddOrUpdateConnection(new Connection("c", departure, arrival, 1700, 100, trdirect));
-            wr.Close();
+            tdb.CloseWriter();
 
             var j = tdb.SelectProfile(new DefaultProfile())
                 .SelectStops(departure, arrival)
@@ -548,7 +548,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 new DateTime(2018, 12, 04, 16, 01, 00, DateTimeKind.Utc),
                 30 * 60, new TripId(0, 0), 0));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(10000),
@@ -586,7 +586,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 new DateTime(2018, 12, 04, 16, 01, 00, DateTimeKind.Utc),
                 30 * 60, new TripId(0, 0), 0));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(10000),
@@ -637,8 +637,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             wr.AddOrUpdateConnection(new Connection(
                 "3", bigstation, arrival, 6500, 1000, tripC
             ));
-
-            wr.Close();
+            tdb.CloseWriter();
 
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(0),

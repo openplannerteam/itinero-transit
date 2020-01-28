@@ -26,7 +26,7 @@ namespace Itinero.Transit.Processor.Switch.Filter
         }
 
 
-        public TransitDb Modify(Dictionary<string, string> arguments, TransitDb old)
+        public TransitDbSnapShot Modify(Dictionary<string, string> arguments, TransitDbSnapShot old)
         {
             var id = arguments["id"];
 

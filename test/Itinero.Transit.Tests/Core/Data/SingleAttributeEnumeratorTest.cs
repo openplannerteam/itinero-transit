@@ -55,10 +55,10 @@ namespace Itinero.Transit.Tests.Core.Data
                 {"operator", "Stad Brugge"},
                 {"public_transport", "stop_position"}
             }));
-            wr.Close();
+            tdb.CloseWriter();
 
 
-            var stops = tdb.Latest.StopsDb;
+            var stops = tdb.Latest.Stops;
 
             Test(stops, a);
             Test(stops, b);

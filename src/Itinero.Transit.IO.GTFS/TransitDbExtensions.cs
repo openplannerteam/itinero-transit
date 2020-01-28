@@ -9,9 +9,10 @@ namespace Itinero.Transit.IO.GTFS
         public static void UseGtfs(this TransitDb tdb, string archivepath, DateTime startdate, DateTime enddate)
         {
             var gtfs = new Gtfs2Tdb(archivepath);
-            var wr = tdb.GetWriter();
+            var wr = TransitDbSnapShot.CreateCompactedWriter(tdb.Latest.DatabaseId, tdb.Latest.GlobalId);
+                tdb.GetWriter();
             gtfs.AddDataBetween(wr, startdate, enddate);
-            wr.Close();
+            tdb.CloseWriter();
         }
     }
 }

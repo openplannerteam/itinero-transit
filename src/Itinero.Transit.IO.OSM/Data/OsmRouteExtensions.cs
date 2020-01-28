@@ -18,17 +18,17 @@ namespace Itinero.Transit.IO.OSM.Data
             tdb.GetWriter().UseOsmRoute(route, start, end);
         }
 
-        internal static void UseOsmRoute(this TransitDbWriter wr, OsmRoute route, 
+        internal static void UseOsmRoute(this IWriter wr, OsmRoute route, 
             DateTime start,DateTime end)
         {
 
-            wr.GlobalId = "https://osm.org/relation/"+route.Id;
-            wr.AttributesWritable["name"] = route.Name;
-            wr.AttributesWritable["duration"] = ""+route.Duration;
-            wr.AttributesWritable["interval"] = ""+route.Interval;
-            wr.AttributesWritable["roundtrip"] = ""+route.RoundTrip;
-            wr.AttributesWritable["stops:count"] = ""+route.StopPositions.Count;
-            wr.AttributesWritable["stops"] = string.Join(";", route.StopPositions.Select(stop => stop.url));
+            wr.SetGlobalId( "https://osm.org/relation/"+route.Id);
+            wr.SetAttribute("name", route.Name);
+            wr.SetAttribute("duration", ""+route.Duration);
+            wr.SetAttribute("interval", ""+route.Interval);
+            wr.SetAttribute("roundtrip", ""+route.RoundTrip);
+            wr.SetAttribute("stops:count", ""+route.StopPositions.Count);
+            wr.SetAttribute("stops", string.Join(";", route.StopPositions.Select(stop => stop.url)));
 
             Log.Information($"Adding route {route.Id} to the transitdb in frame {start} --> {end}. " +
                             $"The route {(route.RoundTrip ? "loops" : "does not loop")}, has {route.StopPositions.Count} stops, " +
@@ -95,8 +95,6 @@ namespace Itinero.Transit.IO.OSM.Data
             {
                 wr.AddOrUpdateConnection(connection);
             }
-
-            wr.Close();
         }
 
 

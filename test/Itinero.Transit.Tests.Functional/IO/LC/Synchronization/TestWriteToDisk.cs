@@ -34,7 +34,7 @@ namespace Itinero.Transit.Tests.Functional.IO.LC.Synchronization
             var read = new TransitDb(0);
             var writer = read.GetWriter();
             writer.ReadFrom(path);
-            writer.Close();
+            read.CloseWriter();
             NotNull(read);
 
             File.Delete(path);

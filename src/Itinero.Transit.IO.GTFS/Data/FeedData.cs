@@ -152,48 +152,79 @@ namespace Itinero.Transit.IO.GTFS.Data
                 return result;
             }
         }
+
+
+        public (DateTime startDate, DateTime endDate) TimeRange
+        {
+            get
+            {
+                var startDate = DateTime.MaxValue;
+                var endDate = DateTime.MinValue;
+                foreach (var c in Feed.Calendars)
+                {
+                    if (c.StartDate < startDate)
+                    {
+                        startDate = c.StartDate;
+                    }
+
+                    if (c.EndDate > endDate)
+                    {
+                        endDate = c.EndDate;
+                    }
+                }
+
+                foreach (var dt in Feed.CalendarDates)
+                {
+                    if (dt.Date < startDate)
+                    {
+                        startDate = dt.Date;
+                    }
+
+                    if (dt.Date > endDate)
+                    {
+                        endDate = dt.Date;
+                    }
+                }
+
+                return (startDate, endDate);
+            }
+        }
+
+
         /// <summary>
-
-
         /// Returns which services are scheduled for the given day.
         /// THis uses both 'calenders.txt' and 'calendar_dates.txt' and does keep track of exceptions as well of regular services
         /// </summary>
         /// <param name="day"></param>
         /// <returns></returns>
-        public List<Calendar> ServicesForDay(DateTime day)
+        public HashSet<string> ServicesForDay(DateTime day)
         {
-            var services = new List<Calendar>();
+            var services = new HashSet<string>();
             var doesntGo = GetExceptionallyDoesntDriveToday(day);
-            var doesGo = GetExceptionallyDrivesToday(day);
-
-            foreach (var service in Feed.Calendars)
             {
-                if (doesntGo.Contains(service.ServiceId))
-                {
-                    continue;
-                }
+                var doesGo = GetExceptionallyDrivesToday(day);
+                services.UnionWith(doesGo);
+                // Services is a hashset, duplicates will be automatically removed
+            }
 
-                if (doesGo.Contains(service.ServiceId))
+            foreach (var calendar in Feed.Calendars)
+            {
+                var service = calendar.ServiceId;
+                if (doesntGo.Contains(service))
                 {
-                    if (service.StartDate <= day && day <= service.EndDate)
-                    {
-                        services.Add(service);
-                    }
-
                     continue;
                 }
 
                 var goesToday =
-                    service[day.DayOfWeek] &&
-                    service.StartDate <= day &&
-                    day <= service
+                    calendar[day.DayOfWeek] &&
+                    calendar.StartDate <= day &&
+                    day <= calendar
                         .EndDate; // end date is included in the interval: https://developers.google.com/transit/gtfs/reference#calendartxt
                 if (goesToday)
                 {
                     services.Add(service);
                 }
             }
-
 
             return services;
         }

@@ -107,7 +107,7 @@ namespace Itinero.Transit.IO.OSM.Data
         {
             var route = OsmRoute.LoadFrom(path);
 
-            void Update(TransitDbWriter transitDbWriter,
+            void Update(IWriter transitDbWriter,
                 DateTime start, DateTime end)
             {
                 foreach (var r in route)

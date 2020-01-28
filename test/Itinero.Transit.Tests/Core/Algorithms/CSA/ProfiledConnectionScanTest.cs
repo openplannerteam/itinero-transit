@@ -33,7 +33,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
 
@@ -70,7 +70,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
 
@@ -106,7 +106,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
 
@@ -186,7 +186,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 t0,
                 40 * 60, new TripId(0, 1)));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
 
@@ -238,7 +238,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 new DateTime(2018, 12, 04, 2, 00, 00, DateTimeKind.Utc),
                 40 * 60, new TripId(0, 3), 0));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
 
             var latest = transitDb.Latest;
@@ -283,7 +283,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 new DateTime(2018, 12, 04, 16, 20, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0),
                 3)); // MODE 3 - cant get on or off
 
-            writer.Close();
+            transitDb.CloseWriter();
             var latest = transitDb.Latest;
 
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
@@ -327,7 +327,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 new DateTime(2018, 12, 04, 16, 01, 00, DateTimeKind.Utc),
                 30 * 60, new TripId(0, 0), 0));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(10000),
@@ -368,7 +368,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 new DateTime(2018, 12, 04, 16, 01, 00, DateTimeKind.Utc),
                 30 * 60, new TripId(0, 0), 0));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var profile = new Profile<TransferMetric>(new InternalTransferGenerator(),
                 new CrowsFlightTransferGenerator(10000),
@@ -399,7 +399,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
 
@@ -439,7 +439,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 10, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 1), 0));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
 
@@ -481,7 +481,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             writer.AddOrUpdateConnection(new Connection(stop1, stop2, "https://example.com/connections/1",
                 new DateTime(2018, 12, 04, 10, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
 
@@ -546,7 +546,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
                     (ulong) (1000 + 241 + i * 60), 60, 0, tripC));
             }
 
-            wr.Close();
+            tdb.CloseWriter();
 
 
             var pr = new DefaultProfile(0, 0);
@@ -589,7 +589,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             wr.AddOrUpdateConnection(new Connection(stops[2], stops[1], "b1", 2060, 60, new TripId(0, 1)));
             wr.AddOrUpdateConnection(new Connection(stops[1], stops[3], "b2", 2120, 60, new TripId(0, 1)));
 
-            wr.Close();
+            tdb.CloseWriter();
 
             var pr = new DefaultProfile(0, 60);
 
@@ -629,7 +629,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             wr.AddOrUpdateConnection(new Connection(stops[2], stops[1], "b1", 2060, 60, new TripId(0, 1)));
             wr.AddOrUpdateConnection(new Connection(stops[1], stops[4], "b2", 2120, 60, new TripId(0, 1)));
 
-            wr.Close();
+            tdb.CloseWriter();
 
             var pr = new DefaultProfile(0, 60);
 
@@ -670,7 +670,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             wr.AddOrUpdateConnection(new Connection(stops[1], stops[4], "b2", 2120, 60, new TripId(0, 1)));
             wr.AddOrUpdateConnection(new Connection(stops[4], stops[5], "b3", 2180, 60, new TripId(0, 1)));
 
-            wr.Close();
+            tdb.CloseWriter();
 
             var pr = new DefaultProfile(0, 60);
 
@@ -711,7 +711,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
             wr.AddOrUpdateConnection(new Connection(stops[2], stops[3], "b1", 2060, 60, new TripId(0, 1)));
             wr.AddOrUpdateConnection(new Connection(stops[3], stops[4], "b2", 2120, 60, new TripId(0, 1)));
 
-            wr.Close();
+            tdb.CloseWriter();
 
             var pr = new DefaultProfile(0, 60);
 
@@ -762,7 +762,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             wr.AddOrUpdateConnection(new Connection(stops[11], arrival, "slowA2", 3000, 60, slowTrip1));
 
-            wr.Close();
+            tdb.CloseWriter();
 
             var pr = new DefaultProfile(0, 60);
 
@@ -867,7 +867,7 @@ namespace Itinero.Transit.Tests.Core.Algorithms.CSA
 
             wr.AddOrUpdateConnection(new Connection(stops[11], arrival, "slowA2", 3000, 60, slowTrip1));
 
-            wr.Close();
+            tdb.CloseWriter();
 
             var pr = new DefaultProfile(0, 60);
 

@@ -24,7 +24,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             var connId = writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
 
@@ -33,7 +33,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
                 TransferMetric.Factory,
                 TransferMetric.ParetoCompare);
 
-            var con = latest.ConnectionsDb;
+            var con = latest.Connections;
             var c = con.Get(connId);
             var iso = latest.SelectProfile(profile)
                 .SelectSingleStop(stop0)
@@ -73,7 +73,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             var connId = writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
 
@@ -93,7 +93,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
                 new DateTime(2018, 12, 04, 9, 00, 00, DateTimeKind.Utc).ToUnixTime(),
                 new DateTime(2018, 12, 04, 11, 00, 00, DateTimeKind.Utc).ToUnixTime());
 
-            var con = latest.ConnectionsDb;
+            var con = latest.Connections;
             var c = con.Get(connId);
             Assert.True(filter.CanBeTaken(c));
 
@@ -127,7 +127,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
             writer.AddOrUpdateConnection(new Connection(stop0, stop1, "https://example.com/connections/0",
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0), 0));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
 
@@ -174,7 +174,7 @@ namespace Itinero.Transit.Tests.Core.Journey.Filter
                 new DateTime(2018, 12, 04, 9, 30, 00, DateTimeKind.Utc), 10 * 60, new TripId(0, 0),
                 Connection.ModeGetOffOnly));
 
-            writer.Close();
+            transitDb.CloseWriter();
 
             var latest = transitDb.Latest;
 

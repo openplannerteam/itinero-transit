@@ -7,23 +7,23 @@ namespace Itinero.Transit.Data.Serialization
 {
     public static class TransitDbWriterExtensions
     {
-        public static void ReadFrom(this TransitDbWriter writer, string path)
+        public static void ReadFrom(this IWriter writer, string path)
         {
             using (Stream s = File.OpenRead(path))
             {
                 writer.ReadFrom(s);
             }
-        }
-
-        public static TransitDbWriter ReadFrom(this TransitDbWriter writer, Stream stream)
+        } 
+        
+        public static void ReadFrom(this IWriter writer, Stream stream)
         {
             var formatter = new BinaryFormatter();
 
-            writer.GlobalId =(string) formatter.Deserialize(stream);
+            writer.SetGlobalId((string) formatter.Deserialize(stream));
             var attributes = (IReadOnlyDictionary<string, string>) formatter.Deserialize(stream);
             foreach (var kv in attributes)
             {
-                writer.AttributesWritable[kv.Key] = kv.Value;
+                writer.SetAttribute(kv.Key, kv.Value);
             }
             
             // TransitDbSnaphot.WriteTo
@@ -57,8 +57,6 @@ namespace Itinero.Transit.Data.Serialization
                     c.Attributes
                 ));
             }
-
-            return writer;
         }
     }
 }

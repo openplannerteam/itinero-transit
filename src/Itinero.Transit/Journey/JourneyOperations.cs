@@ -43,8 +43,6 @@ namespace Itinero.Transit.Journey
         /// <summary>
         /// Converts an entire journey into a neat overview
         /// </summary>
-        /// <param name="dataProvider"></param>
-        /// <returns></returns>
         public string ToString(IStopsDb stops)
         {
 

@@ -22,9 +22,9 @@ namespace Itinero.Transit.IO.LC
 
             var writer = tdb.GetWriter();
 
-            writer.GlobalId = connectionsUri;
-            writer.AttributesWritable["connections"] = connectionsUri;
-            writer.AttributesWritable["locations"] = locationsUri;
+            writer.SetGlobalId(connectionsUri);
+            writer.SetAttribute("connections",connectionsUri);
+            writer.SetAttribute("locations",locationsUri);
 
             try
             {
@@ -33,7 +33,7 @@ namespace Itinero.Transit.IO.LC
             }
             finally
             {
-                writer.Close();
+                tdb.CloseWriter();
             }
 
             return lcDataset;

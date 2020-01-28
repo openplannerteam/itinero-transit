@@ -84,7 +84,6 @@ namespace Itinero.Transit.OtherMode
 
             var reachableLocations =
                 stops.GetInRange((to.Longitude, to.Latitude), otherModeGenerator.Range());
-
             var times = otherModeGenerator.TimesBetween(reachableLocations, to);
 
             foreach (var j in journeys)

@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
-using Itinero.Transit.Data.Aggregators;
-using Itinero.Transit.Data.Simple;
 
 namespace Itinero.Transit.Data
 {
@@ -13,36 +9,20 @@ namespace Itinero.Transit.Data
     public class TransitDb
     {
         /// <summary>
-        /// The identifier of the database. Should be unique amongst the program
-        /// </summary>
-        public uint DatabaseId { get; }
-
-
-        /// <summary>
         /// The actual data
         /// </summary>
         public TransitDbSnapShot Latest;
 
 
         public TransitDb(uint databaseId)
-            : this(databaseId, new TransitDbSnapShot(
-                databaseId,
-                "",
-                new SimpleStopsDb(databaseId),
-                new SimpleConnectionsDb(databaseId),
-                new SimpleTripsDb(databaseId)
-            ))
+
         {
+            Latest = TransitDbSnapShot.CreateSimple(databaseId, "not set").GetSnapshot();
         }
 
-        private TransitDb(uint databaseId, TransitDbSnapShot snapshot)
-        {
-            DatabaseId = databaseId;
-            Latest = snapshot;
-        }
 
         private readonly object _writerLock = new object();
-        private TransitDbWriter _writer;
+        private SimpleWriter _writer;
 
 
         /// <summary>
@@ -53,7 +33,7 @@ namespace Itinero.Transit.Data
         /// <returns>A writer.</returns>
         /// <exception cref="InvalidOperationException">Throws if there is already a writer active.</exception>
         [Pure]
-        public TransitDbWriter GetWriter()
+        public IWriter GetWriter()
         {
             lock (_writerLock)
             {
@@ -61,42 +41,20 @@ namespace Itinero.Transit.Data
                     throw new InvalidOperationException(
                         "There is already a writer active, only one writer per transit db can be active at the same time.");
 
-                _writer = new TransitDbWriter(this, Latest);
-                return _writer;
+                return Latest.Edit();
             }
         }
 
         /// <summary>
         /// This method is called by the writer itself and closely coupled to it
         /// </summary>
-        internal void SetSnapshot(TransitDbSnapShot snapShot)
+        public void CloseWriter()
         {
             lock (_writerLock)
             {
-                Latest = snapShot;
+                Latest = _writer.GetSnapshot();
                 _writer = null;
             }
-        }
-
-        /// <summary>
-        /// This is intended only to be used by Itinero Transit Processor
-        /// </summary>
-        public static TransitDb CreateMergedTransitDb(IEnumerable<TransitDbSnapShot> tdbs)
-        {
-            tdbs = tdbs.ToList();
-
-            if (tdbs.Count() == 1)
-            {
-                return new TransitDb(0, tdbs.First());
-            }
-            
-            var snapshot = new TransitDbSnapShot(0,
-                string.Join(";", tdbs.Select(tdb => tdb.GlobalId)),
-                StopsDbAggregator.CreateFrom(tdbs),
-                ConnectionsDbAggregator.CreateFrom(tdbs),
-                TripsDbAggregator.CreateFrom(tdbs)
-            );
-            return new TransitDb(0, snapshot);
         }
     }
 }

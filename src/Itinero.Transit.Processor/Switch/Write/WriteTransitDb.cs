@@ -37,7 +37,7 @@ namespace Itinero.Transit.Processor.Switch.Write
         }
 
 
-        public void Use(Dictionary<string, string> arguments, IEnumerable<TransitDbSnapShot> tdbs)
+        public void Use(Dictionary<string, string> arguments, List<TransitDbSnapShot> tdbs)
         {
             foreach (var tdb in tdbs)
             {
@@ -58,7 +58,7 @@ namespace Itinero.Transit.Processor.Switch.Write
                 {
                     tdb.WriteTo(stream);
                     Console.WriteLine(
-                        $"Written {fileName}, transitDb is valid from {tdb.ConnectionsDb.EarliestDate.FromUnixTime():s} till {tdb.ConnectionsDb.LatestDate.FromUnixTime():s} ");
+                        $"Written {fileName}, transitDb is valid from {tdb.Connections.EarliestDate.FromUnixTime():s} till {tdb.Connections.LatestDate.FromUnixTime():s} ");
                 }
             }
         }

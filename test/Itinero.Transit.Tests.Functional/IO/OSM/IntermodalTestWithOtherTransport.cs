@@ -29,7 +29,7 @@ namespace Itinero.Transit.Tests.Functional.IO.OSM
         protected override void Execute()
         {
             // We create a router from the TDB and amend it with an OSM-Locations-Reader to decode OSM-coordinates
-            var stops = _tdb.Latest.StopsDb.AddOsmReader(new []{Input.start, Input.destination});
+            var stops = _tdb.Latest.Stops.AddOsmReader(new []{Input.start, Input.destination});
             var startStop = stops.Get(Input.start);
             var destinationStop = stops.Get(Input.destination);
 

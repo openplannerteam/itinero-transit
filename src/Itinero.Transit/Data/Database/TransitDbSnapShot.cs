@@ -2,25 +2,38 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using Itinero.Transit.Data.Core;
+using Itinero.Transit.Data.Compacted;
 using Itinero.Transit.Data.Serialization;
 using Itinero.Transit.Utils;
 
 namespace Itinero.Transit.Data
 {
     /// <summary>
-    /// A transit db snapshot, represents a consistent state of the transit db.
+    /// A transit db snapshot, represents a consistent and readonly state of the transit db.
     /// </summary>
     public class TransitDbSnapShot : IGlobalId
     {
+
+        public static IWriter CreateSimple(uint databaseId, string globalId)
+        {
+            return new SimpleWriter(databaseId, globalId);
+        }
+
+        public static CompactedWriter CreateCompactedWriter(uint databaseid, string globalId)
+        {
+            return new CompactedWriter(databaseid, globalId);
+        }
+            
         public string GlobalId { get; }
         public IReadOnlyDictionary<string, string> Attributes { get; }
-        
-        public uint Id { get; }
+        /// <summary>
+        /// The identifier of the database. Should be unique amongst the program
+        /// </summary>
+        public uint DatabaseId { get; }
 
-        public IStopsDb StopsDb { get; }
-        public ITripsDb TripsDb { get; }
-        public IConnectionsDb ConnectionsDb { get; }
+        public IStopsDb Stops { get; }
+        public ITripsDb Trips { get; }
+        public IConnectionsDb Connections { get; }
 
         internal TransitDbSnapShot(uint id,
             string globalId,
@@ -29,38 +42,36 @@ namespace Itinero.Transit.Data
             ITripsDb tripsDb,
             IReadOnlyDictionary<string, string> attributes = null)
         {
-            Id = id;
+            DatabaseId = id;
             GlobalId = globalId;
-            StopsDb = stopsDb;
-            TripsDb = tripsDb;
-            ConnectionsDb = connectionsDb;
+            Stops = stopsDb;
+            Trips = tripsDb;
+            Connections = connectionsDb;
             Attributes = attributes ?? new Dictionary<string, string>();
-        }
-
-        public Connection Get(ConnectionId id)
-        {
-            return ConnectionsDb.Get(id);
-        }
-
-        public Stop Get(StopId id)
-        {
-            return StopsDb.Get(id);
-        }
-
-        public Trip Get(TripId trip)
-        {
-            return TripsDb.Get(trip);
         }
 
         public DateTime EarliestDate()
         {
-            return ConnectionsDb.EarliestDate.FromUnixTime();
+            return Connections.EarliestDate.FromUnixTime();
         }
 
 
         public DateTime LatestDate()
         {
-            return ConnectionsDb.LatestDate.FromUnixTime();
+            return Connections.LatestDate.FromUnixTime();
+        }
+
+        
+        /// <summary>
+        /// Creates a new writer which uses the same underlying technology as this snapshot.
+        /// WHen the changes are made, call 'Writer.GetSnapshot()' to get a new and finished snapshot.
+        /// This snapshot will not be changed at all and can be safely used in a threadsafe way
+        /// </summary>
+        public IWriter Edit()
+        {
+            return new SimpleWriter(DatabaseId,
+                this,
+                Stops.Clone(), Connections.Clone(), Trips.Clone());
         }
 
         public void WriteTo(Stream stream)
@@ -69,9 +80,9 @@ namespace Itinero.Transit.Data
             formatter.Serialize(stream, GlobalId);
             formatter.Serialize(stream, Attributes);
 
-            stream.Serialize(StopsDb, formatter);
-            stream.Serialize(TripsDb, formatter);
-            stream.Serialize(ConnectionsDb, formatter);
+            stream.Serialize(Stops, formatter);
+            stream.Serialize(Trips, formatter);
+            stream.Serialize(Connections, formatter);
         }
     }
 }

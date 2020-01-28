@@ -32,18 +32,18 @@ namespace Itinero.Transit.Processor.Switch.Misc
         }
 
 
-        public void Use(Dictionary<string, string> __, IEnumerable<TransitDbSnapShot> _)
+        public void Use(Dictionary<string, string> __, List<TransitDbSnapShot> _)
         {
             Run();
         }
 
-        public IEnumerable<TransitDb> Generate(Dictionary<string, string> parameters)
+        public List<TransitDbSnapShot> Generate(Dictionary<string, string> parameters)
         {
             Run();
-            return new List<TransitDb>();
+            return new List<TransitDbSnapShot>();
         }
 
-        public IEnumerable<TransitDb> Modify(Dictionary<string, string> parameters, List<TransitDb> transitDbs)
+        public List<TransitDbSnapShot> Modify(Dictionary<string, string> parameters, List<TransitDbSnapShot> transitDbs)
         {
             Run();
             return transitDbs;

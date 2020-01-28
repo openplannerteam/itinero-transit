@@ -13,7 +13,7 @@ namespace Itinero.Transit.Tests.Functional.Algorithms.Search
         
         protected override void Execute()
         {
-            Input.db.Latest.StopsDb.FindClosest(new Stop("some stop",(Input.lon, Input.lat)), (uint) Input.distance);
+            Input.db.Latest.Stops.FindClosest(new Stop("some stop",(Input.lon, Input.lat)), (uint) Input.distance);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace Itinero.Transit.Processor.Switch.Write
             var writeTo = arguments["file"];
 
 
-            var trips = tdb.TripsDb;
+            var trips = tdb.Trips;
 
 
             using (var outStream =

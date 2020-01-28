@@ -21,7 +21,7 @@ namespace Itinero.Transit.Processor.Switch.Validation
         {
         }
 
-        public TransitDb Modify(Dictionary<string, string> arguments, TransitDb old)
+        public TransitDbSnapShot Modify(Dictionary<string, string> arguments, TransitDbSnapShot old)
 
         {
             var newDb = old.Copy(
@@ -29,9 +29,9 @@ namespace Itinero.Transit.Processor.Switch.Validation
                 keepTrip: _ => false,
                 keepConnection: _ => true);
 
-            var newStopsCount = newDb.Latest.StopsDb.Count();
+            var newStopsCount = newDb.Stops.Count();
             Console.WriteLine(
-                $"There are {newStopsCount} stops (removed {old.Latest.StopsDb.Count() - newStopsCount})");
+                $"There are {newStopsCount} stops (removed {old.Stops.Count() - newStopsCount})");
             return newDb;
         }
     }

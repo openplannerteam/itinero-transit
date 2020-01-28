@@ -27,10 +27,10 @@ namespace Itinero.Transit.Tests.Core.Data
                 "a", stop0, stop1, 12345, 6789, 1,
                 new TripId(1, 5));
             wr.AddOrUpdateConnection(input);
-            wr.Close();
+            tdb.CloseWriter();
 
 
-            var connectionsDb = tdb.Latest.ConnectionsDb;
+            var connectionsDb = tdb.Latest.Connections;
             var output = connectionsDb.First();
 
             Assert.Equal(input.TravelTime, output.TravelTime);
@@ -56,10 +56,10 @@ namespace Itinero.Transit.Tests.Core.Data
             wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, 1200, 10, 0, new TripId(0, 0)));
             wr.AddOrUpdateConnection(new Connection("f", stop0, stop1, 1300, 10, 0, new TripId(0, 0)));
             wr.AddOrUpdateConnection(new Connection("g", stop0, stop1, 1400, 10, 0, new TripId(0, 0)));
-            wr.Close();
+            tdb.CloseWriter();
 
 
-            var cons = tdb.Latest.ConnectionsDb;
+            var cons = tdb.Latest.Connections;
             var enumerator = cons.GetEnumeratorAt(1100);
 
             Assert.True(enumerator.MoveNext());
@@ -133,9 +133,9 @@ namespace Itinero.Transit.Tests.Core.Data
             wr.AddOrUpdateConnection(new Connection("c", stop0, stop1, d + 61, 8, 0, new TripId(0, 2)));
             wr.AddOrUpdateConnection(new Connection("d", stop0, stop1, d + 121, 16, 0, new TripId(0, 3)));
             wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, d + 121, 32, 0, new TripId(0, 5)));
-            wr.Close();
+            tdb.CloseWriter();
 
-            var cons = tdb.Latest.ConnectionsDb;
+            var cons = tdb.Latest.Connections;
 
             var enumerator = cons.GetEnumeratorAt(0);
 
@@ -170,9 +170,9 @@ namespace Itinero.Transit.Tests.Core.Data
             wr.AddOrUpdateConnection(new Connection("c", stop0, stop1, d + 61, 8, 0, new TripId(0, 2)));
             wr.AddOrUpdateConnection(new Connection("d", stop0, stop1, d + 121, 16, 0, new TripId(0, 3)));
             wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, d + 121, 32, 0, new TripId(0, 5)));
-            wr.Close();
+            tdb.CloseWriter();
 
-            var cons = tdb.Latest.ConnectionsDb;
+            var cons = tdb.Latest.Connections;
 
             var enumerator = cons.GetEnumeratorAt(cons.LatestDate + 1);
 
@@ -210,14 +210,14 @@ namespace Itinero.Transit.Tests.Core.Data
             wr.AddOrUpdateConnection(new Connection("c", stop0, stop1, d + 61, 8, 0, new TripId(0, 2)));
             wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, d + 121, 32, 0, new TripId(0, 3)));
             wr1.AddOrUpdateConnection(new Connection("d", stop0, stop1, d + 121, 16, 0, new TripId(0, 3)));
-            wr.Close();
-            wr1.Close();
+            tdb.CloseWriter();
+            tdb1.CloseWriter();
 
             var expected = new[] {"a", "a0", "b", "c", "e", "d"};
             if (true)
             {
                 var c0 = 0;
-                var enumerator0 = tdb.Latest.ConnectionsDb.GetEnumeratorAt(d + 1000);
+                var enumerator0 = tdb.Latest.Connections.GetEnumeratorAt(d + 1000);
                 while (enumerator0.MovePrevious())
                 {
                     c0++;
@@ -226,7 +226,7 @@ namespace Itinero.Transit.Tests.Core.Data
                 Assert.Equal(4, c0);
 
                 c0 = 0;
-                enumerator0 = tdb.Latest.ConnectionsDb.GetEnumeratorAt(0);
+                enumerator0 = tdb.Latest.Connections.GetEnumeratorAt(0);
                 while (enumerator0.MoveNext())
                 {
                     c0++;
@@ -236,7 +236,7 @@ namespace Itinero.Transit.Tests.Core.Data
 
 
                 var c1 = 0;
-                var enumerator1 = tdb1.Latest.ConnectionsDb.GetEnumeratorAt(d + 1000);
+                var enumerator1 = tdb1.Latest.Connections.GetEnumeratorAt(d + 1000);
                 while (enumerator1.MovePrevious())
                 {
                     c1++;
@@ -245,7 +245,7 @@ namespace Itinero.Transit.Tests.Core.Data
                 Assert.Equal(2, c1);
 
                 c1 = 0;
-                enumerator1 = tdb1.Latest.ConnectionsDb.GetEnumeratorAt(0);
+                enumerator1 = tdb1.Latest.Connections.GetEnumeratorAt(0);
                 while (enumerator1.MoveNext())
                 {
                     c1++;
@@ -256,7 +256,7 @@ namespace Itinero.Transit.Tests.Core.Data
 
             var mergedDb = ConnectionsDbAggregator.CreateFrom(new List<IConnectionsDb>
             {
-                tdb.Latest.ConnectionsDb, tdb1.Latest.ConnectionsDb
+                tdb.Latest.Connections, tdb1.Latest.Connections
             });
 
             var enumerator = mergedDb.GetEnumeratorAt(0);
@@ -275,7 +275,7 @@ namespace Itinero.Transit.Tests.Core.Data
             Assert.Equal(6, count);
             Assert.Equal(63, tt);
 
-            enumerator = mergedDb.GetEnumeratorAt(tdb.Latest.ConnectionsDb.LatestDate + 1);
+            enumerator = mergedDb.GetEnumeratorAt(tdb.Latest.Connections.LatestDate + 1);
             tt = 0;
             count = 0;
             while (enumerator.MovePrevious())
@@ -316,7 +316,7 @@ namespace Itinero.Transit.Tests.Core.Data
             wr.AddOrUpdateConnection(new Connection("c", stop0, stop1, d + 61, 8, 0, tr2));
             wr.AddOrUpdateConnection(new Connection("d", stop0, stop1, d + 121, 16, 0, tr3));
             wr.AddOrUpdateConnection(new Connection("e", stop0, stop1, d + 121, 32, 0, tr4));
-            wr.Close();
+            tdb.CloseWriter();
 
 
             using (var fOut = File.OpenWrite("TestEnum.transitdb"))
@@ -329,15 +329,15 @@ namespace Itinero.Transit.Tests.Core.Data
                 tdb = new TransitDb(0);
                 wr = tdb.GetWriter();
                 wr.ReadFrom(fIn);
-                wr.Close();
+                tdb.CloseWriter();
             }
 
             File.Delete("TestEnum.transitdb");
 
 
-            var connections = tdb.Latest.ConnectionsDb;
+            var connections = tdb.Latest.Connections;
 
-            var enumerator = connections.GetEnumeratorAt(tdb.Latest.ConnectionsDb.EarliestDate);
+            var enumerator = connections.GetEnumeratorAt(tdb.Latest.Connections.EarliestDate);
 
             var count = 0;
             var tt = 0;
@@ -352,7 +352,7 @@ namespace Itinero.Transit.Tests.Core.Data
             Assert.Equal(6, count);
             Assert.Equal(63, tt);
 
-            enumerator = connections.GetEnumeratorAt(tdb.Latest.ConnectionsDb.LatestDate + 1);
+            enumerator = connections.GetEnumeratorAt(tdb.Latest.Connections.LatestDate + 1);
             tt = 0;
             count = 0;
             while (enumerator.MovePrevious())
@@ -387,12 +387,12 @@ namespace Itinero.Transit.Tests.Core.Data
                         new TripId(0, 0)));
             }
 
-            wr.Close();
+            tdb.CloseWriter();
 
 
             var start = DateTime.Now;
 
-            var enumerator = tdb.Latest.ConnectionsDb.GetEnumeratorAt(100000000 - 2000);
+            var enumerator = tdb.Latest.Connections.GetEnumeratorAt(100000000 - 2000);
             var count = 0;
             while (enumerator.MoveNext() && enumerator.CurrentTime < 100000000)
             {
@@ -410,7 +410,7 @@ namespace Itinero.Transit.Tests.Core.Data
             Assert.True((end - start).TotalMilliseconds < 5.0);
 
             start = DateTime.Now;
-            enumerator = tdb.Latest.ConnectionsDb.GetEnumeratorAt(100000000);
+            enumerator = tdb.Latest.Connections.GetEnumeratorAt(100000000);
             count = 0;
             while (enumerator.MovePrevious() && enumerator.CurrentTime >= 100000000 - 2000)
             {

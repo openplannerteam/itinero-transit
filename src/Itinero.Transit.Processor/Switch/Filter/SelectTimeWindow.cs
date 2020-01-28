@@ -40,7 +40,7 @@ namespace Itinero.Transit.Processor.Switch.Filter
         {
         }
 
-        public TransitDb Modify(Dictionary<string, string> arguments, TransitDb old)
+        public TransitDbSnapShot Modify(Dictionary<string, string> arguments, TransitDbSnapShot old)
         {
             var startDate = DateTime.ParseExact(arguments["window-start"], "yyyy-MM-dd_HH:mm:ss", null);
             startDate = startDate.ToUniversalTime();

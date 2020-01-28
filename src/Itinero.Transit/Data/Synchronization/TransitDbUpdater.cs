@@ -14,14 +14,14 @@ namespace Itinero.Transit.Data.Synchronization
     /// </summary>
     public class TransitDbUpdater
     {
-        private readonly Action<TransitDbWriter, DateTime, DateTime> _updateTimeFrame;
+        private readonly Action<IWriter, DateTime, DateTime> _updateTimeFrame;
         private readonly DateTracker _loadedTimeWindows = new DateTracker();
 
         public IReadOnlyList<(DateTime start, DateTime end)> LoadedTimeWindows => _loadedTimeWindows.TimeWindows();
 
         public TransitDb TransitDb { get; }
 
-        public TransitDbUpdater(TransitDb tdb, Action<TransitDbWriter, DateTime, DateTime> updateTimeFrame)
+        public TransitDbUpdater(TransitDb tdb, Action<IWriter, DateTime, DateTime> updateTimeFrame)
         {
             TransitDb = tdb;
             _updateTimeFrame = updateTimeFrame;
@@ -70,7 +70,7 @@ namespace Itinero.Transit.Data.Synchronization
             }
             finally
             {
-                writer.Close();
+                TransitDb.CloseWriter();
             }
         }
     }

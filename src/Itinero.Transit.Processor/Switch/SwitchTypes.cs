@@ -5,17 +5,17 @@ namespace Itinero.Transit.Processor.Switch
 {
     public interface ITransitDbSource
     {
-        TransitDb Generate(Dictionary<string, string> parameters);
+        TransitDbSnapShot Generate(Dictionary<string, string> parameters);
     }
 
     public interface IMultiTransitDbSource
     {
-        IEnumerable<TransitDb> Generate(Dictionary<string, string> parameters);
+        List<TransitDbSnapShot> Generate(Dictionary<string, string> parameters);
     }
 
     public interface IMultiTransitDbSink
     {
-        void Use(Dictionary<string, string> parameters, IEnumerable<TransitDbSnapShot> transitDbs);
+        void Use(Dictionary<string, string> parameters, List<TransitDbSnapShot> transitDbs);
     }
 
     public interface ITransitDbSink
@@ -31,7 +31,7 @@ namespace Itinero.Transit.Processor.Switch
         /// <summary>
         /// Modifies the transitdb
         /// </summary>
-        TransitDb Modify(Dictionary<string, string> parameters, TransitDb transitDb);
+        TransitDbSnapShot Modify(Dictionary<string, string> parameters, TransitDbSnapShot transitDb);
     }
 
     public interface IMultiTransitDbModifier
@@ -39,6 +39,6 @@ namespace Itinero.Transit.Processor.Switch
         /// <summary>
         /// Modifies the transitdbs
         /// </summary>
-        IEnumerable<TransitDb> Modify(Dictionary<string, string> parameters, List<TransitDb> transitDbs);
+        List<TransitDbSnapShot> Modify(Dictionary<string, string> parameters, List<TransitDbSnapShot> transitDbs);
     }
 }
