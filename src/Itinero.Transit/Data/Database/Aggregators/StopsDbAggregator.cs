@@ -23,6 +23,13 @@ namespace Itinero.Transit.Data.Aggregators
                 fallbacks.Select(fb => fb.LocationIndex).ToList());
         }
 
+        public long Count
+        {
+            get
+            {
+                return _fallbacks.Sum(fallback => fallback.Count);
+            }
+        }
 
         public IEnumerator<Stop> GetEnumerator()
         {

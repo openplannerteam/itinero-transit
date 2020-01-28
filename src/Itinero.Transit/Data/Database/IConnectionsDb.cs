@@ -18,6 +18,8 @@ namespace Itinero.Transit.Data
         IConnectionEnumerator GetEnumeratorAt(ulong departureTime);
 
         void PostProcess();
+        
+        long Count { get; }
     }
 
 

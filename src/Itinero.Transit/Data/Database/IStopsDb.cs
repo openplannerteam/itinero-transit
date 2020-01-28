@@ -10,6 +10,8 @@ namespace Itinero.Transit.Data
         ILocationIndexing<Stop> LocationIndex { get; }
 
         void PostProcess(uint zoomLevel = 12);
+        
+        long Count { get; }
     }
 
     public static class StopsDbExtensions

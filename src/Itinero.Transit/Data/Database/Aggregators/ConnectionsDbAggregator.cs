@@ -18,6 +18,14 @@ namespace Itinero.Transit.Data.Aggregators
                 fallbacks.Select(fb => (IDatabaseReader<ConnectionId, Connection>) fb).ToList());
         }
 
+        public long Count
+        {
+            get
+            {
+                return _fallbacks.Sum(fallback => fallback.Count);
+            }
+        }
+
         public ulong EarliestDate
         {
             get

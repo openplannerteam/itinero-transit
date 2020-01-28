@@ -29,6 +29,14 @@ namespace Itinero.Transit.Data.Aggregators
             return fresh;
         }
 
+        public long Count
+        {
+            get
+            {
+                return _fallback.Count;
+            }
+        }
+        
         public IEnumerator<Stop> GetEnumerator()
         {
             return _fallback.GetEnumerator();

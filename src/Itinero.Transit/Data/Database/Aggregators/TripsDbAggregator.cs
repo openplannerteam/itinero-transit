@@ -18,6 +18,14 @@ namespace Itinero.Transit.Data.Aggregators
             }
             return new TripsDbAggregator(fallbacks);
         }
+
+        public long Count
+        {
+            get
+            {
+                return _fallbacks.Sum(fallback => fallback.Count);
+            }
+        }
         
         public static ITripsDb CreateFrom(IEnumerable<TransitDbSnapShot> snapshots)
         {
