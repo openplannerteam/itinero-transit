@@ -11,7 +11,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Itinero.Transit\Itinero.Transit.csproj" />
-        <PackageReference Include="NetTopologySuite.IO.VectorTiles.Mapbox" Version="0.0.4" />
+        <PackageReference Include="NetTopologySuite.IO.VectorTiles" Version="0.0.5" />
 
     </ItemGroup>
 
