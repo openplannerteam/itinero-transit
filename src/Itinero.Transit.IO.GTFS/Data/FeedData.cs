@@ -13,33 +13,14 @@ namespace Itinero.Transit.IO.GTFS.Data
     /// Feed data contains all data of a feed and some logic to fetch and cache this data.
     /// All have a cached and non-cached version
     /// </summary>
-    public class FeedData
+    internal class FeedData
     {
-        private readonly string _path;
-
-        public FeedData(string path)
+        public FeedData(IGTFSFeed feed)
         {
-            _path = path;
+            Feed = feed;
         }
 
-
-        private GTFSFeed _feed;
-
-        public GTFSFeed Feed
-        {
-            get
-            {
-                if (_feed == null)
-                {
-                    Log.Information("Starting to read the GTFS-archive");
-                    _feed = new GTFSReader<GTFSFeed>().Read(_path);
-                    Log.Information("GTFS archive unpacked");
-                }
-
-                return _feed;
-            }
-        }
-
+        public IGTFSFeed Feed { get; }
 
         internal List<string> AgencyUrls()
         {
@@ -67,7 +48,7 @@ namespace Itinero.Transit.IO.GTFS.Data
                 var urls = AgencyUrls();
                 if (urls.Count > 1)
                 {
-                    throw new ArgumentException("The GTFS archive " + _path + " contains data on multiple agencies");
+                    throw new ArgumentException("This GTFS archive contains data on multiple agencies");
                 }
 
                 var prefix = urls[0];

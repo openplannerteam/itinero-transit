@@ -59,7 +59,7 @@ namespace Itinero.Transit.Processor.Switch.Read
                     (origin, level, message, parameters) =>
                         Console.WriteLine($"[{DateTime.Now:O}] [{level}] [{origin}]: {message}");
 
-                tdb.UseGtfs(path, time, time.AddSeconds(duration));
+                tdb.LoadGTFS(path, time, time.AddSeconds(duration));
                 tdbs.Add(tdb);
             }
 

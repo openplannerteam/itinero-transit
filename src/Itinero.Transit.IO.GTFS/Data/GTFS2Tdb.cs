@@ -48,7 +48,7 @@ namespace Itinero.Transit.IO.GTFS.Data
 
      */
 
-    public class Gtfs2Tdb
+    internal class Gtfs2Tdb
     {
         private readonly FeedData _f;
 
@@ -57,10 +57,6 @@ namespace Itinero.Transit.IO.GTFS.Data
         public Gtfs2Tdb(FeedData f)
         {
             _f = f;
-        }
-
-        public Gtfs2Tdb(string path) : this(new FeedData(path))
-        {
         }
 
         private void AddService(TransitDbWriter writer, Calendar service, DateTime day, DateTime startDate,

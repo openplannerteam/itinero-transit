@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using GTFS;
 using Itinero.Transit.Data;
 using Itinero.Transit.IO.GTFS;
 using Itinero.Transit.IO.GTFS.Data;
@@ -14,7 +15,9 @@ namespace Itinero.Transit.Tests.IO.GTFS
         [Fact]
         public void AddDay_13oct_ConnectionsAreLoaded()
         {
-            var convertor = new Gtfs2Tdb("IO/GTFS/sncb-13-october.zip");
+            var feed = (new GTFSReader<GTFSFeed>()).Read("IO/GTFS/sncb-13-october.zip");
+            var feedData = new FeedData(feed);
+            var convertor = new Gtfs2Tdb(feedData);
 
             var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
@@ -31,7 +34,7 @@ namespace Itinero.Transit.Tests.IO.GTFS
         public void LoadTimePeriod_HourWithinGtfs_ConnectionsAreLoaded()
         {
             var tdb = new TransitDb(0);
-            tdb.UseGtfs("IO/GTFS/sncb-13-october.zip",
+            tdb.LoadGTFS("IO/GTFS/sncb-13-october.zip",
                 new DateTime(2019, 10, 21, 10, 0, 0, DateTimeKind.Utc),
                 new DateTime(2019, 10, 21, 11, 0, 0, DateTimeKind.Utc));
             var count = tdb.Latest.ConnectionsDb.Count();
@@ -43,7 +46,7 @@ namespace Itinero.Transit.Tests.IO.GTFS
         public void LoadTimePeriod_HourAtFirstDayOfGtfs_ConnectionsAreLoaded()
         {
             var tdb = new TransitDb(0);
-            tdb.UseGtfs("IO/GTFS/sncb-13-october.zip",
+            tdb.LoadGTFS("IO/GTFS/sncb-13-october.zip",
                 new DateTime(2019, 10, 07, 10, 0, 0, DateTimeKind.Utc),
                 new DateTime(2019, 10, 07, 11, 0, 0, DateTimeKind.Utc));
             var count = tdb.Latest.ConnectionsDb.Count();
@@ -55,7 +58,7 @@ namespace Itinero.Transit.Tests.IO.GTFS
         public void LoadTimePeriod_HourAtLastDayOfGtfs_ConnectionsAreLoaded()
         {
             var tdb = new TransitDb(0);
-            tdb.UseGtfs("IO/GTFS/sncb-13-october.zip",
+            tdb.LoadGTFS("IO/GTFS/sncb-13-october.zip",
                 new DateTime(2019, 12, 14, 10, 0, 0, DateTimeKind.Utc),
                 new DateTime(2019, 12, 14, 11, 0, 0, DateTimeKind.Utc));
             var count = tdb.Latest.ConnectionsDb.Count();
@@ -65,7 +68,8 @@ namespace Itinero.Transit.Tests.IO.GTFS
         [Fact]
         public void AgencyURLS_SNCB_ContainBelgianTrainId()
         {
-            var convertor = new FeedData("IO/GTFS/sncb-13-october.zip");
+            var feed = (new GTFSReader<GTFSFeed>()).Read("IO/GTFS/sncb-13-october.zip");
+            var convertor = new FeedData(feed);
 
             var urls = convertor.AgencyUrls().ToList();
 
@@ -76,7 +80,8 @@ namespace Itinero.Transit.Tests.IO.GTFS
         [Fact]
         public void IdentifierPrefix_SNCB_BelgianTrail()
         {
-            var convertor = new FeedData("IO/GTFS/sncb-13-october.zip");
+            var feed = (new GTFSReader<GTFSFeed>()).Read("IO/GTFS/sncb-13-october.zip");
+            var convertor = new FeedData(feed);
 
             var url = convertor.IdentifierPrefix;
 
@@ -87,7 +92,8 @@ namespace Itinero.Transit.Tests.IO.GTFS
         [Fact]
         public void AddLocations_SNCB_AllLocationsadded()
         {
-            var convertor = new Gtfs2Tdb("IO/GTFS/sncb-13-october.zip");
+            var feed = (new GTFSReader<GTFSFeed>()).Read("IO/GTFS/sncb-13-october.zip");
+            var convertor = new Gtfs2Tdb(new FeedData(feed));
 
             var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
@@ -100,7 +106,8 @@ namespace Itinero.Transit.Tests.IO.GTFS
         [Fact]
         public void AddLocations_SNCB_ContainsBruges()
         {
-            var convertor = new Gtfs2Tdb("IO/GTFS/sncb-13-october.zip");
+            var feed = (new GTFSReader<GTFSFeed>()).Read("IO/GTFS/sncb-13-october.zip");
+            var convertor = new Gtfs2Tdb(new FeedData(feed));
 
             var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
@@ -115,7 +122,8 @@ namespace Itinero.Transit.Tests.IO.GTFS
         [Fact]
         public void AddLocations_SNCB_TranslationsAreAdded()
         {
-            var convertor = new Gtfs2Tdb("IO/GTFS/sncb-13-october.zip");
+            var feed = (new GTFSReader<GTFSFeed>()).Read("IO/GTFS/sncb-13-october.zip");
+            var convertor = new Gtfs2Tdb(new FeedData(feed));
 
             var tdb = new TransitDb(0);
             var wr = tdb.GetWriter();
