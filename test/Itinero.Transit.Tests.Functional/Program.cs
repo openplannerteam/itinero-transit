@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using GTFS;
 using Itinero.Transit.Data;
+using Itinero.Transit.IO.GTFS;
 using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms;
 using Itinero.Transit.Tests.Functional.Algorithms.CSA;
@@ -23,7 +25,6 @@ namespace Itinero.Transit.Tests.Functional
         public static void Main(string[] args)
         {
             EnableLogging();
-
 
             var devTestsOnly = args.Length == 0 ||
                                !new List<string> {"--full-test-suite", "--full", "--test", "--all"}.Contains(args[0].ToLower());

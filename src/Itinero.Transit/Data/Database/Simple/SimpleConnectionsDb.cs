@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Itinero.Transit.Data.Core;
+using Itinero.Transit.Logging;
 
 namespace Itinero.Transit.Data.Simple
 {
@@ -109,6 +110,11 @@ namespace Itinero.Transit.Data.Simple
 
             foreach (var c in trip)
             {
+                if (_byArrivalStop.ContainsKey(c.c.ArrivalStop))
+                {
+                    Log.Warning($"A broken trip was found: {trip[0].c.TripId}: Could not correct single departure time.");
+                    return;
+                }
                 _byArrivalStop.Add(c.c.ArrivalStop,c);
             }
 
@@ -140,7 +146,8 @@ namespace Itinero.Transit.Data.Simple
                 {
                     // In normal circumstances, this should never be triggered
                     // It is merely here to prevent infinite loops
-                    throw new ArgumentException("Broken trip");
+                    Log.Warning($"A broken trip was found: {trip[0].c.TripId}: Could not correct single departure time.");
+                    return;
                 }
 
  

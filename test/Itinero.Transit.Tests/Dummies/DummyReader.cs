@@ -39,6 +39,8 @@ namespace Itinero.Transit.Tests.Dummies
             throw new Exception();
         }
 
+        public long Count => throw new Exception();
+
         public ILocationIndexing<Stop> LocationIndex { get; }
         public void PostProcess(uint zoomLevel)
         {
