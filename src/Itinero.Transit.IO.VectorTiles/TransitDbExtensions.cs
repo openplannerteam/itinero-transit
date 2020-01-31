@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using GeoAPI.Geometries;
 using Itinero.Transit.Algorithms.Mergers;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Core;
 using NetTopologySuite.Features;
+using NetTopologySuite.Geometries;
 using NetTopologySuite.IO.VectorTiles;
 
 namespace Itinero.Transit.IO.VectorTiles
@@ -12,29 +16,19 @@ namespace Itinero.Transit.IO.VectorTiles
         public static (VectorTileTree, BBox bbox, string sources) CalculateVectorTileTree(
             this IEnumerable<TransitDbSnapShot> tdbs, uint minZoom, uint maxZoom)
         {
-            var features = new FeatureCollection();
             var bbox = new BBox();
-            var sources = "";
-
-            foreach (var tdb in tdbs)
-            {
-                var stops2Routes = CalculateRoutes(features, tdb);
-                var bboxTdb = AddStops(tdb, features, stops2Routes);
-                bbox.AddBBox(bboxTdb);
-                var source = tdb.GetAttribute("name", tdb.GlobalId);
-                sources += source + ";";
-            }
+            var sources = string.Empty;
 
             IEnumerable<(IFeature feature, int zoom, string layerName)> ConfigureFeature(IFeature feature)
             {
                 for (var z = minZoom; z <= maxZoom; z++)
                 {
-                    switch (feature)
+                    switch (feature.Geometry)
                     {
-                        case StopFeature _:
+                        case Point _:
                             yield return (feature, (int) z, "stops");
                             break;
-                        case RouteFeature _:
+                        case LineString _:
                             yield return (feature, (int) z, "routes");
                             break;
                         default:
@@ -42,71 +36,173 @@ namespace Itinero.Transit.IO.VectorTiles
                     }
                 }
             }
-
-            return (new VectorTileTree
+            
+            var vectorTileTree = new VectorTileTree();
+            
+            foreach (var tdb in tdbs)
             {
-                {
-                    features, ConfigureFeature
-                }
-            }, bbox, sources);
+                vectorTileTree.Add(tdb.ToFeatures(bbox), ConfigureFeature);
+                
+                var source = tdb.GetAttribute("name", tdb.GlobalId);
+                sources += source + ";";
+            }
+
+            return (vectorTileTree, bbox, sources);
         }
 
-        private static Dictionary<string, List<string>> CalculateRoutes(FeatureCollection addFeatures,
-            TransitDbSnapShot tdb)
+        private static IEnumerable<IFeature> ToFeatures(this TransitDbSnapShot transitDbSnapShot, BBox bbox)
         {
-            var connections = tdb.ConnectionsDb;
-
-            var routes = new RouteMerger(connections);
-            var routeId = (uint) 0;
-
-            var stops2Routes = new Dictionary<string, List<string>>();
-            foreach (var kv in routes.GetRouteToTrips())
+            var connectionFeatures = transitDbSnapShot.ToConnectionFeatures(out var tripsPerStop);
+            foreach (var feature in connectionFeatures)
             {
-                var route = kv.Key;
-                var trips = kv.Value;
-                
-                var feature = new RouteFeature(tdb, route, routeId,
-                    tdb.TripsDb.GetAll(trips), tdb.GlobalId);
-                addFeatures.Add(feature);
+                yield return feature;
+            }
 
+            foreach (var feature in transitDbSnapShot.ToStopFeatures(tripsPerStop, bbox))
+            {
+                yield return feature;
+            }
+        }
 
-                foreach (var stopId in route)
+        private static IEnumerable<IFeature> ToConnectionFeatures(this TransitDbSnapShot transitDbSnapShot,
+            out Dictionary<string, HashSet<string>> tripsPerStop)
+        {
+            tripsPerStop = new Dictionary<string, HashSet<string>>();
+            var features = new Dictionary<(StopId stop1, StopId stop2), (Feature feature, int trips, int routeTypes)>();
+
+            foreach (var connection in transitDbSnapShot.ConnectionsDb)
+            {
+                // create new feature if the stop combination doesn't exist yet.
+                (StopId stop1, StopId stop2) key = (connection.DepartureStop, connection.ArrivalStop);
+                string stop1GlobalId;
+                string stop2GlobalId;
+                if (!features.TryGetValue(key, out var feature))
                 {
-                    var stop = tdb.StopsDb.Get(stopId);
-                    if (!stops2Routes.ContainsKey(stop.GlobalId))
+                    var stop1 = transitDbSnapShot.StopsDb.Get(key.stop1);
+                    var stop2 = transitDbSnapShot.StopsDb.Get(key.stop2);
+                    
+                    feature = (new Feature(new LineString(new []
                     {
-                        stops2Routes[stop.GlobalId] = new List<string>();
+                        new Coordinate(stop1.Longitude, stop1.Latitude), 
+                        new Coordinate(stop2.Longitude, stop2.Latitude), 
+                    }), new AttributesTable()), 0, 0);
+
+                    feature.feature.Attributes.AddAttribute("stop_id_departure", stop1.GlobalId);
+                    feature.feature.Attributes.AddAttribute("stop_id_arrival", stop2.GlobalId);
+                    stop1GlobalId = stop1.GlobalId;
+                    stop2GlobalId = stop2.GlobalId;
+                    
+                    features[key] = feature;
+                }
+                else
+                {
+                    stop1GlobalId = feature.feature.Attributes["stop_id_departure"] as string ?? string.Empty;
+                    stop2GlobalId = feature.feature.Attributes["stop_id_arrival"] as string ?? string.Empty;
+                }
+                
+                // get trip.
+                var trip = transitDbSnapShot.TripsDb.Get(connection.TripId);
+                
+                // determine if route_type is already there.
+                var rt = 0;
+                if (trip.TryGetAttribute("route_type", out var newRouteType))
+                {
+                    var routeTypeFound = false;
+                    for (; rt < feature.routeTypes; rt++)
+                    {
+                        var routeType = feature.feature.Attributes[$"route_type_{rt:00000}"];
+                        if (!(routeType is string routeTypeString) || newRouteType != routeTypeString) continue;
+
+                        routeTypeFound = true;
+                        break;
                     }
 
-                    stops2Routes[stop.GlobalId].Add("" + routeId);
+                    if (!routeTypeFound)
+                    {
+                        // add route type.
+                        feature.feature.Attributes.AddAttribute($"route_type_{rt:00000}", newRouteType);
+                        feature.routeTypes += 1;
+                    }
                 }
 
-                routeId++;
+                // determine if trip is already here.
+                var tripFound = false;
+                var t = 0;
+                for (; t < feature.trips; t++)
+                {
+                    var tripId = feature.feature.Attributes[$"trip_{t:00000}_id"];
+                    if (!(tripId is string tripIdString) || tripIdString != trip.GlobalId) continue;
+                    
+                    tripFound = true;
+                    break;
+                }
+
+                if (!tripFound)
+                {
+                    // add trip.
+                    feature.feature.Attributes.AddAttribute($"trip_{t:00000}_id", trip.GlobalId);
+                    foreach (var tripAttribute in trip.Attributes)
+                    {
+                        feature.feature.Attributes.AddAttribute($"trip_{t:00000}_{tripAttribute.Key}",
+                            tripAttribute.Value);
+                    }
+
+                    if (!tripsPerStop.TryGetValue(stop1GlobalId, out var tripsList))
+                    {
+                        tripsList = new HashSet<string>();
+                        tripsPerStop[stop1GlobalId] = tripsList;
+                    }
+
+                    tripsList.Add(trip.GlobalId);
+                    if (!tripsPerStop.TryGetValue(stop2GlobalId, out tripsList))
+                    {
+                        tripsList = new HashSet<string>();
+                        tripsPerStop[stop2GlobalId] = tripsList;
+                    }
+
+                    tripsList.Add(trip.GlobalId);
+
+                    feature.trips += 1;
+                }
+
+                features[key] = feature;
             }
 
-            return stops2Routes;
+            return features.Values.Select(x =>
+            {
+                var (feature, trips, routeTypes) = x;
+                feature.Attributes.AddAttribute("trip_count", trips);
+                feature.Attributes.AddAttribute("route_type_count", trips);
+                return feature;
+            });
         }
 
-
-        private static BBox AddStops(TransitDbSnapShot tdb,
-            FeatureCollection features, IReadOnlyDictionary<string, List<string>> stops2Routes)
+        private static IEnumerable<IFeature> ToStopFeatures(this TransitDbSnapShot transitDbSnapShot,
+            IReadOnlyDictionary<string, HashSet<string>> tripsPerStop, BBox bbox)
         {
-            var stops = tdb.StopsDb;
-
-            var empty = new List<string>();
-            var bbox = new BBox();
-            foreach (var stop in stops)
+            foreach (var stop in transitDbSnapShot.StopsDb)
             {
-                stops2Routes.TryGetValue(stop.GlobalId, out var routes);
-                routes = routes ?? empty;
-                
-                features.Add(
-                    new StopFeature(stop, tdb.GlobalId,routes));
-
+                var feature = new Feature(new Point(stop.Longitude, stop.Latitude), 
+                    new AttributesTable());
                 bbox.AddCoordinate((stop.Longitude, stop.Latitude));
-            }
+                
+                feature.Attributes.AddAttribute("id", stop.GlobalId);
 
-            return bbox;
+                foreach (var attribute in stop.Attributes)
+                {
+                    feature.Attributes.AddAttribute(attribute.Key, attribute.Value);
+                }
+
+                if (!tripsPerStop.TryGetValue(stop.GlobalId, out var trips)) continue;
+                var t = 0;
+                foreach (var tripId in trips)
+                {
+                    feature.Attributes.AddAttribute($"trip_{t:00000}_id", tripId);
+                    t++;
+                }
+
+                yield return feature;
+            }
         }
     }
 }

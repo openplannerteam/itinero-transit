@@ -299,7 +299,7 @@ namespace Itinero.Transit.IO.GTFS
             var newRouteType = ((int) route.Type).ToString();
             
             var i = 0;
-            while (stop.Attributes.TryGetValue($"route_{i:00000}_type", out var routeType))
+            while (stop.Attributes.TryGetValue($"route_type_{i:00000}", out var routeType))
             {
                 if (routeType == newRouteType)
                 {
@@ -315,7 +315,7 @@ namespace Itinero.Transit.IO.GTFS
             {
                 attributes[attribute.Key] = attribute.Value;
             }
-            attributes[$"route_{i:00000}_type"] = newRouteType;
+            attributes[$"route_type_{i:00000}"] = newRouteType;
 
             newStop = new Transit.Data.Core.Stop(stop.GlobalId, (stop.Longitude, stop.Latitude), attributes);
             return true;
