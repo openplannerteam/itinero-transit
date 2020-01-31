@@ -2,12 +2,28 @@ using System;
 using GTFS;
 using Itinero.Transit.Data;
 using Itinero.Transit.IO.GTFS;
+using Itinero.Transit.Tests.Functional.Staging;
 using Serilog;
 
 namespace Itinero.Transit.Tests.Functional.IO.GTFS
 {
     public static class GTFSLoadTest
     {
+        public static void Run()
+        {
+            RunNMBS();
+        }
+        
+        public static void RunNMBS()
+        {
+            var url = "http://planet.anyways.eu/transit/GTFS/belgium/nmbs/nmbs-latest.gtfs.zip";
+            var fileName = "nmbs-latest.gtfs.zip";
+
+            Download.Get(url, fileName);
+            
+            Run(fileName);
+        }
+        
         public static void Run(string path)
         {
             // read GTFS feed.

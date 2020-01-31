@@ -120,6 +120,11 @@ namespace Itinero.Transit.IO.GTFS
             return datePatterns;
         }
 
+        internal static Dictionary<string, Route> GetRoutes(this IGTFSFeed feed)
+        {
+            return feed.Routes.ToDictionary(x => x.Id);
+        }
+
         internal static IEnumerable<(string id, Itinero.Transit.Data.Core.Stop stop)> GetStops(this IGTFSFeed feed, string idPrefix = null,
             Func<string, IEnumerable<(string lng, string term)>> translate = null)
         {

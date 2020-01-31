@@ -98,6 +98,9 @@ namespace Itinero.Transit.IO.GTFS
                         stopIndex[stopId] = (stop, null);
                     }
                 }
+                
+                // get the routes index.
+                var routes = feed.GetRoutes();
 
                 // check and build service schedules.
                 var services = feed.GetDatePatterns();
@@ -120,6 +123,12 @@ namespace Itinero.Transit.IO.GTFS
                     // get service if any.
                     if (!services.TryGetValue(trip.ServiceId, out var service)) continue;
                     
+                    // get route if any.
+                    if (!routes.TryGetValue(trip.RouteId, out var route))
+                    {
+                        Log.Warning($"Route {trip.RouteId} not found for trip {trip.Id}: No route details will be available on this trip.");
+                    }
+                    
                     // TODO: check if this is ok to continue with.
                     // build the trips for each day one.
                     // add here if all trips should be added.
@@ -134,7 +143,7 @@ namespace Itinero.Transit.IO.GTFS
                         {
                             if (settings.AddUnusedTrips)
                             {
-                                var tripDb = trip.ToItineroTrip(day, idPrefix: idPrefix);
+                                var tripDb = trip.ToItineroTrip(day, idPrefix: idPrefix, route: route);
                                 dbTrips[d] = (trip.ToItineroTripId(day, idPrefix: idPrefix), 
                                     writer.AddOrUpdateTrip(tripDb));
                             }
@@ -185,7 +194,7 @@ namespace Itinero.Transit.IO.GTFS
                                 if (!tripDbPair.tripDbId.HasValue)
                                 {
                                     tripDbPair = (tripDbPair.tripId,
-                                        writer.AddOrUpdateTrip(trip.ToItineroTrip(day, idPrefix: idPrefix)));
+                                        writer.AddOrUpdateTrip(trip.ToItineroTrip(day, idPrefix: idPrefix, route: route)));
                                     dbTrips[d] = tripDbPair;
                                 }
                                 var departureTime =
@@ -279,21 +288,35 @@ namespace Itinero.Transit.IO.GTFS
             return $"{idPrefix}trip/{gtfsTrip.BlockId}/{day:yyyyMMdd}";
         }
 
-        internal static Itinero.Transit.Data.Core.Trip ToItineroTrip(this Trip gtfsTrip, DateTime day, string idPrefix = null)
+        internal static Itinero.Transit.Data.Core.Trip ToItineroTrip(this Trip gtfsTrip, DateTime day, string idPrefix = null,
+            Route route = null)
         {
             if (day.Date != day) 
                 throw new ArgumentException($"{nameof(day)} should only contain a date component.",
                     $"{nameof(day)}");
             idPrefix ??= string.Empty;
+
+            var attributes = new Dictionary<string, string>
+            {
+                {"headsign", gtfsTrip.Headsign},
+                {"blockid", gtfsTrip.BlockId},
+                {"shapeid", gtfsTrip.ShapeId},
+                {"shortname", gtfsTrip.ShortName}
+            };
+
+            if (route != null)
+            {
+                attributes["route_description"] = route.Description;
+                attributes["route_url"] = route.Url;
+                attributes["route_type"] = ((int) route.Type).ToString();
+                attributes["route_longname"] = route.LongName;
+                attributes["route_shortname"] = route.ShortName;
+                attributes["route_color"] = route.Color.ToHexColorString();
+                attributes["route_textcolor"] = route.TextColor.ToHexColorString();
+            }
             
             return new Transit.Data.Core.Trip(gtfsTrip.ToItineroTripId(day, idPrefix),
-                new Dictionary<string, string>
-                {
-                    {"headsign", gtfsTrip.Headsign},
-                    {"blockid", gtfsTrip.BlockId},
-                    {"shapeid", gtfsTrip.ShapeId},
-                    {"shortname", gtfsTrip.ShortName}
-                });
+                attributes);
         }
 
         internal static void AddAgencies(this TransitDbWriter writer, IGTFSFeed feed)

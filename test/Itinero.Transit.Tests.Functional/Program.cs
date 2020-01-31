@@ -8,6 +8,7 @@ using Itinero.Transit.Logging;
 using Itinero.Transit.Tests.Functional.Algorithms;
 using Itinero.Transit.Tests.Functional.Algorithms.CSA;
 using Itinero.Transit.Tests.Functional.Data;
+using Itinero.Transit.Tests.Functional.IO.GTFS;
 using Itinero.Transit.Tests.Functional.IO.LC;
 using Itinero.Transit.Tests.Functional.IO.LC.Synchronization;
 using Itinero.Transit.Tests.Functional.IO.OSM;
@@ -34,6 +35,10 @@ namespace Itinero.Transit.Tests.Functional
             {
                 Log.Information("DEV TESTS ONLY");
             }
+            
+            // test gtfs io.
+            GTFSLoadTest.Run();
+            
             // Setup...
             RouterDbStaging.Setup();
             var nmbs = TransitDbCache.Get(StringConstants.Nmbs, 0);
