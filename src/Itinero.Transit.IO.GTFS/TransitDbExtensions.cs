@@ -219,6 +219,13 @@ namespace Itinero.Transit.IO.GTFS
                                     {
                                         fromStopDbId = fromStopData.stopDbId.Value;
                                     }
+
+                                    if (fromStopData.stop.TryUpdateRouteOnStop(route, out var newStop))
+                                    {
+                                        fromStopData.stop = newStop;
+                                        stopIndex[previous.StopId] = (fromStopData.stop, fromStopDbId);
+                                        fromStopDbId = writer.AddOrUpdateStop(fromStopData.stop);
+                                    }
                                 }
 
                                 if (toStopDbId == null)
@@ -238,6 +245,13 @@ namespace Itinero.Transit.IO.GTFS
                                     else
                                     {
                                         toStopDbId = toStopData.stopDbId.Value;
+                                    }
+
+                                    if (toStopData.stop.TryUpdateRouteOnStop(route, out var newStop))
+                                    {
+                                        toStopData.stop = newStop;
+                                        stopIndex[previous.StopId] = (toStopData.stop, toStopDbId);
+                                        toStopDbId = writer.AddOrUpdateStop(toStopData.stop);
                                     }
                                 }
 
@@ -275,6 +289,36 @@ namespace Itinero.Transit.IO.GTFS
             {
                 writer.Close();
             }
+        }
+
+        internal static bool TryUpdateRouteOnStop(this Itinero.Transit.Data.Core.Stop stop, Route route, out Transit.Data.Core.Stop newStop)
+        {
+            newStop = null;
+            if (route == null) return false;
+            
+            var newRouteType = ((int) route.Type).ToString();
+            
+            var i = 0;
+            while (stop.Attributes.TryGetValue($"route_{i:00000}_type", out var routeType))
+            {
+                if (routeType == newRouteType)
+                {
+                    newStop = stop;
+                    return false;
+                }
+
+                i++;
+            }
+
+            var attributes = new Dictionary<string, string>();
+            foreach (var attribute in stop.Attributes)
+            {
+                attributes[attribute.Key] = attribute.Value;
+            }
+            attributes[$"route_{i:00000}_type"] = newRouteType;
+
+            newStop = new Transit.Data.Core.Stop(stop.GlobalId, (stop.Longitude, stop.Latitude), attributes);
+            return true;
         }
 
         internal static string ToItineroTripId(this Trip gtfsTrip, DateTime day, string idPrefix = null)

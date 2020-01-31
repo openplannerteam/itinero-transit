@@ -11,7 +11,8 @@ namespace Itinero.Transit.Tests.Functional.IO.GTFS
     {
         public static void Run()
         {
-            RunNMBS();
+            //RunNMBS();
+            RunDeLijn();
         }
         
         public static void RunNMBS()
@@ -21,14 +22,23 @@ namespace Itinero.Transit.Tests.Functional.IO.GTFS
 
             Download.Get(url, fileName);
             
-            Run(fileName);
+            Run(fileName, DateTime.Now.Date.ToUniversalTime());
         }
         
-        public static void Run(string path)
+        public static void RunDeLijn()
+        {
+            var url = "http://planet.anyways.eu/transit/GTFS/belgium/delijn/delijn-latest.gtfs.zip";
+            var fileName = "delijn-latest.gtfs.zip";
+
+            Download.Get(url, fileName);
+            
+            Run(fileName, DateTime.Now.Date.ToUniversalTime());
+        }
+        
+        public static void Run(string path, DateTime day)
         {
             // read GTFS feed.
             Logging.Log.Verbose("Parsing GTFS...");
-            var day = new DateTime(2020, 01, 28);
             IGTFSFeed feed = null;
             try
             {
