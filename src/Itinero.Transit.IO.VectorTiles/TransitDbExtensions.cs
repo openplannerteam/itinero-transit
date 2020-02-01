@@ -172,7 +172,7 @@ namespace Itinero.Transit.IO.VectorTiles
             {
                 var (feature, trips, routeTypes) = x;
                 feature.Attributes.AddAttribute("trip_count", trips);
-                feature.Attributes.AddAttribute("route_type_count", trips);
+                feature.Attributes.AddAttribute("route_type_count", routeTypes);
                 return feature;
             });
         }
