@@ -44,7 +44,14 @@ namespace Itinero.Transit.IO.VectorTiles
                 vectorTileTree.Add(tdb.ToFeatures(bbox), ConfigureFeature);
                 
                 var source = tdb.GetAttribute("name", tdb.GlobalId);
-                sources += source + ";";
+                if (string.IsNullOrEmpty(source))
+                {
+                    sources = source;
+                }
+                else
+                {
+                    sources = " - " + source;
+                }
             }
 
             return (vectorTileTree, bbox, sources);
