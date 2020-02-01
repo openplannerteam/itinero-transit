@@ -200,6 +200,7 @@ namespace Itinero.Transit.IO.VectorTiles
                     feature.Attributes.AddAttribute($"trip_{t:00000}_id", tripId);
                     t++;
                 }
+                feature.Attributes.AddAttribute("trip_count", trips.Count);
 
                 yield return feature;
             }
