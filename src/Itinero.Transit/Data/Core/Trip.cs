@@ -12,6 +12,8 @@ namespace Itinero.Transit.Data.Core
     {
         public string GlobalId { get; }
         public IReadOnlyDictionary<string, string> Attributes { get; }
+        
+        public OperatorId Operator { get; }
 
         public Trip(string globalId)
         {

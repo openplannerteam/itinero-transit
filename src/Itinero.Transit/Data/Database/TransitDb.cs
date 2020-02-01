@@ -30,7 +30,8 @@ namespace Itinero.Transit.Data
                 "",
                 new SimpleStopsDb(databaseId),
                 new SimpleConnectionsDb(databaseId),
-                new SimpleTripsDb(databaseId)
+                new SimpleTripsDb(databaseId),
+                new SimpleOperatorDb(databaseId)
             ))
         {
         }
@@ -94,7 +95,8 @@ namespace Itinero.Transit.Data
                 string.Join(";", tdbs.Select(tdb => tdb.GlobalId)),
                 StopsDbAggregator.CreateFrom(tdbs),
                 ConnectionsDbAggregator.CreateFrom(tdbs),
-                TripsDbAggregator.CreateFrom(tdbs)
+                TripsDbAggregator.CreateFrom(tdbs),
+                OperatorDbAggregator.CreateFrom(tdbs)
             );
             return new TransitDb(0, snapshot);
         }

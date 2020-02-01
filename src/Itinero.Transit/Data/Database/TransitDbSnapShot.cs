@@ -21,12 +21,14 @@ namespace Itinero.Transit.Data
         public IStopsDb StopsDb { get; }
         public ITripsDb TripsDb { get; }
         public IConnectionsDb ConnectionsDb { get; }
+        public IOperatorDb OperatorDb { get; }
 
         internal TransitDbSnapShot(uint id,
             string globalId,
             IStopsDb stopsDb, 
             IConnectionsDb connectionsDb, 
             ITripsDb tripsDb,
+            IOperatorDb operatorDb,
             IReadOnlyDictionary<string, string> attributes = null)
         {
             Id = id;
@@ -34,6 +36,7 @@ namespace Itinero.Transit.Data
             StopsDb = stopsDb;
             TripsDb = tripsDb;
             ConnectionsDb = connectionsDb;
+            OperatorDb = operatorDb;
             Attributes = attributes ?? new Dictionary<string, string>();
         }
 

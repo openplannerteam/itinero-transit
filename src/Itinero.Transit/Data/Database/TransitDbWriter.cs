@@ -13,6 +13,7 @@ namespace Itinero.Transit.Data
         public readonly IStopsDb StopsDb;
         public readonly IConnectionsDb ConnectionsDb;
         public readonly ITripsDb TripsDb;
+        public readonly IOperatorDb OperatorDb;
 
         /// <summary>
         /// The URL (or prefix) of the PT-operator
@@ -41,6 +42,7 @@ namespace Itinero.Transit.Data
             StopsDb = latestSnapshot.StopsDb.Clone();
             TripsDb = latestSnapshot.TripsDb.Clone();
             ConnectionsDb = latestSnapshot.ConnectionsDb.Clone();
+            OperatorDb = latestSnapshot.OperatorDb.Clone();
         }
 
 
@@ -52,8 +54,9 @@ namespace Itinero.Transit.Data
             StopsDb.PostProcess();
             ConnectionsDb.PostProcess();
             TripsDb.PostProcess();
+            OperatorDb.PostProcess();
 
-            var latest = new TransitDbSnapShot(_parent.DatabaseId, GlobalId, StopsDb, ConnectionsDb, TripsDb, Attributes);
+            var latest = new TransitDbSnapShot(_parent.DatabaseId, GlobalId, StopsDb, ConnectionsDb, TripsDb, OperatorDb, Attributes);
             _parent.SetSnapshot(latest);
         }
 
@@ -75,6 +78,11 @@ namespace Itinero.Transit.Data
         public TripId AddOrUpdateTrip(string globalId)
         {
             return AddOrUpdateTrip(new Trip(globalId));
+        }
+
+        public OperatorId AddOrUpdateOperator(Operator op)
+        {
+            return ((IDatabase<OperatorId, Operator>) OperatorDb).AddOrUpdate(op);
         }
     }
 }
