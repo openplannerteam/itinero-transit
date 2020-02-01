@@ -15,14 +15,16 @@ namespace Itinero.Transit.Data.Core
         
         public OperatorId Operator { get; }
 
-        public Trip(string globalId)
+        public Trip(string globalId, OperatorId op)
         {
             GlobalId = globalId;
+            Operator = op;
         }
         
-        public Trip(string globalId, IReadOnlyDictionary<string, string> attributes)
+        public Trip(string globalId, OperatorId op, IReadOnlyDictionary<string, string> attributes)
         {
             GlobalId = globalId;
+            Operator = op;
             Attributes = attributes;
         }
     }

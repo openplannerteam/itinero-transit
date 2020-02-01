@@ -71,7 +71,7 @@ namespace Itinero.Transit.IO.GTFS
             var writer = transitDb.GetWriter();
             
             // add agency first.
-            writer.AddAgencies(feed);
+            var agencyMap = writer.AddAgencies(feed);
             
             // get the id prefix/timezone.
             var idPrefix = feed.IdentifierPrefix();
@@ -124,9 +124,17 @@ namespace Itinero.Transit.IO.GTFS
                     if (!services.TryGetValue(trip.ServiceId, out var service)) continue;
                     
                     // get route if any.
+                    var operatorId = OperatorId.Invalid;
                     if (!routes.TryGetValue(trip.RouteId, out var route))
                     {
                         Log.Warning($"Route {trip.RouteId} not found for trip {trip.Id}: No route details will be available on this trip.");
+                    }
+                    else
+                    {
+                        if (!agencyMap.TryGetValue(route.AgencyId, out operatorId))
+                        {
+                            Log.Warning($"Route {trip.RouteId} has an unknown agency: {route.AgencyId}");
+                        }
                     }
                     
                     // TODO: check if this is ok to continue with.
@@ -143,7 +151,7 @@ namespace Itinero.Transit.IO.GTFS
                         {
                             if (settings.AddUnusedTrips)
                             {
-                                var tripDb = trip.ToItineroTrip(day, idPrefix: idPrefix, route: route);
+                                var tripDb = trip.ToItineroTrip(day, idPrefix: idPrefix, route: route, op: operatorId);
                                 dbTrips[d] = (trip.ToItineroTripId(day, idPrefix: idPrefix), 
                                     writer.AddOrUpdateTrip(tripDb));
                             }
@@ -194,7 +202,7 @@ namespace Itinero.Transit.IO.GTFS
                                 if (!tripDbPair.tripDbId.HasValue)
                                 {
                                     tripDbPair = (tripDbPair.tripId,
-                                        writer.AddOrUpdateTrip(trip.ToItineroTrip(day, idPrefix: idPrefix, route: route)));
+                                        writer.AddOrUpdateTrip(trip.ToItineroTrip(day, idPrefix: idPrefix, route: route, op: operatorId)));
                                     dbTrips[d] = tripDbPair;
                                 }
                                 var departureTime =
@@ -333,12 +341,13 @@ namespace Itinero.Transit.IO.GTFS
         }
 
         internal static Itinero.Transit.Data.Core.Trip ToItineroTrip(this Trip gtfsTrip, DateTime day, string idPrefix = null,
-            Route route = null)
+            Route route = null, OperatorId? op = null)
         {
             if (day.Date != day) 
                 throw new ArgumentException($"{nameof(day)} should only contain a date component.",
                     $"{nameof(day)}");
             idPrefix ??= string.Empty;
+            op ??= OperatorId.Invalid;
 
             var attributes = new Dictionary<string, string>
             {
@@ -359,34 +368,63 @@ namespace Itinero.Transit.IO.GTFS
                 attributes["route_textcolor"] = route.TextColor.ToHexColorString();
             }
             
-            return new Transit.Data.Core.Trip(gtfsTrip.ToItineroTripId(day, idPrefix),
+            return new Transit.Data.Core.Trip(gtfsTrip.ToItineroTripId(day, idPrefix), op.Value,
                 attributes);
         }
 
-        internal static void AddAgencies(this TransitDbWriter writer, IGTFSFeed feed)
+        internal static Dictionary<string, OperatorId> AddAgencies(this TransitDbWriter writer, IGTFSFeed feed)
         {
             if (feed == null) throw new ArgumentNullException(nameof(feed));
             if (writer == null) throw new ArgumentNullException(nameof(writer));
-            
-            if (feed.Agencies.Count > 1) throw new NotSupportedException("A feed with more than one agency is currently not supported, filter feed before loading.");
 
-            if (feed.Agencies.Count == 0)
+            var useUrlAsGlobalId = true;
+            var agencyUrls = new HashSet<string>();
+            foreach (var agency in feed.Agencies)
             {
-                Log.Warning("Feed has no agencies.");
-                return;
+                if (string.IsNullOrEmpty(agency.URL))
+                {
+                    useUrlAsGlobalId = false;
+                    break;
+                }
+
+                if (agencyUrls.Contains(agency.URL))
+                {
+                    useUrlAsGlobalId = false;
+                    break;
+                }
+                agencyUrls.Add(agency.URL);
             }
             
-            var agency = feed.Agencies.Get(0);
-            writer.GlobalId = agency.URL;
-            writer.AttributesWritable["email"] = agency.Email;
-            writer.AttributesWritable["id"] = agency.Id;
-            writer.AttributesWritable["name"] = agency.Name;
-            writer.AttributesWritable["phone"] = agency.Phone;
-            writer.AttributesWritable["timezone"] = agency.Timezone;
-            writer.AttributesWritable["languagecode"] = agency.LanguageCode;
-            writer.AttributesWritable["url"] = agency.URL;
-            writer.AttributesWritable["website"] = agency.URL;
-            writer.AttributesWritable["charge:url"] = agency.FareURL;
+            var agencyMap = new Dictionary<string, OperatorId>();
+            foreach (var agency in feed.Agencies)
+            {
+                var globalId = agency.Id;
+                if (useUrlAsGlobalId)
+                {
+                    globalId = agency.URL;
+                }
+
+                var attributes = new Dictionary<string, string>
+                {
+                    {"email", agency.Email},
+                    {"id", agency.Id},
+                    {"name", agency.Name},
+                    {"phone", agency.Phone},
+                    {"timezone", agency.Timezone},
+                    {"languagecode", agency.LanguageCode},
+                    {"url", agency.URL},
+                    {"website", agency.URL},
+                    {"charge:url", agency.FareURL}
+                };
+
+                var op = new Operator(globalId, attributes);
+
+                var opId = writer.AddOrUpdateOperator(op);
+
+                agencyMap[agency.Id] = opId;
+            }
+
+            return agencyMap;
         }
     }
 }

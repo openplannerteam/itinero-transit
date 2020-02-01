@@ -72,6 +72,7 @@ namespace Itinero.Transit.Data
             formatter.Serialize(stream, GlobalId);
             formatter.Serialize(stream, Attributes);
 
+            stream.Serialize(OperatorDb, formatter);
             stream.Serialize(StopsDb, formatter);
             stream.Serialize(TripsDb, formatter);
             stream.Serialize(ConnectionsDb, formatter);

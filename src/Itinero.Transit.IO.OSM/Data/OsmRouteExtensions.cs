@@ -77,7 +77,7 @@ namespace Itinero.Transit.IO.OSM.Data
                     var tripGlobalId = $"https://openstreetmap.org/relation/{route.Id}/vehicle/{index}";
 
 
-                    var tripIndex = wr.AddOrUpdateTrip(new Trip(tripGlobalId, new Dictionary<string, string>
+                    var tripIndex = wr.AddOrUpdateTrip(new Trip(tripGlobalId, OperatorId.Invalid, new Dictionary<string, string>
                     {
                         {"route", "http://openstreetmap.org/relation/" + route.Id},
                         {"headsign", route.Name ?? ""}

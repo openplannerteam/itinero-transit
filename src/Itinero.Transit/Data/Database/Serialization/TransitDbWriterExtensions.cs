@@ -26,12 +26,19 @@ namespace Itinero.Transit.Data.Serialization
                 writer.AttributesWritable[kv.Key] = kv.Value;
             }
             
-            // TransitDbSnaphot.WriteTo
+            // TransitDbSnapShot.WriteTo
+            var operators = stream.Deserialize<OperatorId, Operator>(formatter);
             var stops = stream.Deserialize<StopId, Stop>(formatter);
             var trips = stream.Deserialize<TripId, Trip>(formatter);
             var connections = stream.Deserialize<ConnectionId, Connection>(formatter);
 
             // Projects the old, pre-serialization ID onto the new one. Probably the same though
+            var operatorMapping = new Dictionary<OperatorId, OperatorId>();
+            foreach (var (operatorId, op) in operators)
+            {
+                operatorMapping[operatorId] = writer.AddOrUpdateOperator(op);
+            }
+            
             var stopMapping = new Dictionary<StopId, StopId>();
             foreach (var (stopId, stop) in stops)
             {
@@ -41,7 +48,9 @@ namespace Itinero.Transit.Data.Serialization
             var tripMapping = new Dictionary<TripId, TripId>();
             foreach (var (tripId, trip) in trips)
             {
-                tripMapping[tripId] = writer.AddOrUpdateTrip(trip);
+                var newTrip = new Trip(trip.GlobalId,
+                    operatorMapping[trip.Operator], trip.Attributes);
+                tripMapping[tripId] = writer.AddOrUpdateTrip(newTrip);
             }
 
             foreach (var (_, c) in connections)

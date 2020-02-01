@@ -77,7 +77,7 @@ namespace Itinero.Transit.Data
 
         public TripId AddOrUpdateTrip(string globalId)
         {
-            return AddOrUpdateTrip(new Trip(globalId));
+            return AddOrUpdateTrip(new Trip(globalId, OperatorId.Invalid));
         }
 
         public OperatorId AddOrUpdateOperator(Operator op)

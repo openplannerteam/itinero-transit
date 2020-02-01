@@ -176,7 +176,7 @@ namespace Itinero.Transit.IO.LC
                {"trip", $"{connection.Trip()}"},
                {"route", $"{connection.Route()}"}
             };
-            return writer.AddOrUpdateTrip(new Trip(tripUri, attributes));
+            return writer.AddOrUpdateTrip(new Trip(tripUri, OperatorId.Invalid, attributes));
         }
     }
 }
