@@ -12,6 +12,7 @@ namespace Itinero.Transit.Tests.Functional.IO.GTFS
         public static void Run()
         {
             RunNMBS();
+            RunTec();
             //RunDeLijn();
         }
         
@@ -29,6 +30,16 @@ namespace Itinero.Transit.Tests.Functional.IO.GTFS
         {
             var url = "http://planet.anyways.eu/transit/GTFS/belgium/delijn/delijn-latest.gtfs.zip";
             var fileName = "delijn-latest.gtfs.zip";
+
+            Download.Get(url, fileName);
+            
+            Run(fileName, DateTime.Now.Date.ToUniversalTime());
+        }
+        
+        public static void RunTec()
+        {
+            var url = "http://planet.anyways.eu/transit/GTFS/belgium/tec/tec-latest.gtfs.zip";
+            var fileName = "tec-latest.gtfs.zip";
 
             Download.Get(url, fileName);
             

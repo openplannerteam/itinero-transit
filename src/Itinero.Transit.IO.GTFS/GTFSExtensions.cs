@@ -14,33 +14,6 @@ namespace Itinero.Transit.IO.GTFS
 {
     internal static class GTFSExtensions
     {
-        internal static string IdentifierPrefix(this IGTFSFeed feed)
-        {
-            var agency = feed.Agencies.FirstOrDefault();
-            if (agency?.URL == null) return string.Empty;
-            
-            var prefix = agency.URL;
-            if (!prefix.EndsWith("/"))
-            {
-                prefix += "/";
-            }
-
-            return prefix;
-        }
-
-        internal static TimeZoneInfo GetTimeZoneInfo(this IGTFSFeed feed)
-        {
-            // try to get timezone info, assume utc if none available.
-            var agency = feed.Agencies.FirstOrDefault();
-            if (agency == null ||
-                string.IsNullOrWhiteSpace(agency.Timezone))
-            {
-                return TimeZoneInfo.Utc;
-            }
-
-            return TimeZoneInfo.FindSystemTimeZoneById(agency.Timezone);
-        }
-
         internal static Dictionary<string, DatePattern> GetDatePatterns(this IGTFSFeed feed)
         {
             var datePatterns = new Dictionary<string, DatePattern>();
@@ -108,8 +81,6 @@ namespace Itinero.Transit.IO.GTFS
                 while (calendarDate != null &&
                        calendarDate.ServiceId == serviceId)
                 {
-                    //Log.Verbose($"CalendarDate - [{calendarDate.ServiceId}]: {calendarDate}");
-                    
                     // update date pattern.
                     datePattern.AddException(calendarDate.Date, calendarDate.ExceptionType == ExceptionType.Added);
                     

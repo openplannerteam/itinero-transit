@@ -71,11 +71,7 @@ namespace Itinero.Transit.IO.GTFS
             var writer = transitDb.GetWriter();
             
             // add agency first.
-            var agencyMap = writer.AddAgencies(feed);
-            
-            // get the id prefix/timezone.
-            var idPrefix = feed.IdentifierPrefix();
-            var timeZone = feed.GetTimeZoneInfo();
+            var agencyMap = writer.AddAgencies(feed, out var idPrefix, out var timeZone);
             
             // convert to proper timezome.
             startDate = startDate.ToUniversalTime().ConvertTo(timeZone).Date;
@@ -372,36 +368,43 @@ namespace Itinero.Transit.IO.GTFS
                 attributes);
         }
 
-        internal static Dictionary<string, OperatorId> AddAgencies(this TransitDbWriter writer, IGTFSFeed feed)
+        internal static Dictionary<string, OperatorId> AddAgencies(this TransitDbWriter writer, IGTFSFeed feed,
+            out string idPrefix, out TimeZoneInfo timeZoneInfo)
         {
             if (feed == null) throw new ArgumentNullException(nameof(feed));
             if (writer == null) throw new ArgumentNullException(nameof(writer));
 
-            var useUrlAsGlobalId = true;
+            timeZoneInfo = TimeZoneInfo.Utc;
+            
             var agencyUrls = new HashSet<string>();
             foreach (var agency in feed.Agencies)
             {
                 if (string.IsNullOrEmpty(agency.URL))
                 {
-                    useUrlAsGlobalId = false;
-                    break;
+                    continue;
                 }
-
-                if (agencyUrls.Contains(agency.URL))
-                {
-                    useUrlAsGlobalId = false;
-                    break;
-                }
+                
                 agencyUrls.Add(agency.URL);
+            }
+
+            idPrefix = string.Empty;
+            if (agencyUrls.Count == 1)
+            {
+                // only this is very unique case we can use the agency url as a global id prefix.
+                idPrefix = agencyUrls.First();
+                if (!idPrefix.EndsWith("/"))
+                {
+                    idPrefix += "/";
+                }
             }
             
             var agencyMap = new Dictionary<string, OperatorId>();
             foreach (var agency in feed.Agencies)
             {
-                var globalId = agency.Id;
-                if (useUrlAsGlobalId)
+                var globalId =$"{idPrefix}{agency.Id}";
+                if (!string.IsNullOrWhiteSpace(agency.Timezone))
                 {
-                    globalId = agency.URL;
+                    timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(agency.Timezone);
                 }
 
                 var attributes = new Dictionary<string, string>

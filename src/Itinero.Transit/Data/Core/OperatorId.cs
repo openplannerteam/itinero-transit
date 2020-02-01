@@ -22,7 +22,7 @@ namespace Itinero.Transit.Data.Core
         [Pure]
         public InternalId Create(uint databaseId, uint localId)
         {
-            return new StopId(databaseId, localId);
+            return new OperatorId(databaseId, localId);
         }
 
 

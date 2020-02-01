@@ -75,7 +75,7 @@ namespace Itinero.Transit.IO.VectorTiles
             out Dictionary<string, (HashSet<string> trips, int departures, int arrivals)> stopInfos)
         {
             stopInfos = new Dictionary<string, (HashSet<string> trips, int departures, int arrivals)>();
-            var features = new Dictionary<(StopId stop1, StopId stop2), (Feature feature, int trips, int routeTypes)>();
+            var features = new Dictionary<(StopId stop1, StopId stop2), (Feature feature, int trips, int routeTypes, int operators)>();
 
             foreach (var connection in transitDbSnapShot.ConnectionsDb)
             {
@@ -92,7 +92,7 @@ namespace Itinero.Transit.IO.VectorTiles
                     {
                         new Coordinate(stop1.Longitude, stop1.Latitude), 
                         new Coordinate(stop2.Longitude, stop2.Latitude), 
-                    }), new AttributesTable()), 0, 0);
+                    }), new AttributesTable()), 0, 0, 0);
 
                     feature.feature.Attributes.AddAttribute("stop_id_departure", stop1.GlobalId);
                     feature.feature.Attributes.AddAttribute("stop_id_arrival", stop2.GlobalId);
@@ -109,6 +109,36 @@ namespace Itinero.Transit.IO.VectorTiles
                 
                 // get trip.
                 var trip = transitDbSnapShot.TripsDb.Get(connection.TripId);
+                
+                // determine if operator is already there.
+                var op = 0;
+                Operator oper = null;
+                if (trip.Operator.DatabaseId != OperatorId.Invalid.DatabaseId ||
+                    trip.Operator.LocalId != OperatorId.Invalid.LocalId)
+                {
+                    oper = transitDbSnapShot.OperatorDb.Get(trip.Operator);
+                    var operatorFound = false;
+                    for (; op < feature.operators; op++)
+                    {
+                        if (!(feature.feature.Attributes[$"operator_{op:00000}_id"] is string operatorId)) continue;
+                        if (oper.GlobalId != operatorId) continue;
+
+                        operatorFound = true;
+                        break;
+                    }
+
+                    if (!operatorFound)
+                    {
+                        // add operator details.
+                        feature.feature.Attributes.AddAttribute($"operator_{op:00000}_id", oper.GlobalId);
+                        foreach (var tripAttribute in trip.Attributes)
+                        {
+                            feature.feature.Attributes.AddAttribute($"operator_{op:00000}_{tripAttribute.Key}",
+                                tripAttribute.Value);
+                        }
+                        feature.operators += 1;
+                    }
+                }
                 
                 // determine if route_type is already there.
                 var rt = 0;
@@ -153,6 +183,7 @@ namespace Itinero.Transit.IO.VectorTiles
                         feature.feature.Attributes.AddAttribute($"trip_{t:00000}_{tripAttribute.Key}",
                             tripAttribute.Value);
                     }
+                    if (oper != null) feature.feature.Attributes.AddAttribute($"trip_{t:00000}_operator_id", oper.GlobalId);
 
                     HashSet<string> tripsList;
                     if (!stopInfos.TryGetValue(stop1GlobalId, out var stopInfo))
@@ -191,9 +222,10 @@ namespace Itinero.Transit.IO.VectorTiles
 
             return features.Values.Select(x =>
             {
-                var (feature, trips, routeTypes) = x;
+                var (feature, trips, routeTypes, operators) = x;
                 feature.Attributes.AddAttribute("trip_count", trips);
                 feature.Attributes.AddAttribute("route_type_count", routeTypes);
+                feature.Attributes.AddAttribute("operator_count", operators);
                 return feature;
             });
         }
