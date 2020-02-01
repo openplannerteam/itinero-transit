@@ -65,9 +65,9 @@ namespace Itinero.Transit.IO.VectorTiles
         }
 
         private static IEnumerable<IFeature> ToConnectionFeatures(this TransitDbSnapShot transitDbSnapShot,
-            out Dictionary<string, HashSet<string>> tripsPerStop)
+            out Dictionary<string, (HashSet<string> trips, int departures, int arrivals)> stopInfos)
         {
-            tripsPerStop = new Dictionary<string, HashSet<string>>();
+            stopInfos = new Dictionary<string, (HashSet<string> trips, int departures, int arrivals)>();
             var features = new Dictionary<(StopId stop1, StopId stop2), (Feature feature, int trips, int routeTypes)>();
 
             foreach (var connection in transitDbSnapShot.ConnectionsDb)
@@ -147,17 +147,31 @@ namespace Itinero.Transit.IO.VectorTiles
                             tripAttribute.Value);
                     }
 
-                    if (!tripsPerStop.TryGetValue(stop1GlobalId, out var tripsList))
+                    HashSet<string> tripsList;
+                    if (!stopInfos.TryGetValue(stop1GlobalId, out var stopInfo))
                     {
                         tripsList = new HashSet<string>();
-                        tripsPerStop[stop1GlobalId] = tripsList;
+                        stopInfos[stop1GlobalId] = (tripsList, 1, 0);
+                    }
+                    else
+                    {
+                        tripsList = stopInfo.trips;
+                        stopInfos[stop1GlobalId] = (tripsList, 
+                            stopInfo.departures + 1, stopInfo.arrivals);
                     }
 
                     tripsList.Add(trip.GlobalId);
-                    if (!tripsPerStop.TryGetValue(stop2GlobalId, out tripsList))
+                    
+                    if (!stopInfos.TryGetValue(stop2GlobalId, out stopInfo))
                     {
                         tripsList = new HashSet<string>();
-                        tripsPerStop[stop2GlobalId] = tripsList;
+                        stopInfos[stop2GlobalId] = (tripsList, 0, 1);
+                    }
+                    else
+                    {
+                        tripsList = stopInfo.trips;
+                        stopInfos[stop2GlobalId] = (tripsList, 
+                            stopInfo.departures, stopInfo.arrivals + 1);
                     }
 
                     tripsList.Add(trip.GlobalId);
@@ -178,7 +192,7 @@ namespace Itinero.Transit.IO.VectorTiles
         }
 
         private static IEnumerable<IFeature> ToStopFeatures(this TransitDbSnapShot transitDbSnapShot,
-            IReadOnlyDictionary<string, HashSet<string>> tripsPerStop, BBox bbox)
+            IReadOnlyDictionary<string, (HashSet<string> trips, int departures, int arrivals)> tripsPerStop, BBox bbox)
         {
             foreach (var stop in transitDbSnapShot.StopsDb)
             {
@@ -193,7 +207,9 @@ namespace Itinero.Transit.IO.VectorTiles
                     feature.Attributes.AddAttribute(attribute.Key, attribute.Value);
                 }
 
-                if (!tripsPerStop.TryGetValue(stop.GlobalId, out var trips)) continue;
+                if (!tripsPerStop.TryGetValue(stop.GlobalId, out var tripInfo)) continue;
+
+                var trips = tripInfo.trips;
                 var t = 0;
                 foreach (var tripId in trips)
                 {
@@ -201,6 +217,9 @@ namespace Itinero.Transit.IO.VectorTiles
                     t++;
                 }
                 feature.Attributes.AddAttribute("trip_count", trips.Count);
+                feature.Attributes.AddAttribute("arrivals", tripInfo.arrivals);
+                feature.Attributes.AddAttribute("departures", tripInfo.departures);
+                feature.Attributes.AddAttribute("movements", tripInfo.departures + tripInfo.arrivals);
 
                 yield return feature;
             }
