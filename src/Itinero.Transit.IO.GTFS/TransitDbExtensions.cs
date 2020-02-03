@@ -259,7 +259,7 @@ namespace Itinero.Transit.IO.GTFS
                                     if (toStopData.stop.TryUpdateRouteOnStop(route, out var newStop))
                                     {
                                         toStopData.stop = newStop;
-                                        stopIndex[previous.StopId] = (toStopData.stop, toStopDbId);
+                                        stopIndex[stopTime.StopId] = (toStopData.stop, toStopDbId);
                                         toStopDbId = writer.AddOrUpdateStop(toStopData.stop);
                                     }
                                 }
@@ -406,10 +406,25 @@ namespace Itinero.Transit.IO.GTFS
             var agencyMap = new Dictionary<string, OperatorId>();
             foreach (var agency in feed.Agencies)
             {
-                var globalId =$"{idPrefix}{agency.Id}";
+                var globalId =$"{idPrefix}";
+                if (string.IsNullOrEmpty(globalId))
+                {
+                    globalId = agency.Id;
+                }
                 if (!string.IsNullOrWhiteSpace(agency.Timezone))
                 {
-                    timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(agency.Timezone);
+                    try
+                    {
+                        timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(agency.Timezone);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Warning(ex, $"Time zone info for '{agency.Timezone}' could not be found.");
+                    }
+                    finally
+                    {
+                        timeZoneInfo = TimeZoneInfo.Utc;
+                    }
                 }
 
                 var attributes = new Dictionary<string, string>
