@@ -125,12 +125,16 @@ namespace Itinero.Transit.IO.GTFS
                     {
                         Log.Warning($"Route {trip.RouteId} not found for trip {trip.Id}: No route details will be available on this trip.");
                     }
-                    else
+                    else if (!string.IsNullOrEmpty(route.AgencyId))
                     {
                         if (!agencyMap.TryGetValue(route.AgencyId, out operatorId))
                         {
                             Log.Warning($"Route {trip.RouteId} has an unknown agency: {route.AgencyId}");
                         }
+                    }
+                    else if (agencyMap.Count == 1)
+                    {
+                        operatorId = agencyMap.First().Value;
                     }
                     
                     // TODO: check if this is ok to continue with.

@@ -12,9 +12,20 @@ namespace Itinero.Transit.Tests.Functional.IO.GTFS
     {
         public static void Run()
         {
-            RunNMBS();
+            //RunNMBS();
             //RunTec();
             //RunDeLijn();
+            RunMIVB();
+        }
+        
+        public static void RunMIVB()
+        {
+            var url = "http://planet.anyways.eu/transit/GTFS/belgium/mivb/mivb-latest.gtfs.zip";
+            var fileName = "mivb-latest.gtfs.zip";
+
+            Download.Get(url, fileName);
+            
+            Run(fileName, DateTime.Now.Date.ToUniversalTime());
         }
         
         public static void RunNMBS()
