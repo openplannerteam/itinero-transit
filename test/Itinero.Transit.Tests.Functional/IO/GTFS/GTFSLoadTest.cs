@@ -64,19 +64,6 @@ namespace Itinero.Transit.Tests.Functional.IO.GTFS
             
             var transitDb = new TransitDb(0);
             transitDb.LoadGTFS(feed, day, day);
-
-            foreach (var connection in transitDb.Latest.ConnectionsDb)
-            {
-                if (connection.GlobalId.Contains("http://www.belgiantrain.be/connection/88____:007::8814001:8841004:46:2409:20201211/20200203"))
-                {
-                    var departureStop = transitDb.Latest.StopsDb.Get(connection.DepartureStop);
-                    var arrivalStop = transitDb.Latest.StopsDb.Get(connection.ArrivalStop);
-                    Console.WriteLine($"{connection.GlobalId}: " +
-                                      $"[{departureStop.Attributes["name"]}({departureStop.GlobalId}) -> " +
-                                      $"{arrivalStop.Attributes["name"]}]({arrivalStop.GlobalId}) " +
-                                      $"{connection}");
-                }
-            }
         }
     }
 }
