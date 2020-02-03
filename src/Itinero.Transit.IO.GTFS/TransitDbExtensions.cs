@@ -173,6 +173,11 @@ namespace Itinero.Transit.IO.GTFS
 
                         if (previous != null)
                         {
+                            if (previous.StopSequence >= stopTime.StopSequence)
+                            {
+                                Log.Verbose($"StopTime - [{stopTime.TripId}|{stopTime.StopSequence}]: {stopTime}");
+                            }
+                            
                             Itinero.Transit.Data.Core.StopId? fromStopDbId = null;
                             Itinero.Transit.Data.Core.StopId? toStopDbId = null;
                             for (var d = 0; d < days; d++)

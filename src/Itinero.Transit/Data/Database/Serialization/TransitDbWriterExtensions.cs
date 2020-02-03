@@ -48,8 +48,12 @@ namespace Itinero.Transit.Data.Serialization
             var tripMapping = new Dictionary<TripId, TripId>();
             foreach (var (tripId, trip) in trips)
             {
+                if (!operatorMapping.TryGetValue(trip.Operator, out var operatorId))
+                {
+                    operatorId = OperatorId.Invalid;
+                }
                 var newTrip = new Trip(trip.GlobalId,
-                    operatorMapping[trip.Operator], trip.Attributes);
+                    operatorId, trip.Attributes);
                 tripMapping[tripId] = writer.AddOrUpdateTrip(newTrip);
             }
 
