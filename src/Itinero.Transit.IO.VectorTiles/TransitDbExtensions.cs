@@ -72,9 +72,9 @@ namespace Itinero.Transit.IO.VectorTiles
         }
 
         private static IEnumerable<IFeature> ToConnectionFeatures(this TransitDbSnapShot transitDbSnapShot,
-            out Dictionary<string, (HashSet<string> trips, int departures, int arrivals)> stopInfos)
+            out Dictionary<string, (HashSet<(string tripId, string operatorId)> trips, int departures, int arrivals)> stopInfos)
         {
-            stopInfos = new Dictionary<string, (HashSet<string> trips, int departures, int arrivals)>();
+            stopInfos = new Dictionary<string, (HashSet<(string tripId, string operatorId)> trips, int departures, int arrivals)>();
             var features = new Dictionary<(StopId stop1, StopId stop2), (Feature feature, int trips, int routeTypes, int operators)>();
 
             foreach (var connection in transitDbSnapShot.ConnectionsDb)
@@ -185,10 +185,10 @@ namespace Itinero.Transit.IO.VectorTiles
                     }
                     if (oper != null) feature.feature.Attributes.AddAttribute($"trip_{t:00000}_operator_id", oper.GlobalId);
 
-                    HashSet<string> tripsList;
+                    HashSet<(string tripId, string operatorId)> tripsList;
                     if (!stopInfos.TryGetValue(stop1GlobalId, out var stopInfo))
                     {
-                        tripsList = new HashSet<string>();
+                        tripsList = new HashSet<(string tripId, string operatorId)>();
                         stopInfos[stop1GlobalId] = (tripsList, 1, 0);
                     }
                     else
@@ -198,11 +198,11 @@ namespace Itinero.Transit.IO.VectorTiles
                             stopInfo.departures + 1, stopInfo.arrivals);
                     }
 
-                    tripsList.Add(trip.GlobalId);
+                    tripsList.Add((trip.GlobalId, oper?.GlobalId));
                     
                     if (!stopInfos.TryGetValue(stop2GlobalId, out stopInfo))
                     {
-                        tripsList = new HashSet<string>();
+                        tripsList = new HashSet<(string tripId, string operatorId)>();
                         stopInfos[stop2GlobalId] = (tripsList, 0, 1);
                     }
                     else
@@ -212,7 +212,7 @@ namespace Itinero.Transit.IO.VectorTiles
                             stopInfo.departures, stopInfo.arrivals + 1);
                     }
 
-                    tripsList.Add(trip.GlobalId);
+                    tripsList.Add((trip.GlobalId, oper?.GlobalId));
 
                     feature.trips += 1;
                 }
@@ -231,7 +231,7 @@ namespace Itinero.Transit.IO.VectorTiles
         }
 
         private static IEnumerable<IFeature> ToStopFeatures(this TransitDbSnapShot transitDbSnapShot,
-            IReadOnlyDictionary<string, (HashSet<string> trips, int departures, int arrivals)> tripsPerStop, BBox bbox)
+            IReadOnlyDictionary<string, (HashSet<(string tripId, string operatorId)> trips, int departures, int arrivals)> tripsPerStop, BBox bbox)
         {
             foreach (var stop in transitDbSnapShot.StopsDb)
             {
@@ -250,15 +250,37 @@ namespace Itinero.Transit.IO.VectorTiles
 
                 var trips = tripInfo.trips;
                 var t = 0;
-                foreach (var tripId in trips)
+                var o = 0;
+                foreach (var (tripId, operatorId) in trips)
                 {
                     feature.Attributes.AddAttribute($"trip_{t:00000}_id", tripId);
+
+                    if (!string.IsNullOrEmpty(operatorId))
+                    {
+                        var operatorFound = false;
+                        for (var i = 0; i < o; i++)
+                        {
+                            var existingOperatorId = feature.Attributes[$"operator_{i:00000}_id"] as string;
+                            if (existingOperatorId != operatorId) continue;
+                            
+                            operatorFound = true;
+                            break;
+                        }
+
+                        if (!operatorFound)
+                        {
+                            feature.Attributes.AddAttribute($"operator_{o:00000}_id", operatorId);
+                            o++;
+                        }
+                    }
+
                     t++;
                 }
                 feature.Attributes.AddAttribute("trip_count", trips.Count);
                 feature.Attributes.AddAttribute("arrivals", tripInfo.arrivals);
                 feature.Attributes.AddAttribute("departures", tripInfo.departures);
                 feature.Attributes.AddAttribute("movements", tripInfo.departures + tripInfo.arrivals);
+                feature.Attributes.AddAttribute("operator_count", o);
 
                 yield return feature;
             }

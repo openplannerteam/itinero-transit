@@ -1,8 +1,11 @@
 using System;
+using System.IO;
 using System.Linq;
 using GTFS;
 using Itinero.Transit.Data;
+using Itinero.Transit.Data.Serialization;
 using Itinero.Transit.IO.GTFS;
+using Itinero.Transit.IO.VectorTiles;
 using Itinero.Transit.Tests.Functional.Staging;
 using Serilog;
 
@@ -12,10 +15,10 @@ namespace Itinero.Transit.Tests.Functional.IO.GTFS
     {
         public static void Run()
         {
-            //RunNMBS();
+            RunNMBS();
             //RunTec();
             //RunDeLijn();
-            RunMIVB();
+            //RunMIVB();
         }
         
         public static void RunMIVB()
@@ -75,6 +78,19 @@ namespace Itinero.Transit.Tests.Functional.IO.GTFS
             
             var transitDb = new TransitDb(0);
             transitDb.LoadGTFS(feed, day, day);
+
+            (new[] {transitDb.Latest}).CalculateVectorTileTree(6, 14);
+
+            using (var stream = File.Open("temp.transitdb", FileMode.Create))
+            {
+                transitDb.Latest.WriteTo(stream);
+            }
+
+            using (var stream = File.OpenRead("temp.transitdb"))
+            {
+                transitDb = new TransitDb(0);
+                transitDb.GetWriter().ReadFrom(stream);
+            }
         }
     }
 }
