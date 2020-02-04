@@ -72,10 +72,11 @@ namespace Itinero.Transit.IO.VectorTiles
         }
 
         private static IEnumerable<IFeature> ToConnectionFeatures(this TransitDbSnapShot transitDbSnapShot,
-            out Dictionary<string, (HashSet<(string tripId, string operatorId)> trips, int departures, int arrivals)> stopInfos)
+            out Dictionary<string, (HashSet<(string tripId, int tripSequence, string operatorId)> trips, int departures, int arrivals)> stopInfos)
         {
-            stopInfos = new Dictionary<string, (HashSet<(string tripId, string operatorId)> trips, int departures, int arrivals)>();
+            stopInfos = new Dictionary<string, (HashSet<(string tripId, int tripSequence, string operatorId)> trips, int departures, int arrivals)>();
             var features = new Dictionary<(StopId stop1, StopId stop2), (Feature feature, int trips, int routeTypes, int operators)>();
+            var tripSequences = new Dictionary<TripId, int>();
 
             foreach (var connection in transitDbSnapShot.ConnectionsDb)
             {
@@ -106,6 +107,13 @@ namespace Itinero.Transit.IO.VectorTiles
                     stop1GlobalId = feature.feature.Attributes["stop_id_departure"] as string ?? string.Empty;
                     stop2GlobalId = feature.feature.Attributes["stop_id_arrival"] as string ?? string.Empty;
                 }
+
+                if (!tripSequences.TryGetValue(connection.TripId, out var tripSequence))
+                {
+                    tripSequence = 0;
+                }
+                tripSequence++;
+                tripSequences[connection.TripId] = tripSequence;
                 
                 // get trip.
                 var trip = transitDbSnapShot.TripsDb.Get(connection.TripId);
@@ -186,10 +194,10 @@ namespace Itinero.Transit.IO.VectorTiles
                     }
                     if (oper != null) feature.feature.Attributes.AddAttribute($"trip_{t:00000}_operator_id", oper.GlobalId);
 
-                    HashSet<(string tripId, string operatorId)> tripsList;
+                    HashSet<(string tripId, int tripSequence, string operatorId)> tripsList;
                     if (!stopInfos.TryGetValue(stop1GlobalId, out var stopInfo))
                     {
-                        tripsList = new HashSet<(string tripId, string operatorId)>();
+                        tripsList = new HashSet<(string tripId, int tripSequence, string operatorId)>();
                         stopInfos[stop1GlobalId] = (tripsList, 1, 0);
                     }
                     else
@@ -199,11 +207,11 @@ namespace Itinero.Transit.IO.VectorTiles
                             stopInfo.departures + 1, stopInfo.arrivals);
                     }
 
-                    tripsList.Add((trip.GlobalId, oper?.GlobalId));
+                    tripsList.Add((trip.GlobalId, tripSequence - 1, oper?.GlobalId));
                     
                     if (!stopInfos.TryGetValue(stop2GlobalId, out stopInfo))
                     {
-                        tripsList = new HashSet<(string tripId, string operatorId)>();
+                        tripsList = new HashSet<(string tripId, int tripSequence, string operatorId)>();
                         stopInfos[stop2GlobalId] = (tripsList, 0, 1);
                     }
                     else
@@ -213,7 +221,7 @@ namespace Itinero.Transit.IO.VectorTiles
                             stopInfo.departures, stopInfo.arrivals + 1);
                     }
 
-                    tripsList.Add((trip.GlobalId, oper?.GlobalId));
+                    tripsList.Add((trip.GlobalId, tripSequence, oper?.GlobalId));
 
                     feature.trips += 1;
                 }
@@ -232,7 +240,7 @@ namespace Itinero.Transit.IO.VectorTiles
         }
 
         private static IEnumerable<IFeature> ToStopFeatures(this TransitDbSnapShot transitDbSnapShot,
-            IReadOnlyDictionary<string, (HashSet<(string tripId, string operatorId)> trips, int departures, int arrivals)> tripsPerStop, BBox bbox)
+            IReadOnlyDictionary<string, (HashSet<(string tripId, int tripSequence, string operatorId)> trips, int departures, int arrivals)> tripsPerStop, BBox bbox)
         {
             foreach (var stop in transitDbSnapShot.StopsDb)
             {
@@ -252,9 +260,10 @@ namespace Itinero.Transit.IO.VectorTiles
                 var trips = tripInfo.trips;
                 var t = 0;
                 var o = 0;
-                foreach (var (tripId, operatorId) in trips)
+                foreach (var (tripId, tripSequence, operatorId) in trips)
                 {
                     feature.Attributes.AddAttribute($"trip_{t:00000}_id", tripId);
+                    feature.Attributes.AddAttribute($"trip_{t:00000}_sequence", tripSequence);
 
                     if (!string.IsNullOrEmpty(operatorId))
                     {
