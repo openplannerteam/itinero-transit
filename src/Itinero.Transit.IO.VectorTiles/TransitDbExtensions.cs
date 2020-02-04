@@ -131,10 +131,10 @@ namespace Itinero.Transit.IO.VectorTiles
                     {
                         // add operator details.
                         feature.feature.Attributes.AddAttribute($"operator_{op:00000}_id", oper.GlobalId);
-                        foreach (var tripAttribute in trip.Attributes)
+                        foreach (var operatorAttribute in oper.Attributes)
                         {
-                            feature.feature.Attributes.AddAttribute($"operator_{op:00000}_{tripAttribute.Key}",
-                                tripAttribute.Value);
+                            feature.feature.Attributes.AddAttribute($"operator_{op:00000}_{operatorAttribute.Key}",
+                                operatorAttribute.Value);
                         }
                         feature.operators += 1;
                     }
