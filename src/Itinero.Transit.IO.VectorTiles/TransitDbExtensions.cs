@@ -133,6 +133,7 @@ namespace Itinero.Transit.IO.VectorTiles
                         feature.feature.Attributes.AddAttribute($"operator_{op:00000}_id", oper.GlobalId);
                         foreach (var operatorAttribute in oper.Attributes)
                         {
+                            if (operatorAttribute.Key == "id") continue;
                             feature.feature.Attributes.AddAttribute($"operator_{op:00000}_{operatorAttribute.Key}",
                                 operatorAttribute.Value);
                         }
