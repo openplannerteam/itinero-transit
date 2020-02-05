@@ -139,6 +139,7 @@ namespace Itinero.Transit.IO.VectorTiles
                     {
                         // add operator details.
                         feature.feature.Attributes.AddAttribute($"operator_{op:00000}_id", oper.GlobalId);
+                        feature.feature.Attributes.AddAttribute($"operator_{oper.GlobalId}", "true");
                         foreach (var operatorAttribute in oper.Attributes)
                         {
                             if (operatorAttribute.Key == "id") continue;
@@ -166,6 +167,7 @@ namespace Itinero.Transit.IO.VectorTiles
                     if (!routeTypeFound)
                     {
                         // add route type.
+                        feature.feature.Attributes.AddAttribute($"route_type_{newRouteType}", "true");
                         feature.feature.Attributes.AddAttribute($"route_type_{rt:00000}", newRouteType);
                         feature.routeTypes += 1;
                     }
@@ -187,6 +189,7 @@ namespace Itinero.Transit.IO.VectorTiles
                 {
                     // add trip.
                     feature.feature.Attributes.AddAttribute($"trip_{t:00000}_id", trip.GlobalId);
+                    feature.feature.Attributes.AddAttribute($"trip_{trip.GlobalId}", "true");
                     foreach (var tripAttribute in trip.Attributes)
                     {
                         feature.feature.Attributes.AddAttribute($"trip_{t:00000}_{tripAttribute.Key}",
@@ -263,6 +266,7 @@ namespace Itinero.Transit.IO.VectorTiles
                 foreach (var (tripId, tripSequence, operatorId) in trips)
                 {
                     feature.Attributes.AddAttribute($"trip_{t:00000}_id", tripId);
+                    if (!feature.Attributes.Exists($"trip_{tripId}")) feature.Attributes.AddAttribute($"trip_{tripId}", "true");
                     feature.Attributes.AddAttribute($"trip_{t:00000}_sequence", tripSequence);
 
                     if (!string.IsNullOrEmpty(operatorId))
@@ -280,6 +284,7 @@ namespace Itinero.Transit.IO.VectorTiles
                         if (!operatorFound)
                         {
                             feature.Attributes.AddAttribute($"operator_{o:00000}_id", operatorId);
+                            feature.Attributes.AddAttribute($"operator_{operatorId}", "true");
                             o++;
                         }
                     }
