@@ -72,9 +72,9 @@ namespace Itinero.Transit.IO.VectorTiles
         }
 
         private static IEnumerable<IFeature> ToConnectionFeatures(this TransitDbSnapShot transitDbSnapShot,
-            out Dictionary<string, (HashSet<(string routeId, string operatorId)> routes, int departures, int arrivals)> stopInfos)
+            out Dictionary<string, (HashSet<(string routeId, string routeType, string operatorId)> routes, int departures, int arrivals)> stopInfos)
         {
-            stopInfos = new Dictionary<string, (HashSet<(string routeId, string operatorId)> routes, int departures, int arrivals)>();
+            stopInfos = new Dictionary<string, (HashSet<(string routeId, string routeType, string operatorId)> routes, int departures, int arrivals)>();
             var features = new Dictionary<(StopId stop1, StopId stop2), (Feature feature, int routes, int routeTypes, int operators)>();
 
             foreach (var connection in transitDbSnapShot.ConnectionsDb)
@@ -146,10 +146,10 @@ namespace Itinero.Transit.IO.VectorTiles
                         feature.feature.Attributes.AddAttribute($"route_{newRouteId}",
                             Data.Route.FromTrip(trip).ToJson());
 
-                        HashSet<(string routeId, string operatorId)> routesList;
+                        HashSet<(string routeId, string routeType, string operatorId)> routesList;
                         if (!stopInfos.TryGetValue(stop1GlobalId, out var stopInfo))
                         {
-                            routesList = new HashSet<(string routeId, string operatorId)>();
+                            routesList = new HashSet<(string routeId, string routeType, string operatorId)>();
                             stopInfos[stop1GlobalId] = (routesList, 1, 0);
                         }
                         else
@@ -159,11 +159,11 @@ namespace Itinero.Transit.IO.VectorTiles
                                 stopInfo.departures + 1, stopInfo.arrivals);
                         }
 
-                        routesList.Add((trip.GlobalId, op?.GlobalId));
+                        routesList.Add((newRouteId, newRouteType, op?.GlobalId));
                     
                         if (!stopInfos.TryGetValue(stop2GlobalId, out stopInfo))
                         {
-                            routesList = new HashSet<(string routeId, string operatorId)>();
+                            routesList = new HashSet<(string routeId, string routeType, string operatorId)>();
                             stopInfos[stop2GlobalId] = (routesList, 0, 1);
                         }
                         else
@@ -173,7 +173,7 @@ namespace Itinero.Transit.IO.VectorTiles
                                 stopInfo.departures, stopInfo.arrivals + 1);
                         }
 
-                        routesList.Add((trip.GlobalId, op?.GlobalId));
+                        routesList.Add((newRouteId, newRouteType, op?.GlobalId));
                     }
                 }
 
@@ -191,7 +191,7 @@ namespace Itinero.Transit.IO.VectorTiles
         }
 
         private static IEnumerable<IFeature> ToStopFeatures(this TransitDbSnapShot transitDbSnapShot,
-            IReadOnlyDictionary<string, (HashSet<(string routeId, string operatorId)> routes, int departures, int arrivals)> routesPerStops, BBox bbox)
+            IReadOnlyDictionary<string, (HashSet<(string routeId, string routeType, string operatorId)> routes, int departures, int arrivals)> routesPerStops, BBox bbox)
         {
             foreach (var stop in transitDbSnapShot.StopsDb)
             {
@@ -210,10 +210,15 @@ namespace Itinero.Transit.IO.VectorTiles
 
                 var routes = tripInfo.routes;
                 var o = 0;
-                foreach (var (routeId, operatorId) in routes)
+                foreach (var (routeId, routeType, operatorId) in routes)
                 {
                     if (feature.Attributes.Exists($"route_{routeId}")) continue;
                     feature.Attributes.AddAttribute($"route_{routeId}", "true");
+
+                    if (!feature.Attributes.Exists($"route_type_{routeType}"))
+                    {
+                        feature.Attributes.AddAttribute($"route_type_{routeType}", "true");
+                    }
 
                     if (feature.Attributes.Exists($"operator_{operatorId}")) continue;
                     feature.Attributes.AddAttribute($"operator_{operatorId}", "true");
