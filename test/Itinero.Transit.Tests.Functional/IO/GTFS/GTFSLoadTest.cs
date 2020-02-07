@@ -16,9 +16,9 @@ namespace Itinero.Transit.Tests.Functional.IO.GTFS
         public static void Run()
         {
             RunNMBS();
-            RunTec();
-            RunDeLijn();
-            RunMIVB();
+//            RunTec();
+//            RunDeLijn();
+//            RunMIVB();
         }
         
         public static void RunMIVB()
