@@ -72,11 +72,10 @@ namespace Itinero.Transit.IO.VectorTiles
         }
 
         private static IEnumerable<IFeature> ToConnectionFeatures(this TransitDbSnapShot transitDbSnapShot,
-            out Dictionary<string, (HashSet<(string tripId, int tripSequence, string operatorId)> trips, int departures, int arrivals)> stopInfos)
+            out Dictionary<string, (HashSet<(string routeId, string operatorId)> routes, int departures, int arrivals)> stopInfos)
         {
-            stopInfos = new Dictionary<string, (HashSet<(string tripId, int tripSequence, string operatorId)> trips, int departures, int arrivals)>();
-            var features = new Dictionary<(StopId stop1, StopId stop2), (Feature feature, int trips, int routeTypes, int operators)>();
-            var tripSequences = new Dictionary<TripId, int>();
+            stopInfos = new Dictionary<string, (HashSet<(string routeId, string operatorId)> routes, int departures, int arrivals)>();
+            var features = new Dictionary<(StopId stop1, StopId stop2), (Feature feature, int routes, int routeTypes, int operators)>();
 
             foreach (var connection in transitDbSnapShot.ConnectionsDb)
             {
@@ -107,126 +106,75 @@ namespace Itinero.Transit.IO.VectorTiles
                     stop1GlobalId = feature.feature.Attributes["stop_id_departure"] as string ?? string.Empty;
                     stop2GlobalId = feature.feature.Attributes["stop_id_arrival"] as string ?? string.Empty;
                 }
-
-                if (!tripSequences.TryGetValue(connection.TripId, out var tripSequence))
-                {
-                    tripSequence = 0;
-                }
-                tripSequence++;
-                tripSequences[connection.TripId] = tripSequence;
                 
                 // get trip.
                 var trip = transitDbSnapShot.TripsDb.Get(connection.TripId);
                 
                 // determine if operator is already there.
-                var op = 0;
-                Operator oper = null;
+                Operator op = null;
                 if (trip.Operator.DatabaseId != OperatorId.Invalid.DatabaseId ||
                     trip.Operator.LocalId != OperatorId.Invalid.LocalId)
                 {
-                    oper = transitDbSnapShot.OperatorDb.Get(trip.Operator);
-                    var operatorFound = false;
-                    for (; op < feature.operators; op++)
-                    {
-                        if (!(feature.feature.Attributes[$"operator_{op:00000}_id"] is string operatorId)) continue;
-                        if (oper.GlobalId != operatorId) continue;
+                    op = transitDbSnapShot.OperatorDb.Get(trip.Operator);
 
-                        operatorFound = true;
-                        break;
-                    }
-
-                    if (!operatorFound)
+                    if (!feature.feature.Attributes.Exists($"operator_{op.GlobalId}"))
                     {
                         // add operator details.
-                        feature.feature.Attributes.AddAttribute($"operator_{op:00000}_id", oper.GlobalId);
-                        feature.feature.Attributes.AddAttribute($"operator_{oper.GlobalId}", "true");
-                        foreach (var operatorAttribute in oper.Attributes)
-                        {
-                            if (operatorAttribute.Key == "id") continue;
-                            feature.feature.Attributes.AddAttribute($"operator_{op:00000}_{operatorAttribute.Key}",
-                                operatorAttribute.Value);
-                        }
+                        feature.feature.Attributes.AddAttribute($"operator_{op.GlobalId}", "true");
                         feature.operators += 1;
                     }
                 }
-                
+
                 // determine if route_type is already there.
-                var rt = 0;
                 if (trip.TryGetAttribute("route_type", out var newRouteType))
                 {
-                    var routeTypeFound = false;
-                    for (; rt < feature.routeTypes; rt++)
-                    {
-                        var routeType = feature.feature.Attributes[$"route_type_{rt:00000}"];
-                        if (!(routeType is string routeTypeString) || newRouteType != routeTypeString) continue;
-
-                        routeTypeFound = true;
-                        break;
-                    }
-
-                    if (!routeTypeFound)
+                    if (!feature.feature.Attributes.Exists($"route_type_{newRouteType}"))
                     {
                         // add route type.
                         feature.feature.Attributes.AddAttribute($"route_type_{newRouteType}", "true");
-                        feature.feature.Attributes.AddAttribute($"route_type_{rt:00000}", newRouteType);
                         feature.routeTypes += 1;
                     }
                 }
+                
+                // determine if route is already there.
+                if (trip.TryGetAttribute("route_id", out var newRouteId))
+                {   
+                    if (!feature.feature.Attributes.Exists($"route_{newRouteId}"))
+                    {
+                        // add route.
+                        feature.routes += 1;
+                        feature.feature.Attributes.AddAttribute($"route_{newRouteId}",
+                            Data.Route.FromTrip(trip).ToJson());
 
-                // determine if trip is already here.
-                var tripFound = false;
-                var t = 0;
-                for (; t < feature.trips; t++)
-                {
-                    var tripId = feature.feature.Attributes[$"trip_{t:00000}_id"];
-                    if (!(tripId is string tripIdString) || tripIdString != trip.GlobalId) continue;
+                        HashSet<(string routeId, string operatorId)> routesList;
+                        if (!stopInfos.TryGetValue(stop1GlobalId, out var stopInfo))
+                        {
+                            routesList = new HashSet<(string routeId, string operatorId)>();
+                            stopInfos[stop1GlobalId] = (routesList, 1, 0);
+                        }
+                        else
+                        {
+                            routesList = stopInfo.routes;
+                            stopInfos[stop1GlobalId] = (routesList, 
+                                stopInfo.departures + 1, stopInfo.arrivals);
+                        }
+
+                        routesList.Add((trip.GlobalId, op?.GlobalId));
                     
-                    tripFound = true;
-                    break;
-                }
+                        if (!stopInfos.TryGetValue(stop2GlobalId, out stopInfo))
+                        {
+                            routesList = new HashSet<(string routeId, string operatorId)>();
+                            stopInfos[stop2GlobalId] = (routesList, 0, 1);
+                        }
+                        else
+                        {
+                            routesList = stopInfo.routes;
+                            stopInfos[stop2GlobalId] = (routesList, 
+                                stopInfo.departures, stopInfo.arrivals + 1);
+                        }
 
-                if (!tripFound)
-                {
-                    // add trip.
-                    feature.feature.Attributes.AddAttribute($"trip_{t:00000}_id", trip.GlobalId);
-                    feature.feature.Attributes.AddAttribute($"trip_{trip.GlobalId}", "true");
-                    foreach (var tripAttribute in trip.Attributes)
-                    {
-                        feature.feature.Attributes.AddAttribute($"trip_{t:00000}_{tripAttribute.Key}",
-                            tripAttribute.Value);
+                        routesList.Add((trip.GlobalId, op?.GlobalId));
                     }
-                    if (oper != null) feature.feature.Attributes.AddAttribute($"trip_{t:00000}_operator_id", oper.GlobalId);
-
-                    HashSet<(string tripId, int tripSequence, string operatorId)> tripsList;
-                    if (!stopInfos.TryGetValue(stop1GlobalId, out var stopInfo))
-                    {
-                        tripsList = new HashSet<(string tripId, int tripSequence, string operatorId)>();
-                        stopInfos[stop1GlobalId] = (tripsList, 1, 0);
-                    }
-                    else
-                    {
-                        tripsList = stopInfo.trips;
-                        stopInfos[stop1GlobalId] = (tripsList, 
-                            stopInfo.departures + 1, stopInfo.arrivals);
-                    }
-
-                    tripsList.Add((trip.GlobalId, tripSequence - 1, oper?.GlobalId));
-                    
-                    if (!stopInfos.TryGetValue(stop2GlobalId, out stopInfo))
-                    {
-                        tripsList = new HashSet<(string tripId, int tripSequence, string operatorId)>();
-                        stopInfos[stop2GlobalId] = (tripsList, 0, 1);
-                    }
-                    else
-                    {
-                        tripsList = stopInfo.trips;
-                        stopInfos[stop2GlobalId] = (tripsList, 
-                            stopInfo.departures, stopInfo.arrivals + 1);
-                    }
-
-                    tripsList.Add((trip.GlobalId, tripSequence, oper?.GlobalId));
-
-                    feature.trips += 1;
                 }
 
                 features[key] = feature;
@@ -234,8 +182,8 @@ namespace Itinero.Transit.IO.VectorTiles
 
             return features.Values.Select(x =>
             {
-                var (feature, trips, routeTypes, operators) = x;
-                feature.Attributes.AddAttribute("trip_count", trips);
+                var (feature, routes, routeTypes, operators) = x;
+                feature.Attributes.AddAttribute("route_count", routes);
                 feature.Attributes.AddAttribute("route_type_count", routeTypes);
                 feature.Attributes.AddAttribute("operator_count", operators);
                 return feature;
@@ -243,7 +191,7 @@ namespace Itinero.Transit.IO.VectorTiles
         }
 
         private static IEnumerable<IFeature> ToStopFeatures(this TransitDbSnapShot transitDbSnapShot,
-            IReadOnlyDictionary<string, (HashSet<(string tripId, int tripSequence, string operatorId)> trips, int departures, int arrivals)> tripsPerStop, BBox bbox)
+            IReadOnlyDictionary<string, (HashSet<(string routeId, string operatorId)> routes, int departures, int arrivals)> routesPerStops, BBox bbox)
         {
             foreach (var stop in transitDbSnapShot.StopsDb)
             {
@@ -258,40 +206,21 @@ namespace Itinero.Transit.IO.VectorTiles
                     feature.Attributes.AddAttribute(attribute.Key, attribute.Value);
                 }
 
-                if (!tripsPerStop.TryGetValue(stop.GlobalId, out var tripInfo)) continue;
+                if (!routesPerStops.TryGetValue(stop.GlobalId, out var tripInfo)) continue;
 
-                var trips = tripInfo.trips;
-                var t = 0;
+                var routes = tripInfo.routes;
                 var o = 0;
-                foreach (var (tripId, tripSequence, operatorId) in trips)
+                foreach (var (routeId, operatorId) in routes)
                 {
-                    feature.Attributes.AddAttribute($"trip_{t:00000}_id", tripId);
-                    if (!feature.Attributes.Exists($"trip_{tripId}")) feature.Attributes.AddAttribute($"trip_{tripId}", "true");
-                    feature.Attributes.AddAttribute($"trip_{t:00000}_sequence", tripSequence);
+                    if (feature.Attributes.Exists($"route_{routeId}")) continue;
+                    feature.Attributes.AddAttribute($"route_{routeId}", "true");
 
-                    if (!string.IsNullOrEmpty(operatorId))
-                    {
-                        var operatorFound = false;
-                        for (var i = 0; i < o; i++)
-                        {
-                            var existingOperatorId = feature.Attributes[$"operator_{i:00000}_id"] as string;
-                            if (existingOperatorId != operatorId) continue;
-                            
-                            operatorFound = true;
-                            break;
-                        }
-
-                        if (!operatorFound)
-                        {
-                            feature.Attributes.AddAttribute($"operator_{o:00000}_id", operatorId);
-                            feature.Attributes.AddAttribute($"operator_{operatorId}", "true");
-                            o++;
-                        }
-                    }
-
-                    t++;
+                    if (feature.Attributes.Exists($"operator_{operatorId}")) continue;
+                    feature.Attributes.AddAttribute($"operator_{operatorId}", "true");
+                    o++;
                 }
-                feature.Attributes.AddAttribute("trip_count", trips.Count);
+                
+                feature.Attributes.AddAttribute("route_count", routes.Count);
                 feature.Attributes.AddAttribute("arrivals", tripInfo.arrivals);
                 feature.Attributes.AddAttribute("departures", tripInfo.departures);
                 feature.Attributes.AddAttribute("movements", tripInfo.departures + tripInfo.arrivals);

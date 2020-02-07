@@ -364,6 +364,7 @@ namespace Itinero.Transit.IO.GTFS
 
             if (route != null)
             {
+                attributes["route_id"] = route.Id;
                 attributes["route_description"] = route.Description;
                 attributes["route_url"] = route.Url;
                 attributes["route_type"] = ((int) route.Type).ToString();

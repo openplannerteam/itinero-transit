@@ -16,9 +16,9 @@ namespace Itinero.Transit.Tests.Functional.IO.GTFS
         public static void Run()
         {
             RunNMBS();
-            //RunTec();
-            //RunDeLijn();
-            //RunMIVB();
+            RunTec();
+            RunDeLijn();
+            RunMIVB();
         }
         
         public static void RunMIVB()
@@ -64,7 +64,7 @@ namespace Itinero.Transit.Tests.Functional.IO.GTFS
         public static void Run(string path, DateTime day)
         {
             // read GTFS feed.
-            Logging.Log.Verbose("Parsing GTFS...");
+            Logging.Log.Verbose($"Parsing GTFS: {path}...");
             IGTFSFeed feed = null;
             try
             {
