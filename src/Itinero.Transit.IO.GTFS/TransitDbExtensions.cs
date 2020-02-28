@@ -293,12 +293,7 @@ namespace Itinero.Transit.IO.GTFS
         internal static string ToItineroTripId(this Trip gtfsTrip, DateTime day, string idPrefix = null)
         {
             idPrefix ??= string.Empty;
-            if (string.IsNullOrEmpty(gtfsTrip.BlockId))
-            {
-                return $"{idPrefix}trip/{gtfsTrip.Id}/{day:yyyyMMdd}";
-            }
-
-            return $"{idPrefix}trip/{gtfsTrip.BlockId}/{day:yyyyMMdd}";
+            return $"{idPrefix}trip/{gtfsTrip.Id}/{day:yyyyMMdd}";
         }
 
         internal static Itinero.Transit.Data.Core.Trip ToItineroTrip(this Trip gtfsTrip, DateTime day, string idPrefix = null,
