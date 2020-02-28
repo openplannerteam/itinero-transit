@@ -144,7 +144,8 @@ namespace Itinero.Transit.IO.VectorTiles
                         // add route.
                         feature.routes += 1;
                         feature.feature.Attributes.AddAttribute($"route_{newRouteId}",
-                            Data.Route.FromTrip(trip).ToJson());
+                            Data.Route.FromTrip(trip,
+                                oid => transitDbSnapShot.OperatorDb.Get(oid)).ToJson());
 
                         HashSet<(string routeId, string routeType, string operatorId)> routesList;
                         if (!stopInfos.TryGetValue(stop1GlobalId, out var stopInfo))
