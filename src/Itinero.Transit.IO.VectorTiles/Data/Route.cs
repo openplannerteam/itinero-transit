@@ -6,6 +6,8 @@ namespace Itinero.Transit.IO.VectorTiles.Data
 {
     internal class Route
     {
+        public string Id { get; set; }
+        
         public string ShortName { get; set; }
         
         public string LongName { get; set; }
@@ -25,9 +27,15 @@ namespace Itinero.Transit.IO.VectorTiles.Data
                    $", \"color\": \"{this.Color}\"}}";
         }
 
-        public static Route FromTrip(Trip trip, Func<OperatorId, Operator> getOperator = null)
+        public static Route FromTrip(Trip trip, Func<OperatorId, Operator> getOperator = null, string routeId = null)
         {
+            if (string.IsNullOrWhiteSpace(routeId))
+            {
+                trip.TryGetAttribute("route_id", out routeId);
+            }
+            
             var route = new Route();
+            route.Id = routeId;
             if (trip.TryGetAttribute("route_shortname", out var val))
             {
                 route.ShortName = val;
