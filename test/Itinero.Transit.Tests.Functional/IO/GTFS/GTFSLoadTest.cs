@@ -31,24 +31,24 @@ namespace Itinero.Transit.Tests.Functional.IO.GTFS
             Run(fileName, DateTime.Now.Date.ToUniversalTime());
         }
         
-        public static void RunNMBS()
+        public static TransitDb RunNMBS()
         {
             var url = "http://planet.anyways.eu/transit/GTFS/belgium/nmbs/nmbs-latest.gtfs.zip";
             var fileName = "nmbs-latest.gtfs.zip";
 
             Download.Get(url, fileName);
             
-            Run(fileName, DateTime.Now.Date.ToUniversalTime());
+            return Run(fileName, DateTime.Now.ToUniversalTime().Date);
         }
         
-        public static void RunDeLijn()
+        public static TransitDb RunDeLijn()
         {
             var url = "http://planet.anyways.eu/transit/GTFS/belgium/delijn/delijn-latest.gtfs.zip";
             var fileName = "delijn-latest.gtfs.zip";
 
             Download.Get(url, fileName);
             
-            Run(fileName, DateTime.Now.Date.ToUniversalTime());
+            return Run(fileName, DateTime.Now.ToUniversalTime().Date);
         }
         
         public static void RunTec()
@@ -61,7 +61,7 @@ namespace Itinero.Transit.Tests.Functional.IO.GTFS
             Run(fileName, DateTime.Now.Date.ToUniversalTime());
         }
         
-        public static void Run(string path, DateTime day)
+        public static TransitDb Run(string path, DateTime day)
         {
             // read GTFS feed.
             Logging.Log.Verbose($"Parsing GTFS: {path}...");
@@ -79,18 +79,20 @@ namespace Itinero.Transit.Tests.Functional.IO.GTFS
             var transitDb = new TransitDb(0);
             transitDb.LoadGTFS(feed, day, day);
 
-            (new[] {transitDb.Latest}).CalculateVectorTileTree(6, 14);
+//            (new[] {transitDb.Latest}).CalculateVectorTileTree(6, 14);
+//
+//            using (var stream = File.Open("temp.transitdb", FileMode.Create))
+//            {
+//                transitDb.Latest.WriteTo(stream);
+//            }
+//
+//            using (var stream = File.OpenRead("temp.transitdb"))
+//            {
+//                transitDb = new TransitDb(0);
+//                transitDb.GetWriter().ReadFrom(stream);
+//            }
 
-            using (var stream = File.Open("temp.transitdb", FileMode.Create))
-            {
-                transitDb.Latest.WriteTo(stream);
-            }
-
-            using (var stream = File.OpenRead("temp.transitdb"))
-            {
-                transitDb = new TransitDb(0);
-                transitDb.GetWriter().ReadFrom(stream);
-            }
+            return transitDb;
         }
     }
 }

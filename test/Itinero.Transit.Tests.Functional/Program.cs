@@ -13,6 +13,7 @@ using Itinero.Transit.Tests.Functional.IO.GTFS;
 using Itinero.Transit.Tests.Functional.IO.LC;
 using Itinero.Transit.Tests.Functional.IO.LC.Synchronization;
 using Itinero.Transit.Tests.Functional.IO.OSM;
+using Itinero.Transit.Tests.Functional.IO.OSM.Writer;
 using Itinero.Transit.Tests.Functional.Regression;
 using Itinero.Transit.Tests.Functional.Utils;
 using Serilog;
@@ -39,7 +40,10 @@ namespace Itinero.Transit.Tests.Functional
             }
 
             // test gtfs io.
-            GTFSLoadTest.Run();
+            var transitDb = GTFSLoadTest.RunDeLijn();
+            
+            ToOsmStreamSourceTest.Test(transitDb);
+            //GTFSLoadTest.Run();
 
             // Setup...
 //            RouterDbStaging.Setup();
