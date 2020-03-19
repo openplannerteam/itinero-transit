@@ -40,7 +40,7 @@ namespace Itinero.Transit.Tests.Functional
             }
 
             // test gtfs io.
-            var transitDb = GTFSLoadTest.RunDeLijn();
+            var transitDb = GTFSLoadTest.RunNMBS();
             
             ToOsmStreamSourceTest.Test(transitDb);
             //GTFSLoadTest.Run();
