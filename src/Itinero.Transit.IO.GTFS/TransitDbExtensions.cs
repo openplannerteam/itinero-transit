@@ -318,7 +318,21 @@ namespace Itinero.Transit.IO.GTFS
                 attributes["route_id"] = route.Id;
                 attributes["route_description"] = route.Description;
                 attributes["route_url"] = route.Url;
-                attributes["route_type"] = ((int) route.Type).ToString();
+                attributes["route_type"] = string.Empty;
+                if (route.Type.TryToRouteType(out var routeType))
+                {
+                    var routeTypeString = routeType.ToInvariantString();
+                    if (!string.IsNullOrWhiteSpace(routeTypeString))
+                    {
+                        attributes["route_type"] = routeTypeString.ToLowerInvariant();
+                    }
+                }
+
+                var routeTypeExtendedString = route.Type.ToInvariantString();
+                if (!string.IsNullOrWhiteSpace(routeTypeExtendedString))
+                {
+                    attributes["route_type_extended"] = routeTypeExtendedString.ToLowerInvariant();
+                }
                 attributes["route_longname"] = route.LongName;
                 attributes["route_shortname"] = route.ShortName;
                 attributes["route_color"] = route.Color.ToHexColorString();

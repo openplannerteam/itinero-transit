@@ -10,7 +10,7 @@ namespace Itinero.Transit.IO.OSM.Writer
     public static class TransitDbExtensions
     {
         public static IEnumerable<OsmGeo> ToOsmStreamSource(this TransitDbSnapShot snapShot, 
-            Func<OsmGeoType, long> osmIdGenerator = null)
+            Func<OsmGeoType, long> osmIdGenerator)
         {
             var stops = snapShot.StopsDb;
             var stopsIndex = new Dictionary<string, Node>();
@@ -127,7 +127,7 @@ namespace Itinero.Transit.IO.OSM.Writer
                     tags.AddOrReplace("type", "route");
                     if (trip.TryGetAttribute("route_type", out var routeType))
                     {
-                        tags.AddOrReplace("route", routeType);
+                        tags.AddOrReplace("route", OsmDataHandler.ToOsmRouteType(routeType));
                     }
                     if (trip.TryGetAttribute("route_shortname", out var routeShortName))
                     {

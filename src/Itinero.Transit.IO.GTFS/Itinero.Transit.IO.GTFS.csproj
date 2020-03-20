@@ -23,7 +23,7 @@
 
 
     <ItemGroup>
-      <PackageReference Include="GTFS" Version="3.0.0-pre001" />
+      <PackageReference Include="GTFS" Version="3.0.0-pre002" />
     </ItemGroup>
 
 </Project>
